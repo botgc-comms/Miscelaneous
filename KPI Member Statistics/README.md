@@ -1,5 +1,8 @@
 # Script Logic for Calculating Member Metrics
 
+![Example Output](screenshot.png)
+
+
 This script processes two datasets:
 1. **Events Dataset**: Contains member event records, such as membership changes (e.g., status updates, category changes).
 2. **Joiners Dataset**: Contains information about members who joined the club, including their join date.
@@ -7,6 +10,13 @@ This script processes two datasets:
 The script applies several **filters**, **conditions**, and **logic rules** to calculate metrics and classify members into different categories, ensuring accurate reporting based on well-defined criteria.
 
 ---
+
+## Reporting from IG
+
+The above data is retrieved by running the Joiners and Category Change reports from within IG. These can be found here:
+
+[Category Changes Report](https://www.botgc.co.uk/membership_reports.php?tab=categorychanges)
+[New Members Report](https://www.botgc.co.uk/membership_reports.php?tab=newmembers)
 
 ## Key Components of the Script Logic
 
