@@ -1,6 +1,6 @@
 # Script Logic for Calculating Member Metrics
 
-![Example Output](screenshot.png)
+![Example Output](screenshot.jpg)
 
 
 This script processes two datasets:
