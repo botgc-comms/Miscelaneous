@@ -1,0 +1,249 @@
+id,name,RightVolumeML,Code,Product,LeftVolumeML,Score,Method,Status
+128,Amaretto,,018081,AMARETTO,,1.0,right_to_left,matched
+181,Amaretto White,,018091,AMARETTO WHITE,,1.0,right_to_left,matched
+23,Archers Peach,,019341,ARCHERS PEACH SCH,,0.9,right_to_left,matched
+183,Archers Schnapps,,019340,ARCHERS SCHNAPPS,,1.0,right_to_left,matched
+137,Aspall,,060131,ASPALL 4.5% GAL,,1.0,right_to_left,matched
+177,Auchentoshan,,014041,AUCHENTOSHAN,,1.0,right_to_left,matched
+24,Bacardi,,011071,BACARDI,,1.0,right_to_left,matched
+289,Smith's Bacon Fries,,090171,BACON FRIES DOZ,,0.91,right_to_left,matched
+288,Smith's Scampi Fries,,090171,BACON FRIES DOZ,,0.91,right_to_left,matched
+25,Baileys Irish Cream,,018151,BAILEYS IRISH CRM,,1.0,right_to_left,matched
+134,Bass,,040481,BASS ALE 10GAL GAL,,1.0,right_to_left,matched
+121,Louis Jadot Beaujolais Villages 750ml Bottle,,030221,BEAUJOLAIS VILLAGE BOT,,0.91,right_to_left,matched
+26,Bells Scotch Whisky,,013071,BELLS,,1.0,right_to_left,matched
+222,Belu Sparkling Water,,075100,BELU WATER,,1.0,right_to_left,matched
+27,Benedictine,,018171,BENEDICTINE,,1.0,right_to_left,matched
+28,Bombay Sapphire,,012081,BOMBAY SAPPHIRE,,1.0,right_to_left,matched
+30,Bowmore Malt Whisky 12Year,,014091,BOWMORE 12YO,,1.0,right_to_left,matched
+129,Harveys Bristol Cream ,,025201,BRISTOL CREAM,,0.9,right_to_left,matched
+31,Brockmans Gin,,012101,BROCKMANS GIN,,1.0,right_to_left,matched
+32,Brooklyn Gin,,012116,BROOKLYN GIN,,1.0,right_to_left,matched
+114,Brookford Shiraz Cabernet ,,030421,CAB SAUV BROOKFORD BOT,,0.9,right_to_left,matched
+192,Brookford Cabernet Sauv,,030421,CAB SAUV BROOKFORD BOT,,0.9,right_to_left,matched
+161,Captain Morgan Dark Rum,,011201,CAPT MORGAN DARK,,0.9,right_to_left,matched
+33,Captain Morgan Spiced Rum,,011201,CAPT MORGAN DARK,,0.9,right_to_left,matched
+1,Carling Lager,,047281,CARLING GAL,,1.0,right_to_left,matched
+209,Cava Lacrima,,038651,CAVA LACRIMA BOT,,1.0,right_to_left,matched
+110,Brookford Chardonnay 750ml Bottle,,030511,CHARD BROOKFORD BOT,,0.9,right_to_left,matched
+112,Rochebin Macon Chardonnay 750ml Bottle,,030551,CHARD MACON VILLAGE BOT,,0.9,right_to_left,matched
+193,Oude Kaap Chardonnay 750ml Bottle,,030571,CHARD OUDE KAAP BOT,,0.9,right_to_left,matched
+194,Oude Kaap Chenin Blanc 750ml Bottle,,030651,CHENIN OUDE KAAP BOT,,0.9,right_to_left,matched
+34,Cinzano Bianco,,021221,CINZANO BIANCO,,1.0,right_to_left,matched
+15,Coca Cola Can,,077301,COCA COLA CN,,1.0,right_to_left,matched
+189,Cockburns Special,,022451,COCKBURNS SPECIAL,,1.0,right_to_left,matched
+35,Courvoisier VS,,010161,COURVOISIER VS,,1.0,right_to_left,matched
+8,Crabbies Ginger Beer,,029121,CRABBIES GINGER,,1.0,right_to_left,matched
+157,Pipers Crisps - Cider & Vinegar,,090601,CRISPS PIPERS 40G TEN,,0.9,right_to_left,matched
+248,Crunchie,,098271,CRUNCHIE DOZ,,1.0,right_to_left,matched
+284,De Kuyper Blue Curacao,,019836,CURACAO BLUE DKY,,1.0,right_to_left,matched
+249,Dairy Milk 45g,,098276,DAIRY MILK 45G DOZ,,1.0,right_to_left,matched
+87,Dairy Milk Duo,,098276,DAIRY MILK 45G DOZ,,0.9,right_to_left,matched
+88,Dairy Milk Bar,,098276,DAIRY MILK 45G DOZ,,0.9,right_to_left,matched
+37,Drambuie,,018501,DRAMBUIE,,1.0,right_to_left,matched
+246,KP Dry Roasted,,094421,DRY ROAST KP 50G DOZ,,0.9,right_to_left,matched
+141,Estrella Galicia 0%,,047446,ESTRELLA 0% GAL,,0.9,right_to_left,matched
+219,Fever Tree Aromatic,,071521,F/TREE AROMATIC,,1.0,right_to_left,matched
+220,Fever Tree Ginger Ale,,071551,F/TREE GINGER ALE,,1.0,right_to_left,matched
+151,Fever Tree Tonic Light,,071581,F/TREE TONIC,,1.0,right_to_left,matched
+152,Fever Tree Tonic Water,,071581,F/TREE TONIC,,1.0,right_to_left,matched
+38,The Famous Grouse Scotch Whisky,,013271,FAMOUS GROUSE,,0.9,right_to_left,matched
+277,Four Pillars Gin,,012306,FOUR PILLARS GIN,,1.0,right_to_left,matched
+17,Fruit Shoot Orange,,071611,FRUIT SHOOTS,,0.9,right_to_left,matched
+268,Ginger Beer Post Mix,,076321,GINGER BEER 5-1 LTR,,1.0,right_to_left,matched
+178,Glen Scotia,,014371,GLEN SCOTIA,,1.0,right_to_left,matched
+39,Glenmorangie Malt Whisky 12YO,,014431,GLENMORANGIE 10YR,,1.0,right_to_left,matched
+41,Gordons Special Dry,,012351,GORDONS,,1.0,right_to_left,matched
+159,Gordons Gin 0%,,012341,GORDONS 0%,,1.0,right_to_left,matched
+164,Gordons Cherry Gin,,012353,GORDONS CHERRY,,1.0,right_to_left,matched
+166,Gordons Lemon Gin,,012357,GORDONS LEMON,,1.0,right_to_left,matched
+165,Gordons Med Orange Gin,,012355,GORDONS MED ORANGE,,1.0,right_to_left,matched
+167,Gordons White Peach Gin,,012359,GORDONS PEACH,,0.9,right_to_left,matched
+40,Gordons Pink Gin,,012361,GORDONS PINK,,1.0,right_to_left,matched
+283,Grey Goose Vodka,,019834,GREY GOOSE VODKA,,1.0,right_to_left,matched
+4,Guinness,,046321,GUINNESS GAL,,1.0,right_to_left,matched
+294,Guinness 0.0% 440ml Can,,052336,GUINNESS O% CANS,,0.9,right_to_left,matched
+101,Guinness 0.0% 538ml Can,,052336,GUINNESS O% CANS,,0.9,right_to_left,matched
+43,Haig Club,,014455,HAIG CLUBMAN,,0.9,right_to_left,matched
+251,Haribo Supamix,,098566,HARIBO SUPERMIX DOZ,,1.0,right_to_left,matched
+252,Haribo Tangfastic,,098571,HARIBO TANGFASTIC DOZ,,1.0,right_to_left,matched
+45,Jack Daniels Tennessee,,015341,JACK DANIELS,,0.9,right_to_left,matched
+46,Jagermeister,,018841,JAGERMEISTER,,1.0,right_to_left,matched
+48,Jim Beam,,015361,JIM BEAM WHITE,,0.9,right_to_left,matched
+182,Kahlua,,018861,KAHLUA,,1.0,right_to_left,matched
+10,Koppaberg Mixed Fruit 500ml Bottle,,064851,KOPPABERG M/FRUIT,,1.0,right_to_left,matched
+270,Koppaberg Mixed Fruit 0.0% 500ml Bottle,,064851,KOPPABERG M/FRUIT,,1.0,right_to_left,matched
+149,Koppaberg Strawberry & Lime 500ml Bottle,,064881,KOPPABERG ST/LIME,,1.0,right_to_left,matched
+269,Koppaberg Strawberry & Lime 0.0% 500ml Bottle,,064881,KOPPABERG ST/LIME,,1.0,right_to_left,matched
+160,Kraken Spiced Rum,,011551,KRAKEN,,1.0,right_to_left,matched
+162,Kraken Cherry Rum,,011556,KRAKEN CHERRY,,1.0,right_to_left,matched
+163,Kraken Roast Coffee Rum,,011559,KRAKEN COFFEE,,0.9,right_to_left,matched
+138,Level Head,,042771,LEVEL HEAD 30L GAL,,1.0,right_to_left,matched
+136,Madri,,048061,MADRI GAL,,1.0,right_to_left,matched
+115,Despacito Malbec 750ml Bottle,,034221,MALBEC DESPACITO BOT,,1.0,right_to_left,matched
+117,Hermandad Malbec 750ml Bottle,,034321,MALBEC HERMANDAD BOT,,1.0,right_to_left,matched
+51,Martini Rosso,,021540,MARTINI RED,,1.0,right_to_left,matched
+113,Casa Merlot  LCL,,034531,MERLOT CASA SANTI BOT,,0.9,right_to_left,matched
+197,Casa Santiago Merlot 750ml Bottle,,034531,MERLOT CASA SANTI BOT,,0.9,right_to_left,matched
+264,Nelsons Gin,,011601,NELSONS RUM,,1.0,right_to_left,matched
+120,Niepoort Port,,023761,NIEPOORT RUBY PORT,,0.9,right_to_left,matched
+150,Old Mout Kiwi & Lime 500ml Bottle,,065371,OLD MOUT KIWI,,0.9,right_to_left,matched
+144,Orange Juice Post Mix,,076621,ORANGE JUICE 4-1 LTR,,1.0,right_to_left,matched
+201,Pino Grigio Blush Trevigiana,,034661,P/GRIGIO TREVIGIAN BOT,,0.9,right_to_left,matched
+200,Pino Grigio Trevigiana  DOC,,034661,P/GRIGIO TREVIGIAN BOT,,0.9,right_to_left,matched
+108,Cantina Trevigiana Pinot Grigio 750ml Bottle,,034661,P/GRIGIO TREVIGIAN BOT,,0.9,right_to_left,matched
+107,Cantina Trevigiana Pinot Grigio Blush 750ml Bottle,,034661,P/GRIGIO TREVIGIAN BOT,,0.9,right_to_left,matched
+202,Arte Noble Reserve Pino Noir 75cl Bottle,,034811,P/NOIR ARTE NOBLE BOT,,0.9,right_to_left,matched
+203,Pino Noir Bourgogne,,034821,P/NOIR BOURG BOT,,0.9,right_to_left,matched
+204,Rochebin Pinot Noir 750ml Bottle,,034821,P/NOIR BOURG BOT,,0.9,right_to_left,matched
+95,Pepsi Max Post Mix,,076701,PEPSI MAX 5-1 LTR,,1.0,right_to_left,matched
+303,Pepsi Max 500ml Bottle,,076701,PEPSI MAX 5-1 LTR,,1.0,right_to_left,matched
+20,Pepsi Max Can,,076701,PEPSI MAX 5-1 LTR,,1.0,right_to_left,matched
+148,Peroni Nastro Azzuro 0.0% 330ml Bottle,,055061,PERONI N/AZZURO,,1.0,right_to_left,matched
+215,Peroni Nastro Azzuro 330ml Bottle,,055061,PERONI N/AZZURO,,1.0,right_to_left,matched
+52,Pimms No 1,,017651,PIMMS NO1,,1.0,right_to_left,matched
+290,Midlands Pork Scratchings,,099712,PORK SCRATCHINGS DOZ,,0.9,right_to_left,matched
+211,75cl Trevigiana Prosecco Rose,,038871,PROSECCO TREVIGIAN BOT,,1.0,right_to_left,matched
+304,Redbull 250ml Can,,077993,RED BULL,,1.0,right_to_left,matched
+281,Red Door Gin,,012772,RED DOOR GIN FOC,,1.0,right_to_left,matched
+205,Choza Rioja Crianza 750ml Bottle,,035321,RIOJA CHOZA BOT,,0.9,right_to_left,matched
+282,Rugby Gin,,012807,RUGBY GIN FOC,,1.0,right_to_left,matched
+83,KP Nuts Salted,,095751,SALTED NUTS KP 50G DOZ,,1.0,right_to_left,matched
+79,Sambuca Antica,,019513,SAMBUCA ANTICA,,1.0,right_to_left,matched
+5,San Miguel,,048501,SAN MIGUEL GAL,,1.0,right_to_left,matched
+111,Inviniti Sauvignon Blanc,,036551,SAUV BLNC INVINIT BOT,,0.9,right_to_left,matched
+206,Aotearoa Sauvignon Blanc 750ml Bottle,,036551,SAUV BLNC INVINIT BOT,,0.9,right_to_left,matched
+207,Oude Kaap Sauvignon Blanc 750ml Bottle,,036571,SAUV BLNC OUDE KAAP BOT,,1.0,right_to_left,matched
+208,Casa Santiago Sauvignon Blanc 750ml Bottle,,036591,SAUV BLNC SANTIAGO BOT,,0.9,right_to_left,matched
+307,Smirnoff Miami Peach Vodka 70cl,,019835,SMIRNOFF PEACH,,0.9,right_to_left,matched
+57,Smirnoff Red Label Vodka,,016801,SMIRNOFF RED,,0.9,right_to_left,matched
+259,Snickers,,099351,SNICKERS DOZ,,1.0,right_to_left,matched
+58,Southern Comfort,,015501,SOUTHERN COMFORT,,1.0,right_to_left,matched
+223,Springbourne Water,,075701,SPRINGBOURNE WATER,,1.0,right_to_left,matched
+59,Talisker Malt Whisky 10YO,,014841,TALISKER,,1.0,right_to_left,matched
+186,Dead Man Fingers Blue Raspberry Rum,,019697,TEQ DEAD MAN RASP,,0.9,right_to_left,matched
+298,Patron Silver Tequilla ,,019785,TEQ PATRON SILVER,,1.0,right_to_left,matched
+262,Patron Reposado Tequilla ,,019785,TEQ PATRON SILVER,,0.9,right_to_left,matched
+187,Tequilla Rose,,019793,TEQ ROSE,,1.0,right_to_left,matched
+263,Three Barrels,,010891,THREE BARRELS,,1.0,right_to_left,matched
+168,Whitley Neill Pink Apricot Gin,,012931,W/NEIL APRICOT PINK,,1.0,right_to_left,matched
+171,Whitley Neill Blood Orange Gin,,012950,W/NEIL B/ORANGE,,1.0,right_to_left,matched
+170,Whitley Neill Black Cherry Gin,,012949,W/NEIL BLK CHERRY,,1.0,right_to_left,matched
+172,Whitley Neill Gooseberry Gin,,012953,W/NEIL GOOSEBERRY,,1.0,right_to_left,matched
+173,Whitley Neil Pineapple Gin,,012954,W/NEIL PINEAPPLE,,1.0,right_to_left,matched
+174,Whitley Neill Pink Grape Gin,,012955,W/NEIL PINK GRAPE,,1.0,right_to_left,matched
+175,Whitley Neill Raspberry Gin,,012957,W/NEIL RASPBERRY,,1.0,right_to_left,matched
+176,Whitley Neill Rhubarb Gin,,012959,W/NEIL RHUBARB,,1.0,right_to_left,matched
+63,Whitley Neill Gin,,012941,WHITNEY NEIL GIN,,1.0,right_to_left,matched
+169,Whitley Neill DC Gin,,012941,WHITNEY NEIL GIN,,0.9,right_to_left,matched
+123,Whyte & Mackay Whisky,,013951,WHYTE & MACKAY,,1.0,right_to_left,matched
+305,Wray & Nephew 70cl Bottle,,019832,WRAY & NEPHEW RUM,,1.0,right_to_left,matched
+106,Hilmar Springs White Zinfandel 750ml Bottle,,037851,ZINF HILMASPRINGS BOT,,0.9,right_to_left,matched
+3,BlackHole Guest Ale ,,,,,,right_to_left,unmatched
+16,Elderflower presse,,,,,,right_to_left,unmatched
+19,Natural Still Water,,,,,,right_to_left,unmatched
+22,Sparkling Water,,,,,,right_to_left,unmatched
+36,Disaronno Amaretto,,,,,,right_to_left,unmatched
+42,Grand Marnier,,,,,,right_to_left,unmatched
+44,Hendricks Gin,,,,,,right_to_left,unmatched
+47,Jamesons Irish Whiskey,,,,,,right_to_left,unmatched
+49,Malibu,,,,,,right_to_left,unmatched
+50,Martini Extra Dry,,,,,,right_to_left,unmatched
+53,Remy Martin,,,,,,right_to_left,unmatched
+55,Rhubarb Gin,,,,,,right_to_left,unmatched
+56,Sherry,,,,,,right_to_left,unmatched
+60,Tanqueray Gin,,,,,,right_to_left,unmatched
+61,Taylors Fine Ruby Port,,,,,,right_to_left,unmatched
+62,Tia Maria,,,,,,right_to_left,unmatched
+73,Roku Gin,,,,,,right_to_left,unmatched
+74,Eden Mill Gin,,,,,,right_to_left,unmatched
+75,Ophir Gin,,,,,,right_to_left,unmatched
+76,Tanquery Seville,,,,,,right_to_left,unmatched
+80,Chambord,,,,,,right_to_left,unmatched
+84,McCoys Crisps,,,,,,right_to_left,unmatched
+85,Pipers Crisps - Longhorn Beef,,,,,,right_to_left,unmatched
+86,Kit Kat 4 Finger,,,,,,right_to_left,unmatched
+96,Lilt Zero,,,,,,right_to_left,unmatched
+97,Fanta Orange Can,,,,,,right_to_left,unmatched
+103,Big Hoop Crisps,,,,,,right_to_left,unmatched
+119,Champagne Tattinger,,,,,,right_to_left,unmatched
+125,Donman Dry Roasted Nuts,,,,,,right_to_left,unmatched
+130,Radnor Hills,,,,,,right_to_left,unmatched
+135,Lemonade Post Mix,,,,,,right_to_left,unmatched
+140,TT Landlord,,,,,,right_to_left,unmatched
+143,Cola Post mix,,,,,,right_to_left,unmatched
+145,Lime Cordial,,,,,,right_to_left,unmatched
+146,Orange Cordial ,,,,,,right_to_left,unmatched
+147,Blackcurrant Cordial,,,,,,right_to_left,unmatched
+155,Pipers Crisps - Cheddar & Onion,,,,,,right_to_left,unmatched
+156,Pipers Crisps - Sea Salt,,,,,,right_to_left,unmatched
+158,Pipers Crisps - Sweet Chilli,,,,,,right_to_left,unmatched
+179,Glenlivet Malt Whisky 12YO,,,,,,right_to_left,unmatched
+180,JJ Whitley Vodka,,,,,,right_to_left,unmatched
+184,Sourz Apple,,,,,,right_to_left,unmatched
+185,Sourz Cherry,,,,,,right_to_left,unmatched
+188,Dead Mans Fingers Passion Fruit Rum Bottle,,,,,,right_to_left,unmatched
+190,Grahams LBC,,,,,,right_to_left,unmatched
+191,Triple Crown Port,,,,,,right_to_left,unmatched
+196,Land of Malbec White Malbec 750ml,,,,,,right_to_left,unmatched
+198,Merlot IL Molo,,,,,,right_to_left,unmatched
+214,Cantina Trevigiana Rose Prosecco 75cl Bottle,,,,,,right_to_left,unmatched
+216,Britvic J2O Orange & Passion Fruit,,,,,,right_to_left,unmatched
+217,Britvic J2O Apple & Raspberry,,,,,,right_to_left,unmatched
+218,Britvic J2O  Apple & Mango,,,,,,right_to_left,unmatched
+221,Fruit Shoot  Apple & Blackcurrant,,,,,,right_to_left,unmatched
+224,Diet Cola,,,,,,right_to_left,unmatched
+225,Coke Zero,,,,,,right_to_left,unmatched
+226,Orange Tango,,,,,,right_to_left,unmatched
+227,Tango Orange Bottle,,,,,,right_to_left,unmatched
+228,Fanta Orange Bottle,,,,,,right_to_left,unmatched
+229,Lucozade Energy Orange,,,,,,right_to_left,unmatched
+230,Lucozade Energy Original,,,,,,right_to_left,unmatched
+231,Lucozade Sport Orange,,,,,,right_to_left,unmatched
+232,Lucozade Sport Raspberry,,,,,,right_to_left,unmatched
+233,Oasis Citrus Fruits,,,,,,right_to_left,unmatched
+234,Oasis Summer Fruits,,,,,,right_to_left,unmatched
+235,Oasis Tropical,,,,,,right_to_left,unmatched
+236,Oasis Mango,,,,,,right_to_left,unmatched
+237,Oasis Zero Citrus Fruits,,,,,,right_to_left,unmatched
+238,Oasis Zero Summer Fruits,,,,,,right_to_left,unmatched
+239,Oasis Zero Tropical,,,,,,right_to_left,unmatched
+240,Oasis Zero Mango,,,,,,right_to_left,unmatched
+241,Ribena,,,,,,right_to_left,unmatched
+242,Ribena Strawberry,,,,,,right_to_left,unmatched
+243,Vimto Bottle,,,,,,right_to_left,unmatched
+244,Vimto Zero,,,,,,right_to_left,unmatched
+247,Aero Mint Chocolate,,,,,,right_to_left,unmatched
+250,Haribo Starmix,,,,,,right_to_left,unmatched
+253,Galaxy Chocolate Bar,,,,,,right_to_left,unmatched
+254,Kit Kat 2 Finger,,,,,,right_to_left,unmatched
+255,Maltesers,,,,,,right_to_left,unmatched
+256,Mars Bar,,,,,,right_to_left,unmatched
+257,Minstrels,,,,,,right_to_left,unmatched
+258,Maoam Pinballs,,,,,,right_to_left,unmatched
+260,Twirl,,,,,,right_to_left,unmatched
+261,Twix,,,,,,right_to_left,unmatched
+265,Nelsons Temir Gin,,,,,,right_to_left,unmatched
+266,Nelsons Rhubarb & Custard Gin,,,,,,right_to_left,unmatched
+267,Disaronno Velvet,,,,,,right_to_left,unmatched
+271,Old Mout Berries & Cherries 500ml Bottle,,,,,,right_to_left,unmatched
+272,Fanta Lemon Bottle,,,,,,right_to_left,unmatched
+273,Fanta Fruit Twist,,,,,,right_to_left,unmatched
+274,Ribena Light Strawberry,,,,,,right_to_left,unmatched
+275,Ribena Light Mango,,,,,,right_to_left,unmatched
+276,Galaxy Caramel,,,,,,right_to_left,unmatched
+278,Nelsons Rum - Signature,,,,,,right_to_left,unmatched
+279,Nelsons Rum - Chocolate,,,,,,right_to_left,unmatched
+280,Nelsons Rum - Pineapple,,,,,,right_to_left,unmatched
+285,Dairy Milk - Little Bars,,,,,,right_to_left,unmatched
+286,Giant Triple Choc Cookie,,,,,,right_to_left,unmatched
+287,Giant Fruit & Oat Cookie,,,,,,right_to_left,unmatched
+291,Lucozade Sport - L& L,,,,,,right_to_left,unmatched
+293,Lucozade Sport - Lemon & Lime,,,,,,right_to_left,unmatched
+295,Vilarnau 0.0% Sparkling White Wine 750ml Bottle,,,,,,right_to_left,unmatched
+297,Cantina Trevigiana Prosecco 750ml Bottle,,,,,,right_to_left,unmatched
+299,Di Maria Rose Prosecco 200ml Bottle,,,,,,right_to_left,unmatched
+300,Cantina Trevigiana Prosecco 200ml Bottle,,,,,,right_to_left,unmatched
+302,Oasis Exotic Fruits Zero 500ml,,,,,,right_to_left,unmatched
+306,Mulled Wine 1500ml Bottle,,,,,,right_to_left,unmatched
+308,Large Pork Sausage,,,,,,right_to_left,unmatched
