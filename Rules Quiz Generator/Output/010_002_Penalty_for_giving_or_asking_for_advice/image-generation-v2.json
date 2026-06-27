@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\010_002_Penalty_for_giving_or_asking_for_advice\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:10:12.471Z",
+  "title": "Penalty for giving or asking for advice",
+  "ruleNumber": "R10",
+  "ruleName": "Advice and line of play",
+  "durationSeconds": 182.049
+}

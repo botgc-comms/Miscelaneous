@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "15.2a & 16.1",
+  "ruleName": "Movable and Immovable Obstructions",
+  "group": "Abnormal Course Conditions",
+  "title": "Ball Under a Parked Car",
+  "question": "Your tee shot comes to rest underneath a parked car on the edge of the course. The car is preventing you from playing your ball. What is the correct ruling?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You must play the ball as it lies."
+    },
+    {
+      "id": "b",
+      "text": "You may move the car if it can be readily moved. If it cannot be readily moved, you are entitled to free relief."
+    },
+    {
+      "id": "c",
+      "text": "You must take an unplayable ball with a one-stroke penalty."
+    },
+    {
+      "id": "d",
+      "text": "You may always take free relief, whether the car can be moved or not."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "A parked car is an obstruction. If the car can be readily moved, it is a movable obstruction: move the car and play the ball. If the car cannot readily be moved, it is treated as an immovable obstruction and you are entitled to free relief. This is covered by Rules 15.2a (Relief from Movable Obstructions) and 16.1 (Relief from Immovable Obstructions).",
+  "imagePrompt": "Create a modern, polished, semi-realistic golf scene in the established junior golf quiz illustration style (about 75% realistic, 25% stylised). Show a golf course with a single parked car at the edge of the fairway near the rough. A golf ball is clearly visible lying under the centre of the car, just beneath the chassis. A golfer stands a few metres away, observing the ball and the car, considering what to do next. The overall mood is realistic but approachable and clean. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer on a golf course looks at their ball, which is lying underneath a parked car at the edge of the fairway.",
+  "sceneSpec": {
+    "setting": "A well-maintained golf course with a parked car at the edge of the fairway, near the rough, visible from the teeing area.",
+    "players": "One golfer standing on the course near the parked car, clearly observing the situation.",
+    "ballPosition": "Golf ball is clearly visible on the grass underneath the centre of the parked car, just beneath the chassis.",
+    "ruleMoment": "The moment the player discovers their ball is under the vehicle and is unable to play a stroke.",
+    "educationalFocus": "Identifying whether an obstruction is movable or immovable and the correct relief procedure.",
+    "mustShow": [
+      "A modern parked car at the edge of the course",
+      "A golf ball visible under the centre of the car",
+      "A golfer looking at the car and the ball, considering options"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  }
+}

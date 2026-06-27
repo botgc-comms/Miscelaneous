@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "9.1",
+  "ruleName": "Ball Played as It Lies; Ball at Rest Lifted or Moved",
+  "group": "General Play",
+  "title": "Ball in a Fairway Divot: Free Relief?",
+  "question": "Your tee shot finishes in the middle of the fairway, but unfortunately the ball comes to rest in a deep divot left by another player. Can you take free relief?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes. A divot is ground under repair."
+    },
+    {
+      "id": "b",
+      "text": "Yes. You are entitled to relief because your ball is on the fairway."
+    },
+    {
+      "id": "c",
+      "text": "No. You must play the ball as it lies unless a Local Rule says otherwise."
+    },
+    {
+      "id": "d",
+      "text": "Yes, but only if the divot has not yet started to grow back."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "A common misconception is that free relief is allowed from a divot in the fairway. Under the Rules of Golf, however, a divot is not ground under repair and there is no automatic entitlement to free relief. The ball must be played as it lies unless a Local Rule gives additional options.",
+  "imagePrompt": "A polished, modern, semi-realistic illustration of a lone golfer standing on a fairway under mild daylight, in stylish and recognisable golf clothing, preparing to take a shot. The scene focuses on a golf ball clearly sitting in the middle of a fresh, noticeable divot in the fairway turf in front of the golfer. There are no painted lines, stakes, markers or obvious ground under repair indicators. The setting is open fairway grass with natural textures and no visible green, tees or bunkers. The composition is about 75% realistic, 25% stylised. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer stands on a golf fairway about to play a shot, with their ball clearly sitting in the middle of a visible divot in the turf.",
+  "sceneSpec": {
+    "setting": "Fairway of a golf hole, in moderate daylight.",
+    "players": "One player is standing with a club, preparing to play a shot.",
+    "ballPosition": "The player’s ball is clearly sitting in the middle of a fresh, obvious divot in the fairway.",
+    "ruleMoment": "The moment just before the player considers playing the shot, observing the lie.",
+    "educationalFocus": "Show clearly that the ball is in a divot in the fairway to represent the situation where players might ask about free relief.",
+    "mustShow": [
+      "A realistic fairway surface with cut grass and natural shading",
+      "A player dressed in recognisable golf attire standing next to the ball",
+      "The golf ball clearly resting in the centre of a notable and fresh divot"
+    ],
+    "mustNotShow": [
+      "Any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles",
+      "Any features that suggest ground under repair (e.g., lines, paint, stakes)",
+      "Any other players or caddies in the scene"
+    ]
+  }
+}

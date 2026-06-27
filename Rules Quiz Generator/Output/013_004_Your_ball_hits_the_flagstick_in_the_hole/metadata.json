@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-13.png",
+  "ruleNumber": "R13",
+  "ruleName": "Ball in motion accidentally hits ... the flagstick",
+  "group": "Ball in motion accidentally hits ...",
+  "title": "Your ball hits the flagstick in the hole",
+  "question": "On the putting green, if your ball accidentally hits the flagstick that is left in the hole, what should you do?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Replay the shot from the same spot."
+    },
+    {
+      "id": "b",
+      "text": "Add a penalty stroke and play the ball from where it stops."
+    },
+    {
+      "id": "c",
+      "text": "Play the ball as it lies, no penalty."
+    },
+    {
+      "id": "d",
+      "text": "Remove the flagstick and replace your ball before playing on."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "There is no penalty if your ball hits the flagstick left in the hole. You simply play the ball from where it comes to rest.",
+  "imagePrompt": "A teenage girl golfer on the putting green has just putted and her ball has struck the flagstick left in the hole. She prepares to play the next putt.",
+  "imageAlt": "Teen girl golfer's ball hits flagstick in the hole on green.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "addressing_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "medium",
+    "clothingTopColour": "blue",
+    "clothingBottomColour": "red",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The club, golfer posture, green, ball, and hole are all realistic and match the left-handed spec.",
+      "Ball is positioned perfectly near the flagstick, clearly showing the intended scene.",
+      "All visual details (blue top, red shorts, cap, medium mixed skin tone) are accurate.",
+      "The only very minor issue is that the ball could show a slightly more dramatic 'just struck' position (e.g., a hint of motion or proximity to the flag), but this does not break the educational intent."
+    ],
+    "repairPrompt": "Slightly emphasize that the golf ball has just impacted the flagstick by showing a subtle motion effect, vibration of the flagstick, or the ball closer to or gently rebounding from the stick, while maintaining all current proportions, realism, and scene details."
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\013_003_If_you_accidentally_move_your_ball_or_marker_when_marking\\metadata.json",
+  "sourceImageName": "pageb-05.png",
+  "ruleNumber": "R13",
+  "ruleName": "Ball moved when marking it",
+  "title": "If you accidentally move your ball or marker when marking",
+  "question": "You are marking your ball on the green and accidentally move the ball or the marker. What is the correct action?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball from its new position"
+    },
+    {
+      "id": "b",
+      "text": "Leave everything as it is and continue play"
+    },
+    {
+      "id": "c",
+      "text": "Replace the ball or marker to their correct spot without penalty"
+    },
+    {
+      "id": "d",
+      "text": "Add one penalty stroke and continue"
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "If you accidentally move your ball or marker when marking, picking up, or replacing it on the green, you must put it back on the correct spot without penalty.",
+  "juniorVersion": {
+    "title": "What to do if you bump your ball or marker when marking",
+    "question": "If you are putting your marker down or picking up your ball on the green, and you accidentally move the ball or the marker, what should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Hit the ball from where it moved to"
+      },
+      {
+        "id": "b",
+        "text": "Just keep playing from where everything is"
+      },
+      {
+        "id": "c",
+        "text": "Put the ball or marker back in the right spot with no penalty"
+      },
+      {
+        "id": "d",
+        "text": "Add one extra shot and carry on"
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "If you accidentally move your ball or marker when marking, just put them back where they were. You don’t get a penalty for this.",
+    "vocabulary": [
+      {
+        "term": "marker",
+        "simpleMeaning": "A small, flat object you put behind your ball on the green to show where your ball was."
+      },
+      {
+        "term": "green",
+        "simpleMeaning": "The smooth, short grass area around the hole."
+      }
+    ],
+    "teachingTip": "Let children practise marking and replacing their ball gently so they learn to avoid moving it, but also know it’s okay as long as they put it back if it happens by accident.",
+    "likelyMisconceptions": [
+      "Kids might think they always get a penalty if the ball or marker moves.",
+      "They might think they have to play from where the ball rolled to."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:33.297Z",
+  "model": "gpt-4.1"
+}

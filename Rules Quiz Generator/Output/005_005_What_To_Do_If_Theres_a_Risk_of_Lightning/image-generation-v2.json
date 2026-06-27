@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\005_005_What_To_Do_If_Theres_a_Risk_of_Lightning\\metadata.json",
+  "generatedAtUtc": "2026-06-24T14:48:21.100Z",
+  "title": "What To Do If There's a Risk of Lightning",
+  "ruleNumber": "R5",
+  "ruleName": "Suspension of play/thunderstorm",
+  "durationSeconds": 192.339
+}

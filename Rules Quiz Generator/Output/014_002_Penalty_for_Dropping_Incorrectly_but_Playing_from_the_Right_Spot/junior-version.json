@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\014_002_Penalty_for_Dropping_Incorrectly_but_Playing_from_the_Right_Spot\\metadata.json",
+  "sourceImageName": "page-04.png",
+  "ruleNumber": "R14",
+  "ruleName": "Incorrect drop",
+  "title": "Penalty for Dropping Incorrectly but Playing from the Right Spot",
+  "question": "If you drop your ball using the wrong procedure (for example, not from knee height), but it comes to rest in the right relief area and you play it, what is the penalty?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No penalty"
+    },
+    {
+      "id": "b",
+      "text": "1 penalty stroke"
+    },
+    {
+      "id": "c",
+      "text": "2 penalty strokes"
+    },
+    {
+      "id": "d",
+      "text": "Disqualification"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "Dropping incorrectly but playing the ball from the correct relief area results in a one-stroke penalty.",
+  "juniorVersion": {
+    "title": "What if You Drop Your Ball the Wrong Way but Play From the Right Spot?",
+    "question": "You need to drop your ball, but you forget to drop it from your knee and do it another way. The ball ends up in the right place, and you hit your shot from there. What happens?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Nothing happens. No penalty."
+      },
+      {
+        "id": "b",
+        "text": "You get 1 penalty stroke."
+      },
+      {
+        "id": "c",
+        "text": "You get 2 penalty strokes."
+      },
+      {
+        "id": "d",
+        "text": "You are out of the game."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If you don’t drop your ball from your knee but play your shot from the right place, you get a 1-shot penalty.",
+    "vocabulary": [
+      {
+        "term": "drop",
+        "simpleMeaning": "Letting your ball go from your hand and letting it fall to the ground so you can play."
+      },
+      {
+        "term": "penalty stroke",
+        "simpleMeaning": "An extra shot added to your score because you broke a rule."
+      },
+      {
+        "term": "relief area",
+        "simpleMeaning": "The special spot on the course where you are allowed to drop your ball."
+      }
+    ],
+    "teachingTip": "Practise dropping your ball from knee height so you remember during a game.",
+    "likelyMisconceptions": [
+      "Some might think there is no penalty if the ball ends up in the right place.",
+      "Some might think they have to drop again even if the ball is in the right area."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:42.092Z",
+  "model": "gpt-4.1"
+}

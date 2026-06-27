@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\010_004_Advice_about_line_of_play_on_the_green\\metadata.json",
+  "sourceImageName": "pageb-06.png",
+  "ruleNumber": "10",
+  "ruleName": "Advice and line of play",
+  "title": "Advice about line of play on the green",
+  "question": "Which of these actions are NOT allowed when you're putting on the green? (Select all that apply)",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Your friend who is also playing tells you how the putt will break"
+    },
+    {
+      "id": "b",
+      "text": "You lay a putter or club on the green to show your intended line"
+    },
+    {
+      "id": "c",
+      "text": "Your caddie stands directly behind you on your line to help you aim"
+    },
+    {
+      "id": "d",
+      "text": "You read your own putt without help"
+    }
+  ],
+  "correctAnswers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "explanation": "You can't get advice about your line from fellow players, can't put a club or object down to show the line, and your caddie can't stand behind you to help you line up.",
+  "juniorVersion": {
+    "title": "What are you not allowed to do on the green when putting?",
+    "question": "When you are putting on the green, which things are NOT allowed? (Choose all the ones that are not okay)",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Another golfer playing with you tells you which way the ball should roll"
+      },
+      {
+        "id": "b",
+        "text": "You put your putter or another club on the green to show where you want to hit the ball"
+      },
+      {
+        "id": "c",
+        "text": "Your caddie stands right behind you to help you aim"
+      },
+      {
+        "id": "d",
+        "text": "You look at your putt and decide where to aim by yourself"
+      }
+    ],
+    "correctAnswers": [
+      "a",
+      "b",
+      "c"
+    ],
+    "explanation": "You cannot get help with where to aim your putt from other players. You also can’t use your club or putter to show your line, and your caddie cannot stand behind you to help you line up. But you can read your own putt by yourself.",
+    "vocabulary": [
+      {
+        "term": "Green",
+        "simpleMeaning": "The smooth grass around the hole, which you putt on."
+      },
+      {
+        "term": "Putt",
+        "simpleMeaning": "A gentle stroke to roll the ball into the hole when on the green."
+      },
+      {
+        "term": "Line",
+        "simpleMeaning": "The path the ball will roll towards the hole."
+      },
+      {
+        "term": "Caddie",
+        "simpleMeaning": "A person who helps carry your clubs and gives you advice."
+      }
+    ],
+    "teachingTip": "Let children practise reading their own putts without help, to build their own skills.",
+    "likelyMisconceptions": [
+      "Children may think it is okay for friends to tell them where to aim on the green.",
+      "They might think it's allowed to put a club on the green to guide their putt.",
+      "Some may believe their caddie can stand right behind them to line up every putt."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:06.230Z",
+  "model": "gpt-4.1"
+}

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "15.2",
+  "ruleName": "Movable Obstructions",
+  "group": "Obstructions and Relief",
+  "title": "Trolley Exclusion Stake – Movable Obstruction",
+  "question": "Your ball is lying beside a blue and white trolley exclusion stake. The stake does not interfere with your lie, stance or swing, but you believe your shot might strike it. The stake is easily removable. What is the correct ruling?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You must leave the stake where it is because it doesn't interfere with your stance or swing."
+    },
+    {
+      "id": "b",
+      "text": "You may remove the stake before playing because it is a movable obstruction."
+    },
+    {
+      "id": "c",
+      "text": "You are entitled to free relief from the stake."
+    },
+    {
+      "id": "d",
+      "text": "You may only remove the stake if your opponent agrees."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "A blue and white trolley exclusion stake that can be moved is treated as a movable obstruction under Rule 15.2. Movable obstructions may be removed anywhere on the course. Free relief is not required unless the obstruction is immovable and interferes with your stroke, lie, stance or area of intended swing.",
+  "imagePrompt": "Create a modern, semi-realistic (75% realistic, 25% stylised) illustration of a teenage golfer preparing to play a shot on a well-maintained fairway. The golf ball is close beside a blue and white trolley exclusion stake stuck in the ground. The golfer is thoughtfully considering the stake, with the club in hand, but has not yet played. The setting is a sunny day with clear golfing context—short grass, trees and fairway details in the background. Focus on the golf ball, stake, and the player for a clear rules scenario. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards, or speech bubbles.",
+  "imageAlt": "A teenage golfer stands on a fairway, preparing to play a shot with a golf ball lying next to a blue and white trolley exclusion stake.",
+  "sceneSpec": {
+    "setting": "Well-maintained fairway on a bright day",
+    "players": "One teenage golfer preparing for a shot, wearing smart casual golf attire, holding a club and standing in a natural, thoughtful pose",
+    "ballPosition": "Golf ball on grass a short distance next to a blue and white trolley exclusion stake that is protruding from the ground",
+    "ruleMoment": "Golfer is assessing the situation and considering whether to remove the stake",
+    "educationalFocus": "Highlight that easily removed stakes are considered movable obstructions and may be taken away before a stroke",
+    "mustShow": [
+      "Blue and white trolley exclusion stake next to golf ball",
+      "Golfer preparing to play with attention to the stake",
+      "Normal golf course details such as short grass, fairway background"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  }
+}

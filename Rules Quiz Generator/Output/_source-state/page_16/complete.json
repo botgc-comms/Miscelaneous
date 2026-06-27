@@ -1,0 +1,364 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-16.png",
+  "sourceImagePath": "Input\\page-16.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-16.png",
+      "ruleNumber": "R19",
+      "ruleName": "Unplayable ball",
+      "group": "Unplayable ball",
+      "title": "Who decides if a ball is unplayable?",
+      "question": "If your ball ends up in a really bad spot, like under a tree, who gets to decide whether it’s unplayable?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "The player"
+        },
+        {
+          "id": "b",
+          "text": "The marker"
+        },
+        {
+          "id": "c",
+          "text": "Your opponent"
+        },
+        {
+          "id": "d",
+          "text": "A referee"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "The player is always free to decide if their ball is unplayable. You don’t need agreement from anyone else.",
+      "imagePrompt": "A teenage golfer stands next to a ball that is stuck under tree roots, looking puzzled and thinking about what to do.",
+      "imageAlt": "A teen golfer next to a ball under tree roots, appearing unsure.",
+      "sceneSpec": {
+        "setting": "rough",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "blue",
+        "clothingBottomColour": "yellow",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-16.png",
+      "ruleNumber": "R19",
+      "ruleName": "Unplayable ball",
+      "group": "Unplayable ball",
+      "title": "What are your options for an unplayable ball?",
+      "question": "If you declare your ball unplayable, which of the following actions can you take for a penalty of one stroke? (Select all that apply)",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop the ball within two club-lengths of where it lies"
+        },
+        {
+          "id": "b",
+          "text": "Go back as far as you like on the line from your ball to the hole and drop there"
+        },
+        {
+          "id": "c",
+          "text": "Replay the shot from where you last played"
+        },
+        {
+          "id": "d",
+          "text": "Drop the ball on the green for free"
+        },
+        {
+          "id": "e",
+          "text": "Ask your friend what to do"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "c"
+      ],
+      "explanation": "You can drop within two club-lengths, back on the line, or replay the last shot, all for one penalty stroke.",
+      "imagePrompt": "A teenage boy golfer with a ball under a bush, thinking about three different drop options: two club-lengths, back on a line, or to replay from the previous spot.",
+      "imageAlt": "Teen golfer has a ball under a bush and is imagining three choices for dropping.",
+      "sceneSpec": {
+        "setting": "rough",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "wedge",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "light",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "purple",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-16.png",
+      "ruleNumber": "R19",
+      "ruleName": "Unplayable ball",
+      "group": "Unplayable ball",
+      "title": "What happens if your dropped ball rolls back to the bad spot?",
+      "question": "You drop your ball after declaring it unplayable, but it rolls back to the same impossible position. What are your options?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You must play the ball as it now lies, or declare it unplayable again"
+        },
+        {
+          "id": "b",
+          "text": "You can drop again for free"
+        },
+        {
+          "id": "c",
+          "text": "You get to move the ball to a better spot without penalty"
+        },
+        {
+          "id": "d",
+          "text": "You must give up the hole"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You either have to play the ball as it lies or you can declare it unplayable again, taking another penalty.",
+      "imagePrompt": "A teen golfer watches as their dropped ball rolls right back under the same tree roots, looking frustrated.",
+      "imageAlt": "Teen golfer drops a ball and it returns to an awkward spot under tree roots.",
+      "sceneSpec": {
+        "setting": "rough",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "dropping_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "light",
+        "clothingTopColour": "blue",
+        "clothingBottomColour": "grey",
+        "hat": true
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-16.png",
+      "ruleNumber": "R19",
+      "ruleName": "Unplayable ball",
+      "group": "Unplayable ball",
+      "title": "Who decides if a ball is unplayable?",
+      "question": "If your ball ends up in a really tough spot, like under a tree, who is allowed to declare it unplayable?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "The player"
+        },
+        {
+          "id": "b",
+          "text": "The marker"
+        },
+        {
+          "id": "c",
+          "text": "Your opponent"
+        },
+        {
+          "id": "d",
+          "text": "A referee"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "Only the player can decide if their ball is unplayable, no one else can make this decision for them.",
+      "imagePrompt": "A teenage golfer stands next to a ball that is stuck under tree roots, looking puzzled and weighing their choices about declaring the ball unplayable.",
+      "imageAlt": "A teen golfer next to a ball under tree roots, appearing unsure.",
+      "sceneSpec": {
+        "setting": "rough",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "dark",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "white",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-16.png",
+      "ruleNumber": "R19",
+      "ruleName": "Unplayable ball",
+      "group": "Unplayable ball",
+      "title": "What are your options for an unplayable ball?",
+      "question": "If you declare your ball unplayable, which of the following actions are allowed for a one-stroke penalty? (Select all that apply)",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop the ball within two club-lengths of where it lies"
+        },
+        {
+          "id": "b",
+          "text": "Go back as far as you like in line with the hole and drop there"
+        },
+        {
+          "id": "c",
+          "text": "Replay the shot from where you last played"
+        },
+        {
+          "id": "d",
+          "text": "Drop the ball on the green without penalty"
+        },
+        {
+          "id": "e",
+          "text": "Ask your friend to choose for you"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "c"
+      ],
+      "explanation": "You may drop within two club-lengths, go back on a straight line keeping the spot between you and the hole, or replay the last shot, all for one penalty stroke.",
+      "imagePrompt": "A teenage girl golfer with a ball under a bush, visualising three possible relief options: dropping within two club-lengths, going back on the line, or replaying from the previous spot.",
+      "imageAlt": "Teen golfer has a ball under a bush and is imagining three possible drop choices.",
+      "sceneSpec": {
+        "setting": "rough",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "wedge",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "grey",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-16.png",
+      "ruleNumber": "R19",
+      "ruleName": "Unplayable ball",
+      "group": "Unplayable ball",
+      "title": "What if your dropped ball ends up back in the same spot?",
+      "question": "You drop your ball for relief but it rolls back to the same tough place as before. What can you do next?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball as it is, or declare it unplayable again"
+        },
+        {
+          "id": "b",
+          "text": "Drop again for free"
+        },
+        {
+          "id": "c",
+          "text": "Move the ball to an easier spot without penalty"
+        },
+        {
+          "id": "d",
+          "text": "Pick up the ball and stop playing the hole"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You must play the ball as it lies, or you may declare it unplayable again and take another penalty stroke.",
+      "imagePrompt": "A teenage boy golfer has dropped his ball and watches as it rolls back under the same tree roots, looking frustrated.",
+      "imageAlt": "Teen golfer drops a ball and it returns to a tough spot under tree roots.",
+      "sceneSpec": {
+        "setting": "rough",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "dropping_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "dark",
+        "clothingTopColour": "blue",
+        "clothingBottomColour": "purple",
+        "hat": false
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "019_001_Who_decides_if_a_ball_is_unplayable",
+    "019_002_What_are_your_options_for_an_unplayable_ball",
+    "019_003_What_if_your_dropped_ball_ends_up_back_in_the_same_spot"
+  ],
+  "updatedAtUtc": "2026-04-24T20:58:00.391Z"
+}

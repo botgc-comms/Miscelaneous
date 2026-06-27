@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "pageb-06.png",
+  "ruleNumber": "6",
+  "ruleName": "Wrong ball",
+  "group": "Wrong ball",
+  "type": "multiple_choice",
+  "imagePrompt": "A teenage boy on the putting green, looking upset while realising he finished the hole with the wrong ball.",
+  "imageAlt": "Teen boy looking worried at the golf hole after making a mistake with the wrong ball.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "dark",
+    "clothingTopColour": "green",
+    "clothingBottomColour": "white",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "Slight ambiguity in skin tone representation for 'dark', but overall presentation is plausible for mixed ethnicity.",
+      "No obvious faults in equipment, clothing, or pose."
+    ],
+    "repairPrompt": "Slightly deepen the golfer's skin tone to better match a dark skin tone for mixed ethnicity. Ensure this does not impact the natural shading or illustrated realism."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What Happens if You Finish a Hole with the Wrong Ball?",
+      "question": "You putt the wrong ball into the hole on the green. You don’t fix it before you start the next hole or leave the green. What can happen?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Nothing happens, just keep playing as usual"
+        },
+        {
+          "id": "b",
+          "text": "You get a two-shot penalty but keep playing"
+        },
+        {
+          "id": "c",
+          "text": "You might have to stop playing and are out of the match"
+        },
+        {
+          "id": "d",
+          "text": "You take away two shots from your score"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "If you putt the wrong ball into the hole and don’t fix it before you start the next hole or leave the green, you can be out of the competition for that round.",
+      "vocabulary": [
+        {
+          "term": "Wrong ball",
+          "simpleMeaning": "A ball that is not yours or not the one you were meant to play."
+        },
+        {
+          "term": "Green",
+          "simpleMeaning": "The smooth area with short grass around the hole."
+        },
+        {
+          "term": "Putt",
+          "simpleMeaning": "A gentle hit to roll the ball along the green toward the hole."
+        }
+      ],
+      "teachingTip": "Remind juniors to mark their balls and always check before playing on the green.",
+      "likelyMisconceptions": [
+        "Some might think nothing happens or you only get a few extra shots, but you can be out of the round if you do not correct it."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Consequences if you hole out with a wrong ball",
+      "question": "If you putt a wrong ball into the hole on the green and do not fix your mistake before starting the next hole or leaving the green (in stroke play), what can happen?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Nothing, you continue the round as normal"
+        },
+        {
+          "id": "b",
+          "text": "You get a two-stroke penalty, but keep playing"
+        },
+        {
+          "id": "c",
+          "text": "You may be disqualified for not correcting the mistake"
+        },
+        {
+          "id": "d",
+          "text": "You subtract two strokes from your score"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "If you do not correct the mistake of holing out with a wrong ball in stroke play, you can be disqualified."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "006_003_Consequences_if_you_hole_out_with_a_wrong_ball",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v4.png",
+    "promptFileName": "final-prompt-v4.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.365Z"
+  }
+}

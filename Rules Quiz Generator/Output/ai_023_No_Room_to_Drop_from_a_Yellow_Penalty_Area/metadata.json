@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "17.1d",
+  "ruleName": "Relief for Ball in Penalty Area",
+  "group": "Penalty Areas",
+  "title": "No Room to Drop from a Yellow Penalty Area",
+  "question": "Your ball lies in a yellow penalty area near a steep cliff. You want to take back-on-the-line relief, but there is nowhere you can drop a ball on that line without being closer to the hole. What are your options?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Drop at the nearest place where you can stand safely."
+    },
+    {
+      "id": "b",
+      "text": "Drop on the opposite side of the penalty area."
+    },
+    {
+      "id": "c",
+      "text": "You cannot take back-on-the-line relief. You must either play the ball as it lies (if possible) or return to where you played your previous stroke under stroke and distance."
+    },
+    {
+      "id": "d",
+      "text": "Take free relief because there is nowhere to drop."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "For a yellow penalty area, you have two options for relief under penalty: stroke and distance (play again from the original spot), or back-on-the-line relief (dropping on a line from the hole through where the ball last crossed the edge of the area). If there is nowhere behind the penalty area where you can drop without being nearer the hole, only these options are available. You must either play the ball as it lies (if possible), or take stroke-and-distance relief. There is no free relief and you cannot drop simply where convenient.",
+  "imagePrompt": "Show a semi-realistic, polished modern illustration (about 75% realistic, 25% stylised) in an established junior golf quiz style. The setting is a golf course near the green, featuring a clear yellow penalty area by a steep cliff drop-off. A golf ball is visible just inside the yellow penalty area near the cliff. A junior golfer stands thoughtfully nearby, holding a club and a ball or marker, looking towards the area behind the penalty area where relief would be taken, but where safe dropping is not possible because of the steep drop. Emphasise the natural landscape, the proximity of the penalty area to the cliff, and the player’s deliberation. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A junior golfer stands at the edge of a yellow penalty area near a steep cliff, considering relief options with a golf ball resting near the cliff in the penalty area.",
+  "sceneSpec": {
+    "setting": "Golf hole with a yellow penalty area and a steep cliff behind it, near the green.",
+    "players": "One player, pondering relief options near the edge of the penalty area.",
+    "ballPosition": "Ball visible just inside the yellow penalty area, close to the cliff edge.",
+    "ruleMoment": "Player is considering how to take penalty relief, but cannot find a valid dropping area on the required line.",
+    "educationalFocus": "Illustrate that sometimes back-on-the-line relief is not available due to terrain, and only standard penalty options apply.",
+    "mustShow": [
+      "Ball resting in yellow penalty area near a steep drop or cliff",
+      "Player holding a golf club and a ball or marker, looking at the area behind the penalty area",
+      "Steep cliff immediately behind the area where back-on-the-line relief would normally be taken"
+    ],
+    "mustNotShow": [
+      "Text, labels, numbers, captions, diagrams, arrows, speech bubbles, scorecards, club logos, badges, watermarks"
+    ]
+  }
+}

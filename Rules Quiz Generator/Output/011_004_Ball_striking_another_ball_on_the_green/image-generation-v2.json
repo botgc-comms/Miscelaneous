@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\011_004_Ball_striking_another_ball_on_the_green\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:18:45.654Z",
+  "title": "Ball striking another ball on the green",
+  "ruleNumber": "R11",
+  "ruleName": "Ball hits another ball",
+  "durationSeconds": 168.238
+}

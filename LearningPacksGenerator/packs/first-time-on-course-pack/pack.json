@@ -1,0 +1,38 @@
+{
+  "id": "first-time-on-course",
+  "title": "First time on the course",
+  "summary": "What juniors and parents should expect the first time playing on the course.",
+  "estimatedMinutes": 5,
+  "priority": 1000,
+  "mandatoryFor": [
+    "Junior Course Cadet"
+  ],
+  "version": 1,
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "Your first round",
+      "file": "pages/00-title.md"
+    },
+    {
+      "id": "01-arrival",
+      "title": "Arriving at the club",
+      "file": "pages/01-arrival.md"
+    },
+    {
+      "id": "02-playing",
+      "title": "Playing your first holes",
+      "file": "pages/02-playing.md"
+    },
+    {
+      "id": "03-what-to-do-if-unsure",
+      "title": "If you are unsure",
+      "file": "pages/03-what-to-do-if-unsure.md"
+    },
+    {
+      "id": "04-after-the-round",
+      "title": "After the round",
+      "file": "pages/04-after-the-round.md"
+    }
+  ]
+}

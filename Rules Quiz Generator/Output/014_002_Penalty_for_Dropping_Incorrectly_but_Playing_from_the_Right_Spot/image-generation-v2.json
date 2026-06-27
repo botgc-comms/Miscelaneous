@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\014_002_Penalty_for_Dropping_Incorrectly_but_Playing_from_the_Right_Spot\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:31:47.070Z",
+  "title": "Penalty for Dropping Incorrectly but Playing from the Right Spot",
+  "ruleNumber": "R14",
+  "ruleName": "Incorrect drop",
+  "durationSeconds": 194.757
+}

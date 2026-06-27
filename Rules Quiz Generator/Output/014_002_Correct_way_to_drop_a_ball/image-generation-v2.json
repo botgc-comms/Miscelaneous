@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\014_002_Correct_way_to_drop_a_ball\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:31:43.990Z",
+  "title": "Correct way to drop a ball",
+  "ruleNumber": "14",
+  "ruleName": "Dropping and re-dropping",
+  "durationSeconds": 197.699
+}

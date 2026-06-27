@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\006_005_Does_an_air_shot_count_as_a_stroke\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:01:01.845Z",
+  "title": "Does an air shot count as a stroke?",
+  "ruleNumber": "Def./R6",
+  "ruleName": "Air shot",
+  "durationSeconds": 218.268
+}

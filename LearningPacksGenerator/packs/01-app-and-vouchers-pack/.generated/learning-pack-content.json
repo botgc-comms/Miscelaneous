@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "packId": "junior-golf-learning-pack",
+  "title": "Junior Golf Learning Pack",
+  "audience": "New junior golfers and non-golfing parents",
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "Welcome to Junior Golf",
+      "file": "pages/00-title.md",
+      "type": "content",
+      "assetFile": "title.png",
+      "imageAlt": "A welcoming junior golf environment with children learning.",
+      "imagePrompt": "A vibrant golf course scene featuring children practicing their swings under the supervision of friendly golf coaches, surrounded by lush greenery and sunny skies.",
+      "markdown": "# Welcome to Junior Golf\n\nWelcome to the exciting world of junior golf! This learning pack is designed especially for young golfers and their families. Whether you have never held a golf club or you are just starting out, this guide will help you understand the basics of the game.\n\nIn this pack, you will find simple explanations, helpful tips, and enjoyable activities. Golf is a fantastic sport for kids - it encourages physical activity, builds friendships, and teaches valuable life skills like patience and teamwork.\n\nTogether, we’ll explore essential aspects of golf including how to hold a club, basic rules of the game, and how to have fun while learning. Remember, everyone starts somewhere, and there are no wrong questions! Let's get ready to tee off on this wonderful adventure!",
+      "quiz": null
+    },
+    {
+      "id": "01-getting-started",
+      "title": "Getting Started with Golf",
+      "file": "pages/01-getting-started.md",
+      "type": "content",
+      "assetFile": "getting-started.png",
+      "imageAlt": "A child holding a golf club with a mentor.",
+      "imagePrompt": "A child happily holding a golf club while a friendly mentor shows them the proper grip, set against a picturesque golf course backdrop.",
+      "markdown": "# Getting Started with Golf\n\nGetting started in golf is all about having fun and feeling confident. The first step is to familiarise yourself with some basic equipment. You don’t need fancy clubs; a simple 7-iron and a putter will do for beginners. Making sure your shoes are comfortable is also very important.\n\nBefore heading out to the course, let’s learn how to hold a golf club. Here’s a simple way: use your left hand (for right-handed players) to hold the club at the top with your fingers wrapped around it. Then place your right hand below it, gripping lightly. Remember, it should feel comfortable, not too tight!\n\nAlso, don’t forget to have fun! Golf is about enjoying your time on the course with friends and family. Along the way, you’ll learn how to swing, aim, and even play games. Just take it one step at a time and enjoy the experience!",
+      "quiz": null
+    },
+    {
+      "id": "02-using-the-app",
+      "title": "Using the Golf App",
+      "file": "pages/02-using-the-app.md",
+      "type": "content",
+      "assetFile": "using-the-app.png",
+      "imageAlt": "A family using a golf app together.",
+      "imagePrompt": "A cheerful family gathered around a smartphone, exploring a golf app that tracks their golfing goals and achievements, with smiles and excitement.",
+      "markdown": "# Using the Golf App\n\nMany golf clubs now have apps that help golfers manage their practice and progress. These apps are like a personal coach right in your pocket! You can track your scores, find tips for improving your game, and see your achievements.\n\nTo get started with the app, you will need to download it from your device's store. Once it’s installed, you can create an account. Most apps will ask for some basic details like your name and the club you belong to.\n\nAs a junior golfer, you can use the app to record your scores from practice rounds or competitions. Some apps also include fun games and challenges you can do with your friends. Be sure to ask a parent or a coach if you need help navigating it. The more you use it, the easier it will become!",
+      "quiz": null
+    },
+    {
+      "id": "03-voucher-scheme",
+      "title": "Understanding the Voucher Scheme",
+      "file": "pages/03-voucher-scheme.md",
+      "type": "content",
+      "assetFile": "voucher-scheme.png",
+      "imageAlt": "A chart showing golf vouchers and rewards.",
+      "imagePrompt": "A cheerful visual representation of golf vouchers displayed next to rewards such as free lessons or merchandise, showcasing a fun and rewarding atmosphere.",
+      "markdown": "# Understanding the Voucher Scheme\n\nThe voucher scheme is an amazing way for junior golfers to earn rewards while having fun practicing their skills. When you participate in lessons, practice sessions, or competitions at the club, you can collect vouchers.\n\nThese vouchers can be used for various rewards, such as free lessons, golf merchandise, or even special events. It’s not just about playing golf; it’s about your progress and commitment to learning the game.\n\nCollecting vouchers motivates young golfers and helps you keep track of your achievements. Plus, it adds an element of excitement! Ask your coach or a club staff member how you can earn more vouchers and what rewards are available. Remember, every little bit of progress counts!",
+      "quiz": null
+    },
+    {
+      "id": "04-using-vouchers",
+      "title": "Making the Most of Your Vouchers",
+      "file": "pages/04-using-vouchers.md",
+      "type": "content",
+      "assetFile": "using-vouchers.png",
+      "imageAlt": "A happy child redeeming a voucher.",
+      "imagePrompt": "A joyful child at a golf shop, excitedly redeeming a voucher for a golf lesson or merchandise, with friendly shop staff assisting.",
+      "markdown": "# Making the Most of Your Vouchers\n\nOnce you have collected some vouchers, it’s time to put them to good use! Each club usually has its own rules on how to redeem vouchers, so be sure to ask the staff how it works.\n\nYou can use your vouchers for various things, like booking lessons with a coach or getting new golf gear. It’s a fun way to reward yourself for all the effort you have put into learning golf!\n\nAlways check what vouchers are available before your next lesson or practice round. Sometimes clubs offer special deals or bonuses, allowing you to get even more for your vouchers. Your efforts in practicing will pay off in great ways, allowing you to enjoy your golfing journey even more!",
+      "quiz": null
+    },
+    {
+      "id": "90-quick-check",
+      "title": "Quick Check",
+      "file": "pages/90-quick-check.md",
+      "type": "quiz",
+      "assetFile": "quick-check.png",
+      "imageAlt": "Golfer reviewing questions on a quiz.",
+      "imagePrompt": "A golfer happily reviewing quiz questions on a tablet in a sunny park setting, with golf clubs in the background.",
+      "markdown": "# Quick Check\n\nLet’s see how much you’ve learned! Here are a few friendly questions to test your knowledge about junior golf.\n\n1. What is the primary purpose of the golf app?\n   - a) To share photos\n   - b) To track scores and progress\n   - c) To play video games\n\n2. What type of rewards can junior golfers earn through the voucher scheme?\n   - a) Free lessons and merchandise\n   - b) Money for shopping\n   - c) Gift cards for restaurants\n\n3. Which club equipment is often used by beginners?\n   - a) A driver\n   - b) A 7-iron\n   - c) A putter only\n\n4. Why is it important to have fun while playing golf?\n   - a) To impress others\n   - b) To learn and enjoy the game\n   - c) To win prizes\n\n5. Who can help you understand how to use the app?\n   - a) A friend\n   - b) A parent or coach\n   - c) No one\n\nLet’s see your answers and celebrate your progress!",
+      "quiz": null
+    }
+  ]
+}

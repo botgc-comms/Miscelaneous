@@ -1,0 +1,467 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-29.png",
+  "sourceImagePath": "Input\\page-29.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-29.png",
+      "ruleNumber": "R6",
+      "ruleName": "Penalty area – Wrong ball",
+      "group": "Penalty area",
+      "title": "Penalty for hitting the wrong ball in a penalty area",
+      "question": "If you play a shot from a penalty area and accidentally hit the wrong ball, what is the penalty?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty, just play again"
+        },
+        {
+          "id": "b",
+          "text": "1 stroke penalty and replay the shot"
+        },
+        {
+          "id": "c",
+          "text": "2 penalty strokes and you must play the correct ball"
+        },
+        {
+          "id": "d",
+          "text": "Lose the hole"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "If you hit the wrong ball from a penalty area, you get 2 penalty strokes and must go back and play the correct ball.",
+      "imagePrompt": "A teenage girl golfer accidentally hitting a golf ball that does not belong to her from a red-staked penalty area beside a blue stream.",
+      "imageAlt": "Girl golfer in penalty area by water accidentally striking wrong ball",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "replaying_shot",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "red",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "light",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "black",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-29.png",
+      "ruleNumber": "R17",
+      "ruleName": "Penalty area – Ball lost or not out",
+      "group": "Penalty area",
+      "title": "What happens if you hit your ball into the water again from a penalty area?",
+      "question": "You hit a shot from a penalty area, but your ball ends up lost or goes into the water in the penalty area. What must you do next?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop a new ball outside the penalty area without penalty"
+        },
+        {
+          "id": "b",
+          "text": "Proceed under the penalty area rule with 1 penalty stroke"
+        },
+        {
+          "id": "c",
+          "text": "No penalty is given, play on from where it entered the water"
+        },
+        {
+          "id": "d",
+          "text": "Replay the shot with 2 penalty strokes"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You must take relief in line with the penalty area rule, with a 1-stroke penalty.",
+      "imagePrompt": "A teenage boy golfer hitting a golf ball from a penalty area, the ball splashing into water ahead.",
+      "imageAlt": "Teen boy golfer hits ball from penalty area and it splashes back into water",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "replaying_shot",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "red",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "orange",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-29.png",
+      "ruleNumber": "R17",
+      "ruleName": "Penalty area – Ball out of bounds or lost",
+      "group": "Penalty area",
+      "title": "Ball from penalty area goes out of bounds",
+      "question": "If you play from a penalty area and your ball goes out of bounds, what are your options?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop a ball with 1 penalty stroke within 1 club-length of your last stroke back into the penalty area"
+        },
+        {
+          "id": "b",
+          "text": "Accept another 1-stroke penalty and proceed using the penalty area rule"
+        },
+        {
+          "id": "c",
+          "text": "Play a free drop from where the ball went out of bounds"
+        },
+        {
+          "id": "d",
+          "text": "Replay the shot without penalty"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b"
+      ],
+      "explanation": "You can drop within a club-length of your previous spot in the penalty area with 1 penalty stroke, or take another penalty stroke and use normal penalty area relief.",
+      "imagePrompt": "A teenage girl golfer standing at the edge of a penalty area, looking at her ball that has flown over a red stake and gone out of bounds.",
+      "imageAlt": "Teen girl golfer sees her ball from penalty area fly out of bounds",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "dropping_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "red",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "blue",
+        "clothingBottomColour": "black",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-29.png",
+      "ruleNumber": "R10",
+      "ruleName": "Double hit",
+      "group": "Double hit",
+      "title": "If you accidentally double-hit the ball",
+      "question": "What is the penalty if you accidentally hit the golf ball twice in one swing?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty – it only counts as one stroke"
+        },
+        {
+          "id": "b",
+          "text": "1 penalty stroke is added"
+        },
+        {
+          "id": "c",
+          "text": "2 penalty strokes are added"
+        },
+        {
+          "id": "d",
+          "text": "You must replay the shot"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "If you double-hit the ball by accident, it only counts as one stroke with no penalty.",
+      "imagePrompt": "A teenage boy golfer accidentally hitting the ball twice in one swing near the edge of a penalty area.",
+      "imageAlt": "Boy golfer double-hits ball while swinging near penalty area",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "red",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "light",
+        "clothingTopColour": "blue",
+        "clothingBottomColour": "grey",
+        "hat": true
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-29.png",
+      "ruleNumber": "R6",
+      "ruleName": "Penalty area – Wrong ball",
+      "group": "Penalty area",
+      "title": "Penalty for hitting the wrong ball in a penalty area",
+      "question": "If you play the wrong ball from a penalty area, what penalty do you get?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "There is no penalty, just play the correct ball"
+        },
+        {
+          "id": "b",
+          "text": "1-stroke penalty and replay the shot"
+        },
+        {
+          "id": "c",
+          "text": "2-stroke penalty and you must play the correct ball"
+        },
+        {
+          "id": "d",
+          "text": "You are disqualified from the hole"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "Hitting a wrong ball from a penalty area means you get a two-stroke penalty and must play the correct ball.",
+      "imagePrompt": "A teenage girl golfer mistakenly plays a golf ball that is not hers in a red-staked penalty area next to a blue stream.",
+      "imageAlt": "Teen girl golfer in penalty area by water accidentally plays wrong ball",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "replaying_shot",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "red",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "purple",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-29.png",
+      "ruleNumber": "R17",
+      "ruleName": "Penalty area – Ball lost or not out",
+      "group": "Penalty area",
+      "title": "What happens if you hit your ball into the water again from a penalty area?",
+      "question": "You play from a penalty area and your ball is lost or goes straight into the water in the penalty area. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop a new ball outside the penalty area with no penalty"
+        },
+        {
+          "id": "b",
+          "text": "Proceed under the penalty area rules with a one-stroke penalty"
+        },
+        {
+          "id": "c",
+          "text": "Play your next shot from the water with no penalty"
+        },
+        {
+          "id": "d",
+          "text": "Replay the shot but add two penalty strokes"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You must use the penalty area relief options and take a one-stroke penalty.",
+      "imagePrompt": "A teenage boy golfer hits a shot from a penalty area and his ball splashes into water ahead inside the penalty area.",
+      "imageAlt": "Teen boy golfer's ball splashes into the water from penalty area",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "replaying_shot",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "red",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "blue",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-29.png",
+      "ruleNumber": "R17",
+      "ruleName": "Penalty area – Ball out of bounds or lost",
+      "group": "Penalty area",
+      "title": "Ball from penalty area goes out of bounds",
+      "question": "You play a shot from a penalty area and your ball ends up out of bounds. Which options do you have for your next shot, following the rules?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop a ball with one penalty stroke near where you played your last shot in the penalty area"
+        },
+        {
+          "id": "b",
+          "text": "Take another one-stroke penalty and use the penalty area relief options"
+        },
+        {
+          "id": "c",
+          "text": "Take a free drop from where the ball went out of bounds"
+        },
+        {
+          "id": "d",
+          "text": "Replay the shot with no penalty"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b"
+      ],
+      "explanation": "If your ball from a penalty area goes out of bounds, you can either drop with a one-stroke penalty near your previous spot in the penalty area, or with another one-stroke penalty, use the normal relief options for a penalty area.",
+      "imagePrompt": "A teenage girl golfer stands at the edge of a penalty area looking towards the out of bounds markers beyond a red stake, after her ball has gone out of bounds.",
+      "imageAlt": "Teen girl golfer watches her ball from penalty area go out of bounds",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "dropping_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "red",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "dark",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "purple",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-29.png",
+      "ruleNumber": "R10",
+      "ruleName": "Double hit",
+      "group": "Double hit",
+      "title": "If you accidentally double-hit the ball",
+      "question": "If you accidentally hit the golf ball twice in one swing, what is the rule?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty – it only counts as one stroke"
+        },
+        {
+          "id": "b",
+          "text": "Add one penalty stroke"
+        },
+        {
+          "id": "c",
+          "text": "Add two penalty strokes"
+        },
+        {
+          "id": "d",
+          "text": "Replay the shot"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "If you hit the ball twice in one swing by accident, it only counts as one stroke and there is no penalty.",
+      "imagePrompt": "A teenage boy golfer near the edge of a penalty area accidentally double-hits the ball during his swing.",
+      "imageAlt": "Boy golfer accidentally double-hits the ball near penalty area",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "red",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "medium",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "grey",
+        "hat": false
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "006_001_Penalty_for_hitting_the_wrong_ball_in_a_penalty_area",
+    "017_002_What_happens_if_you_hit_your_ball_into_the_water_again_from_a_penalty_area",
+    "017_003_Ball_from_penalty_area_goes_out_of_bounds",
+    "010_004_If_you_accidentally_double_hit_the_ball"
+  ],
+  "updatedAtUtc": "2026-04-24T22:30:28.991Z"
+}

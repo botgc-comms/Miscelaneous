@@ -1,0 +1,51 @@
+{
+  "generatedAtUtc": "2026-06-26T11:22:49.176Z",
+  "model": "gpt-4.1",
+  "reviewerInstructions": "It should be reworded to a seagull moves your ball",
+  "sourceQuestionFileName": "question-v3.json",
+  "juniorSuggestion": {
+    "title": "Seagull moves your golf ball",
+    "question": "A seagull comes and moves your golf ball from where it was on the fairway. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Play the ball from where the seagull dropped it"
+      },
+      {
+        "id": "b",
+        "text": "Put the ball back where it was, with no penalty"
+      },
+      {
+        "id": "c",
+        "text": "Add a penalty and put the ball back"
+      },
+      {
+        "id": "d",
+        "text": "Hit your previous shot again"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If a seagull (or any animal) moves your ball, you must put it back where it was before, and you don’t get a penalty.",
+    "vocabulary": [
+      {
+        "term": "fairway",
+        "simpleMeaning": "The short grass part of a golf hole, between the tee and the green."
+      },
+      {
+        "term": "penalty",
+        "simpleMeaning": "Extra shots added to your score for breaking a rule."
+      },
+      {
+        "term": "outside influence",
+        "simpleMeaning": "Something not part of the game, like an animal or a person, that moves your ball."
+      }
+    ],
+    "teachingTip": "Explain that only the player or their partner can get a penalty for moving the ball, but animals don’t cause a penalty. Practise putting the ball back on its spot.",
+    "likelyMisconceptions": [
+      "Some children may think they have to play the ball from wherever it ends up after an animal moves it.",
+      "Some may think a penalty is given even if an animal moves the ball."
+    ]
+  }
+}

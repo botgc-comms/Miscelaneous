@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_034_Can_You_Move_a_Worm_Before_Playing\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "Rule 15.2a",
+  "ruleName": "Moving Loose Impediments and Movable Obstructions",
+  "title": "Can You Move a Worm Before Playing?",
+  "question": "Your ball comes to rest in the rough. A large worm is lying directly behind your ball and is likely to interfere with your next shot. Can you move the worm before playing?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No. Animals on the course must never be moved."
+    },
+    {
+      "id": "b",
+      "text": "Yes. A live worm is an animal and may be moved without penalty."
+    },
+    {
+      "id": "c",
+      "text": "Yes, but only if your ball is on the putting green."
+    },
+    {
+      "id": "d",
+      "text": "No. You must either play the ball as it lies or take an unplayable ball."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "A live worm is an animal and may be moved without penalty, regardless of where the ball lies. However, if moving the worm causes your ball at rest to move, you must replace the ball and may incur a penalty unless an exception applies. This is detailed in the Definition of Animal, and Rules 9 and 8.1a of the Rules of Golf.",
+  "juniorVersion": {
+    "title": "Can You Move a Worm Next to Your Ball?",
+    "question": "Your ball lands in some long grass (the rough). There is a big worm right behind your ball, and it might get in the way of your next shot. Are you allowed to move the worm before you hit your ball?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "No. You can never move animals on the course."
+      },
+      {
+        "id": "b",
+        "text": "Yes. You can move a living worm without getting a penalty."
+      },
+      {
+        "id": "c",
+        "text": "Yes, but only if your ball is on the green."
+      },
+      {
+        "id": "d",
+        "text": "No. You must play it as it is or take an unplayable ball."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "You are allowed to move a worm if it is in your way before you play your shot, no matter where your ball is. But if moving the worm makes your ball roll or move, you usually have to put your ball back and might get a penalty.",
+    "vocabulary": [
+      {
+        "term": "Rough",
+        "simpleMeaning": "The long grass around the fairway and green."
+      },
+      {
+        "term": "Penalty",
+        "simpleMeaning": "An extra shot added to your score because of a rule mistake."
+      }
+    ],
+    "teachingTip": "Let children practise spotting things they can move, like leaves, stones, or worms, before playing their shot.",
+    "likelyMisconceptions": [
+      "Children might think you can never move animals.",
+      "Children might think the rule is different if the ball is not on the green."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:15:21.913Z",
+  "model": "gpt-4.1"
+}

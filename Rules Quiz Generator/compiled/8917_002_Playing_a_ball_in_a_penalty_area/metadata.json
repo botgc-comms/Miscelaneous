@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-27.png",
+  "ruleNumber": "R8/9/17",
+  "ruleName": "Playing the ball as it lies",
+  "group": "Playing the ball as it lies",
+  "type": "multi_select",
+  "imagePrompt": "A teenage right-handed girl golfer, in a hat, prepares to play her ball as it lies at the edge of a red-staked penalty area with water and trees nearby, lightly grounding her iron club next to the ball.",
+  "imageAlt": "Teenage girl golfer playing a ball as it lies in a penalty area with her club grounded.",
+  "sceneSpec": {
+    "setting": "penalty_area_edge",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "red",
+    "waterVisible": true,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "dark",
+    "clothingTopColour": "red",
+    "clothingBottomColour": "grey",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [],
+    "repairPrompt": "No repair needed. The illustration is accurate: one realistic iron club, one golf ball, correct golfer posture, red penalty area stake, visible water and trees, and correct clothing/ethnicity. Maintain this quality."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What can you do with your ball in a penalty area?",
+      "question": "Your ball lands in a penalty area, like a pond or near some long grass. What are you allowed to do with no penalty?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Move plants out of the way to help your swing"
+        },
+        {
+          "id": "b",
+          "text": "Use your hand to push tall grass away for more space"
+        },
+        {
+          "id": "c",
+          "text": "Let your club touch water next to your ball"
+        },
+        {
+          "id": "d",
+          "text": "Hit the ball just how it is, without moving anything"
+        },
+        {
+          "id": "e",
+          "text": "Break branches to make a better shot"
+        }
+      ],
+      "correctAnswers": [
+        "c",
+        "d"
+      ],
+      "correctAnswer": [
+        "c",
+        "d"
+      ],
+      "explanation": "You can let your club touch water or the ground in a penalty area. You can also hit the ball just how it is. But you must not move, bend or break grass, plants or branches to make your shot easier.",
+      "vocabulary": [
+        {
+          "term": "penalty area",
+          "simpleMeaning": "A place on the course like a pond, stream or area marked with red or yellow lines."
+        },
+        {
+          "term": "ground your club",
+          "simpleMeaning": "Let your club touch the ground or water before you hit the ball."
+        }
+      ],
+      "teachingTip": "Show children real penalty areas and let them practise setting their club on the ground or in water, then talk about what they can and can’t move.",
+      "likelyMisconceptions": [
+        "Some might think it’s okay to move or bend grass and plants to make a better swing.",
+        "Some might think you are not allowed to let your club touch the water at all."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Playing a ball in a penalty area",
+      "question": "You decide to play your ball from inside a penalty area. Which actions are allowed without penalty?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Move plants out of your way to improve your swing"
+        },
+        {
+          "id": "b",
+          "text": "Bend tall grass away with your hand to make space"
+        },
+        {
+          "id": "c",
+          "text": "Ground your club in the water beside the ball"
+        },
+        {
+          "id": "d",
+          "text": "Play the ball exactly as it lies without changing the area"
+        },
+        {
+          "id": "e",
+          "text": "Break branches to clear a better shot"
+        }
+      ],
+      "correctAnswers": [
+        "c",
+        "d"
+      ],
+      "correctAnswer": [
+        "c",
+        "d"
+      ],
+      "explanation": "You are allowed to ground your club in a penalty area and play the ball as it lies, even if the club touches water or the ground. But you must not move, bend or break anything growing or attached to improve your lie or swing."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "8917_002_Playing_a_ball_in_a_penalty_area",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:53.852Z"
+  }
+}

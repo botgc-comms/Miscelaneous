@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-03.png",
+  "ruleNumber": "14",
+  "ruleName": "Dropping and re-dropping",
+  "group": "Dropping and re-dropping",
+  "title": "What do you do if the ball won't stay in the relief area?",
+  "question": "If you drop the ball twice and it still won’t stay in the relief area, what does the Rule require you to do?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Place the ball on the spot where it first touched the ground after the second drop"
+    },
+    {
+      "id": "b",
+      "text": "Drop it a third time"
+    },
+    {
+      "id": "c",
+      "text": "Place it anywhere in the relief area"
+    },
+    {
+      "id": "d",
+      "text": "Take a penalty and continue"
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "If a dropped ball twice fails to stay within the defined relief area, you must place it on the spot where it touched the ground after the second drop.",
+  "imagePrompt": "A teenage golfer places a golf ball carefully on the fairway at the spot it last landed after two drops.",
+  "imageAlt": "Golfer placing a ball at the spot after failed drops in the relief area.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "lifting_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "green",
+    "clothingBottomColour": "red",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 99,
+    "issues": [],
+    "repairPrompt": "No correction needed. The illustration accurately reflects the scene: a teenage boy golfer with light skin, green top, red shorts, and a cap places a single golf ball on a believable fairway, with correct golf posture and no clubs or extraneous elements."
+  }
+}

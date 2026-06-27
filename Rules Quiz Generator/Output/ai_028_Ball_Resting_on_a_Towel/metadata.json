@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "15.2a(1)",
+  "ruleName": "Relief from a Movable Obstruction",
+  "group": "Obstructions",
+  "title": "Ball Resting on a Towel",
+  "question": "Your approach shot comes to rest on a towel left on the course by another player. What is the correct ruling?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You must play the ball as it lies on the towel."
+    },
+    {
+      "id": "b",
+      "text": "You may remove the towel. If the ball moves as a result, replace it on its original spot without penalty."
+    },
+    {
+      "id": "c",
+      "text": "You must take free relief and drop the ball within one club-length."
+    },
+    {
+      "id": "d",
+      "text": "You receive a one-stroke penalty if the ball moves when the towel is removed."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "A towel is a movable obstruction. You may remove it at any time. If removing the towel causes your ball to move, there is no penalty. Simply replace the ball on its original spot before making your next stroke. Rule Reference: Rule 15.2a(1).",
+  "imagePrompt": "A polished, modern semi-realistic illustration in the junior golf quiz style, showing a golf ball at rest on top of a light-coloured towel lying on a closely-mown fairway. One golfer stands nearby, looking at the ball, clearly contemplating their next move. The setting is bright and clear, around midday, and there are no crowds. The illustration is about 75% realistic and 25% stylised, with clean lines and inviting colours. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer on a fairway looking at a golf ball that has come to rest on a towel lying on the grass, preparing to decide what to do next according to the Rules of Golf.",
+  "sceneSpec": {
+    "setting": "Fairway area of a golf course, neatly mown green grass with ball in view.",
+    "players": "One golfer visible, standing near the ball, preparing to consider their options.",
+    "ballPosition": "Golf ball clearly resting on top of a light-coloured towel that has accidentally been left behind.",
+    "ruleMoment": "The moment before the golfer attempts to remove the towel from under the ball.",
+    "educationalFocus": "Identifying a movable obstruction and correct procedure if the ball is resting on it.",
+    "mustShow": [
+      "Golf ball at rest on a towel on the fairway",
+      "Golfer nearby observing the situation"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  }
+}

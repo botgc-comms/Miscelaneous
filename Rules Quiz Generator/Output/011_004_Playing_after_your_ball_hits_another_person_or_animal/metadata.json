@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-17.png",
+  "ruleNumber": "R11",
+  "ruleName": "Ball hits an outside influence or the player",
+  "group": "Ball hits an outside influence or the player",
+  "title": "Playing after your ball hits another person or animal",
+  "question": "Your golf ball accidentally hits a person or an animal while in play. What does the rule say you should do?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Add a penalty and replay the shot"
+    },
+    {
+      "id": "b",
+      "text": "Play the ball as it lies, no penalty"
+    },
+    {
+      "id": "c",
+      "text": "Drop a new ball near where the incident happened"
+    },
+    {
+      "id": "d",
+      "text": "Add two penalty strokes and continue"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If your ball hits a person or animal by chance, you play the ball from where it rests with no penalty.",
+  "imagePrompt": "A teen boy on the fairway watches as his golf ball comes to rest after accidentally hitting a dog, holding his iron club, under sunny weather.",
+  "imageAlt": "Teen boy golfer's ball hits a dog on the fairway.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "grey",
+    "clothingBottomColour": "red",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 95,
+    "issues": [
+      "The golfer's left-handed stance could be slightly more convincing; his right hand may look slightly dominant.",
+      "Club grip and posture are mostly natural, but could improve to be more distinctively left-handed."
+    ],
+    "repairPrompt": "Ensure the teen boy is holding and addressing the iron golf club in a distinctly left-handed manner (right hand below left on grip, facing the target from the left-handed side). Emphasize natural and physically correct left-handed golf posture."
+  }
+}

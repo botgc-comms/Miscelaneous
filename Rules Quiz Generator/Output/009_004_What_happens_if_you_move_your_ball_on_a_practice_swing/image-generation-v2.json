@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\009_004_What_happens_if_you_move_your_ball_on_a_practice_swing\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:06:21.980Z",
+  "title": "What happens if you move your ball on a practice swing?",
+  "ruleNumber": "R9",
+  "ruleName": "Ball moved when taking a practice swing",
+  "durationSeconds": 178.225
+}

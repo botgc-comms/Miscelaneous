@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\017_003_Options_when_your_ball_is_in_a_yellow_penalty_area\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:56:02.602Z",
+  "title": "Options when your ball is in a yellow penalty area",
+  "ruleNumber": "17",
+  "ruleName": "Penalty area rule",
+  "durationSeconds": 199.793
+}

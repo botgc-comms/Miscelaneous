@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-23.png",
+  "ruleNumber": "R12/14/18",
+  "ruleName": "Ball hit out of bounds/lost ball",
+  "group": "Ball hit out of bounds/lost ball",
+  "title": "What to Do if Ball is Lost or Out of Bounds From Bunker",
+  "question": "You hit a shot from a bunker and your ball goes out of bounds. What do the rules require you to do?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Drop a ball anywhere in the bunker with no penalty"
+    },
+    {
+      "id": "b",
+      "text": "Replay your shot from the bunker, dropping a ball within one club-length, and add one penalty stroke"
+    },
+    {
+      "id": "c",
+      "text": "Play on from out of bounds without penalty"
+    },
+    {
+      "id": "d",
+      "text": "Take a free drop outside the bunker"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If your ball is lost or out of bounds, you must return to where you last played (the bunker), drop a ball within one club-length, and add one penalty stroke.",
+  "imagePrompt": "A teen girl prepares to drop a new ball in a bunker after her previous shot went out of bounds.",
+  "imageAlt": "Teen girl in bunker getting ready to drop a ball for her next shot after hitting out of bounds.",
+  "sceneSpec": {
+    "setting": "bunker",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "dropping_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": true,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "dark",
+    "clothingTopColour": "grey",
+    "clothingBottomColour": "yellow",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 96,
+    "issues": [
+      "Golfer appears as a teen girl, but 'sceneSpec' requests a teen boy (while image prompt asks for a girl). Other specifications (no club in hand, one ball from knee height, pose, outfit, skin tone, and hat) are accurate. All golf elements are believable and realistic for rules education."
+    ],
+    "repairPrompt": "Change the golfer to a teenage boy, maintaining mixed ethnicity and dark skin tone, with a grey top, yellow trousers or shorts, golf cap, and no club in hand. Preserve the realistic dropping action from knee height in the bunker."
+  }
+}

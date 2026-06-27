@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\016_003_Free_drop_near_a_dangerous_animal\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:46:31.042Z",
+  "title": "Free drop near a dangerous animal",
+  "ruleNumber": "R16",
+  "ruleName": "Dangerous situation",
+  "durationSeconds": 284.056
+}

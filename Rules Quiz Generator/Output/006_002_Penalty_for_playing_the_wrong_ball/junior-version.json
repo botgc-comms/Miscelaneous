@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\006_002_Penalty_for_playing_the_wrong_ball\\metadata.json",
+  "sourceImageName": "pageb-06.png",
+  "ruleNumber": "6",
+  "ruleName": "Wrong ball",
+  "title": "Penalty for playing the wrong ball",
+  "question": "While playing a hole, you hit a shot and then realise you played a ball that isn't yours. What should you do next according to the rules?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Keep playing with the wrong ball for the rest of the hole"
+    },
+    {
+      "id": "b",
+      "text": "Stop, find your own ball, play it from where it was, add two penalty strokes, and ignore any strokes made with the wrong ball"
+    },
+    {
+      "id": "c",
+      "text": "Go back to the last tee and replay your shot"
+    },
+    {
+      "id": "d",
+      "text": "Put the wrong ball back where you found it and continue with that ball"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You must stop and play your own ball from where it lay, adding two penalty strokes. Any strokes made with the wrong ball do not count.",
+  "juniorVersion": {
+    "title": "What to Do If You Hit the Wrong Ball",
+    "question": "You hit a ball, but then you see it isn't your ball. What should you do now by the rules?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Keep playing with the wrong ball until you finish the hole"
+      },
+      {
+        "id": "b",
+        "text": "Stop. Find your own ball, play your shot from there, add two extra shots to your score, and forget about the shots with the wrong ball"
+      },
+      {
+        "id": "c",
+        "text": "Go back to the place where you last hit and play the shot again"
+      },
+      {
+        "id": "d",
+        "text": "Leave the wrong ball where it was and keep playing with it"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "You must stop and find your own ball. Play from where your ball is, not the wrong one. Add two shots to your score. The hits you made with the wrong ball don't count.",
+    "vocabulary": [
+      {
+        "term": "Penalty stroke",
+        "simpleMeaning": "An extra shot added to your score when you break a rule."
+      }
+    ],
+    "teachingTip": "Help children mark their ball before playing so they can find it easily and don’t get mixed up.",
+    "likelyMisconceptions": [
+      "Some kids may think they can keep playing with any ball.",
+      "Some may forget to add the penalty strokes.",
+      "Kids might think they have to start the whole hole again."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:30.999Z",
+  "model": "gpt-4.1"
+}

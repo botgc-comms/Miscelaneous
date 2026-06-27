@@ -1,0 +1,203 @@
+{
+  "schemaVersion": 1,
+  "packId": "course-safety",
+  "title": "Staying safe on the course",
+  "audience": "Brand new junior golfers and non-golfing parents",
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "Before you start",
+      "file": "pages/00-title.md",
+      "type": "content",
+      "assetFile": "title.png",
+      "imageAlt": "A group of junior golfers and parents listening to a coach at the edge of a golf course.",
+      "imagePrompt": "A group of smiling junior golfers and parents, wearing casual golf clothes, listening to a coach near the first hole on a golf course on a bright day. There are golf bags and trees in the background.",
+      "markdown": "# Before you start\n\nWelcome to the golf course! If you’re new to golf, don’t worry – everyone was a beginner at some point. This guide will help you and your parent or carer learn about staying safe while enjoying golf. You don’t need special or expensive equipment to get started; there are often clubs and balls you can borrow at the club.\n\nGolf is meant to be fun for everyone. A big part of making it enjoyable is looking after yourself and the people around you. The course can be a busy place, with players of all ages. By following a few simple steps, you can avoid accidents, be confident, and help make the course a friendly place.\n\nRead through each page and talk about them together. If you’re ever worried or not sure what to do, just ask your coach or another adult. Everyone in golf clubs wants you to have a safe, happy time!",
+      "quiz": null
+    },
+    {
+      "id": "01-shouting-fore",
+      "title": "Shouting ‘Fore!’",
+      "file": "pages/01-shouting-fore.md",
+      "type": "content",
+      "assetFile": "shouting-fore.png",
+      "imageAlt": "A junior golfer with their hands around their mouth, shouting across the green, while other players look alert.",
+      "imagePrompt": "A junior golfer with hands cupped around their mouth shouting loudly across a golf course, while other golfers look alert and attentive. The scene is safe and positive, with green fairway and trees.",
+      "markdown": "# Shouting ‘Fore!’\n\nIn golf, if there is a risk that a ball might accidentally go near someone, we shout “Fore!” This is a simple way to warn others to watch out. It’s one of the most important safety words in golf. The shout means, “Heads up! A golf ball might be coming your way.”\n\nYou might feel a little nervous shouting on a quiet course, but don’t be shy – everyone expects it. Saying “Fore!” loudly helps keep people safe. Even experienced golfers shout it if a shot could reach another person.\n\nWhen do you shout “Fore!”? If you hit a ball and it goes in a direction where people (even far away) could be in danger, shout clearly and quickly. You can even practise shouting it with your family so you feel confident.\n\nRemember, shouting “Fore!” doesn’t mean you’ve done something wrong. It shows you care about everyone’s safety on the course.",
+      "quiz": null
+    },
+    {
+      "id": "02-hearing-fore",
+      "title": "If someone shouts ‘Fore!’",
+      "file": "pages/02-hearing-fore.md",
+      "type": "content",
+      "assetFile": "hearing-fore.png",
+      "imageAlt": "A group of juniors and parents on a fairway, ducking and covering their heads after hearing a warning.",
+      "imagePrompt": "A group of junior golfers and adults on a fairway quickly ducking down and covering their heads after hearing a distant shout, with alert and safe body language. The background is a green golf course with some trees.",
+      "markdown": "# If someone shouts ‘Fore!’\n\nIf you hear someone shout “Fore!” on the course, you need to get safe right away. The safest thing to do is to stop, turn away from where the shout came from, and cover your head with your hands or arms. This helps protect you from any ball that might be flying your way.\n\nDon’t try to spot the ball in the air – it can be hard to see and it is much better to cover up than to risk getting hit. Stay in that spot for a few moments until you’re sure there’s no danger, and then look around.\n\nSometimes, parents or junior coaches will hear “Fore!” first and tell you what to do. Always listen out when you’re on the course; even if you’re chatting or looking for your ball, it’s important to pay attention.\n\nRemember, shouts of “Fore!” are for everyone’s safety – so don’t worry if it happens. Just make yourself safe and carry on enjoying your round once the danger has passed.",
+      "quiz": null
+    },
+    {
+      "id": "03-bells-and-blind-shots",
+      "title": "Bells and blind shots",
+      "file": "pages/03-bells-and-blind-shots.md",
+      "type": "content",
+      "assetFile": "bells-and-blind-shots.png",
+      "imageAlt": "A junior golfer ringing a bell near tall bushes on the course to signal it is safe, with a parent watching.",
+      "imagePrompt": "A junior golfer standing next to a post with a bell, ringing it beside a fairway with tall bushes or a hill blocking the view, while a parent looks on. The background shows a typical golf course landscape.",
+      "markdown": "# Bells and blind shots\n\nSome parts of a golf course make it hard to see other players, such as hills, bushes, or corners. These are called “blind spots.” To keep everyone safe, courses sometimes have bells you can ring after you’ve finished hitting from these spots.\n\nIf you see a bell, it’s there to let the next group know it’s safe to play. After everyone in your group has played and moved away from danger, walk safely to the bell and give it a good ring. This is the signal that the fairway ahead is now clear.\n\nIf you’re about to hit into an area you cannot see fully, always wait until you hear the bell – or check with an adult that it’s safe. Never hit unless you’re sure the group ahead is out of reach.\n\nWhen in doubt, be patient and double-check. Bells and signals are all about keeping people out of harm’s way, so use them every time you find one.",
+      "quiz": null
+    },
+    {
+      "id": "04-lightning-and-horns",
+      "title": "Lightning and warning horns",
+      "file": "pages/04-lightning-and-horns.md",
+      "type": "content",
+      "assetFile": "lightning-and-horns.png",
+      "imageAlt": "A junior group and adults leaving the course quickly as storm clouds gather, one adult looks to a clubhouse where a warning horn can be seen.",
+      "imagePrompt": "A group of junior golfers and adults quickly and calmly leaving the golf course as dark storm clouds gather. One adult glances towards a distant clubhouse where a staff member is about to sound a horn. The scene looks urgent but well-organised.",
+      "markdown": "# Lightning and warning horns\n\nOn rare occasions, the weather can turn dangerous when you’re out on the course. Lightning is very dangerous in open spaces. If club staff see lightning or hear thunder, they may use a loud warning horn or shout instructions.\n\nIf you hear a horn or someone tells you to leave the course because of weather, stop playing straight away. Put your clubs down and calmly walk to the clubhouse or the nearest safe place as quickly as possible. Never shelter under trees – they can attract lightning.\n\nIf you notice lightning or thunder before the staff, it’s best to stop and tell an adult, then make your way in. Being safe is much more important than finishing your round!\n\nClubs cancel or pause play in storms to look after everyone. Don’t worry about your equipment – it can be collected later. The most important thing is that you, your family and your friends get inside safely.",
+      "quiz": null
+    },
+    {
+      "id": "05-hazards-and-rough",
+      "title": "Tree roots, ditches and rough",
+      "file": "pages/05-hazards-and-rough.md",
+      "type": "content",
+      "assetFile": "hazards-and-rough.png",
+      "imageAlt": "A junior golfer and parent carefully walking near a ditch and rough grass, with a tree and roots nearby.",
+      "imagePrompt": "A junior golfer and a parent cautiously walking near a shallow ditch and an area of rough grass with visible tree roots poking through the ground. The fairway is nearby, and both are watching their step.",
+      "markdown": "# Tree roots, ditches and rough\n\nGolf courses have many different areas, like fairways, rough grass, trees, and ditches. Some of these can hide tricky hazards. Watch out for tree roots – they can be hard and make you trip if you’re not careful. Always walk and play away from big, exposed roots. Never try to hit a ball if it sits near a root; tell an adult, who can help decide what to do safely.\n\nDitches can look shallow but may be slippery or deeper than you think. Walk around them if possible, or ask an adult for help. Be careful in thick rough grass, too, as it can hide uneven ground or holes.\n\nIf you’re with friends, remind each other to watch where you’re walking, especially if you’ve strayed off the main pathways. It’s always okay to slow down and check the ground before walking or searching for a ball. Golf is about enjoying nature as well as hitting great shots!",
+      "quiz": null
+    },
+    {
+      "id": "90-quick-check",
+      "title": "Quick check",
+      "file": "pages/90-quick-check.md",
+      "type": "quiz",
+      "assetFile": "quick-check.png",
+      "imageAlt": "A smiling coach giving a thumbs-up as a junior golfer answers questions, with a golf bag nearby.",
+      "imagePrompt": "A photorealistic image of a friendly coach sitting with a junior golfer at a picnic bench on a golf course. The coach holds a clipboard and gives a thumbs-up as the child answers questions. There is a golf bag in the background, and everything looks positive and informal.",
+      "markdown": "# Quick check\n\nLet’s see what you remember! These questions will help you and your family feel confident about staying safe. Try your best, and chat about any you’re not sure about — there are no wrong questions when it comes to safety.",
+      "quiz": {
+        "questions": [
+          {
+            "question": "What should you do if you hear someone shout 'Fore!' on the course?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Start running after your ball."
+              },
+              {
+                "id": "b",
+                "text": "Stop, turn away from the shout and cover your head."
+              },
+              {
+                "id": "c",
+                "text": "Wave at the people shouting."
+              },
+              {
+                "id": "d",
+                "text": "Lie down on the grass and shut your eyes."
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "The correct thing is to stop, turn away from the shout and cover your head with your arms for safety."
+          },
+          {
+            "question": "Why do golfers shout 'Fore!'?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "To greet their friends on another hole."
+              },
+              {
+                "id": "b",
+                "text": "To warn people that a ball may be coming their way."
+              },
+              {
+                "id": "c",
+                "text": "To signal it's time to eat lunch."
+              },
+              {
+                "id": "d",
+                "text": "Because they're happy with their shot."
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "Golfers shout 'Fore!' to warn others that a ball might go near them, helping everyone stay safe."
+          },
+          {
+            "question": "What should you do if you see a bell on the course?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Ignore it – it's just decoration."
+              },
+              {
+                "id": "b",
+                "text": "Ring it after your group is safely out of the way, to signal it's clear."
+              },
+              {
+                "id": "c",
+                "text": "Sit next to it and have a break."
+              },
+              {
+                "id": "d",
+                "text": "Only ring it if there's a birthday."
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "You should ring the bell when your group is safely out of the way, letting others know it’s safe to play."
+          },
+          {
+            "question": "If you see lightning or hear thunder while playing, what’s the safest action?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Keep playing until you finish."
+              },
+              {
+                "id": "b",
+                "text": "Hide under the tallest tree."
+              },
+              {
+                "id": "c",
+                "text": "Head to the clubhouse or a safe building straight away."
+              },
+              {
+                "id": "d",
+                "text": "Hold your club in the air like a flag."
+              }
+            ],
+            "correctAnswer": "c",
+            "explanation": "Always go to the clubhouse or nearest safe building straight away during lightning or thunder."
+          },
+          {
+            "question": "Why should you be careful around tree roots, ditches and thick rough?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "They can be slippery, hard or hide holes."
+              },
+              {
+                "id": "b",
+                "text": "They are always full of lost balls."
+              },
+              {
+                "id": "c",
+                "text": "They make a good place for a picnic."
+              },
+              {
+                "id": "d",
+                "text": "You can walk faster through them."
+              }
+            ],
+            "correctAnswer": "a",
+            "explanation": "Tree roots, ditches and rough can cause you to trip or slip, so always walk carefully around them."
+          }
+        ]
+      }
+    }
+  ]
+}

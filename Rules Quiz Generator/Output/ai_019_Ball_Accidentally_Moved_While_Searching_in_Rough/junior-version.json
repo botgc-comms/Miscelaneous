@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_019_Ball_Accidentally_Moved_While_Searching_in_Rough\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "7.4",
+  "ruleName": "Ball Accidentally Moved in Trying to Find or Identify It",
+  "title": "Ball Accidentally Moved While Searching in Rough",
+  "question": "While searching for your ball in long rough, you accidentally kick it and it rolls a few feet. What is the correct ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You receive a one-stroke penalty and must play the ball from its new position."
+    },
+    {
+      "id": "b",
+      "text": "You receive the general penalty and must replace the ball."
+    },
+    {
+      "id": "c",
+      "text": "There is no penalty. You must replace the ball on its original spot."
+    },
+    {
+      "id": "d",
+      "text": "There is no penalty. You play the ball from where it came to rest."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "Accidentally moving your ball while searching for it is an exception under the Rules. There is no penalty, but you must replace the ball on its original spot before playing. If the exact spot is not known, it must be estimated and the ball replaced there. (Rule 7.4)",
+  "juniorVersion": {
+    "title": "Finding Your Ball in Long Grass",
+    "question": "You are looking for your ball in the long grass. By mistake, you kick it and it rolls a little way. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You get one shot added and play your ball from where it rolled to."
+      },
+      {
+        "id": "b",
+        "text": "You get a big penalty and must put the ball back where it was."
+      },
+      {
+        "id": "c",
+        "text": "You do not get a penalty. You must put your ball back where it was before it moved."
+      },
+      {
+        "id": "d",
+        "text": "You do not get a penalty. You play your ball from where it now rests."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "If you move your ball by accident when looking for it, you do not get a penalty. Just put your ball back where it was before you touched it. If you don’t know the exact spot, guess the best you can and put your ball there.",
+    "vocabulary": [
+      {
+        "term": "rough",
+        "simpleMeaning": "The long grass by the side of the fairway."
+      },
+      {
+        "term": "penalty",
+        "simpleMeaning": "Extra shots you have to add to your score if you break a rule."
+      },
+      {
+        "term": "replace",
+        "simpleMeaning": "Put the ball back on the spot where it was before."
+      }
+    ],
+    "teachingTip": "Let children try searching for a ball in long grass. Show what happens if they accidentally move it, and practise replacing the ball to the right spot.",
+    "likelyMisconceptions": [
+      "Some may think you always get a penalty if you move your ball.",
+      "Some may think you should play the ball from where it rolled to."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:05:59.760Z",
+  "model": "gpt-4.1"
+}

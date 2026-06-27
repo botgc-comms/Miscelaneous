@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "pageb-12.png",
+  "ruleNumber": "R9",
+  "ruleName": "Ball at rest is moved",
+  "group": "Ball at rest is moved",
+  "type": "multiple_choice",
+  "imagePrompt": "Two teenage boys searching in the rough; one boy accidentally moves a ball while the other watches.",
+  "imageAlt": "Two teen boys in the rough, one accidentally moving a ball during search.",
+  "sceneSpec": {
+    "setting": "rough",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "navy",
+    "clothingBottomColour": "blue",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [],
+    "repairPrompt": "No repair needed; the illustration fully meets the revised specification."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What if your friend moves your ball when looking for it?",
+      "question": "You and your friend are playing a match. Your ball is lost in the long grass (the rough), and while your friend is helping to look, they accidentally move your ball. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Your friend gets a penalty and the ball goes back where it was"
+        },
+        {
+          "id": "b",
+          "text": "No one gets a penalty, and you must put the ball back where it was"
+        },
+        {
+          "id": "c",
+          "text": "Play the ball from where it ended up"
+        },
+        {
+          "id": "d",
+          "text": "You get a penalty and must put the ball back where it was"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If your friend moves your ball by accident while helping you find it, no one gets a penalty. You must put your ball back where it was before it was moved.",
+      "vocabulary": [
+        {
+          "term": "match play",
+          "simpleMeaning": "Match play is when you and a friend compete to win each hole."
+        },
+        {
+          "term": "rough",
+          "simpleMeaning": "Rough means the long grass next to the fairway on a golf course."
+        }
+      ],
+      "teachingTip": "Demonstrate searching for a ball in the rough and show how to mark and replace a moved ball.",
+      "likelyMisconceptions": [
+        "Children may think someone always gets a penalty when a ball is moved.",
+        "They may think the ball can be played from its new spot."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Opponent moves your ball in match play",
+      "question": "In match play, your opponent accidentally moves your ball while searching for it in the rough. What is the correct procedure?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Your opponent gets a penalty and the ball is replaced"
+        },
+        {
+          "id": "b",
+          "text": "No penalty for anyone, and the ball must be replaced"
+        },
+        {
+          "id": "c",
+          "text": "The ball is played from its new position"
+        },
+        {
+          "id": "d",
+          "text": "You get a penalty and must replace the ball"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "In match play, if your opponent moves your ball accidentally during a search, no one is penalised but the ball must be put back where it was."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "009_005_Opponent_moves_your_ball_in_match_play",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.484Z"
+  }
+}

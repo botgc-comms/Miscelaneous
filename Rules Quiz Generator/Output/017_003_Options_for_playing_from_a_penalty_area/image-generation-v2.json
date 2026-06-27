@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\017_003_Options_for_playing_from_a_penalty_area\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:53:39.785Z",
+  "title": "Options for playing from a penalty area",
+  "ruleNumber": "R17",
+  "ruleName": "In a penalty area",
+  "durationSeconds": 194.198
+}

@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-07.png",
+  "ruleNumber": "R6",
+  "ruleName": "Ball falls off the tee",
+  "group": "Ball falls off the tee",
+  "title": "What happens if your ball falls off the tee accidentally?",
+  "question": "If you accidentally knock your ball off the tee before taking your shot, what is the correct thing to do?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Count it as a stroke and play the ball from where it comes to rest."
+    },
+    {
+      "id": "b",
+      "text": "Simply put the ball back on the tee and play your shot with no penalty."
+    },
+    {
+      "id": "c",
+      "text": "Add two penalty strokes for knocking the ball."
+    },
+    {
+      "id": "d",
+      "text": "Leave the tee and ask for help."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If you accidentally make your ball fall off the tee before making a stroke, there is no penalty. You should just place the ball back on the tee and continue.",
+  "imagePrompt": "A teen golfer with a driver accidentally causing the ball to fall off the tee before their shot. The golfer looks surprised, about to replace the ball.",
+  "imageAlt": "A teen golfer about to replace their ball on the tee after accidentally knocking it off.",
+  "sceneSpec": {
+    "setting": "teeing_area",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "replaying_shot",
+    "clubInHand": "driver",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": true,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "medium",
+    "clothingTopColour": "purple",
+    "clothingBottomColour": "grey",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Tee markers are visible and plausible, though they appear slightly stylised in colour but still fall within normal variation seen on real courses."
+    ],
+    "repairPrompt": "Make the tee markers a more standard colour for a golf tee area (e.g. white, yellow, blue, or red) to match common real-world courses."
+  }
+}

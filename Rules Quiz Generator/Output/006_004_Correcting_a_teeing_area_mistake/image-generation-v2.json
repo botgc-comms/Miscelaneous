@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\006_004_Correcting_a_teeing_area_mistake\\metadata.json",
+  "generatedAtUtc": "2026-06-24T14:59:16.438Z",
+  "title": "Correcting a teeing area mistake",
+  "ruleNumber": "6",
+  "ruleName": "Playing from outside the teeing area",
+  "durationSeconds": 170.966
+}

@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-19.png",
+  "ruleNumber": "R12",
+  "ruleName": "Bunker",
+  "group": "Bunker",
+  "type": "multiple_choice",
+  "imagePrompt": "A golf ball resting half on sand and half on grass inside a bunker as a teenage girl holding an iron stands nearby deciding if it counts as in the bunker.",
+  "imageAlt": "A golf ball on the border of sand and grass in a bunker with a girl golfer checking.",
+  "sceneSpec": {
+    "setting": "bunker",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": true,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "dark",
+    "clothingTopColour": "navy",
+    "clothingBottomColour": "grey",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Golfer is slightly outside the bunker, but this is plausible for the described 'standing near ball' pose.",
+      "The golf ball is at the sand/grass border as required, but the grass area looks a touch narrow compared to most real bunker lips—minor issue."
+    ],
+    "repairPrompt": "Make sure the golf ball is centered even more clearly at the sand/grass border, with a slightly wider visible strip of bunker-edge grass for realism. Keep the golfer standing right next to the ball, still near the bunker, and ensure the postures remain natural."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "When Is Your Ball Inside the Bunker?",
+      "question": "Your ball stops where the sand meets the grass next to the bunker. When do we say your ball is in the bunker?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Only if your whole ball is on the sand"
+        },
+        {
+          "id": "b",
+          "text": "If any part of your ball is touching the sand in the bunker"
+        },
+        {
+          "id": "c",
+          "text": "If your ball is all the way on the grass, even if it’s still inside the edge"
+        },
+        {
+          "id": "d",
+          "text": "Any time your ball is inside the line, even if it’s not touching the sand"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "Your ball is 'in the bunker' if any part of it is touching the sand inside the bunker, even if the rest is on grass.",
+      "vocabulary": [
+        {
+          "term": "Bunker",
+          "simpleMeaning": "A bunker is a sandy area on a golf course. If your ball lands in the sand, that’s the bunker."
+        }
+      ],
+      "teachingTip": "Show kids a real bunker or use a picture. Place a ball partly in the sand and partly on the grass to let them see when it counts as 'in the bunker.'",
+      "likelyMisconceptions": [
+        "Some children may think the whole ball must be on the sand to be 'in the bunker.'",
+        "They might believe the ball is not 'in the bunker' if it is touching grass, even inside the edge."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "When is a ball 'in the bunker'?",
+      "question": "Your ball comes to rest on the border between the sand and some grass that's inside the edge of the bunker. When is your ball officially classed as 'in the bunker'?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Only if the whole ball is inside the sand area"
+        },
+        {
+          "id": "b",
+          "text": "If any part of the ball touches the sand in the bunker"
+        },
+        {
+          "id": "c",
+          "text": "If the ball is fully on grass even if inside the edge"
+        },
+        {
+          "id": "d",
+          "text": "Any time the ball is within the boundary, even if not touching sand"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "The ball is classed as being in the bunker if any part of it touches sand inside the edge of the bunker, no matter where the rest of the ball lies."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "012_001_When_is_a_ball_in_the_bunker",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.662Z"
+  }
+}

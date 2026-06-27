@@ -1,0 +1,10 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "sourcePromptFileName": "final-prompt-v2.txt",
+  "promptFileName": "final-prompt-v3.txt",
+  "imageFileName": "illustration-v3.png",
+  "correctionInstructions": "the image is wrong. it should show one player borrowing a club from another",
+  "generatedAtUtc": "2026-06-26T07:19:52.298Z"
+}

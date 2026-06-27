@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-18.png",
+  "ruleNumber": "R9/14",
+  "ruleName": "Ball at rest moved by an outside influence",
+  "group": "Ball at rest moved by an outside influence",
+  "title": "What to do if your ball is moved by an animal",
+  "question": "A dog runs onto the course and moves your ball from where it was resting. What is the correct action under the Rules?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball from where the dog left it"
+    },
+    {
+      "id": "b",
+      "text": "Replace the ball as close as possible to its original spot, with no penalty"
+    },
+    {
+      "id": "c",
+      "text": "Add a penalty stroke and drop the ball"
+    },
+    {
+      "id": "d",
+      "text": "Skip the hole and move to the next one"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If an outside influence, such as a dog, moves your ball at rest, you must replace it as close as possible to its original spot with no penalty.",
+  "imagePrompt": "A teenage left-handed boy golfer on the fairway prepares to replace his ball after a dog has moved it; the boy is retrieving the ball and trees are visible in the background.",
+  "imageAlt": "A dog moves a boy's golf ball on the fairway and he gets ready to put it back.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "lifting_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "yellow",
+    "clothingBottomColour": "red",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [],
+    "repairPrompt": "No repair needed. The image accurately depicts a white teenage girl golfer with a light skin tone, right-handed, wearing a yellow top and red bottoms, bending naturally to lift a single golf ball, with no club in hand. The background and fairway are realistic, with trees visible in the distance."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\016_001_Identifying_Immovable_Obstructions\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:40:48.937Z",
+  "title": "Identifying Immovable Obstructions",
+  "ruleNumber": "16",
+  "ruleName": "Abnormal course conditions",
+  "durationSeconds": 186.3
+}

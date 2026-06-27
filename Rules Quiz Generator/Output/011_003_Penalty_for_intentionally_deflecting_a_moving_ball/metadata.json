@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-14.png",
+  "ruleNumber": "11",
+  "ruleName": "Ball in motion intentionally deflected",
+  "group": "Ball in motion intentionally deflected",
+  "title": "Penalty for intentionally deflecting a moving ball",
+  "question": "What is the general penalty if a player deliberately stops or deflects a ball in motion?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "1 penalty stroke"
+    },
+    {
+      "id": "b",
+      "text": "2 penalty strokes"
+    },
+    {
+      "id": "c",
+      "text": "Loss of hole"
+    },
+    {
+      "id": "d",
+      "text": "No penalty"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "A player who deliberately stops or deflects their own ball in motion receives the general penalty of two strokes.",
+  "imagePrompt": "A teenage boy golfer, right-handed, standing on a sunny fairway with another person shown near a golf ball, highlighting a deliberate stop or deflection.",
+  "imageAlt": "A teen boy golfer with another person near a golf ball that was intentionally stopped or deflected.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "purple",
+    "clothingBottomColour": "orange",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": false,
+    "score": 65,
+    "issues": [
+      "The golfer depicted is a teenage girl with correct posture and clothing, matching the specification, but the scene prompt intent describes a right-handed boy.",
+      "Golfer is holding an iron with correct realistic proportions and grip; club shape is accurate.",
+      "The golf ball is correctly sized and positioned—only one ball visible.",
+      "The secondary figure is partially included and clearly stopping the ball with their hand, accurately illustrating a deliberate infraction.",
+      "The fairway is believable and the weather, clothing colors, and lack of headwear are accurate.",
+      "No penalties: No floating gear, child-sized clubs, duplicated club heads, or duplicated balls.",
+      "Mismatch between the specified character in the prompt intent (teen boy, right-handed) and the scene's main character (teen girl, left-handed, matching sceneSpec but not the illustration intent)."
+    ],
+    "repairPrompt": "Change the main golfer to a right-handed teenage boy with a natural golf posture. Ensure he is holding a realistic iron club. Maintain the secondary figure's action (deliberately stopping or deflecting the ball) and all other course, ball, and equipment accuracy. Update clothing and appearance to reflect a white boy with light skin, not wearing a hat."
+  }
+}

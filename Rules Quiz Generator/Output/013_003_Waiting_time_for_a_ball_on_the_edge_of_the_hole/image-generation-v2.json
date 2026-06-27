@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\013_003_Waiting_time_for_a_ball_on_the_edge_of_the_hole\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:28:10.331Z",
+  "title": "Waiting time for a ball on the edge of the hole",
+  "ruleNumber": "R13",
+  "ruleName": "Ball on the edge of the hole",
+  "durationSeconds": 184.38
+}

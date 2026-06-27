@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-03.png",
+  "ruleNumber": "14",
+  "ruleName": "Dropping and re-dropping",
+  "group": "Dropping and re-dropping",
+  "title": "Correct way to drop a ball",
+  "question": "According to the Rules of Golf, how should you drop a ball when taking relief?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Let it fall from knee height"
+    },
+    {
+      "id": "b",
+      "text": "Let it fall from shoulder height"
+    },
+    {
+      "id": "c",
+      "text": "Place it gently on the ground by hand"
+    },
+    {
+      "id": "d",
+      "text": "Toss it upwards from knee height"
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "You need to drop the ball straight down from knee height so it falls through the air without touching you or your equipment.",
+  "imagePrompt": "A teenage golfer standing on the fairway drops a golf ball from knee height.",
+  "imageAlt": "Golfer dropping a golf ball from knee height.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "dropping_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "white",
+    "clothingBottomColour": "blue",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "Golfer's left-handedness is not absolutely explicit (though not contradicted; pose is neutral as ball is dropped)."
+    ],
+    "repairPrompt": "Ensure the golfer's left-handedness is clear (e.g., a glove on the right hand or bag with clubs on the right shoulder)."
+  }
+}

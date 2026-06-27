@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-07.png",
+  "ruleNumber": "R6/8/15",
+  "ruleName": "Relief",
+  "group": "Relief",
+  "title": "What can you do on the tee?",
+  "question": "Which of these actions are allowed on the teeing area before your first shot? Select all that apply.",
+  "type": "multi_select",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Evening out uneven ground for a better stance."
+    },
+    {
+      "id": "b",
+      "text": "Pulling up loose grass that might affect your shot."
+    },
+    {
+      "id": "c",
+      "text": "Removing loose stones or twigs."
+    },
+    {
+      "id": "d",
+      "text": "Moving the tee-markers to change your starting spot."
+    }
+  ],
+  "correctAnswer": [
+    "a",
+    "b",
+    "c"
+  ],
+  "correctAnswers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "explanation": "You can prepare the surface by smoothing the ground and removing natural loose items like grass or twigs, but must never move the tee-markers.",
+  "imagePrompt": "A teen golfer on the teeing area, picking up a twig and pulling some loose grass, clearly within the correct area with untouched tee-markers.",
+  "imageAlt": "Teen golfer tidying grass and removing a twig on the tee with tee-markers visible.",
+  "sceneSpec": {
+    "setting": "teeing_area",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": true,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "yellow",
+    "clothingBottomColour": "green",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "Tee markers could be a more common or standard color for authenticity—typically white, yellow, blue, or red."
+    ],
+    "repairPrompt": "Depict tee markers in a standard golf color such as white, yellow, blue, or red for added realism."
+  }
+}

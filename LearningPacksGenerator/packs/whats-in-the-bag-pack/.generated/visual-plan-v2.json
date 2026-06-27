@@ -1,0 +1,140 @@
+{
+  "pages/00-title.md": {
+    "slot": "real junior golf bag equipment overview",
+    "assetFile": "title.png",
+    "referenceKeywords": [
+      "junior-bag",
+      "driver",
+      "hybrid",
+      "iron",
+      "wedge",
+      "putter",
+      "equipment"
+    ],
+    "requiredReferenceKeywords": [
+      "junior-bag"
+    ],
+    "prompt": "Create a photorealistic product-style image of a real junior golf bag with real clubs visible. Show believable shafts, grips and club heads. The image should help a parent understand what a junior bag contains.",
+    "avoid": [
+      "text, labels, captions, watermarks, brand names, logos unless a logo reference is explicitly supplied",
+      "distorted hands, extra fingers, malformed people, toy equipment",
+      "hook-shaped golf clubs, very short golf clubs, bent shafts, double club heads, floating clubs",
+      "generic repeated parent holding phone scenes unless the page is specifically about using an app screen"
+    ]
+  },
+  "pages/01-clubs-overview.md": {
+    "slot": "real junior golf bag equipment overview",
+    "assetFile": "clubs-overview.png",
+    "referenceKeywords": [
+      "junior-bag",
+      "driver",
+      "hybrid",
+      "iron",
+      "wedge",
+      "putter",
+      "equipment"
+    ],
+    "requiredReferenceKeywords": [
+      "junior-bag"
+    ],
+    "prompt": "Create a photorealistic product-style image of a real junior golf bag with real clubs visible. Show believable shafts, grips and club heads. The image should help a parent understand what a junior bag contains.",
+    "avoid": [
+      "text, labels, captions, watermarks, brand names, logos unless a logo reference is explicitly supplied",
+      "distorted hands, extra fingers, malformed people, toy equipment",
+      "hook-shaped golf clubs, very short golf clubs, bent shafts, double club heads, floating clubs",
+      "generic repeated parent holding phone scenes unless the page is specifically about using an app screen"
+    ]
+  },
+  "pages/02-woods-irons.md": {
+    "slot": "real junior golf bag equipment overview",
+    "assetFile": "woods-irons.png",
+    "referenceKeywords": [
+      "junior-bag",
+      "driver",
+      "hybrid",
+      "iron",
+      "wedge",
+      "putter",
+      "equipment"
+    ],
+    "requiredReferenceKeywords": [
+      "junior-bag"
+    ],
+    "prompt": "Create a photorealistic product-style image of a real junior golf bag with real clubs visible. Show believable shafts, grips and club heads. The image should help a parent understand what a junior bag contains.",
+    "avoid": [
+      "text, labels, captions, watermarks, brand names, logos unless a logo reference is explicitly supplied",
+      "distorted hands, extra fingers, malformed people, toy equipment",
+      "hook-shaped golf clubs, very short golf clubs, bent shafts, double club heads, floating clubs",
+      "generic repeated parent holding phone scenes unless the page is specifically about using an app screen"
+    ]
+  },
+  "pages/03-wedges-putter.md": {
+    "slot": "real junior golf bag equipment overview",
+    "assetFile": "wedges-putter.png",
+    "referenceKeywords": [
+      "junior-bag",
+      "driver",
+      "hybrid",
+      "iron",
+      "wedge",
+      "putter",
+      "equipment"
+    ],
+    "requiredReferenceKeywords": [
+      "junior-bag"
+    ],
+    "prompt": "Create a photorealistic product-style image of a real junior golf bag with real clubs visible. Show believable shafts, grips and club heads. The image should help a parent understand what a junior bag contains.",
+    "avoid": [
+      "text, labels, captions, watermarks, brand names, logos unless a logo reference is explicitly supplied",
+      "distorted hands, extra fingers, malformed people, toy equipment",
+      "hook-shaped golf clubs, very short golf clubs, bent shafts, double club heads, floating clubs",
+      "generic repeated parent holding phone scenes unless the page is specifically about using an app screen"
+    ]
+  },
+  "pages/04-fitting.md": {
+    "slot": "real junior golf bag equipment overview",
+    "assetFile": "fitting.png",
+    "referenceKeywords": [
+      "junior-bag",
+      "driver",
+      "hybrid",
+      "iron",
+      "wedge",
+      "putter",
+      "equipment"
+    ],
+    "requiredReferenceKeywords": [
+      "junior-bag"
+    ],
+    "prompt": "Create a photorealistic product-style image of a real junior golf bag with real clubs visible. Show believable shafts, grips and club heads. The image should help a parent understand what a junior bag contains.",
+    "avoid": [
+      "text, labels, captions, watermarks, brand names, logos unless a logo reference is explicitly supplied",
+      "distorted hands, extra fingers, malformed people, toy equipment",
+      "hook-shaped golf clubs, very short golf clubs, bent shafts, double club heads, floating clubs",
+      "generic repeated parent holding phone scenes unless the page is specifically about using an app screen"
+    ]
+  },
+  "pages/90-quick-check.md": {
+    "slot": "real junior golf bag equipment overview",
+    "assetFile": "quick-check.png",
+    "referenceKeywords": [
+      "junior-bag",
+      "driver",
+      "hybrid",
+      "iron",
+      "wedge",
+      "putter",
+      "equipment"
+    ],
+    "requiredReferenceKeywords": [
+      "junior-bag"
+    ],
+    "prompt": "Create a photorealistic product-style image of a real junior golf bag with real clubs visible. Show believable shafts, grips and club heads. The image should help a parent understand what a junior bag contains.",
+    "avoid": [
+      "text, labels, captions, watermarks, brand names, logos unless a logo reference is explicitly supplied",
+      "distorted hands, extra fingers, malformed people, toy equipment",
+      "hook-shaped golf clubs, very short golf clubs, bent shafts, double club heads, floating clubs",
+      "generic repeated parent holding phone scenes unless the page is specifically about using an app screen"
+    ]
+  }
+}

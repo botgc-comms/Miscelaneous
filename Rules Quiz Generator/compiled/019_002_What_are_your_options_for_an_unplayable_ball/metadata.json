@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-16.png",
+  "ruleNumber": "R19",
+  "ruleName": "Unplayable ball",
+  "group": "Unplayable ball",
+  "type": "multi_select",
+  "imagePrompt": "A teenage girl golfer with a ball under a bush, visualising three possible relief options: dropping within two club-lengths, going back on the line, or replaying from the previous spot.",
+  "imageAlt": "Teen golfer has a ball under a bush and is imagining three possible drop choices.",
+  "sceneSpec": {
+    "setting": "rough",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "wedge",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "dark",
+    "clothingTopColour": "white",
+    "clothingBottomColour": "grey",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [],
+    "repairPrompt": "No major repairs needed. If additional improvement desired, ensure the ball is clearly under the bush and the golfer's stance interacts slightly more directly with the bush to enhance the sense of 'unplayability'."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What Can You Do If You Can't Play Your Ball?",
+      "question": "If you say your ball is unplayable (you can't play it), which things can you do for one extra shot? (Choose all that are right)",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop your ball within two club-lengths from where it is"
+        },
+        {
+          "id": "b",
+          "text": "Go back as far as you like in a straight line with the flag and drop your ball there"
+        },
+        {
+          "id": "c",
+          "text": "Hit your ball again from the same spot where you last played"
+        },
+        {
+          "id": "d",
+          "text": "Drop your ball straight on the green without a penalty"
+        },
+        {
+          "id": "e",
+          "text": "Let your friend pick for you"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "c"
+      ],
+      "correctAnswer": [
+        "a",
+        "b",
+        "c"
+      ],
+      "explanation": "If your ball is unplayable, you can (for one extra shot) drop it within two club-lengths, go back as far as you want in line with the flag and drop, or try again from where you last hit. You can't put it straight on the green or let your friend choose.",
+      "vocabulary": [
+        {
+          "term": "Unplayable ball",
+          "simpleMeaning": "When you can't hit your ball because it's stuck or in a very bad spot, you can say it is 'unplayable' and use special choices."
+        },
+        {
+          "term": "Club-length",
+          "simpleMeaning": "The length of your golf club. You use this to measure how far you can drop your ball."
+        }
+      ],
+      "teachingTip": "Help kids practise measuring two club-lengths and picking a good place to drop the ball.",
+      "likelyMisconceptions": [
+        "Thinking you can drop your ball on the green without a penalty.",
+        "Thinking a friend can pick what to do for you."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "What are your options for an unplayable ball?",
+      "question": "If you declare your ball unplayable, which of the following actions are allowed for a one-stroke penalty? (Select all that apply)",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop the ball within two club-lengths of where it lies"
+        },
+        {
+          "id": "b",
+          "text": "Go back as far as you like in line with the hole and drop there"
+        },
+        {
+          "id": "c",
+          "text": "Replay the shot from where you last played"
+        },
+        {
+          "id": "d",
+          "text": "Drop the ball on the green without penalty"
+        },
+        {
+          "id": "e",
+          "text": "Ask your friend to choose for you"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "c"
+      ],
+      "correctAnswer": [
+        "a",
+        "b",
+        "c"
+      ],
+      "explanation": "You may drop within two club-lengths, go back on a straight line keeping the spot between you and the hole, or replay the last shot, all for one penalty stroke."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "019_002_What_are_your_options_for_an_unplayable_ball",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:53.638Z"
+  }
+}

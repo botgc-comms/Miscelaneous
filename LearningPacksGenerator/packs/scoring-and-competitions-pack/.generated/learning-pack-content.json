@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 1,
+  "packId": "scoring-and-competitions",
+  "title": "Scoring and competitions",
+  "audience": "Brand new junior golfers and non-golfing parents at a UK golf club.",
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "Scoring basics",
+      "file": "pages/00-title.md",
+      "type": "content",
+      "assetFile": "title.png",
+      "imageAlt": "A young golfer with an adult, smiling beside a golf green, holding a scorecard and pencil.",
+      "imagePrompt": "A photorealistic image of a young golfer and a supportive parent standing on a golf course green, holding a pencil and scorecard, appearing happy and relaxed. The setting is a nice golf course suitable for families, with short-cut grass and sunshine. No text or logos.",
+      "markdown": "# Scoring basics\n\nWelcome to the basics of scoring in golf! Whether you’re a junior picking up a club for the first time or a parent new to the sport, this learning pack will guide you through what you need to know. Golf is a friendly game where players try to get the ball into the hole in as few shots as possible. Every time you hit the ball, it counts as a “stroke”. You keep track of these on a “scorecard”.\n\nGolf might seem complicated at first, but it’s easy to follow once you understand the basics. You don’t need special or expensive equipment—just honesty, encouragement, and a willingness to learn. There are lots of fun ways to play and many competitions specially designed to be friendly for juniors and beginners. \n\nParents, you don’t need to be golfers yourselves; your interest and encouragement are what really matter. This course will cover what counts as a stroke, how to record scores, and what to expect at junior competitions. Ready to get started?",
+      "quiz": null
+    },
+    {
+      "id": "01-counting-strokes",
+      "title": "Counting strokes",
+      "file": "pages/01-counting-strokes.md",
+      "type": "content",
+      "assetFile": "counting-strokes.png",
+      "imageAlt": "A close-up of a junior golfer putting a ball on a green while an adult counts on their fingers nearby.",
+      "imagePrompt": "Photorealistic close-up of a young golfer putting a golf ball, with an adult in the background holding up fingers counting strokes. A flagstick and golf hole are visible on a tidy green. No logos, text, or brands.",
+      "markdown": "# Counting strokes\n\nIn golf, every time you swing at the ball with the intention to hit it, it counts as a “stroke”. Even if you miss the ball, that swing still counts as one stroke. The main aim is to complete each hole using as few strokes as possible.\n\nAfter you have finished a hole (got the ball in the hole), you simply count up how many shots you needed. For example, if it took four swings (including putting), your score for that hole is four.\n\nHere’s a tip: be as honest as possible when counting strokes. Everyone, even professionals, sometimes forget to count properly, so it’s good to check with your playing partners. Golf relies on honesty and fair play. \n\nParents can help by keeping a quiet tally or asking the junior golfer after each shot, “That’s one, now two…” This builds good habits early on. Remember, having fun and learning are just as important as the score. \n\nIf you’re unsure, just ask a coach or another adult for help – everyone is there to support you.",
+      "quiz": null
+    },
+    {
+      "id": "02-scorecards",
+      "title": "Using a scorecard",
+      "file": "pages/02-scorecards.md",
+      "type": "content",
+      "assetFile": "scorecards.png",
+      "imageAlt": "A child and an adult filling out a simple golf scorecard outdoors, with a golf bag in the background.",
+      "imagePrompt": "Photorealistic image of a junior golfer and an adult sitting at a bench on a golf course, filling out a blank scorecard with a pencil. A golf bag lies on the grass nearby on a sunny day. No brand names, no text.",
+      "markdown": "# Using a scorecard\n\nA scorecard is a handy tool for keeping track of your strokes on each hole. Each hole has its own box on the card. After you finish a hole, you write down the number of strokes it took you to get the ball in the hole. If you played hole 1 in 5 strokes, write ‘5’ in the box for hole 1.\n\nThere’s usually space on the scorecard for your name and maybe for other players in your group. After all holes are played, you add up your scores for a total. It doesn’t matter if your handwriting isn’t perfect—the main thing is to be clear and honest.\n\nIf you’re not sure how to fill out a scorecard, just ask another player, a parent, or your golf coach. They’ll be pleased to help. Some clubs use special scorecards for beginners—these might only have a few holes to play, and that’s absolutely fine.\n\nRemember: the scorecard isn’t about winning or losing—it’s a way to see how you’re improving each time you play.",
+      "quiz": null
+    },
+    {
+      "id": "03-competitions",
+      "title": "Junior competitions",
+      "file": "pages/03-competitions.md",
+      "type": "content",
+      "assetFile": "competitions.png",
+      "imageAlt": "A group of children with varied ages and genders wait at a tee box with supportive adults, some wearing caddie bibs, at a welcoming golf club.",
+      "imagePrompt": "Photorealistic image of a friendly group of children with different ages and genders standing around a tee box. Some adults are nearby wearing plain caddie bibs, looking supportive. The golf course is bright and neat, and everyone appears relaxed and happy. No logos or text.",
+      "markdown": "# Junior competitions\n\nGolf clubs often organise special competitions just for juniors. These are friendly, relaxed, and designed to help children enjoy the game and learn at their own pace. Each competition might be different—some are for beginners, while others are for more experienced juniors. There could be prizes or certificates, but the main focus is always on having fun and showing good sportsmanship.\n\nCompetitions can be 3, 6, 9, or 18 holes, depending on age and experience. Sometimes, you’ll play in a team; other times, it will be just you. Parents or adult helpers might walk with the groups to offer support and encouragement, not coaching during play. \n\nBefore the competition starts, listen to the organiser for a simple explanation of the rules and what to do. Don’t be nervous—everyone there remembers what it’s like to play in their first competition! Just try your best, count your strokes honestly, and enjoy playing with others.\n\nIf you ever need help or feel unsure about anything, just ask—everyone wants you to feel welcome and included.",
+      "quiz": null
+    },
+    {
+      "id": "04-stableford",
+      "title": "Stableford scoring",
+      "file": "pages/04-stableford.md",
+      "type": "content",
+      "assetFile": "stableford.png",
+      "imageAlt": "An illustrated example of a simple junior golf Stableford score grid with smiling children playing on a friendly course.",
+      "imagePrompt": "A photorealistic educational image showing a simple grid of golf holes with coloured points for Stableford scoring, with a few cheerful children playing on a gentle, sunny golf course in the background. No text, no brand names.",
+      "markdown": "# Stableford scoring\n\nOne popular way for juniors to play is the “Stableford” scoring system. With Stableford, you earn points at each hole based on how many strokes you take. The fewer shots you need, the more points you get! If you have a high-scoring hole, you simply move to the next one without feeling down—this helps keep things positive.\n\nHere’s the basic idea:\n\n- You start each hole trying to get the ball in with as few shots as you can.\n- After each hole, you check a simple table to see how many points you earned for your score.\n- For most junior events, if you take a lot of shots and can't finish the hole, you can pick up your ball and write ‘0’ points. No need to feel bad—everyone has tough holes sometimes!\n\nStableford is great because it rewards good holes and helps beginners stay cheerful. If you’re not sure how many points you earned, just check with a helper or coach. Soon you’ll get the hang of it!",
+      "quiz": null
+    },
+    {
+      "id": "90-quick-check",
+      "title": "Quick check",
+      "file": "pages/90-quick-check.md",
+      "type": "quiz",
+      "assetFile": "quick-check.png",
+      "imageAlt": "A child holds up a pencil, smiling next to a parent, with a completed golf scorecard on a table outdoors.",
+      "imagePrompt": "Photorealistic image of a child and a parent sitting at an outdoor table at a golf course, the child holding up a pencil in celebration and a completed scorecard on the table. The atmosphere is cheerful and relaxed, with green fairways in the background. No text or logos.",
+      "markdown": "# Quick check\n\nLet’s quickly check what you’ve learned about scoring and competitions in junior golf. These questions are just for practice—have a go, and don’t worry if you’re not sure of every answer!",
+      "quiz": {
+        "questions": [
+          {
+            "question": "What do you call it each time you hit the ball in golf?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "A swing"
+              },
+              {
+                "id": "b",
+                "text": "A stroke"
+              },
+              {
+                "id": "c",
+                "text": "A turn"
+              },
+              {
+                "id": "d",
+                "text": "A round"
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "Each time you hit the ball, whether you make contact or not, it counts as a stroke."
+          },
+          {
+            "question": "What is a scorecard used for?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Storing golf balls"
+              },
+              {
+                "id": "b",
+                "text": "Marking the flag"
+              },
+              {
+                "id": "c",
+                "text": "Recording your strokes"
+              },
+              {
+                "id": "d",
+                "text": "Cleaning your clubs"
+              }
+            ],
+            "correctAnswer": "c",
+            "explanation": "A scorecard is for writing down the number of strokes you take on each hole."
+          },
+          {
+            "question": "If you miss the ball when you swing, does it still count as a stroke?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Yes"
+              },
+              {
+                "id": "b",
+                "text": "No"
+              },
+              {
+                "id": "c",
+                "text": "Only if someone sees"
+              },
+              {
+                "id": "d",
+                "text": "Only on the last hole"
+              }
+            ],
+            "correctAnswer": "a",
+            "explanation": "Every attempt to hit the ball counts as a stroke, even if you miss."
+          },
+          {
+            "question": "In a Stableford scoring game, what should you do if you take lots of shots on one hole?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Keep going forever"
+              },
+              {
+                "id": "b",
+                "text": "Feel upset"
+              },
+              {
+                "id": "c",
+                "text": "Pick up your ball and move on"
+              },
+              {
+                "id": "d",
+                "text": "Start again from the tee"
+              }
+            ],
+            "correctAnswer": "c",
+            "explanation": "If you can't finish a hole in a reasonable number of shots in Stableford, just pick up the ball, record zero points and move on. This helps everyone enjoy the round."
+          },
+          {
+            "question": "Are parents allowed to play for their children in a competition?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Yes, always"
+              },
+              {
+                "id": "b",
+                "text": "No, but they can offer encouragement"
+              },
+              {
+                "id": "c",
+                "text": "Only on the putting green"
+              },
+              {
+                "id": "d",
+                "text": "Yes, but only if they are good at golf"
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "Parents cannot play for their children, but positive encouragement is always welcome."
+          }
+        ]
+      }
+    }
+  ]
+}

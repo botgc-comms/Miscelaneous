@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\018_002_What_if_the_provisional_ball_is_in_a_better_spot\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:00:23.399Z",
+  "title": "What if the provisional ball is in a better spot?",
+  "ruleNumber": "R18",
+  "ruleName": "Provisional Balls",
+  "durationSeconds": 207.599
+}

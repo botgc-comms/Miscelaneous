@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-30.png",
+  "ruleNumber": "R18",
+  "ruleName": "Out of bounds and provisional ball",
+  "group": "Out of bounds and provisional ball",
+  "title": "When is a ball out of bounds?",
+  "question": "Which of these situations means your ball is out of bounds?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "The entire ball is over the line made by the out of bounds posts."
+    },
+    {
+      "id": "b",
+      "text": "Part of the ball is still on the course side of the line marked by the out of bounds posts."
+    },
+    {
+      "id": "c",
+      "text": "The ball is touching an out of bounds post but most of it is still on the course side."
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "A ball is only out of bounds if its entire location is over the line defined by the out of bounds (white) posts. If any part of the ball is in bounds, it is not out of bounds.",
+  "imagePrompt": "A teenage girl golfer stands near a white post on the edge of the fairway, carefully checking if her golf ball is fully sitting past the imaginary line made by the posts.",
+  "imageAlt": "Teen girl golfer checking if her ball is completely out of bounds beyond a white post at the edge of a fairway.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "white",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "navy",
+    "clothingBottomColour": "black",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [],
+    "repairPrompt": "No major corrections necessary. Maintain the accurate depiction of a single realistic golf ball, a believable iron club, correct posture, white stakes, navy top, black shorts, and an authentic fairway setting with light-skinned white teenage girl."
+  }
+}

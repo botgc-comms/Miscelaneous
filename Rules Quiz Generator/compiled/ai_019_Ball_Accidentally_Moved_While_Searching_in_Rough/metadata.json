@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "7.4",
+  "ruleName": "Ball Accidentally Moved in Trying to Find or Identify It",
+  "group": "Ball Search",
+  "type": "multiple_choice",
+  "imagePrompt": "A modern, semi-realistic (about 75% realistic, 25% stylised) illustration in a junior golf quiz style. Show a golfer searching in thick, long rough beside a fairway, depicted bending over and focused on the ground. The player's foot has just accidentally kicked a golf ball, which is visibly rolling away through the grass. The rough should look dense and somewhat challenging. The atmosphere is daylight and the golfer wears standard golf attire. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer in golf clothes is searching for their ball in thick rough. The golf ball is rolling away after being accidentally kicked by the player's foot.",
+  "sceneSpec": {
+    "setting": "Long rough area beside a fairway on a golf course, with thick grass and some patches of wildflowers and weeds, under daylight conditions.",
+    "players": "One player searching through the rough, wearing a golf glove, golf attire and cap, body posture bent over and clearly searching with a focused expression.",
+    "ballPosition": "Golf ball has just been accidentally kicked by the player’s foot and is rolling away through the rough, several feet from the player’s searching position.",
+    "ruleMoment": "Moment after the ball has clearly begun to move due to being kicked while searching, before it has come to rest at a new spot.",
+    "educationalFocus": "Accidental movement of the ball by the player during search, highlighting the requirement to replace the ball without penalty.",
+    "mustShow": [
+      "Player in the act of searching the thick rough",
+      "Golf ball clearly in motion after being lightly kicked by the player",
+      "Thick, realistic rough showing how easily the ball can be lost"
+    ],
+    "mustNotShow": [
+      "Golf clubs in hand",
+      "Tee box, putting green or bunker",
+      "Any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles",
+      "Multiple golf balls"
+    ]
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Finding Your Ball in Long Grass",
+      "question": "You are looking for your ball in the long grass. By mistake, you kick it and it rolls a little way. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You get one shot added and play your ball from where it rolled to."
+        },
+        {
+          "id": "b",
+          "text": "You get a big penalty and must put the ball back where it was."
+        },
+        {
+          "id": "c",
+          "text": "You do not get a penalty. You must put your ball back where it was before it moved."
+        },
+        {
+          "id": "d",
+          "text": "You do not get a penalty. You play your ball from where it now rests."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "If you move your ball by accident when looking for it, you do not get a penalty. Just put your ball back where it was before you touched it. If you don’t know the exact spot, guess the best you can and put your ball there.",
+      "vocabulary": [
+        {
+          "term": "rough",
+          "simpleMeaning": "The long grass by the side of the fairway."
+        },
+        {
+          "term": "penalty",
+          "simpleMeaning": "Extra shots you have to add to your score if you break a rule."
+        },
+        {
+          "term": "replace",
+          "simpleMeaning": "Put the ball back on the spot where it was before."
+        }
+      ],
+      "teachingTip": "Let children try searching for a ball in long grass. Show what happens if they accidentally move it, and practise replacing the ball to the right spot.",
+      "likelyMisconceptions": [
+        "Some may think you always get a penalty if you move your ball.",
+        "Some may think you should play the ball from where it rolled to."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Ball Accidentally Moved While Searching in Rough",
+      "question": "While searching for your ball in long rough, you accidentally kick it and it rolls a few feet. What is the correct ruling?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You receive a one-stroke penalty and must play the ball from its new position."
+        },
+        {
+          "id": "b",
+          "text": "You receive the general penalty and must replace the ball."
+        },
+        {
+          "id": "c",
+          "text": "There is no penalty. You must replace the ball on its original spot."
+        },
+        {
+          "id": "d",
+          "text": "There is no penalty. You play the ball from where it came to rest."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "Accidentally moving your ball while searching for it is an exception under the Rules. There is no penalty, but you must replace the ball on its original spot before playing. If the exact spot is not known, it must be estimated and the ball replaced there. (Rule 7.4)"
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "ai_019_Ball_Accidentally_Moved_While_Searching_in_Rough",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-06-26T20:03:53.998Z"
+  }
+}

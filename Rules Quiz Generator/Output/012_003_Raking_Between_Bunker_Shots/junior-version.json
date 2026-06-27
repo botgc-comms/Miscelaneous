@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\012_003_Raking_Between_Bunker_Shots\\metadata.json",
+  "sourceImageName": "page-23.png",
+  "ruleNumber": "R12",
+  "ruleName": "Ball stays in bunker",
+  "title": "Raking Between Bunker Shots",
+  "question": "If your ball stays in the same bunker after your first shot, can you rake away footprints or disturbed sand from your previous shot before you play your next stroke?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, and you can ground your club behind the ball too"
+    },
+    {
+      "id": "b",
+      "text": "No, you aren’t allowed to touch the sand at all"
+    },
+    {
+      "id": "c",
+      "text": "Yes, but you still can't ground your club behind the ball or during a practice swing"
+    },
+    {
+      "id": "d",
+      "text": "No, you must leave the sand as it is and play your next shot"
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "You may rake the sand to care for the course, but you still can't ground your club behind the ball or touch the sand during your stance or a practice swing.",
+  "juniorVersion": {
+    "title": "Cleaning Up Sand in the Bunker Before Your Next Shot",
+    "question": "After you hit a shot in a bunker and your ball stays in the bunker, can you use a rake to smooth out your footprints before hitting again?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Yes, and you can also rest your club on the sand behind your ball."
+      },
+      {
+        "id": "b",
+        "text": "No, you cannot touch the sand at all."
+      },
+      {
+        "id": "c",
+        "text": "Yes, but you still cannot rest your club on the sand behind your ball or touch the sand on practice swings."
+      },
+      {
+        "id": "d",
+        "text": "No, you must leave the sand messy and play your next shot."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "You are allowed to rake the sand to smooth your footprints, but you cannot put your club down on the sand right behind your ball or touch the sand when practising your swing.",
+    "vocabulary": [
+      {
+        "term": "Bunker",
+        "simpleMeaning": "A sandy area on the golf course, sometimes called a sand trap."
+      },
+      {
+        "term": "Rake",
+        "simpleMeaning": "A tool with a long handle and teeth for smoothing out the sand."
+      },
+      {
+        "term": "Ground your club",
+        "simpleMeaning": "Resting your club on the sand behind your ball."
+      }
+    ],
+    "teachingTip": "Show juniors how to use the rake after a shot and remind them about keeping the club above the sand before hitting.",
+    "likelyMisconceptions": [
+      "Some might think they can rest the club on the sand behind the ball after raking.",
+      "Some might think they can't touch the sand at all, even to care for the course."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:24.730Z",
+  "model": "gpt-4.1"
+}

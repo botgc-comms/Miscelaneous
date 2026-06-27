@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_007_How_Long_May_You_Search_for_a_Ball\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "18.2a(1)",
+  "ruleName": "Ball Lost or Out of Bounds: Stroke-and-Distance Relief",
+  "title": "How Long May You Search for a Ball?",
+  "question": "Your tee shot disappears into long rough. You and your playing partners begin searching for the ball. How long are you allowed to search before the ball is officially lost?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "2 minutes."
+    },
+    {
+      "id": "b",
+      "text": "3 minutes."
+    },
+    {
+      "id": "c",
+      "text": "5 minutes."
+    },
+    {
+      "id": "d",
+      "text": "As long as you keep up with the group in front."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "A player has 3 minutes to search for a ball. The search time begins when the player or their caddie starts searching for it, not when the ball was played. If the ball is not found and identified within those 3 minutes, it is lost, and the player must proceed under stroke and distance unless another Rule applies. (Rule 18.2a(1))",
+  "juniorVersion": {
+    "title": "How Long Can You Look for Your Golf Ball?",
+    "question": "You hit your ball into tall grass and can't see it. You and your friends start looking for it. How many minutes can you look before your ball is called lost?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "2 minutes."
+      },
+      {
+        "id": "b",
+        "text": "3 minutes."
+      },
+      {
+        "id": "c",
+        "text": "5 minutes."
+      },
+      {
+        "id": "d",
+        "text": "You can look as long as you don’t slow down the group in front."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "You get 3 minutes to look for your ball. The timer starts when you or your friends begin to search. If you do not find it in 3 minutes, your ball is lost.",
+    "vocabulary": [
+      {
+        "term": "Lost ball",
+        "simpleMeaning": "A ‘lost ball’ means you couldn’t find your ball within the allowed time."
+      },
+      {
+        "term": "Out of bounds",
+        "simpleMeaning": "A ball that is outside the course, like over a fence or beyond white stakes."
+      },
+      {
+        "term": "Stroke-and-distance",
+        "simpleMeaning": "If your ball is lost, you must play a new ball from where you last hit with a one-shot penalty."
+      }
+    ],
+    "teachingTip": "Draw a clock showing 3 minutes to help children remember how long they can search.",
+    "likelyMisconceptions": [
+      "Some children might think they have 5 minutes to search because that used to be the rule.",
+      "Some might think they can search longer if no one is waiting."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T16:53:50.297Z",
+  "model": "gpt-4.1"
+}

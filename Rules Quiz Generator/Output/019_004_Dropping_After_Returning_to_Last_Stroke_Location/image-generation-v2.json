@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\019_004_Dropping_After_Returning_to_Last_Stroke_Location\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:06:23.656Z",
+  "title": "Dropping After Returning to Last Stroke Location",
+  "ruleNumber": "R19",
+  "ruleName": "Unplayable ball",
+  "durationSeconds": 180.97
+}

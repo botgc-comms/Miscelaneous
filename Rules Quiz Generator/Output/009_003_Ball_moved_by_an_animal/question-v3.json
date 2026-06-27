@@ -1,0 +1,59 @@
+{
+  "generatedAtUtc": "2026-06-26T11:22:49.175Z",
+  "model": "gpt-4.1",
+  "reviewerInstructions": "It should be reworded to a seagull moves your ball",
+  "sourceMetadataPath": "output\\009_003_Ball_moved_by_an_animal\\metadata.json",
+  "sourceQuestionPath": "output\\009_003_Ball_moved_by_an_animal\\question-v2.json",
+  "original": {
+    "title": "Ball moved by a seagull",
+    "question": "A seagull lands on the fairway and moves your ball from its spot. What should you do under the Rules?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Play the ball from where it stopped"
+      },
+      {
+        "id": "b",
+        "text": "Put the ball back where it was with no penalty"
+      },
+      {
+        "id": "c",
+        "text": "Add a penalty and put the ball back"
+      },
+      {
+        "id": "d",
+        "text": "Play your previous shot again"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If your ball at rest is moved by an outside influence, like a seagull, you must put it back where it was with no penalty."
+  },
+  "suggestion": {
+    "title": "Ball moved by a seagull",
+    "question": "A seagull moves your ball from its spot on the fairway. What should you do under the Rules?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Play the ball from where it stopped"
+      },
+      {
+        "id": "b",
+        "text": "Replace the ball where it was with no penalty"
+      },
+      {
+        "id": "c",
+        "text": "Add a penalty and replace the ball"
+      },
+      {
+        "id": "d",
+        "text": "Play your previous shot again"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If your ball at rest is moved by an outside influence, such as a seagull, you must replace it on its original spot with no penalty."
+  }
+}

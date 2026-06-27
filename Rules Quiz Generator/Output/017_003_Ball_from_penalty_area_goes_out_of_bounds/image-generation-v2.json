@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\017_003_Ball_from_penalty_area_goes_out_of_bounds\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:53:49.352Z",
+  "title": "Ball from penalty area goes out of bounds",
+  "ruleNumber": "R17",
+  "ruleName": "Penalty area – Ball out of bounds or lost",
+  "durationSeconds": 207.667
+}

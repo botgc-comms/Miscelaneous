@@ -1,0 +1,469 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-11.png",
+  "sourceImagePath": "Input\\pageb-11.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-11.png",
+      "ruleNumber": "R16",
+      "ruleName": "Double green",
+      "group": "Double green",
+      "title": "Relief from wrong hole on a double green",
+      "question": "Your ball lands on a double green, but the wrong hole is between your ball and the correct hole. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play around the wrong hole as it lies."
+        },
+        {
+          "id": "b",
+          "text": "Move your ball so the wrong hole is no longer in your way, without penalty."
+        },
+        {
+          "id": "c",
+          "text": "Pick up the ball and start the hole again."
+        },
+        {
+          "id": "d",
+          "text": "Ask your opponent to move their ball."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If the wrong hole is blocking your play, you can place your ball at the nearest point where it's no longer in your way, with no penalty.",
+      "imagePrompt": "A golfer on a big green with two holes, moving their ball sideways to avoid a hole that blocks their path to the flag.",
+      "imageAlt": "Girl golfer on a double green, moving ball to avoid a wrong hole.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "dark",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "white",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-11.png",
+      "ruleNumber": "R3/9",
+      "ruleName": "Putt conceded/ball not holed",
+      "group": "Putt conceded/ball not holed",
+      "title": "Conceding putts in stroke play",
+      "question": "In stroke play, if a player picks up their ball before holing out, what must happen?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "They are allowed to record their last stroke and move on."
+        },
+        {
+          "id": "b",
+          "text": "They must put the ball back with 1 penalty stroke and finish the hole."
+        },
+        {
+          "id": "c",
+          "text": "They receive 2 penalty strokes automatically."
+        },
+        {
+          "id": "d",
+          "text": "They must restart the hole."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If a player picks up their ball early in stroke play, they must put it back, add a penalty stroke, and finish the hole.",
+      "imagePrompt": "A teenage boy golfer picks up the ball next to the hole before finishing, looking confused.",
+      "imageAlt": "Boy picking up golf ball before holing out.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "lifting_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "dark",
+        "clothingTopColour": "black",
+        "clothingBottomColour": "white",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-11.png",
+      "ruleNumber": "R10",
+      "ruleName": "Protection from the elements",
+      "group": "Protection from the elements",
+      "title": "Umbrellas and outside help while putting",
+      "question": "During a putt, can another person hold an umbrella for a player to shield them from the rain?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, it is always allowed."
+        },
+        {
+          "id": "b",
+          "text": "No, only the player can hold their own umbrella while playing."
+        },
+        {
+          "id": "c",
+          "text": "Yes, but only if both players agree."
+        },
+        {
+          "id": "d",
+          "text": "No, umbrellas are never allowed on the green."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You can't have someone else hold an umbrella for you while playing a stroke, but you can hold it yourself.",
+      "imagePrompt": "A girl golfer on the green preparing to putt, holding her own umbrella while it rains.",
+      "imageAlt": "Girl holding her own umbrella while putting.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "light",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "black",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-11.png",
+      "ruleNumber": "R5",
+      "ruleName": "Practice putting and chipping",
+      "group": "Practice putting and chipping",
+      "title": "Practising after finishing a hole",
+      "question": "You’ve finished the hole. Can you stay and practise putting or chipping on the green, and is there any place you can’t practise from?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, you can putt again for practice."
+        },
+        {
+          "id": "b",
+          "text": "Yes, you can chip again for practice."
+        },
+        {
+          "id": "c",
+          "text": "No, you can’t practise from a bunker."
+        },
+        {
+          "id": "d",
+          "text": "Yes, you can practise from a bunker."
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "c"
+      ],
+      "explanation": "You may putt or chip again for practice unless it’s banned by Local Rules, but you can’t play practice shots from a bunker.",
+      "imagePrompt": "A boy practising putts on the green near the flag, a nearby bunker left alone.",
+      "imageAlt": "Boy practising putts on a green with bunker nearby.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "medium",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "black",
+        "hat": false
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-11.png",
+      "ruleNumber": "R16",
+      "ruleName": "Double green",
+      "group": "Double green",
+      "title": "Relief from wrong hole on a double green",
+      "question": "Your ball comes to rest on a double green, but the wrong hole is directly in the line between your ball and the correct hole. What are you allowed to do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play your shot as it lies, even if the hole is in the way."
+        },
+        {
+          "id": "b",
+          "text": "Take free relief by moving your ball sideways, no closer to the hole, so the wrong hole isn't in your way."
+        },
+        {
+          "id": "c",
+          "text": "Pick up your ball and replay your last stroke."
+        },
+        {
+          "id": "d",
+          "text": "Ask another player to cover the wrong hole."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You're allowed free relief if the other hole interferes with your line. Place your ball at the nearest spot, not closer to the hole, where the wrong hole doesn't interfere.",
+      "imagePrompt": "A teenage boy golfer on a double green, placing his ball sideways away from a second hole that blocks his path to the flag.",
+      "imageAlt": "Boy golfer on a double green, moving his ball away from the wrong hole.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "light",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "red",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-11.png",
+      "ruleNumber": "R3/9",
+      "ruleName": "Putt conceded/ball not holed",
+      "group": "Putt conceded/ball not holed",
+      "title": "Conceding putts in stroke play",
+      "question": "In stroke play, what happens if a player picks up their ball before holing out, thinking their score is already made?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Their score for the hole is finished as it stands."
+        },
+        {
+          "id": "b",
+          "text": "They must replace the ball, add one penalty stroke, and finish the hole."
+        },
+        {
+          "id": "c",
+          "text": "They get a two-stroke penalty but do not replay the shot."
+        },
+        {
+          "id": "d",
+          "text": "They are disqualified from the competition."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "In stroke play, you must finish out the hole. If you pick up your ball before finishing, you need to put it back, add a penalty stroke, and finish the hole.",
+      "imagePrompt": "A teenage boy golfer on the green, looking uncertain as he picks up his ball before holing out.",
+      "imageAlt": "Boy picking up golf ball before finishing the putt.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "lifting_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "medium",
+        "clothingTopColour": "orange",
+        "clothingBottomColour": "yellow",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-11.png",
+      "ruleNumber": "R10",
+      "ruleName": "Protection from the elements",
+      "group": "Protection from the elements",
+      "title": "Umbrellas and outside help while putting",
+      "question": "While you putt, can someone else hold an umbrella over you to protect you from rain?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, anyone can hold an umbrella for you while you play."
+        },
+        {
+          "id": "b",
+          "text": "No, only you can hold your umbrella while playing a stroke."
+        },
+        {
+          "id": "c",
+          "text": "Only your caddie can hold it for you."
+        },
+        {
+          "id": "d",
+          "text": "Umbrellas aren't allowed on the course at all."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "Only the player is allowed to hold their umbrella during a stroke. Nobody else can shield you from the elements.",
+      "imagePrompt": "Teenage boy golfer on the green, holding his own umbrella while preparing to putt in light rain.",
+      "imageAlt": "Boy holding his own umbrella while putting.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "purple",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-11.png",
+      "ruleNumber": "R5",
+      "ruleName": "Practice putting and chipping",
+      "group": "Practice putting and chipping",
+      "title": "Practising after finishing a hole",
+      "question": "After finishing a hole, which types of practice are allowed on the green, and where are you not allowed to practise from?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Practising extra putts on the green."
+        },
+        {
+          "id": "b",
+          "text": "Practising extra chips on or just beside the green."
+        },
+        {
+          "id": "c",
+          "text": "Playing practice shots from a bunker beside the green."
+        },
+        {
+          "id": "d",
+          "text": "Practising putts or chips unless banned by Local Rules."
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "d"
+      ],
+      "explanation": "You may practise extra putts or chips on or near the putting green after completing a hole, unless local rules ban it. You can't practise from a bunker.",
+      "imagePrompt": "A boy golfer practising putts on a green after finishing the hole; a bunker can be seen nearby but is not used.",
+      "imageAlt": "Boy practising putts on a green with bunker nearby.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "light",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "white",
+        "hat": false
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "016_001_Relief_from_wrong_hole_on_a_double_green",
+    "039_002_Conceding_putts_in_stroke_play",
+    "010_003_Umbrellas_and_outside_help_while_putting",
+    "005_004_Practising_after_finishing_a_hole"
+  ],
+  "updatedAtUtc": "2026-04-25T00:08:24.748Z"
+}

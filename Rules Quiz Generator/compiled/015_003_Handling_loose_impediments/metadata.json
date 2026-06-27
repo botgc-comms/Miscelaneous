@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-20.png",
+  "ruleNumber": "R15",
+  "ruleName": "Loose impediments",
+  "group": "Loose impediments",
+  "type": "multi_select",
+  "imagePrompt": "A teen girl golfer on the fairway reaching down to remove leaves and twigs from around her golf ball, with trees in the background.",
+  "imageAlt": "A teen girl golfer removing leaves and twigs next to her ball on the fairway.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "overcast",
+    "prohibitedElements": [
+      "golf_cart",
+      "spectators",
+      "animals",
+      "extra balls",
+      "electronic devices",
+      "caddies",
+      "drink bottles",
+      "mobile phones",
+      "scorecards",
+      "rule books",
+      "benches",
+      "umbrellas"
+    ],
+    "ethnicity": "black",
+    "skinTone": "light",
+    "clothingTopColour": "purple",
+    "clothingBottomColour": "black",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "Golfer is depicted as left-handed and matches age, gender, and ethnicity specifications.",
+      "One believable iron club with a single, realistic club head is present, with natural shaft and grip proportions.",
+      "One realistic golf ball, clearly proportional and in correct position.",
+      "Clothing colors (purple top, black trousers), cap, and skin tone match prompt.",
+      "Fairway and trees match course setting; background is authentic.",
+      "No prohibited elements are present.",
+      "Posture is natural for the action of removing loose impediments."
+    ],
+    "repairPrompt": "No major repairs needed. To maximize educational clarity, ensure the club is clearly in the left hand and the golfer's left-handed stance is unmistakable."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What can you do with leaves and twigs near your ball?",
+      "question": "Your ball is on the short grass (fairway) and there are leaves and twigs right next to it. What can you do?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You can move the leaves and twigs, but be careful not to move your ball."
+        },
+        {
+          "id": "b",
+          "text": "If you move your ball by mistake while moving the leaves and twigs, you have to put it back and add one extra shot."
+        },
+        {
+          "id": "c",
+          "text": "You can just leave the leaves and twigs and play the ball as it is."
+        },
+        {
+          "id": "d",
+          "text": "You can clean your ball before your shot, even if you haven't marked it."
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "c"
+      ],
+      "correctAnswer": [
+        "a",
+        "b",
+        "c"
+      ],
+      "explanation": "You can take away leaves and twigs around your ball. If you move your ball while you do this, put it back and add one shot to your score. It’s also fine to just play the ball with the leaves and twigs there.",
+      "vocabulary": [
+        {
+          "term": "Fairway",
+          "simpleMeaning": "The short grass area between the tee and the green."
+        },
+        {
+          "term": "Loose impediments",
+          "simpleMeaning": "Small things like leaves or twigs on the ground that aren’t growing or stuck down."
+        }
+      ],
+      "teachingTip": "Show children how to gently move loose things like leaves around their ball using their fingers or a tee without making the ball roll.",
+      "likelyMisconceptions": [
+        "Some kids might think they will always get a penalty for touching leaves and twigs.",
+        "Some might think they can lift and clean the ball whenever they want, even if they didn’t mark it."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Handling loose impediments",
+      "question": "There are leaves and twigs right next to your ball on the fairway. What are your options?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Remove the leaves and twigs without penalty, as long as you don't move the ball."
+        },
+        {
+          "id": "b",
+          "text": "If your ball moves while removing them, put it back and take a 1-stroke penalty."
+        },
+        {
+          "id": "c",
+          "text": "Ignore the leaves and twigs and play your shot as it is."
+        },
+        {
+          "id": "d",
+          "text": "Clean your ball before playing, even if you haven't marked it."
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "c"
+      ],
+      "correctAnswer": [
+        "a",
+        "b",
+        "c"
+      ],
+      "explanation": "You can remove loose impediments like leaves and twigs, but if your ball moves while doing so you must replace it and take a 1-stroke penalty. You can also just choose to play as it lies."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "015_003_Handling_loose_impediments",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.861Z"
+  }
+}

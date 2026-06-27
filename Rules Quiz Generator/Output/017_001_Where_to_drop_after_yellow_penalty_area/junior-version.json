@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\017_001_Where_to_drop_after_yellow_penalty_area\\metadata.json",
+  "sourceImageName": "page-25.png",
+  "ruleNumber": "17",
+  "ruleName": "Penalty area rule",
+  "title": "Where to drop after yellow penalty area",
+  "question": "Your ball has gone into a yellow penalty area. Which of these is a correct place to drop your ball under the rules, with a one-stroke penalty?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "On a straight line, going as far back as you wish, keeping where your ball last crossed into the penalty area between you and the flag."
+    },
+    {
+      "id": "b",
+      "text": "Directly on the green, closest to the hole."
+    },
+    {
+      "id": "c",
+      "text": "Within one club-length in any direction from where your ball entered the penalty area, even if it's nearer the hole."
+    },
+    {
+      "id": "d",
+      "text": "Anywhere you like on the course."
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "For a yellow penalty area, you can drop on the line from the hole through the point where your ball last crossed into the penalty area, going as far back as you want, but not closer to the hole.",
+  "juniorVersion": {
+    "title": "Where to drop your ball after a yellow water hazard",
+    "question": "Your ball went into a yellow penalty area, like a pond. Where can you put another ball to keep playing, if you take a one-shot penalty?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Go back as far as you want in a straight line from the hole through the spot where your ball went into the water."
+      },
+      {
+        "id": "b",
+        "text": "Put your ball on the green, as close as possible to the hole."
+      },
+      {
+        "id": "c",
+        "text": "Drop your ball one club-length from where it went in, even if it’s closer to the hole."
+      },
+      {
+        "id": "d",
+        "text": "Place the ball wherever you want on the golf course."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "If your ball goes in a yellow penalty area, you can go back as far as you want in a straight line from the hole through where your ball last went into the water. But you cannot go closer to the hole.",
+    "vocabulary": [
+      {
+        "term": "Penalty area",
+        "simpleMeaning": "A part of the course with water, like a pond or a stream. If your ball goes in, you take a penalty stroke."
+      },
+      {
+        "term": "Yellow penalty area",
+        "simpleMeaning": "This is a penalty area marked with yellow stakes or lines. There are special ways you can drop your ball if it goes in here."
+      },
+      {
+        "term": "Drop",
+        "simpleMeaning": "To let go of your ball from knee height to start playing again after a penalty."
+      }
+    ],
+    "teachingTip": "Show how to find the straight line from the hole through the spot the ball went in, and walk back on that line to choose a dropping place.",
+    "likelyMisconceptions": [
+      "Thinking you can drop closer to the hole.",
+      "Thinking you can drop anywhere.",
+      "Thinking you can always drop right next to where the ball went in for a yellow penalty area."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:16.201Z",
+  "model": "gpt-4.1"
+}

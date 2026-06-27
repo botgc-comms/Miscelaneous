@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-17.png",
+  "ruleNumber": "R11",
+  "ruleName": "Ball hits an outside influence or the player",
+  "group": "Ball hits an outside influence or the player",
+  "type": "multi_select",
+  "imagePrompt": "A teen girl golfer on the fairway, with a golf trolley deliberately placed in the path of her next shot as she prepares to play, holding an iron club, with trees behind under an overcast sky.",
+  "imageAlt": "Teen girl golfer places a golf trolley as a ball stopper on the fairway.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "medium",
+    "clothingTopColour": "navy",
+    "clothingBottomColour": "grey",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 93,
+    "issues": [
+      "Golf trolley could be positioned even more obviously in the direct path of the shot to reinforce 'deliberately placed' intent.",
+      "Slightly more overcast sky could help reinforce the weather condition, but this is minor."
+    ],
+    "repairPrompt": "Position the golf trolley more directly in front of the golfer, clearly in the path of her next shot to emphasize the deliberate action. Make the sky appear a little more overcast to match the specified weather."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Stopping Your Ball On Purpose With Your Things",
+      "question": "When do you get a penalty for using your things to stop your ball while playing?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Your ball hits your bag by accident"
+        },
+        {
+          "id": "b",
+          "text": "You put your golf trolley in the way to stop your ball on purpose"
+        },
+        {
+          "id": "c",
+          "text": "Your ball hits another ball on the course"
+        },
+        {
+          "id": "d",
+          "text": "You put a headcover down to stop your ball from rolling away"
+        },
+        {
+          "id": "e",
+          "text": "Your ball hits a tree by accident"
+        }
+      ],
+      "correctAnswers": [
+        "b",
+        "d"
+      ],
+      "correctAnswer": [
+        "b",
+        "d"
+      ],
+      "explanation": "You get a penalty if you use anything, like a trolley or headcover, on purpose to stop your ball. If your ball hits your bag, another ball, or a tree by accident, there is no penalty.",
+      "vocabulary": [
+        {
+          "term": "Penalty",
+          "simpleMeaning": "Extra shots added to your score when you break a rule."
+        },
+        {
+          "term": "Equipment",
+          "simpleMeaning": "Things you use in golf, like your bag, clubs, trolleys, and headcovers."
+        },
+        {
+          "term": "Deliberately",
+          "simpleMeaning": "Doing something on purpose."
+        }
+      ],
+      "teachingTip": "Remind kids they should never try to stop their ball with objects or equipment on purpose, but accidents are okay.",
+      "likelyMisconceptions": [
+        "Kids might think hitting their own bag or equipment by accident is always a penalty.",
+        "Kids might think they can use objects to help stop their ball without a penalty."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Deliberately stopping your ball with equipment",
+      "question": "In which situations would you receive a penalty for equipment stopping your ball during play?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Your ball accidentally hits your own bag"
+        },
+        {
+          "id": "b",
+          "text": "You deliberately place a golf trolley to stop your ball"
+        },
+        {
+          "id": "c",
+          "text": "Your ball strikes another ball on the course"
+        },
+        {
+          "id": "d",
+          "text": "You purposely put a headcover to prevent your ball rolling away"
+        },
+        {
+          "id": "e",
+          "text": "The ball accidentally hits a tree"
+        }
+      ],
+      "correctAnswers": [
+        "b",
+        "d"
+      ],
+      "correctAnswer": [
+        "b",
+        "d"
+      ],
+      "explanation": "There is a penalty if you use equipment or objects on purpose to stop your ball. Accidents, like hitting your bag, another ball, or a tree, have no penalty."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "011_005_Deliberately_stopping_your_ball_with_equipment",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.650Z"
+  }
+}

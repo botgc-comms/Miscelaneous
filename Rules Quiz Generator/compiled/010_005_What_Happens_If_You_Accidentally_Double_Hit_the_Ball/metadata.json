@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-23.png",
+  "ruleNumber": "R10",
+  "ruleName": "Double hit",
+  "group": "Double hit",
+  "type": "multiple_choice",
+  "imagePrompt": "A teen girl reacts in surprise after realising she has accidentally double-hit the ball during her shot on the fairway.",
+  "imageAlt": "Teen girl golfer surprised after double-hitting the ball on the fairway.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "replaying_shot",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "dark",
+    "clothingTopColour": "grey",
+    "clothingBottomColour": "red",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 96,
+    "issues": [
+      "The golfer's handedness is slightly ambiguous; club held in right hand, but no clear left-handed swing posture is visible.",
+      "Golfer's 'replaying shot' action is not totally explicit, but scene intent is clear and surprise reaction fits the prompt."
+    ],
+    "repairPrompt": "Ensure the golfer's posture and golf club orientation clearly indicate a left-handed player preparing to replay the shot, with dominant use of the left hand. Emphasize authentic left-handed golf grip and stance."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "If You Accidentally Hit the Ball Twice in One Swing",
+      "question": "You swing your club and, by accident, hit the ball two times in one swing. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "It counts as two shots and you get a penalty"
+        },
+        {
+          "id": "b",
+          "text": "It counts as one shot and there is no penalty"
+        },
+        {
+          "id": "c",
+          "text": "You have to take your shot again from the same spot"
+        },
+        {
+          "id": "d",
+          "text": "It is one shot plus a penalty"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If you hit the ball twice by mistake, but only swung once, it only counts as one shot. You do not get a penalty.",
+      "vocabulary": [
+        {
+          "term": "Double hit",
+          "simpleMeaning": "Sometimes, the club touches the ball two times in one swing. This is called a double hit."
+        },
+        {
+          "term": "Stroke",
+          "simpleMeaning": "A stroke is when you try to hit the golf ball with your club."
+        }
+      ],
+      "teachingTip": "Let children practise swinging slowly so they understand how a double hit might happen, and that it's just counted as one shot if it was a single swing.",
+      "likelyMisconceptions": [
+        "Kids might think a double hit always means extra shots added.",
+        "Some may think they must go back and replay the shot."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "What Happens If You Accidentally Double-Hit the Ball?",
+      "question": "If you accidentally hit the ball twice in one swing, how is this counted?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "It counts as two strokes and you receive a penalty"
+        },
+        {
+          "id": "b",
+          "text": "It counts as one stroke and there is no penalty"
+        },
+        {
+          "id": "c",
+          "text": "You must replay the shot from where you started"
+        },
+        {
+          "id": "d",
+          "text": "It is one stroke plus a one-shot penalty"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If you accidentally double hit the ball in a single motion, it only counts as one stroke with no penalty."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "010_005_What_Happens_If_You_Accidentally_Double_Hit_the_Ball",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.569Z"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\016_003_Recognising_Ground_Under_Repair\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:47:11.795Z",
+  "title": "Recognising Ground Under Repair",
+  "ruleNumber": "16",
+  "ruleName": "Abnormal course conditions",
+  "durationSeconds": 233.659
+}

@@ -1,0 +1,582 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-07.png",
+  "sourceImagePath": "Input\\page-07.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-07.png",
+      "ruleNumber": "R6",
+      "ruleName": "Playing from the teeing area",
+      "group": "Playing from the teeing area",
+      "title": "Playing from the wrong teeing area",
+      "question": "If you play your ball from the wrong tee, which rule applies?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "It's fine as long as the shot was good."
+        },
+        {
+          "id": "b",
+          "text": "The same rule applies as when playing from outside the teeing area."
+        },
+        {
+          "id": "c",
+          "text": "You must retake the shot with no penalty."
+        },
+        {
+          "id": "d",
+          "text": "You get a prize for being creative."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If you play from the wrong tee, the same rule applies as when playing from outside the teeing area.",
+      "imagePrompt": "A teen golfer about to hit a shot from a teeing area, but standing on the wrong tee box with tee markers visible.",
+      "imageAlt": "A teen golfer preparing to play from the wrong teeing area.",
+      "sceneSpec": {
+        "setting": "teeing_area",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "light",
+        "clothingTopColour": "black",
+        "clothingBottomColour": "red",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-07.png",
+      "ruleNumber": "R6",
+      "ruleName": "Tee-markers",
+      "group": "Tee-markers",
+      "title": "Moving the tee-markers",
+      "question": "Before teeing off, can you move the tee-markers to make your shot easier?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, there is no penalty for moving them."
+        },
+        {
+          "id": "b",
+          "text": "No, it is a two stroke penalty if you move them to gain an advantage."
+        },
+        {
+          "id": "c",
+          "text": "Only if you ask your friends first."
+        },
+        {
+          "id": "d",
+          "text": "Yes, but only if it's raining."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "Moving tee-markers before teeing off to gain an advantage gets a 2 stroke penalty.",
+      "imagePrompt": "A teen girl golfer standing over a teeing area, with tee-markers clearly fixed in place and not being moved.",
+      "imageAlt": "A teen girl on the teeing ground with fixed tee-markers visible.",
+      "sceneSpec": {
+        "setting": "teeing_area",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "navy",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-07.png",
+      "ruleNumber": "R6/8/15",
+      "ruleName": "Relief",
+      "group": "Relief",
+      "title": "What can you do on the tee?",
+      "question": "Which of these actions are allowed when preparing to tee off? Select all that apply.",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Evening out uneven ground."
+        },
+        {
+          "id": "b",
+          "text": "Pulling up loose grass."
+        },
+        {
+          "id": "c",
+          "text": "Removing loose stones or twigs."
+        },
+        {
+          "id": "d",
+          "text": "Moving tee-markers apart."
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "c"
+      ],
+      "explanation": "You can smooth uneven ground, remove loose objects, and even pull up grass on the tee, but you cannot move tee-markers.",
+      "imagePrompt": "A teen boy golfer on the teeing area pulling out loose grass while preparing to tee off, with tee-markers visible in the background.",
+      "imageAlt": "Teen boy preparing to tee off by removing loose grass from the tee, tee-markers in view.",
+      "sceneSpec": {
+        "setting": "teeing_area",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "dark",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "orange",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-07.png",
+      "ruleNumber": "R6",
+      "ruleName": "Ball falls off the tee",
+      "group": "Ball falls off the tee",
+      "title": "What happens if your ball falls off the tee accidentally?",
+      "question": "If you accidentally knock the ball off the tee before your shot, what should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Count it as a stroke and play the ball from where it stops."
+        },
+        {
+          "id": "b",
+          "text": "Put the ball back on the tee with no penalty."
+        },
+        {
+          "id": "c",
+          "text": "Add two penalty strokes."
+        },
+        {
+          "id": "d",
+          "text": "Shout and leave the tee!"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If the ball is accidentally knocked off the tee before your shot, there is no penalty and you may tee it up again.",
+      "imagePrompt": "A teen boy with a driver accidentally knocking the ball off the tee while taking a practice swing in the teeing area.",
+      "imageAlt": "A teen golfer accidentally knocks their ball off the tee during a practice swing.",
+      "sceneSpec": {
+        "setting": "teeing_area",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "replaying_shot",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "dark",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "black",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-07.png",
+      "ruleNumber": "Def./R6",
+      "ruleName": "Air shot",
+      "group": "Air shot",
+      "title": "Does an air shot count as a stroke?",
+      "question": "If you swing at the ball and miss completely (an air shot), what happens?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "It does not count because you missed."
+        },
+        {
+          "id": "b",
+          "text": "It counts as a stroke."
+        },
+        {
+          "id": "c",
+          "text": "You must re-tee your ball without penalty."
+        },
+        {
+          "id": "d",
+          "text": "You get to try again for free but only once."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "Every swing at the ball, even if you miss, counts as a stroke.",
+      "imagePrompt": "A teen girl attempting a tee shot and missing the ball completely, the ball still on the tee.",
+      "imageAlt": "Teen girl makes an air shot, missing the golf ball on the tee.",
+      "sceneSpec": {
+        "setting": "teeing_area",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "black",
+        "clothingBottomColour": "orange",
+        "hat": true
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-07.png",
+      "ruleNumber": "R6",
+      "ruleName": "Playing from the teeing area",
+      "group": "Playing from the teeing area",
+      "title": "Playing from the wrong teeing area",
+      "question": "If you play your ball from the wrong teeing area, what is the correct ruling?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You can continue playing your ball with no penalty if the shot was good."
+        },
+        {
+          "id": "b",
+          "text": "You must cancel your shot and play again from the correct teeing area, with a penalty."
+        },
+        {
+          "id": "c",
+          "text": "You must retake the shot without any penalty."
+        },
+        {
+          "id": "d",
+          "text": "You receive a reward for being original."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If you play from the wrong teeing area, your shot does not count. In stroke play, you must cancel the shot, play from the correct teeing area, and add a two-stroke penalty.",
+      "imagePrompt": "A teen golfer stands on a teeing area, preparing to hit but obviously outside the area marked by two tee-markers.",
+      "imageAlt": "A teen golfer addressing a ball outside the proper teeing area, with tee-markers in view.",
+      "sceneSpec": {
+        "setting": "teeing_area",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "light",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "yellow",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-07.png",
+      "ruleNumber": "R6",
+      "ruleName": "Tee-markers",
+      "group": "Tee-markers",
+      "title": "Moving the tee-markers",
+      "question": "Is it allowed to move the tee-markers to improve your position before teeing off?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, there is no penalty for moving them."
+        },
+        {
+          "id": "b",
+          "text": "No, moving them to gain an advantage results in a two stroke penalty."
+        },
+        {
+          "id": "c",
+          "text": "Only if all players agree."
+        },
+        {
+          "id": "d",
+          "text": "Yes, but only if it is raining."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You must not move the tee-markers to improve your position. If you do, you receive a two-stroke penalty in stroke play.",
+      "imagePrompt": "A teen golfer prepares to tee off with two tee-markers clearly set in their original position, unmoved.",
+      "imageAlt": "A teen golfer on the teeing ground with unmoved tee-markers.",
+      "sceneSpec": {
+        "setting": "teeing_area",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "blue",
+        "clothingBottomColour": "orange",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-07.png",
+      "ruleNumber": "R6/8/15",
+      "ruleName": "Relief",
+      "group": "Relief",
+      "title": "What can you do on the tee?",
+      "question": "Which of these actions are allowed on the teeing area before your first shot? Select all that apply.",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Evening out uneven ground for a better stance."
+        },
+        {
+          "id": "b",
+          "text": "Pulling up loose grass that might affect your shot."
+        },
+        {
+          "id": "c",
+          "text": "Removing loose stones or twigs."
+        },
+        {
+          "id": "d",
+          "text": "Moving the tee-markers to change your starting spot."
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "c"
+      ],
+      "explanation": "You can prepare the surface by smoothing the ground and removing natural loose items like grass or twigs, but must never move the tee-markers.",
+      "imagePrompt": "A teen golfer on the teeing area, picking up a twig and pulling some loose grass, clearly within the correct area with untouched tee-markers.",
+      "imageAlt": "Teen golfer tidying grass and removing a twig on the tee with tee-markers visible.",
+      "sceneSpec": {
+        "setting": "teeing_area",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "green",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-07.png",
+      "ruleNumber": "R6",
+      "ruleName": "Ball falls off the tee",
+      "group": "Ball falls off the tee",
+      "title": "What happens if your ball falls off the tee accidentally?",
+      "question": "If you accidentally knock your ball off the tee before taking your shot, what is the correct thing to do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Count it as a stroke and play the ball from where it comes to rest."
+        },
+        {
+          "id": "b",
+          "text": "Simply put the ball back on the tee and play your shot with no penalty."
+        },
+        {
+          "id": "c",
+          "text": "Add two penalty strokes for knocking the ball."
+        },
+        {
+          "id": "d",
+          "text": "Leave the tee and ask for help."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If you accidentally make your ball fall off the tee before making a stroke, there is no penalty. You should just place the ball back on the tee and continue.",
+      "imagePrompt": "A teen golfer with a driver accidentally causing the ball to fall off the tee before their shot. The golfer looks surprised, about to replace the ball.",
+      "imageAlt": "A teen golfer about to replace their ball on the tee after accidentally knocking it off.",
+      "sceneSpec": {
+        "setting": "teeing_area",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "replaying_shot",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "medium",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "grey",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-07.png",
+      "ruleNumber": "Def./R6",
+      "ruleName": "Air shot",
+      "group": "Air shot",
+      "title": "Does an air shot count as a stroke?",
+      "question": "If you swing at your ball on the tee and miss completely, does it count as a stroke?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No, because you did not hit the ball."
+        },
+        {
+          "id": "b",
+          "text": "Yes, it counts as a stroke."
+        },
+        {
+          "id": "c",
+          "text": "You must re-tee your ball without penalty."
+        },
+        {
+          "id": "d",
+          "text": "You can try again for free, but only once."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "Whenever you make a swing at the ball with the intention of hitting it, even if you miss (an air shot), it counts as a stroke.",
+      "imagePrompt": "A teen golfer making a swing at a ball sitting on the tee but missing completely, the ball still in place.",
+      "imageAlt": "Teen golfer swings and misses the golf ball on the tee (air shot).",
+      "sceneSpec": {
+        "setting": "teeing_area",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "medium",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "black",
+        "hat": true
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "006_001_Playing_from_the_wrong_teeing_area",
+    "006_002_Moving_the_tee_markers",
+    "6815_003_What_can_you_do_on_the_tee",
+    "006_004_What_happens_if_your_ball_falls_off_the_tee_accidentally",
+    "006_005_Does_an_air_shot_count_as_a_stroke"
+  ],
+  "updatedAtUtc": "2026-04-24T19:43:41.559Z"
+}

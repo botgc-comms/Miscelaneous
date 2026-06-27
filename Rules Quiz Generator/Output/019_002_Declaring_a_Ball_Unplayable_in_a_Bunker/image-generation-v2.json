@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\019_002_Declaring_a_Ball_Unplayable_in_a_Bunker\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:03:38.791Z",
+  "title": "Declaring a Ball Unplayable in a Bunker",
+  "ruleNumber": "R19",
+  "ruleName": "Unplayable ball",
+  "durationSeconds": 176.802
+}

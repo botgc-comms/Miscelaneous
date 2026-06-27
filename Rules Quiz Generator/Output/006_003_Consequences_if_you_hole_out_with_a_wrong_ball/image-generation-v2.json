@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\006_003_Consequences_if_you_hole_out_with_a_wrong_ball\\metadata.json",
+  "generatedAtUtc": "2026-06-24T14:56:31.541Z",
+  "title": "Consequences if you hole out with a wrong ball",
+  "ruleNumber": "6",
+  "ruleName": "Wrong ball",
+  "durationSeconds": 176.881
+}

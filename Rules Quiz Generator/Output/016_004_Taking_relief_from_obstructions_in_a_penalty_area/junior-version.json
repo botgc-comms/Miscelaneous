@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\016_004_Taking_relief_from_obstructions_in_a_penalty_area\\metadata.json",
+  "sourceImageName": "page-28.png",
+  "ruleNumber": "R16",
+  "ruleName": "Abnormal course conditions",
+  "title": "Taking relief from obstructions in a penalty area",
+  "question": "Your ball is in a penalty area next to a bridge and a puddle. Which actions are allowed under the rules?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball as it lies"
+    },
+    {
+      "id": "b",
+      "text": "Take relief by dropping a ball outside the penalty area with a 1-stroke penalty"
+    },
+    {
+      "id": "c",
+      "text": "Take free relief from the bridge"
+    },
+    {
+      "id": "d",
+      "text": "Take free relief from the puddle"
+    }
+  ],
+  "correctAnswers": [
+    "a",
+    "b"
+  ],
+  "explanation": "When your ball is in a penalty area, free relief is not available from obstructions or temporary water. You may either play it as it lies or take penalty area relief for one penalty stroke.",
+  "juniorVersion": {
+    "title": "What can you do if your ball is in a penalty area near a bridge and a puddle?",
+    "question": "Your ball has landed in a penalty area, close to a bridge and a puddle. What are you allowed to do by the golf rules?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Hit your ball just how it is"
+      },
+      {
+        "id": "b",
+        "text": "You can drop a ball outside the penalty area but you get one penalty shot"
+      },
+      {
+        "id": "c",
+        "text": "You can move your ball off the bridge for free"
+      },
+      {
+        "id": "d",
+        "text": "You can move your ball away from the puddle for free"
+      }
+    ],
+    "correctAnswers": [
+      "a",
+      "b"
+    ],
+    "explanation": "If your ball is in a penalty area, like near water or a bridge, you can hit it just like it is or you can move it out with one extra shot. You can’t move the ball for free away from the bridge or puddle.",
+    "vocabulary": [
+      {
+        "term": "Penalty area",
+        "simpleMeaning": "A place on the golf course, like near water, marked with red or yellow lines or stakes, where special rules happen."
+      },
+      {
+        "term": "Obstruction",
+        "simpleMeaning": "Something made by people, like a bridge, not part of the natural golf course."
+      }
+    ],
+    "teachingTip": "Use markers or cones to show where penalty area lines are and let juniors practise choosing between playing from the spot or taking a drop with a penalty stroke.",
+    "likelyMisconceptions": [
+      "Kids might think they always get a free drop from puddles or bridges, but not if they're in a penalty area.",
+      "Some might forget that a penalty area has its own rules and think normal free relief always applies."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:11.312Z",
+  "model": "gpt-4.1"
+}

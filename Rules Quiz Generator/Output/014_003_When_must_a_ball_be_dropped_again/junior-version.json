@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\014_003_When_must_a_ball_be_dropped_again\\metadata.json",
+  "sourceImageName": "page-03.png",
+  "ruleNumber": "14",
+  "ruleName": "Dropping and re-dropping",
+  "title": "When must a ball be dropped again?",
+  "question": "If you drop the ball but it touches you or your equipment before hitting the ground, what must you do?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Drop the ball again"
+    },
+    {
+      "id": "b",
+      "text": "Play the ball as it lies"
+    },
+    {
+      "id": "c",
+      "text": "Add a penalty and play on"
+    },
+    {
+      "id": "d",
+      "text": "Ask a referee and wait"
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "If the dropped ball touches you or your equipment before hitting the ground, you must drop it again without penalty.",
+  "juniorVersion": {
+    "title": "When do you need to drop the ball again?",
+    "question": "You try to drop your ball, but it hits your leg or your bag before it hits the ground. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Drop the ball again"
+      },
+      {
+        "id": "b",
+        "text": "Play the ball where it is"
+      },
+      {
+        "id": "c",
+        "text": "Add a penalty and keep playing"
+      },
+      {
+        "id": "d",
+        "text": "Ask a referee and wait"
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "If your ball touches you or your things before it touches the ground, you have to drop it again. There is no penalty.",
+    "vocabulary": [
+      {
+        "term": "Drop",
+        "simpleMeaning": "Letting the ball fall from your hand at your knee so it can land and stop."
+      },
+      {
+        "term": "Equipment",
+        "simpleMeaning": "Things you use to play golf, like your clubs, bag, and trolley."
+      }
+    ],
+    "teachingTip": "Show children how to drop a ball from knee height and remind them to stand clear of their bag and feet.",
+    "likelyMisconceptions": [
+      "They might think they should keep playing if the ball touches them or their things.",
+      "They might think they get a penalty even if they drop again."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:44.082Z",
+  "model": "gpt-4.1"
+}

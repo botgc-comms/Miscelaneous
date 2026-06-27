@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\011_005_Deliberately_stopping_your_ball_with_equipment\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:21:40.822Z",
+  "title": "Deliberately stopping your ball with equipment",
+  "ruleNumber": "R11",
+  "ruleName": "Ball hits an outside influence or the player",
+  "durationSeconds": 179.042
+}

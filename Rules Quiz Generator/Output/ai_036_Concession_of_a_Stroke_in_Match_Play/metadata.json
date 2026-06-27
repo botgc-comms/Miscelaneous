@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "3.2b",
+  "ruleName": "Concessions",
+  "group": "Match Play",
+  "title": "Concession of a Stroke in Match Play",
+  "question": "In a match, after your opponent tells you, \"That's good,\" to concede your next putt, you decide to putt anyway, but you miss. What is the correct ruling?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "The missed putt counts, so you must hole out."
+    },
+    {
+      "id": "b",
+      "text": "You lose the hole because you played after the concession."
+    },
+    {
+      "id": "c",
+      "text": "The hole was already over. Your opponent's concession cannot be declined or withdrawn, so your next stroke does not count."
+    },
+    {
+      "id": "d",
+      "text": "You may choose whether to accept the concession after seeing whether the putt goes in."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "In match play, when your opponent concedes your next stroke, a hole or the match, the concession is immediately effective and cannot be refused or withdrawn. Any stroke played after the concession is irrelevant and does not count for the match. (Rule 3.2b)",
+  "imagePrompt": "Draw a polished, modern, semi-realistic (about 75% realistic, 25% stylised) illustration of a golf scene on the putting green during a match play round. Show two players: one golfer is near the hole with an open palm or friendly gesture (indicating a concession), while the other golfer is about to putt a short putt with their ball almost at the hole. The background should be a typical lush golf green. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards, or speech bubbles.",
+  "imageAlt": "A golfer prepares a short putt while their opponent stands near the hole gesturing concession on a golf green in match play.",
+  "sceneSpec": {
+    "setting": "Putting green of a golf hole during a match play round.",
+    "players": "Two golfers: one (the opponent) standing near the hole giving a gesture of concession, and one about to take a short putt.",
+    "ballPosition": "The ball of the player receiving the concession is close to the hole, on the putting green.",
+    "ruleMoment": "Moment after the opponent has gestured concession but before or as the player takes the unnecessary putt.",
+    "educationalFocus": "Demonstrate that once a putt is conceded in match play, any putt made afterwards does not count.",
+    "mustShow": [
+      "Player preparing for a short putt after clear gesture of concession by opponent",
+      "Opponent standing near the hole",
+      "Ball close to the hole on the green"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "packId": "when-things-go-wrong",
+  "title": "When things go wrong",
+  "audience": "Brand new junior golfers and non-golfing parents",
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "It happens to everyone",
+      "file": "pages/00-title.md",
+      "type": "content",
+      "assetFile": "title.png",
+      "imageAlt": "A reassuring scene of a junior golfer and parent smiling on a golf course after a missed shot.",
+      "imagePrompt": "A realistic photo of a smiling junior golfer and a supportive parent standing together on a golf course, both relaxed and cheerful after a shot that did not go as planned. Bright, open sky and lush green fairway in the background, celebrating effort rather than the result.",
+      "markdown": "# It happens to everyone\n\nEvery golfer, no matter their age or experience, faces difficult moments on the course. Balls sometimes get lost, a player might have a bad hole, play may be slow, or feelings of frustration can appear. This is completely normal!\n\nGolf is a game full of ups and downs. One round may feel easy, while the next can bring unexpected challenges. The important thing is not to feel alone or embarrassed when things don’t go perfectly. Even the greatest professionals have days where it feels like nothing is going right.\n\nThis simple guide will help you and your junior golfer know what to do when things don’t go as planned. You’ll find practical tips to support your child through tricky moments, making sure the game stays fun and positive.\n\nRemember, golf is about enjoying time together, learning, and having fun – not just about the score!",
+      "quiz": null
+    },
+    {
+      "id": "01-lost-balls",
+      "title": "Lost balls",
+      "file": "pages/01-lost-balls.md",
+      "type": "content",
+      "assetFile": "lost-balls.png",
+      "imageAlt": "A junior golfer and their parent searching for a golf ball in long grass with a sense of calm.",
+      "imagePrompt": "A photorealistic image of a junior golfer and a supportive adult calmly searching for a lost golf ball in long grass. The focus is on their patient expressions and careful looking, with golf bags nearby and a peaceful course atmosphere.",
+      "markdown": "# Lost balls\n\nLosing a golf ball happens to everyone—adults and children alike! It’s part of the game. Sometimes a ball goes into long grass, bushes, or even water. If this happens, try to stay calm.\n\nSpend a minute or two looking for the ball as a team. If you can’t find it, don’t worry. Let other players go ahead if they are waiting, and move on by using a new ball.\n\nOn busy golf courses, there’s often a rule called 'five minutes to search' (sometimes less). If the ball isn’t found in that time, it’s best to stop looking so the game can continue for everyone.\n\nParents, it’s helpful to remind juniors: it’s just a ball! Losing one does not mean a round is ruined. Having a few spare golf balls in your bag is all you really need. There’s no need to buy anything special.\n\nStay positive—sometimes the search adds adventure, and other times it’s simply time to move on. If you do find the ball, celebrate together!",
+      "quiz": null
+    },
+    {
+      "id": "02-bad-holes",
+      "title": "Bad holes",
+      "file": "pages/02-bad-holes.md",
+      "type": "content",
+      "assetFile": "bad-holes.png",
+      "imageAlt": "A junior golfer at the end of a hole, looking disappointed, with a parent giving a supportive pat on the back.",
+      "imagePrompt": "A realistic photo of a junior golfer with a slightly disappointed expression after a tough hole, with a kind parent offering a supportive pat on the back on the green. The background shows a calm golf course and another group playing cheerfully.",
+      "markdown": "# Bad holes\n\nEveryone has a bad hole now and again. Sometimes a shot goes wrong, a ball lands in a bunker (a sandy area), or it just takes many more shots to finish a hole than expected. This can feel frustrating, but remember—it happens to all golfers!\n\nOne tough hole doesn’t define your whole round. The next hole is a fresh start. Many experienced golfers simply 'forget' a bad hole and move on. This helps make the overall game more enjoyable.\n\nFor parents, it’s important to keep things positive. Praising good effort and attitude means much more than any particular score. You could say things like, “You did your best”, or “Let’s have a go at the next one!”\n\nIf your junior feels upset, remind them that learning from tricky shots is part of golf. Every missed shot helps them get better for next time.\n\nSmile, shake it off, and look forward to the next opportunity. Golf is about enjoying the entire day, not just one hole!",
+      "quiz": null
+    },
+    {
+      "id": "03-slow-play",
+      "title": "Slow play",
+      "file": "pages/03-slow-play.md",
+      "type": "content",
+      "assetFile": "slow-play.png",
+      "imageAlt": "A junior golfer and parent letting faster players go ahead on the golf course with friendly waves.",
+      "imagePrompt": "A photorealistic image of a junior golfer and their parent standing to the side of a golf fairway, smiling and waving as a faster group of players walks past. The scene is friendly, with a sunny golf course and relaxed atmosphere.",
+      "markdown": "# Slow play\n\nGolf is a sport where everyone shares the course, and sometimes play moves at different speeds. Sometimes, you may find your group is taking longer than others, especially with beginners.\n\nIf another group catches up behind you, it’s polite to let them ‘play through’. This means standing safely to the side and waving them on. Most people are grateful and will wave back with a thank you.\n\nThere are simple ways to help keep golf moving smoothly:\n\n- Be ready for your turn with your club, ball, and tee.\n- Walk briskly between shots.\n- Decide quickly which club to use.\n- Keep chit-chat to a minimum when it’s nearly your turn.\n\nParents, you don’t need to rush children, but encouraging gentle focus helps everyone have fun. If a round seems slow, enjoy a snack or chat while waiting.\n\nRemember: everyone was new once, and most golfers are happy to encourage beginners as long as the game keeps moving!",
+      "quiz": null
+    },
+    {
+      "id": "04-staying-calm",
+      "title": "Staying calm",
+      "file": "pages/04-staying-calm.md",
+      "type": "content",
+      "assetFile": "staying-calm.png",
+      "imageAlt": "A junior golfer taking a deep breath with a parent gently encouraging, both looking relaxed.",
+      "imagePrompt": "A realistic photo of a junior golfer standing on a green, pausing to take a deep breath with eyes closed while a supportive parent places a reassuring hand on their shoulder. The mood is peaceful, with a soft focus on the background of the golf course.",
+      "markdown": "# Staying calm\n\nGolf can bring out lots of feelings. When things go wrong, it’s easy to get upset or worried, but staying calm is the best skill you can learn.\n\nTake slow, deep breaths between shots. This helps the body relax and keeps your mind clear. Some golfers make a habit of pausing, breathing out, and then calmly moving onto the next shot. Count to five in your head if you need a moment.\n\nParents, being calm yourself is the best example to set. Speaking quietly, smiling, and showing patience helps children to relax, even after a tricky moment. Avoid showing frustration or rushing.\n\nIf your junior gets upset, let them know it’s okay to feel disappointed, but it can help to shake it off and try again. Golf is a game, and games should be fun!\n\nPractising calm habits on the golf course will help your child enjoy the sport for life—and it even helps adults too.",
+      "quiz": null
+    }
+  ]
+}

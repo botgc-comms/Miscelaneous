@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\018_001_Playing_a_second_ball_without_announcing_it_as_provisional\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:56:54.710Z",
+  "title": "Playing a second ball without announcing it as provisional",
+  "ruleNumber": "R18",
+  "ruleName": "Provisional Balls",
+  "durationSeconds": 194.921
+}

@@ -1,0 +1,5 @@
+﻿{
+  "text": [],
+  "allowText": true,
+  "notes": "There is an inscription on the cup. Show something in italics that suggests writing without actually using real words. there are 3 small shields on the base."
+}

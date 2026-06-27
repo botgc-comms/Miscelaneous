@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "8.1a",
+  "ruleName": "Actions That Improve Conditions Affecting the Stroke",
+  "group": "General Play",
+  "type": "multiple_choice",
+  "imagePrompt": "Create a polished, modern semi-realistic illustration (about 75% realistic, 25% stylised) in the established junior golf quiz style. The scene takes place on a lush golf course under clear skies. Show one golfer preparing to play a shot with their ball lying on grass close to a white out of bounds post, with the post clearly interfering with the player's swing. The post should look firmly in place. Do not show anyone moving or removing the post. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer stands about to play a shot with their ball lying close to a white out of bounds post that is obstructing their swing. The post is firmly planted in the ground, demonstrating that it cannot be moved.",
+  "sceneSpec": {
+    "setting": "A golf hole on a bright day with trimmed grass and a clear out of bounds line marked with white posts.",
+    "players": "One player in a standard golf outfit preparing to take a shot near the out of bounds post.",
+    "ballPosition": "A golf ball resting on grass close to a white out of bounds post, with the post obstructing the player's backswing.",
+    "ruleMoment": "The moment before the player attempts to play the shot, showing the challenge presented by the post.",
+    "educationalFocus": "Highlighting that out of bounds posts are boundary objects and must not be moved, even if they interfere with the player's swing.",
+    "mustShow": [
+      "A white out of bounds post firmly stuck in the ground",
+      "A golf ball close to the post",
+      "A player preparing to swing with the post interfering"
+    ],
+    "mustNotShow": [
+      "Any player or person moving or removing the post",
+      "Text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles"
+    ]
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Can You Move an Out of Bounds Post?",
+      "question": "Your ball stops next to a white out of bounds post. The post is in the way of your swing. Can you move the post so you can hit your ball?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, because it is man-made and you can move it."
+        },
+        {
+          "id": "b",
+          "text": "Yes, but only if you put it back after you play."
+        },
+        {
+          "id": "c",
+          "text": "No. Out of bounds posts are part of the course and must not be moved."
+        },
+        {
+          "id": "d",
+          "text": "Yes, but you must add one penalty shot."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "White out of bounds posts show the edge of the golf course. They are not just things you can move. You must not move or take away an out of bounds post to make your shot easier.",
+      "vocabulary": [
+        {
+          "term": "Out of bounds post",
+          "simpleMeaning": "A white post that shows where the golf course ends."
+        },
+        {
+          "term": "Boundary object",
+          "simpleMeaning": "Something like a post or fence that marks the edge of the course and cannot be moved."
+        }
+      ],
+      "teachingTip": "Remind juniors that out of bounds posts are not like sticks or stones. They are special and must stay in the ground.",
+      "likelyMisconceptions": [
+        "Some children might think it’s okay to move a post to help their swing.",
+        "Children may believe if they put the post back, it is allowed."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Can You Remove an Out of Bounds Post?",
+      "question": "Your ball comes to rest next to a white out of bounds post. The post is stopping you from making a full swing. Can you remove the post to play your shot?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, because it is an artificial object and therefore a movable obstruction."
+        },
+        {
+          "id": "b",
+          "text": "Yes, but only if you replace it before leaving the hole."
+        },
+        {
+          "id": "c",
+          "text": "No. Out of bounds posts are boundary objects and must not be moved to improve your shot."
+        },
+        {
+          "id": "d",
+          "text": "Yes, but you must add one penalty stroke."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "White out of bounds posts are boundary objects, not obstructions. Boundary objects are treated as fixed parts of the course and no free relief is available from them. Players must not move or remove a boundary object to improve the conditions affecting their stroke. Even if a boundary object is movable (such as a removable fence panel or gate), it is still treated as a boundary object when defining the course boundary and must not be moved. (Rule 8.1a and the Definition of Boundary Object)"
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "ai_003_Can_You_Remove_an_Out_of_Bounds_Post",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-06-26T20:03:53.881Z"
+  }
+}

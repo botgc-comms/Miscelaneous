@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\011_004_Objects_as_ball_stoppers\\metadata.json",
+  "sourceImageName": "pageb-14.png",
+  "ruleNumber": "11",
+  "ruleName": "Ball in motion intentionally deflected",
+  "title": "Objects as ball stoppers",
+  "question": "In which of these situations does it count as intentional deflection of a golf ball in motion?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "A person kicks the golf ball on purpose"
+    },
+    {
+      "id": "b",
+      "text": "A club dropped by accident blocks the ball"
+    },
+    {
+      "id": "c",
+      "text": "Someone puts a water bottle in the ball's path to stop it"
+    },
+    {
+      "id": "d",
+      "text": "The wind blows the ball in another direction"
+    }
+  ],
+  "correctAnswers": [
+    "a",
+    "c"
+  ],
+  "explanation": "Intentional actions, like kicking the ball or placing an object to stop it, count as intentional deflection. Accidents or natural influences like wind do not.",
+  "juniorVersion": {
+    "title": "Stopping a Moving Golf Ball",
+    "question": "Which of these mean someone tried to stop a moving golf ball on purpose?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "A person kicks the golf ball on purpose"
+      },
+      {
+        "id": "b",
+        "text": "A club that falls by mistake stops the ball"
+      },
+      {
+        "id": "c",
+        "text": "Someone puts a water bottle in front of the ball to make it stop"
+      },
+      {
+        "id": "d",
+        "text": "The wind blows the ball away"
+      }
+    ],
+    "correctAnswers": [
+      "a",
+      "c"
+    ],
+    "explanation": "It counts as stopping the ball on purpose if someone kicks it or puts something in the way. If it was an accident or something like wind, it doesn't count as on purpose.",
+    "vocabulary": [
+      {
+        "term": "Deflection",
+        "simpleMeaning": "When something makes the moving golf ball stop or change direction."
+      },
+      {
+        "term": "Intentional",
+        "simpleMeaning": "Doing something on purpose, not by accident."
+      }
+    ],
+    "teachingTip": "Ask children to think about what actions are done on purpose and what are just accidents or nature (like wind). Use simple props to show each example.",
+    "likelyMisconceptions": [
+      "Some children might think any object stopping the ball is always on purpose.",
+      "Children may confuse accidents (like dropping a club) with doing things on purpose."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:17.425Z",
+  "model": "gpt-4.1"
+}

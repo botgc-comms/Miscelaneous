@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-19.png",
+  "ruleNumber": "R7/14",
+  "ruleName": "Identifying the ball",
+  "group": "Bunker",
+  "title": "How do you check if a ball in a bunker is yours?",
+  "question": "You find a golf ball in a bunker but aren't sure if it belongs to you. What is the correct way to check if it's your ball?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Mark the spot, then lift the ball to check, and recreate the lie afterwards"
+    },
+    {
+      "id": "b",
+      "text": "Pick up the ball right away without marking"
+    },
+    {
+      "id": "c",
+      "text": "Clean the ball completely before checking"
+    },
+    {
+      "id": "d",
+      "text": "Leave it untouched and keep searching"
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "You must mark the exact spot, lift the ball for identification, and then recreate the lie as closely as possible before playing.",
+  "imagePrompt": "A teenage girl golfer marking a spot with a tee next to a golf ball in a bunker before lifting it to check if it's hers.",
+  "imageAlt": "A girl golfer marking the spot and carefully picking up her ball in a bunker.",
+  "sceneSpec": {
+    "setting": "bunker",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "lifting_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": true,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "black",
+    "clothingBottomColour": "blue",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "The golfer is not obviously left-handed, as there are no cues indicating handedness as none are required in the absence of a club."
+    ],
+    "repairPrompt": "Ensure the teenage girl golfer appears left-handed through visual cues, such as wearing a golf glove on her right hand or subtly indicating left-handedness, even when no club is present."
+  }
+}

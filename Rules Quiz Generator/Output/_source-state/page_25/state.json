@@ -1,0 +1,356 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-25.png",
+  "sourceImagePath": "Input\\page-25.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-25.png",
+      "ruleNumber": "17",
+      "ruleName": "Penalty area rule",
+      "group": "Penalty area rule",
+      "title": "Where to drop after yellow penalty area",
+      "question": "Your ball went into a yellow penalty area. Which of these is a correct place to drop your ball under the rules, with a one-stroke penalty?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Anywhere behind where the ball last crossed the edge of the penalty area, keeping that point between you and the hole."
+        },
+        {
+          "id": "b",
+          "text": "Directly on the green, closest to the hole."
+        },
+        {
+          "id": "c",
+          "text": "Within one club-length in any direction from the point where your ball entered the penalty area, even if it's nearer the hole."
+        },
+        {
+          "id": "d",
+          "text": "Anywhere on the course."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "For a yellow penalty area, you can drop as far back as you like on the line from the hole through where your ball last crossed the edge, with a one-stroke penalty.",
+      "imagePrompt": "A teenage girl golfer standing on the fairway, about to drop a ball on a straight line extending back from a water hazard marked by yellow stakes, keeping the point where the ball entered between her and the flag.",
+      "imageAlt": "Teen girl golfer preparing to drop a ball behind a yellow penalty area near water.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "dropping_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "yellow",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "grey",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-25.png",
+      "ruleNumber": "17",
+      "ruleName": "Penalty area rule",
+      "group": "Penalty area rule",
+      "title": "Returning to previous spot after water hazard",
+      "question": "If your shot goes into a yellow penalty area and you decide not to drop behind the hazard, what is your other main option?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You must play from where the ball lies in the penalty area."
+        },
+        {
+          "id": "b",
+          "text": "You can return to where you last hit the shot and play again, taking a one-stroke penalty."
+        },
+        {
+          "id": "c",
+          "text": "You may drop the ball on the green without penalty."
+        },
+        {
+          "id": "d",
+          "text": "You can only continue if you find your original ball."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You can go back to your last shot's spot, drop within one club-length (and even tee up if it's on the teeing ground), for a one-stroke penalty.",
+      "imagePrompt": "A teenage boy golfer standing in the fairway at the spot of his last shot near a water hazard with yellow stakes, preparing to drop a ball near his previous divot.",
+      "imageAlt": "Teen boy golfer preparing to drop a ball at his previous shot position after landing in a yellow penalty area.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "dropping_ball",
+        "clubInHand": "fairway_wood",
+        "ballCount": 1,
+        "stakeColour": "yellow",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "light",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "grey",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-25.png",
+      "ruleNumber": "17",
+      "ruleName": "Penalty area rule",
+      "group": "Penalty area rule",
+      "title": "Playing from a penalty area",
+      "question": "If your ball is inside a yellow penalty area, what can you do according to the rules?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball as it lies inside the penalty area."
+        },
+        {
+          "id": "b",
+          "text": "Drop back on the line outside the penalty area with a one-stroke penalty."
+        },
+        {
+          "id": "c",
+          "text": "Pick up your ball and place it anywhere on the course without penalty."
+        },
+        {
+          "id": "d",
+          "text": "Return to your last shot location and play from there with a one-stroke penalty."
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "d"
+      ],
+      "explanation": "You may play the ball as it lies, or use one of the relief options with a penalty stroke.",
+      "imagePrompt": "A teenage girl golfer standing in long grass with her ball sitting near water, yellow stakes visible, considering her options.",
+      "imageAlt": "Teen girl golfer looking at her ball inside a yellow penalty area.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "yellow",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "orange",
+        "hat": true
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-25.png",
+      "ruleNumber": "17",
+      "ruleName": "Penalty area rule",
+      "group": "Penalty area rule",
+      "title": "Where to drop after yellow penalty area",
+      "question": "Your ball has gone into a yellow penalty area. Which of these is a correct place to drop your ball under the rules, with a one-stroke penalty?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "On a straight line, going as far back as you wish, keeping where your ball last crossed into the penalty area between you and the flag."
+        },
+        {
+          "id": "b",
+          "text": "Directly on the green, closest to the hole."
+        },
+        {
+          "id": "c",
+          "text": "Within one club-length in any direction from where your ball entered the penalty area, even if it's nearer the hole."
+        },
+        {
+          "id": "d",
+          "text": "Anywhere you like on the course."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "For a yellow penalty area, you can drop on the line from the hole through the point where your ball last crossed into the penalty area, going as far back as you want, but not closer to the hole.",
+      "imagePrompt": "A teen girl golfer stands on the fairway, preparing to drop a ball on a straight line behind a yellow-staked water hazard, keeping the entry point between herself and the flag.",
+      "imageAlt": "Teen girl golfer preparing to drop a ball behind a yellow penalty area near water.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "dropping_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "yellow",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "medium",
+        "clothingTopColour": "orange",
+        "clothingBottomColour": "black",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-25.png",
+      "ruleNumber": "17",
+      "ruleName": "Penalty area rule",
+      "group": "Penalty area rule",
+      "title": "Returning to previous spot after water hazard",
+      "question": "If your shot ends up in a yellow penalty area and you don't want to drop behind the hazard, what other relief option do you have?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You must play the ball where it lies in the penalty area."
+        },
+        {
+          "id": "b",
+          "text": "You can go back to where you last played the shot and play again, taking a one-stroke penalty."
+        },
+        {
+          "id": "c",
+          "text": "You may drop the ball on the green without penalty."
+        },
+        {
+          "id": "d",
+          "text": "You can only keep playing if you find your original ball."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You can go back to the spot of your last shot and play again from there for a one-stroke penalty. If your previous shot was from the tee, you are allowed to tee up as well.",
+      "imagePrompt": "A teen boy golfer is on the fairway where he previously played a shot, preparing to drop a ball near his original divot with a water hazard and yellow stakes in the background.",
+      "imageAlt": "Teen boy golfer preparing to drop a ball at his previous shot location after landing in a yellow penalty area.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "dropping_ball",
+        "clubInHand": "fairway_wood",
+        "ballCount": 1,
+        "stakeColour": "yellow",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "grey",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-25.png",
+      "ruleNumber": "17",
+      "ruleName": "Penalty area rule",
+      "group": "Penalty area rule",
+      "title": "Options when your ball is in a yellow penalty area",
+      "question": "Your ball is inside a yellow penalty area. What are your options according to the rules?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball as it lies in the penalty area."
+        },
+        {
+          "id": "b",
+          "text": "Drop a ball back on the line outside the penalty area with a one-stroke penalty."
+        },
+        {
+          "id": "c",
+          "text": "Pick up your ball and place it anywhere you like on the course without penalty."
+        },
+        {
+          "id": "d",
+          "text": "Go back and play a shot again from your previous position with a one-stroke penalty."
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "d"
+      ],
+      "explanation": "You can play the ball as it lies, or take relief options for a one-stroke penalty: either drop back on the line behind the hazard or return to your previous shot position and replay.",
+      "imagePrompt": "A teen boy golfer stands on the edge of a yellow-staked water hazard, looking at his ball near the water and considering his next move.",
+      "imageAlt": "Teen boy golfer looking at his ball inside a yellow penalty area.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "yellow",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "light",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "black",
+        "hat": false
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "017_001_Where_to_drop_after_yellow_penalty_area",
+    "017_002_Returning_to_previous_spot_after_water_hazard",
+    "017_003_Options_when_your_ball_is_in_a_yellow_penalty_area"
+  ],
+  "updatedAtUtc": "2026-04-24T22:04:21.591Z"
+}

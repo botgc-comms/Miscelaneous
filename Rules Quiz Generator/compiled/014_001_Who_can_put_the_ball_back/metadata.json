@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "pageb-05.png",
+  "ruleNumber": "R14",
+  "ruleName": "Ball marked by another person",
+  "group": "Ball marked by another person",
+  "type": "multiple_choice",
+  "imagePrompt": "A teenage girl golfer on the putting green gestures to a friend who is picking up her marked golf ball to clean it.",
+  "imageAlt": "Teenage golfer having her ball marked and picked up by another player on the green.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "dark",
+    "clothingTopColour": "white",
+    "clothingBottomColour": "red",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": false,
+    "score": 65,
+    "issues": [
+      "Golfer is shown right-handed, not left-handed as specified",
+      "Marked ball is not clearly indicated (no visible marker under or near the ball)",
+      "Friend's action suggests picking up ball but marker positioning/action should be clearer",
+      "Putting green and putter are correct, scene proportions good",
+      "Only one golf ball is present, which is correct",
+      "Golfer's clothing and appearance match specification"
+    ],
+    "repairPrompt": "Show the golfer holding the putter in a left-handed position. Clearly depict the act of marking and lifting by showing a visible ball marker under or next to the ball as the friend lifts it. Make sure the golf ball is the only ball present. Keep the golfer's appearance, skin tone, and clothing as specified."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Who can put the ball back on the ground?",
+      "question": "If you ask a friend to pick up and mark your golf ball, who is allowed to put it back on the spot?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Only you, the owner of the ball"
+        },
+        {
+          "id": "b",
+          "text": "Only your friend who picked up the ball"
+        },
+        {
+          "id": "c",
+          "text": "You or your friend who picked up the ball"
+        },
+        {
+          "id": "d",
+          "text": "Anyone playing in your group"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "You or the friend who picked up your ball can put it back where it was. Both are allowed.",
+      "vocabulary": [
+        {
+          "term": "mark",
+          "simpleMeaning": "To put something small (like a coin or marker) behind your ball so you know where it was."
+        },
+        {
+          "term": "spot",
+          "simpleMeaning": "The exact place where your ball was before it got moved."
+        }
+      ],
+      "teachingTip": "Let children mark and replace each other's balls in practice, so they know both the player and helper can do it.",
+      "likelyMisconceptions": [
+        "Children might think only the person who owns the ball is allowed to put it back.",
+        "Children might think anyone in the group can put the ball back."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Who can put the ball back?",
+      "question": "If you ask another player to mark and lift your ball for you, who is allowed to put the ball back on its spot afterwards?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Only the player whose ball it is"
+        },
+        {
+          "id": "b",
+          "text": "Only the person who marked and picked up the ball"
+        },
+        {
+          "id": "c",
+          "text": "Either the player or the person who picked it up"
+        },
+        {
+          "id": "d",
+          "text": "Any player in the group"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "Either the person who marked and lifted the ball or the player themselves can put the ball back on its spot."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "014_001_Who_can_put_the_ball_back",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.791Z"
+  }
+}

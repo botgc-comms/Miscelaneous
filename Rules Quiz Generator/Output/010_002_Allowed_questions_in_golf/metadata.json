@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-20.png",
+  "ruleNumber": "R10",
+  "ruleName": "Advice and line of play",
+  "group": "Advice and line of play",
+  "title": "Allowed questions in golf",
+  "question": "If you can't see the flag from a bunker, which of these questions can you ask a friend without breaking the rules?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Is this the right club for the shot?"
+    },
+    {
+      "id": "b",
+      "text": "Where is the flag?"
+    },
+    {
+      "id": "c",
+      "text": "How should I play this shot?"
+    },
+    {
+      "id": "d",
+      "text": "Should I aim left or right?"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You are allowed to ask about distance or the location of the flag, but you cannot ask for advice about clubs, tactics, or where to aim.",
+  "imagePrompt": "A teen girl golfer in a bunker asking a friend to point out where the flag is located, with the green and a flag just visible in the background.",
+  "imageAlt": "A teen girl golfer in a bunker asking a friend where the flag is.",
+  "sceneSpec": {
+    "setting": "bunker",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": true,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [
+      "golf_cart",
+      "spectators",
+      "animals",
+      "extra balls",
+      "electronic devices",
+      "caddies",
+      "drink bottles",
+      "mobile phones",
+      "scorecards",
+      "rule books",
+      "benches",
+      "umbrellas"
+    ],
+    "ethnicity": "mixed",
+    "skinTone": "light",
+    "clothingTopColour": "purple",
+    "clothingBottomColour": "grey",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [],
+    "repairPrompt": "No major corrections required. All golf details are accurate; keep the proportions, club type, course features, posture, and clothing as in this version."
+  }
+}

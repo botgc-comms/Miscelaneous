@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\011_001_Ball_hits_players_own_equipment\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:15:44.654Z",
+  "title": "Ball hits player's own equipment",
+  "ruleNumber": "R11",
+  "ruleName": "Ball in motion accidentally hits ...",
+  "durationSeconds": 228.092
+}

@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_063_Replacing_a_Club_Broken_in_Anger\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "4.1a(2)",
+  "ruleName": "Clubs Broken or Damaged During Round – Deliberately",
+  "title": "Replacing a Club Broken in Anger",
+  "question": "After hitting a poor shot, you smash your putter into the ground and the shaft breaks. Can you replace the club?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes."
+    },
+    {
+      "id": "b",
+      "text": "Yes, but only if you take a one-stroke penalty."
+    },
+    {
+      "id": "c",
+      "text": "No. Because you deliberately damaged the club, you must continue without replacing it."
+    },
+    {
+      "id": "d",
+      "text": "You are disqualified."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "If you deliberately damage a club in anger or frustration, you must not replace it during the round. You may continue to use the damaged club, but you cannot repair or substitute it. This is different from damage that occurs accidentally or during normal play.",
+  "juniorVersion": {
+    "title": "Can You Get a New Club If You Break One on Purpose?",
+    "question": "You get upset and hit your putter on the ground. The putter breaks. Are you allowed to get a new putter while you play?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Yes."
+      },
+      {
+        "id": "b",
+        "text": "Yes, but only if you take a one-shot penalty."
+      },
+      {
+        "id": "c",
+        "text": "No. You must keep playing without a new putter because you broke it on purpose."
+      },
+      {
+        "id": "d",
+        "text": "You are out of the game."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "If you break your club on purpose, you cannot get a new one. You have to finish the round without a new club. This rule is different if the club breaks by mistake or while you are playing a normal shot.",
+    "vocabulary": [
+      {
+        "term": "putter",
+        "simpleMeaning": "A special club used to roll the ball into the hole on the green."
+      },
+      {
+        "term": "round",
+        "simpleMeaning": "All the holes you play in one game of golf."
+      }
+    ],
+    "teachingTip": "Talk to children about what to do if they feel upset after a shot. Remind them not to hit clubs in anger.",
+    "likelyMisconceptions": [
+      "Some children might think they can always get a new club if one breaks.",
+      "Some might think they are out of the game if a club breaks.",
+      "They might believe it is okay to break clubs if they pay a penalty."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T19:39:28.066Z",
+  "model": "gpt-4.1"
+}

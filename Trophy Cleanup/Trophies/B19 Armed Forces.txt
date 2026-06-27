@@ -1,0 +1,5 @@
+﻿{
+  "text": [],
+  "allowText": false,
+  "notes": "the lid of the cup carries the silhouette of a golfer in the circle. The cup itself is gold. Use light and dark shades of gold."
+}

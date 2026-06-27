@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\010_002_Giving_advice_before_a_shot\\metadata.json",
+  "sourceImageName": "page-08.png",
+  "ruleNumber": "R10",
+  "ruleName": "Advice and line of play",
+  "title": "Giving advice before a shot",
+  "question": "If one golfer asks another, 'Which club should I use?' and gets an answer, what is the penalty?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Nothing, this is always allowed."
+    },
+    {
+      "id": "b",
+      "text": "Both the player asking and the one answering get 2 penalty strokes."
+    },
+    {
+      "id": "c",
+      "text": "The player who asks for or receives advice, and the one who gives it, each get 2 penalty strokes."
+    },
+    {
+      "id": "d",
+      "text": "Only the person giving advice gets a penalty."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "If a player asks for or gives advice about how to play a shot (such as club selection), both the player who asks/receives and the one giving advice get a two-stroke penalty in stroke play.",
+  "juniorVersion": {
+    "title": "Talking about which club to use",
+    "question": "If one golfer asks another, 'Which club should I use?' and the other answers, what happens?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Nothing happens, you can always do this."
+      },
+      {
+        "id": "b",
+        "text": "Both the golfer who asks and the one who answers get 2 extra shots added."
+      },
+      {
+        "id": "c",
+        "text": "The golfer who asks or gets help, and the one who gives help, both get 2 extra shots added."
+      },
+      {
+        "id": "d",
+        "text": "Only the person who gives help gets a penalty."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "If someone asks what club to use and the other answers, both golfers get 2 extra shots added to their score. You are not allowed to help pick clubs during a round.",
+    "vocabulary": [
+      {
+        "term": "club",
+        "simpleMeaning": "The stick you use to hit the golf ball."
+      },
+      {
+        "term": "penalty",
+        "simpleMeaning": "An extra shot added to your score for breaking a rule."
+      }
+    ],
+    "teachingTip": "Remind young golfers that you have to make your own choices on the course. No giving or getting help with choosing clubs during the round!",
+    "likelyMisconceptions": [
+      "They might think it's always okay to talk about which club to use.",
+      "They might think only the person giving advice gets a penalty."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:59.947Z",
+  "model": "gpt-4.1"
+}

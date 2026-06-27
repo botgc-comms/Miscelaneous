@@ -1,0 +1,578 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-04.png",
+  "sourceImagePath": "Input\\page-04.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-04.png",
+      "ruleNumber": "R14",
+      "ruleName": "Incorrect drop",
+      "group": "Incorrect drop",
+      "title": "Penalty for Playing from the Wrong Spot After a Drop",
+      "question": "If you drop your ball outside the relief area and play from there, what is the standard penalty?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty"
+        },
+        {
+          "id": "b",
+          "text": "1 penalty stroke"
+        },
+        {
+          "id": "c",
+          "text": "2 penalty strokes"
+        },
+        {
+          "id": "d",
+          "text": "Disqualification"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "Playing from the wrong spot after a drop usually results in a 2 stroke penalty.",
+      "imagePrompt": "A teenage girl golfer on the fairway, about to play a ball that is lying outside a yellow marked relief area.",
+      "imageAlt": "Teen girl about to play a ball outside a marked relief area on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "light",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "white",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-04.png",
+      "ruleNumber": "R14",
+      "ruleName": "Incorrect drop",
+      "group": "Incorrect drop",
+      "title": "Penalty for Dropping Incorrectly but Playing from the Right Spot",
+      "question": "What is the penalty if you drop your ball incorrectly but it comes to rest in the correct relief area and you play it?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty"
+        },
+        {
+          "id": "b",
+          "text": "1 penalty stroke"
+        },
+        {
+          "id": "c",
+          "text": "2 penalty strokes"
+        },
+        {
+          "id": "d",
+          "text": "Disqualification"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "There is a 1 stroke penalty for dropping incorrectly but playing from the correct spot.",
+      "imagePrompt": "A teenage boy golfer on the fairway, having dropped his ball without following the proper procedure, but the ball is in the correct relief area.",
+      "imageAlt": "Teen boy golfer near a golf ball dropped in the correct area but not from knee height.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "dropping_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "yellow",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-04.png",
+      "ruleNumber": "R14",
+      "ruleName": "Incorrect drop",
+      "group": "Incorrect drop",
+      "title": "Penalty for Placing Instead of Dropping",
+      "question": "What happens if you place your ball instead of dropping it when required by the rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty"
+        },
+        {
+          "id": "b",
+          "text": "1 penalty stroke"
+        },
+        {
+          "id": "c",
+          "text": "2 penalty strokes"
+        },
+        {
+          "id": "d",
+          "text": "Disqualification"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "Placing the ball when a drop is required results in 2 penalty strokes.",
+      "imagePrompt": "A teenage girl golfer on the fairway, bending to place a ball with her hand instead of dropping it.",
+      "imageAlt": "Teen girl golfer places a ball on the fairway with her hand.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "lifting_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "light",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "black",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-04.png",
+      "ruleNumber": "R5",
+      "ruleName": "Suspension of play/thunderstorm",
+      "group": "Suspension of play/thunderstorm",
+      "title": "What to Do When Play Is Suspended Due to a Thunderstorm",
+      "question": "If a warning signal stops play because of a thunderstorm, what should you do with your ball?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Leave it where it is and return to the clubhouse"
+        },
+        {
+          "id": "b",
+          "text": "Pick it up and take it with you without marking"
+        },
+        {
+          "id": "c",
+          "text": "Mark its position, lift it, and replace it later"
+        },
+        {
+          "id": "d",
+          "text": "Play your shot quickly before leaving"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "You should mark your ball, lift it, and return it to the same spot when play resumes.",
+      "imagePrompt": "A teenage boy golfer marking his golf ball on the fairway as a thunderstorm approaches.",
+      "imageAlt": "Teen boy golfer marks a golf ball on the fairway with dark storm clouds above.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "lifting_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "light",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "black",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-04.png",
+      "ruleNumber": "R5",
+      "ruleName": "Suspension of play/thunderstorm",
+      "group": "Suspension of play/thunderstorm",
+      "title": "What To Do If There's a Risk of Lightning",
+      "question": "If you believe there is a risk of lightning, what are you allowed to do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Keep playing until the Committee officially suspends play"
+        },
+        {
+          "id": "b",
+          "text": "Wait for your friends to decide"
+        },
+        {
+          "id": "c",
+          "text": "Stop playing immediately for your own safety"
+        },
+        {
+          "id": "d",
+          "text": "Only stop playing if it starts to rain"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "You don't have to wait for the suspension signal if there's a risk of lightning. Safety comes first.",
+      "imagePrompt": "A teenage girl golfer on the fairway looking up at dark, stormy clouds, with a flash of lightning visible in the sky.",
+      "imageAlt": "Teen girl golfer watches the sky as lightning strikes nearby during a round of golf.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "light",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "black",
+        "hat": true
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-04.png",
+      "ruleNumber": "R14",
+      "ruleName": "Incorrect drop",
+      "group": "Incorrect drop",
+      "title": "Penalty for Playing from the Wrong Spot After a Drop",
+      "question": "If you drop your ball outside the relief area and then play it from there, what penalty do you receive?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty"
+        },
+        {
+          "id": "b",
+          "text": "1 penalty stroke"
+        },
+        {
+          "id": "c",
+          "text": "2 penalty strokes"
+        },
+        {
+          "id": "d",
+          "text": "Disqualification"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "There is a two-stroke penalty for playing a ball from the wrong place after a drop, according to the Rules of Golf.",
+      "imagePrompt": "A teenage golfer, right-handed, addresses a ball lying clearly outside a yellow marked relief area on the fairway.",
+      "imageAlt": "Teen golfer about to play a ball outside a marked relief area on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "orange",
+        "clothingBottomColour": "green",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-04.png",
+      "ruleNumber": "R14",
+      "ruleName": "Incorrect drop",
+      "group": "Incorrect drop",
+      "title": "Penalty for Dropping Incorrectly but Playing from the Right Spot",
+      "question": "If you drop your ball using the wrong procedure (for example, not from knee height), but it comes to rest in the right relief area and you play it, what is the penalty?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty"
+        },
+        {
+          "id": "b",
+          "text": "1 penalty stroke"
+        },
+        {
+          "id": "c",
+          "text": "2 penalty strokes"
+        },
+        {
+          "id": "d",
+          "text": "Disqualification"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "Dropping incorrectly but playing the ball from the correct relief area results in a one-stroke penalty.",
+      "imagePrompt": "A left-handed teen golfer on a fairway drops a ball carelessly from shoulder height, but the ball stays inside the suitable relief area.",
+      "imageAlt": "Teen golfer next to a ball dropped in the correct spot but not from knee height.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "dropping_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "light",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "grey",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-04.png",
+      "ruleNumber": "R14",
+      "ruleName": "Incorrect drop",
+      "group": "Incorrect drop",
+      "title": "Penalty for Placing Instead of Dropping",
+      "question": "If the rules require you to drop your ball, but you place it instead, what is the penalty?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty"
+        },
+        {
+          "id": "b",
+          "text": "1 penalty stroke"
+        },
+        {
+          "id": "c",
+          "text": "2 penalty strokes"
+        },
+        {
+          "id": "d",
+          "text": "Disqualification"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "Placing the ball when you are supposed to drop it, and then playing from there, results in a two-stroke penalty.",
+      "imagePrompt": "A teen golfer, right-handed, bends down to place a golf ball on the fairway instead of dropping it as required.",
+      "imageAlt": "Teen golfer places a golf ball on the fairway by hand.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "lifting_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "black",
+        "clothingBottomColour": "red",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-04.png",
+      "ruleNumber": "R5",
+      "ruleName": "Suspension of play/thunderstorm",
+      "group": "Suspension of play/thunderstorm",
+      "title": "What to Do When Play Is Suspended Due to a Thunderstorm",
+      "question": "What must you do with your ball if play is stopped because of a thunderstorm warning signal?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Leave it where it is and return to the clubhouse"
+        },
+        {
+          "id": "b",
+          "text": "Pick it up and take it with you without marking"
+        },
+        {
+          "id": "c",
+          "text": "Mark its position, lift it, and replace it later"
+        },
+        {
+          "id": "d",
+          "text": "Play your shot quickly before leaving"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "You must mark where your ball lies, lift it, and later return it to exactly the same spot when play resumes.",
+      "imagePrompt": "A teen golfer, right-handed, uses a ball marker to mark his ball's position on the fairway as dark thunderclouds gather.",
+      "imageAlt": "Teen golfer marks a golf ball on the fairway with storm clouds above.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "lifting_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "black",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-04.png",
+      "ruleNumber": "R5",
+      "ruleName": "Suspension of play/thunderstorm",
+      "group": "Suspension of play/thunderstorm",
+      "title": "What To Do If There's a Risk of Lightning",
+      "question": "If you think there is a risk of lightning nearby while you are playing, what should you do according to the Rules of Golf?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Keep playing until the Committee officially suspends play"
+        },
+        {
+          "id": "b",
+          "text": "Wait for your friends to decide"
+        },
+        {
+          "id": "c",
+          "text": "Stop playing immediately for your own safety"
+        },
+        {
+          "id": "d",
+          "text": "Only stop playing if it starts to rain"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "If you believe there is a danger from lightning, you should stop play at once, even if the Committee has not yet officially suspended play.",
+      "imagePrompt": "A left-handed teen girl golfer stands on the fairway looking up at threatening storm clouds and lightning, standing by her golf ball.",
+      "imageAlt": "Teen girl golfer watches the sky as lightning strikes nearby during golf.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "blue",
+        "clothingBottomColour": "orange",
+        "hat": true
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "014_001_Penalty_for_Playing_from_the_Wrong_Spot_After_a_Drop",
+    "014_002_Penalty_for_Dropping_Incorrectly_but_Playing_from_the_Right_Spot",
+    "014_003_Penalty_for_Placing_Instead_of_Dropping",
+    "005_004_What_to_Do_When_Play_Is_Suspended_Due_to_a_Thunderstorm",
+    "005_005_What_To_Do_If_Theres_a_Risk_of_Lightning"
+  ],
+  "updatedAtUtc": "2026-04-24T19:19:32.392Z"
+}

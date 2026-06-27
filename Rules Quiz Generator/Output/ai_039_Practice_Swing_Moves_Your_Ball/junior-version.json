@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_039_Practice_Swing_Moves_Your_Ball\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "9.4",
+  "ruleName": "Ball Lifted or Deliberately Touched by Player or Causes It to Move",
+  "title": "Practice Swing Moves Your Ball",
+  "question": "Your ball lies on the fairway. Before playing your shot, you take a practice swing and accidentally take a divot. The divot flies forward, hits your ball and causes it to move. What is the correct ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "There is no penalty because you did not touch the ball with your club."
+    },
+    {
+      "id": "b",
+      "text": "There is no penalty. Play the ball from its new position."
+    },
+    {
+      "id": "c",
+      "text": "You receive a one-stroke penalty because your actions caused the ball to move. You must replace the ball on its original spot."
+    },
+    {
+      "id": "d",
+      "text": "You receive the general penalty."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "Although the club did not touch the ball, your practice swing caused the divot to move the ball. As your action is responsible for the ball's movement, you receive a one-stroke penalty and must replace the ball on its original spot before making your next stroke. This is covered under Rule 9.4.",
+  "juniorVersion": {
+    "title": "Practice Swing Makes Your Ball Move",
+    "question": "Your ball is on the short grass. You take a practice swing, and your club makes a chunk of grass fly. The flying grass hits your ball and makes it roll away. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "No penalty, because you did not hit the ball with your club."
+      },
+      {
+        "id": "b",
+        "text": "No penalty. Hit the ball from where it rolled to."
+      },
+      {
+        "id": "c",
+        "text": "You get one penalty shot because your practice swing made the ball move. Put the ball back where it was."
+      },
+      {
+        "id": "d",
+        "text": "You get two penalty shots."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "Even though you did not hit the ball with your club, your practice swing made grass move your ball. That means you have to add one penalty shot. You must put the ball back where it was before you play your next shot.",
+    "vocabulary": [
+      {
+        "term": "Divot",
+        "simpleMeaning": "A piece of grass and dirt that your club may cut out of the ground during a swing."
+      },
+      {
+        "term": "Penalty",
+        "simpleMeaning": "Extra shots added to your score because you broke a rule."
+      },
+      {
+        "term": "Replace",
+        "simpleMeaning": "Put the ball back in the spot it was before it moved."
+      }
+    ],
+    "teachingTip": "Show children how practice swings can move grass and remind them to check their ball after practising near it.",
+    "likelyMisconceptions": [
+      "Thinking you only get a penalty if you hit the ball with your club.",
+      "Thinking you can just play the ball from where it rolled to after any practice swing."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:18:59.915Z",
+  "model": "gpt-4.1"
+}

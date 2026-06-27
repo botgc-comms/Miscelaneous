@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\689_001_What_should_you_do_if_you_find_your_ball_in_a_tricky_spot\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:18:47.474Z",
+  "title": "What should you do if you find your ball in a tricky spot?",
+  "ruleNumber": "6/8/9",
+  "ruleName": "Playing the ball as it lies",
+  "durationSeconds": 195.757
+}

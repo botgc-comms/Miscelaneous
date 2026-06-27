@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\014_001_Who_can_put_the_ball_back\\metadata.json",
+  "sourceImageName": "pageb-05.png",
+  "ruleNumber": "R14",
+  "ruleName": "Ball marked by another person",
+  "title": "Who can put the ball back?",
+  "question": "If you ask another player to mark and lift your ball for you, who is allowed to put the ball back on its spot afterwards?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Only the player whose ball it is"
+    },
+    {
+      "id": "b",
+      "text": "Only the person who marked and picked up the ball"
+    },
+    {
+      "id": "c",
+      "text": "Either the player or the person who picked it up"
+    },
+    {
+      "id": "d",
+      "text": "Any player in the group"
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "Either the person who marked and lifted the ball or the player themselves can put the ball back on its spot.",
+  "juniorVersion": {
+    "title": "Who can put the ball back on the ground?",
+    "question": "If you ask a friend to pick up and mark your golf ball, who is allowed to put it back on the spot?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Only you, the owner of the ball"
+      },
+      {
+        "id": "b",
+        "text": "Only your friend who picked up the ball"
+      },
+      {
+        "id": "c",
+        "text": "You or your friend who picked up the ball"
+      },
+      {
+        "id": "d",
+        "text": "Anyone playing in your group"
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "You or the friend who picked up your ball can put it back where it was. Both are allowed.",
+    "vocabulary": [
+      {
+        "term": "mark",
+        "simpleMeaning": "To put something small (like a coin or marker) behind your ball so you know where it was."
+      },
+      {
+        "term": "spot",
+        "simpleMeaning": "The exact place where your ball was before it got moved."
+      }
+    ],
+    "teachingTip": "Let children mark and replace each other's balls in practice, so they know both the player and helper can do it.",
+    "likelyMisconceptions": [
+      "Children might think only the person who owns the ball is allowed to put it back.",
+      "Children might think anyone in the group can put the ball back."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:40.080Z",
+  "model": "gpt-4.1"
+}

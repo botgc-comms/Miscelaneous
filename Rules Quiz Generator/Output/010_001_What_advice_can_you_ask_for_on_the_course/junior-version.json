@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\010_001_What_advice_can_you_ask_for_on_the_course\\metadata.json",
+  "sourceImageName": "page-11.png",
+  "ruleNumber": "R10",
+  "ruleName": "Advice and line of play",
+  "title": "What advice can you ask for on the course?",
+  "question": "You can't see the flag from your ball on the fairway. Which action are you allowed to ask your friend to do?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Tell you which club to use."
+    },
+    {
+      "id": "b",
+      "text": "Point out the direction of the flag."
+    },
+    {
+      "id": "c",
+      "text": "Suggest which type of shot you should play."
+    },
+    {
+      "id": "d",
+      "text": "Explain the golf rules for you."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You are allowed to ask someone to show you the line of play (such as pointing towards the flag). You can't ask what club to use or what shot to play, as that's giving advice.",
+  "juniorVersion": {
+    "title": "What help can your friend give you in golf?",
+    "question": "You are on the fairway but you can't see the flag. What can you ask your friend to do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Tell you which club you should use."
+      },
+      {
+        "id": "b",
+        "text": "Point to show where the flag is."
+      },
+      {
+        "id": "c",
+        "text": "Tell you what kind of shot to play."
+      },
+      {
+        "id": "d",
+        "text": "Explain the golf rules to you."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "You are allowed to ask your friend to point at the flag if you can’t see it. That is just showing you where to aim. Your friend cannot tell you what club to use or what shot to play because that is giving advice.",
+    "vocabulary": [
+      {
+        "term": "Flag",
+        "simpleMeaning": "The flag is the tall stick with a cloth at the top that shows where the hole is."
+      },
+      {
+        "term": "Fairway",
+        "simpleMeaning": "The fairway is the short grass area between the tee and the green."
+      },
+      {
+        "term": "Line of play",
+        "simpleMeaning": "The line of play is the direction you want the ball to go."
+      }
+    ],
+    "teachingTip": "Let children practise showing each other where the flag is from different spots on the course to help them learn what information they can share.",
+    "likelyMisconceptions": [
+      "Some children may think they are allowed to ask what club or shot to use.",
+      "Some may think pointing to the flag is not allowed."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:56.088Z",
+  "model": "gpt-4.1"
+}

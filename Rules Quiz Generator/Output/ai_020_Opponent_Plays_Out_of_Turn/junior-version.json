@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_020_Opponent_Plays_Out_of_Turn\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "6.4a",
+  "ruleName": "Order of Play in Match Play",
+  "title": "Opponent Plays Out of Turn",
+  "question": "You are playing a match. It is your turn to play first, but your opponent plays before you and hits a perfect drive straight down the middle of the fairway. What are you allowed to do?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Nothing. Once the shot has been played, it must stand."
+    },
+    {
+      "id": "b",
+      "text": "Add one penalty stroke to your opponent's score."
+    },
+    {
+      "id": "c",
+      "text": "Cancel your opponent's stroke and require them to play again in the correct order."
+    },
+    {
+      "id": "d",
+      "text": "Make your opponent replay the shot only if it went out of bounds."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "In match play, if your opponent plays out of turn, you may immediately require them to cancel the stroke and replay it in the correct order. There is no penalty, but the original stroke does not count if you choose to recall it. If you do not require the stroke to be replayed straight away, the stroke stands and play continues. This Rule applies only in match play. In stroke play, there is generally no penalty for playing out of turn, although players should play in the correct order for safety and pace of play. (Rule 6.4a)",
+  "juniorVersion": {
+    "title": "What if Someone Hits When It's Not Their Turn in Match Play?",
+    "question": "You are playing a match against a friend. It's your turn to hit, but your friend hits first by mistake and hits a great shot into the middle of the fairway. What can you do about it?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Nothing. If your friend hits already, the shot stays as it is."
+      },
+      {
+        "id": "b",
+        "text": "Give your friend a one-shot penalty."
+      },
+      {
+        "id": "c",
+        "text": "Ask your friend to take the shot again in the right order, and the first shot does not count."
+      },
+      {
+        "id": "d",
+        "text": "You can only ask for a replay if your friend’s ball went out of bounds."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "In match play, if your friend hits when it was your turn, you can tell them to take that shot again, but this time in the right order. The first shot doesn’t count if you ask for a replay. But if you let the shot stand, then it counts and you just keep playing.",
+    "vocabulary": [
+      {
+        "term": "Match Play",
+        "simpleMeaning": "A type of golf game where you and your friend try to win each hole instead of counting all strokes for the round."
+      },
+      {
+        "term": "Fairway",
+        "simpleMeaning": "The short grass area between the tee and the green."
+      }
+    ],
+    "teachingTip": "Remind children that in matches, it's important to take turns. They can ask for a replay if someone goes out of turn.",
+    "likelyMisconceptions": [
+      "Children might think the first shot always counts, even if it was hit out of turn.",
+      "They might think there is always a penalty for playing out of turn."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:06:44.801Z",
+  "model": "gpt-4.1"
+}

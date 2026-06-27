@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\009_004_What_happens_if_you_move_your_ball_on_a_practice_swing\\metadata.json",
+  "sourceImageName": "page-11.png",
+  "ruleNumber": "R9",
+  "ruleName": "Ball moved when taking a practice swing",
+  "title": "What happens if you move your ball on a practice swing?",
+  "question": "On the fairway, you accidentally move your ball by brushing it during a practice swing. What should you do?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball from where it moved to."
+    },
+    {
+      "id": "b",
+      "text": "Replace the ball and add 1 penalty stroke."
+    },
+    {
+      "id": "c",
+      "text": "Ignore it and keep playing."
+    },
+    {
+      "id": "d",
+      "text": "Move the ball to a place you like better."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You must return the ball to its original spot and add 1 penalty stroke if you move it while making a practice swing.",
+  "juniorVersion": {
+    "title": "If your ball moves when you practise your swing, what should you do?",
+    "question": "You are on the fairway and you accidentally touch your ball with your club during a practice swing. The ball rolls away. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Hit the ball from where it stopped."
+      },
+      {
+        "id": "b",
+        "text": "Put your ball back to where it was and add 1 extra shot."
+      },
+      {
+        "id": "c",
+        "text": "Ignore it and keep going."
+      },
+      {
+        "id": "d",
+        "text": "Move the ball to a place you like more."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If you make your ball move during a practice swing, you must put the ball back where it was and add 1 extra shot to your score.",
+    "vocabulary": [
+      {
+        "term": "Practice swing",
+        "simpleMeaning": "Swinging your club to get ready, but not hitting the real shot."
+      },
+      {
+        "term": "Fairway",
+        "simpleMeaning": "The short grass area that leads to the hole."
+      },
+      {
+        "term": "Penalty stroke",
+        "simpleMeaning": "An extra shot added to your score as a penalty."
+      }
+    ],
+    "teachingTip": "Show a simple demonstration of a practice swing and what to do if the ball moves. Use cones or a coin to mark where the ball started.",
+    "likelyMisconceptions": [
+      "Children may think they can play the ball from its new spot.",
+      "Children might forget to add a penalty stroke.",
+      "Children might think they can move the ball to anywhere else."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:53.545Z",
+  "model": "gpt-4.1"
+}

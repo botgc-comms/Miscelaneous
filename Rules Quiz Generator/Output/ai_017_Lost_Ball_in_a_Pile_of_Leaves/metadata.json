@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "18.2a(1)",
+  "ruleName": "Lost Ball",
+  "group": "Ball Lost or Out of Bounds; Provisional Ball",
+  "title": "Lost Ball in a Pile of Leaves",
+  "question": "Your tee shot heads towards a large pile of fallen leaves. You and your playing partners are virtually certain the ball is buried underneath, but you cannot find it within three minutes. Can you take a free drop?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes. If everyone agrees the ball is under the leaves, you may take free relief."
+    },
+    {
+      "id": "b",
+      "text": "Yes. Fallen leaves are loose impediments, so you always get free relief."
+    },
+    {
+      "id": "c",
+      "text": "No. Unless a Local Rule provides relief, the ball is lost and you must proceed under stroke and distance."
+    },
+    {
+      "id": "d",
+      "text": "Yes, but only if the leaves are on the fairway."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "Fallen leaves are loose impediments, but that does not entitle you to free relief if your ball cannot be found. If the ball is not found and identified within three minutes, it is lost, even if everyone is certain it is underneath the leaves. The player must proceed under stroke and distance, unless the Committee has introduced a Local Rule allowing relief for balls lost in piles of leaves.",
+  "imagePrompt": "Create a polished, semi-realistic (about 75% realistic, 25% stylised) illustration in a modern junior golf quiz style, showing an autumn scene on a golf course. Depict a large, obvious pile of fallen autumn leaves near the edge of a fairway or rough. One junior golfer is actively searching for their ball in the pile, bending down or kneeling, while two other juniors stand nearby watching or helping. There should be no visible golf ball. The focus is on the players searching and the challenging conditions. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A junior golfer searches for a lost golf ball in a large pile of autumn leaves, with two friends watching. The ball is not visible under the leaves.",
+  "sceneSpec": {
+    "setting": "Autumn day on a golf course with many fallen leaves. The scene is near the edge of a fairway or rough with a prominent, large pile of leaves.",
+    "players": "One junior golfer is searching for their ball near the pile of leaves, while two other junior players look on. All players are alert and engaged in the search.",
+    "ballPosition": "The ball is not visible, as it is presumed to be hidden underneath the pile of leaves.",
+    "ruleMoment": "Players are actively searching for the ball within the leaves. The three-minute search period is implied.",
+    "educationalFocus": "Emphasise the difficulty of finding the ball and the uncertainty, even with group agreement; illustrate that the ball must be found to avoid being lost under the Rules.",
+    "mustShow": [
+      "Large, obvious pile of autumn leaves on the ground",
+      "Junior golfer bending down or kneeling, searching the pile for a ball",
+      "Two other juniors nearby, also looking or helping"
+    ],
+    "mustNotShow": [
+      "Visible golf ball",
+      "Scorecards or any written text",
+      "Arrows, speech bubbles, numbers, diagrams, badges, club crests, logos, watermarks, or captions"
+    ]
+  }
+}

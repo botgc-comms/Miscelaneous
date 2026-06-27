@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\006_001_Playing_from_the_wrong_teeing_area\\metadata.json",
+  "generatedAtUtc": "2026-06-24T14:53:48.714Z",
+  "title": "Playing from the wrong teeing area",
+  "ruleNumber": "R6",
+  "ruleName": "Playing from the teeing area",
+  "durationSeconds": 185.543
+}

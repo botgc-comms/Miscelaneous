@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\016_004_Dealing_with_an_embedded_ball_in_a_penalty_area\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:46:58.899Z",
+  "title": "Dealing with an embedded ball in a penalty area",
+  "ruleNumber": "R16",
+  "ruleName": "Embedded ball",
+  "durationSeconds": 198.88
+}

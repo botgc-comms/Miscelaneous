@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\018_004_Can_you_play_a_provisional_ball_if_your_ball_is_in_a_penalty_area\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:02:55.098Z",
+  "title": "Can you play a provisional ball if your ball is in a penalty area?",
+  "ruleNumber": "R18",
+  "ruleName": "Provisional/lost ball",
+  "durationSeconds": 178.947
+}

@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-28.png",
+  "ruleNumber": "R10",
+  "ruleName": "Advice and line of play",
+  "group": "Advice and line of play",
+  "title": "What advice can you ask for on the golf course?",
+  "question": "You can't see the flag from where your ball is. Which of these are you allowed to ask a fellow player?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "To recommend a club for your next shot"
+    },
+    {
+      "id": "b",
+      "text": "To point out the direction of the hole"
+    },
+    {
+      "id": "c",
+      "text": "To tell you how to play the shot"
+    },
+    {
+      "id": "d",
+      "text": "To tell you how far it is to the green"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You are allowed to ask someone to physically point out the direction or line of play, but you are not allowed to ask for advice on which club to use or how to play the shot.",
+  "imagePrompt": "A teen girl golfer stands on the fairway, asking a friend to point out the line of play toward a flag that is hidden from view. The landscape includes short grass and some trees, but the green is not visible.",
+  "imageAlt": "Teen girl golfer on the fairway asking a friend to indicate the direction to the flag she can't see.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "navy",
+    "clothingBottomColour": "blue",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Minor: The friend’s shorts are tan/beige, not blue as specified, but this does not affect rules illustration or equipment accuracy."
+    ],
+    "repairPrompt": "Adjust the golfer's friend's shorts to be blue in color to match the specified clothing bottom color."
+  }
+}

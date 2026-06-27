@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\012_001_When_is_a_ball_in_the_bunker\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:22:15.201Z",
+  "title": "When is a ball 'in the bunker'?",
+  "ruleNumber": "R12",
+  "ruleName": "Bunker",
+  "durationSeconds": 194.481
+}

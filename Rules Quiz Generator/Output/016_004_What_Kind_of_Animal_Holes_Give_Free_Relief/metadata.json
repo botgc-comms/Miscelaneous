@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-13.png",
+  "ruleNumber": "16",
+  "ruleName": "Abnormal course conditions",
+  "group": "Abnormal course conditions",
+  "title": "What Kind of Animal Holes Give Free Relief?",
+  "question": "For which of these is free relief generally given if it interferes with your ball or stance?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "A mole hill"
+    },
+    {
+      "id": "b",
+      "text": "Worm casts"
+    },
+    {
+      "id": "c",
+      "text": "An insect nest"
+    },
+    {
+      "id": "d",
+      "text": "A divot made by a golf shot"
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "Holes or hills made by burrowing animals such as moles, rabbits, or similar, entitle you to relief. Worms, insects, and divots do not qualify.",
+  "imagePrompt": "A teenage girl golfer in the fairway with her ball lying next to a clear mole hill, illustrating animal hole relief.",
+  "imageAlt": "Teen girl golfer and her golf ball next to a fresh mole hill.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "light",
+    "clothingTopColour": "blue",
+    "clothingBottomColour": "purple",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [],
+    "repairPrompt": "No repair needed. The golfer is a teenage boy with mixed appearance and light skin tone, wearing a blue top and purple trousers with a cap. The golf club is a realistic iron with proper proportions, and there is exactly one realistic golf ball next to a clear mole hill on a fairway. The posture and course features are authentic and suitable for educational use."
+  }
+}

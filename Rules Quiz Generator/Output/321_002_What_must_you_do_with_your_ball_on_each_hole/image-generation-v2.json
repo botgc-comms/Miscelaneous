@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\321_002_What_must_you_do_with_your_ball_on_each_hole\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:15:51.293Z",
+  "title": "What must you do with your ball on each hole?",
+  "ruleNumber": "R3/21",
+  "ruleName": "Holing out and conceding",
+  "durationSeconds": 180.596
+}

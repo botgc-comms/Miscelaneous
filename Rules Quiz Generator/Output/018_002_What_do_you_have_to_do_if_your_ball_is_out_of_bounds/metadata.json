@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-30.png",
+  "ruleNumber": "R18",
+  "ruleName": "Out of bounds and provisional ball",
+  "group": "Out of bounds and provisional ball",
+  "title": "What do you have to do if your ball is out of bounds?",
+  "question": "If you find out your ball is out of bounds, what should you do next according to the rules?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Drop a ball at the spot where your ball went out of bounds and keep playing."
+    },
+    {
+      "id": "b",
+      "text": "Go back to where you played your last shot, play another ball, and add a one-stroke penalty."
+    },
+    {
+      "id": "c",
+      "text": "Move the ball back in bounds and keep playing with no penalty."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "When a ball is out of bounds, you must go back to the place you last played from, play again, and add a one-stroke penalty.",
+  "imagePrompt": "A teenage boy golfer is seen walking back toward the teeing area after finding out his ball has ended up out of bounds past white posts on the side of the fairway.",
+  "imageAlt": "Teen boy golfer walking back to replay his shot because his ball is out of bounds past white posts.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "replaying_shot",
+    "clubInHand": "driver",
+    "ballCount": 1,
+    "stakeColour": "white",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": true,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "asian",
+    "skinTone": "light",
+    "clothingTopColour": "green",
+    "clothingBottomColour": "navy",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 96,
+    "issues": [
+      "The tee markers are slightly stylized but still recognizable and plausible for a teaching image."
+    ],
+    "repairPrompt": "Keep all current details, but make the tee markers look even more authentic and realistic, matching typical golf course shapes and finishes."
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_045_Ball_Breaks_in_Half_After_Hitting_Tree\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "4.2b",
+  "ruleName": "Ball Breaks into Pieces While Playing Hole",
+  "title": "Ball Breaks in Half After Hitting Tree",
+  "question": "Your drive strikes a tree and your golf ball splits into two pieces. One half lands in the fairway and the other half finishes in the rough. What is the correct ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play whichever half of the ball finished in the best position."
+    },
+    {
+      "id": "b",
+      "text": "Replace the damaged ball with another ball on the original spot and replay the stroke without penalty."
+    },
+    {
+      "id": "c",
+      "text": "Continue playing the larger half of the ball."
+    },
+    {
+      "id": "d",
+      "text": "Take a one-stroke penalty and drop another ball."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If a ball breaks into pieces as a result of a stroke, the stroke does not count. The damaged ball must be replaced with another ball, and the player must replay the stroke from the spot where the original stroke was made. Rule Reference: Rule 4.2b.",
+  "juniorVersion": {
+    "title": "Golf Ball Cracks When It Hits a Tree",
+    "question": "You hit your ball and it crashes into a tree. The ball breaks into two pieces! One piece lands on the short grass, and the other lands in the long grass. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Play the piece of the ball that is in the best spot."
+      },
+      {
+        "id": "b",
+        "text": "Put a new ball on the spot where you hit from and try your shot again. No penalty."
+      },
+      {
+        "id": "c",
+        "text": "Keep playing with the bigger half of your broken ball."
+      },
+      {
+        "id": "d",
+        "text": "Take a penalty, then drop a new ball."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If your ball breaks into pieces after a shot, you must use a new ball. Go back to where you hit from and play your shot again. You don't get a penalty, and the first shot doesn't count.",
+    "vocabulary": [
+      {
+        "term": "stroke",
+        "simpleMeaning": "A stroke means hitting the ball with your club."
+      },
+      {
+        "term": "fairway",
+        "simpleMeaning": "The fairway is the short, neat grass between the tee and the green."
+      },
+      {
+        "term": "rough",
+        "simpleMeaning": "The rough is the long grass next to the fairway."
+      }
+    ],
+    "teachingTip": "Encourage juniors to check their ball after hitting trees or rocks. Balls should not be used if they are broken.",
+    "likelyMisconceptions": [
+      "Some children may think you can choose one piece of the broken ball to keep playing.",
+      "They may think you must take a penalty when your ball breaks.",
+      "They might not know the first shot doesn't count if the ball breaks."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:21:53.437Z",
+  "model": "gpt-4.1"
+}

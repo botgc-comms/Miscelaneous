@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\020_004_Is_playing_two_balls_allowed_in_match_play\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:09:02.355Z",
+  "title": "Is playing two balls allowed in match play?",
+  "ruleNumber": "20",
+  "ruleName": "When in doubt about the rules",
+  "durationSeconds": 189.335
+}

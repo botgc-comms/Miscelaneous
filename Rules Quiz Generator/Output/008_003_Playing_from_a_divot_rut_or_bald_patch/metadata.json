@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-15.png",
+  "ruleNumber": "R8",
+  "ruleName": "Divots, tractor ruts, bald patches, etc.",
+  "group": "Divots, tractor ruts, bald patches, etc.",
+  "title": "Playing from a divot, rut or bald patch",
+  "question": "Your ball lands in a deep divot or a tractor rut on the fairway. Which of these is correct?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You must play the ball as it lies or take an unplayable lie and add a penalty"
+    },
+    {
+      "id": "b",
+      "text": "You always get free relief"
+    },
+    {
+      "id": "c",
+      "text": "You can move the ball to some good grass without penalty"
+    },
+    {
+      "id": "d",
+      "text": "You are allowed to rehit your shot with no penalty"
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "You have to play the ball as it lies, or declare it unplayable and take a penalty stroke—there is no free relief just for a divot or rut.",
+  "imagePrompt": "A teenage girl in a navy top and red bottoms, addressing a golf ball lying in a deep divot on a fairway under an overcast sky, holding an iron club and ready to play.",
+  "imageAlt": "Teen girl golfer in navy and red about to play a ball from a fairway divot.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "addressing_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "red",
+    "clothingBottomColour": "white",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": false,
+    "score": 70,
+    "issues": [
+      "Golfer is not left-handed as specified in the sceneSpec and repair instructions—stance and club address appear right-handed.",
+      "Golfer's top is navy instead of the required red, and bottoms are red instead of required white.",
+      "Skin tone is slightly darker than specified 'medium' for a white teen.",
+      "Otherwise, the golf club, ball, course, and general posture are suitable and believable for golf."
+    ],
+    "repairPrompt": "Adjust the golfer's stance and grip so she is clearly left-handed, addressing the ball from the left side with a natural left-handed posture. Change the golfer's shirt to a clearly red top and bottoms to white. Ensure the golfer appears as a white teenager with a medium skin tone."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\006_001_What_happens_if_you_tee_off_in_the_wrong_order\\metadata.json",
+  "generatedAtUtc": "2026-06-24T14:53:48.134Z",
+  "title": "What happens if you tee off in the wrong order?",
+  "ruleNumber": "6",
+  "ruleName": "Playing in the wrong order",
+  "durationSeconds": 184.961
+}

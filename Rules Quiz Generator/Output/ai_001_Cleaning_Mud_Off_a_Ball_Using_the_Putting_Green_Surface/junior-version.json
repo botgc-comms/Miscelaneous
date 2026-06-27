@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_001_Cleaning_Mud_Off_a_Ball_Using_the_Putting_Green_Surface\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "13.1e",
+  "ruleName": "No Deliberate Testing of Greens",
+  "title": "Cleaning Mud Off a Ball Using the Putting Green Surface",
+  "question": "While on the putting green, may you rub your golf ball on the surface of the green to wipe off mud, as long as you are not doing it to test the condition of the green?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, you may rub your ball on the putting green to clean off mud, provided you are not testing the green."
+    },
+    {
+      "id": "b",
+      "text": "No, you are never allowed to rub your ball on the putting green surface."
+    },
+    {
+      "id": "c",
+      "text": "Yes, but only if the Committee gives you permission each time."
+    },
+    {
+      "id": "d",
+      "text": "No, it is only permitted between holes after completing your putt."
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "You are permitted to rub your golf ball on the putting green to clean off mud, as long as you are not deliberately testing the condition of the green. This does not breach Rule 13.1e. However, you must not rub the surface of the green or roll a ball on it to gain information about its condition during play.",
+  "juniorVersion": {
+    "title": "Wiping Mud Off Your Ball on the Green",
+    "question": "Can you clean mud off your golf ball by rubbing it on the putting green, if you are not trying to find out how smooth or bumpy the green is?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Yes, you can rub your ball on the green to clean mud, if you are not trying to test the green."
+      },
+      {
+        "id": "b",
+        "text": "No, you cannot ever rub your ball on the putting green."
+      },
+      {
+        "id": "c",
+        "text": "Yes, but only if someone in charge says it is okay each time."
+      },
+      {
+        "id": "d",
+        "text": "No, you can only do it after you finish the hole."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "You can clean mud off your ball by rubbing it on the green, if you are not checking how the grass feels or rolls. Just make sure you are only cleaning and not trying to learn about the green.",
+    "vocabulary": [
+      {
+        "term": "putting green",
+        "simpleMeaning": "The special grass area where you try to hit the ball into the hole."
+      },
+      {
+        "term": "test the green",
+        "simpleMeaning": "To find out how smooth, bumpy, fast, or slow the green is for putting."
+      }
+    ],
+    "teachingTip": "Remind children the difference between just cleaning their ball and trying to find out how the green will affect their putt.",
+    "likelyMisconceptions": [
+      "Some may think it is always bad to touch the green with the ball.",
+      "Some might believe you can only use a towel to clean the ball, not the green."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T16:30:33.060Z",
+  "model": "gpt-4.1"
+}

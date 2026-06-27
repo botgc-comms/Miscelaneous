@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\018_003_Provisional_ball_played_past_where_the_original_ball_is_believed_to_be\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:59:56.145Z",
+  "title": "Provisional ball played past where the original ball is believed to be",
+  "ruleNumber": "R18",
+  "ruleName": "Provisional Balls",
+  "durationSeconds": 174.529
+}

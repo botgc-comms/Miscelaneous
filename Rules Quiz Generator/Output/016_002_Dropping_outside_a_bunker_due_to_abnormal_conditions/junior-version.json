@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\016_002_Dropping_outside_a_bunker_due_to_abnormal_conditions\\metadata.json",
+  "sourceImageName": "page-21.png",
+  "ruleNumber": "R16",
+  "ruleName": "Abnormal course conditions",
+  "title": "Dropping outside a bunker due to abnormal conditions",
+  "question": "If you take relief outside a bunker from an abnormal course condition in the bunker, what must you do according to the Rules?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Drop outside the bunker without penalty"
+    },
+    {
+      "id": "b",
+      "text": "Drop outside the bunker and add one penalty stroke"
+    },
+    {
+      "id": "c",
+      "text": "Place the ball anywhere outside the bunker without penalty"
+    },
+    {
+      "id": "d",
+      "text": "You cannot take relief outside the bunker"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If you take relief outside the bunker for abnormal course conditions, you must add a one-stroke penalty.",
+  "juniorVersion": {
+    "title": "Getting your ball out of a bunker when there is a puddle or ground is too wet",
+    "question": "If your ball is in a bunker and there is a big puddle or very wet ground (abnormal condition), what do the rules say if you want to move your ball out of the bunker to play it?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You can drop the ball outside the bunker with no extra shots."
+      },
+      {
+        "id": "b",
+        "text": "You can drop the ball outside the bunker, but you have to add one penalty stroke."
+      },
+      {
+        "id": "c",
+        "text": "You can put the ball anywhere outside the bunker with no extra shots."
+      },
+      {
+        "id": "d",
+        "text": "You are not allowed to move your ball outside the bunker."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If you need to move your ball out of the bunker because of a puddle or wet ground, you must count one extra shot (penalty stroke).",
+    "vocabulary": [
+      {
+        "term": "Bunker",
+        "simpleMeaning": "A sandy area on the golf course, usually shaped like a big pit or hole."
+      },
+      {
+        "term": "Relief",
+        "simpleMeaning": "A chance to move your ball to a better spot when something unfair is stopping you (like a puddle)."
+      },
+      {
+        "term": "Abnormal Course Condition",
+        "simpleMeaning": "Something on the course that is not usually there, like water in a bunker or ground that is too soft."
+      },
+      {
+        "term": "Penalty Stroke",
+        "simpleMeaning": "An extra shot you must add to your score when you take a special option in the rules."
+      }
+    ],
+    "teachingTip": "Show kids a bunker with water in it and use a second ball to show dropping outside the bunker and remembering to count an extra shot.",
+    "likelyMisconceptions": [
+      "Kids may think they never have to add any shots when moving out of a bunker.",
+      "They might believe they can put the ball anywhere they want outside the bunker."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:02.123Z",
+  "model": "gpt-4.1"
+}

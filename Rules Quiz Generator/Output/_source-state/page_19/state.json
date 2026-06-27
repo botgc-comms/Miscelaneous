@@ -1,0 +1,477 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-19.png",
+  "sourceImagePath": "Input\\page-19.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-19.png",
+      "ruleNumber": "R12",
+      "ruleName": "Bunker",
+      "group": "Bunker",
+      "title": "Where is your ball classed as 'in the bunker'?",
+      "question": "Your ball lands right on the border of the sand and some grass inside the bunker. When is it officially classed as 'in the bunker'?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Only if it is completely in the sand"
+        },
+        {
+          "id": "b",
+          "text": "If any part touches the sand within the bunker"
+        },
+        {
+          "id": "c",
+          "text": "If it lands on grass in the bunker"
+        },
+        {
+          "id": "d",
+          "text": "When it stops moving anywhere inside the bunker"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "The ball is classed as being in the bunker if it touches the sand within it, not grass.",
+      "imagePrompt": "A golf ball half on sand and half on grass inside a bunker with a teenage girl holding an iron, deciding if the ball is in the bunker.",
+      "imageAlt": "A golf ball on the edge of sand and grass in a bunker with a girl golfer checking.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "medium",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "red",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-19.png",
+      "ruleNumber": "R7",
+      "ruleName": "Ball disappeared in the sand",
+      "group": "Bunker",
+      "title": "What can you do if your ball sinks into the bunker?",
+      "question": "You hit a shot, and your ball sinks deep into the sand so you can't see it. What are you allowed to do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Leave it and play a different ball"
+        },
+        {
+          "id": "b",
+          "text": "Use your club or feet to search for it, and if it moves, replace it and recreate the lie"
+        },
+        {
+          "id": "c",
+          "text": "Just dig it out and play it as it lies"
+        },
+        {
+          "id": "d",
+          "text": "Ask a friend to search for you, but don't move any sand"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You may use your club or feet to find the ball, and if it moves, you should put it back and recreate the original lie, with no penalty.",
+      "imagePrompt": "A teenage boy searching for a golf ball that has disappeared under the sand in a bunker, using his club to gently prod the sand.",
+      "imageAlt": "A boy golfer in a bunker probing the sand with a club to locate his hidden ball.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "dropping_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "dark",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "white",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-19.png",
+      "ruleNumber": "R7/14",
+      "ruleName": "Identifying the ball",
+      "group": "Bunker",
+      "title": "How can you identify your ball in a bunker?",
+      "question": "You find a ball in the bunker but aren't sure if it's yours. What should you do to check if it's your ball?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Pick it up straight away, no need to mark it"
+        },
+        {
+          "id": "b",
+          "text": "Mark its position, pick it up to check, and try to recreate the original lie"
+        },
+        {
+          "id": "c",
+          "text": "Clean it fully before checking"
+        },
+        {
+          "id": "d",
+          "text": "Ignore it and keep searching for your ball"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "To identify your ball, you should mark its spot, then pick it up and check, and recreate the original lie as accurately as possible.",
+      "imagePrompt": "A teenage girl golfer marking the spot before picking up a golf ball in a bunker to check if it is hers.",
+      "imageAlt": "A girl golfer using a tee to mark and identify her ball in a bunker.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "lifting_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "light",
+        "clothingTopColour": "black",
+        "clothingBottomColour": "white",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-19.png",
+      "ruleNumber": "R12",
+      "ruleName": "Do not touch or test the sand",
+      "group": "Bunker",
+      "title": "Testing or touching the sand in a bunker",
+      "question": "Before playing your shot from a bunker, which of these actions are NOT allowed?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Touching the sand with your hand to test it"
+        },
+        {
+          "id": "b",
+          "text": "Making a practice swing that touches the sand"
+        },
+        {
+          "id": "c",
+          "text": "Grounding your club behind the ball before you hit"
+        },
+        {
+          "id": "d",
+          "text": "Taking your shot without touching the sand first"
+        },
+        {
+          "id": "e",
+          "text": "Leaning on your club outside the bunker"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "c"
+      ],
+      "explanation": "Testing the sand by touching it or making practice swings that touch the sand, and grounding your club before playing, are all not allowed.",
+      "imagePrompt": "A teenage boy golfer in a bunker accidentally touching the sand with his club while taking a practice swing near the ball.",
+      "imageAlt": "A boy golfer in a bunker making a practice swing that touches the sand.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "wedge",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "dark",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "red",
+        "hat": false
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-19.png",
+      "ruleNumber": "R12",
+      "ruleName": "Bunker",
+      "group": "Bunker",
+      "title": "When is a ball 'in the bunker'?",
+      "question": "Your ball comes to rest on the border between the sand and some grass that's inside the edge of the bunker. When is your ball officially classed as 'in the bunker'?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Only if the whole ball is inside the sand area"
+        },
+        {
+          "id": "b",
+          "text": "If any part of the ball touches the sand in the bunker"
+        },
+        {
+          "id": "c",
+          "text": "If the ball is fully on grass even if inside the edge"
+        },
+        {
+          "id": "d",
+          "text": "Any time the ball is within the boundary, even if not touching sand"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "The ball is classed as being in the bunker if any part of it touches sand inside the edge of the bunker, no matter where the rest of the ball lies.",
+      "imagePrompt": "A golf ball resting half on sand and half on grass inside a bunker as a teenage girl holding an iron stands nearby deciding if it counts as in the bunker.",
+      "imageAlt": "A golf ball on the border of sand and grass in a bunker with a girl golfer checking.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "dark",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "grey",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-19.png",
+      "ruleNumber": "R7",
+      "ruleName": "Ball disappeared in the sand",
+      "group": "Bunker",
+      "title": "What can you do if your ball sinks into the bunker?",
+      "question": "After your shot, you can't see your ball because it's buried under the sand in a bunker. What are you allowed to do to find it?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Use your club or feet to search for it; if the ball moves, you must replace it and recreate the lie"
+        },
+        {
+          "id": "b",
+          "text": "Leave it hidden and play a different ball"
+        },
+        {
+          "id": "c",
+          "text": "Dig out the ball and just play it from where it ends up"
+        },
+        {
+          "id": "d",
+          "text": "Ask someone else to find your ball, but you can't move any sand"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You can carefully use your club or feet to find your buried ball. If you move it while searching, you must put it back where it was and recreate the original lie without penalty.",
+      "imagePrompt": "A teenage boy searching for a buried golf ball in a bunker, gently pushing sand with his club.",
+      "imageAlt": "A boy golfer using his club in a bunker to find a hidden ball.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "dropping_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "medium",
+        "clothingTopColour": "black",
+        "clothingBottomColour": "orange",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-19.png",
+      "ruleNumber": "R7/14",
+      "ruleName": "Identifying the ball",
+      "group": "Bunker",
+      "title": "How do you check if a ball in a bunker is yours?",
+      "question": "You find a golf ball in a bunker but aren't sure if it belongs to you. What is the correct way to check if it's your ball?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Mark the spot, then lift the ball to check, and recreate the lie afterwards"
+        },
+        {
+          "id": "b",
+          "text": "Pick up the ball right away without marking"
+        },
+        {
+          "id": "c",
+          "text": "Clean the ball completely before checking"
+        },
+        {
+          "id": "d",
+          "text": "Leave it untouched and keep searching"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You must mark the exact spot, lift the ball for identification, and then recreate the lie as closely as possible before playing.",
+      "imagePrompt": "A teenage girl golfer marking a spot with a tee next to a golf ball in a bunker before lifting it to check if it's hers.",
+      "imageAlt": "A girl golfer marking the spot and carefully picking up her ball in a bunker.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "lifting_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "black",
+        "clothingBottomColour": "blue",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-19.png",
+      "ruleNumber": "R12",
+      "ruleName": "Do not touch or test the sand",
+      "group": "Bunker",
+      "title": "What is not allowed before your bunker shot?",
+      "question": "Before playing from a bunker, which of these are you not allowed to do?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Touch the sand with your hand to see how soft it is"
+        },
+        {
+          "id": "b",
+          "text": "Make a practice swing that touches the sand"
+        },
+        {
+          "id": "c",
+          "text": "Rest your club on the sand behind your ball before hitting"
+        },
+        {
+          "id": "d",
+          "text": "Play your shot without touching the sand first"
+        },
+        {
+          "id": "e",
+          "text": "Lean on your club while standing outside the bunker"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "c"
+      ],
+      "explanation": "You are not allowed to test or touch the sand with your hand, touch the sand with your club during practice swings, or ground your club behind your ball before you hit.",
+      "imagePrompt": "A teenage boy golfer in a bunker making a practice swing that brushes the sand near his ball.",
+      "imageAlt": "A boy golfer in a bunker whose club touches sand in a practice swing.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "wedge",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "white",
+        "hat": false
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "012_001_When_is_a_ball_in_the_bunker",
+    "007_002_What_can_you_do_if_your_ball_sinks_into_the_bunker",
+    "714_003_How_do_you_check_if_a_ball_in_a_bunker_is_yours",
+    "012_004_What_is_not_allowed_before_your_bunker_shot"
+  ],
+  "updatedAtUtc": "2026-04-24T21:24:08.242Z"
+}

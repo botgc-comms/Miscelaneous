@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-10.png",
+  "ruleNumber": "R13",
+  "ruleName": "Ball wedged on the flagstick",
+  "group": "Ball wedged on the flagstick",
+  "title": "Ball wedged against the flagstick",
+  "question": "Your putt finishes with the ball wedged between the flagstick and the edge of the hole, with some of the ball below the lip. What is the ruling?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You must play the ball from where it stopped"
+    },
+    {
+      "id": "b",
+      "text": "You must remove the flagstick and replay the shot"
+    },
+    {
+      "id": "c",
+      "text": "The ball is considered holed"
+    },
+    {
+      "id": "d",
+      "text": "You get a penalty and remove the ball"
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "If your ball comes to rest wedged between the flagstick and the hole with part of it below the level of the lip, it's considered holed.",
+  "imagePrompt": "A teenage boy golfer standing on the green, watching as his golf ball is wedged between the flagstick and the rim of the hole, with part of the ball visible below the cup's edge.",
+  "imageAlt": "Golf ball wedged on the flagstick at the hole with a teenage golfer watching.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "dark",
+    "clothingTopColour": "purple",
+    "clothingBottomColour": "navy",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The ball is realistically wedged between the flagstick and hole with part below the lip, but slight additional cup detail could emphasize below-the-rim position even further.",
+      "Boy stands naturally, left-handed with a realistic putter and accurate kit—purple top, navy shorts, and cap.",
+      "One single believable golf ball and club. Proportions and posture are excellent.",
+      "Setting is a believable putting green in bright daylight."
+    ],
+    "repairPrompt": "Further emphasize part of the ball visible below the cup's rim by adding more visible cup edge height or perspective detail, making it clear the ball dips beneath the level of the putting surface."
+  }
+}

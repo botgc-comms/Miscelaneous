@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\019_003_What_if_your_dropped_ball_ends_up_back_in_the_same_spot\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:06:53.271Z",
+  "title": "What if your dropped ball ends up back in the same spot?",
+  "ruleNumber": "R19",
+  "ruleName": "Unplayable ball",
+  "durationSeconds": 217.152
+}

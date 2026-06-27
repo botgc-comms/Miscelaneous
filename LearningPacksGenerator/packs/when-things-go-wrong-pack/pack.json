@@ -1,0 +1,35 @@
+{
+  "id": "when-things-go-wrong",
+  "title": "When things go wrong",
+  "summary": "How to deal calmly with lost balls, bad holes, slow play, and frustration.",
+  "estimatedMinutes": 5,
+  "mandatoryFor": [],
+  "version": 1,
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "It happens to everyone",
+      "file": "pages/00-title.md"
+    },
+    {
+      "id": "01-lost-balls",
+      "title": "Lost balls",
+      "file": "pages/01-lost-balls.md"
+    },
+    {
+      "id": "02-bad-holes",
+      "title": "Bad holes",
+      "file": "pages/02-bad-holes.md"
+    },
+    {
+      "id": "03-slow-play",
+      "title": "Slow play",
+      "file": "pages/03-slow-play.md"
+    },
+    {
+      "id": "04-staying-calm",
+      "title": "Staying calm",
+      "file": "pages/04-staying-calm.md"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\005_004_What_to_Do_When_Play_Is_Suspended_Due_to_a_Thunderstorm\\metadata.json",
+  "generatedAtUtc": "2026-06-24T14:40:39.607Z",
+  "title": "What to Do When Play Is Suspended Due to a Thunderstorm",
+  "ruleNumber": "R5",
+  "ruleName": "Suspension of play/thunderstorm",
+  "durationSeconds": 184.624
+}

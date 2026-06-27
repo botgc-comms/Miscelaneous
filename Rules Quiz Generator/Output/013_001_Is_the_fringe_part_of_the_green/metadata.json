@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-04.png",
+  "ruleNumber": "R13",
+  "ruleName": "Green and fringe",
+  "group": "Green and fringe",
+  "title": "Is the fringe part of the green?",
+  "question": "If your ball comes to rest on the fringe just beside the green, is it treated as being on the putting green according to the rules?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, the fringe is part of the green"
+    },
+    {
+      "id": "b",
+      "text": "No, only the green itself counts"
+    },
+    {
+      "id": "c",
+      "text": "Only if any part of your ball touches the green and the fringe at the same time"
+    },
+    {
+      "id": "d",
+      "text": "It depends where your feet are standing"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "According to the rules, the fringe is not part of the putting green, even if it is right next to it. Only the area marked as the putting green counts.",
+  "imagePrompt": "A golf ball sits on the fringe close to the edge of the putting green with a flagstick in the hole. A teen girl golfer stands nearby looking at the ball.",
+  "imageAlt": "Ball on the fringe near putting green, with teen girl golfer.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "asian",
+    "skinTone": "medium",
+    "clothingTopColour": "red",
+    "clothingBottomColour": "blue",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": false,
+    "score": 65,
+    "issues": [
+      "Golfer is depicted as a teen girl instead of a boy (sceneSpec requires a teen boy).",
+      "Skin tone and facial features do not clearly represent Asian ethnicity with medium skin tone as required.",
+      "Otherwise, all major golf elements are correct: there is exactly one golf ball on the fringe, the putter has a realistic head, proportions are sound, posture is plausible, and clothing colours match red top, blue bottoms, and cap."
+    ],
+    "repairPrompt": "Change the golfer to a teenage Asian boy with medium skin tone while keeping the same clothing (red top, blue trousers or shorts), cap, and posture. Ensure the golfer's facial features, hairstyle, and build are clearly masculine and aligned with the sceneSpec. Maintain the current golf course, ball, putter, and pose."
+  }
+}

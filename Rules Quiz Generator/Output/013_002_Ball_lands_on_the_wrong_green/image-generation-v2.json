@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\013_002_Ball_lands_on_the_wrong_green\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:25:20.892Z",
+  "title": "Ball lands on the wrong green",
+  "ruleNumber": "R13",
+  "ruleName": "Wrong green",
+  "durationSeconds": 185.687
+}

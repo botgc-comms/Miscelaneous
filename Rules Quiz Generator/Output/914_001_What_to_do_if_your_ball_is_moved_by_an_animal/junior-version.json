@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\914_001_What_to_do_if_your_ball_is_moved_by_an_animal\\metadata.json",
+  "sourceImageName": "page-18.png",
+  "ruleNumber": "R9/14",
+  "ruleName": "Ball at rest moved by an outside influence",
+  "title": "What to do if your ball is moved by an animal",
+  "question": "A dog runs onto the course and moves your ball from where it was resting. What is the correct action under the Rules?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball from where the dog left it"
+    },
+    {
+      "id": "b",
+      "text": "Replace the ball as close as possible to its original spot, with no penalty"
+    },
+    {
+      "id": "c",
+      "text": "Add a penalty stroke and drop the ball"
+    },
+    {
+      "id": "d",
+      "text": "Skip the hole and move to the next one"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If an outside influence, such as a dog, moves your ball at rest, you must replace it as close as possible to its original spot with no penalty.",
+  "juniorVersion": {
+    "title": "What should you do if an animal moves your ball?",
+    "question": "Imagine a dog runs onto the course and kicks your golf ball away from where it was. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Play the ball from where the dog left it"
+      },
+      {
+        "id": "b",
+        "text": "Put the ball back to where it was before the dog moved it. No penalty."
+      },
+      {
+        "id": "c",
+        "text": "Add a penalty and drop the ball"
+      },
+      {
+        "id": "d",
+        "text": "Skip this hole and go to the next one"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If an animal moves your ball, you should put it back to where it was before. You don’t get a penalty.",
+    "vocabulary": [
+      {
+        "term": "Penalty",
+        "simpleMeaning": "A penalty is an extra shot added to your score because you broke a rule."
+      },
+      {
+        "term": "Replace",
+        "simpleMeaning": "Put your ball back where it was before."
+      },
+      {
+        "term": "Outside influence",
+        "simpleMeaning": "Something not part of the game, like an animal, person, or something blowing the ball."
+      }
+    ],
+    "teachingTip": "Explain that if something outside the game (like a dog or bird) moves the ball, golfers always put the ball back where it was.",
+    "likelyMisconceptions": [
+      "Kids may think they have to play the ball from where the animal moved it.",
+      "Some may think there is always a penalty when a ball is moved."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:28:17.177Z",
+  "model": "gpt-4.1"
+}

@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-09.png",
+  "ruleNumber": "R11/13",
+  "ruleName": "Ball hits the flagstick or the person tending it",
+  "group": "Ball hits the flagstick or the person tending it",
+  "title": "Flagstick Hit Accidentally – What Happens?",
+  "question": "You're putting and your ball rolls into a flagstick lying beside the green after it was removed. What is the ruling?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You get a penalty and must replay the stroke"
+    },
+    {
+      "id": "b",
+      "text": "There is no penalty, play the ball as it lies"
+    },
+    {
+      "id": "c",
+      "text": "Move the flagstick and replay the shot"
+    },
+    {
+      "id": "d",
+      "text": "Add two penalty strokes and continue"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If your ball accidentally hits the flagstick after it has been properly removed and placed on the ground, there is no penalty. You play the ball as it lies.",
+  "imagePrompt": "A teenage girl golfer watches her ball as it rolls into a flagstick lying beside the hole on a sunny putting green.",
+  "imageAlt": "A golf ball rolling into a flagstick lying next to the hole on the green, with a teenage golfer watching.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "red",
+    "clothingBottomColour": "grey",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Golfer's cap is blue instead of a specified alternate colour (should not default to blue based on prompt instructions)."
+    ],
+    "repairPrompt": "Change the golfer's cap to a colour other than blue (e.g., white, grey, or red) to avoid defaulting to the same appearance across images. Keep all other details as shown, ensuring realistic posture, a white teenage boy with medium skin tone, red top, grey trousers or shorts, realistic putter, one golf ball, golf course accuracy, and a flagstick lying beside the hole."
+  }
+}

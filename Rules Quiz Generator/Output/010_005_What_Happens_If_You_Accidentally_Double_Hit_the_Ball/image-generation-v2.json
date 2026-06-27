@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\010_005_What_Happens_If_You_Accidentally_Double_Hit_the_Ball\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:15:51.021Z",
+  "title": "What Happens If You Accidentally Double-Hit the Ball?",
+  "ruleNumber": "R10",
+  "ruleName": "Double hit",
+  "durationSeconds": 278.746
+}

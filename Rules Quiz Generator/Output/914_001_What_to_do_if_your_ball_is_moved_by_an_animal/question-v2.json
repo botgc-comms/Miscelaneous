@@ -1,0 +1,59 @@
+{
+  "generatedAtUtc": "2026-06-26T11:23:13.501Z",
+  "model": "gpt-4.1",
+  "reviewerInstructions": "should be a squirell",
+  "sourceMetadataPath": "output\\914_001_What_to_do_if_your_ball_is_moved_by_an_animal\\metadata.json",
+  "sourceQuestionPath": null,
+  "original": {
+    "title": "What to do if your ball is moved by an animal",
+    "question": "A dog runs onto the course and moves your ball from where it was resting. What is the correct action under the Rules?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Play the ball from where the dog left it"
+      },
+      {
+        "id": "b",
+        "text": "Replace the ball as close as possible to its original spot, with no penalty"
+      },
+      {
+        "id": "c",
+        "text": "Add a penalty stroke and drop the ball"
+      },
+      {
+        "id": "d",
+        "text": "Skip the hole and move to the next one"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If an outside influence, such as a dog, moves your ball at rest, you must replace it as close as possible to its original spot with no penalty."
+  },
+  "suggestion": {
+    "title": "What to do if your ball is moved by a squirrel",
+    "question": "A squirrel runs onto the course and moves your ball from where it was resting. What is the correct action under the Rules?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Play the ball from where the squirrel left it"
+      },
+      {
+        "id": "b",
+        "text": "Replace the ball as close as possible to its original spot, with no penalty"
+      },
+      {
+        "id": "c",
+        "text": "Add a penalty stroke and drop the ball"
+      },
+      {
+        "id": "d",
+        "text": "Skip the hole and move to the next one"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If an outside influence, such as a squirrel, moves your ball at rest, you must replace it as close as possible to its original spot with no penalty."
+  }
+}

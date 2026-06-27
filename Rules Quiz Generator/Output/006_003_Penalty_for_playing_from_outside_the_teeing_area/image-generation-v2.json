@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\006_003_Penalty_for_playing_from_outside_the_teeing_area\\metadata.json",
+  "generatedAtUtc": "2026-06-24T14:56:45.500Z",
+  "title": "Penalty for playing from outside the teeing area",
+  "ruleNumber": "6",
+  "ruleName": "Playing from outside the teeing area",
+  "durationSeconds": 177.43
+}

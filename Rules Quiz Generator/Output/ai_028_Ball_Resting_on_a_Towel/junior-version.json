@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_028_Ball_Resting_on_a_Towel\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "15.2a(1)",
+  "ruleName": "Relief from a Movable Obstruction",
+  "title": "Ball Resting on a Towel",
+  "question": "Your approach shot comes to rest on a towel left on the course by another player. What is the correct ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You must play the ball as it lies on the towel."
+    },
+    {
+      "id": "b",
+      "text": "You may remove the towel. If the ball moves as a result, replace it on its original spot without penalty."
+    },
+    {
+      "id": "c",
+      "text": "You must take free relief and drop the ball within one club-length."
+    },
+    {
+      "id": "d",
+      "text": "You receive a one-stroke penalty if the ball moves when the towel is removed."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "A towel is a movable obstruction. You may remove it at any time. If removing the towel causes your ball to move, there is no penalty. Simply replace the ball on its original spot before making your next stroke. Rule Reference: Rule 15.2a(1).",
+  "juniorVersion": {
+    "title": "Ball Sitting on a Towel",
+    "question": "Your golf ball stops on top of a towel that someone left on the grass. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You have to hit the ball while it's on the towel."
+      },
+      {
+        "id": "b",
+        "text": "You can move the towel. If the ball rolls or moves when you do, just put the ball back where it was. No penalty."
+      },
+      {
+        "id": "c",
+        "text": "You must drop the ball somewhere else for free, using one club-length."
+      },
+      {
+        "id": "d",
+        "text": "If the ball moves when you take away the towel, you get a one-shot penalty."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "A towel is something you can move. You can take it away. If your ball moves while you do this, you won't get in trouble. Just put your ball back where it was before you play your shot.",
+    "vocabulary": [
+      {
+        "term": "Movable Obstruction",
+        "simpleMeaning": "Anything on the course, like a towel or can, that isn’t stuck to the ground and can be moved."
+      }
+    ],
+    "teachingTip": "Show children a towel or bottle on the ground and ask them what they could do if their ball lands on it, helping them see what a movable obstruction is.",
+    "likelyMisconceptions": [
+      "Children may think they have to play the ball from on top of the towel.",
+      "They may think it's always a penalty if the ball moves."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:12:11.633Z",
+  "model": "gpt-4.1"
+}

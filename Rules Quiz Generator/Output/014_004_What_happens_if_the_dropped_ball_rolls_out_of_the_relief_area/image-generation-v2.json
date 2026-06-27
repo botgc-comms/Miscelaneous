@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\014_004_What_happens_if_the_dropped_ball_rolls_out_of_the_relief_area\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:34:17.101Z",
+  "title": "What happens if the dropped ball rolls out of the relief area?",
+  "ruleNumber": "14",
+  "ruleName": "Dropping and re-dropping",
+  "durationSeconds": 195.068
+}

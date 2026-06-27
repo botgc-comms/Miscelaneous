@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "16.1",
+  "ruleName": "Relief from Abnormal Course Conditions (Including Immovable Obstructions)",
+  "group": "General Play",
+  "title": "Sprinkler Head on Line of Play Off the Putting Green",
+  "question": "Your ball lies just off the putting green and you wish to putt towards the hole. A sprinkler head is directly on your line of play between your ball and the hole, but it does not interfere with your lie, stance or area of intended swing. What is the correct ruling?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You are entitled to free relief because the sprinkler head is on your line of play."
+    },
+    {
+      "id": "b",
+      "text": "You are entitled to free relief because you are using a putter."
+    },
+    {
+      "id": "c",
+      "text": "You are not entitled to free relief because the sprinkler head does not interfere with your lie, stance or area of intended swing."
+    },
+    {
+      "id": "d",
+      "text": "You may move the sprinkler head before playing."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "You are not entitled to free relief when an immovable obstruction, such as a sprinkler head, is only on your line of play but does not interfere with your lie, stance or area of intended swing. (Rule 16.1a)",
+  "imagePrompt": "Show a modern, semi-realistic illustration (75% realistic, 25% stylised) in junior golf quiz style. A golfer stands just off the putting green with a putter, preparing a shot. The golf ball rests just off the edge of a neatly trimmed green, with a sprinkler head clearly visible between the ball and the flagstick in the background, directly on the line of play. The player's intended stance and swing are not affected by the sprinkler head. The scene should clearly depict the layout but must not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer with a putter stands just off the edge of a putting green preparing to play, with a golf ball close to the green fringe. A sprinkler head is directly between the ball and the hole, but does not interfere with the golfer's lie, stance or swing.",
+  "sceneSpec": {
+    "setting": "Edge of a putting green on a well-kept golf course, with short grass on the green and slightly longer grass just off it.",
+    "players": "One golfer preparing to putt from just off the green, holding a putter and focusing on the situation.",
+    "ballPosition": "Golf ball resting just off the putting green, a short distance from the fringe.",
+    "ruleMoment": "The golfer is evaluating how to play the shot with the sprinkler head directly in the line between the ball and the hole, but not interfering with the player's stance or swing.",
+    "educationalFocus": "Clarifies relief is not given when an immovable obstruction is only on the line of play and does not interfere with lie, stance or area of intended swing.",
+    "mustShow": [
+      "A golf ball just off the green",
+      "A sprinkler head between the ball and the hole",
+      "The golfer preparing to putt, with normal stance and swing unobstructed"
+    ],
+    "mustNotShow": [
+      "Any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles"
+    ]
+  }
+}

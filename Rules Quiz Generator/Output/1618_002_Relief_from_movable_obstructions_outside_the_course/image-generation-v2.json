@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\1618_002_Relief_from_movable_obstructions_outside_the_course\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:15:31.708Z",
+  "title": "Relief from movable obstructions outside the course",
+  "ruleNumber": "16/18",
+  "ruleName": "Player out of bounds but ball on the course",
+  "durationSeconds": 194.621
+}

@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "pageb-01.png",
+  "ruleNumber": "16/18",
+  "ruleName": "Player out of bounds but ball on the course",
+  "group": "Player out of bounds but ball on the course",
+  "type": "multiple_choice",
+  "imagePrompt": "A teenage girl golfer stands with both feet out of bounds, but her golf ball sits just inside the fairway boundary marked by a white stake. She prepares her swing.",
+  "imageAlt": "Girl golfer standing out of bounds, preparing to hit a ball that is on the fairway inside the white boundary line.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "addressing_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "white",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "medium",
+    "clothingTopColour": "red",
+    "clothingBottomColour": "white",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The girl's stance and address position are appropriate and physically plausible for golf.",
+      "She is outside the white stake (out of bounds) while the ball is inside (in bounds), matching the rule explanation.",
+      "Only one golf ball is visible and its size and position are accurate relative to club and golfer.",
+      "She is holding one iron club with a single, realistic metal head and believably proportioned shaft and grip.",
+      "The white stake marking the boundary is the correct color and realistic.",
+      "Setting, clothing colors, ethnicity, and skin tone are all consistent with the prompt.",
+      "Golf course features (fairway, rough) are believable."
+    ],
+    "repairPrompt": "Ensure the club is held clearly in a left-handed position for a left-handed swing. Make slight adjustments to hand and club orientation if necessary to emphasize left-handedness."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Can your feet be out of bounds when you hit the ball?",
+      "question": "Your golf ball is just inside the white out of bounds line, but to hit it you need to stand with your feet on the other side of the line, where it is out of bounds. Can you do this?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, you can stand out of bounds to hit a ball that is on the course."
+        },
+        {
+          "id": "b",
+          "text": "No, your feet must stay on the course when you play."
+        },
+        {
+          "id": "c",
+          "text": "Yes, but only if part of your feet are still on the course."
+        },
+        {
+          "id": "d",
+          "text": "No, both you and your ball must stay inside the line."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "You can stand out of bounds when you hit the ball, as long as the ball itself is still on the course. Only the ball needs to be on the right side of the line.",
+      "vocabulary": [
+        {
+          "term": "out of bounds",
+          "simpleMeaning": "A place marked on the course, usually with white lines or posts, where you cannot play your ball."
+        },
+        {
+          "term": "boundary line",
+          "simpleMeaning": "The white line or markers that show where out of bounds starts."
+        }
+      ],
+      "teachingTip": "Show children the white line or posts, put a ball just inside, and ask them to try standing outside the line to hit. Ask which part must stay on the course.",
+      "likelyMisconceptions": [
+        "Children may think their feet also have to stay on the course.",
+        "They might believe both the ball and the player must be inside the line."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Standing out of bounds to play a ball",
+      "question": "Your ball is lying just inside the boundary line on the fairway, but to take your next shot, you need to stand with your feet outside the white out of bounds line. Is this allowed?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, you can stand out of bounds to play a ball that is still on the course."
+        },
+        {
+          "id": "b",
+          "text": "No, you must keep your feet on the course when hitting."
+        },
+        {
+          "id": "c",
+          "text": "Yes, but only if part of your feet are still in bounds."
+        },
+        {
+          "id": "d",
+          "text": "No, both you and the ball must be within the boundary."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "You are allowed to stand out of bounds to play a ball that is in bounds, as only the position of the ball matters."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "1618_001_Standing_out_of_bounds_to_play_a_ball",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:53.759Z"
+  }
+}

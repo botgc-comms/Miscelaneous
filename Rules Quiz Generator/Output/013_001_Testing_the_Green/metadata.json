@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-07.png",
+  "ruleNumber": "R13",
+  "ruleName": "Putting Green",
+  "group": "Putting Green",
+  "title": "Testing the Green",
+  "question": "Before putting, are you allowed to test the putting green by rolling a ball or making the surface rough with your hand?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, both actions are allowed"
+    },
+    {
+      "id": "b",
+      "text": "No, neither action is allowed"
+    },
+    {
+      "id": "c",
+      "text": "Only rolling a ball is allowed"
+    },
+    {
+      "id": "d",
+      "text": "Only making the surface rough is allowed"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You are not allowed to test the green by rolling a ball or roughening the surface. Doing so results in a two-stroke penalty.",
+  "imagePrompt": "A teenage girl on the putting green, kneeling beside her golf ball, hesitating with her hand close to the grass as if unsure about touching it.",
+  "imageAlt": "Teen girl near her ball on the green, hand close to the surface, looking uncertain.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "dark",
+    "clothingTopColour": "white",
+    "clothingBottomColour": "green",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Minor ambiguity in handedness: golfer's grip is slightly ambiguous but likely right-handed."
+    ],
+    "repairPrompt": "Ensure the boy's putting grip and stance are unambiguously right-handed, with the right hand lower on the club shaft than the left."
+  }
+}

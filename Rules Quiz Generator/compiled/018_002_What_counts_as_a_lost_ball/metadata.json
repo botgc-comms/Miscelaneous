@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-18.png",
+  "ruleNumber": "R18",
+  "ruleName": "Lost ball",
+  "group": "Lost ball",
+  "type": "multiple_choice",
+  "imagePrompt": "A teenage boy golfer in the rough searches for his ball among trees and then prepares to replay his previous shot from the original spot with his iron.",
+  "imageAlt": "A boy golfer looks for a lost ball in the trees and walks back to replay his shot.",
+  "sceneSpec": {
+    "setting": "rough",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "replaying_shot",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "dark",
+    "clothingTopColour": "red",
+    "clothingBottomColour": "white",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 96,
+    "issues": [
+      "The scene lacks a strong indication of deep rough or dense trees, making it look closer to semi-rough than a truly 'lost ball' scenario."
+    ],
+    "repairPrompt": "Increase the thickness and density of the rough grass slightly, and add more prominent and closer trees in the background and sides to create a sense of a challenging search area. Keep all other details the same."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What happens if you lose your ball?",
+      "question": "You hit your ball into the trees and look for it for 4 minutes, but can't find it. What should you do now?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop a ball near where it went missing and keep playing without a penalty"
+        },
+        {
+          "id": "b",
+          "text": "Keep looking for as long as you want until you find your ball"
+        },
+        {
+          "id": "c",
+          "text": "Go back to where you last hit your shot, drop a new ball within one club-length, and add one extra shot"
+        },
+        {
+          "id": "d",
+          "text": "Start playing a new ball from any spot you like on the course"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "If you can’t find your ball after looking for 3 minutes, it is called a lost ball. You must go back to where you last hit your shot, drop a ball within one club-length, and count one extra shot.",
+      "vocabulary": [
+        {
+          "term": "club-length",
+          "simpleMeaning": "The length of your golf club. When dropping a ball, you can drop it within this distance from a set spot."
+        },
+        {
+          "term": "penalty stroke",
+          "simpleMeaning": "An extra shot you have to add to your score when you break a rule."
+        },
+        {
+          "term": "lost ball",
+          "simpleMeaning": "When you can't find your ball after looking for 3 minutes."
+        }
+      ],
+      "teachingTip": "Remind children to remember how long they are allowed to look for their ball and to know where they last hit their shot.",
+      "likelyMisconceptions": [
+        "Children might think they can keep looking for their ball as long as they want.",
+        "They may believe they can drop a ball anywhere if their ball is lost."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "What counts as a lost ball?",
+      "question": "You hit your ball deep into the trees and spend 4 minutes searching but can't find it. What must you do under the Rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop a ball near where it disappeared with no penalty"
+        },
+        {
+          "id": "b",
+          "text": "Continue searching until you find it"
+        },
+        {
+          "id": "c",
+          "text": "Go back to where you last played, drop a ball within one club-length, and add one penalty stroke"
+        },
+        {
+          "id": "d",
+          "text": "Play a new ball from anywhere you like"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "If you cannot find your ball within three minutes, it is lost. You must return to where you last played, drop a ball within one club-length, and take a one-stroke penalty."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "018_002_What_counts_as_a_lost_ball",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:53.554Z"
+  }
+}

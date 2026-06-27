@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\015_004_Moving_artificial_objects\\metadata.json",
+  "sourceImageName": "page-20.png",
+  "ruleNumber": "R15",
+  "ruleName": "Movable obstructions",
+  "title": "Moving artificial objects",
+  "question": "You spot a rake next to your ball in the rough. If you move the rake and your ball rolls slightly, what must you do?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Replace the ball with no penalty."
+    },
+    {
+      "id": "b",
+      "text": "Add a 1-stroke penalty and replace the ball."
+    },
+    {
+      "id": "c",
+      "text": "Play the ball from where it comes to rest, with no penalty."
+    },
+    {
+      "id": "d",
+      "text": "Leave the rake where it is and play as it lies."
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "If you accidentally move your ball while moving a movable obstruction like a rake, you simply put the ball back with no penalty.",
+  "juniorVersion": {
+    "title": "What to Do if You Move Your Ball Moving a Rake",
+    "question": "You see a rake next to your ball in the long grass. You move the rake, and your ball rolls a little bit. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Put your ball back where it was, no penalty."
+      },
+      {
+        "id": "b",
+        "text": "Add one shot to your score and put the ball back."
+      },
+      {
+        "id": "c",
+        "text": "Play the ball from its new place, no penalty."
+      },
+      {
+        "id": "d",
+        "text": "Leave the rake and hit the ball as it is."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "If your ball moves because you moved a rake or something like it, you just put your ball back to where it was. You don’t get a penalty.",
+    "vocabulary": [
+      {
+        "term": "Rake",
+        "simpleMeaning": "A tool for smoothing the sand in bunkers (sandy areas on the golf course)."
+      },
+      {
+        "term": "Penalty",
+        "simpleMeaning": "An extra shot added to your score for breaking a rule."
+      },
+      {
+        "term": "Rough",
+        "simpleMeaning": "The longer grass next to the fairway."
+      },
+      {
+        "term": "Movable obstruction",
+        "simpleMeaning": "Something you can move, like a rake or a stick, that isn’t part of the course."
+      }
+    ],
+    "teachingTip": "Show children how to carefully lift and move objects like rakes so they understand when and how to put the ball back if needed.",
+    "likelyMisconceptions": [
+      "Children may think they always get a penalty if the ball moves.",
+      "They might also think they have to play the ball from where it rolled to, even if it was moved by a rake."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:51.516Z",
+  "model": "gpt-4.1"
+}

@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-06.png",
+  "ruleNumber": "6",
+  "ruleName": "Playing in the wrong order",
+  "group": "Playing in the wrong order",
+  "title": "What happens if you tee off in the wrong order?",
+  "question": "In a stroke play competition, you accidentally play your tee shot before it's your turn. What is the correct outcome?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You must replay the shot with a one-stroke penalty added."
+    },
+    {
+      "id": "b",
+      "text": "The shot stands and there is no penalty."
+    },
+    {
+      "id": "c",
+      "text": "You are disqualified from the hole."
+    },
+    {
+      "id": "d",
+      "text": "You have to replay the shot, but there is no penalty."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "In stroke play, playing out of order is allowed and there is no penalty. Your shot counts as played.",
+  "imagePrompt": "A teenage girl golfer on the teeing area having just played a shot, while two other players watch and wait behind her. Both tee markers are clearly visible showing a tee box setting.",
+  "imageAlt": "Teen girl golfer playing out of turn on the tee with two other junior golfers watching and the tee markers visible.",
+  "sceneSpec": {
+    "setting": "teeing_area",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "addressing_ball",
+    "clubInHand": "driver",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": true,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "light",
+    "clothingTopColour": "white",
+    "clothingBottomColour": "black",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Tee markers are present and clearly visible, but their color and shape (both a single reddish-brown tone and cylindrical) could more strongly match typical real-world tee marker designs for authenticity."
+    ],
+    "repairPrompt": "Tee markers should be realistic in both color and shape as commonly seen on golf courses, such as globe, block, or other standard forms with colors like white, yellow, blue, or red."
+  }
+}

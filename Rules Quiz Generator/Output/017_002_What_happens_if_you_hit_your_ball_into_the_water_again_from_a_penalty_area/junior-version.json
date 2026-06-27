@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\017_002_What_happens_if_you_hit_your_ball_into_the_water_again_from_a_penalty_area\\metadata.json",
+  "sourceImageName": "page-29.png",
+  "ruleNumber": "R17",
+  "ruleName": "Penalty area – Ball lost or not out",
+  "title": "What happens if you hit your ball into the water again from a penalty area?",
+  "question": "You play from a penalty area and your ball is lost or goes straight into the water in the penalty area. What should you do?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Drop a new ball outside the penalty area with no penalty"
+    },
+    {
+      "id": "b",
+      "text": "Proceed under the penalty area rules with a one-stroke penalty"
+    },
+    {
+      "id": "c",
+      "text": "Play your next shot from the water with no penalty"
+    },
+    {
+      "id": "d",
+      "text": "Replay the shot but add two penalty strokes"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You must use the penalty area relief options and take a one-stroke penalty.",
+  "juniorVersion": {
+    "title": "What do you do if your ball goes back into the water from the pond or stream?",
+    "question": "You hit your ball from the edge of the pond or stream, but it goes back into the water and you can't find it. What should you do next?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Drop a new ball outside the water with no penalty"
+      },
+      {
+        "id": "b",
+        "text": "Follow the penalty area rules and add one penalty shot"
+      },
+      {
+        "id": "c",
+        "text": "Try to hit your next shot from the water with no penalty"
+      },
+      {
+        "id": "d",
+        "text": "Hit the shot again from the last spot and add two penalty shots"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "You need to use the rules for the penalty area and add one extra shot to your score. This is what happens if your ball is lost or in the water again.",
+    "vocabulary": [
+      {
+        "term": "penalty area",
+        "simpleMeaning": "A place on the course with water, like a pond or stream, marked with red or yellow lines or stakes."
+      },
+      {
+        "term": "penalty shot",
+        "simpleMeaning": "An extra shot added to your score as a punishment."
+      }
+    ],
+    "teachingTip": "Show children where the penalty area is and what the coloured stakes or lines mean. Practise what to do when the ball goes into the water.",
+    "likelyMisconceptions": [
+      "Children might think they can drop the ball on the fairway with no penalty.",
+      "Children might try to play from the water with no penalty.",
+      "Some might think they have to hit again and add two shots."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:20.118Z",
+  "model": "gpt-4.1"
+}

@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-12.png",
+  "ruleNumber": "R9",
+  "ruleName": "Ball at rest is moved",
+  "group": "Ball at rest is moved",
+  "title": "Ball moved while preparing a stroke",
+  "question": "If you accidentally move your ball when taking a practice swing on the fairway (not on the tee or green), what is the correct action?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Replace the ball and add a one-stroke penalty"
+    },
+    {
+      "id": "b",
+      "text": "Replace the ball with no penalty"
+    },
+    {
+      "id": "c",
+      "text": "Play the ball from its new place"
+    },
+    {
+      "id": "d",
+      "text": "Drop a new ball and add a penalty stroke"
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "If you move your ball by accident during a practice swing away from the teeing area or green, you must replace it and add a one-stroke penalty.",
+  "imagePrompt": "A teenage right-handed girl on the fairway is practising her swing with an iron, her ball accidentally moved slightly from its spot.",
+  "imageAlt": "Teen girl with an iron on the fairway, ball displaced by a practice swing.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "addressing_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "orange",
+    "clothingBottomColour": "red",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": false,
+    "score": 75,
+    "issues": [
+      "Golfer is not addressing the ball with a left-handed posture—the stance, club grip, and direction appear right-handed, contradicting the requirement for a left-handed golfer.",
+      "The club and ball are otherwise accurate, but the golfer's handedness is essential to match the prompt correction."
+    ],
+    "repairPrompt": "Ensure the teenage girl is addressing the ball as a left-handed golfer: her right hand is the lowest on the grip, her right side is closest to the target, and her stance faces opposite that of a right-handed golfer. Adjust her body orientation and grip accordingly."
+  }
+}

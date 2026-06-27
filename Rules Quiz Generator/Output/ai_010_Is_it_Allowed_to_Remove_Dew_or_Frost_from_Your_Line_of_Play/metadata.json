@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "8.1a",
+  "ruleName": "Actions That Improve Conditions Affecting the Stroke",
+  "group": "General Play",
+  "title": "Is it Allowed to Remove Dew or Frost from Your Line of Play?",
+  "question": "Early on a cold morning, your ball is on the fairway. There is a layer of frost and dew on the grass between your ball and the hole. Before playing, you wipe the frost away with your towel to make the shot easier. What is the correct ruling?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "This is allowed because dew and frost are temporary water."
+    },
+    {
+      "id": "b",
+      "text": "This is allowed because you are only cleaning the grass."
+    },
+    {
+      "id": "c",
+      "text": "You receive the general penalty because you improved the conditions affecting your stroke."
+    },
+    {
+      "id": "d",
+      "text": "You receive a one-stroke penalty."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "Dew, frost and water are not loose impediments, so you cannot deliberately remove them to improve the conditions affecting your stroke. Brushing away dew or frost from your line of play or the area where your club will swing is a breach of Rule 8. However, there is no penalty if you accidentally remove dew or frost while taking a normal stance or making your stroke.",
+  "imagePrompt": "Create a polished, modern semi-realistic golf illustration (about 75% realistic and 25% stylised) in the established junior golf quiz style. Show an early morning golf scene with visible dew and frost on the fairway grass. A golfer is shown about to play a shot, but is using a towel to wipe away a visible patch of dew and frost directly on the line between their ball (lying on the fairway) and the hole. The focus is on the action of wiping away the frost and dew along the intended path. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer on a frosty fairway uses a towel to wipe away a patch of dew and frost from the grass between their ball and the hole on a cold morning.",
+  "sceneSpec": {
+    "setting": "Cool early morning on a golf course fairway, with visible frost and dew on the grass.",
+    "players": "One golfer preparing to play a shot, holding a towel.",
+    "ballPosition": "Golf ball at rest on the frosty grass in the fairway.",
+    "ruleMoment": "The golfer is actively wiping away a patch of dew and frost from the grass on the line between their ball and the hole.",
+    "educationalFocus": "Clarifies that players must not remove dew or frost to improve playing conditions on their line of play under Rule 8.1a.",
+    "mustShow": [
+      "Visible layer of frost and dew on the fairway grass",
+      "Player using a towel to wipe away dew and frost directly on the line between ball and hole",
+      "Golf ball in the fairway"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  }
+}

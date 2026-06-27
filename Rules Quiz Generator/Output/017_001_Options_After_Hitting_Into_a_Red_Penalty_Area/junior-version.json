@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\017_001_Options_After_Hitting_Into_a_Red_Penalty_Area\\metadata.json",
+  "sourceImageName": "page-26.png",
+  "ruleNumber": "17",
+  "ruleName": "Penalty Areas",
+  "title": "Options After Hitting Into a Red Penalty Area",
+  "question": "Your ball lands in a red penalty area. Which of the following relief options is available for a red penalty area but not for a yellow penalty area?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball as it lies, if possible."
+    },
+    {
+      "id": "b",
+      "text": "Drop a ball within two club-lengths of where it last crossed into the area, for one penalty stroke."
+    },
+    {
+      "id": "c",
+      "text": "Replay the shot from your previous spot, for one penalty stroke."
+    },
+    {
+      "id": "d",
+      "text": "Drop anywhere on the course for one penalty stroke."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "Only red penalty areas allow the option to drop a ball within two club-lengths of where it last crossed into the area, with a one-stroke penalty. This option is not allowed for yellow penalty areas.",
+  "juniorVersion": {
+    "title": "What Can You Do When Your Ball Goes Into a Red Penalty Area?",
+    "question": "Your ball goes into a red penalty area, like a pond or puddle with red lines. What special thing can you do with a red penalty area, but not a yellow one?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Try to hit the ball from where it landed, if you can."
+      },
+      {
+        "id": "b",
+        "text": "Drop your ball within two club-lengths from where it crossed the edge, and take one penalty shot."
+      },
+      {
+        "id": "c",
+        "text": "Go back and play from where you last hit, with one penalty shot."
+      },
+      {
+        "id": "d",
+        "text": "Drop the ball anywhere you want on the course for one penalty shot."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "With a red penalty area, you are allowed to drop your ball within two club-lengths of where it entered the area, and then you add one penalty stroke. You can't do this with a yellow penalty area.",
+    "vocabulary": [
+      {
+        "term": "Penalty Area",
+        "simpleMeaning": "A place on the golf course marked by yellow or red lines, like a pond, puddle, or stream, where special rules are used."
+      },
+      {
+        "term": "Club-length",
+        "simpleMeaning": "The length of your longest club, usually your driver."
+      },
+      {
+        "term": "Penalty Stroke",
+        "simpleMeaning": "An extra shot added to your score because of a rule."
+      }
+    ],
+    "teachingTip": "Use coloured ropes or chalk to show red and yellow areas on a practice field, so kids can see the difference and practise the drops.",
+    "likelyMisconceptions": [
+      "Some juniors might think the two club-length drop is allowed for yellow penalty areas, but it is only for red penalty areas.",
+      "Kids might think they can drop the ball anywhere for a penalty stroke, but there are special rules for where you drop."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:15.661Z",
+  "model": "gpt-4.1"
+}

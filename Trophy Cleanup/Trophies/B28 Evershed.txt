@@ -1,0 +1,5 @@
+{
+  "text": ["Burton Golf Club", "Presidents", "Challenge Cup"],
+  "allowText": true,
+  "notes": ""
+}

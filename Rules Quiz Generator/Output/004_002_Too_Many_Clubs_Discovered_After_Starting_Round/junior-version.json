@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\004_002_Too_Many_Clubs_Discovered_After_Starting_Round\\metadata.json",
+  "sourceImageName": "page-05.png",
+  "ruleNumber": "R4",
+  "ruleName": "Maximum of 14 clubs",
+  "title": "Too Many Clubs Discovered After Starting Round",
+  "question": "During your round you find that you have more than 14 clubs in your bag. What should you do right away to avoid further penalties?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Declare any extra clubs out of play immediately"
+    },
+    {
+      "id": "b",
+      "text": "Keep using all the clubs"
+    },
+    {
+      "id": "c",
+      "text": "Wait until you finish the hole to remove the extras"
+    },
+    {
+      "id": "d",
+      "text": "Give the extra clubs to another player"
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "You must instantly declare any clubs over the 14-club limit out of play as soon as you realise it. Leaving them in play will cause additional penalties for each hole you play with too many clubs.",
+  "juniorVersion": {
+    "title": "What If You Have Too Many Clubs in Your Bag?",
+    "question": "You start your game and notice you have more than 14 clubs in your bag. What should you do right away so you don't get into more trouble?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Tell someone you have extra clubs and stop using them straight away"
+      },
+      {
+        "id": "b",
+        "text": "Keep playing with all your clubs"
+      },
+      {
+        "id": "c",
+        "text": "Wait until the hole is finished to put away the extra clubs"
+      },
+      {
+        "id": "d",
+        "text": "Give the extra clubs to another player to use"
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "If you find out you have more than 14 clubs in your bag, you must say which clubs you will not use anymore right away. If you keep playing with too many clubs, you might get into more trouble.",
+    "vocabulary": [
+      {
+        "term": "Club",
+        "simpleMeaning": "A golf stick you use to hit the ball."
+      }
+    ],
+    "teachingTip": "You can ask the child to look in their bag and count their clubs before starting to play.",
+    "likelyMisconceptions": [
+      "Children may think they can finish the hole before taking out the extra clubs.",
+      "They might think it's okay if another player uses their extra clubs.",
+      "Some will think it doesn't matter if they have more than 14 if they don’t use them."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:17.014Z",
+  "model": "gpt-4.1"
+}

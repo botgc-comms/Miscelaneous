@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-07.png",
+  "ruleNumber": "R13",
+  "ruleName": "Putting Green",
+  "group": "Putting Green",
+  "title": "Repairing Damage on the Green",
+  "question": "On the putting green, which types of damage can you repair without penalty?",
+  "type": "multi_select",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Pitch-marks and spike marks"
+    },
+    {
+      "id": "b",
+      "text": "Aeration holes"
+    },
+    {
+      "id": "c",
+      "text": "Old hole plugs"
+    },
+    {
+      "id": "d",
+      "text": "Natural imperfections"
+    }
+  ],
+  "correctAnswer": [
+    "a",
+    "c"
+  ],
+  "correctAnswers": [
+    "a",
+    "c"
+  ],
+  "explanation": "You are permitted to fix pitch-marks, spike marks, and old hole plugs, but not aeration holes or natural imperfections.",
+  "imagePrompt": "A teenage boy using a repair tool to fix a pitch mark next to his ball on the putting green.",
+  "imageAlt": "Teen boy repairing a pitch mark beside his golf ball on the putting green.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "asian",
+    "skinTone": "medium",
+    "clothingTopColour": "purple",
+    "clothingBottomColour": "grey",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [],
+    "repairPrompt": "No repair necessary. All scene and equipment elements are correct and visually strong."
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\039_002_Conceding_putts_in_stroke_play\\metadata.json",
+  "sourceImageName": "pageb-11.png",
+  "ruleNumber": "R3/9",
+  "ruleName": "Putt conceded/ball not holed",
+  "title": "Conceding putts in stroke play",
+  "question": "In stroke play, what happens if a player picks up their ball before holing out, thinking their score is already made?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Their score for the hole is finished as it stands."
+    },
+    {
+      "id": "b",
+      "text": "They must replace the ball, add one penalty stroke, and finish the hole."
+    },
+    {
+      "id": "c",
+      "text": "They get a two-stroke penalty but do not replay the shot."
+    },
+    {
+      "id": "d",
+      "text": "They are disqualified from the competition."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "In stroke play, you must finish out the hole. If you pick up your ball before finishing, you need to put it back, add a penalty stroke, and finish the hole.",
+  "juniorVersion": {
+    "title": "What if you pick up your ball before finishing the hole?",
+    "question": "You are playing a normal golf match and you pick up your ball next to the hole before hitting it in, thinking you're done. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Your score for this hole is finished and you are done."
+      },
+      {
+        "id": "b",
+        "text": "You must put your ball back, add one extra shot to your score, and putt the ball into the hole."
+      },
+      {
+        "id": "c",
+        "text": "You get two extra shots but you don’t have to finish the hole."
+      },
+      {
+        "id": "d",
+        "text": "You can’t play in the game anymore."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "In golf, you have to keep playing until your ball is in the hole. If you pick up your ball before it is in the hole, you must put the ball back, add one extra shot to your score, and finish the hole by putting it in.",
+    "vocabulary": [
+      {
+        "term": "Penalty stroke",
+        "simpleMeaning": "An extra shot added to your score for breaking a rule."
+      },
+      {
+        "term": "Hole out",
+        "simpleMeaning": "When your ball goes into the hole and you finish the hole."
+      },
+      {
+        "term": "Stroke play",
+        "simpleMeaning": "A way to play golf where you count all your shots and try to get the lowest score."
+      }
+    ],
+    "teachingTip": "Remind children to always finish the hole unless a coach or referee says it is okay to stop.",
+    "likelyMisconceptions": [
+      "Some kids might think they can just pick up their ball next to the hole and count their score without finishing.",
+      "Some might not know that in stroke play you must hit the ball into the hole."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:53.502Z",
+  "model": "gpt-4.1"
+}

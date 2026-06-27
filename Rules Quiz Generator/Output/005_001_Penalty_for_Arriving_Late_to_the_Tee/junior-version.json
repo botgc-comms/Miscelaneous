@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\005_001_Penalty_for_Arriving_Late_to_the_Tee\\metadata.json",
+  "sourceImageName": "page-05.png",
+  "ruleNumber": "R5",
+  "ruleName": "Late arrival",
+  "title": "Penalty for Arriving Late to the Tee",
+  "question": "If you arrive at the tee 3 minutes after your starting time, what is the penalty?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You may play but receive a two-stroke penalty"
+    },
+    {
+      "id": "b",
+      "text": "You are disqualified"
+    },
+    {
+      "id": "c",
+      "text": "You can play with no penalty"
+    },
+    {
+      "id": "d",
+      "text": "You receive a warning only"
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "If you arrive within five minutes after your starting time, you may play but must add two penalty strokes. Arriving later than five minutes results in disqualification.",
+  "juniorVersion": {
+    "title": "What Happens If You Are Late to Tee Off?",
+    "question": "You are supposed to start your game at 10:00. You arrive at the tee at 10:03. What happens?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You can play but get two extra shots added to your score."
+      },
+      {
+        "id": "b",
+        "text": "You are not allowed to play because you are out."
+      },
+      {
+        "id": "c",
+        "text": "You can play and nothing happens."
+      },
+      {
+        "id": "d",
+        "text": "You just get a warning and no penalty."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "If you get to the tee up to 5 minutes late, you can still play, but you must add two extra shots to your score on the first hole. If you are later than 5 minutes, you cannot play.",
+    "vocabulary": [
+      {
+        "term": "Tee",
+        "simpleMeaning": "The place where you start playing the hole. You hit your first shot from here."
+      },
+      {
+        "term": "Penalty",
+        "simpleMeaning": "Extra shots added to your score because you broke a rule."
+      }
+    ],
+    "teachingTip": "Use a clock or watch to show how much 3 minutes or 5 minutes is. Practise arriving early for your tee time.",
+    "likelyMisconceptions": [
+      "Thinking you can always play with no penalty if you are late.",
+      "Thinking you are only told off and not given penalty shots.",
+      "Not knowing you cannot play if you are more than 5 minutes late."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:21.119Z",
+  "model": "gpt-4.1"
+}

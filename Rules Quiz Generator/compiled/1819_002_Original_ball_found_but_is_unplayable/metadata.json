@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "pageb-03.png",
+  "ruleNumber": "R18/19",
+  "ruleName": "Provisional Ball / Unplayable Ball",
+  "group": "Provisional Ball",
+  "type": "multiple_choice",
+  "imagePrompt": "Teenage boy golfer in the rough, near trees, looking at his golf ball which is up against tree roots and appears unplayable.",
+  "imageAlt": "Teen boy golfer with golf ball stuck by a tree root, thinking about his next move.",
+  "sceneSpec": {
+    "setting": "rough",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "light",
+    "clothingTopColour": "orange",
+    "clothingBottomColour": "grey",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Golfer is holding the club in the right hand, and it's not 100% clear if the posture signals left-handedness as specified (minor)."
+    ],
+    "repairPrompt": "Ensure the golfer is clearly standing and holding the iron in a left-handed posture. Show the left hand lower on the grip, and the face/outfit orientation should clearly suggest a left-handed player."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "You Find Your Ball But It's Stuck",
+      "question": "You find your ball next to a tree. You can't hit it because it's blocked. Can you use your other (provisional) ball instead?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, you can play your provisional ball instead"
+        },
+        {
+          "id": "b",
+          "text": "No, you have to use your first ball and use the unplayable rule"
+        },
+        {
+          "id": "c",
+          "text": "Yes, but only if you add a penalty shot"
+        },
+        {
+          "id": "d",
+          "text": "You can say both balls are lost and play again from where you hit"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "You must keep playing your first ball, even if it’s stuck and you can’t hit it. You need to use the unplayable rule to move it.",
+      "vocabulary": [
+        {
+          "term": "Provisional ball",
+          "simpleMeaning": "A second ball you play in case you can’t find your first ball."
+        },
+        {
+          "term": "Unplayable ball rule",
+          "simpleMeaning": "A rule that lets you move your ball if you can’t hit it, by taking a penalty."
+        }
+      ],
+      "teachingTip": "Act out being stuck by a tree and show how to use the unplayable ball rule.",
+      "likelyMisconceptions": [
+        "Kids may think they can always use their provisional ball if their first one is in a bad spot.",
+        "They might not know what 'unplayable rule' means."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Original ball found but is unplayable",
+      "question": "You find your original ball within 3 minutes, but it's stuck up against a tree and you can't play it. Are you allowed to keep playing your provisional ball instead?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, you can play the provisional ball instead of the original"
+        },
+        {
+          "id": "b",
+          "text": "No, you must continue with the original ball and use the unplayable ball rule"
+        },
+        {
+          "id": "c",
+          "text": "Yes, but only with a penalty stroke"
+        },
+        {
+          "id": "d",
+          "text": "You can declare both balls lost and replay your shot"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "You must continue with your original ball, even if it’s unplayable. If you can't play it, you have to use the options under the unplayable ball rule."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "1819_002_Original_ball_found_but_is_unplayable",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:53.788Z"
+  }
+}

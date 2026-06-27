@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-02.png",
+  "ruleNumber": "R18",
+  "ruleName": "Provisional Balls",
+  "group": "Provisional Balls",
+  "title": "What if the provisional ball is in a better spot?",
+  "question": "You hit a great shot with your provisional ball, but haven't looked for your original ball yet. If the original is found in bounds within 3 minutes, can you choose to play the provisional ball instead?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No, you must play the original ball if found in time and in bounds."
+    },
+    {
+      "id": "b",
+      "text": "Yes, you can choose whichever ball you like."
+    },
+    {
+      "id": "c",
+      "text": "Yes, but only if everyone agrees."
+    },
+    {
+      "id": "d",
+      "text": "No, the provisional ball always has to be abandoned."
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "If you find your original ball in bounds within 3 minutes, you must play it, even if the provisional ball is in a better position.",
+  "imagePrompt": "A teen boy golfer stands close to a provisional ball on the fairway while looking towards the rough, where the original ball might be.",
+  "imageAlt": "Boy golfer with a provisional ball in a great spot, glances toward where the original ball may be.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "purple",
+    "clothingBottomColour": "red",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "Left-handed grip is present but could be slightly more emphasized for absolute clarity."
+    ],
+    "repairPrompt": "Clarify the golfer's left-handed grip a bit more obviously by adjusting the hand positions and club orientation to unmistakably indicate left-handedness. Otherwise, maintain current scene, posture, clothing, and ball position."
+  }
+}

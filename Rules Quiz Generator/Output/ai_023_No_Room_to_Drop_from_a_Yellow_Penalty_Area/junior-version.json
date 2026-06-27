@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_023_No_Room_to_Drop_from_a_Yellow_Penalty_Area\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "17.1d",
+  "ruleName": "Relief for Ball in Penalty Area",
+  "title": "No Room to Drop from a Yellow Penalty Area",
+  "question": "Your ball lies in a yellow penalty area near a steep cliff. You want to take back-on-the-line relief, but there is nowhere you can drop a ball on that line without being closer to the hole. What are your options?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Drop at the nearest place where you can stand safely."
+    },
+    {
+      "id": "b",
+      "text": "Drop on the opposite side of the penalty area."
+    },
+    {
+      "id": "c",
+      "text": "You cannot take back-on-the-line relief. You must either play the ball as it lies (if possible) or return to where you played your previous stroke under stroke and distance."
+    },
+    {
+      "id": "d",
+      "text": "Take free relief because there is nowhere to drop."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "For a yellow penalty area, you have two options for relief under penalty: stroke and distance (play again from the original spot), or back-on-the-line relief (dropping on a line from the hole through where the ball last crossed the edge of the area). If there is nowhere behind the penalty area where you can drop without being nearer the hole, only these options are available. You must either play the ball as it lies (if possible), or take stroke-and-distance relief. There is no free relief and you cannot drop simply where convenient.",
+  "juniorVersion": {
+    "title": "Nowhere to Drop Behind the Yellow Water",
+    "question": "Your ball is in a yellow penalty area near a steep cliff. You want to drop the ball behind the water, but there’s no safe place to drop without getting closer to the hole. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Drop at the closest safe spot you can stand."
+      },
+      {
+        "id": "b",
+        "text": "Drop on the other side of the water."
+      },
+      {
+        "id": "c",
+        "text": "You can’t drop behind the water. You must either play the ball as it is (if you can), or go back and hit from where you last played."
+      },
+      {
+        "id": "d",
+        "text": "You get a free drop because there’s no place to drop."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "With a yellow penalty area, you can play the ball as it is, or go back to where you last hit and take a penalty. If you can’t drop behind the water without getting closer to the hole, these are your only choices. You can’t just pick any safe spot or take a free drop.",
+    "vocabulary": [
+      {
+        "term": "Yellow penalty area",
+        "simpleMeaning": "A part of the course marked with yellow where it is hard to play, like a pond or a stream."
+      },
+      {
+        "term": "Stroke and distance",
+        "simpleMeaning": "Going back to where you last played your shot and hitting again, adding a penalty."
+      },
+      {
+        "term": "Back-on-the-line relief",
+        "simpleMeaning": "Dropping the ball behind the yellow penalty area, in line with the hole and where your ball last went in."
+      }
+    ],
+    "teachingTip": "Use cones or markers on the field to help children see where they could drop, and what counts as being 'closer to the hole'.",
+    "likelyMisconceptions": [
+      "It’s okay to drop wherever you feel safe.",
+      "You get a free drop if you can’t find a place to drop behind the water.",
+      "You can always drop on the other side of the water."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:08:36.247Z",
+  "model": "gpt-4.1"
+}

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_042_Practice_Swing_Moves_Ball_on_Putting_Green\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "13.1d(1)",
+  "ruleName": "Actions Affecting Ball on Putting Green",
+  "title": "Practice Swing Moves Ball on Putting Green",
+  "question": "Your ball is on the putting green. Before making your putt, you take a practice swing and accidentally hit the ball, causing it to roll several feet away. What is the correct ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Count it as your next stroke and play the ball from where it came to rest."
+    },
+    {
+      "id": "b",
+      "text": "You receive a one-stroke penalty and must replace the ball."
+    },
+    {
+      "id": "c",
+      "text": "There is no penalty. Replace the ball on its original spot before making your stroke."
+    },
+    {
+      "id": "d",
+      "text": "There is no penalty. Play the ball from where it came to rest."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "A practice swing is not a stroke as there was no intention to hit the ball. On the putting green, if a player accidentally causes their ball to move, there is no penalty. The ball must be replaced on its original spot before making the next stroke (Rule 13.1d(1)).",
+  "juniorVersion": {
+    "title": "Practice Swing Accidentally Moves Your Ball on the Green",
+    "question": "Your ball is sitting on the green. Before you putt, you take a practice swing, but you accidentally hit your ball and it rolls away. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "This counts as your next shot. Play from where the ball stops."
+      },
+      {
+        "id": "b",
+        "text": "You get one penalty stroke and put the ball back where it was."
+      },
+      {
+        "id": "c",
+        "text": "There is no penalty. Put the ball back where it was before you hit it."
+      },
+      {
+        "id": "d",
+        "text": "There is no penalty. Play the ball from where it rolled to."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "Because you didn’t mean to hit your ball with your practice swing, you don’t get a penalty. Just put your ball back in its old spot and then play your putt.",
+    "vocabulary": [
+      {
+        "term": "Putting green",
+        "simpleMeaning": "The short grass around the hole where you use your putter."
+      },
+      {
+        "term": "Practice swing",
+        "simpleMeaning": "A swing you make to get ready, but not to hit the ball."
+      }
+    ],
+    "teachingTip": "Practising by swinging next to your ball is normal, just try to be careful not to touch your ball. If it does move, remember you won’t get a penalty on the green, but you must put it back.",
+    "likelyMisconceptions": [
+      "Some children might think any hit counts as a stroke, even if it’s an accident.",
+      "Some children may think you always get a penalty if the ball is moved, even on the green."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:19:59.294Z",
+  "model": "gpt-4.1"
+}

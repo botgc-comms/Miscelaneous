@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\006_004_What_happens_if_your_ball_falls_off_the_tee_accidentally\\metadata.json",
+  "sourceImageName": "page-07.png",
+  "ruleNumber": "R6",
+  "ruleName": "Ball falls off the tee",
+  "title": "What happens if your ball falls off the tee accidentally?",
+  "question": "If you accidentally knock your ball off the tee before taking your shot, what is the correct thing to do?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Count it as a stroke and play the ball from where it comes to rest."
+    },
+    {
+      "id": "b",
+      "text": "Simply put the ball back on the tee and play your shot with no penalty."
+    },
+    {
+      "id": "c",
+      "text": "Add two penalty strokes for knocking the ball."
+    },
+    {
+      "id": "d",
+      "text": "Leave the tee and ask for help."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If you accidentally make your ball fall off the tee before making a stroke, there is no penalty. You should just place the ball back on the tee and continue.",
+  "juniorVersion": {
+    "title": "What should you do if your ball falls off the tee by accident?",
+    "question": "Imagine you are getting ready to hit your shot, but you bump your ball and it rolls off the tee. What do you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Count it as a shot and play your ball from where it stops."
+      },
+      {
+        "id": "b",
+        "text": "Pick up your ball, put it back on the tee, and try again with no penalty."
+      },
+      {
+        "id": "c",
+        "text": "Add two penalty shots because you knocked your ball."
+      },
+      {
+        "id": "d",
+        "text": "Leave the tee and go ask someone for help."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If your ball falls off the tee before you swing and hit it, you can just put it back on the tee and try again with no penalty. It doesn’t count as a shot.",
+    "vocabulary": [
+      {
+        "term": "Tee",
+        "simpleMeaning": "A small stand that holds your ball up when you start a hole."
+      },
+      {
+        "term": "Stroke",
+        "simpleMeaning": "A swing you make to hit the golf ball."
+      },
+      {
+        "term": "Penalty",
+        "simpleMeaning": "Extra shots added to your score if you break a rule."
+      }
+    ],
+    "teachingTip": "Show children how to set a ball on the tee carefully, and explain that only swings to hit the ball count as strokes.",
+    "likelyMisconceptions": [
+      "Kids may think dropping the ball counts as a shot.",
+      "Children may not know they can put the ball back on the tee."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:40.331Z",
+  "model": "gpt-4.1"
+}

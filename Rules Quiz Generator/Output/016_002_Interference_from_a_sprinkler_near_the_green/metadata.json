@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-08.png",
+  "ruleNumber": "R16",
+  "ruleName": "Sprinklers",
+  "group": "Sprinklers",
+  "title": "Interference from a sprinkler near the green",
+  "question": "If a sprinkler head by the green is only in your putting line but does not affect your stance or the area of your intended swing, what must you do?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Take free relief and move your ball."
+    },
+    {
+      "id": "b",
+      "text": "Play your ball as it lies."
+    },
+    {
+      "id": "c",
+      "text": "Move your ball to the fringe without penalty."
+    },
+    {
+      "id": "d",
+      "text": "Take a penalty and move your ball."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You only get free relief when the sprinkler interferes with your stance or your area of intended swing, not just your line of play.",
+  "imagePrompt": "A teenage golfer preparing to putt from just off the green with a sprinkler on their intended line, but not in their stance or swing.",
+  "imageAlt": "Teen golfer by the green, sprinkler is only in the putting line and not interfering with stance.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "addressing_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "yellow",
+    "clothingBottomColour": "navy",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Everything is correct except the handedness: the golfer is depicted right-handed, not left-handed as specified. All other details—including club, ball, posture, apparel, setting, and sprinkler placement—are accurate and suitable for teaching."
+    ],
+    "repairPrompt": "Make sure the golfer is depicted with a left-handed putting stance and grip, with the putter head positioned for a left-handed stroke. Keep all other scene elements and details unchanged."
+  }
+}

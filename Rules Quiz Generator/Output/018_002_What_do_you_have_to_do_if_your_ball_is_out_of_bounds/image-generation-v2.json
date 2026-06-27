@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\018_002_What_do_you_have_to_do_if_your_ball_is_out_of_bounds\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:59:46.099Z",
+  "title": "What do you have to do if your ball is out of bounds?",
+  "ruleNumber": "R18",
+  "ruleName": "Out of bounds and provisional ball",
+  "durationSeconds": 171.383
+}

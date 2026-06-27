@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_013_Can_You_Use_a_Stone_to_Mark_Your_Ball\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "14.1a",
+  "ruleName": "Marking, Lifting and Cleaning Ball",
+  "title": "Can You Use a Stone to Mark Your Ball?",
+  "question": "Your ball is on the putting green. You do not have a coin or a ball marker, so you place a small stone behind your ball before lifting it. Is this allowed?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes. Any small object can be used to mark a ball."
+    },
+    {
+      "id": "b",
+      "text": "Yes, as long as the stone does not move."
+    },
+    {
+      "id": "c",
+      "text": "No. A stone is a natural object and is not a permitted ball-marker."
+    },
+    {
+      "id": "d",
+      "text": "No. You must use a coin."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "Before lifting a ball on the putting green, you must mark its spot by placing a ball-marker (an artificial object, such as a coin or purpose-made marker) immediately behind or next to the ball, or by holding a club on the ground immediately behind or next to the ball. A stone is a natural object, so it is not a ball-marker under the Rules. Many golfers think any small object will do, but the Rules specifically define a ball-marker as an artificial object.",
+  "juniorVersion": {
+    "title": "Can You Use a Stone to Show Where Your Ball Was?",
+    "question": "Your ball is on the putting green. You want to pick up your ball, but you don’t have a coin or a ball marker. You put a little stone behind your ball before you pick it up. Is this okay?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Yes. You can use any small thing to mark your ball."
+      },
+      {
+        "id": "b",
+        "text": "Yes, if the stone does not roll away."
+      },
+      {
+        "id": "c",
+        "text": "No. You cannot use a stone because it is not a ball marker."
+      },
+      {
+        "id": "d",
+        "text": "No. You must always use a coin."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "When you want to pick up your ball on the green, you must use a ball marker. A ball marker is a man-made thing, like a coin or a round marker from your pocket. A stone comes from the ground, so it does not count as a ball marker in golf.",
+    "vocabulary": [
+      {
+        "term": "putting green",
+        "simpleMeaning": "The short, smooth grass near the hole where you putt the ball."
+      },
+      {
+        "term": "ball marker",
+        "simpleMeaning": "A small, man-made thing like a coin you use to show where your ball was."
+      }
+    ],
+    "teachingTip": "Show different objects and ask children which ones could be ball markers and which cannot, guiding them to spot the man-made markers.",
+    "likelyMisconceptions": [
+      "Any small thing like a twig, stone, or leaf can be used to mark the ball.",
+      "You must always use a coin and nothing else."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:01:10.447Z",
+  "model": "gpt-4.1"
+}

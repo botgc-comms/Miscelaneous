@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\016_001_Free_relief_for_lost_ball_in_abnormal_course_conditions\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:40:45.510Z",
+  "title": "Free relief for lost ball in abnormal course conditions",
+  "ruleNumber": "R16",
+  "ruleName": "Ball lost in abnormal course conditions",
+  "durationSeconds": 204.954
+}

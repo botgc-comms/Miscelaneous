@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-11.png",
+  "ruleNumber": "R9",
+  "ruleName": "Ball moved when grounding the club",
+  "group": "Ball at rest moved",
+  "title": "Penalty for moving the ball when grounding the club",
+  "question": "You accidentally move your ball on the fairway by grounding your club behind it. What must you do according to the rules?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No penalty, play the ball from where it moved to."
+    },
+    {
+      "id": "b",
+      "text": "Replace the ball and add 1 penalty stroke."
+    },
+    {
+      "id": "c",
+      "text": "Add two penalty strokes and carry on."
+    },
+    {
+      "id": "d",
+      "text": "Replace the ball with no penalty."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If you move your ball by grounding your club behind it on the fairway, the correct action is to replace the ball and add one penalty stroke.",
+  "imagePrompt": "A teenage golfer on the fairway unintentionally makes the golf ball move while grounding their club behind it.",
+  "imageAlt": "Teen golfer causes ball to roll by grounding club behind it on fairway.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "addressing_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "green",
+    "clothingBottomColour": "red",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": false,
+    "score": 84,
+    "issues": [
+      "Golfer's stance and hand placement are not clearly left-handed; it appears more like a right-handed address",
+      "Club face orientation does not clearly indicate a left-handed golfer"
+    ],
+    "repairPrompt": "Adjust the golfer's posture and hand placement so that it is unmistakably a left-handed stance, with the left hand lower on the grip and the club face oriented as appropriate for a left-handed golfer. Ensure all other details remain unchanged."
+  }
+}

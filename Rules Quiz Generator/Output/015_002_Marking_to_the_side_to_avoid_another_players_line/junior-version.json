@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\015_002_Marking_to_the_side_to_avoid_another_players_line\\metadata.json",
+  "sourceImageName": "pageb-05.png",
+  "ruleNumber": "R15",
+  "ruleName": "Marking to the side",
+  "title": "Marking to the side to avoid another player's line",
+  "question": "If your ball-marker is on another player's putting line on the green, what should you do?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Leave it on their line and wait for your turn"
+    },
+    {
+      "id": "b",
+      "text": "Move your marker to the side by one or two putter head lengths"
+    },
+    {
+      "id": "c",
+      "text": "Pick up your ball and marker without replacing them"
+    },
+    {
+      "id": "d",
+      "text": "Mark it with any item, not just a marker"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You should move your marker to the side by one or two putter head lengths to avoid interfering with the other player's line.",
+  "juniorVersion": {
+    "title": "What to do if your marker is in someone’s way",
+    "question": "If your coin or marker is on the green and it’s in the path where someone else wants to putt, what should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Leave your marker where it is and just wait"
+      },
+      {
+        "id": "b",
+        "text": "Move your marker to the side by one or two club heads"
+      },
+      {
+        "id": "c",
+        "text": "Pick up your ball and marker and don’t put them back"
+      },
+      {
+        "id": "d",
+        "text": "Use anything you want as a marker, not just your marker"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If your marker is in the way of where another player wants to putt, you should move it to the side by one or two club heads, so you are not in their way. Put it back where it started after they are done.",
+    "vocabulary": [
+      {
+        "term": "marker",
+        "simpleMeaning": "A small coin or object you use to show where your ball was on the green when you pick up your ball."
+      },
+      {
+        "term": "green",
+        "simpleMeaning": "The smooth, short grass area where you putt into the hole."
+      },
+      {
+        "term": "putt",
+        "simpleMeaning": "A soft shot you make on the green to try and get your ball in the hole."
+      },
+      {
+        "term": "club head",
+        "simpleMeaning": "The end part of your golf club that hits the ball."
+      }
+    ],
+    "teachingTip": "Show children how to measure one or two club heads from their marker, reminding them to always put it back in the same spot afterwards.",
+    "likelyMisconceptions": [
+      "Children might think they can leave the marker in the way.",
+      "Some might think they can use anything as a marker.",
+      "They might forget to put the marker back where it started."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:48.461Z",
+  "model": "gpt-4.1"
+}

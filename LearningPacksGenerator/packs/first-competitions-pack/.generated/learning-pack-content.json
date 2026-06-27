@@ -1,0 +1,181 @@
+{
+  "schemaVersion": 1,
+  "packId": "first-competitions",
+  "title": "Moving into competitions",
+  "audience": "Brand new junior golfers and their parents or guardians.",
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "Your first competition",
+      "file": "pages/00-title.md",
+      "type": "content",
+      "assetFile": "title.png",
+      "imageAlt": "A smiling young golfer holding a golf ball, standing with family and friends on a sunny golf course tee.",
+      "imagePrompt": "A photorealistic image of a young boy and girl golfer in casual clothing, smiling on the first tee with supportive parents and other children in the background. The golf course looks lush and inviting under a bright sky. No logos.",
+      "markdown": "# Your first competition\n\nTaking part in your first golf competition is an exciting step. It’s normal to feel a mix of nerves and excitement, both for juniors and their families. This learning pack will help you know what to expect when you enter a golf competition for the first time.\n\nYou don’t need to be an expert or have expensive equipment—just a little preparation and a positive attitude will help you have fun and do your best. Friendly club staff and experienced junior golfers are always on hand to help, and everyone was a beginner once.\n\nYou’ll learn about what to do before your round, how competitions are run, what it’s like during a round, and the important steps after your round finishes. You’ll also find tips for parents so everyone can enjoy the day together. Every competition is a chance to enjoy golf, make friends, and learn new things.",
+      "quiz": null
+    },
+    {
+      "id": "01-before-you-start",
+      "title": "Before you start",
+      "file": "pages/01-before-you-start.md",
+      "type": "content",
+      "assetFile": "before-you-start.png",
+      "imageAlt": "A neat junior golf bag, clean trainers, a hat, and a refillable water bottle laid out on grass next to a scorecard.",
+      "imagePrompt": "A photorealistic image of a child's golf bag with a few golf clubs, a simple cap, clean trainers, a water bottle, and a blank scorecard placed neatly on a patch of green grass. The setting is sunny and welcoming.",
+      "markdown": "# Before you start\n\nBefore you arrive at your competition, there are a few simple things to do. Make sure you have your basic golf equipment: a couple of clubs (like a putter and an iron), a ball or two, tees, and comfortable clothes suitable for the weather. Trainers are often fine, and you don’t need to buy special shoes at first.\n\nIt’s a good idea to check the start time, as competitions often run on a fixed schedule. Try to get to the club in good time so you don’t need to rush. If you’re not sure where to go, ask at the clubhouse or look for friendly, welcoming stewards—most clubs are well set up to guide new juniors and parents.\n\nDon’t forget to have a snack and a filled water bottle, plus a hat if it’s sunny. Parents and juniors should know where the toilets are and which holes you will be playing. If you’re not sure about anything, it’s always okay to ask a club coach or organiser. They want you to have a great first experience!",
+      "quiz": null
+    },
+    {
+      "id": "02-during-the-round",
+      "title": "During the round",
+      "file": "pages/02-during-the-round.md",
+      "type": "content",
+      "assetFile": "during-the-round.png",
+      "imageAlt": "Two juniors playing golf calmly on the course, watched from a distance by supportive adults near a pathway.",
+      "imagePrompt": "A photorealistic image showing two junior golfers playing on the fairway while two relaxed adults (parents or guardians) observe from a respectful distance along a golf path. The children are smiling and taking their shots, with the golf course visible.",
+      "markdown": "# During the round\n\nOnce your group is called, you’ll go out onto the course with other juniors. Often, you’ll play in small groups called “matches” or “groups.” One of you will be chosen to keep the score—a simple job just marking the number of shots you each take on each hole.\n\nDuring play, focus on enjoying your shots rather than worrying about perfect scores. Remember to be respectful of other players: wait quietly while others play their shots and be ready when it’s your turn. If your ball goes somewhere you didn’t expect, don’t worry—everyone has tricky shots sometimes!\n\nParents and carers are usually welcome to walk along the side of the course, but they should avoid giving advice about how to play golf during the round, as this can be against competition rules. Lots of encouragement is always allowed! Be sure to drink water and stay sun safe.\n\nIf you’re unsure about what to do, ask your group or a club helper. It’s all about learning and enjoying the day together.",
+      "quiz": null
+    },
+    {
+      "id": "03-after-the-round",
+      "title": "After the round",
+      "file": "pages/03-after-the-round.md",
+      "type": "content",
+      "assetFile": "after-the-round.png",
+      "imageAlt": "Juniors and parents gathered by a clubhouse, chatting and smiling after a round of golf.",
+      "imagePrompt": "A photorealistic image showing several junior golfers and parents or guardians standing together outside a golf clubhouse, smiling and chatting after a round. Golf bags are nearby. The mood is light and friendly.",
+      "markdown": "# After the round\n\nWhen you finish playing, all players in your group meet at the end to check and agree on everyone’s scores. Make sure your scorecard is filled out clearly, with no guessing—if you’re not certain about a hole, ask one of the organisers to help. Hand in your scorecard where you’re told, usually at the club’s reception or a special table.\n\nOften, there’s a short wait while results are checked. This is a great time to have a snack and chat about your round with other juniors and families. Sometimes there are prizes, but the main aim is to have fun, make friends, and learn.\n\nParents, encourage your junior even if their score isn’t what they hoped for. Every round helps you improve! Remember to say thanks to organisers and volunteers—they work hard to make competitions welcoming and fair for everyone. Enjoy the day and be proud of taking part.\n",
+      "quiz": null
+    },
+    {
+      "id": "90-quick-check",
+      "title": "Quick check",
+      "file": "pages/90-quick-check.md",
+      "type": "quiz",
+      "assetFile": "quick-check.png",
+      "imageAlt": "A junior golfer giving a thumbs up, standing with a completed scorecard beside a parent on a sunny golf course.",
+      "imagePrompt": "A photorealistic image of a junior golfer giving a cheerful thumbs up, holding a completed scorecard, standing next to a smiling parent on a bright and welcoming golf course. Golf bag in the background. No text or logos.",
+      "markdown": "# Quick check\n\nLet’s see what you remember! These questions will help you feel ready for your first competition.",
+      "quiz": {
+        "questions": [
+          {
+            "question": "What should you bring to your first competition?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "A hat, water bottle, simple clubs, comfortable clothes, and a snack"
+              },
+              {
+                "id": "b",
+                "text": "Expensive new clubs and fancy clothes"
+              },
+              {
+                "id": "c",
+                "text": "Only golf balls"
+              },
+              {
+                "id": "d",
+                "text": "Nothing at all"
+              }
+            ],
+            "correctAnswer": "a",
+            "explanation": "You just need basic equipment to get started, plus a snack and hat if it’s sunny."
+          },
+          {
+            "question": "What can parents do while juniors are playing?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Give advice on every shot"
+              },
+              {
+                "id": "b",
+                "text": "Stay nearby, offer encouragement, and watch with other parents"
+              },
+              {
+                "id": "c",
+                "text": "Run onto the course to help look for balls"
+              },
+              {
+                "id": "d",
+                "text": "Play shots for their child"
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "Parents can give encouragement but should not give playing advice or interfere with play."
+          },
+          {
+            "question": "What happens at the end of a round?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Players shout and run home straight away"
+              },
+              {
+                "id": "b",
+                "text": "Players check scores together and hand in their scorecard"
+              },
+              {
+                "id": "c",
+                "text": "Only the winner fills in their card"
+              },
+              {
+                "id": "d",
+                "text": "Everyone is sent home without checking anything"
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "Players should check and agree on the scores, then hand in the scorecard as a group."
+          },
+          {
+            "question": "If you are unsure of a rule or what to do during the competition, what should you do?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Guess and hope it’s right"
+              },
+              {
+                "id": "b",
+                "text": "Ask a club organiser, coach, or your group"
+              },
+              {
+                "id": "c",
+                "text": "Do nothing"
+              },
+              {
+                "id": "d",
+                "text": "Leave the course"
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "It’s always okay to ask for help—organisers want you to learn and enjoy the day!"
+          },
+          {
+            "question": "The most important thing about your first competition is to...",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Win at all costs"
+              },
+              {
+                "id": "b",
+                "text": "Have fun, learn, and make friends"
+              },
+              {
+                "id": "c",
+                "text": "Buy the best equipment"
+              },
+              {
+                "id": "d",
+                "text": "Worry about your score"
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "The main goal is to have a good time, learn new things, and meet new friends."
+          }
+        ]
+      }
+    }
+  ]
+}

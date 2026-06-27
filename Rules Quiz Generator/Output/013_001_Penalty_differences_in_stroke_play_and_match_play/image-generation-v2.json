@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\013_001_Penalty_differences_in_stroke_play_and_match_play\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:24:49.049Z",
+  "title": "Penalty differences in stroke play and match play",
+  "ruleNumber": "R1/3",
+  "ruleName": "Stroke play and match play",
+  "durationSeconds": 188.222
+}

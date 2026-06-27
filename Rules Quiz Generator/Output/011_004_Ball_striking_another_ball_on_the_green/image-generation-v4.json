@@ -1,0 +1,10 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "sourcePromptFileName": "final-prompt-v2.txt",
+  "promptFileName": "final-prompt-v4.txt",
+  "imageFileName": "illustration-v4.png",
+  "correctionInstructions": "the boy has taken his put but his ball has collided with another ball thats on the green half way to the hole.",
+  "generatedAtUtc": "2026-06-26T08:35:19.079Z"
+}

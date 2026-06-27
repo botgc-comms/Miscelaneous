@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\017_001_Where_does_the_penalty_area_begin\\metadata.json",
+  "sourceImageName": "page-24.png",
+  "ruleNumber": "R17",
+  "ruleName": "In a penalty area",
+  "title": "Where does the penalty area begin?",
+  "question": "When is a ball considered to be in a penalty area?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "As soon as any part of the ball touches the edge or line of the penalty area."
+    },
+    {
+      "id": "b",
+      "text": "Only if it comes to rest completely next to the water."
+    },
+    {
+      "id": "c",
+      "text": "Only if it touches a penalty area stake."
+    },
+    {
+      "id": "d",
+      "text": "When it's lost somewhere in the rough."
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "A ball is considered in a penalty area as soon as any part of it touches the edge or the line marking the penalty area, not just if it is in water or touching a stake.",
+  "juniorVersion": {
+    "title": "When does your ball count as being in the penalty area?",
+    "question": "Your ball rolls near the water, and part of it is on the red line that shows the penalty area. Is your ball in the penalty area?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Yes, as soon as any bit of your ball touches the edge or line of the penalty area."
+      },
+      {
+        "id": "b",
+        "text": "No, only if the whole ball stops right next to the water."
+      },
+      {
+        "id": "c",
+        "text": "No, only if your ball is touching one of the stakes that shows the penalty area."
+      },
+      {
+        "id": "d",
+        "text": "No, only if you lose your ball in the long grass."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "Your ball is in the penalty area as soon as any part of it is touching the line or edge that marks the penalty area. It does not have to be in the water or touching a stake to count.",
+    "vocabulary": [
+      {
+        "term": "penalty area",
+        "simpleMeaning": "A special place on the golf course, like near water or sand, marked by red or yellow lines or stakes."
+      },
+      {
+        "term": "stake",
+        "simpleMeaning": "A coloured stick that helps show where the penalty area is."
+      }
+    ],
+    "teachingTip": "Show children a real penalty area on the course and have them look at where the lines are. Lay a ball with just a tiny part touching the line so they can see how the rule works.",
+    "likelyMisconceptions": [
+      "Some may think the whole ball must be over the line or in the water to count.",
+      "Some may believe the ball must be next to a stake or lost to be in the penalty area."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:15.517Z",
+  "model": "gpt-4.1"
+}

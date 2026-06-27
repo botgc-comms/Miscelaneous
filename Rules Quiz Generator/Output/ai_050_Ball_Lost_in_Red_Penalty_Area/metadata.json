@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "17.1c",
+  "ruleName": "Relief for Ball Not Found but Known or Virtually Certain to Be in Penalty Area",
+  "group": "Penalty Areas",
+  "title": "Ball Lost in Red Penalty Area",
+  "question": "Your tee shot heads into a red-staked penalty area. You search for your ball but cannot find it. Everyone in your group is certain the ball came to rest in the penalty area. What is the correct ruling?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "The ball is lost, so you must return to the tee and play under stroke and distance."
+    },
+    {
+      "id": "b",
+      "text": "You may take penalty area relief without finding the ball because it is known or virtually certain that it came to rest in the penalty area."
+    },
+    {
+      "id": "c",
+      "text": "You get a free drop because the ball cannot be found."
+    },
+    {
+      "id": "d",
+      "text": "You may only take relief if you find the ball first."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You do not have to find your ball to take relief from a penalty area. If it is known or virtually certain that the ball came to rest in the penalty area, you may take penalty relief under Rule 17 using the point where the ball last crossed the edge of the penalty area. However, if it is not known or virtually certain that the ball is in the penalty area, you must treat the ball as lost and proceed under stroke and distance.",
+  "imagePrompt": "A polished modern semi-realistic illustration (about 75% realistic, 25% stylised) for a golf rules quiz. Show a group of four golfers on a modern parkland golf course. Three golfers stand near the edge of a red-staked penalty area, conferring and clearly searching for a lost ball. The fourth golfer is shown also searching in the grass near the water's edge. The red penalty area is marked by prominent red stakes along a water hazard or marshy area. There is no ball visible. The scene should show the group in discussion but not in action of hitting a shot. Use dynamic, natural golfer poses and expressions. Show no text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "Four golfers searching and conferring together beside a red-staked penalty area on a modern parkland golf course, with no ball visible.",
+  "sceneSpec": {
+    "setting": "A modern parkland golf hole, with a defined red penalty area (marked with red stakes) running along one side of the fairway.",
+    "players": "Four golfers, three standing together near the edge of the penalty area looking towards the water, one golfer appearing to search for a ball near the penalty area.",
+    "ballPosition": "No ball is visible – the ball is presumably in the penalty area but cannot be seen by any of the players.",
+    "ruleMoment": "The moment after the search when the group agrees the ball is almost certainly in the penalty area, though it hasn't been found.",
+    "educationalFocus": "Demonstrates when relief from a penalty area may be taken even without finding the ball, as long as it is known or virtually certain the ball came to rest in the penalty area.",
+    "mustShow": [
+      "Red penalty area with clear red stakes",
+      "Group of golfers searching and conferring near the penalty area",
+      "Modern, well-maintained golf course with water feature or marsh for the penalty area"
+    ],
+    "mustNotShow": [
+      "The ball itself",
+      "Any form of text, labels, numbers, or arrows",
+      "Scorecards, badges, logos, watermarks, club crests, diagrams or speech bubbles"
+    ]
+  }
+}

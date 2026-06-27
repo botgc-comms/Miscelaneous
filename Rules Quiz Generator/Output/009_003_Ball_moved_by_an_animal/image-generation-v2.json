@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\009_003_Ball_moved_by_an_animal\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:05:45.158Z",
+  "title": "Ball moved by an animal",
+  "ruleNumber": "R9",
+  "ruleName": "Ball at rest is moved",
+  "durationSeconds": 199.535
+}

@@ -1,0 +1,465 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-09.png",
+  "sourceImagePath": "Input\\pageb-09.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-09.png",
+      "ruleNumber": "Def.",
+      "ruleName": "Ball bounces back out of the hole",
+      "group": "Ball bounces back out of the hole",
+      "title": "Ball Bounces Out Of The Hole – Is It Holed?",
+      "question": "Your ball drops into the hole but bounces out again. What must you do next?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Count it as holed and move on"
+        },
+        {
+          "id": "b",
+          "text": "Hole the ball again by playing it as it lies"
+        },
+        {
+          "id": "c",
+          "text": "Add a penalty stroke and pick up your ball"
+        },
+        {
+          "id": "d",
+          "text": "Place the ball back in the hole"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "A ball is only holed if it comes to rest in the hole. If it bounces out, you must hole it again by playing it as it lies.",
+      "imagePrompt": "A teenage girl golfer stands near the hole on a green, looking surprised as her golf ball pops back out of the cup after appearing to drop in.",
+      "imageAlt": "A golf ball bouncing out of the hole with a surprised player.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "medium",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "black",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-09.png",
+      "ruleNumber": "R11/13",
+      "ruleName": "Ball hits the flagstick or the person tending it",
+      "group": "Ball hits the flagstick or the person tending it",
+      "title": "Flagstick Hit Accidentally – What Happens?",
+      "question": "If your ball accidentally hits the flagstick that's been removed and put aside after a putt, what happens?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You get a penalty and must replay the stroke"
+        },
+        {
+          "id": "b",
+          "text": "No penalty, play the ball as it lies"
+        },
+        {
+          "id": "c",
+          "text": "Move the flagstick and replay the shot"
+        },
+        {
+          "id": "d",
+          "text": "Add two penalty strokes"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If your ball accidentally hits the flagstick after it has been removed and put aside, there is no penalty and you play the ball as it lies.",
+      "imagePrompt": "A teenage boy golfer watches as his golf ball rolls into a flagstick lying on the green after being removed.",
+      "imageAlt": "A golf ball rolling into a flagstick lying beside the hole, with a golfer watching.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "navy",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-09.png",
+      "ruleNumber": "R11/13",
+      "ruleName": "Ball hits the flagstick or the person tending it",
+      "group": "Ball hits the flagstick or the person tending it",
+      "title": "Flagstick Used To Stop The Ball – What's The Penalty?",
+      "question": "If the flagstick is placed behind the hole on purpose to stop your ball, and your ball hits it, what happens?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty, play as it lies"
+        },
+        {
+          "id": "b",
+          "text": "Two penalty strokes and replay the stroke"
+        },
+        {
+          "id": "c",
+          "text": "Move the flagstick and carry on"
+        },
+        {
+          "id": "d",
+          "text": "Add one penalty stroke and continue"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If the flagstick was placed behind the hole to act as a ball stopper and the ball hits it, 2 penalty strokes are added and the stroke does not count—it must be replayed.",
+      "imagePrompt": "A teenage girl golfer putts, her ball strikes a flagstick deliberately placed behind the hole to stop it.",
+      "imageAlt": "Golf ball hitting a flagstick placed just behind the hole to act as a stopper, with a girl golfer putting.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "grey",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-09.png",
+      "ruleNumber": "R11",
+      "ruleName": "Ball hits another player or an outside influence",
+      "group": "Ball hits another player or an outside influence",
+      "title": "Ball Hits Another Player On The Green – What Now?",
+      "question": "After putting from the green, your ball accidentally hits another player standing on the green. What do you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball as it lies"
+        },
+        {
+          "id": "b",
+          "text": "Replay the stroke without penalty"
+        },
+        {
+          "id": "c",
+          "text": "Add a penalty stroke"
+        },
+        {
+          "id": "d",
+          "text": "Move your ball to the nearest spot"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If your ball accidentally hits another player on the green, the stroke does not count and you must replay the shot with no penalty.",
+      "imagePrompt": "A teenage boy golfer putts from the green, and his golf ball accidentally strikes another player standing nearby.",
+      "imageAlt": "A golf ball hitting another player on the green, with a boy golfer looking on after putting.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "replaying_shot",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "yellow",
+        "hat": true
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-09.png",
+      "ruleNumber": "Def.",
+      "ruleName": "Ball bounces back out of the hole",
+      "group": "Ball bounces back out of the hole",
+      "title": "Ball Bounces Out Of The Hole – Is It Holed?",
+      "question": "Your ball drops into the hole but bounces out and comes to rest outside. What do you need to do next?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Count the ball as holed and move to the next hole"
+        },
+        {
+          "id": "b",
+          "text": "Play the ball as it lies and try to hole out"
+        },
+        {
+          "id": "c",
+          "text": "Add a penalty stroke and pick up your ball"
+        },
+        {
+          "id": "d",
+          "text": "Place the ball in the hole and continue"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "A ball is only considered holed if it comes to rest within the hole. If it bounces out and stops outside the hole, you must play the ball as it lies and try to hole out.",
+      "imagePrompt": "A teen boy golfer stands just off the hole on the green, looking surprised as his golf ball pops back out of the cup and comes to rest nearby.",
+      "imageAlt": "A golf ball bouncing out of the hole and stopping on the green, with a surprised teenage golfer nearby.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "light",
+        "clothingTopColour": "orange",
+        "clothingBottomColour": "navy",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-09.png",
+      "ruleNumber": "R11/13",
+      "ruleName": "Ball hits the flagstick or the person tending it",
+      "group": "Ball hits the flagstick or the person tending it",
+      "title": "Flagstick Hit Accidentally – What Happens?",
+      "question": "You're putting and your ball rolls into a flagstick lying beside the green after it was removed. What is the ruling?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You get a penalty and must replay the stroke"
+        },
+        {
+          "id": "b",
+          "text": "There is no penalty, play the ball as it lies"
+        },
+        {
+          "id": "c",
+          "text": "Move the flagstick and replay the shot"
+        },
+        {
+          "id": "d",
+          "text": "Add two penalty strokes and continue"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If your ball accidentally hits the flagstick after it has been properly removed and placed on the ground, there is no penalty. You play the ball as it lies.",
+      "imagePrompt": "A teenage girl golfer watches her ball as it rolls into a flagstick lying beside the hole on a sunny putting green.",
+      "imageAlt": "A golf ball rolling into a flagstick lying next to the hole on the green, with a teenage golfer watching.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "grey",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-09.png",
+      "ruleNumber": "R11/13",
+      "ruleName": "Ball hits the flagstick or the person tending it",
+      "group": "Ball hits the flagstick or the person tending it",
+      "title": "Flagstick Used To Stop The Ball – What's The Penalty?",
+      "question": "If the flagstick is deliberately placed behind the hole to stop your ball, and your ball hits it, what is the ruling?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty, play as it lies"
+        },
+        {
+          "id": "b",
+          "text": "Two penalty strokes and you must replay the stroke"
+        },
+        {
+          "id": "c",
+          "text": "Move the flagstick and keep playing"
+        },
+        {
+          "id": "d",
+          "text": "Add one penalty stroke and continue"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If someone sets the flagstick behind the hole on purpose to stop the ball and your ball hits it, you get a two stroke penalty and must replay the shot, as the previous stroke does not count.",
+      "imagePrompt": "A teen boy putts and his golf ball strikes a flagstick intentionally placed a short distance behind the hole.",
+      "imageAlt": "A golf ball hitting a flagstick purposefully set behind the hole to stop it, with a teen golfer putting.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "red",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-09.png",
+      "ruleNumber": "R11",
+      "ruleName": "Ball hits another player or an outside influence",
+      "group": "Ball hits another player or an outside influence",
+      "title": "Ball Hits Another Player On The Green – What Now?",
+      "question": "You putt from the green and your ball accidentally strikes another player who is also on the green. What must you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball from where it comes to rest"
+        },
+        {
+          "id": "b",
+          "text": "Replay the stroke with no penalty"
+        },
+        {
+          "id": "c",
+          "text": "Add a penalty stroke and play on"
+        },
+        {
+          "id": "d",
+          "text": "Move your ball to the nearest spot"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If your ball accidentally hits another player on the putting green, you must replay the stroke and there is no penalty.",
+      "imagePrompt": "A teen boy left-handed golfer watches as his putted ball hits another player standing on the green during play.",
+      "imageAlt": "A golf ball striking a player on the green after a putt, observed by a teenage left-handed golfer.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "replaying_shot",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "medium",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "yellow",
+        "hat": true
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "000_001_Ball_Bounces_Out_Of_The_Hole_Is_It_Holed",
+    "1113_002_Flagstick_Hit_Accidentally_What_Happens",
+    "1113_003_Flagstick_Used_To_Stop_The_Ball_Whats_The_Penalty",
+    "011_004_Ball_Hits_Another_Player_On_The_Green_What_Now"
+  ],
+  "updatedAtUtc": "2026-04-24T23:52:47.913Z"
+}

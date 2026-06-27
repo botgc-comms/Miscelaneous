@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\005_005_Chipping_and_putting_before_your_tee_shot\\metadata.json",
+  "sourceImageName": "page-08.png",
+  "ruleNumber": "R5",
+  "ruleName": "Chipping and putting while waiting",
+  "title": "Chipping and putting before your tee shot",
+  "question": "Is it allowed to chip or putt on or near the teeing area while waiting for your turn to play?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, you are allowed to practise chipping or putting there."
+    },
+    {
+      "id": "b",
+      "text": "No, you must wait without playing any shots."
+    },
+    {
+      "id": "c",
+      "text": "Only if no one else is waiting to play."
+    },
+    {
+      "id": "d",
+      "text": "Only if your coach is present."
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "You are allowed to practise chipping or putting on or near the teeing area while waiting to tee off, provided it doesn't delay play.",
+  "juniorVersion": {
+    "title": "Practising chips and putts while waiting at the tee",
+    "question": "Can you practise a chip or a putt on or near the tee box while you wait for your turn to hit?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Yes, you can practise chipping or putting there."
+      },
+      {
+        "id": "b",
+        "text": "No, you have to wait without hitting any shots."
+      },
+      {
+        "id": "c",
+        "text": "Only if no other players are waiting to play."
+      },
+      {
+        "id": "d",
+        "text": "Only if your coach is standing with you."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "You can practise chipping or putting on or near the tee box if it is not your turn to play, as long as you do not slow down the game.",
+    "vocabulary": [
+      {
+        "term": "chip",
+        "simpleMeaning": "A short golf shot to make the ball go softly onto the green."
+      },
+      {
+        "term": "putt",
+        "simpleMeaning": "A soft shot on the green to roll the ball into the hole."
+      },
+      {
+        "term": "tee box",
+        "simpleMeaning": "The area where you start a hole and play your first shot."
+      }
+    ],
+    "teachingTip": "Let children try a few chip or putt shots near the tee before starting a hole so they know when it is okay. Remind them to be quick so no one has to wait long.",
+    "likelyMisconceptions": [
+      "Children might think they must always just wait and not play any shots before their turn.",
+      "Children might think they can only practise if their coach says so.",
+      "Children might believe they can only practise if the teeing area is empty."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:25.307Z",
+  "model": "gpt-4.1"
+}

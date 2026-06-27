@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-07.png",
+  "ruleNumber": "R6",
+  "ruleName": "Ball falls off the tee",
+  "group": "Ball falls off the tee",
+  "type": "multiple_choice",
+  "imagePrompt": "A teen golfer with a driver accidentally causing the ball to fall off the tee before their shot. The golfer looks surprised, about to replace the ball.",
+  "imageAlt": "A teen golfer about to replace their ball on the tee after accidentally knocking it off.",
+  "sceneSpec": {
+    "setting": "teeing_area",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "replaying_shot",
+    "clubInHand": "driver",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": true,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "medium",
+    "clothingTopColour": "purple",
+    "clothingBottomColour": "grey",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Tee markers are visible and plausible, though they appear slightly stylised in colour but still fall within normal variation seen on real courses."
+    ],
+    "repairPrompt": "Make the tee markers a more standard colour for a golf tee area (e.g. white, yellow, blue, or red) to match common real-world courses."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What should you do if your ball falls off the tee by accident?",
+      "question": "Imagine you are getting ready to hit your shot, but you bump your ball and it rolls off the tee. What do you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Count it as a shot and play your ball from where it stops."
+        },
+        {
+          "id": "b",
+          "text": "Pick up your ball, put it back on the tee, and try again with no penalty."
+        },
+        {
+          "id": "c",
+          "text": "Add two penalty shots because you knocked your ball."
+        },
+        {
+          "id": "d",
+          "text": "Leave the tee and go ask someone for help."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If your ball falls off the tee before you swing and hit it, you can just put it back on the tee and try again with no penalty. It doesn’t count as a shot.",
+      "vocabulary": [
+        {
+          "term": "Tee",
+          "simpleMeaning": "A small stand that holds your ball up when you start a hole."
+        },
+        {
+          "term": "Stroke",
+          "simpleMeaning": "A swing you make to hit the golf ball."
+        },
+        {
+          "term": "Penalty",
+          "simpleMeaning": "Extra shots added to your score if you break a rule."
+        }
+      ],
+      "teachingTip": "Show children how to set a ball on the tee carefully, and explain that only swings to hit the ball count as strokes.",
+      "likelyMisconceptions": [
+        "Kids may think dropping the ball counts as a shot.",
+        "Children may not know they can put the ball back on the tee."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "What happens if your ball falls off the tee accidentally?",
+      "question": "If you accidentally knock your ball off the tee before taking your shot, what is the correct thing to do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Count it as a stroke and play the ball from where it comes to rest."
+        },
+        {
+          "id": "b",
+          "text": "Simply put the ball back on the tee and play your shot with no penalty."
+        },
+        {
+          "id": "c",
+          "text": "Add two penalty strokes for knocking the ball."
+        },
+        {
+          "id": "d",
+          "text": "Leave the tee and ask for help."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If you accidentally make your ball fall off the tee before making a stroke, there is no penalty. You should just place the ball back on the tee and continue."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "006_004_What_happens_if_your_ball_falls_off_the_tee_accidentally",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.408Z"
+  }
+}

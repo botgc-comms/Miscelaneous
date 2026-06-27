@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\008_003_Playing_from_a_divot_rut_or_bald_patch\\metadata.json",
+  "sourceImageName": "page-15.png",
+  "ruleNumber": "R8",
+  "ruleName": "Divots, tractor ruts, bald patches, etc.",
+  "title": "Playing from a divot, rut or bald patch",
+  "question": "Your ball lands in a deep divot or a tractor rut on the fairway. Which of these is correct?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You must play the ball as it lies or take an unplayable lie and add a penalty"
+    },
+    {
+      "id": "b",
+      "text": "You always get free relief"
+    },
+    {
+      "id": "c",
+      "text": "You can move the ball to some good grass without penalty"
+    },
+    {
+      "id": "d",
+      "text": "You are allowed to rehit your shot with no penalty"
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "You have to play the ball as it lies, or declare it unplayable and take a penalty stroke—there is no free relief just for a divot or rut.",
+  "juniorVersion": {
+    "title": "What if your ball is in a hole or bumpy spot?",
+    "question": "Your ball lands in a deep hole made by someone’s shot or a track from a tractor on the fairway. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You must hit the ball as it is, or say it’s unplayable and take a penalty."
+      },
+      {
+        "id": "b",
+        "text": "You always get to move your ball for free."
+      },
+      {
+        "id": "c",
+        "text": "You can pick up your ball and put it on the nice grass for free."
+      },
+      {
+        "id": "d",
+        "text": "You can hit again from the same place without a penalty."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "You need to hit the ball where it is, even if it’s in a hole or tractor mark. If you don’t want to play it, you can say it’s unplayable, but you have to add a penalty.",
+    "vocabulary": [
+      {
+        "term": "Divot",
+        "simpleMeaning": "A hole or chunk taken out of the grass by someone’s golf club."
+      },
+      {
+        "term": "Unplayable Lie",
+        "simpleMeaning": "When your ball is in a spot too hard to play, and you say so, but you get a penalty."
+      },
+      {
+        "term": "Fairway",
+        "simpleMeaning": "The short grass between where you start and the green."
+      }
+    ],
+    "teachingTip": "Show kids what a divot or tractor rut looks like on the course. Ask them to try playing a shot from a divot so they understand how tricky it can be.",
+    "likelyMisconceptions": [
+      "Some children may think they can always move their ball out of a hole or bump for free.",
+      "They might believe deep ruts are like puddles, where you get free relief."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:46.188Z",
+  "model": "gpt-4.1"
+}

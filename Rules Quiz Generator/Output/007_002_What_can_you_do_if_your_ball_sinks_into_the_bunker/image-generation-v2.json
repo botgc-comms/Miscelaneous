@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\007_002_What_can_you_do_if_your_ball_sinks_into_the_bunker\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:02:25.621Z",
+  "title": "What can you do if your ball sinks into the bunker?",
+  "ruleNumber": "R7",
+  "ruleName": "Ball disappeared in the sand",
+  "durationSeconds": 189.177
+}

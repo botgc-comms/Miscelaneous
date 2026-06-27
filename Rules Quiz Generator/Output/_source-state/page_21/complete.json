@@ -1,0 +1,468 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-21.png",
+  "sourceImagePath": "Input\\page-21.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-21.png",
+      "ruleNumber": "R16",
+      "ruleName": "Abnormal course conditions",
+      "group": "Abnormal course conditions",
+      "title": "Taking relief from abnormal course conditions in a bunker",
+      "question": "Your ball is in a bunker and a puddle interferes with your stance. What are your options for taking relief?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop within one club-length in the bunker with no penalty"
+        },
+        {
+          "id": "b",
+          "text": "Drop outside the bunker with no penalty"
+        },
+        {
+          "id": "c",
+          "text": "Drop outside the bunker, but take a one-stroke penalty"
+        },
+        {
+          "id": "d",
+          "text": "Play the ball as it lies with no penalty"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "c"
+      ],
+      "explanation": "You may drop within the bunker without penalty or drop outside the bunker for a one-stroke penalty.",
+      "imagePrompt": "A teenage girl golfer in a bunker with a puddle, preparing to drop a ball within the bunker to take relief.",
+      "imageAlt": "Teenage girl golfer dropping a ball in a bunker with a puddle.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "dropping_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "dark",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "white",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-21.png",
+      "ruleNumber": "R16",
+      "ruleName": "Abnormal course conditions",
+      "group": "Abnormal course conditions",
+      "title": "Dropping outside a bunker due to abnormal conditions",
+      "question": "What must you do if you decide to take relief outside the bunker from abnormal course conditions in the bunker?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop outside the bunker with no penalty"
+        },
+        {
+          "id": "b",
+          "text": "Drop outside the bunker but add one penalty stroke"
+        },
+        {
+          "id": "c",
+          "text": "Place the ball anywhere outside the bunker with no penalty"
+        },
+        {
+          "id": "d",
+          "text": "You cannot take relief outside the bunker"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If you take relief outside the bunker for abnormal course conditions, you must add one penalty stroke.",
+      "imagePrompt": "A teenage boy golfer standing just outside a bunker after dropping a ball, taking a penalty stroke for relief.",
+      "imageAlt": "Teenage boy golfer dropping a ball outside a bunker for a penalty.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "dropping_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "orange",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-21.png",
+      "ruleNumber": "R16",
+      "ruleName": "Abnormal course conditions",
+      "group": "Abnormal course conditions",
+      "title": "Animal holes and relief",
+      "question": "Which of these is classed as an animal hole for relief?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "A hole dug by a rabbit"
+        },
+        {
+          "id": "b",
+          "text": "A shoe print from a previous player"
+        },
+        {
+          "id": "c",
+          "text": "A sprinkler head"
+        },
+        {
+          "id": "d",
+          "text": "A footprint from a bird"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "Only a hole dug by an animal (like a rabbit) counts as an animal hole. A footprint or a sprinkler head does not.",
+      "imagePrompt": "A teen girl golfer standing next to her ball in a bunker, looking at a small animal hole nearby.",
+      "imageAlt": "Teenage girl golfer checks a ball near an animal hole in the bunker.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "wedge",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "yellow",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-21.png",
+      "ruleNumber": "R16",
+      "ruleName": "Abnormal course conditions",
+      "group": "Abnormal course conditions",
+      "title": "If the bunker is completely flooded",
+      "question": "What happens if your ball is in a bunker that is completely flooded with water and you can't find any dry spot to drop the ball in the bunker?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You must play from the water with no penalty"
+        },
+        {
+          "id": "b",
+          "text": "You take free relief outside the bunker"
+        },
+        {
+          "id": "c",
+          "text": "You must drop outside the bunker and add one penalty stroke"
+        },
+        {
+          "id": "d",
+          "text": "You can choose any spot on the course for free"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "If the bunker is completely flooded, you may drop outside the bunker but you must take one penalty stroke.",
+      "imagePrompt": "A teenage boy golfer looking at a bunker that is totally filled with water, preparing to drop a ball outside the bunker.",
+      "imageAlt": "Teenage boy golfer dropping a ball outside a flooded bunker.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "dropping_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": true,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "medium",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "navy",
+        "hat": true
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-21.png",
+      "ruleNumber": "R16",
+      "ruleName": "Abnormal course conditions",
+      "group": "Abnormal course conditions",
+      "title": "Taking relief from abnormal course conditions in a bunker",
+      "question": "Your ball is in a bunker and there is a puddle of water interfering with your stance. What options do you have under the Rules of Golf?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop within one club-length in the bunker without penalty"
+        },
+        {
+          "id": "b",
+          "text": "Drop outside the bunker without penalty"
+        },
+        {
+          "id": "c",
+          "text": "Drop outside the bunker for one penalty stroke"
+        },
+        {
+          "id": "d",
+          "text": "Play the ball as it lies without penalty"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "c",
+        "d"
+      ],
+      "explanation": "You can drop in the bunker within one club-length with no penalty, or drop outside the bunker but take one penalty stroke. You may also choose to play the ball as it lies.",
+      "imagePrompt": "A teenage girl golfer in a bunker with a puddle, preparing to drop a ball within the bunker to take relief, with a rake and club nearby.",
+      "imageAlt": "Teenage girl golfer dropping a ball in a bunker with a puddle, considering her relief options.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "dropping_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": true,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "medium",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "black",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-21.png",
+      "ruleNumber": "R16",
+      "ruleName": "Abnormal course conditions",
+      "group": "Abnormal course conditions",
+      "title": "Dropping outside a bunker due to abnormal conditions",
+      "question": "If you take relief outside a bunker from an abnormal course condition in the bunker, what must you do according to the Rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop outside the bunker without penalty"
+        },
+        {
+          "id": "b",
+          "text": "Drop outside the bunker and add one penalty stroke"
+        },
+        {
+          "id": "c",
+          "text": "Place the ball anywhere outside the bunker without penalty"
+        },
+        {
+          "id": "d",
+          "text": "You cannot take relief outside the bunker"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If you take relief outside the bunker for abnormal course conditions, you must add a one-stroke penalty.",
+      "imagePrompt": "A teenage boy golfer standing just outside a bunker after dropping a ball, counting a penalty stroke for taking relief.",
+      "imageAlt": "Teenage boy golfer dropping a ball outside a bunker for a penalty.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "dropping_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "purple",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-21.png",
+      "ruleNumber": "R16",
+      "ruleName": "Abnormal course conditions",
+      "group": "Abnormal course conditions",
+      "title": "Animal holes and relief",
+      "question": "Which of these situations would allow you to take relief as it counts as an animal hole under the Rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "A hole dug by a rabbit"
+        },
+        {
+          "id": "b",
+          "text": "A shoe print from a previous player"
+        },
+        {
+          "id": "c",
+          "text": "A sprinkler head"
+        },
+        {
+          "id": "d",
+          "text": "A footprint from a bird"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "Only a hole made by an animal, such as a rabbit, is classed as an animal hole for relief purposes.",
+      "imagePrompt": "A teenage boy golfer in a bunker, examining his ball lying next to a fresh animal hole in the sand.",
+      "imageAlt": "Teenage boy golfer checks a ball near an animal hole in the bunker.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "wedge",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "medium",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "purple",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-21.png",
+      "ruleNumber": "R16",
+      "ruleName": "Abnormal course conditions",
+      "group": "Abnormal course conditions",
+      "title": "If the bunker is completely flooded",
+      "question": "Your ball comes to rest in a bunker that is completely filled with water and there is no dry ground to drop your ball inside the bunker. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball from the water without penalty"
+        },
+        {
+          "id": "b",
+          "text": "Take free relief outside the bunker"
+        },
+        {
+          "id": "c",
+          "text": "Drop outside the bunker with a one-stroke penalty"
+        },
+        {
+          "id": "d",
+          "text": "Choose any spot on the course for free"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "If you cannot find a dry spot within the bunker, you are allowed to take relief outside the bunker, but you must take a one-stroke penalty.",
+      "imagePrompt": "A teenage girl golfer looking at a bunker that is completely flooded, preparing to drop her ball outside the bunker.",
+      "imageAlt": "Teenage girl golfer dropping a ball just outside a flooded bunker.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "dropping_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": true,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "dark",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "black",
+        "hat": false
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "016_001_Taking_relief_from_abnormal_course_conditions_in_a_bunker",
+    "016_002_Dropping_outside_a_bunker_due_to_abnormal_conditions",
+    "016_003_Animal_holes_and_relief",
+    "016_004_If_the_bunker_is_completely_flooded"
+  ],
+  "updatedAtUtc": "2026-04-24T21:43:31.445Z"
+}

@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_050_Ball_Lost_in_Red_Penalty_Area\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "17.1c",
+  "ruleName": "Relief for Ball Not Found but Known or Virtually Certain to Be in Penalty Area",
+  "title": "Ball Lost in Red Penalty Area",
+  "question": "Your tee shot heads into a red-staked penalty area. You search for your ball but cannot find it. Everyone in your group is certain the ball came to rest in the penalty area. What is the correct ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "The ball is lost, so you must return to the tee and play under stroke and distance."
+    },
+    {
+      "id": "b",
+      "text": "You may take penalty area relief without finding the ball because it is known or virtually certain that it came to rest in the penalty area."
+    },
+    {
+      "id": "c",
+      "text": "You get a free drop because the ball cannot be found."
+    },
+    {
+      "id": "d",
+      "text": "You may only take relief if you find the ball first."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You do not have to find your ball to take relief from a penalty area. If it is known or virtually certain that the ball came to rest in the penalty area, you may take penalty relief under Rule 17 using the point where the ball last crossed the edge of the penalty area. However, if it is not known or virtually certain that the ball is in the penalty area, you must treat the ball as lost and proceed under stroke and distance.",
+  "juniorVersion": {
+    "title": "Ball Gone in the Water with Red Stakes",
+    "question": "You hit your ball and it goes towards a pond with red stakes. You look, but you can't find your ball. Everyone saw it go into the water. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You lost your ball, so you must go back to the tee and hit again."
+      },
+      {
+        "id": "b",
+        "text": "You can take a penalty drop, even though you can't find your ball, because you all saw it go in the water."
+      },
+      {
+        "id": "c",
+        "text": "You get a free drop because you can't find your ball."
+      },
+      {
+        "id": "d",
+        "text": "You can only take a drop if you find your ball first."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If everyone is sure your ball went into the red-staked water, you can take a penalty drop, even if you can't find your ball. You don't have to go back and hit again. But you must take a penalty shot.",
+    "vocabulary": [
+      {
+        "term": "Penalty area",
+        "simpleMeaning": "A part of the course with water or red/yellow stakes, like a pond or stream."
+      },
+      {
+        "term": "Penalty drop",
+        "simpleMeaning": "When you drop your ball and count a penalty shot after your ball goes in a penalty area."
+      }
+    ],
+    "teachingTip": "Remind children that if everyone knows the ball is in the water or penalty area, you don't have to find the ball to take a drop. But you do get a penalty shot.",
+    "likelyMisconceptions": [
+      "Thinking you must find your ball before you can take a penalty drop.",
+      "Thinking you get a free drop just because you can’t find your ball.",
+      "Thinking you must always go back and hit again when you lose your ball in a penalty area."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:25:34.939Z",
+  "model": "gpt-4.1"
+}

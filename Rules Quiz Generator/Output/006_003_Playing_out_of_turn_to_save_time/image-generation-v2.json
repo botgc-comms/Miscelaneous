@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\006_003_Playing_out_of_turn_to_save_time\\metadata.json",
+  "generatedAtUtc": "2026-06-24T14:57:29.340Z",
+  "title": "Playing out of turn to save time",
+  "ruleNumber": "R6",
+  "ruleName": "Playing in the wrong order",
+  "durationSeconds": 221.202
+}

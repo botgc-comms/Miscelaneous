@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\019_005_Declaring_a_ball_unplayable_in_a_penalty_area\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:08:01.186Z",
+  "title": "Declaring a ball unplayable in a penalty area",
+  "ruleNumber": "R19",
+  "ruleName": "Unplayable lie",
+  "durationSeconds": 262.389
+}

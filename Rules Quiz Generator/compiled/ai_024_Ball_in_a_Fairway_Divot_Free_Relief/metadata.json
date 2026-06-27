@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "9.1",
+  "ruleName": "Ball Played as It Lies; Ball at Rest Lifted or Moved",
+  "group": "General Play",
+  "type": "multiple_choice",
+  "imagePrompt": "A polished, modern, semi-realistic illustration of a lone golfer standing on a fairway under mild daylight, in stylish and recognisable golf clothing, preparing to take a shot. The scene focuses on a golf ball clearly sitting in the middle of a fresh, noticeable divot in the fairway turf in front of the golfer. There are no painted lines, stakes, markers or obvious ground under repair indicators. The setting is open fairway grass with natural textures and no visible green, tees or bunkers. The composition is about 75% realistic, 25% stylised. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer stands on a golf fairway about to play a shot, with their ball clearly sitting in the middle of a visible divot in the turf.",
+  "sceneSpec": {
+    "setting": "Fairway of a golf hole, in moderate daylight.",
+    "players": "One player is standing with a club, preparing to play a shot.",
+    "ballPosition": "The player’s ball is clearly sitting in the middle of a fresh, obvious divot in the fairway.",
+    "ruleMoment": "The moment just before the player considers playing the shot, observing the lie.",
+    "educationalFocus": "Show clearly that the ball is in a divot in the fairway to represent the situation where players might ask about free relief.",
+    "mustShow": [
+      "A realistic fairway surface with cut grass and natural shading",
+      "A player dressed in recognisable golf attire standing next to the ball",
+      "The golf ball clearly resting in the centre of a notable and fresh divot"
+    ],
+    "mustNotShow": [
+      "Any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles",
+      "Any features that suggest ground under repair (e.g., lines, paint, stakes)",
+      "Any other players or caddies in the scene"
+    ]
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Stuck in a Hole on the Fairway",
+      "question": "You hit your shot and your ball stops right in the middle of the fairway, but it's stuck in a hole made by someone else's shot (a divot). Can you pick up your ball and move it for free?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes. A divot is a special area that lets you move your ball."
+        },
+        {
+          "id": "b",
+          "text": "Yes. If your ball is on the fairway, you can always move it."
+        },
+        {
+          "id": "c",
+          "text": "No. You must play the ball where it is, unless there's a special rule."
+        },
+        {
+          "id": "d",
+          "text": "Yes, but only if grass isn’t growing back in the hole yet."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "In golf, if your ball lands in a hole (divot) on the fairway, you have to play it as it is. You can only move it if there's a special rule at your golf course.",
+      "vocabulary": [
+        {
+          "term": "Divot",
+          "simpleMeaning": "A chunk of grass and dirt removed when someone hits the ball, leaving a hole."
+        },
+        {
+          "term": "Fairway",
+          "simpleMeaning": "The nice short grass between the tee and the green."
+        }
+      ],
+      "teachingTip": "Tell children that golf is about playing the course as you find it, including any holes left by other players. Practice hitting from tricky spots so they feel confident.",
+      "likelyMisconceptions": [
+        "Thinking the hole in the fairway is always a special spot where you can move your ball.",
+        "Thinking you always get to move your ball if you don't like where it landed."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Ball in a Fairway Divot: Free Relief?",
+      "question": "Your tee shot finishes in the middle of the fairway, but unfortunately the ball comes to rest in a deep divot left by another player. Can you take free relief?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes. A divot is ground under repair."
+        },
+        {
+          "id": "b",
+          "text": "Yes. You are entitled to relief because your ball is on the fairway."
+        },
+        {
+          "id": "c",
+          "text": "No. You must play the ball as it lies unless a Local Rule says otherwise."
+        },
+        {
+          "id": "d",
+          "text": "Yes, but only if the divot has not yet started to grow back."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "A common misconception is that free relief is allowed from a divot in the fairway. Under the Rules of Golf, however, a divot is not ground under repair and there is no automatic entitlement to free relief. The ball must be played as it lies unless a Local Rule gives additional options."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "ai_024_Ball_in_a_Fairway_Divot_Free_Relief",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-06-26T20:03:54.040Z"
+  }
+}

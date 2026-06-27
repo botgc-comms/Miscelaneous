@@ -1,0 +1,5 @@
+﻿{
+  "text": [],
+  "allowText": true,
+  "notes": "the inscription on the cup itself reads Ladies Junior Trophy. The base is inscribed with the names of past winners."
+}

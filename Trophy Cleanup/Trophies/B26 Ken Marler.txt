@@ -1,0 +1,5 @@
+{
+  "text": ["Ken Marler", "Memorial Trophy"],
+  "allowText": true,
+  "notes": "the text is on the body of the trophy not the base"
+}

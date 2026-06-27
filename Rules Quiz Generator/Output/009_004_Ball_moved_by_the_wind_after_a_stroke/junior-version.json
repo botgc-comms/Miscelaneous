@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\009_004_Ball_moved_by_the_wind_after_a_stroke\\metadata.json",
+  "sourceImageName": "pageb-12.png",
+  "ruleNumber": "R9",
+  "ruleName": "Ball at rest is moved",
+  "title": "Ball moved by the wind after a stroke",
+  "question": "Your ball comes to rest after a stroke, but then the wind blows it somewhere else. According to the rules, how do you play on?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Replace the ball to its original resting spot"
+    },
+    {
+      "id": "b",
+      "text": "Play the ball from its new position"
+    },
+    {
+      "id": "c",
+      "text": "Add a penalty and replace the ball"
+    },
+    {
+      "id": "d",
+      "text": "Replay your previous shot from the old spot"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If the wind or gravity moves your ball after it has come to rest from a stroke, you must play it from its new position, with no penalty.",
+  "juniorVersion": {
+    "title": "What to do if the wind moves your ball after you’ve hit",
+    "question": "You hit your ball and it stops. But then, the wind blows your ball to a different place. What should you do next?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Put the ball back where it stopped the first time"
+      },
+      {
+        "id": "b",
+        "text": "Play the ball from where the wind moved it"
+      },
+      {
+        "id": "c",
+        "text": "Add a penalty and put the ball back"
+      },
+      {
+        "id": "d",
+        "text": "Hit your shot again from the old spot"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If the wind moves your ball after it has stopped, you play the ball from the new spot. You don’t get a penalty.",
+    "vocabulary": [
+      {
+        "term": "Stroke",
+        "simpleMeaning": "A stroke is when you swing your club to try to hit the ball."
+      },
+      {
+        "term": "At rest",
+        "simpleMeaning": "At rest means your ball has stopped rolling or moving."
+      }
+    ],
+    "teachingTip": "Let children see how wind or gravity might move a ball after it stops, and practise playing from where it gets moved.",
+    "likelyMisconceptions": [
+      "Children may think they always have to put the ball back where it stopped the first time.",
+      "They may think a penalty is needed if the wind moves the ball."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:52.788Z",
+  "model": "gpt-4.1"
+}

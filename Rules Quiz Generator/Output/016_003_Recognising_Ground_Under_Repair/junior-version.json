@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\016_003_Recognising_Ground_Under_Repair\\metadata.json",
+  "sourceImageName": "page-13.png",
+  "ruleNumber": "16",
+  "ruleName": "Abnormal course conditions",
+  "title": "Recognising Ground Under Repair",
+  "question": "Which area is most likely to be marked as 'ground under repair' where you may get relief?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "A blue-marked area with piles of grass cuttings"
+    },
+    {
+      "id": "b",
+      "text": "A patch of bare earth not marked by anything"
+    },
+    {
+      "id": "c",
+      "text": "A normal bunker filled with sand"
+    },
+    {
+      "id": "d",
+      "text": "A spot of wet grass after rain"
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "Ground under repair is usually marked with lines or stakes (commonly blue or white) and can include areas with piled grass from maintenance.",
+  "juniorVersion": {
+    "title": "Spotting Ground Under Repair",
+    "question": "Which place is usually marked as 'ground under repair' so you can take relief?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "A blue-marked area with piles of grass clippings"
+      },
+      {
+        "id": "b",
+        "text": "A patch of bare dirt with nothing on it"
+      },
+      {
+        "id": "c",
+        "text": "A regular bunker full of sand"
+      },
+      {
+        "id": "d",
+        "text": "Some wet grass after it rains"
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "Ground under repair is often shown with blue lines or sticks. It can be a spot with lots of cut grass left by the greenkeeper.",
+    "vocabulary": [
+      {
+        "term": "ground under repair",
+        "simpleMeaning": "A part of the course marked with lines or stakes because it is being fixed. You may be allowed to move your ball from here."
+      },
+      {
+        "term": "relief",
+        "simpleMeaning": "A free chance to move your ball without penalty when there is something wrong with the ground."
+      },
+      {
+        "term": "grass clippings",
+        "simpleMeaning": "Pieces of grass that have been cut and left in a pile."
+      }
+    ],
+    "teachingTip": "Show children what ground under repair markers look like and explain why these spots are fixed or unsafe.",
+    "likelyMisconceptions": [
+      "Children might think any bare patch of earth or any wet spot is 'ground under repair'. Remind them to look for lines or markers.",
+      "Children might confuse grass clippings with normal grass or not notice markers."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:05.630Z",
+  "model": "gpt-4.1"
+}

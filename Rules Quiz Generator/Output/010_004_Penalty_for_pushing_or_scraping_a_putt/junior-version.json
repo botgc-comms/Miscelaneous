@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\010_004_Penalty_for_pushing_or_scraping_a_putt\\metadata.json",
+  "sourceImageName": "pageb-10.png",
+  "ruleNumber": "R10",
+  "ruleName": "Careless putting",
+  "title": "Penalty for pushing or scraping a putt",
+  "question": "What is the penalty if you push or scrape your ball along the green with your putter instead of making a proper stroke?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No penalty, continue your game"
+    },
+    {
+      "id": "b",
+      "text": "Two penalty strokes"
+    },
+    {
+      "id": "c",
+      "text": "Replay the shot with no penalty"
+    },
+    {
+      "id": "d",
+      "text": "One penalty stroke"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "Pushing or scraping a ball along the putting green rather than making a recognised stroke results in a two-stroke penalty.",
+  "juniorVersion": {
+    "title": "Penalty for not hitting your putt properly",
+    "question": "If you use your putter to push or scrape the ball along the green instead of making a normal putt, what is the penalty?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "No penalty, you keep playing"
+      },
+      {
+        "id": "b",
+        "text": "You get two extra shots added to your score"
+      },
+      {
+        "id": "c",
+        "text": "You take the shot again with no penalty"
+      },
+      {
+        "id": "d",
+        "text": "You get one extra shot added"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If you push or scrape your ball with your putter instead of making a proper stroke, you get two extra shots added to your score.",
+    "vocabulary": [
+      {
+        "term": "putt",
+        "simpleMeaning": "A soft shot played with a putter to roll the ball on the green towards the hole."
+      },
+      {
+        "term": "putter",
+        "simpleMeaning": "The golf club you use on the green to roll the ball into the hole."
+      },
+      {
+        "term": "stroke",
+        "simpleMeaning": "A regular hit or swing at the ball with a club."
+      }
+    ],
+    "teachingTip": "Show what a proper putt looks like by letting kids try both a correct putt and a push/scrape, then explain why the rule is important for fairness.",
+    "likelyMisconceptions": [
+      "Thinking that pushing or scraping the ball is the same as a normal putt.",
+      "Believing there is no penalty for not doing a proper stroke."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:07.049Z",
+  "model": "gpt-4.1"
+}

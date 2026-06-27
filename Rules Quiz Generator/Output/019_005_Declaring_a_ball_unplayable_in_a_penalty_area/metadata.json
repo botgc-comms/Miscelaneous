@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-28.png",
+  "ruleNumber": "R19",
+  "ruleName": "Unplayable lie",
+  "group": "Unplayable lie",
+  "title": "Declaring a ball unplayable in a penalty area",
+  "question": "Your ball is in a penalty area, stuck behind rocks. Are you allowed to declare it unplayable?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, at any time"
+    },
+    {
+      "id": "b",
+      "text": "No, you cannot declare it unplayable in a penalty area"
+    },
+    {
+      "id": "c",
+      "text": "Only if another player agrees"
+    },
+    {
+      "id": "d",
+      "text": "Only if the ball is lost"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You cannot declare a ball unplayable in a penalty area. You must use the penalty area relief options instead.",
+  "imagePrompt": "A teen girl golfer near the water in a clearly marked red penalty area is looking at her ball stuck behind rocks, deciding what to do.",
+  "imageAlt": "Teen girl standing next to her ball among rocks in a penalty area by the water.",
+  "sceneSpec": {
+    "setting": "penalty_area_edge",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "wedge",
+    "ballCount": 1,
+    "stakeColour": "red",
+    "waterVisible": true,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "asian",
+    "skinTone": "medium",
+    "clothingTopColour": "red",
+    "clothingBottomColour": "blue",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The girl's cap is blue instead of red as required by the prompt."
+    ],
+    "repairPrompt": "Change the golf cap color to red to ensure all clothing matches the specification."
+  }
+}

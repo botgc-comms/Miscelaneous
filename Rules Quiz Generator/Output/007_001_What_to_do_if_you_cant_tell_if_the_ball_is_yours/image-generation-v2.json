@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\007_001_What_to_do_if_you_cant_tell_if_the_ball_is_yours\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:00:50.901Z",
+  "title": "What to do if you can't tell if the ball is yours",
+  "ruleNumber": "R7",
+  "ruleName": "Identifying the ball",
+  "durationSeconds": 201.552
+}

@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "pageb-10.png",
+  "ruleNumber": "R10",
+  "ruleName": "Careless putting",
+  "group": "Careless putting",
+  "type": "multiple_choice",
+  "imagePrompt": "On a sunny putting green, a teenage boy is seen moving his ball by pushing it with his putter instead of making a regular stroke. The scene is clear and simple.",
+  "imageAlt": "Teen boy scraping a putt on the green with a putter.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "dark",
+    "clothingTopColour": "yellow",
+    "clothingBottomColour": "red",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [],
+    "repairPrompt": "No major repairs needed. If further improvement is desired, you may slightly exaggerate the motion to make it slightly more obvious that the putter is being used to push (not strike) the ball, for even better educational clarity."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Penalty for not hitting your putt properly",
+      "question": "If you use your putter to push or scrape the ball along the green instead of making a normal putt, what is the penalty?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty, you keep playing"
+        },
+        {
+          "id": "b",
+          "text": "You get two extra shots added to your score"
+        },
+        {
+          "id": "c",
+          "text": "You take the shot again with no penalty"
+        },
+        {
+          "id": "d",
+          "text": "You get one extra shot added"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If you push or scrape your ball with your putter instead of making a proper stroke, you get two extra shots added to your score.",
+      "vocabulary": [
+        {
+          "term": "putt",
+          "simpleMeaning": "A soft shot played with a putter to roll the ball on the green towards the hole."
+        },
+        {
+          "term": "putter",
+          "simpleMeaning": "The golf club you use on the green to roll the ball into the hole."
+        },
+        {
+          "term": "stroke",
+          "simpleMeaning": "A regular hit or swing at the ball with a club."
+        }
+      ],
+      "teachingTip": "Show what a proper putt looks like by letting kids try both a correct putt and a push/scrape, then explain why the rule is important for fairness.",
+      "likelyMisconceptions": [
+        "Thinking that pushing or scraping the ball is the same as a normal putt.",
+        "Believing there is no penalty for not doing a proper stroke."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Penalty for pushing or scraping a putt",
+      "question": "What is the penalty if you push or scrape your ball along the green with your putter instead of making a proper stroke?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty, continue your game"
+        },
+        {
+          "id": "b",
+          "text": "Two penalty strokes"
+        },
+        {
+          "id": "c",
+          "text": "Replay the shot with no penalty"
+        },
+        {
+          "id": "d",
+          "text": "One penalty stroke"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "Pushing or scraping a ball along the putting green rather than making a recognised stroke results in a two-stroke penalty."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "010_004_Penalty_for_pushing_or_scraping_a_putt",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.563Z"
+  }
+}

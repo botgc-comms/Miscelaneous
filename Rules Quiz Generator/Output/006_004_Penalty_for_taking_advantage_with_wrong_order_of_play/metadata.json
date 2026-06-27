@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-10.png",
+  "ruleNumber": "R6",
+  "ruleName": "Playing in the wrong order",
+  "group": "Playing in the wrong order",
+  "title": "Penalty for taking advantage with wrong order of play",
+  "question": "If two players agree to play out of order so that one of them can get a clear advantage, what is the penalty?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No penalty if they both agree."
+    },
+    {
+      "id": "b",
+      "text": "Only the player who played early gets a penalty."
+    },
+    {
+      "id": "c",
+      "text": "Both players get two penalty strokes."
+    },
+    {
+      "id": "d",
+      "text": "They must replay their shots."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "If players play out of order to give an advantage, both get two penalty strokes. It doesn't matter if they agree.",
+  "imagePrompt": "Two teenage golfers on the fairway, quietly discussing their shots while one seems poised to play out of order for an advantage.",
+  "imageAlt": "Two teen golfers talking by their balls on the fairway, one preparing to play before the other for tactical reasons.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "addressing_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "dark",
+    "clothingTopColour": "orange",
+    "clothingBottomColour": "navy",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 96,
+    "issues": [
+      "Golfer's handedness not perfectly clear; pose could make left-handedness more obvious"
+    ],
+    "repairPrompt": "Ensure the teenage girl is clearly poised in a left-handed stance, with her right hand lower on the grip than her left, to make left-handed play visually unmistakable."
+  }
+}

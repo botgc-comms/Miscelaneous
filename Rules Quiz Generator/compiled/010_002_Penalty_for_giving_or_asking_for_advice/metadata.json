@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-11.png",
+  "ruleNumber": "R10",
+  "ruleName": "Advice and line of play",
+  "group": "Advice and line of play",
+  "type": "multiple_choice",
+  "imagePrompt": "A teenage golfer on the fairway holding a club and asking their friend for advice about which club to use.",
+  "imageAlt": "Teen golfer holding a club and asking friend for club choice advice.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "red",
+    "clothingBottomColour": "black",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "The golfer's skin tone appears on the lighter side of 'medium', but is within reasonable bounds for the prompt.",
+      "A bunker is visible in the distance, though the scene says no bunker should be visible. However, it is on the green edge far away and not a distraction."
+    ],
+    "repairPrompt": "Adjust the golfer's skin tone very slightly deeper to clearly match 'medium' as specified, and if possible, remove visible bunkers from the background."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What happens if you ask your friend which club to use?",
+      "question": "You say to your friend, 'Which club should I use for this shot?' What does the rule say will happen?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Nothing happens. No penalty."
+        },
+        {
+          "id": "b",
+          "text": "You get 2 extra shots added to your score."
+        },
+        {
+          "id": "c",
+          "text": "Your friend gets 2 extra shots added to their score."
+        },
+        {
+          "id": "d",
+          "text": "You and your friend each get 1 extra shot added."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "The rules say you must choose your club on your own. If you ask your friend which club to use, you get 2 shots added to your score.",
+      "vocabulary": [
+        {
+          "term": "Penalty",
+          "simpleMeaning": "Extra shots added to your score if you break a rule."
+        },
+        {
+          "term": "Advice",
+          "simpleMeaning": "When someone tells you what to do, like which club to use."
+        }
+      ],
+      "teachingTip": "Explain that golf is about making choices for yourself. Remind children not to ask or tell friends what club to use during a round.",
+      "likelyMisconceptions": [
+        "Children may think it's okay to ask friends for help during play.",
+        "They might believe both players are penalised."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Penalty for giving or asking for advice",
+      "question": "You ask your playing partner, 'Which club should I use for this shot?' What happens according to the rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty."
+        },
+        {
+          "id": "b",
+          "text": "You get a 2-stroke penalty."
+        },
+        {
+          "id": "c",
+          "text": "Your partner gets a 2-stroke penalty."
+        },
+        {
+          "id": "d",
+          "text": "Both you and your partner get 1 penalty stroke."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If you ask for or receive advice like club selection during a round, you get a 2-stroke penalty."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "010_002_Penalty_for_giving_or_asking_for_advice",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.528Z"
+  }
+}

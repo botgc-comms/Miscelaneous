@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-06.png",
+  "ruleNumber": "6",
+  "ruleName": "Playing from outside the teeing area",
+  "group": "Playing from outside the teeing area",
+  "title": "Correcting a teeing area mistake",
+  "question": "After realising you hit your tee shot from outside the teeing area in stroke play, what should you do to avoid being disqualified?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Go to your ball and continue playing, no penalty."
+    },
+    {
+      "id": "b",
+      "text": "Replay your shot from within the teeing area and add two penalty strokes."
+    },
+    {
+      "id": "c",
+      "text": "Replay from anywhere you like with just a warning."
+    },
+    {
+      "id": "d",
+      "text": "Ask your opponent for permission to keep playing from where you are."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You must replay your shot from within the teeing area and take two penalty strokes to avoid disqualification.",
+  "imagePrompt": "A teen boy preparing to replay his tee shot, with the ball now correctly positioned inside the tee markers after fixing a previous mistake.",
+  "imageAlt": "Teen boy resetting for a tee shot inside the marker after error.",
+  "sceneSpec": {
+    "setting": "teeing_area",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "replaying_shot",
+    "clubInHand": "driver",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": true,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "dark",
+    "clothingTopColour": "grey",
+    "clothingBottomColour": "orange",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [],
+    "repairPrompt": "No repair needed. All scene, equipment, and character requirements are visually accurate. The golfer is a teenage girl with dark skin, grey top, orange shorts, and a cap. The club is a realistic modern driver, held naturally. One correctly positioned golf ball is visible between two tee markers in a natural teeing area. Proportions, posture, and course features are all believable and suitable for teaching golf rules."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "packId": "whats-in-the-bag",
+  "pageId": "02-woods-irons",
+  "pageTitle": "Woods, irons and hybrids",
+  "pageFile": "pages/02-woods-irons.md",
+  "assetFile": "woods-irons.png",
+  "audience": "brand new junior golfers and non-golfing parents",
+  "learningGoal": "Understand the different types of golf clubs and their uses.",
+  "markdown": "![Woods, irons and hybrids](../assets/woods-irons.png)\n\n# Woods, irons and hybrids\n\nWelcome to the exciting world of golf! In this section, we’ll introduce you to the important clubs you'll be using: woods, irons, and hybrids. This will help you choose the right equipment and understand what each club does.\n\n**Woods** are typically the longest clubs in your bag. They have a large head and are used for hitting the golf ball long distances, especially from the tee on par 4 and par 5 holes. The most common woods are the 1-wood (often called the driver) and the 3-wood. \n\n**Irons** are medium-length clubs used for a variety of shots. They have a thinner head, making them suitable for accurate shots from the fairway or rough. Irons are numbered (for example, 7-iron, 9-iron) based on their loft or angle, which affects the distance they hit the ball.\n\n**Hybrids** combine features of both woods and irons. They are easier to hit than long irons and provide a better option for beginners when trying to reach the green. Many golfers find hybrids useful for a variety of situations.\n\nChoosing the right clubs is essential for a successful start in golf. Focus on practice, and remember to have fun while learning! Your confidence will grow as you get familiar with each club's purpose and use. Happy golfing!",
+  "imageAlt": "A view of a golf course showcasing various types of clubs like woods, irons, and hybrids, with a focus on the lush green fairway.",
+  "imagePrompt": "A picturesque, wide-angle view of a sunny golf course. Include lush green fairways, a tee box with woods, various iron clubs, and a distant view of a player preparing a shot. The image should show the peaceful, open space of the course, highlighting the environment where golf is played."
+}

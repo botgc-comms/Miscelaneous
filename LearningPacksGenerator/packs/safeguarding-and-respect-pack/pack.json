@@ -1,0 +1,39 @@
+{
+  "id": "safeguarding-and-respect",
+  "title": "Safeguarding",
+  "summary": "Staying safe and respectful at the club.",
+  "estimatedMinutes": 5,
+  "priority": 300,  
+  "mandatoryFor": [
+    "Junior Cadet", 
+    "Junior Course Cadet"
+  ],
+  "version": 1,
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "A safe and respectful environment",
+      "file": "pages/00-title.md"
+    },
+    {
+      "id": "01-respectful-behaviour",
+      "title": "Respectful behaviour",
+      "file": "pages/01-respectful-behaviour.md"
+    },
+    {
+      "id": "02-boundaries",
+      "title": "Boundaries and appropriate behaviour",
+      "file": "pages/02-boundaries.md"
+    },
+    {
+      "id": "03-speaking-up",
+      "title": "Speaking up",
+      "file": "pages/03-speaking-up.md"
+    },
+    {
+      "id": "04-support",
+      "title": "Getting support",
+      "file": "pages/04-support.md"
+    }
+  ]
+}

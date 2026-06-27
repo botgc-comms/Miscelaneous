@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\016_001_Free_relief_for_lost_ball_in_abnormal_course_conditions\\metadata.json",
+  "sourceImageName": "page-15.png",
+  "ruleNumber": "R16",
+  "ruleName": "Ball lost in abnormal course conditions",
+  "title": "Free relief for lost ball in abnormal course conditions",
+  "question": "You are certain your ball is lost in an area marked as abnormal course conditions (like ground under repair), but you can’t find it. What are you allowed to do?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play a new ball from the tee with a penalty"
+    },
+    {
+      "id": "b",
+      "text": "Take free relief by dropping a ball at the spot where your original ball last crossed the edge of the abnormal course condition"
+    },
+    {
+      "id": "c",
+      "text": "Drop another ball anywhere on the course without penalty"
+    },
+    {
+      "id": "d",
+      "text": "Search for your ball for 10 minutes"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If you are certain your ball is lost in abnormal course conditions, you may take free relief by dropping a ball at the point where the ball last crossed the edge of that area, with no penalty.",
+  "juniorVersion": {
+    "title": "What to do if your ball is lost in a special area like ground under repair",
+    "question": "You hit your ball and you are sure it went into a muddy area with a sign that says 'ground under repair', but you can’t find your ball. What are you allowed to do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Hit a new ball from the tee and add a penalty stroke"
+      },
+      {
+        "id": "b",
+        "text": "Drop a ball for free where your ball last went into the bad area"
+      },
+      {
+        "id": "c",
+        "text": "Drop a ball for free anywhere you want on the course"
+      },
+      {
+        "id": "d",
+        "text": "Look for your ball for 10 minutes"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If you are sure your ball is lost in a spot like 'ground under repair', you can drop a new ball for free near where your ball went in, at the edge of the area.",
+    "vocabulary": [
+      {
+        "term": "Ground under repair",
+        "simpleMeaning": "A muddy, wet, or damaged spot on the course with a sign. You get special help if your ball goes in here."
+      },
+      {
+        "term": "Drop",
+        "simpleMeaning": "Letting go of a ball from knee height, so it can be played again."
+      }
+    ],
+    "teachingTip": "Explain that 'ground under repair' is a special spot to help the grass or fix problems, so golfers don’t have to play from there.",
+    "likelyMisconceptions": [
+      "Children may think they always have to take a penalty when the ball is lost.",
+      "Kids might believe they can drop the ball anywhere for free relief.",
+      "They may think they can search for the ball longer than the rules allow."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:55.137Z",
+  "model": "gpt-4.1"
+}

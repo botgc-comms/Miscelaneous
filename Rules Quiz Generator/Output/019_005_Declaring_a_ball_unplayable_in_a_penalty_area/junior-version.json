@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\019_005_Declaring_a_ball_unplayable_in_a_penalty_area\\metadata.json",
+  "sourceImageName": "page-28.png",
+  "ruleNumber": "R19",
+  "ruleName": "Unplayable lie",
+  "title": "Declaring a ball unplayable in a penalty area",
+  "question": "Your ball is in a penalty area, stuck behind rocks. Are you allowed to declare it unplayable?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, at any time"
+    },
+    {
+      "id": "b",
+      "text": "No, you cannot declare it unplayable in a penalty area"
+    },
+    {
+      "id": "c",
+      "text": "Only if another player agrees"
+    },
+    {
+      "id": "d",
+      "text": "Only if the ball is lost"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You cannot declare a ball unplayable in a penalty area. You must use the penalty area relief options instead.",
+  "juniorVersion": {
+    "title": "Can you say your ball is unplayable in a penalty area?",
+    "question": "Your ball lands in a penalty area, like near water or mud, and gets stuck behind rocks. Can you say it is unplayable and use the unplayable ball rule?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Yes, you can always do that"
+      },
+      {
+        "id": "b",
+        "text": "No, you can't say it is unplayable in a penalty area"
+      },
+      {
+        "id": "c",
+        "text": "Only if another player says it's OK"
+      },
+      {
+        "id": "d",
+        "text": "Only if you cannot find the ball"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "You are not allowed to say your ball is unplayable when it is in a penalty area. There are different rules for balls in penalty areas. You must use the penalty area rules to move your ball.",
+    "vocabulary": [
+      {
+        "term": "Penalty area",
+        "simpleMeaning": "A place like a pond, stream, or muddy patch on the course that is marked with yellow or red lines or stakes."
+      },
+      {
+        "term": "Unplayable",
+        "simpleMeaning": "When you decide you can’t hit the ball from where it is and want to take a penalty to move it, but you can't do this in a penalty area."
+      }
+    ],
+    "teachingTip": "You can only use the special penalty area drop rules when your ball is in a penalty area, not the unplayable ball rule.",
+    "likelyMisconceptions": [
+      "Some children might think they can use the unplayable ball rule anywhere, even in a penalty area.",
+      "Kids may believe they need to ask other players before deciding."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:51.850Z",
+  "model": "gpt-4.1"
+}

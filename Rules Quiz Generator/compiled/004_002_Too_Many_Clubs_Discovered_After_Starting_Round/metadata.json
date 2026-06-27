@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-05.png",
+  "ruleNumber": "R4",
+  "ruleName": "Maximum of 14 clubs",
+  "group": "Maximum of 14 clubs",
+  "type": "multiple_choice",
+  "imagePrompt": "A teenage boy on the fairway counting his clubs and looking surprised, while another golfer stands nearby.",
+  "imageAlt": "Teen boy counting golf clubs on the fairway, looking surprised, with another player watching.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "asian",
+    "skinTone": "medium",
+    "clothingTopColour": "navy",
+    "clothingBottomColour": "purple",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 95,
+    "issues": [
+      "The image is strong overall but the golf bag in the background could be seen as having clubs that appear slightly large or emphasized, which may mildly distract from strict realism."
+    ],
+    "repairPrompt": "Ensure that all visible golf clubs, especially those in the background golf bag, are depicted with realistic proportions and do not appear exaggerated or toy-like."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What If You Have Too Many Clubs in Your Bag?",
+      "question": "You start your game and notice you have more than 14 clubs in your bag. What should you do right away so you don't get into more trouble?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Tell someone you have extra clubs and stop using them straight away"
+        },
+        {
+          "id": "b",
+          "text": "Keep playing with all your clubs"
+        },
+        {
+          "id": "c",
+          "text": "Wait until the hole is finished to put away the extra clubs"
+        },
+        {
+          "id": "d",
+          "text": "Give the extra clubs to another player to use"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "If you find out you have more than 14 clubs in your bag, you must say which clubs you will not use anymore right away. If you keep playing with too many clubs, you might get into more trouble.",
+      "vocabulary": [
+        {
+          "term": "Club",
+          "simpleMeaning": "A golf stick you use to hit the ball."
+        }
+      ],
+      "teachingTip": "You can ask the child to look in their bag and count their clubs before starting to play.",
+      "likelyMisconceptions": [
+        "Children may think they can finish the hole before taking out the extra clubs.",
+        "They might think it's okay if another player uses their extra clubs.",
+        "Some will think it doesn't matter if they have more than 14 if they don’t use them."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Too Many Clubs Discovered After Starting Round",
+      "question": "During your round you find that you have more than 14 clubs in your bag. What should you do right away to avoid further penalties?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Declare any extra clubs out of play immediately"
+        },
+        {
+          "id": "b",
+          "text": "Keep using all the clubs"
+        },
+        {
+          "id": "c",
+          "text": "Wait until you finish the hole to remove the extras"
+        },
+        {
+          "id": "d",
+          "text": "Give the extra clubs to another player"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "You must instantly declare any clubs over the 14-club limit out of play as soon as you realise it. Leaving them in play will cause additional penalties for each hole you play with too many clubs."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "004_002_Too_Many_Clubs_Discovered_After_Starting_Round",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.265Z"
+  }
+}

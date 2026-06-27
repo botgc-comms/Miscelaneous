@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "17.1d",
+  "ruleName": "Relief for Ball in Penalty Area",
+  "group": "Penalty Areas",
+  "title": "Lateral Relief from Yellow Penalty Area",
+  "question": "Your ball comes to rest in a yellow-staked penalty area. You would like to take lateral relief by dropping within two club-lengths of where the ball last crossed the edge of the penalty area.\n\nIs this allowed?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes. You may always take lateral relief from any penalty area."
+    },
+    {
+      "id": "b",
+      "text": "Yes, but only if the ball cannot be found."
+    },
+    {
+      "id": "c",
+      "text": "No. Lateral relief is only available from a red penalty area."
+    },
+    {
+      "id": "d",
+      "text": "Yes, but only if you add two penalty strokes."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "Lateral relief (dropping within two club-lengths of where the ball last crossed the edge) is available only from red penalty areas. For yellow penalty areas, you may take stroke-and-distance relief or back-on-the-line relief, both for one penalty stroke. Lateral relief is not allowed from a yellow penalty area under Rule 17.1d.",
+  "imagePrompt": "Illustrate a golf course scene featuring a penalty area clearly marked with yellow stakes along the edge of a water hazard. Show a golfer in modern golf attire, standing close to this edge, thoughtfully holding a golf ball as if preparing for a drop. The original ball should be visible inside the yellow-staked penalty area near the edge. Use a polished, modern, semi-realistic illustration style: 75% realistic and 25% stylised. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles. There should be no red stakes anywhere in the scene.",
+  "imageAlt": "A golfer stands near a water hazard marked by yellow stakes, holding a ball and appearing to decide about relief, with the original ball visible just inside the penalty area.",
+  "sceneSpec": {
+    "setting": "Golf course, edge of a water hazard marked with yellow stakes",
+    "players": "One player, dressed in typical golf clothing, preparing to take relief",
+    "ballPosition": "Ball has just entered and come to rest inside a yellow-staked penalty area, visible just inside the marked hazard",
+    "ruleMoment": "Player is considering dropping a ball within two club-lengths of the yellow penalty area's edge for lateral relief",
+    "educationalFocus": "Highlight the difference in relief options between yellow and red penalty areas",
+    "mustShow": [
+      "Yellow stakes marking the edge of a water penalty area",
+      "A player near the edge, with ball clearly in the penalty area",
+      "Player in a thoughtful or decision-making pose, holding a ball ready to drop"
+    ],
+    "mustNotShow": [
+      "Red stakes",
+      "Arrows, numbers or lines showing relief area",
+      "Any text, labels, badges, logos, scorecards, diagrams, captions or speech bubbles"
+    ]
+  }
+}

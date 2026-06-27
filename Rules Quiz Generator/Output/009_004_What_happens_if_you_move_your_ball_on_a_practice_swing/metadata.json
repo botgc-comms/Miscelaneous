@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-11.png",
+  "ruleNumber": "R9",
+  "ruleName": "Ball moved when taking a practice swing",
+  "group": "Ball at rest moved",
+  "title": "What happens if you move your ball on a practice swing?",
+  "question": "On the fairway, you accidentally move your ball by brushing it during a practice swing. What should you do?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball from where it moved to."
+    },
+    {
+      "id": "b",
+      "text": "Replace the ball and add 1 penalty stroke."
+    },
+    {
+      "id": "c",
+      "text": "Ignore it and keep playing."
+    },
+    {
+      "id": "d",
+      "text": "Move the ball to a place you like better."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You must return the ball to its original spot and add 1 penalty stroke if you move it while making a practice swing.",
+  "imagePrompt": "A teenage golfer on the fairway accidentally brushing and moving their golf ball while attempting a practice swing.",
+  "imageAlt": "Teen golfer brushing the ball with a club on a practice swing on fairway.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "replaying_shot",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "asian",
+    "skinTone": "medium",
+    "clothingTopColour": "red",
+    "clothingBottomColour": "navy",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "Could emphasize the action of the ball being brushed or just moved more clearly to suit the prompt, but all visual golf details are accurate."
+    ],
+    "repairPrompt": "Show the golf ball very slightly displaced with a subtle visible trace or motion blur towards its new position, and depict a wisp of grass or brush motion near the ball to make it clearer the ball was moved accidentally during the practice swing."
+  }
+}

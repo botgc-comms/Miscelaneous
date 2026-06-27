@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\089_001_Moving_or_bending_grass_before_your_shot\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:09:32.402Z",
+  "title": "Moving or bending grass before your shot",
+  "ruleNumber": "R8/9",
+  "ruleName": "Do not break anything off or bend anything out of the way",
+  "durationSeconds": 188.742
+}

@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-07.png",
+  "ruleNumber": "R15",
+  "ruleName": "Movable Obstructions",
+  "group": "Movable Obstructions",
+  "title": "Dealing with Movable Obstructions",
+  "question": "You find a lost glove and a scorecard near your ball on the putting green. Are you allowed to move them?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No, you must play your ball as it lies"
+    },
+    {
+      "id": "b",
+      "text": "Yes, you can remove both without penalty"
+    },
+    {
+      "id": "c",
+      "text": "You must call for a penalty before touching them"
+    },
+    {
+      "id": "d",
+      "text": "Only other players can move them"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You are allowed to remove movable obstructions like a glove or a scorecard with no penalty. If the ball moves while doing so, you simply replace it.",
+  "imagePrompt": "A teenage girl lifting a glove and a scorecard from beside her golf ball on the putting green.",
+  "imageAlt": "Teen girl moving a glove and scorecard away from her ball on the green.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "yellow",
+    "clothingBottomColour": "blue",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "There is a very slight stiffness in the hand holding the putter, but the posture is physically plausible.",
+      "The shadow detail beneath the ball and glove could be very slightly sharper for maximal realism."
+    ],
+    "repairPrompt": "Add a touch more lifelike softness to the golfer's left hand and fingers for a slightly more relaxed posture, and enhance shadow definition under the golf ball and glove, making the lighting appear even more grounded and realistic."
+  }
+}

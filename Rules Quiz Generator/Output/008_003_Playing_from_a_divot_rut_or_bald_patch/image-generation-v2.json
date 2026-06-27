@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\008_003_Playing_from_a_divot_rut_or_bald_patch\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:02:49.712Z",
+  "title": "Playing from a divot, rut or bald patch",
+  "ruleNumber": "R8",
+  "ruleName": "Divots, tractor ruts, bald patches, etc.",
+  "durationSeconds": 184.983
+}

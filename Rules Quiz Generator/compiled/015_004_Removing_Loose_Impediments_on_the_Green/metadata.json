@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "pageb-07.png",
+  "ruleNumber": "R15",
+  "ruleName": "Loose Impediments",
+  "group": "Loose Impediments",
+  "type": "multi_select",
+  "imagePrompt": "A teenage girl carefully picking up a twig and leaves next to her ball on the putting green, with a small amount of sand also present.",
+  "imageAlt": "Teen girl removing debris and sand from around her golf ball on the green.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "purple",
+    "clothingBottomColour": "orange",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The posture and grip do not clearly indicate left-handedness; the boy is using his right hand to pick up the leaves, and the putter is leaning on his right side, which could be ambiguous."
+    ],
+    "repairPrompt": "Ensure the boy's posture and grip clearly indicate left-handedness: position the putter on his left side, held or resting naturally in his left hand, to authentically show a left-handed golfer. Maintain all current scene and golfer details."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Taking Things Away From the Green",
+      "question": "Which of these things can you pick up or brush away when they are next to your golf ball on the green, without getting a penalty?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Leaves"
+        },
+        {
+          "id": "b",
+          "text": "Twig"
+        },
+        {
+          "id": "c",
+          "text": "Sand"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "c"
+      ],
+      "correctAnswer": [
+        "a",
+        "b",
+        "c"
+      ],
+      "explanation": "You can pick up or sweep away leaves, twigs, and even sand or loose dirt on the green and not get a penalty.",
+      "vocabulary": [
+        {
+          "term": "Green",
+          "simpleMeaning": "The smooth grass around the hole where you putt the ball."
+        },
+        {
+          "term": "Penalty",
+          "simpleMeaning": "An extra shot added to your score if you break a rule."
+        },
+        {
+          "term": "Loose Impediment",
+          "simpleMeaning": "Things like sticks, leaves, or stones that are on the ground but not stuck to it."
+        }
+      ],
+      "teachingTip": "Show children how to gently clear away things like leaves or sand near their ball on the green without moving the ball.",
+      "likelyMisconceptions": [
+        "Some children may think you can’t touch anything near your ball.",
+        "Some may not know sand counts as something you can remove on the green."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Removing Loose Impediments on the Green",
+      "question": "On the putting green, which of these items can you remove without penalty when they are next to your ball?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Leaves"
+        },
+        {
+          "id": "b",
+          "text": "Twig"
+        },
+        {
+          "id": "c",
+          "text": "Sand"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "c"
+      ],
+      "correctAnswer": [
+        "a",
+        "b",
+        "c"
+      ],
+      "explanation": "On the green, you may remove leaves, twigs, and even sand or loose soil without penalty."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "015_004_Removing_Loose_Impediments_on_the_Green",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.941Z"
+  }
+}

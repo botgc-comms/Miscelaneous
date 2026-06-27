@@ -1,0 +1,465 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-12.png",
+  "sourceImagePath": "Input\\page-12.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-12.png",
+      "ruleNumber": "14/15",
+      "ruleName": "Balls close to each other",
+      "group": "Balls close to each other",
+      "title": "What to do when two balls are very close together",
+      "question": "Two golf balls are so close together on the fairway that they might block each other's shots. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Pick up and clean both balls, then play."
+        },
+        {
+          "id": "b",
+          "text": "Mark and pick up one ball (but don't clean it), play the other ball, then replace the first ball."
+        },
+        {
+          "id": "c",
+          "text": "Leave both balls where they are and try to play around them."
+        },
+        {
+          "id": "d",
+          "text": "Remove both balls and drop them at a different location."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If two balls are so close they obstruct each other, one can be marked, picked up (not cleaned), and replaced after the first is played.",
+      "imagePrompt": "A teenage girl golfer on the fairway, marking her golf ball with a coin because it is very close to another ball.",
+      "imageAlt": "Girl golfer marks her ball with a coin next to another ball on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "lifting_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "dark",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "yellow",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-12.png",
+      "ruleNumber": "16",
+      "ruleName": "Embedded ball",
+      "group": "Embedded ball",
+      "title": "Taking relief for an embedded ball",
+      "question": "If your ball is embedded in the ground after it lands, what should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Leave the ball in place and play it as it lies."
+        },
+        {
+          "id": "b",
+          "text": "Pick it up, clean it, and drop it within one club-length, no nearer the hole, with no penalty."
+        },
+        {
+          "id": "c",
+          "text": "Take a two-stroke penalty and drop it anywhere on the green."
+        },
+        {
+          "id": "d",
+          "text": "Replace it exactly where it embedded."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You may lift, clean, and drop your ball within one club-length, not nearer the hole, with no penalty if it's embedded.",
+      "imagePrompt": "A teenage boy golfer using a tee to measure a drop spot after his ball is embedded in soft ground.",
+      "imageAlt": "Boy golfer preparing to drop his ball near an embedded spot on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "dropping_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "black",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-12.png",
+      "ruleNumber": "Def./R15",
+      "ruleName": "Loose impediments",
+      "group": "Loose impediments",
+      "title": "Moving loose impediments around your ball",
+      "question": "Which of these can you do without penalty if loose impediments (like leaves or stones) are near your ball?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You can remove them, but if your ball moves, you must replace it and add a penalty stroke."
+        },
+        {
+          "id": "b",
+          "text": "You can remove them, and if your ball moves, just play from where it ends up."
+        },
+        {
+          "id": "c",
+          "text": "You cannot move loose impediments near your ball at all."
+        },
+        {
+          "id": "d",
+          "text": "You can only remove loose impediments with special permission from a referee."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You may remove loose impediments, but if your ball moves, you must replace it and take a one-stroke penalty.",
+      "imagePrompt": "A teenage boy gently picks up a twig and a small stone from beside his ball on the fairway.",
+      "imageAlt": "Boy picks up a twig beside golf ball near rough.",
+      "sceneSpec": {
+        "setting": "rough",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "black",
+        "clothingBottomColour": "purple",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-12.png",
+      "ruleNumber": "R15",
+      "ruleName": "Movable obstructions",
+      "group": "Movable obstructions",
+      "title": "Dealing with movable obstructions on the course",
+      "question": "While playing, your golf ball comes to rest against a can. What are you allowed to do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Only play the ball as it lies."
+        },
+        {
+          "id": "b",
+          "text": "Remove the can and, if the ball moves, put it back without penalty."
+        },
+        {
+          "id": "c",
+          "text": "Remove the can, and if the ball moves, take a one-stroke penalty."
+        },
+        {
+          "id": "d",
+          "text": "You must not move the can because it is part of the course."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "Movable obstructions like cans can be removed, and if the ball moves, you put it back without penalty.",
+      "imagePrompt": "A teenage girl bends down to remove a soda can from beside her golf ball in the rough.",
+      "imageAlt": "Girl golfer removes a soda can beside her ball on the rough.",
+      "sceneSpec": {
+        "setting": "rough",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "lifting_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "navy",
+        "hat": true
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-12.png",
+      "ruleNumber": "14/15",
+      "ruleName": "Balls close to each other",
+      "group": "Balls close to each other",
+      "title": "What to do when two balls are very close together",
+      "question": "Two golf balls are so close together on the fairway that one player's stroke would be affected. What should happen next?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Pick up and clean both balls, then play."
+        },
+        {
+          "id": "b",
+          "text": "Mark and lift the other player's ball (without cleaning it), play your own shot, then replace their ball."
+        },
+        {
+          "id": "c",
+          "text": "Try to play without moving either ball, even if it's difficult."
+        },
+        {
+          "id": "d",
+          "text": "Both balls must be dropped in a different spot."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "When two balls interfere with each other, one player's ball can be marked and lifted (without cleaning). After the other player's shot, the ball is replaced in its original spot.",
+      "imagePrompt": "A teenage girl golfer on the fairway marks a golf ball with a coin because it is close to another player's ball.",
+      "imageAlt": "Girl golfer marks her ball with a coin near another golf ball on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "lifting_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "dark",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "orange",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-12.png",
+      "ruleNumber": "16",
+      "ruleName": "Embedded ball",
+      "group": "Embedded ball",
+      "title": "Taking relief for an embedded ball",
+      "question": "If your ball is embedded in the ground after landing in the fairway, what are you allowed to do according to the rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball as it lies, even though it is embedded."
+        },
+        {
+          "id": "b",
+          "text": "Pick it up, clean it, and drop it within one club-length of its original spot, not nearer the hole, with no penalty."
+        },
+        {
+          "id": "c",
+          "text": "Take a two-stroke penalty and drop it anywhere on the green."
+        },
+        {
+          "id": "d",
+          "text": "Replace it exactly where it is embedded, without cleaning it."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If your ball is embedded in the fairway, you may lift, clean, and drop it within one club-length no nearer the hole without penalty.",
+      "imagePrompt": "A teenage boy golfer prepares to drop his golf ball near the spot where it was embedded in the fairway.",
+      "imageAlt": "Boy golfer ready to drop his ball next to where it was embedded on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "dropping_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "light",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "green",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-12.png",
+      "ruleNumber": "Def./R15",
+      "ruleName": "Loose impediments",
+      "group": "Loose impediments",
+      "title": "Moving loose impediments around your ball",
+      "question": "If there are loose impediments (like twigs or stones) next to your ball, what does the rule allow you to do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You can remove them, but if the ball moves, you must replace it and take a one-stroke penalty."
+        },
+        {
+          "id": "b",
+          "text": "You can remove them, and if your ball moves, play from wherever it ends up."
+        },
+        {
+          "id": "c",
+          "text": "You are not allowed to remove loose impediments near your ball."
+        },
+        {
+          "id": "d",
+          "text": "You must ask for a referee's permission before moving loose impediments."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You can remove loose impediments, but if your ball moves in the process, it must be replaced and you receive a one-stroke penalty.",
+      "imagePrompt": "A teenage boy gently picks up a twig and a small stone from near his ball in the rough.",
+      "imageAlt": "Boy golfer removing a twig by his golf ball in the rough.",
+      "sceneSpec": {
+        "setting": "rough",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "dark",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "blue",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-12.png",
+      "ruleNumber": "R15",
+      "ruleName": "Movable obstructions",
+      "group": "Movable obstructions",
+      "title": "Dealing with movable obstructions on the course",
+      "question": "Your golf ball stops against a can on the course. What should you do according to the rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball as it lies with the can in place."
+        },
+        {
+          "id": "b",
+          "text": "Remove the can and, if your ball moves because of this, replace it with no penalty."
+        },
+        {
+          "id": "c",
+          "text": "Remove the can and take a one-stroke penalty if the ball moves."
+        },
+        {
+          "id": "d",
+          "text": "You must not move the can as it is now part of the course."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "When a movable obstruction like a can is interfering, you may remove it. If your ball moves as a direct result, just replace your ball with no penalty.",
+      "imagePrompt": "A teenage girl bends down to remove a can from right next to her golf ball in the rough.",
+      "imageAlt": "Girl golfer removing a can that is next to her ball in the rough.",
+      "sceneSpec": {
+        "setting": "rough",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "lifting_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "light",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "blue",
+        "hat": false
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "1415_001_What_to_do_when_two_balls_are_very_close_together",
+    "016_002_Taking_relief_for_an_embedded_ball",
+    "015_003_Moving_loose_impediments_around_your_ball",
+    "015_004_Dealing_with_movable_obstructions_on_the_course"
+  ],
+  "updatedAtUtc": "2026-04-24T20:26:06.159Z"
+}

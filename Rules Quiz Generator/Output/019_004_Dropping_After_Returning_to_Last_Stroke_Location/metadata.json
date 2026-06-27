@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-22.png",
+  "ruleNumber": "R19",
+  "ruleName": "Unplayable ball",
+  "group": "Unplayable ball",
+  "title": "Dropping After Returning to Last Stroke Location",
+  "question": "If you decide to return to the spot of your last shot and declare your ball unplayable, how far from that spot are you allowed to drop your ball under the rules?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Exactly on the same spot"
+    },
+    {
+      "id": "b",
+      "text": "Within 1 club-length"
+    },
+    {
+      "id": "c",
+      "text": "Within 2 club-lengths"
+    },
+    {
+      "id": "d",
+      "text": "Anywhere on the green"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You must drop the ball within one club-length of where your last shot was played, not closer to the hole.",
+  "imagePrompt": "A teen boy on the fairway about to drop a new ball within one club-length from where he just played his previous shot.",
+  "imageAlt": "Boy measures and drops a new ball near his last shot location on fairway.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "dropping_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "light",
+    "clothingTopColour": "black",
+    "clothingBottomColour": "navy",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [],
+    "repairPrompt": "No repair needed, the illustration meets all requirements."
+  }
+}

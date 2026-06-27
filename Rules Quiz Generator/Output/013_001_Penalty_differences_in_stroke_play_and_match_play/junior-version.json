@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\013_001_Penalty_differences_in_stroke_play_and_match_play\\metadata.json",
+  "sourceImageName": "page-01.png",
+  "ruleNumber": "R1/3",
+  "ruleName": "Stroke play and match play",
+  "title": "Penalty differences in stroke play and match play",
+  "question": "What is the usual penalty for breaking a rule in stroke play?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You have to return to the tee and replay the shot"
+    },
+    {
+      "id": "b",
+      "text": "You get 2 penalty strokes added to your score"
+    },
+    {
+      "id": "c",
+      "text": "You lose the hole"
+    },
+    {
+      "id": "d",
+      "text": "You retake the shot with no penalty"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "In stroke play, the general penalty for a rule breach is 2 penalty strokes.",
+  "juniorVersion": {
+    "title": "What happens if you break a rule in stroke play?",
+    "question": "If you break a rule when playing stroke play, what usually happens?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You go back to the start and hit again"
+      },
+      {
+        "id": "b",
+        "text": "You get 2 shots added to your score"
+      },
+      {
+        "id": "c",
+        "text": "You lose the hole"
+      },
+      {
+        "id": "d",
+        "text": "You hit your shot again with no penalty"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "In stroke play, if you break a rule, most of the time you must add 2 shots to your score for that hole.",
+    "vocabulary": [
+      {
+        "term": "Stroke play",
+        "simpleMeaning": "A golf game where you count all your shots for every hole."
+      },
+      {
+        "term": "Penalty strokes",
+        "simpleMeaning": "Extra shots you must add to your score if you break a rule."
+      }
+    ],
+    "teachingTip": "Tell kids that in stroke play, following the rules is important because every shot counts. Breaking rules almost always means extra shots on your score.",
+    "likelyMisconceptions": [
+      "Some kids may think you lose the hole like in match play.",
+      "Kids might believe you can just retake the shot with no penalty."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:28.921Z",
+  "model": "gpt-4.1"
+}

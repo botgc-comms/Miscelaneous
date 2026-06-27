@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "19.1",
+  "ruleName": "Relief for an Unplayable Ball",
+  "group": "Ball Unplayable",
+  "title": "Ball Stuck in a Tree - What Are Your Options?",
+  "question": "Your tee shot becomes lodged high up in a tree and you cannot play it where it lies. What are your options?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Take free relief because the ball is impossible to play."
+    },
+    {
+      "id": "b",
+      "text": "Shake the tree until the ball falls out."
+    },
+    {
+      "id": "c",
+      "text": "Declare the ball lost and play another ball."
+    },
+    {
+      "id": "d",
+      "text": "Either try to play the ball as it lies (for example by shaking the tree or climbing it if safe), or take unplayable ball relief with a one-stroke penalty."
+    }
+  ],
+  "correctAnswer": "d",
+  "correctAnswers": [
+    "d"
+  ],
+  "explanation": "A ball stuck in a tree is not lost if its location is known or virtually certain. The player may play the ball as it lies, which could include shaking the tree in an attempt to dislodge the ball, provided no rule is infringed (such as deliberately breaking branches to improve conditions). Alternatively, unplayable ball relief may be taken anywhere on the course except in a penalty area, with a one-stroke penalty. There is no free relief simply for a ball stuck in a tree.",
+  "imagePrompt": "A modern polished semi-realistic illustration (approximately 75% realistic, 25% stylised) in a bright, relatable junior golf quiz style. Scene shows a golfer standing near the tee, club in hand, looking upwards towards a large mature tree at the edge of a maintained fairway. A golf ball is clearly visible stuck in the high branches of the tree, in a believable and non-exaggerated position. The golfer should appear to be thoughtfully considering the situation, with no action like shaking or climbing the tree currently happening. The background should be plausible for a golf course, with well-kept grass, bunker and light foliage visible. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer stands on the fairway near a tee, looking up at a golf ball stuck high in the branches of a tree, clearly visible, considering what to do next.",
+  "sceneSpec": {
+    "setting": "A tee shot area adjacent to a fairway with a prominent tree near the edge.",
+    "players": "One individual golfer, golf club in hand, looking up towards the tree.",
+    "ballPosition": "Golf ball visibly stuck on a branch high up in the tree, clearly identifiable.",
+    "ruleMoment": "Player observing the lodged ball, evidently considering the next action.",
+    "educationalFocus": "Demonstrating that a player may try to play a ball stuck in a tree or take unplayable relief, but does not automatically get free relief.",
+    "mustShow": [
+      "A clearly visible golf ball stuck high up in the branches of a tree.",
+      "The golfer looking up at the ball, club in hand, considering options."
+    ],
+    "mustNotShow": [
+      "Text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+      "Any actions (such as shaking the tree or climbing) actually occurring—just the moment where the player is considering options."
+    ]
+  }
+}

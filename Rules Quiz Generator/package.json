@@ -1,0 +1,23 @@
+{
+  "name": "rules-quiz-generator",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build-review": "tsx buildImageReviewPage.ts ./output ./input",
+    "serve-review": "tsx reviewServer.ts ./output ./input",
+    "start": "npm run build-review && npm run serve-review", 
+    "compile": "tsx compileReviewedQuiz.ts ./output ./compiled"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "open": "^11.0.0",
+    "openai": "^6.34.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.6.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3"
+  }
+}

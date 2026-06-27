@@ -1,0 +1,588 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-17.png",
+  "sourceImagePath": "Input\\page-17.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-17.png",
+      "ruleNumber": "R6",
+      "ruleName": "Wrong ball",
+      "group": "Wrong ball",
+      "title": "Penalty for playing the wrong ball",
+      "question": "If you accidentally play a wrong ball during your round, what happens to your score for that hole?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You count the stroke, but with no penalty"
+        },
+        {
+          "id": "b",
+          "text": "The stroke doesn't count, but you get 2 penalty strokes"
+        },
+        {
+          "id": "c",
+          "text": "You can continue playing the wrong ball with no penalty"
+        },
+        {
+          "id": "d",
+          "text": "You automatically lose the hole"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If you play a wrong ball, the stroke doesn't count, but you incur 2 penalty strokes and must replay with the correct ball.",
+      "imagePrompt": "A teen girl golfer on the fairway realising she played the wrong golf ball, holding an iron club, and looking confused.",
+      "imageAlt": "Teen girl golfer notices she hit a wrong ball on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "light",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "black",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-17.png",
+      "ruleNumber": "R6",
+      "ruleName": "Wrong ball",
+      "group": "Wrong ball",
+      "title": "What to do if you can't find your original ball after hitting a wrong ball",
+      "question": "You play a wrong ball by mistake, and now you can't find your original ball. What should you do next?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop a ball within one club-length of where you last played the correct ball and add 1 penalty stroke"
+        },
+        {
+          "id": "b",
+          "text": "Drop a ball anywhere on the course and add 2 penalty strokes"
+        },
+        {
+          "id": "c",
+          "text": "Go back to the tee and start again with no penalty"
+        },
+        {
+          "id": "d",
+          "text": "Continue playing with any ball you find"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "If you cannot find the correct ball after playing a wrong one, you return to where your last proper shot was made, drop within one club-length with 1 extra penalty stroke.",
+      "imagePrompt": "A teen boy golfer on the fairway searching for a golf ball, holding a wedge, and looking around, showing difficulty finding his original ball.",
+      "imageAlt": "Teen boy golfer searching for his ball on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "wedge",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "medium",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "red",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-17.png",
+      "ruleNumber": "R6",
+      "ruleName": "Wrong ball",
+      "group": "Wrong ball",
+      "title": "Consequence of not correcting a wrong ball mistake",
+      "question": "What happens if you finish the hole with the wrong ball and don’t fix your mistake?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You get 4 penalty strokes"
+        },
+        {
+          "id": "b",
+          "text": "You must replay the hole"
+        },
+        {
+          "id": "c",
+          "text": "You are disqualified"
+        },
+        {
+          "id": "d",
+          "text": "Nothing happens"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "If you hole out with the wrong ball and don’t correct your mistake, you are disqualified.",
+      "imagePrompt": "A teen girl golfer putting a different ball into the hole on the green while other players watch.",
+      "imageAlt": "Teen girl golfer holes out a wrong ball on the green.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "replaying_shot",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "light",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "green",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-17.png",
+      "ruleNumber": "R11",
+      "ruleName": "Ball hits an outside influence or the player",
+      "group": "Ball hits an outside influence or the player",
+      "title": "What happens if your ball accidentally hits another person or an animal?",
+      "question": "During play, your golf ball accidentally hits a dog or another person standing nearby. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Take a penalty and replay the shot"
+        },
+        {
+          "id": "b",
+          "text": "Play the ball as it lies, no penalty"
+        },
+        {
+          "id": "c",
+          "text": "Drop a new ball at the nearest point"
+        },
+        {
+          "id": "d",
+          "text": "Add two penalty strokes and continue"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If your ball hits a person or animal by accident, it’s called a chance occurrence. You play the ball as it lies with no penalty.",
+      "imagePrompt": "A teen boy on the fairway watches as his golf ball accidentally hits a dog. The ball comes to rest on the grass, and he prepares to play his next shot.",
+      "imageAlt": "Teen boy golfer's ball hits a dog on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "blue",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-17.png",
+      "ruleNumber": "R11",
+      "ruleName": "Ball hits an outside influence or the player",
+      "group": "Ball hits an outside influence or the player",
+      "title": "Illegal use of equipment to stop a ball",
+      "question": "Which of these actions will result in a penalty if the ball is stopped during play?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Hitting your own bag by accident"
+        },
+        {
+          "id": "b",
+          "text": "Deliberately placing a golf trolley to block your ball"
+        },
+        {
+          "id": "c",
+          "text": "Ball striking another ball on the course"
+        },
+        {
+          "id": "d",
+          "text": "Positioning a headcover to stop your ball rolling away"
+        },
+        {
+          "id": "e",
+          "text": "Accidentally hitting a tree"
+        }
+      ],
+      "correctAnswers": [
+        "b",
+        "d"
+      ],
+      "explanation": "If you position any object or equipment to act as a 'ball stopper', you get a two stroke penalty. Accidental hits do not result in a penalty.",
+      "imagePrompt": "A teen girl golfer on the fairway stands near a golf trolley deliberately placed in line with her shot, indicating use as a ball stopper.",
+      "imageAlt": "Teen girl golfer places a golf trolley as a ball stopper on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "green",
+        "hat": true
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-17.png",
+      "ruleNumber": "R6",
+      "ruleName": "Wrong ball",
+      "group": "Wrong ball",
+      "title": "Penalty for playing the wrong ball",
+      "question": "If you discover you have played a wrong ball during your round, what is the correct penalty and procedure?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "The stroke counts, but there is no penalty"
+        },
+        {
+          "id": "b",
+          "text": "The stroke does not count, you get two penalty strokes, and you must play the correct ball"
+        },
+        {
+          "id": "c",
+          "text": "You can keep playing the wrong ball, no penalty"
+        },
+        {
+          "id": "d",
+          "text": "You automatically lose the hole"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "When you play a wrong ball, the stroke does not count. You get two penalty strokes and must continue the hole with your correct ball (or take further action if you cannot find it).",
+      "imagePrompt": "A teen girl golfer on the fairway, holding an iron club and looking confused as she realises she has played a wrong golf ball, with one ball at her feet, trees in the background, and sunny weather.",
+      "imageAlt": "Teen girl golfer realises she played the wrong ball on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "medium",
+        "clothingTopColour": "blue",
+        "clothingBottomColour": "green",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-17.png",
+      "ruleNumber": "R6",
+      "ruleName": "Wrong ball",
+      "group": "Wrong ball",
+      "title": "What to do if you can't find your original ball after hitting a wrong ball",
+      "question": "You have played a wrong ball and cannot find your original ball. What should you do according to the rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop a ball within one club-length of where you last played your correct ball and add one penalty stroke"
+        },
+        {
+          "id": "b",
+          "text": "Drop a ball anywhere on the course and add two penalty strokes"
+        },
+        {
+          "id": "c",
+          "text": "Go back to the tee and start again with no penalty"
+        },
+        {
+          "id": "d",
+          "text": "Continue playing with any ball you find"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "If the correct ball cannot be found after playing a wrong ball, you must return to where your last proper shot was made, drop a ball within one club-length of that spot, and add one penalty stroke (for a lost ball).",
+      "imagePrompt": "A teen boy golfer on the fairway, holding a wedge, looking around searching for his original ball, with one ball visible on the fairway, and an overcast sky.",
+      "imageAlt": "Teen boy golfer searching for his ball on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "wedge",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "light",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "green",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-17.png",
+      "ruleNumber": "R6",
+      "ruleName": "Wrong ball",
+      "group": "Wrong ball",
+      "title": "Consequence of not correcting a wrong ball mistake",
+      "question": "What is the result if you finish a hole without correcting your mistake of playing the wrong ball?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You receive four penalty strokes"
+        },
+        {
+          "id": "b",
+          "text": "You must replay the hole"
+        },
+        {
+          "id": "c",
+          "text": "You are disqualified"
+        },
+        {
+          "id": "d",
+          "text": "There is no penalty"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "If you fail to correct your mistake and finish the hole with a wrong ball, you are disqualified.",
+      "imagePrompt": "A teen girl golfer on the green, holing out a different ball while other players look on, with a putter in hand and one ball near the hole under sunny weather.",
+      "imageAlt": "Teen girl golfer holes out a wrong ball on the green.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "replaying_shot",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "dark",
+        "clothingTopColour": "blue",
+        "clothingBottomColour": "red",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-17.png",
+      "ruleNumber": "R11",
+      "ruleName": "Ball hits an outside influence or the player",
+      "group": "Ball hits an outside influence or the player",
+      "title": "Playing after your ball hits another person or animal",
+      "question": "Your golf ball accidentally hits a person or an animal while in play. What does the rule say you should do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Add a penalty and replay the shot"
+        },
+        {
+          "id": "b",
+          "text": "Play the ball as it lies, no penalty"
+        },
+        {
+          "id": "c",
+          "text": "Drop a new ball near where the incident happened"
+        },
+        {
+          "id": "d",
+          "text": "Add two penalty strokes and continue"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If your ball hits a person or animal by chance, you play the ball from where it rests with no penalty.",
+      "imagePrompt": "A teen boy on the fairway watches as his golf ball comes to rest after accidentally hitting a dog, holding his iron club, under sunny weather.",
+      "imageAlt": "Teen boy golfer's ball hits a dog on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "red",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-17.png",
+      "ruleNumber": "R11",
+      "ruleName": "Ball hits an outside influence or the player",
+      "group": "Ball hits an outside influence or the player",
+      "title": "Deliberately stopping your ball with equipment",
+      "question": "In which situations would you receive a penalty for equipment stopping your ball during play?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Your ball accidentally hits your own bag"
+        },
+        {
+          "id": "b",
+          "text": "You deliberately place a golf trolley to stop your ball"
+        },
+        {
+          "id": "c",
+          "text": "Your ball strikes another ball on the course"
+        },
+        {
+          "id": "d",
+          "text": "You purposely put a headcover to prevent your ball rolling away"
+        },
+        {
+          "id": "e",
+          "text": "The ball accidentally hits a tree"
+        }
+      ],
+      "correctAnswers": [
+        "b",
+        "d"
+      ],
+      "explanation": "There is a penalty if you use equipment or objects on purpose to stop your ball. Accidents, like hitting your bag, another ball, or a tree, have no penalty.",
+      "imagePrompt": "A teen girl golfer on the fairway, with a golf trolley deliberately placed in the path of her next shot as she prepares to play, holding an iron club, with trees behind under an overcast sky.",
+      "imageAlt": "Teen girl golfer places a golf trolley as a ball stopper on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "medium",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "grey",
+        "hat": true
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "006_001_Penalty_for_playing_the_wrong_ball",
+    "006_002_What_to_do_if_you_cant_find_your_original_ball_after_hitting_a_wrong_ball",
+    "006_003_Consequence_of_not_correcting_a_wrong_ball_mistake",
+    "011_004_Playing_after_your_ball_hits_another_person_or_animal",
+    "011_005_Deliberately_stopping_your_ball_with_equipment"
+  ],
+  "updatedAtUtc": "2026-04-24T21:05:18.576Z"
+}

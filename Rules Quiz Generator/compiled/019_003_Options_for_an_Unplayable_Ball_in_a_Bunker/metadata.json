@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-22.png",
+  "ruleNumber": "R19",
+  "ruleName": "Unplayable ball",
+  "group": "Unplayable ball",
+  "type": "multi_select",
+  "imagePrompt": "A teen girl standing in a bunker thinking over her options for an unplayable ball, considering various legal drop spots within and outside the bunker.",
+  "imageAlt": "Girl in bunker looking at possible places to drop her ball.",
+  "sceneSpec": {
+    "setting": "bunker",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "wedge",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": true,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "dark",
+    "clothingTopColour": "purple",
+    "clothingBottomColour": "blue",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [],
+    "repairPrompt": "No repair needed: the illustration accurately depicts a teen girl with dark skin and mixed ethnicity, wearing a purple top, blue shorts, and a cap. She stands naturally in a golf bunker near one realistic golf ball, holding a full-length wedge with a single believable club head. The posture and course features are authentic and the bunker and sand look realistic. No duplicated or malformed equipment. Everything is visually accurate and suitable for teaching golf rules to children."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What Can You Do if Your Ball is Stuck in a Bunker?",
+      "question": "Your ball lands in a bunker and you cannot hit it. What are you allowed to do? Pick all the choices that are right.",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop your ball in the bunker, but only up to 2 club-lengths away (add 1 penalty stroke)."
+        },
+        {
+          "id": "b",
+          "text": "Drop the ball further back in the bunker on a straight line from the flag and where your ball was (add 1 penalty stroke)."
+        },
+        {
+          "id": "c",
+          "text": "Go back and hit from where you played your last shot, even if it was the tee (add 1 penalty stroke)."
+        },
+        {
+          "id": "d",
+          "text": "Drop your ball outside the bunker, but only on a straight line back from the flag and where your ball was (add 2 penalty strokes)."
+        },
+        {
+          "id": "e",
+          "text": "Take your ball out of the bunker and drop it outside for no penalty."
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "correctAnswer": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "explanation": "If you cannot play your ball in a bunker, you can drop it in the bunker, either close or further back on a line (add 1 penalty stroke). You can also play again from your last spot (add 1 penalty stroke) or drop outside the bunker further back, but you must add 2 penalty strokes. You cannot drop outside for free.",
+      "vocabulary": [
+        {
+          "term": "Bunker",
+          "simpleMeaning": "A sandy area, often shaped like a hole or ditch, where you must try to hit the ball out."
+        },
+        {
+          "term": "Club-length",
+          "simpleMeaning": "The length of your longest club, usually your driver, used to measure how far you can drop your ball."
+        },
+        {
+          "term": "Penalty stroke",
+          "simpleMeaning": "A stroke that gets added to your score as a punishment for breaking a rule or taking relief."
+        }
+      ],
+      "teachingTip": "Show learners where to measure club-lengths and the possible places to drop a ball in and out of a bunker.",
+      "likelyMisconceptions": [
+        "Thinking you can take a free drop outside the bunker.",
+        "Forgetting you need to add penalty strokes.",
+        "Believing you can drop the ball anywhere, not just along a line or within 2 club-lengths."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Options for an Unplayable Ball in a Bunker",
+      "question": "If your ball is unplayable in a bunker, which of these are legal options you can choose? Select all that apply.",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop within 2 club-lengths in the bunker (1 penalty stroke)"
+        },
+        {
+          "id": "b",
+          "text": "Go back on the line in the bunker and drop (1 penalty stroke)"
+        },
+        {
+          "id": "c",
+          "text": "Replay from your last spot, even from the tee (1 penalty stroke)"
+        },
+        {
+          "id": "d",
+          "text": "Drop outside the bunker going back on the line (2 penalty strokes)"
+        },
+        {
+          "id": "e",
+          "text": "Take a free drop outside the bunker"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "correctAnswer": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "explanation": "You may drop within the bunker using either the two club-length or back-on-the-line options, replay the shot, or drop outside the bunker with a two-stroke penalty. A free drop outside the bunker is not allowed."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "019_003_Options_for_an_Unplayable_Ball_in_a_Bunker",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:53.644Z"
+  }
+}

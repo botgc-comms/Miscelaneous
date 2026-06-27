@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\011_003_Penalty_for_intentionally_deflecting_a_moving_ball\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:18:41.775Z",
+  "title": "Penalty for intentionally deflecting a moving ball",
+  "ruleNumber": "11",
+  "ruleName": "Ball in motion intentionally deflected",
+  "durationSeconds": 177.118
+}

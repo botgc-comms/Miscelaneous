@@ -1,0 +1,352 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-02.png",
+  "sourceImagePath": "Input\\pageb-02.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-02.png",
+      "ruleNumber": "R18",
+      "ruleName": "Provisional Balls",
+      "group": "Provisional Balls",
+      "title": "Playing a second ball without announcing it as provisional",
+      "question": "Sam's first shot might be lost, so she hits another ball just in case. She forgets to say that it's a provisional ball. What happens?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "She can still play her first ball if she finds it."
+        },
+        {
+          "id": "b",
+          "text": "She must play the second ball and the first ball is lost."
+        },
+        {
+          "id": "c",
+          "text": "She must replay both shots from the tee."
+        },
+        {
+          "id": "d",
+          "text": "She gets no penalty and can choose which ball to play."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If a provisional ball is not clearly announced as 'provisional,' it becomes the ball in play with a one-stroke penalty, and the original ball is lost.",
+      "imagePrompt": "A teen girl golfer about to hit a second shot from the fairway, forgetting to announce it is a provisional ball.",
+      "imageAlt": "Girl golfer addresses a second ball without saying it's provisional.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "medium",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "yellow",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-02.png",
+      "ruleNumber": "R18",
+      "ruleName": "Provisional Balls",
+      "group": "Provisional Balls",
+      "title": "What if the provisional ball is in a better spot?",
+      "question": "You hit a great shot with your provisional ball, but haven’t searched for the original. Can you just choose to play the provisional ball even if the original is found?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No, you must play the original ball if found within 3 minutes and it’s not out of bounds."
+        },
+        {
+          "id": "b",
+          "text": "Yes, you can choose to play the better ball."
+        },
+        {
+          "id": "c",
+          "text": "Only if you declare the original ball lost."
+        },
+        {
+          "id": "d",
+          "text": "Yes, but only if you ask your opponent first."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "If you find your original ball within 3 minutes and it’s not out of bounds, you must play it, even if your provisional ball is better.",
+      "imagePrompt": "A teen boy golfer stands smiling nearby a provisional ball in an excellent position on the fairway, with the original ball possibly nearby in the rough.",
+      "imageAlt": "Boy golfer with a provisional ball in a great spot, thinking about the original ball.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "orange",
+        "clothingBottomColour": "grey",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-02.png",
+      "ruleNumber": "R18",
+      "ruleName": "Provisional Balls",
+      "group": "Provisional Balls",
+      "title": "Provisional ball played past where the original ball is believed to be",
+      "question": "If you play your provisional ball past the spot where you think your original ball is, can you keep playing the provisional ball from there if you haven't looked for your original?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, but only with a 2-stroke penalty."
+        },
+        {
+          "id": "b",
+          "text": "No, you must not play your provisional past that position."
+        },
+        {
+          "id": "c",
+          "text": "Yes, and there's no penalty."
+        },
+        {
+          "id": "d",
+          "text": "You can play it once and then must stop if the original is not found."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You can't play your provisional ball from a spot nearer the hole than where you believe your original ball to be.",
+      "imagePrompt": "A teen boy golfer hitting a shot from the fairway, the ball landing closer to the hole than where he thinks his original lost ball is.",
+      "imageAlt": "Boy golfer hitting a provisional ball past the spot of the original ball.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "replaying_shot",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "dark",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "purple",
+        "hat": false
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-02.png",
+      "ruleNumber": "R18",
+      "ruleName": "Provisional Balls",
+      "group": "Provisional Balls",
+      "title": "Playing a second ball without announcing it as provisional",
+      "question": "Sam thinks her first shot might be lost, so she plays another ball but forgets to say it's a provisional ball. Which ball must she play?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "She can still play her first ball if she finds it."
+        },
+        {
+          "id": "b",
+          "text": "She must play the second ball, and the first ball is treated as lost."
+        },
+        {
+          "id": "c",
+          "text": "She has to replay from where she hit the second ball."
+        },
+        {
+          "id": "d",
+          "text": "She can choose which ball to play."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If a player forgets to say their second ball is provisional, that ball becomes the ball in play under penalty, and the first ball is lost.",
+      "imagePrompt": "A teen girl golfer prepares to hit a second shot from the fairway without announcing it as provisional.",
+      "imageAlt": "Girl golfer addresses a second ball, forgetting to say it's provisional.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "green",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-02.png",
+      "ruleNumber": "R18",
+      "ruleName": "Provisional Balls",
+      "group": "Provisional Balls",
+      "title": "What if the provisional ball is in a better spot?",
+      "question": "You hit a great shot with your provisional ball, but haven't looked for your original ball yet. If the original is found in bounds within 3 minutes, can you choose to play the provisional ball instead?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No, you must play the original ball if found in time and in bounds."
+        },
+        {
+          "id": "b",
+          "text": "Yes, you can choose whichever ball you like."
+        },
+        {
+          "id": "c",
+          "text": "Yes, but only if everyone agrees."
+        },
+        {
+          "id": "d",
+          "text": "No, the provisional ball always has to be abandoned."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "If you find your original ball in bounds within 3 minutes, you must play it, even if the provisional ball is in a better position.",
+      "imagePrompt": "A teen boy golfer stands close to a provisional ball on the fairway while looking towards the rough, where the original ball might be.",
+      "imageAlt": "Boy golfer with a provisional ball in a great spot, glances toward where the original ball may be.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "red",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-02.png",
+      "ruleNumber": "R18",
+      "ruleName": "Provisional Balls",
+      "group": "Provisional Balls",
+      "title": "Provisional ball played past where the original ball is believed to be",
+      "question": "If you hit your provisional ball from a spot closer to the hole than where you think your original ball is, what is the result?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You can keep playing your provisional ball with no penalty."
+        },
+        {
+          "id": "b",
+          "text": "You must not play a provisional ball from closer to the hole than where your original ball is thought to be."
+        },
+        {
+          "id": "c",
+          "text": "You get a two-stroke penalty but can keep playing."
+        },
+        {
+          "id": "d",
+          "text": "You can play it once but need to switch if your original isn't found."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You are not allowed to play a provisional ball from a spot nearer the hole than where you think your original ball lies. If you do, the provisional becomes your ball in play under penalty.",
+      "imagePrompt": "A teen boy golfer plays a shot from the fairway, sending the provisional ball further than where the original ball is believed to be.",
+      "imageAlt": "Boy golfer hits a provisional ball past the likely spot of his original ball.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "replaying_shot",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "light",
+        "clothingTopColour": "blue",
+        "clothingBottomColour": "purple",
+        "hat": false
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "018_001_Playing_a_second_ball_without_announcing_it_as_provisional",
+    "018_002_What_if_the_provisional_ball_is_in_a_better_spot",
+    "018_003_Provisional_ball_played_past_where_the_original_ball_is_believed_to_be"
+  ],
+  "updatedAtUtc": "2026-04-24T22:48:31.711Z"
+}

@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\016_001_Relief_from_wrong_hole_on_a_double_green\\metadata.json",
+  "sourceImageName": "pageb-11.png",
+  "ruleNumber": "R16",
+  "ruleName": "Double green",
+  "title": "Relief from wrong hole on a double green",
+  "question": "Your ball comes to rest on a double green, but the wrong hole is directly in the line between your ball and the correct hole. What are you allowed to do?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play your shot as it lies, even if the hole is in the way."
+    },
+    {
+      "id": "b",
+      "text": "Take free relief by moving your ball sideways, no closer to the hole, so the wrong hole isn't in your way."
+    },
+    {
+      "id": "c",
+      "text": "Pick up your ball and replay your last stroke."
+    },
+    {
+      "id": "d",
+      "text": "Ask another player to cover the wrong hole."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You're allowed free relief if the other hole interferes with your line. Place your ball at the nearest spot, not closer to the hole, where the wrong hole doesn't interfere.",
+  "juniorVersion": {
+    "title": "What if the other hole is in your way on a big green?",
+    "question": "You are on a big green that has two holes. If your ball stops so the other hole is right between your ball and the flag you are aiming for, what can you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Hit your ball from where it is, even if the other hole is blocking your shot."
+      },
+      {
+        "id": "b",
+        "text": "Move your ball sideways, not closer to the flag, so the other hole is not in your way. It's a free move."
+      },
+      {
+        "id": "c",
+        "text": "Pick up your ball and take your shot again."
+      },
+      {
+        "id": "d",
+        "text": "Ask your friend to cover up the other hole."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If the other hole is in your way on the green, you can move your ball to the side, not nearer to your flag, so that the other hole is not blocking you. This is called free relief.",
+    "vocabulary": [
+      {
+        "term": "Double green",
+        "simpleMeaning": "A big green on a golf course with two different holes and flags."
+      },
+      {
+        "term": "Free relief",
+        "simpleMeaning": "You are allowed to move your ball to a better spot without a penalty."
+      }
+    ],
+    "teachingTip": "Show children a picture of a double green, and use two cups to show when a second hole might get in the way when aiming for their flag.",
+    "likelyMisconceptions": [
+      "Children may think they have to play around the other hole or hit over it.",
+      "Some might believe they can move the ball any direction, even closer to the flag.",
+      "They might think you can always play again instead of just moving sideways."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:56.241Z",
+  "model": "gpt-4.1"
+}

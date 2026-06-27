@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\011_003_Ball_hits_a_ball_marker\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:16:25.871Z",
+  "title": "Ball hits a ball-marker",
+  "ruleNumber": "R11",
+  "ruleName": "Ball deflected by marker",
+  "durationSeconds": 185.786
+}

@@ -1,0 +1,38 @@
+{
+  "id": "first-competitions",
+  "title": "Moving into competitions",
+  "summary": "What juniors and parents should expect when entering competitions for the first time.",
+  "estimatedMinutes": 6,
+  "priority": 1600,
+  "mandatoryFor": [
+    "Junior Course Cadet"
+  ],
+  "version": 1,
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "Your first competition",
+      "file": "pages/00-title.md"
+    },
+    {
+      "id": "01-before-you-start",
+      "title": "Before you start",
+      "file": "pages/01-before-you-start.md"
+    },
+    {
+      "id": "02-during-the-round",
+      "title": "During the round",
+      "file": "pages/02-during-the-round.md"
+    },
+    {
+      "id": "03-after-the-round",
+      "title": "After the round",
+      "file": "pages/03-after-the-round.md"
+    },
+    {
+      "id": "90-quick-check",
+      "title": "Quick check",
+      "file": "pages/90-quick-check.md"
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\714_004_Identifying_your_ball\\metadata.json",
+  "sourceImageName": "page-09.png",
+  "ruleNumber": "R7/14",
+  "ruleName": "Identifying the ball",
+  "title": "Identifying your ball",
+  "question": "When are you allowed to lift your golf ball to check if it is yours?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Only if it is on the putting green"
+    },
+    {
+      "id": "b",
+      "text": "If you first mark its position and need to identify it"
+    },
+    {
+      "id": "c",
+      "text": "Never; you must always play it as it lies"
+    },
+    {
+      "id": "d",
+      "text": "Only with your opponent’s permission"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If you cannot identify your ball, you may mark its position and lift it anywhere on the course to check – not just on the putting green.",
+  "juniorVersion": {
+    "title": "Checking if it’s your ball",
+    "question": "When can you pick up your ball to see if it’s really yours?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Only if your ball is on the green"
+      },
+      {
+        "id": "b",
+        "text": "If you mark where it is first and you need to check"
+      },
+      {
+        "id": "c",
+        "text": "Never, you always have to hit it where it sits"
+      },
+      {
+        "id": "d",
+        "text": "Only if the other player says you can"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If you are not sure your ball is yours, you must put a marker down to show where it is, then you can pick it up and look. You can do this anywhere on the course, not just on the green.",
+    "vocabulary": [
+      {
+        "term": "marker",
+        "simpleMeaning": "A small object (like a coin) you put down to remember where your ball was."
+      },
+      {
+        "term": "putting green",
+        "simpleMeaning": "The smooth, short grass area around the hole."
+      },
+      {
+        "term": "course",
+        "simpleMeaning": "The whole area where you play golf."
+      }
+    ],
+    "teachingTip": "Show how to mark a ball with a coin before lifting it, and remind children that they must always put the ball back in the same spot.",
+    "likelyMisconceptions": [
+      "Children may think they can only check their ball on the green.",
+      "Some may believe they never need to mark the spot before picking up their ball.",
+      "Some might think they always need an opponent’s permission."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:28:16.317Z",
+  "model": "gpt-4.1"
+}

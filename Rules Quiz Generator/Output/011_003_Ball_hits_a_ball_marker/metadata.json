@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-08.png",
+  "ruleNumber": "R11",
+  "ruleName": "Ball deflected by marker",
+  "group": "Ball deflected by marker",
+  "title": "Ball hits a ball-marker",
+  "question": "If your ball accidentally hits a ball-marker on the green and is deflected to a new spot, what should you do?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball from where it comes to rest with no penalty."
+    },
+    {
+      "id": "b",
+      "text": "Replace your ball and the marker."
+    },
+    {
+      "id": "c",
+      "text": "Move the ball back to its original spot and continue."
+    },
+    {
+      "id": "d",
+      "text": "Add one penalty stroke and replay the putt."
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "If your ball strikes a ball-marker on the green, you play the ball from where it ends up, with no penalty.",
+  "imagePrompt": "A teenage golfer on the putting green observing their ball after it accidentally strikes a ball-marker left by another player.",
+  "imageAlt": "Teenager's ball on green deflected by a ball-marker.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "replaying_shot",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "dark",
+    "clothingTopColour": "green",
+    "clothingBottomColour": "white",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Left-handed grip and realistic putter are correct.",
+      "One ball and a ball-marker are clearly depicted.",
+      "The green and course features are realistic; overall scene feels authentic.",
+      "Proportions, posture, and golfer match prompt: teenage boy, dark skin tone, green top, white shorts, cap.",
+      "Golf equipment proportions and details are visually strong.",
+      "No visible issues with club or ball."
+    ],
+    "repairPrompt": "No major repairs required; retain all current details. If desired, further soften any hard lines in shading for a slightly more illustrated look."
+  }
+}

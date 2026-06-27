@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-03.png",
+  "ruleNumber": "14",
+  "ruleName": "Dropping and re-dropping",
+  "group": "Dropping and re-dropping",
+  "title": "When must a ball be dropped again?",
+  "question": "If you drop the ball but it touches you or your equipment before hitting the ground, what must you do?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Drop the ball again"
+    },
+    {
+      "id": "b",
+      "text": "Play the ball as it lies"
+    },
+    {
+      "id": "c",
+      "text": "Add a penalty and play on"
+    },
+    {
+      "id": "d",
+      "text": "Ask a referee and wait"
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "If the dropped ball touches you or your equipment before hitting the ground, you must drop it again without penalty.",
+  "imagePrompt": "A teenage girl drops a ball, but the ball bounces off her shoe before touching the ground on the fairway.",
+  "imageAlt": "Golf ball making contact with the golfer's foot before it lands.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "dropping_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "purple",
+    "clothingBottomColour": "white",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": false,
+    "score": 65,
+    "issues": [
+      "The ball is shown midair beneath the boy's hand, but it does not clearly show contact with or bouncing off the shoe as required by the prompt correction.",
+      "The image depicts the correct number of balls, believable fairway, accurate dropping action, and correct left-handed posture with no club in hand.",
+      "The ball and golf course features are realistic, clothing colors are accurate, and the boy's appearance matches the ethnicity and skin tone requirements.",
+      "Does not clearly emphasize the ball hitting and rebounding off the shoe—the key moment for the teaching objective."
+    ],
+    "repairPrompt": "Clearly depict the golf ball making visible contact with and bouncing directly off the boy's shoe before it hits the ground. Emphasize the exact moment of impact or rebound, keeping all existing details, including single ball, correct clothing, correct left-handed dropping posture, and realistic fairway setting."
+  }
+}

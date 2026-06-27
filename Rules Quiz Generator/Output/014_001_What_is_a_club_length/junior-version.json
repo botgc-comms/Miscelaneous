@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\014_001_What_is_a_club_length\\metadata.json",
+  "sourceImageName": "page-03.png",
+  "ruleNumber": "14",
+  "ruleName": "Dropping and re-dropping",
+  "title": "What is a club-length?",
+  "question": "When you are allowed to drop within a 'club-length', what does that distance mean?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "The length of your longest club, except the putter"
+    },
+    {
+      "id": "b",
+      "text": "Any club you choose from your bag"
+    },
+    {
+      "id": "c",
+      "text": "The length of your driver only"
+    },
+    {
+      "id": "d",
+      "text": "The length of your putter"
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "A club-length is measured using your longest club, except for the putter.",
+  "juniorVersion": {
+    "title": "What does 'club-length' mean in golf?",
+    "question": "If you are told to drop your ball within one club-length, how do you know how far that is?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "It is the length of your longest club, but not your putter."
+      },
+      {
+        "id": "b",
+        "text": "It can be any club you pick from your bag."
+      },
+      {
+        "id": "c",
+        "text": "It is only as long as your driver."
+      },
+      {
+        "id": "d",
+        "text": "It is only as long as your putter."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "A club-length is how long your longest club is, except for your putter. Lay your biggest club (not your putter) on the ground to check the distance.",
+    "vocabulary": [
+      {
+        "term": "club-length",
+        "simpleMeaning": "The space as long as your biggest club (except the putter)."
+      },
+      {
+        "term": "putter",
+        "simpleMeaning": "A special club used on the green to roll the ball into the hole."
+      }
+    ],
+    "teachingTip": "Show children the difference between a driver and a putter side-by-side so they can see which club is longest.",
+    "likelyMisconceptions": [
+      "Kids might think they can use their putter to measure.",
+      "Kids might think any club in the bag can be used to measure."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:41.628Z",
+  "model": "gpt-4.1"
+}

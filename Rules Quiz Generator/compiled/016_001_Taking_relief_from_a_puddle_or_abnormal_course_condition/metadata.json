@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "pageb-08.png",
+  "ruleNumber": "R16",
+  "ruleName": "Puddles and other abnormal course conditions",
+  "group": "Puddles and other abnormal course conditions",
+  "type": "multiple_choice",
+  "imagePrompt": "A teenage golfer placing the ball on the putting green to the nearest point of relief from a puddle affecting the line to the hole.",
+  "imageAlt": "Teen golfer on the green placing ball to avoid puddle, not nearer the hole.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "dropping_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "yellow",
+    "clothingBottomColour": "green",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "The golfer appears to be right-handed instead of left-handed."
+    ],
+    "repairPrompt": "Ensure the teenage boy is clearly left-handed in his action when dropping the ball; the putter should be held in the right hand, with the ball being dropped from the left hand."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What to do if there's a puddle on the green",
+      "question": "Your ball is on the green, but there’s a puddle in the way between your ball and the hole. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Move your ball to the closest spot where the puddle doesn’t block your putt, but not closer to the hole. No penalty."
+        },
+        {
+          "id": "b",
+          "text": "Try to hit around the puddle and play your ball from where it is."
+        },
+        {
+          "id": "c",
+          "text": "Move your ball closer to the hole to get away from the puddle."
+        },
+        {
+          "id": "d",
+          "text": "Take a penalty and drop your ball anywhere on the green."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "You can move your ball to the closest dry spot so the puddle isn’t blocking your putt, but you can’t go closer to the hole. You don’t get a penalty for this.",
+      "vocabulary": [
+        {
+          "term": "putting green",
+          "simpleMeaning": "The smooth area around the hole where you use your putter."
+        },
+        {
+          "term": "puddle",
+          "simpleMeaning": "A small pool of water on the ground."
+        },
+        {
+          "term": "penalty",
+          "simpleMeaning": "Extra strokes added to your score for breaking a rule."
+        }
+      ],
+      "teachingTip": "Show children how to find the nearest point where their putt isn’t blocked by water and remind them not to move closer to the hole.",
+      "likelyMisconceptions": [
+        "Some kids might think they can move the ball closer to the hole to get a dry putt.",
+        "Some may believe they always get a penalty if they move their ball."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Taking relief from a puddle or abnormal course condition",
+      "question": "Your ball is on the putting green and there is a puddle between your ball and the hole, affecting your line of play. What do the rules say you are allowed to do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Place the ball at the nearest spot where the puddle does not affect your line, no closer to the hole, with no penalty."
+        },
+        {
+          "id": "b",
+          "text": "Try to avoid the puddle and play your ball as it lies."
+        },
+        {
+          "id": "c",
+          "text": "Place your ball closer to the hole to find a dry line."
+        },
+        {
+          "id": "d",
+          "text": "Take a penalty stroke and drop your ball anywhere on the green."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "You are allowed to place your ball at the nearest point where the puddle does not interfere, not nearer the hole, with no penalty."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "016_001_Taking_relief_from_a_puddle_or_abnormal_course_condition",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:53.319Z"
+  }
+}

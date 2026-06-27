@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 1,
+  "packId": "basic-rules",
+  "title": "Basic rules",
+  "audience": "Brand new junior golfers and non-golfing parents",
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "Rules made simple",
+      "file": "pages/00-title.md",
+      "type": "content",
+      "assetFile": "title.png",
+      "imageAlt": "A group of children and adults smiling on a golf green on a sunny day, with golf clubs and balls nearby.",
+      "imagePrompt": "A photorealistic image of junior golfers with their parents and a friendly golf coach gathered on a green golf course. Everyone looks relaxed and happy, beginners learning the basics of golf together.",
+      "markdown": "# Rules made simple\n\nWelcome to golf! Whether you are a young beginner or a parent brand new to the game, this pack is for you. Golf is enjoyable and welcoming to all ages. Understanding a few basic rules makes playing much easier and more fun for everyone. This introduction will help you quickly learn the essentials, so you can feel confident at any club or course.\n\nWe will use plain language and explain golf terms the first time they appear. You don’t need any special equipment to get started, just a willingness to have a go. Remember, the main goal is to have fun, play fairly, and enjoy your time outside together.\n\nLet’s get started with the most important rules every junior golfer and parent should know!",
+      "quiz": null
+    },
+    {
+      "id": "01-play-the-ball",
+      "title": "Play the ball as it lies",
+      "file": "pages/01-play-the-ball.md",
+      "type": "content",
+      "assetFile": "play-the-ball.png",
+      "imageAlt": "A junior golfer standing next to a golf ball on the grass, focusing on the ball and not touching it with hands.",
+      "imagePrompt": "Photorealistic image of a junior golfer standing over a golf ball on short grass, preparing to take a shot. The ball is resting naturally on the ground and is untouched by hands.",
+      "markdown": "# Play the ball as it lies\n\nIn golf, one of the most important rules is to always 'play the ball as it lies.' This means you should hit the ball from wherever it comes to rest, without moving or touching it. You’re not allowed to pick it up or give it a better position. Leave the ball alone and play your next shot from there.\n\nIf your ball lands in a tricky spot, like behind a tree or on rough grass, don’t worry! Golf is about solving challenges. Part of the fun comes from playing each shot honestly and creatively.\n\nThere are some situations, such as when your ball is on a path or in water, where you may move it with a penalty or sometimes for free. We’ll cover these soon. But most of the time, remember: play the ball as it lies and enjoy giving each shot your best go!",
+      "quiz": null
+    },
+    {
+      "id": "02-out-of-bounds",
+      "title": "Out of bounds",
+      "file": "pages/02-out-of-bounds.md",
+      "type": "content",
+      "assetFile": "out-of-bounds.png",
+      "imageAlt": "A golf course with a white boundary marker stake and a ball resting just outside the boundary on rough grass.",
+      "imagePrompt": "Photorealistic image showing a golf course boundary, marked by a white stake, with a golf ball just outside the line. There is visible difference between the fairway inside the boundary and rough grass outside.",
+      "markdown": "# Out of bounds\n\nEvery golf course has areas where play is not allowed. These are called 'out of bounds'. They are usually marked by white stakes or fences. If your ball goes out of bounds, it means it has left the area where you are allowed to play.\n\nWhen this happens, you must take a penalty. Go back to where you last played your shot, add one penalty shot to your score, and hit the ball again. Don’t feel bad—everyone hits out of bounds sometimes, even professionals!\n\nIf you’re not sure if the ball is out of bounds, ask a coach or a more experienced player. It’s always best to play fairly and count every shot, even if it means a higher score. This honesty is part of golf’s spirit.",
+      "quiz": null
+    },
+    {
+      "id": "03-penalties",
+      "title": "Penalties and drops",
+      "file": "pages/03-penalties.md",
+      "type": "content",
+      "assetFile": "penalties.png",
+      "imageAlt": "A golf coach helping a junior drop a golf ball from knee height onto the fairway, demonstrating a penalty drop.",
+      "imagePrompt": "Photorealistic image of a golf coach showing a junior golfer how to drop a golf ball from knee height onto the grass, with other juniors watching and learning nearby.",
+      "markdown": "# Penalties and drops\n\nSometimes, a penalty is given in golf. This usually means adding an extra shot to your score. A common reason for a penalty is hitting your ball out of bounds or into water.\n\nIf your ball goes into water or is lost and you can’t find it, you must take a 'drop.' This means you stand next to where your ball entered the water or where it was lost, then let go of a new ball from knee height. This is called a 'drop'. After dropping, add one penalty shot to your total and carry on playing.\n\nPenalties are simply part of the game. They help everyone play fairly and keep things moving. If you’re ever unsure, ask a coach or another player for help. Golfers are always happy to help new juniors and parents understand what to do.",
+      "quiz": null
+    },
+    {
+      "id": "04-order-of-play",
+      "title": "Order of play",
+      "file": "pages/04-order-of-play.md",
+      "type": "content",
+      "assetFile": "order-of-play.png",
+      "imageAlt": "A group of juniors on a tee, patiently waiting in line to take their turns, while one child prepares to hit a golf ball.",
+      "imagePrompt": "Photorealistic image of several junior golfers standing together on a golf tee, taking turns to hit. One child is getting ready to hit a ball, while others watch respectfully and wait their turn.",
+      "markdown": "# Order of play\n\nGolf is played in turns, one player at a time. Usually, the player whose ball is farthest from the hole goes first. This helps keep the game safe and fair for everyone.\n\nWhen you’re not taking your shot, stand in a safe spot to one side, well away from the player hitting the ball. Be quiet and still so the player can concentrate. Once they have finished, it’s the next player’s turn.\n\nIf you are putting on the green (rolling the ball towards the hole), the person farthest from the hole still plays first, until everyone finishes the hole. This order makes it clear who goes next and keeps everyone safe. If you are ever unsure, simply ask or take turns in a friendly way. The most important thing is to have fun and help everyone play safely.",
+      "quiz": null
+    },
+    {
+      "id": "90-quick-check",
+      "title": "Quick check",
+      "file": "pages/90-quick-check.md",
+      "type": "quiz",
+      "assetFile": "quick-check.png",
+      "imageAlt": "A group of juniors and an adult looking thoughtful on a golf course, as if answering questions and learning together.",
+      "imagePrompt": "Photorealistic image of junior golfers and a parent or coach gathered together on the golf course, with some children looking thoughtful as if they're discussing or answering a question.",
+      "markdown": "# Quick check\n\nLet’s see what you remember about the basic rules! Try these quick questions and have fun checking your understanding. Parents and juniors can answer together.",
+      "quiz": {
+        "questions": [
+          {
+            "question": "What should you do if your ball lands on rough grass behind a tree?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Move the ball to a better spot"
+              },
+              {
+                "id": "b",
+                "text": "Play the ball as it lies"
+              },
+              {
+                "id": "c",
+                "text": "Ask someone to move the tree"
+              },
+              {
+                "id": "d",
+                "text": "Pick the ball up and throw it forwards"
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "You should play the ball as it lies, even if it is in a tricky spot."
+          },
+          {
+            "question": "What happens if your ball goes out of bounds?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "You keep playing from where it is"
+              },
+              {
+                "id": "b",
+                "text": "You get a penalty and replay the shot"
+              },
+              {
+                "id": "c",
+                "text": "You get a free shot closer to the hole"
+              },
+              {
+                "id": "d",
+                "text": "You skip your next go"
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "You take a penalty and replay your shot from where you played last."
+          },
+          {
+            "question": "If someone else is hitting, what should you do?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Stand close to them and chat"
+              },
+              {
+                "id": "b",
+                "text": "Watch from a safe distance and stay quiet"
+              },
+              {
+                "id": "c",
+                "text": "Run in front of them"
+              },
+              {
+                "id": "d",
+                "text": "Take your shot at the same time"
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "It's safest and most polite to be quiet and stand well to the side while others are playing."
+          },
+          {
+            "question": "How do you make a proper ‘drop’ after a lost ball?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Throw a ball over your shoulder"
+              },
+              {
+                "id": "b",
+                "text": "Drop a ball from knee height near where it was lost"
+              },
+              {
+                "id": "c",
+                "text": "Place the ball by hand on the fairway"
+              },
+              {
+                "id": "d",
+                "text": "Drop the ball from head height anywhere you like"
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "You make a drop by letting go of the ball from knee height near where the ball was lost."
+          }
+        ]
+      }
+    }
+  ]
+}

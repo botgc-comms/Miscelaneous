@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "pageb-03.png",
+  "ruleNumber": "R18",
+  "ruleName": "Provisional Ball",
+  "group": "Provisional Ball",
+  "type": "multiple_choice",
+  "imagePrompt": "Teenage girl golfer on a sunny fairway, near white out-of-bounds stakes, holding a driver club and standing by her provisional ball.",
+  "imageAlt": "Teenage girl golfer at the edge of the fairway by white out-of-bounds markers, preparing to play the provisional ball.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "driver",
+    "ballCount": 1,
+    "stakeColour": "white",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "purple",
+    "clothingBottomColour": "yellow",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "Golfer's grip could be slightly more clearly left-handed, though it is visually plausible as left-handed.",
+      "Posture is nearly perfect but could show a bit more knee flex or spine tilt common with a driver."
+    ],
+    "repairPrompt": "Ensure the golfer's grip and stance are more clearly left-handed. Add a slight knee flex and natural spine tilt appropriate for a modern driver setup."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What happens if you lose your ball or hit it out of bounds?",
+      "question": "You hit a ball and think it might be lost or out of bounds, so you play another ball as a provisional. Later, you can't find your first ball or you see it's out of bounds. What should you do next?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Now the provisional ball is your ball to play, and you add one extra shot."
+        },
+        {
+          "id": "b",
+          "text": "You get to hit again from where you last played, with no extra shots."
+        },
+        {
+          "id": "c",
+          "text": "You can pick which ball you want to use, with no extra shots."
+        },
+        {
+          "id": "d",
+          "text": "You must drop a new ball where your first ball went out, and add two extra shots."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "If your first ball is lost or out of bounds, the provisional ball you played becomes your ball. You must add one extra shot to your score.",
+      "vocabulary": [
+        {
+          "term": "Provisional ball",
+          "simpleMeaning": "An extra ball you play just in case your first ball is lost or out of bounds."
+        },
+        {
+          "term": "Out of bounds",
+          "simpleMeaning": "A place off the golf course where you are not allowed to play your ball from."
+        }
+      ],
+      "teachingTip": "Show the boundary on a hole and let kids practise saying 'provisional ball' when they think their shot might be lost or out of bounds.",
+      "likelyMisconceptions": [
+        "Kids may think they can choose the better ball to use.",
+        "They may forget to add the penalty shot.",
+        "They may try to drop a ball where the first ball went out instead of playing the provisional."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "What if your original ball is out of bounds or not found?",
+      "question": "You play a provisional ball. Your original ball is later found to be out of bounds, or you don't find it within 3 minutes. What should you do next?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "The provisional ball becomes your ball in play, with a 1-stroke penalty"
+        },
+        {
+          "id": "b",
+          "text": "You must replay your shot from the previous spot with no penalty"
+        },
+        {
+          "id": "c",
+          "text": "You can choose to play either ball with no penalty"
+        },
+        {
+          "id": "d",
+          "text": "You must drop a new ball where the original went out of bounds, with a 2-stroke penalty"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "If your original ball is out of bounds or lost (not found within 3 minutes), the provisional ball becomes the ball in play and you count a one-stroke penalty."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "018_003_What_if_your_original_ball_is_out_of_bounds_or_not_found",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:53.599Z"
+  }
+}

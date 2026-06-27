@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-01.png",
+  "ruleNumber": "R1/3",
+  "ruleName": "Stroke play and match play",
+  "group": "Stroke play and match play",
+  "type": "multiple_choice",
+  "imagePrompt": "A teenage girl golfer on a sunny fairway, holding her scorecard and looking concerned after learning she has broken a rule. The scene focuses on her thoughtful reaction and the open fairway.",
+  "imageAlt": "Teenage girl on a fairway looking at a scorecard after a rules breach.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "red",
+    "clothingBottomColour": "yellow",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": false,
+    "score": 75,
+    "issues": [
+      "Golfer gender does not match (shows a teenage girl, needs to be a teenage boy as per revised sceneSpec).",
+      "Handedness is unclear: club is held in left hand, not clearly a right-handed golfer.",
+      "Golfer's hair is styled and long, typically associated with females (not matching the revised requirement for a teenage boy)."
+    ],
+    "repairPrompt": "Change the golfer to a teenage boy with a light skin tone, wearing a red top and yellow trousers or shorts, and a golf cap. Ensure the boy holds the iron golf club naturally as a right-handed player. Keep all other details (one realistic golf ball near feet, fairway setting, concerned expression, and realistic equipment) the same."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What happens if you break a rule in stroke play?",
+      "question": "If you break a rule when playing stroke play, what usually happens?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You go back to the start and hit again"
+        },
+        {
+          "id": "b",
+          "text": "You get 2 shots added to your score"
+        },
+        {
+          "id": "c",
+          "text": "You lose the hole"
+        },
+        {
+          "id": "d",
+          "text": "You hit your shot again with no penalty"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "In stroke play, if you break a rule, most of the time you must add 2 shots to your score for that hole.",
+      "vocabulary": [
+        {
+          "term": "Stroke play",
+          "simpleMeaning": "A golf game where you count all your shots for every hole."
+        },
+        {
+          "term": "Penalty strokes",
+          "simpleMeaning": "Extra shots you must add to your score if you break a rule."
+        }
+      ],
+      "teachingTip": "Tell kids that in stroke play, following the rules is important because every shot counts. Breaking rules almost always means extra shots on your score.",
+      "likelyMisconceptions": [
+        "Some kids may think you lose the hole like in match play.",
+        "Kids might believe you can just retake the shot with no penalty."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Penalty differences in stroke play and match play",
+      "question": "What is the usual penalty for breaking a rule in stroke play?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You have to return to the tee and replay the shot"
+        },
+        {
+          "id": "b",
+          "text": "You get 2 penalty strokes added to your score"
+        },
+        {
+          "id": "c",
+          "text": "You lose the hole"
+        },
+        {
+          "id": "d",
+          "text": "You retake the shot with no penalty"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "In stroke play, the general penalty for a rule breach is 2 penalty strokes."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "013_001_Penalty_differences_in_stroke_play_and_match_play",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.686Z"
+  }
+}

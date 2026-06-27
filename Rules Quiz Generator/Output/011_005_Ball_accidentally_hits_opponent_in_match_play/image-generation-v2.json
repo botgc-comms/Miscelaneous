@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\011_005_Ball_accidentally_hits_opponent_in_match_play\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:21:11.994Z",
+  "title": "Ball accidentally hits opponent in match play",
+  "ruleNumber": "R11",
+  "ruleName": "Ball in motion accidentally hits ... the opponent in match play",
+  "durationSeconds": 173.077
+}

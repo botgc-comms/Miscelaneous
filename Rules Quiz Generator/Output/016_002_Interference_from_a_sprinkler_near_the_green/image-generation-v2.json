@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\016_002_Interference_from_a_sprinkler_near_the_green\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:43:40.012Z",
+  "title": "Interference from a sprinkler near the green",
+  "ruleNumber": "R16",
+  "ruleName": "Sprinklers",
+  "durationSeconds": 173.769
+}

@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-13.png",
+  "ruleNumber": "16",
+  "ruleName": "Abnormal course conditions",
+  "group": "Abnormal course conditions",
+  "type": "multiple_choice",
+  "imagePrompt": "A teenage girl golfer taking her stance over her ball on the fairway, with a puddle of water visible under her shoes and ball.",
+  "imageAlt": "Teen girl golfer with water visible at her feet as she addresses the golf ball.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "addressing_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": true,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "dark",
+    "clothingTopColour": "navy",
+    "clothingBottomColour": "purple",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [],
+    "repairPrompt": "No significant repair needed. Maintain: left-handed teenage girl with dark skin and white ethnicity, navy top, purple bottoms, golf cap, iron club with single proper head, one realistic golf ball, natural golf posture on fairway, puddle visible beneath feet and ball, believable proportions, and authentic course."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "When Can You Get a Free Drop Because of Water?",
+      "question": "When are you allowed to move your ball without a penalty because of water on the ground?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You can see water under your ball or under your feet when you stand to hit"
+        },
+        {
+          "id": "b",
+          "text": "You see water in a ditch near your ball"
+        },
+        {
+          "id": "c",
+          "text": "It rained earlier today"
+        },
+        {
+          "id": "d",
+          "text": "You hear a squishy noise under your shoes"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "You only get a free drop when you can actually see water under your ball or feet when you are getting ready to play. Just hearing or feeling squishy grass is not enough.",
+      "vocabulary": [
+        {
+          "term": "Free Relief",
+          "simpleMeaning": "A chance to move your ball without a penalty because of a special problem."
+        },
+        {
+          "term": "Temporary Water",
+          "simpleMeaning": "Water on the ground you can see outside a water hazard, like puddles after rain."
+        },
+        {
+          "term": "Stance",
+          "simpleMeaning": "Where you stand and place your feet when you get ready to hit the ball."
+        }
+      ],
+      "teachingTip": "Show children a puddle and ask them to stand over it to check if they can see water under their feet or ball.",
+      "likelyMisconceptions": [
+        "Thinking the ground just feels wet is enough for a free drop.",
+        "Believing any water nearby, like in a ditch, means free relief.",
+        "Thinking free relief is allowed just because it rained earlier."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Free Relief from Temporary Water",
+      "question": "When can you take free relief for temporary water on the course?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You can see water on the ground under your feet or the ball when taking your stance"
+        },
+        {
+          "id": "b",
+          "text": "You notice water in a nearby ditch"
+        },
+        {
+          "id": "c",
+          "text": "It has rained at some point earlier that day"
+        },
+        {
+          "id": "d",
+          "text": "You hear squelching under your shoes"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "You must be able to see water physically under your feet or the ball when taking your stance for it to be temporary water. Just dampness, sound, or distant puddles aren't enough."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "016_002_Free_Relief_from_Temporary_Water",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:53.340Z"
+  }
+}

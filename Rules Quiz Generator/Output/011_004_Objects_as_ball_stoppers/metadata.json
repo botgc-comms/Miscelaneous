@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-14.png",
+  "ruleNumber": "11",
+  "ruleName": "Ball in motion intentionally deflected",
+  "group": "Ball in motion intentionally deflected",
+  "title": "Objects as ball stoppers",
+  "question": "In which of these situations does it count as intentional deflection of a golf ball in motion?",
+  "type": "multi_select",
+  "choices": [
+    {
+      "id": "a",
+      "text": "A person kicks the golf ball on purpose"
+    },
+    {
+      "id": "b",
+      "text": "A club dropped by accident blocks the ball"
+    },
+    {
+      "id": "c",
+      "text": "Someone puts a water bottle in the ball's path to stop it"
+    },
+    {
+      "id": "d",
+      "text": "The wind blows the ball in another direction"
+    }
+  ],
+  "correctAnswer": [
+    "a",
+    "c"
+  ],
+  "correctAnswers": [
+    "a",
+    "c"
+  ],
+  "explanation": "Intentional actions, like kicking the ball or placing an object to stop it, count as intentional deflection. Accidents or natural influences like wind do not.",
+  "imagePrompt": "A teenage golfer, right-handed, watches their golf ball on the fairway as it strikes a water bottle that was purposely set as a barrier.",
+  "imageAlt": "A teen golfer watches their ball strike a water bottle purposefully placed to stop it.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "addressing_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "dark",
+    "clothingTopColour": "black",
+    "clothingBottomColour": "red",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The golfer is depicted as right-handed rather than left-handed as specified in the scene requirements."
+    ],
+    "repairPrompt": "Adjust the golfer to appear left-handed, ensuring they are addressing the ball with a left-handed golf stance. The rest of the scene, equipment, and posture remain unchanged, with exactly one golf ball striking the water bottle."
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_046_Damaged_Ball_During_Play_of_Hole\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "4.2c",
+  "ruleName": "Ball Becomes Cut or Cracked While Playing Hole",
+  "title": "Damaged Ball During Play of Hole",
+  "question": "After playing an approach shot, you discover that your golf ball has developed a large crack, but remains in one piece. What is the correct ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You must continue playing the damaged ball until the end of the hole."
+    },
+    {
+      "id": "b",
+      "text": "You may replace the damaged ball with another ball without penalty before playing your next stroke."
+    },
+    {
+      "id": "c",
+      "text": "You must take a one-stroke penalty to replace the ball."
+    },
+    {
+      "id": "d",
+      "text": "You must replay your previous stroke."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If a ball becomes cut or cracked during the play of a hole, you may replace it with another ball without penalty before your next stroke. Before lifting the ball, you should mark its position, then lift and inspect it. If the ball is found to be cut or cracked, it may be replaced. Only if it is scuffed, scratched, or discoloured, must it not be replaced under this Rule.",
+  "juniorVersion": {
+    "title": "What To Do If Your Ball is Broken",
+    "question": "You hit your ball and then see it has a big crack, but it isn’t in pieces. What should you do next?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You have to keep playing with the cracked ball until you finish the hole."
+      },
+      {
+        "id": "b",
+        "text": "You can swap your cracked ball for a new one, without any penalty, before your next shot."
+      },
+      {
+        "id": "c",
+        "text": "You need to take a one-shot penalty if you want to change your ball."
+      },
+      {
+        "id": "d",
+        "text": "You have to hit your last shot again."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If you find a big crack in your ball after a shot, you can switch it for another ball without a penalty. Before you pick up the ball, remember to put a marker like a tee or coin down to show where it was. Only if the ball is cracked or has a big cut can you change it. If it’s just a bit dirty or scratched, you must keep using it.",
+    "vocabulary": [
+      {
+        "term": "Penalty",
+        "simpleMeaning": "A penalty is an extra shot added to your score if you break a rule."
+      },
+      {
+        "term": "Approach shot",
+        "simpleMeaning": "An approach shot is when you hit the ball towards the green."
+      },
+      {
+        "term": "Marker",
+        "simpleMeaning": "A marker is something small, like a coin, that shows where your ball was."
+      }
+    ],
+    "teachingTip": "Show kids real golf balls that are cracked, scratched, and just dirty, so they can see the difference for this rule.",
+    "likelyMisconceptions": [
+      "A player might think they have to keep playing even if the ball is badly cracked.",
+      "Some might think any small scratch or scuff means you can swap the ball.",
+      "A child may think you have to take a penalty if you change the ball."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:22:25.509Z",
+  "model": "gpt-4.1"
+}

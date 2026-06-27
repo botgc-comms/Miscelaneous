@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\006_003_Who_plays_first_on_the_green\\metadata.json",
+  "sourceImageName": "pageb-04.png",
+  "ruleNumber": "R6",
+  "ruleName": "Order of play",
+  "title": "Who plays first on the green?",
+  "question": "When players have their balls on the green, whose turn is it to putt first?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Whoever is closer to the hole"
+    },
+    {
+      "id": "b",
+      "text": "Whoever is furthest from the hole"
+    },
+    {
+      "id": "c",
+      "text": "Whoever played their last shot first"
+    },
+    {
+      "id": "d",
+      "text": "Whoever wants to go first"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "On the green, the player whose ball is furthest from the hole plays first. This helps keep play fair and safe.",
+  "juniorVersion": {
+    "title": "Who putts first when you’re all on the green?",
+    "question": "If everyone’s balls are on the green, who should take their putt first?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "The person whose ball is closest to the hole"
+      },
+      {
+        "id": "b",
+        "text": "The person whose ball is the furthest from the hole"
+      },
+      {
+        "id": "c",
+        "text": "The person who hit their last shot first"
+      },
+      {
+        "id": "d",
+        "text": "Anyone who wants to go first"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "The player who is the furthest away from the hole always putts first. This way, everyone gets a fair go and no one gets in the way.",
+    "vocabulary": [
+      {
+        "term": "Green",
+        "simpleMeaning": "The soft, smooth area around the hole where you putt."
+      },
+      {
+        "term": "Putt",
+        "simpleMeaning": "A soft shot you make to roll the ball into the hole on the green."
+      }
+    ],
+    "teachingTip": "Show children how to tell which ball is furthest from the hole using footsteps on the green.",
+    "likelyMisconceptions": [
+      "Some kids may think the closest player goes first because they are near the hole.",
+      "Kids might not realise you always check all balls before choosing who putts first."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:36.962Z",
+  "model": "gpt-4.1"
+}

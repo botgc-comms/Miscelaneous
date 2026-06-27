@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "packId": "whats-in-the-bag",
+  "pageId": "00-title",
+  "pageTitle": "A simple guide",
+  "pageFile": "pages/00-title.md",
+  "assetFile": "title.png",
+  "audience": "brand new junior golfers and non-golfing parents",
+  "learningGoal": "Introduce essential golf equipment for beginners",
+  "markdown": "![A simple guide](../assets/title.png)\n\n# A simple guide\n\nWelcome to your Junior Golf Learning Pack! This guide helps you understand the equipment you need as young golfers. We aim to keep things simple and straightforward.\n\n### What’s in the Bag?\n\nFor junior golfers, the right clubs and equipment matter a lot. Don’t worry if it feels overwhelming at first! Here's a clear outline of essential items:\n\n1. **Golf Clubs**:  \n   - A driver for starting shots off the tee  \n   - Some irons for making different distances  \n   - A putter to help sink the ball in the hole on the green\n\n2. **Golf Balls**:  \n   - A few practice balls are vital, as they can easily get lost.\n\n3. **Tees**:  \n   - Small pegs that hold the ball in place when teeing off.\n\n4. **Glove**:  \n   - Helps grip the club and can prevent blisters.\n\n5. **Comfortable Shoes**:  \n   - Trainers or golfing shoes with good grip keep your footing stable.\n\n6. **Hat and Sunscreen**:  \n   - Protect yourself from the sun while having fun!\n\n---\n\nKeep it simple, focus on the basics, and enjoy your golfing journey! The love for the game will grow as you play.\n",
+  "imageAlt": "Assorted golf clubs and equipment neatly arranged on grass",
+  "imagePrompt": "A photorealistic image showing a variety of golf clubs, a putter, golf balls, tees, and a glove arranged neatly on a patch of grass. The background should be soft and blurred, enhancing the focus on the equipment without any people or brand names."
+}

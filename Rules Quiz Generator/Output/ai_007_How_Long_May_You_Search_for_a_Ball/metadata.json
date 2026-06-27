@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "18.2a(1)",
+  "ruleName": "Ball Lost or Out of Bounds: Stroke-and-Distance Relief",
+  "group": "Ball Lost or Out of Bounds, Provisional Ball",
+  "title": "How Long May You Search for a Ball?",
+  "question": "Your tee shot disappears into long rough. You and your playing partners begin searching for the ball. How long are you allowed to search before the ball is officially lost?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "2 minutes."
+    },
+    {
+      "id": "b",
+      "text": "3 minutes."
+    },
+    {
+      "id": "c",
+      "text": "5 minutes."
+    },
+    {
+      "id": "d",
+      "text": "As long as you keep up with the group in front."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "A player has 3 minutes to search for a ball. The search time begins when the player or their caddie starts searching for it, not when the ball was played. If the ball is not found and identified within those 3 minutes, it is lost, and the player must proceed under stroke and distance unless another Rule applies. (Rule 18.2a(1))",
+  "imagePrompt": "Create a polished modern semi-realistic illustration (about 75% realistic, 25% stylised) showing a golf rules situation: Three golfers are searching in long thick rough near a fairway for a missing ball following a tee shot. All are focused on looking for the ball in the grass, with golf bags or trolleys nearby. The scene should depict a realistic golf course with deep rough clearly contrasting with the fairway. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles. Only show the players actively searching; do not show the ball being found, no indication of time, and no extraneous details.",
+  "imageAlt": "Three golfers searching in long rough near a golf fairway, looking for a missing ball after a tee shot, with golf bags nearby on a modern course.",
+  "sceneSpec": {
+    "setting": "A long hole on a golf course with deep rough near the fairway.",
+    "players": "One player in golf attire searching intently in the thick grass, with two playing partners also assisting with the search.",
+    "ballPosition": "The ball is hidden in long, dense rough.",
+    "ruleMoment": "Players actively searching for a ball soon after a tee shot vanished into the rough.",
+    "educationalFocus": "Clarifying the Rules of Golf time limit for searching for a lost ball.",
+    "mustShow": [
+      "A player and two partners searching for a ball in long grass.",
+      "Golf bags or trolleys on the edge of the rough.",
+      "A realistic golf course environment with clearly visible rough and fairway."
+    ],
+    "mustNotShow": [
+      "Text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+      "Any indication of time limits (no clocks, watches, timers).",
+      "The ball being found or picked up."
+    ]
+  }
+}

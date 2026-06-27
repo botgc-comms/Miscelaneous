@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\006_001_Penalty_for_playing_the_wrong_ball\\metadata.json",
+  "generatedAtUtc": "2026-06-24T14:48:34.190Z",
+  "title": "Penalty for playing the wrong ball",
+  "ruleNumber": "R6",
+  "ruleName": "Wrong ball",
+  "durationSeconds": 205.37
+}

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\812_002_Ball_Rolls_Back_Into_Your_Footprints_in_Bunker\\metadata.json",
+  "sourceImageName": "page-23.png",
+  "ruleNumber": "R8/12",
+  "ruleName": "Ball rolls into your own footprints",
+  "title": "Ball Rolls Back Into Your Footprints in Bunker",
+  "question": "After playing a shot from a bunker, your ball rolls back and comes to rest in the footprints you made. What are your options?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Smooth out the footprints before your next shot"
+    },
+    {
+      "id": "b",
+      "text": "Take a free drop"
+    },
+    {
+      "id": "c",
+      "text": "Play the ball as it lies or declare it unplayable"
+    },
+    {
+      "id": "d",
+      "text": "Move the ball to a nicer patch of sand"
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "You must play the ball as it lies, even if it is in your own footprints, unless you declare the ball unplayable under the rules.",
+  "juniorVersion": {
+    "title": "Your Ball Stops in Your Own Footprints in the Sand",
+    "question": "You hit your golf ball from the bunker and it rolls back into the marks your feet made in the sand. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Smooth the sand where your ball stopped before you hit"
+      },
+      {
+        "id": "b",
+        "text": "Pick up your ball and put it somewhere else in the bunker for free"
+      },
+      {
+        "id": "c",
+        "text": "Hit the ball from the spot where it is, or say it is unplayable"
+      },
+      {
+        "id": "d",
+        "text": "Move your ball to a spot with smoother sand"
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "You have to play your ball from the footprints, or you can say it is unplayable and follow those rules. You cannot smooth the sand or move the ball to a nicer spot.",
+    "vocabulary": [
+      {
+        "term": "Bunker",
+        "simpleMeaning": "A sandy area on the golf course, sometimes called a sand trap."
+      },
+      {
+        "term": "Unplayable",
+        "simpleMeaning": "When you decide your ball is too hard to play, you can choose to take a penalty and drop it somewhere else by the rules."
+      }
+    ],
+    "teachingTip": "Ask the child to show how they would play a shot from rough sand, and talk about why the rule says to leave the sand how it is.",
+    "likelyMisconceptions": [
+      "Children might think it’s okay to smooth the sand before hitting the next shot.",
+      "They might believe they can always move their ball to a better spot in the bunker without penalty."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:28:17.746Z",
+  "model": "gpt-4.1"
+}

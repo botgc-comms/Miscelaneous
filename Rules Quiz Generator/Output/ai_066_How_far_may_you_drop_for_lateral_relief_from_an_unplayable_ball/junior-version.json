@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_066_How_far_may_you_drop_for_lateral_relief_from_an_unplayable_ball\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "19.2c",
+  "ruleName": "Unplayable Ball Relief – Lateral Relief",
+  "title": "How far may you drop for lateral relief from an unplayable ball?",
+  "question": "Your ball is under a bush. You decide to declare it unplayable and take lateral relief. How far may you drop?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "One club-length."
+    },
+    {
+      "id": "b",
+      "text": "Two club-lengths."
+    },
+    {
+      "id": "c",
+      "text": "Three club-lengths."
+    },
+    {
+      "id": "d",
+      "text": "Nearest point of relief."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "When taking lateral relief for an unplayable ball, you must drop the ball within two club-lengths of where the ball lies, no nearer the hole.",
+  "juniorVersion": {
+    "title": "How far can you drop your ball if you can't play it?",
+    "question": "Your ball is stuck under a bush and you can't hit it. If you choose to drop it to the side, how far are you allowed to move away from where it was?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "One club-length."
+      },
+      {
+        "id": "b",
+        "text": "Two club-lengths."
+      },
+      {
+        "id": "c",
+        "text": "Three club-lengths."
+      },
+      {
+        "id": "d",
+        "text": "Nearest point you can play."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If your ball cannot be played and you want to drop it to the side (lateral relief), you are allowed to drop it within two club-lengths from where your ball was, but not closer to the hole.",
+    "vocabulary": [
+      {
+        "term": "Lateral Relief",
+        "simpleMeaning": "This means you move the ball sideways (to the side), not closer to the hole, when you can't play it."
+      },
+      {
+        "term": "Club-length",
+        "simpleMeaning": "The length of your golf club, used to measure how far you can drop your ball."
+      }
+    ],
+    "teachingTip": "Show children how to lay two clubs down on the ground to measure two club-lengths from the ball.",
+    "likelyMisconceptions": [
+      "Children might think you can drop anywhere you want away from the bush.",
+      "Children may think you can drop closer to the hole.",
+      "Some may believe 'nearest point you can play' means you can pick any spot you like."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T19:41:40.622Z",
+  "model": "gpt-4.1"
+}

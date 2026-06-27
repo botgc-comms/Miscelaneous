@@ -1,0 +1,10 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "sourcePromptFileName": "final-prompt-v2.txt",
+  "promptFileName": "final-prompt-v3.txt",
+  "imageFileName": "illustration-v3.png",
+  "correctionInstructions": "the flag stick should be out of the hole and lying on the ground near to the hole, as if to assist the girl in getting the ball into the hole",
+  "generatedAtUtc": "2026-06-26T08:34:37.538Z"
+}

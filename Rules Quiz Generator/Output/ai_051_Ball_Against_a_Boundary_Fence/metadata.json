@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "Definition of Boundary Object",
+  "ruleName": "Boundary Objects",
+  "group": "Relief Situations",
+  "title": "Ball Against a Boundary Fence",
+  "question": "Your ball is just inside the course boundary, but an out of bounds fence prevents you making a normal swing. Can you take free relief?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes."
+    },
+    {
+      "id": "b",
+      "text": "No. Boundary fences are boundary objects and there is no free relief."
+    },
+    {
+      "id": "c",
+      "text": "Yes, but only in match play."
+    },
+    {
+      "id": "d",
+      "text": "One-stroke penalty relief."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "Boundary fences are not obstructions. They define the edge of the course, so there is no free relief.",
+  "imagePrompt": "A modern, polished semi-realistic illustration showing the edge of a golf hole where a golfer's ball lies very close to a tall boundary fence clearly marking out of bounds. The golfer stands awkwardly next to the ball on the grass, with their swing restricted by the fence. The focus is on the situation demonstrating that the ball is in bounds but relief is not allowed due to the boundary object. Scene is realistic but slightly stylised, with no text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer unable to swing normally because their ball is right next to a tall boundary fence at the edge of a golf course",
+  "sceneSpec": {
+    "setting": "Edge of a golf hole, next to an out of bounds area marked by a tall fence",
+    "players": "One golfer standing close to the ball, appearing concerned about the restricted backswing by the fence",
+    "ballPosition": "Ball lying on the grass just inside the boundary fence, clearly in bounds but very close to the fence",
+    "ruleMoment": "Golfer is considering options for relief, holding a club but unable to swing properly because of the fence",
+    "educationalFocus": "Clarify that boundary fences do not permit free relief under the Rules of Golf",
+    "mustShow": [
+      "Tall boundary fence marking the edge of the course",
+      "Ball very close to but just inside the fence, clearly within bounds",
+      "Golfer positioned awkwardly, struggling to make a swing because of the fence"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  }
+}

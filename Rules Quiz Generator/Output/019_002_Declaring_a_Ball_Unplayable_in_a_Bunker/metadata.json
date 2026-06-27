@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-22.png",
+  "ruleNumber": "R19",
+  "ruleName": "Unplayable ball",
+  "group": "Unplayable ball",
+  "title": "Declaring a Ball Unplayable in a Bunker",
+  "question": "If your ball is unplayable in a bunker and you choose to drop it outside the bunker behind where it lay, how many penalty strokes must you add?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No penalty"
+    },
+    {
+      "id": "b",
+      "text": "1 penalty stroke"
+    },
+    {
+      "id": "c",
+      "text": "2 penalty strokes"
+    },
+    {
+      "id": "d",
+      "text": "3 penalty strokes"
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "According to the rules, choosing to drop outside the bunker behind the original spot incurs a two-stroke penalty.",
+  "imagePrompt": "A teen girl preparing to drop a ball on the grass behind a bunker after declaring her ball unplayable, holding an iron club.",
+  "imageAlt": "Girl drops a golf ball behind a bunker with a club in hand.",
+  "sceneSpec": {
+    "setting": "bunker",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "dropping_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": true,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "black",
+    "clothingBottomColour": "green",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Golfer's left-handedness is ambiguous due to club being held in right hand during the drop (should be emphasized more by holding iron in left hand or a more left-handed drop posture)."
+    ],
+    "repairPrompt": "Ensure the teen girl appears clearly left-handed by holding the iron club in her left hand while dropping the ball with her right, or otherwise clearly indicating left-handedness in posture."
+  }
+}

@@ -1,0 +1,5 @@
+﻿{
+  "text": [],
+  "allowText": true,
+  "notes": "The inscription reads - Gail Coltman Cup"
+}

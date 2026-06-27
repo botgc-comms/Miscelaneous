@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\010_003_Umbrellas_and_outside_help_while_putting\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:11:12.272Z",
+  "title": "Umbrellas and outside help while putting",
+  "ruleNumber": "R10",
+  "ruleName": "Protection from the elements",
+  "durationSeconds": 191.213
+}

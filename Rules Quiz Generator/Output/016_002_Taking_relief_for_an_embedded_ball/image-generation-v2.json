@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\016_002_Taking_relief_for_an_embedded_ball\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:43:45.395Z",
+  "title": "Taking relief for an embedded ball",
+  "ruleNumber": "16",
+  "ruleName": "Embedded ball",
+  "durationSeconds": 176.453
+}

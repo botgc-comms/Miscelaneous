@@ -1,0 +1,352 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-18.png",
+  "sourceImagePath": "Input\\page-18.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-18.png",
+      "ruleNumber": "R9/14",
+      "ruleName": "Ball at rest moved by an outside influence",
+      "group": "Ball at rest moved by an outside influence",
+      "title": "What to do if your ball is moved by an animal",
+      "question": "A dog runs onto the course and moves your ball from where it was resting. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball from its new position"
+        },
+        {
+          "id": "b",
+          "text": "Put the ball back as close as possible to its original spot, no penalty"
+        },
+        {
+          "id": "c",
+          "text": "Take a penalty stroke and drop the ball"
+        },
+        {
+          "id": "d",
+          "text": "Move to the next hole"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You must put your ball back as close as possible to its original position. There is no penalty when an outside influence moves your ball.",
+      "imagePrompt": "A dog is running away with a golf ball while a teenage girl golfer prepares to put the ball back on the fairway.",
+      "imageAlt": "A dog moves a girl's golf ball and she gets ready to put it back.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "lifting_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "yellow",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-18.png",
+      "ruleNumber": "R18",
+      "ruleName": "Lost ball",
+      "group": "Lost ball",
+      "title": "What counts as a lost ball?",
+      "question": "You hit your ball into the trees and spend 4 minutes looking for it but can't find it. What is the correct procedure?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Take a drop near the spot where the ball was lost with no penalty"
+        },
+        {
+          "id": "b",
+          "text": "Continue searching for as long as needed"
+        },
+        {
+          "id": "c",
+          "text": "Return to where you last played, take a drop within one club-length, and add one penalty stroke"
+        },
+        {
+          "id": "d",
+          "text": "Play another ball from a different spot"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "If you cannot find your ball within 3 minutes, it's lost. You must return to where you last played, take a drop within one club-length, and take a one-stroke penalty.",
+      "imagePrompt": "A teenage boy golfer looks for his ball in the rough for a long time and walks back to replay his last shot.",
+      "imageAlt": "A boy golfer searching for a lost ball in the trees, returning to replay his shot.",
+      "sceneSpec": {
+        "setting": "rough",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "replaying_shot",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "dark",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "green",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-18.png",
+      "ruleNumber": "R10",
+      "ruleName": "Double hit",
+      "group": "Double hit",
+      "title": "What happens if you accidentally hit the ball twice in one swing?",
+      "question": "During a tricky chip, your club accidentally strikes the ball twice in a single swing. How many strokes do you count and is there a penalty?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Count two strokes and add a penalty stroke"
+        },
+        {
+          "id": "b",
+          "text": "Count one stroke and no penalty"
+        },
+        {
+          "id": "c",
+          "text": "Count one stroke and add a penalty stroke"
+        },
+        {
+          "id": "d",
+          "text": "Ignore the shot completely"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "A double hit counts as only one stroke with no penalty.",
+      "imagePrompt": "A teenage girl accidentally double-hits the ball during a chip shot on the fairway.",
+      "imageAlt": "A girl golfer chips the ball and accidentally makes a double hit.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "wedge",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "medium",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "white",
+        "hat": true
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-18.png",
+      "ruleNumber": "R9/14",
+      "ruleName": "Ball at rest moved by an outside influence",
+      "group": "Ball at rest moved by an outside influence",
+      "title": "What to do if your ball is moved by an animal",
+      "question": "A dog runs onto the course and moves your ball from where it was resting. What is the correct action under the Rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball from where the dog left it"
+        },
+        {
+          "id": "b",
+          "text": "Replace the ball as close as possible to its original spot, with no penalty"
+        },
+        {
+          "id": "c",
+          "text": "Add a penalty stroke and drop the ball"
+        },
+        {
+          "id": "d",
+          "text": "Skip the hole and move to the next one"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If an outside influence, such as a dog, moves your ball at rest, you must replace it as close as possible to its original spot with no penalty.",
+      "imagePrompt": "A teenage left-handed boy golfer on the fairway prepares to replace his ball after a dog has moved it; the boy is retrieving the ball and trees are visible in the background.",
+      "imageAlt": "A dog moves a boy's golf ball on the fairway and he gets ready to put it back.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "lifting_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "red",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-18.png",
+      "ruleNumber": "R18",
+      "ruleName": "Lost ball",
+      "group": "Lost ball",
+      "title": "What counts as a lost ball?",
+      "question": "You hit your ball deep into the trees and spend 4 minutes searching but can't find it. What must you do under the Rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop a ball near where it disappeared with no penalty"
+        },
+        {
+          "id": "b",
+          "text": "Continue searching until you find it"
+        },
+        {
+          "id": "c",
+          "text": "Go back to where you last played, drop a ball within one club-length, and add one penalty stroke"
+        },
+        {
+          "id": "d",
+          "text": "Play a new ball from anywhere you like"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "If you cannot find your ball within three minutes, it is lost. You must return to where you last played, drop a ball within one club-length, and take a one-stroke penalty.",
+      "imagePrompt": "A teenage boy golfer in the rough searches for his ball among trees and then prepares to replay his previous shot from the original spot with his iron.",
+      "imageAlt": "A boy golfer looks for a lost ball in the trees and walks back to replay his shot.",
+      "sceneSpec": {
+        "setting": "rough",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "replaying_shot",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "white",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-18.png",
+      "ruleNumber": "R10",
+      "ruleName": "Double hit",
+      "group": "Double hit",
+      "title": "What happens if you accidentally hit the ball twice in one swing?",
+      "question": "During a tricky chip, your club accidentally hits the ball twice in the same swing. How many strokes do you count and is there a penalty?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Count two strokes and add a penalty stroke"
+        },
+        {
+          "id": "b",
+          "text": "Count one stroke with no penalty"
+        },
+        {
+          "id": "c",
+          "text": "Count one stroke and add a penalty stroke"
+        },
+        {
+          "id": "d",
+          "text": "Ignore the shot and play again without penalty"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If you double-hit the ball in a single swing, it counts as just one stroke and there is no penalty.",
+      "imagePrompt": "A teenage left-handed girl with a wedge accidentally double-hits the golf ball during a chip shot on the sunny fairway, wearing a red top, white bottoms, and a hat.",
+      "imageAlt": "A girl golfer chips the ball and accidentally hits it twice in one swing.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "wedge",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "red",
+        "hat": true
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "914_001_What_to_do_if_your_ball_is_moved_by_an_animal",
+    "018_002_What_counts_as_a_lost_ball",
+    "010_003_What_happens_if_you_accidentally_hit_the_ball_twice_in_one_swing"
+  ],
+  "updatedAtUtc": "2026-04-24T21:11:28.558Z"
+}

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\010_004_If_you_accidentally_double_hit_the_ball\\metadata.json",
+  "sourceImageName": "page-29.png",
+  "ruleNumber": "R10",
+  "ruleName": "Double hit",
+  "title": "If you accidentally double-hit the ball",
+  "question": "If you accidentally hit the golf ball twice in one swing, what is the rule?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No penalty – it only counts as one stroke"
+    },
+    {
+      "id": "b",
+      "text": "Add one penalty stroke"
+    },
+    {
+      "id": "c",
+      "text": "Add two penalty strokes"
+    },
+    {
+      "id": "d",
+      "text": "Replay the shot"
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "If you hit the ball twice in one swing by accident, it only counts as one stroke and there is no penalty.",
+  "juniorVersion": {
+    "title": "What happens if you hit the ball twice by mistake?",
+    "question": "When you swing your club and hit the ball, but your club touches it again in the same swing by accident, what should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "No penalty – it only counts as one hit"
+      },
+      {
+        "id": "b",
+        "text": "Add one extra shot to your score"
+      },
+      {
+        "id": "c",
+        "text": "Add two extra shots to your score"
+      },
+      {
+        "id": "d",
+        "text": "Hit the shot again"
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "If you hit the ball twice in one swing and did not mean to, it is just one shot with no extra penalty.",
+    "vocabulary": [
+      {
+        "term": "Swing",
+        "simpleMeaning": "The motion you make when you move the club to hit the ball."
+      },
+      {
+        "term": "Stroke",
+        "simpleMeaning": "A stroke is one hit at the ball. It is how we count your score."
+      }
+    ],
+    "teachingTip": "After explaining, let juniors try swinging their club (without a ball) to show how a double hit can accidentally happen, so they see it's just part of learning.",
+    "likelyMisconceptions": [
+      "Some juniors may think they have to add a penalty or hit the ball again.",
+      "Some may think both hits must be counted. Remind them: it is only one stroke."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:05.855Z",
+  "model": "gpt-4.1"
+}

@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\018_003_What_happens_to_your_provisional_ball\\metadata.json",
+  "sourceImageName": "page-30.png",
+  "ruleNumber": "R18",
+  "ruleName": "Out of bounds and provisional ball",
+  "title": "What happens to your provisional ball?",
+  "question": "After you've played a provisional ball because your first shot might be out of bounds, what do you do if it's clear your first ball is definitely out?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Your provisional ball becomes your ball in play and you get a one-stroke penalty."
+    },
+    {
+      "id": "b",
+      "text": "You must pick up your provisional ball and drop another ball at the out of bounds spot."
+    },
+    {
+      "id": "c",
+      "text": "You can keep playing your original ball with no penalty."
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "If your original ball is confirmed out of bounds, your provisional ball becomes your ball in play, and you must add a one-stroke penalty.",
+  "juniorVersion": {
+    "title": "What do you do with your second ball if your first ball went out?",
+    "question": "You hit a second ball because you thought your first one might be out of bounds. Now you see your first ball is definitely out. What happens next?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You keep playing the second ball and add one shot to your score."
+      },
+      {
+        "id": "b",
+        "text": "You pick up the second ball and drop a new ball where your first ball went out."
+      },
+      {
+        "id": "c",
+        "text": "You can use your first ball and don’t get a penalty."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "If your first ball went out of bounds, your second ball (the provisional ball) becomes the one you play, and you get one extra shot as a penalty.",
+    "vocabulary": [
+      {
+        "term": "Out of bounds",
+        "simpleMeaning": "When your ball is outside the edges of the golf course, like over a fence or white line."
+      },
+      {
+        "term": "Provisional ball",
+        "simpleMeaning": "A second ball you play if you think your first ball might be lost or out of bounds."
+      }
+    ],
+    "teachingTip": "Practise hitting a provisional ball so children know what to do if their first ball goes over a boundary.",
+    "likelyMisconceptions": [
+      "Children might think they can keep using the original ball if they find it, even if it’s out of bounds.",
+      "Some might believe they need to drop a new ball instead of using the provisional ball."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:36.699Z",
+  "model": "gpt-4.1"
+}

@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-07.png",
+  "ruleNumber": "R6",
+  "ruleName": "Playing from the teeing area",
+  "group": "Playing from the teeing area",
+  "title": "Playing from the wrong teeing area",
+  "question": "If you play your ball from the wrong teeing area, what is the correct ruling?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You can continue playing your ball with no penalty if the shot was good."
+    },
+    {
+      "id": "b",
+      "text": "You must cancel your shot and play again from the correct teeing area, with a penalty."
+    },
+    {
+      "id": "c",
+      "text": "You must retake the shot without any penalty."
+    },
+    {
+      "id": "d",
+      "text": "You receive a reward for being original."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If you play from the wrong teeing area, your shot does not count. In stroke play, you must cancel the shot, play from the correct teeing area, and add a two-stroke penalty.",
+  "imagePrompt": "A teen golfer stands on a teeing area, preparing to hit but obviously outside the area marked by two tee-markers.",
+  "imageAlt": "A teen golfer addressing a ball outside the proper teeing area, with tee-markers in view.",
+  "sceneSpec": {
+    "setting": "teeing_area",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "driver",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": true,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "light",
+    "clothingTopColour": "green",
+    "clothingBottomColour": "yellow",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 96,
+    "issues": [
+      "Tee markers are present and correct; golfer's position is clearly outside the area.",
+      "Golfer is right-handed, light-skinned black teenager, with green top, yellow shorts, and cap as specified.",
+      "Golf club is a realistic modern driver with proper proportions; ball size and position are correct.",
+      "Stance and posture are believable, physically plausible, with only one golf ball visible.",
+      "Course and daylight setting are realistic and suitable for education."
+    ],
+    "repairPrompt": "No major faults; ensure tee markers are unambiguously outside the golfer's stance and the ball position, and confirm tee marker style matches usual course practice."
+  }
+}

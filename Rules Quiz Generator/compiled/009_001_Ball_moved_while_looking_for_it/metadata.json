@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "pageb-12.png",
+  "ruleNumber": "R9",
+  "ruleName": "Ball at rest is moved",
+  "group": "Ball at rest is moved",
+  "type": "multiple_choice",
+  "imagePrompt": "A teenage left-handed boy in the rough searching for his ball among long grass, close-up on him noticing the ball has moved.",
+  "imageAlt": "Teenage left-handed boy in the rough searching for his golf ball, noticing it has been accidentally moved.",
+  "sceneSpec": {
+    "setting": "rough",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "light",
+    "clothingTopColour": "navy",
+    "clothingBottomColour": "yellow",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [],
+    "repairPrompt": "None needed. The image now correctly depicts a teenage right-handed girl of mixed ethnicity with light skin, wearing a navy top and yellow bottoms, without a club, addressing a single golf ball in the rough naturally. Suitable for educational use."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What to do if you move your ball by mistake while looking for it",
+      "question": "You are looking for your ball in the long grass. Your foot moves the ball by accident. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Hit the ball from where it stopped"
+        },
+        {
+          "id": "b",
+          "text": "Put the ball back where it was with no penalty"
+        },
+        {
+          "id": "c",
+          "text": "Put the ball back and add one penalty shot"
+        },
+        {
+          "id": "d",
+          "text": "Drop a new ball and keep playing"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If you move your golf ball by mistake when you are looking for it, just put it back where it was. You do not have to count a penalty.",
+      "vocabulary": [
+        {
+          "term": "Penalty",
+          "simpleMeaning": "Extra shots you must add to your score if you break a rule."
+        },
+        {
+          "term": "Rough",
+          "simpleMeaning": "The area with long grass next to the short grass (fairway) on a golf course."
+        }
+      ],
+      "teachingTip": "Show children how to look for a ball in long grass using a club or gently moving grass with a foot, reminding them to watch where the ball is.",
+      "likelyMisconceptions": [
+        "Some might think they have to play the ball from the new spot. Remind them the ball must go back to where it was.",
+        "Some might think they get a penalty every time the ball moves. Explain there is no penalty if it only moves while you are trying to find it."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Ball moved while looking for it",
+      "question": "If you accidentally move your ball while searching for it in the rough, what should you do according to the rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball from where it ends up"
+        },
+        {
+          "id": "b",
+          "text": "Replace the ball without penalty"
+        },
+        {
+          "id": "c",
+          "text": "Replace the ball and take a one-stroke penalty"
+        },
+        {
+          "id": "d",
+          "text": "Drop a new ball and play on"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If your ball is accidentally moved while searching for it, you must put it back without penalty."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "009_001_Ball_moved_while_looking_for_it",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.446Z"
+  }
+}

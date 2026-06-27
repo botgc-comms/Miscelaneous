@@ -1,0 +1,465 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-14.png",
+  "sourceImagePath": "Input\\page-14.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-14.png",
+      "ruleNumber": "17",
+      "ruleName": "Taking Relief from Abnormal Course Conditions",
+      "group": "Taking Relief from Abnormal Course Conditions",
+      "title": "Choosing the Correct Relief Point",
+      "question": "When taking free relief from an abnormal course condition, which point should you choose?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "The nearest point where there is no interference for stance or swing."
+        },
+        {
+          "id": "b",
+          "text": "Any point you prefer, as long as it is closer to the hole."
+        },
+        {
+          "id": "c",
+          "text": "The furthest point from the original ball location."
+        },
+        {
+          "id": "d",
+          "text": "A spot that is comfortable, even if still interfered by the condition."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You must choose the nearest point with no interference for your stance or swing, not just any preferred or furthest spot.",
+      "imagePrompt": "A teen girl golfer, right-handed, standing next to her ball on a fairway, judging where she can take relief from an abnormal condition nearby.",
+      "imageAlt": "Teen girl golfer on the fairway considering relief from an abnormal course condition.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "light",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "navy",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-14.png",
+      "ruleNumber": "17",
+      "ruleName": "Taking Relief from Abnormal Course Conditions",
+      "group": "Taking Relief from Abnormal Course Conditions",
+      "title": "Relief Location Choices",
+      "question": "Your ball is blocked by a road. The nearest point of relief puts you in rough, but another spot the same distance away lets you stay on the fairway if you stand partly on the road. Where must you drop the ball?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "On the fairway, even if part of your stance is still on the road."
+        },
+        {
+          "id": "b",
+          "text": "In the rough, at the nearest point of full relief with no interference."
+        },
+        {
+          "id": "c",
+          "text": "Anywhere you want as long as it's the same distance."
+        },
+        {
+          "id": "d",
+          "text": "On the road to keep the best angle."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You must drop at the nearest point where there is no interference, even if that puts you in the rough.",
+      "imagePrompt": "A teen boy golfer, right-handed, identifying the nearest point of relief from a road on a golf hole, with the fairway and rough shown.",
+      "imageAlt": "Teen boy choosing nearest point of relief from a road, with fairway and rough visible.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "medium",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "grey",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-14.png",
+      "ruleNumber": "17",
+      "ruleName": "Taking Relief from Abnormal Course Conditions",
+      "group": "Taking Relief from Abnormal Course Conditions",
+      "title": "What if the nearest point is in a bad lie?",
+      "question": "If your nearest relief point is in a bush, thick rough or on a steep slope, what can you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Take relief and play from there, even if it's a tough shot."
+        },
+        {
+          "id": "b",
+          "text": "Ignore the rules and pick a nicer spot."
+        },
+        {
+          "id": "c",
+          "text": "Choose not to take relief and play the ball as it lies."
+        },
+        {
+          "id": "d",
+          "text": "Move the ball to the green for an easier shot."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You can either take relief at the correct spot, or decide to play the ball as it lies if relief would leave you in a bad spot.",
+      "imagePrompt": "A teen girl golfer, left-handed, looking at possible relief options from a tough lie in thick rough next to the fairway.",
+      "imageAlt": "Teen girl facing a choice between taking relief in thick rough or playing her ball as it lies.",
+      "sceneSpec": {
+        "setting": "rough",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "hybrid",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "dark",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "orange",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-14.png",
+      "ruleNumber": "17",
+      "ruleName": "Taking Relief from Abnormal Course Conditions",
+      "group": "Taking Relief from Abnormal Course Conditions",
+      "title": "No Play Zones in Relief Situations",
+      "question": "If your ball is in a no play zone or your stance/swing is interfered by one, what must you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball as it lies and ignore the no play zone."
+        },
+        {
+          "id": "b",
+          "text": "Move your ball for free relief, you must not play as it lies."
+        },
+        {
+          "id": "c",
+          "text": "Take a penalty stroke before moving the ball."
+        },
+        {
+          "id": "d",
+          "text": "Ask your group for permission to play from there."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You must always take free relief from a no play zone or if it interferes with your swing or stance. You cannot play from that spot.",
+      "imagePrompt": "A teen boy golfer, left-handed, standing near a staked no play zone and preparing to take relief.",
+      "imageAlt": "Teen boy preparing to take relief from a marked no play zone beside the course.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "dropping_ball",
+        "clubInHand": "wedge",
+        "ballCount": 1,
+        "stakeColour": "yellow",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "light",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "yellow",
+        "hat": true
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-14.png",
+      "ruleNumber": "17",
+      "ruleName": "Taking Relief from Abnormal Course Conditions",
+      "group": "Taking Relief from Abnormal Course Conditions",
+      "title": "Choosing the Correct Relief Point",
+      "question": "When taking free relief from an abnormal course condition, which point should you use to find where to drop your ball?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "The nearest point with no interference from the condition for your stance or swing."
+        },
+        {
+          "id": "b",
+          "text": "Any point you want, as long as it is closer to the hole."
+        },
+        {
+          "id": "c",
+          "text": "The furthest place from where your ball lies."
+        },
+        {
+          "id": "d",
+          "text": "A comfortable place, even if you are still standing in the condition."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "The rules say you must use the nearest point where there is no interference with your stance or swing from the abnormal condition, not just anywhere you prefer.",
+      "imagePrompt": "A teen girl golfer, left-handed, standing near her ball on the fairway, pointing towards possible relief areas from a patch of abnormal ground condition.",
+      "imageAlt": "Teen girl golfer on the fairway assessing where to take relief from an abnormal course condition.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "medium",
+        "clothingTopColour": "orange",
+        "clothingBottomColour": "green",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-14.png",
+      "ruleNumber": "17",
+      "ruleName": "Taking Relief from Abnormal Course Conditions",
+      "group": "Taking Relief from Abnormal Course Conditions",
+      "title": "Relief Location Choices",
+      "question": "Your ball has stopped on a road. The nearest point of relief is in the rough, but you could stand partly on the road and drop onto the fairway. Where must you actually drop the ball?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "On the fairway, even if you are still partly standing on the road."
+        },
+        {
+          "id": "b",
+          "text": "In the rough, at the nearest place where there is no interference at all."
+        },
+        {
+          "id": "c",
+          "text": "Wherever your shot will be easier, as long as you are not closer to the hole."
+        },
+        {
+          "id": "d",
+          "text": "On the road, if that's the best spot for your next shot."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You must drop the ball at the nearest point of full relief, even if that means playing from the rough, not just where it is easier.",
+      "imagePrompt": "A teen boy golfer, right-handed, working out the nearest full relief spot from a road, with fairway and rough clearly shown.",
+      "imageAlt": "Teen boy checking for the nearest full relief from a road, fairway and rough visible.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "dark",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "green",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-14.png",
+      "ruleNumber": "17",
+      "ruleName": "Taking Relief from Abnormal Course Conditions",
+      "group": "Taking Relief from Abnormal Course Conditions",
+      "title": "What if the nearest point is in a bad lie?",
+      "question": "If the nearest point of complete relief is in thick rough, a bush, or on a steep slope, what are your options?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You can take relief and play from there, even if it's a difficult shot."
+        },
+        {
+          "id": "b",
+          "text": "You may ignore the rules and choose any spot you like."
+        },
+        {
+          "id": "c",
+          "text": "You can decide to play the ball as it lies without taking relief."
+        },
+        {
+          "id": "d",
+          "text": "You can move your ball to the green for an easier shot."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You can either take relief at the correct relief point, even if the lie is poor, or you may play the ball as it lies and not take relief.",
+      "imagePrompt": "A teen boy golfer, left-handed, looking at possible relief options from a difficult lie in thick rough next to the fairway.",
+      "imageAlt": "Teen boy considering whether to take relief in thick rough or play his ball as it lies.",
+      "sceneSpec": {
+        "setting": "rough",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "hybrid",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "black",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-14.png",
+      "ruleNumber": "17",
+      "ruleName": "Taking Relief from Abnormal Course Conditions",
+      "group": "Taking Relief from Abnormal Course Conditions",
+      "title": "No Play Zones in Relief Situations",
+      "question": "If your ball, stance or swing is in a no play zone, what must you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball as it lies and ignore the no play zone."
+        },
+        {
+          "id": "b",
+          "text": "Take free relief; you are not allowed to play the ball as it lies."
+        },
+        {
+          "id": "c",
+          "text": "Take a penalty stroke before moving the ball."
+        },
+        {
+          "id": "d",
+          "text": "Ask your group for permission to play from there."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You must take free relief if your ball, stance or swing is in a no play zone. Playing from there is not allowed under the rules.",
+      "imagePrompt": "A teen girl golfer, right-handed, preparing to drop a ball for free relief from a yellow-staked no play zone that is clearly next to the fairway.",
+      "imageAlt": "Teen girl taking relief from a marked no play zone next to the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "dropping_ball",
+        "clubInHand": "wedge",
+        "ballCount": 1,
+        "stakeColour": "yellow",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "dark",
+        "clothingTopColour": "black",
+        "clothingBottomColour": "navy",
+        "hat": false
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "017_001_Choosing_the_Correct_Relief_Point",
+    "017_002_Relief_Location_Choices",
+    "017_003_What_if_the_nearest_point_is_in_a_bad_lie",
+    "017_004_No_Play_Zones_in_Relief_Situations"
+  ],
+  "updatedAtUtc": "2026-04-24T20:44:29.448Z"
+}

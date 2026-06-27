@@ -1,0 +1,30 @@
+{
+  "id": "handling-setbacks",
+  "title": "Handling setbacks and plateaus",
+  "summary": "Supporting juniors when progress feels slow.",
+  "estimatedMinutes": 6,
+  "mandatoryFor": [],
+  "version": 1,
+  "pages": [
+    {
+      "id": "00-normal",
+      "title": "Setbacks are normal",
+      "file": "pages/00-normal.md"
+    },
+    {
+      "id": "01-comparison",
+      "title": "Avoid comparison",
+      "file": "pages/01-comparison.md"
+    },
+    {
+      "id": "02-support",
+      "title": "How parents can help",
+      "file": "pages/02-support.md"
+    },
+    {
+      "id": "03-confidence",
+      "title": "Rebuilding confidence",
+      "file": "pages/03-confidence.md"
+    }
+  ]
+}

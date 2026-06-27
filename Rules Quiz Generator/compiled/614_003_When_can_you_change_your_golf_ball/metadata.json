@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-01.png",
+  "ruleNumber": "R6/14",
+  "ruleName": "Substituting the ball",
+  "group": "Substituting the ball",
+  "type": "multi_select",
+  "imagePrompt": "A teenage boy golfer standing on the fairway, examining a badly cracked golf ball before replacing it with a new one.",
+  "imageAlt": "Teenage boy inspecting a damaged golf ball on the fairway.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "lifting_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "green",
+    "clothingBottomColour": "white",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 96,
+    "issues": [
+      "The scene meets all main requirements: one teenage girl golfer, right-handed, visibly examining one damaged golf ball, with a realistic iron, on a fairway.",
+      "The golf club is believable in size, grip, and proportion, with a single iron head.",
+      "The golfer is wearing a green top and white bottoms with no hat, matching the clothing spec.",
+      "Posture is natural and golf-appropriate.",
+      "The fairway is realistic and nothing extraneous (no stakes, water, bunker, etc.).",
+      "Apparent age and skin tone fit the prompt.",
+      "The golfer's hair and facial features are appropriate for a teenage girl.",
+      "Lighting and course background are consistent with the description."
+    ],
+    "repairPrompt": "No repair needed. All specifications are met in this illustration, including accurate depiction of a right-handed teenage girl golfer with a green top and white bottoms, holding a realistic iron, and examining one cracked golf ball on a fairway."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "When are you allowed to swap your golf ball for a new one?",
+      "question": "While you are playing a hole, when can you change your ball for a different one?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "If you cannot find your ball after looking for it"
+        },
+        {
+          "id": "b",
+          "text": "When you take a drop because of the rules (like dropping out of a puddle or long grass area)"
+        },
+        {
+          "id": "c",
+          "text": "If your ball just has a little scratch"
+        },
+        {
+          "id": "d",
+          "text": "If your ball has a big cut or crack in it"
+        },
+        {
+          "id": "e",
+          "text": "Any time you want, even during the hole"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "d"
+      ],
+      "correctAnswer": [
+        "a",
+        "b",
+        "d"
+      ],
+      "explanation": "You can change your ball if you cannot find it, if you are taking a drop because of a rule, or if your ball has a big cut or crack. You cannot switch your ball just because it has a small scratch or whenever you want.",
+      "vocabulary": [
+        {
+          "term": "Drop",
+          "simpleMeaning": "Dropping a ball from knee height to play after moving it for a rule reason."
+        },
+        {
+          "term": "Relief",
+          "simpleMeaning": "Getting to move your ball without penalty because of something like water or a rule problem."
+        },
+        {
+          "term": "Cut or crack",
+          "simpleMeaning": "A big mark or break in your golf ball that can change how it rolls."
+        }
+      ],
+      "teachingTip": "Ask children if they have ever found a damaged or lost ball, and discuss when it's fair to use a new one.",
+      "likelyMisconceptions": [
+        "Thinking you can always swap your ball for a new one for any reason.",
+        "Not realising a small scratch does not let you change your ball."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "When can you change your golf ball?",
+      "question": "On which occasions are you allowed to replace your ball with another one while playing a hole?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "If you can't find your original ball after searching"
+        },
+        {
+          "id": "b",
+          "text": "When taking relief under the Rules (such as from a penalty area or abnormal course condition)"
+        },
+        {
+          "id": "c",
+          "text": "If your ball only has a small scratch"
+        },
+        {
+          "id": "d",
+          "text": "If your ball has a significant cut or crack"
+        },
+        {
+          "id": "e",
+          "text": "Any time you feel like it, even during play of a hole"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "d"
+      ],
+      "correctAnswer": [
+        "a",
+        "b",
+        "d"
+      ],
+      "explanation": "You may substitute a new ball if your original is lost, when taking relief under the rules, or if it's severely damaged (like a big cut or crack). A minor scratch isn't enough, and you can't just switch at any moment."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "614_003_When_can_you_change_your_golf_ball",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:53.802Z"
+  }
+}

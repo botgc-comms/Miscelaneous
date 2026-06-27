@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "pageb-13.png",
+  "ruleNumber": "R11",
+  "ruleName": "Ball in motion accidentally hits ...",
+  "group": "Ball in motion accidentally hits ...",
+  "type": "multiple_choice",
+  "imagePrompt": "A teenage boy golfer on the fairway, looking surprised after his shot has deflected off his golf bag. He is preparing to play the ball as it lies.",
+  "imageAlt": "Teen boy golfer on fairway, golf ball has bounced off his bag, ready to play the ball as it lies.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "dark",
+    "clothingTopColour": "navy",
+    "clothingBottomColour": "orange",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [],
+    "repairPrompt": "No major repairs required. Minor suggestion: Ensure the emotion on the golfer's face does not appear overly cartoonish to keep the semi-realistic tone."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Ball hits your golf bag by accident",
+      "question": "You hit your ball and it bumps into your own golf bag. What do you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Add a penalty and hit again from the same place."
+        },
+        {
+          "id": "b",
+          "text": "Play the ball from where it stopped, no penalty."
+        },
+        {
+          "id": "c",
+          "text": "Pick up the ball and drop it close to the bag."
+        },
+        {
+          "id": "d",
+          "text": "Move your bag and hit the shot again."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If your ball hits your bag or anything you are carrying and it was an accident, you just play the ball from where it stops. You do not get a penalty.",
+      "vocabulary": [
+        {
+          "term": "Penalty",
+          "simpleMeaning": "Extra points added to your score for breaking a rule."
+        },
+        {
+          "term": "Play the ball from where it stops",
+          "simpleMeaning": "Hit the ball from the place it finishes after you hit it."
+        }
+      ],
+      "teachingTip": "Show what happens if the ball hits a bag or towel—let children see they just play from there. Ask them what to do and let them practise.",
+      "likelyMisconceptions": [
+        "Children may think they must always take a penalty if their ball hits their bag.",
+        "Some may try to drop the ball or hit again instead of just playing from where it stopped."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Ball hits player's own equipment",
+      "question": "If you hit a shot and your ball accidentally hits your own golf bag, what should you do under the Rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Add one penalty stroke and replay the shot."
+        },
+        {
+          "id": "b",
+          "text": "Play the ball from where it comes to rest, with no penalty."
+        },
+        {
+          "id": "c",
+          "text": "Pick up the ball and drop it as close as possible to the bag."
+        },
+        {
+          "id": "d",
+          "text": "Move your bag and replay the shot."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "According to the Rules, if your ball in motion accidentally hits your own equipment, you must play the ball as it lies without penalty."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "011_001_Ball_hits_players_own_equipment",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.575Z"
+  }
+}

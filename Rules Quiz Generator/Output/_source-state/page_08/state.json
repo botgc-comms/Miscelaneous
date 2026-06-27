@@ -1,0 +1,590 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-08.png",
+  "sourceImagePath": "Input\\page-08.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-08.png",
+      "ruleNumber": "R10",
+      "ruleName": "Advice and line of play",
+      "group": "Advice and line of play",
+      "title": "When can you discuss distances on the course?",
+      "question": "Your friend asks you if they can discuss the distance to the green, position of bunkers, and general rules with you before their shot. Is this allowed?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, discussing distances and general facts is allowed."
+        },
+        {
+          "id": "b",
+          "text": "No, any conversation is not allowed before a shot."
+        },
+        {
+          "id": "c",
+          "text": "Only if you are on the green."
+        },
+        {
+          "id": "d",
+          "text": "Only during a team competition."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "Discussing distances, locations of bunkers or penalty areas, and general facts is permitted.",
+      "imagePrompt": "Two teenagers on a fairway, one pointing in the distance while the other listens, with a golf course in the background.",
+      "imageAlt": "Two teenagers discuss distances on a golf course fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "light",
+        "clothingTopColour": "black",
+        "clothingBottomColour": "green",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-08.png",
+      "ruleNumber": "R10",
+      "ruleName": "Advice and line of play",
+      "group": "Advice and line of play",
+      "title": "Giving advice before a shot",
+      "question": "If a golfer asks, 'Which club should I use?' and someone answers, what happens?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Nothing, this is always allowed."
+        },
+        {
+          "id": "b",
+          "text": "Both players get 2 penalty strokes."
+        },
+        {
+          "id": "c",
+          "text": "The player asking or receiving advice gets 2 penalty strokes."
+        },
+        {
+          "id": "d",
+          "text": "Only the person giving advice gets a penalty stroke."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "A player asking for or giving advice before a shot will get 2 penalty strokes. The person who is given advice does not get penalised unless they asked for it.",
+      "imagePrompt": "A teenager asks another which club to use just before taking a shot on a golf course fairway.",
+      "imageAlt": "One teenager asking another for advice on club selection during a golf game.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "red",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-08.png",
+      "ruleNumber": "R18",
+      "ruleName": "Provisional/lost ball",
+      "group": "Provisional/lost ball",
+      "title": "How to play a provisional ball",
+      "question": "When should you play a provisional ball in case your original ball might be lost or out of bounds?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "After searching for 3 minutes."
+        },
+        {
+          "id": "b",
+          "text": "Immediately after the first shot, before walking forward, and announce it is provisional."
+        },
+        {
+          "id": "c",
+          "text": "Only if your ball is in a penalty area."
+        },
+        {
+          "id": "d",
+          "text": "After someone tells you to play another ball."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You must announce and play a provisional ball before moving forward if you think the original ball could be lost or out of bounds.",
+      "imagePrompt": "A teenager on a teeing area preparing to hit a second ball and calling out 'provisional' after hitting their first shot towards long grass.",
+      "imageAlt": "Teen golfer on the tee, playing a provisional ball towards rough.",
+      "sceneSpec": {
+        "setting": "teeing_area",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "replaying_shot",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "navy",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-08.png",
+      "ruleNumber": "R18",
+      "ruleName": "Provisional/lost ball",
+      "group": "Provisional/lost ball",
+      "title": "Can you play a provisional ball if your ball is in a penalty area?",
+      "question": "If your ball might have landed in a penalty area, are you allowed to play a provisional ball?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, you must always play a provisional ball."
+        },
+        {
+          "id": "b",
+          "text": "No, not if the ball is likely in a penalty area."
+        },
+        {
+          "id": "c",
+          "text": "Only if you lost your ball in long grass."
+        },
+        {
+          "id": "d",
+          "text": "Yes, but only after looking for 5 minutes."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You cannot play a provisional ball if your ball is thought to be in a penalty area.",
+      "imagePrompt": "A teen golfer standing near the edge of a water hazard, looking towards the penalty area marked with red stakes.",
+      "imageAlt": "Teenage golfer stands at the edge of a penalty area with water, unsure about playing a provisional ball.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "hybrid",
+        "ballCount": 1,
+        "stakeColour": "red",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "medium",
+        "clothingTopColour": "orange",
+        "clothingBottomColour": "grey",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-08.png",
+      "ruleNumber": "R5",
+      "ruleName": "Chipping and putting while waiting",
+      "group": "Chipping and putting while waiting",
+      "title": "Chipping and putting before your tee shot",
+      "question": "While waiting to tee off, can you chip and putt on or near the teeing area?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, you are allowed to."
+        },
+        {
+          "id": "b",
+          "text": "No, you must wait without hitting any shots."
+        },
+        {
+          "id": "c",
+          "text": "Only if the green is empty."
+        },
+        {
+          "id": "d",
+          "text": "Only if your coach says it’s OK."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "Players are allowed to practise chipping and putting on or near the teeing area while waiting to tee off.",
+      "imagePrompt": "A teenage girl chipping a golf ball near the teeing area while waiting for her turn.",
+      "imageAlt": "Teen golfer chips a ball near the teeing area alongside golf bags waiting to play.",
+      "sceneSpec": {
+        "setting": "teeing_area",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "wedge",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "light",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "red",
+        "hat": false
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-08.png",
+      "ruleNumber": "R10",
+      "ruleName": "Advice and line of play",
+      "group": "Advice and line of play",
+      "title": "When can you discuss distances on the course?",
+      "question": "Can players share information like distances to the green or the position of hazards with each other during a round?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, sharing information about distance or the layout of the course is allowed."
+        },
+        {
+          "id": "b",
+          "text": "No, any conversation about the course is not allowed."
+        },
+        {
+          "id": "c",
+          "text": "Only if both players are on the putting green."
+        },
+        {
+          "id": "d",
+          "text": "Only in team matches."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You are allowed to discuss distance, the position of bunkers or other course features, and general information with other players. This is not considered giving advice.",
+      "imagePrompt": "Two teenage boys stand together on the fairway, one pointing out towards the green while they talk about the distance. A well-kept golf course stretches ahead.",
+      "imageAlt": "Two teenage boys discuss distance to the green on a fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [
+          "crowds",
+          "caddies"
+        ],
+        "ethnicity": "mixed",
+        "skinTone": "light",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "red",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-08.png",
+      "ruleNumber": "R10",
+      "ruleName": "Advice and line of play",
+      "group": "Advice and line of play",
+      "title": "Giving advice before a shot",
+      "question": "If one golfer asks another, 'Which club should I use?' and gets an answer, what is the penalty?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Nothing, this is always allowed."
+        },
+        {
+          "id": "b",
+          "text": "Both the player asking and the one answering get 2 penalty strokes."
+        },
+        {
+          "id": "c",
+          "text": "The player who asks for or receives advice, and the one who gives it, each get 2 penalty strokes."
+        },
+        {
+          "id": "d",
+          "text": "Only the person giving advice gets a penalty."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "If a player asks for or gives advice about how to play a shot (such as club selection), both the player who asks/receives and the one giving advice get a two-stroke penalty in stroke play.",
+      "imagePrompt": "A teenage girl at her golf ball on the fairway turns to another player for advice, both discussing possible club choices, with golf bags in the background.",
+      "imageAlt": "Two teenage golfers, one asking the other for advice on club selection on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [
+          "caddies"
+        ],
+        "ethnicity": "mixed",
+        "skinTone": "light",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "white",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-08.png",
+      "ruleNumber": "R18",
+      "ruleName": "Provisional/lost ball",
+      "group": "Provisional/lost ball",
+      "title": "How and when to play a provisional ball",
+      "question": "If you think your ball might be lost outside a penalty area or out of bounds, what should you do before going forward to search?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Search first, then play a provisional ball after 3 minutes."
+        },
+        {
+          "id": "b",
+          "text": "Announce that you will play a provisional ball, then play it immediately before searching."
+        },
+        {
+          "id": "c",
+          "text": "Only play a provisional ball if the ball is in a penalty area."
+        },
+        {
+          "id": "d",
+          "text": "Play a provisional ball only if told to by another player."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You must announce and play your provisional ball before going forward to search for your original ball if you think it might be lost or out of bounds (not in a penalty area).",
+      "imagePrompt": "A left-handed teenage boy stands on the teeing area, preparing to play a second ball and calling out 'provisional' with his first shot having gone into trees.",
+      "imageAlt": "Teen golfer on the tee playing a provisional ball after the first shot went towards thick trees.",
+      "sceneSpec": {
+        "setting": "teeing_area",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "replaying_shot",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [
+          "crowds"
+        ],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "blue",
+        "clothingBottomColour": "purple",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-08.png",
+      "ruleNumber": "R18",
+      "ruleName": "Provisional/lost ball",
+      "group": "Provisional/lost ball",
+      "title": "Can you play a provisional ball if your ball is in a penalty area?",
+      "question": "If you think your ball might be in a penalty area (like a water hazard), can you play a provisional ball?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, you must always play a provisional ball."
+        },
+        {
+          "id": "b",
+          "text": "No, you are not allowed to play a provisional ball in this case."
+        },
+        {
+          "id": "c",
+          "text": "Only if your ball is in long grass."
+        },
+        {
+          "id": "d",
+          "text": "Yes, but only after searching for 5 minutes."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "A provisional ball cannot be played if it is known or virtually certain your ball is in a penalty area. Instead, you must follow the penalty area rules.",
+      "imagePrompt": "A teenage boy stands at the edge of a water hazard marked by red stakes, looking uncertainly towards the water.",
+      "imageAlt": "Teen golfer stands at the edge of a penalty area, wondering about playing a provisional ball.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "hybrid",
+        "ballCount": 1,
+        "stakeColour": "red",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [
+          "spectators"
+        ],
+        "ethnicity": "asian",
+        "skinTone": "medium",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "orange",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-08.png",
+      "ruleNumber": "R5",
+      "ruleName": "Chipping and putting while waiting",
+      "group": "Chipping and putting while waiting",
+      "title": "Chipping and putting before your tee shot",
+      "question": "Is it allowed to chip or putt on or near the teeing area while waiting for your turn to play?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, you are allowed to practise chipping or putting there."
+        },
+        {
+          "id": "b",
+          "text": "No, you must wait without playing any shots."
+        },
+        {
+          "id": "c",
+          "text": "Only if no one else is waiting to play."
+        },
+        {
+          "id": "d",
+          "text": "Only if your coach is present."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You are allowed to practise chipping or putting on or near the teeing area while waiting to tee off, provided it doesn't delay play.",
+      "imagePrompt": "A left-handed teenage boy practises a chip shot with a wedge on the grass next to the tee markers, waiting for his turn.",
+      "imageAlt": "Teenage boy chipping the ball near the tee markers before starting his round.",
+      "sceneSpec": {
+        "setting": "teeing_area",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "wedge",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [
+          "other players hitting",
+          "caddies"
+        ],
+        "ethnicity": "mixed",
+        "skinTone": "dark",
+        "clothingTopColour": "blue",
+        "clothingBottomColour": "red",
+        "hat": true
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "010_001_When_can_you_discuss_distances_on_the_course",
+    "010_002_Giving_advice_before_a_shot",
+    "018_003_How_and_when_to_play_a_provisional_ball",
+    "018_004_Can_you_play_a_provisional_ball_if_your_ball_is_in_a_penalty_area",
+    "005_005_Chipping_and_putting_before_your_tee_shot"
+  ],
+  "updatedAtUtc": "2026-04-24T19:54:49.136Z"
+}

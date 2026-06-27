@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\018_004_Provisional_ball_and_penalty_areas\\metadata.json",
+  "sourceImageName": "pageb-01.png",
+  "ruleNumber": "18",
+  "ruleName": "Playing a provisional ball",
+  "title": "Provisional ball and penalty areas",
+  "question": "If your ball goes into a penalty area, such as a pond marked with red stakes, can you decide to play a provisional ball?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, you can always play a provisional ball in any situation."
+    },
+    {
+      "id": "b",
+      "text": "No, you cannot play a provisional ball if your ball might be in a penalty area."
+    },
+    {
+      "id": "c",
+      "text": "Yes, but only if your ball is not found."
+    },
+    {
+      "id": "d",
+      "text": "Only if you are playing in a team competition."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You are not allowed to play a provisional ball when your ball is likely in a penalty area. Instead, you must use the penalty relief options.",
+  "juniorVersion": {
+    "title": "Hitting a Second Ball Near Water",
+    "question": "If your ball goes into the pond or a place marked with red sticks, can you hit a second ball just in case (a provisional ball)?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Yes, you can always hit a second ball anywhere."
+      },
+      {
+        "id": "b",
+        "text": "No, you cannot hit a second ball if your ball might be in a pond or by red sticks."
+      },
+      {
+        "id": "c",
+        "text": "Yes, but only if you cannot find your ball."
+      },
+      {
+        "id": "d",
+        "text": "Only if you are playing with a team."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "You cannot hit a provisional ball if you think your ball is in a pond or marked by red sticks. For these places, you must follow special rules to play your next shot.",
+    "vocabulary": [
+      {
+        "term": "Provisional ball",
+        "simpleMeaning": "A second ball you play just in case your first ball is lost or out of bounds."
+      },
+      {
+        "term": "Penalty area",
+        "simpleMeaning": "Parts of the course like ponds, rivers, or places marked with red or yellow sticks."
+      }
+    ],
+    "teachingTip": "Take kids to a pond or area marked with red sticks and act out what happens when a ball goes in. Show that you do not play a provisional ball, but follow relief procedures.",
+    "likelyMisconceptions": [
+      "Kids might think they can always play a provisional ball if they cannot see their ball.",
+      "Kids might not know that water marked with red or yellow sticks has special rules."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:44.883Z",
+  "model": "gpt-4.1"
+}

@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "pageb-04.png",
+  "ruleNumber": "R13",
+  "ruleName": "Green and fringe",
+  "group": "Green and fringe",
+  "type": "multiple_choice",
+  "imagePrompt": "A golf ball sits on the fringe close to the edge of the putting green with a flagstick in the hole. A teen girl golfer stands nearby looking at the ball.",
+  "imageAlt": "Ball on the fringe near putting green, with teen girl golfer.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "asian",
+    "skinTone": "medium",
+    "clothingTopColour": "red",
+    "clothingBottomColour": "blue",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": false,
+    "score": 65,
+    "issues": [
+      "Golfer is depicted as a teen girl instead of a boy (sceneSpec requires a teen boy).",
+      "Skin tone and facial features do not clearly represent Asian ethnicity with medium skin tone as required.",
+      "Otherwise, all major golf elements are correct: there is exactly one golf ball on the fringe, the putter has a realistic head, proportions are sound, posture is plausible, and clothing colours match red top, blue bottoms, and cap."
+    ],
+    "repairPrompt": "Change the golfer to a teenage Asian boy with medium skin tone while keeping the same clothing (red top, blue trousers or shorts), cap, and posture. Ensure the golfer's facial features, hairstyle, and build are clearly masculine and aligned with the sceneSpec. Maintain the current golf course, ball, putter, and pose."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Is the grass around the green part of the green?",
+      "question": "If your ball stops on the short grass right next to the green, is that counted as being on the putting green in golf?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, the grass next to the green counts as the green"
+        },
+        {
+          "id": "b",
+          "text": "No, only the putting green itself counts"
+        },
+        {
+          "id": "c",
+          "text": "Only if part of your ball sits on both the green and the grass"
+        },
+        {
+          "id": "d",
+          "text": "It matters where you stand with your feet"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "The short grass next to the green is called the 'fringe.' The rules say only the putting green counts as the green, not the fringe, even if it’s very close.",
+      "vocabulary": [
+        {
+          "term": "Fringe",
+          "simpleMeaning": "The short grass right next to the putting green, but not part of the green."
+        },
+        {
+          "term": "Putting green",
+          "simpleMeaning": "The smooth, flat area where you try to putt the ball in the hole."
+        }
+      ],
+      "teachingTip": "Draw a picture showing the putting green and the fringe to help kids see the difference.",
+      "likelyMisconceptions": [
+        "Some kids might think the fringe is the same as the green because it is so close.",
+        "Kids may think where their feet are changes the rule."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Is the fringe part of the green?",
+      "question": "If your ball comes to rest on the fringe just beside the green, is it treated as being on the putting green according to the rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, the fringe is part of the green"
+        },
+        {
+          "id": "b",
+          "text": "No, only the green itself counts"
+        },
+        {
+          "id": "c",
+          "text": "Only if any part of your ball touches the green and the fringe at the same time"
+        },
+        {
+          "id": "d",
+          "text": "It depends where your feet are standing"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "According to the rules, the fringe is not part of the putting green, even if it is right next to it. Only the area marked as the putting green counts."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "013_001_Is_the_fringe_part_of_the_green",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.681Z"
+  }
+}

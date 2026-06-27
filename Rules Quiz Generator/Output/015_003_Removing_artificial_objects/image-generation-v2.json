@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\015_003_Removing_artificial_objects\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:37:16.388Z",
+  "title": "Removing artificial objects",
+  "ruleNumber": "R15",
+  "ruleName": "Movable obstructions",
+  "durationSeconds": 179.282
+}

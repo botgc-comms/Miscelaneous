@@ -1,0 +1,348 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-26.png",
+  "sourceImagePath": "Input\\page-26.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-26.png",
+      "ruleNumber": "17",
+      "ruleName": "Penalty Areas",
+      "group": "Penalty Areas",
+      "title": "Options After Hitting Into a Red Penalty Area",
+      "question": "Your ball lands in a red penalty area. Which of these is an extra option you have (compared to a yellow penalty area)?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball as it lies, if possible."
+        },
+        {
+          "id": "b",
+          "text": "Take a drop within two club-lengths of the entry point, for one penalty stroke."
+        },
+        {
+          "id": "c",
+          "text": "Replay from the original spot only."
+        },
+        {
+          "id": "d",
+          "text": "Drop anywhere on the course you like, for one penalty stroke."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "With a red penalty area, you can drop within two club-lengths of where the ball last crossed the edge, with a penalty stroke. This is not allowed in a yellow penalty area.",
+      "imagePrompt": "A young golfer standing near the edge of a red-staked penalty area, holding a ball and preparing to drop it within two club-lengths of the spot where the ball entered the water.",
+      "imageAlt": "Golfer about to drop a ball next to a red-staked penalty area by a stream.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "dropping_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "red",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "dark",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "black",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-26.png",
+      "ruleNumber": "17",
+      "ruleName": "Penalty Areas",
+      "group": "Penalty Areas",
+      "title": "What Should You Do After Losing a Ball in a Red Penalty Area?",
+      "question": "If your ball goes into a red penalty area and you can't find it, what are your basic options?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Replay the shot from your previous spot with a penalty stroke."
+        },
+        {
+          "id": "b",
+          "text": "Drop a ball within two club-lengths of where it crossed into the penalty area, with a penalty stroke."
+        },
+        {
+          "id": "c",
+          "text": "Drop a ball anywhere you want with no penalty."
+        },
+        {
+          "id": "d",
+          "text": "Take a drop on a straight line back from the hole through the entry point, with a penalty stroke."
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "d"
+      ],
+      "explanation": "You can replay the shot, drop within two club-lengths of the entry point, or take a drop on the line back from the hole. All options cost one penalty stroke.",
+      "imagePrompt": "A teen golfer near a red-staked penalty area considering their options after a ball went into the water, looking at possible drop areas.",
+      "imageAlt": "Golfer looking at drop options beside a red penalty area.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "red",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "light",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "grey",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-26.png",
+      "ruleNumber": "17",
+      "ruleName": "Penalty Areas",
+      "group": "Penalty Areas",
+      "title": "Knowing When Local Rules Offer Extra Options",
+      "question": "True or false? Local Rules at some courses may give you extra dropping options in penalty areas, such as a special dropping zone.",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "True"
+        },
+        {
+          "id": "b",
+          "text": "False"
+        },
+        {
+          "id": "c",
+          "text": "Only if you ask the referee"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "Local Rules can allow extra dropping options, such as a special dropping zone, beyond the standard rules.",
+      "imagePrompt": "A girl golfer reading a notice board with Local Rules near a penalty area with red stakes.",
+      "imageAlt": "Golfer reading Local Rules near a red penalty area.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "red",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "white",
+        "hat": true
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-26.png",
+      "ruleNumber": "17",
+      "ruleName": "Penalty Areas",
+      "group": "Penalty Areas",
+      "title": "Options After Hitting Into a Red Penalty Area",
+      "question": "Your ball lands in a red penalty area. Which of the following relief options is available for a red penalty area but not for a yellow penalty area?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball as it lies, if possible."
+        },
+        {
+          "id": "b",
+          "text": "Drop a ball within two club-lengths of where it last crossed into the area, for one penalty stroke."
+        },
+        {
+          "id": "c",
+          "text": "Replay the shot from your previous spot, for one penalty stroke."
+        },
+        {
+          "id": "d",
+          "text": "Drop anywhere on the course for one penalty stroke."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "Only red penalty areas allow the option to drop a ball within two club-lengths of where it last crossed into the area, with a one-stroke penalty. This option is not allowed for yellow penalty areas.",
+      "imagePrompt": "A left-handed teen boy about to drop a ball within two club-lengths of the edge of a red-staked penalty area, with water clearly visible and red stakes marking the edge.",
+      "imageAlt": "Left-handed teen golfer preparing to drop a ball by a red-staked penalty area next to water.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "dropping_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "red",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "medium",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "purple",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-26.png",
+      "ruleNumber": "17",
+      "ruleName": "Penalty Areas",
+      "group": "Penalty Areas",
+      "title": "What Should You Do After Losing a Ball in a Red Penalty Area?",
+      "question": "If your ball goes into a red penalty area and you can't retrieve it, which relief options are allowed under the Rules (each for one penalty stroke)? Select all that apply.",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Replay your shot from the previous spot."
+        },
+        {
+          "id": "b",
+          "text": "Drop a ball within two club-lengths of the point where it crossed into the penalty area."
+        },
+        {
+          "id": "c",
+          "text": "Drop a ball anywhere you like on the course, with no penalty."
+        },
+        {
+          "id": "d",
+          "text": "Drop a ball behind the penalty area, keeping the entry point between you and the hole."
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "d"
+      ],
+      "explanation": "If your ball is lost in a red penalty area, you may: replay the shot, drop within two club-lengths of the entry point, or drop behind the penalty area on a straight line from the hole—each for one penalty stroke.",
+      "imagePrompt": "A left-handed teen girl golfer standing at the edge of a red-staked penalty area, examining possible places to drop after her ball went into the water.",
+      "imageAlt": "Teen girl golfer at a red penalty area considering her drop options after losing a ball.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "red",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "black",
+        "clothingBottomColour": "purple",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-26.png",
+      "ruleNumber": "17",
+      "ruleName": "Penalty Areas",
+      "group": "Penalty Areas",
+      "title": "Knowing When Local Rules Offer Extra Options",
+      "question": "True or false? Local Rules at some golf courses can give you extra options for dropping in penalty areas, like using a special dropping zone.",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "True"
+        },
+        {
+          "id": "b",
+          "text": "False"
+        },
+        {
+          "id": "c",
+          "text": "Only if you ask the referee"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "Local Rules may allow additional relief options, such as using special dropping zones, beyond the standard penalty area rules.",
+      "imagePrompt": "A left-handed teen girl reading Local Rules on a signboard near the edge of a red-staked penalty area, with trees and water visible.",
+      "imageAlt": "Teen golfer reading Local Rules sign near a red penalty area.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "red",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "dark",
+        "clothingTopColour": "black",
+        "clothingBottomColour": "red",
+        "hat": false
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "017_001_Options_After_Hitting_Into_a_Red_Penalty_Area",
+    "017_002_What_Should_You_Do_After_Losing_a_Ball_in_a_Red_Penalty_Area",
+    "017_003_Knowing_When_Local_Rules_Offer_Extra_Options"
+  ],
+  "updatedAtUtc": "2026-04-24T22:10:26.443Z"
+}

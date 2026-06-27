@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\013_001_Testing_the_Green\\metadata.json",
+  "sourceImageName": "pageb-07.png",
+  "ruleNumber": "R13",
+  "ruleName": "Putting Green",
+  "title": "Testing the Green",
+  "question": "Before putting, are you allowed to test the putting green by rolling a ball or making the surface rough with your hand?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, both actions are allowed"
+    },
+    {
+      "id": "b",
+      "text": "No, neither action is allowed"
+    },
+    {
+      "id": "c",
+      "text": "Only rolling a ball is allowed"
+    },
+    {
+      "id": "d",
+      "text": "Only making the surface rough is allowed"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You are not allowed to test the green by rolling a ball or roughening the surface. Doing so results in a two-stroke penalty.",
+  "juniorVersion": {
+    "title": "Can You Test the Putting Green?",
+    "question": "Before you putt, can you check the green by rolling a ball or rubbing your hand on the grass to make it rough?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Yes, you can do both things"
+      },
+      {
+        "id": "b",
+        "text": "No, you can't do either thing"
+      },
+      {
+        "id": "c",
+        "text": "You can only roll a ball"
+      },
+      {
+        "id": "d",
+        "text": "You can only rub the grass"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "You are not allowed to test the green by rolling a ball on it or rubbing your hand on the grass to see how it feels. These things are not allowed before you putt.",
+    "vocabulary": [
+      {
+        "term": "putting green",
+        "simpleMeaning": "The smooth, short grass around the hole where you use your putter to try to get the ball in."
+      },
+      {
+        "term": "putt",
+        "simpleMeaning": "A soft hit (or stroke) on the green to try to get the ball in the hole."
+      }
+    ],
+    "teachingTip": "Encourage children to look at the green to read it, but tell them not to touch it or roll a ball to test it before they putt.",
+    "likelyMisconceptions": [
+      "Kids may think it is OK to roll a ball or touch the green to feel how fast or rough it is.",
+      "Kids may believe touching with a hand is not as bad as rolling a ball."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:27.151Z",
+  "model": "gpt-4.1"
+}

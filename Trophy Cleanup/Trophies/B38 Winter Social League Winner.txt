@@ -1,0 +1,5 @@
+{
+  "text": ["George Thornton", "Social Cup"],
+  "allowText": true,
+  "notes": "inscription on the cup. the base contains the names and dates of past winners."
+}

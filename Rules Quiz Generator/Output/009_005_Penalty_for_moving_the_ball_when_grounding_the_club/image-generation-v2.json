@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\009_005_Penalty_for_moving_the_ball_when_grounding_the_club\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:06:58.793Z",
+  "title": "Penalty for moving the ball when grounding the club",
+  "ruleNumber": "R9",
+  "ruleName": "Ball moved when grounding the club",
+  "durationSeconds": 180.115
+}

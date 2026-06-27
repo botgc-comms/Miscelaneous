@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\014_003_When_must_a_ball_be_dropped_again\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:34:05.873Z",
+  "title": "When must a ball be dropped again?",
+  "ruleNumber": "14",
+  "ruleName": "Dropping and re-dropping",
+  "durationSeconds": 190.26
+}

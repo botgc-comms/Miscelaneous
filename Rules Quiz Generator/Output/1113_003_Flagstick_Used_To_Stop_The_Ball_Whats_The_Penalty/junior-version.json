@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\1113_003_Flagstick_Used_To_Stop_The_Ball_Whats_The_Penalty\\metadata.json",
+  "sourceImageName": "pageb-09.png",
+  "ruleNumber": "R11/13",
+  "ruleName": "Ball hits the flagstick or the person tending it",
+  "title": "Flagstick Used To Stop The Ball – What's The Penalty?",
+  "question": "If the flagstick is deliberately placed behind the hole to stop your ball, and your ball hits it, what is the ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No penalty, play as it lies"
+    },
+    {
+      "id": "b",
+      "text": "Two penalty strokes and you must replay the stroke"
+    },
+    {
+      "id": "c",
+      "text": "Move the flagstick and keep playing"
+    },
+    {
+      "id": "d",
+      "text": "Add one penalty stroke and continue"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If someone sets the flagstick behind the hole on purpose to stop the ball and your ball hits it, you get a two stroke penalty and must replay the shot, as the previous stroke does not count.",
+  "juniorVersion": {
+    "title": "Putting the Flagstick Behind the Hole On Purpose",
+    "question": "If someone puts the flagstick behind the hole to stop your ball and your ball hits it, what happens?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "No penalty, play from where your ball stopped"
+      },
+      {
+        "id": "b",
+        "text": "You get 2 penalty shots and you must hit again from the same place"
+      },
+      {
+        "id": "c",
+        "text": "Just move the flagstick and keep going"
+      },
+      {
+        "id": "d",
+        "text": "Add one penalty shot and keep playing"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If someone puts the flagstick behind the hole to try to stop your ball, and your ball hits it, you must add 2 penalty shots and play your shot again. Your first shot does not count.",
+    "vocabulary": [
+      {
+        "term": "flagstick",
+        "simpleMeaning": "The stick with a flag that shows where the hole is on the green."
+      },
+      {
+        "term": "penalty shot",
+        "simpleMeaning": "Extra shots added to your score if you break a rule."
+      }
+    ],
+    "teachingTip": "Remind children that putting or holding the flagstick anywhere to stop a moving ball is not allowed. The flag can be in or taken out, but it can't be used to block the ball on purpose.",
+    "likelyMisconceptions": [
+      "Some kids may think it's okay to use the flagstick to help stop the ball.",
+      "They may not know you must replay the shot, not just take a penalty."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:28:00.817Z",
+  "model": "gpt-4.1"
+}

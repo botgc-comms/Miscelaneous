@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-29.png",
+  "ruleNumber": "R6",
+  "ruleName": "Penalty area – Wrong ball",
+  "group": "Penalty area",
+  "title": "Penalty for hitting the wrong ball in a penalty area",
+  "question": "If you play the wrong ball from a penalty area, what penalty do you get?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "There is no penalty, just play the correct ball"
+    },
+    {
+      "id": "b",
+      "text": "1-stroke penalty and replay the shot"
+    },
+    {
+      "id": "c",
+      "text": "2-stroke penalty and you must play the correct ball"
+    },
+    {
+      "id": "d",
+      "text": "You are disqualified from the hole"
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "Hitting a wrong ball from a penalty area means you get a two-stroke penalty and must play the correct ball.",
+  "imagePrompt": "A teenage girl golfer mistakenly plays a golf ball that is not hers in a red-staked penalty area next to a blue stream.",
+  "imageAlt": "Teen girl golfer in penalty area by water accidentally plays wrong ball",
+  "sceneSpec": {
+    "setting": "penalty_area_edge",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "replaying_shot",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "red",
+    "waterVisible": true,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "yellow",
+    "clothingBottomColour": "purple",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The only very minor issue is that the girl does not appear fully left-handed in her posture, as the club position could be interpreted as right-handed."
+    ],
+    "repairPrompt": "Ensure the teenage girl golfer is clearly depicted with a left-handed grip and stance, so her posture and club orientation are obviously left-handed."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\018_003_What_if_your_original_ball_is_out_of_bounds_or_not_found\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:02:31.369Z",
+  "title": "What if your original ball is out of bounds or not found?",
+  "ruleNumber": "R18",
+  "ruleName": "Provisional Ball",
+  "durationSeconds": 180.092
+}

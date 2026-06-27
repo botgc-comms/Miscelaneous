@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\914_001_What_to_do_if_your_ball_is_moved_by_an_animal\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:24:50.421Z",
+  "title": "What to do if your ball is moved by an animal",
+  "ruleNumber": "R9/14",
+  "ruleName": "Ball at rest moved by an outside influence",
+  "durationSeconds": 362.943
+}

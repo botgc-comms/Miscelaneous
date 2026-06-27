@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-26.png",
+  "ruleNumber": "17",
+  "ruleName": "Penalty Areas",
+  "group": "Penalty Areas",
+  "title": "What Should You Do After Losing a Ball in a Red Penalty Area?",
+  "question": "If your ball goes into a red penalty area and you can't retrieve it, which relief options are allowed under the Rules (each for one penalty stroke)? Select all that apply.",
+  "type": "multi_select",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Replay your shot from the previous spot."
+    },
+    {
+      "id": "b",
+      "text": "Drop a ball within two club-lengths of the point where it crossed into the penalty area."
+    },
+    {
+      "id": "c",
+      "text": "Drop a ball anywhere you like on the course, with no penalty."
+    },
+    {
+      "id": "d",
+      "text": "Drop a ball behind the penalty area, keeping the entry point between you and the hole."
+    }
+  ],
+  "correctAnswer": [
+    "a",
+    "b",
+    "d"
+  ],
+  "correctAnswers": [
+    "a",
+    "b",
+    "d"
+  ],
+  "explanation": "If your ball is lost in a red penalty area, you may: replay the shot, drop within two club-lengths of the entry point, or drop behind the penalty area on a straight line from the hole—each for one penalty stroke.",
+  "imagePrompt": "A left-handed teen girl golfer standing at the edge of a red-staked penalty area, examining possible places to drop after her ball went into the water.",
+  "imageAlt": "Teen girl golfer at a red penalty area considering her drop options after losing a ball.",
+  "sceneSpec": {
+    "setting": "penalty_area_edge",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "red",
+    "waterVisible": true,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "dark",
+    "clothingTopColour": "black",
+    "clothingBottomColour": "purple",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 96,
+    "issues": [
+      "The style sits slightly closer to photoreal than the requested 75% illustration, but remains within the acceptable range.",
+      "The golfer's hands are positioned correctly for a right-handed grip, though her stance is very neutral and could be made a bit more clearly right-handed for absolute clarity for beginners."
+    ],
+    "repairPrompt": "Clarify the golfer's right-handed stance by angling her feet and body more obviously for a right-handed player and ensure the illustration remains clearly stylized at about 75% between cartoon and photo, not photoreal."
+  }
+}

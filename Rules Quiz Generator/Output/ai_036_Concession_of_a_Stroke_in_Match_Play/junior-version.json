@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_036_Concession_of_a_Stroke_in_Match_Play\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "3.2b",
+  "ruleName": "Concessions",
+  "title": "Concession of a Stroke in Match Play",
+  "question": "In a match, after your opponent tells you, \"That's good,\" to concede your next putt, you decide to putt anyway, but you miss. What is the correct ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "The missed putt counts, so you must hole out."
+    },
+    {
+      "id": "b",
+      "text": "You lose the hole because you played after the concession."
+    },
+    {
+      "id": "c",
+      "text": "The hole was already over. Your opponent's concession cannot be declined or withdrawn, so your next stroke does not count."
+    },
+    {
+      "id": "d",
+      "text": "You may choose whether to accept the concession after seeing whether the putt goes in."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "In match play, when your opponent concedes your next stroke, a hole or the match, the concession is immediately effective and cannot be refused or withdrawn. Any stroke played after the concession is irrelevant and does not count for the match. (Rule 3.2b)",
+  "juniorVersion": {
+    "title": "When Someone Says Your Next Putt is Good",
+    "question": "You are playing a match. Your friend says, \"That putt is good,\" so you do not have to hit it. But you decide to try the putt anyway and you miss. What happens next?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Your miss counts, so you have to finish putting."
+      },
+      {
+        "id": "b",
+        "text": "You lose the hole because you tried after your friend said it was good."
+      },
+      {
+        "id": "c",
+        "text": "The hole is already finished! Your friend's \"good\" means you don't need to putt, so your try doesn't count."
+      },
+      {
+        "id": "d",
+        "text": "You can wait to see if you make it and then decide if you want to take the 'good'."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "If your friend says your putt is \"good,\" the hole is finished for you. You do not need to putt, and if you do, it does not matter if you miss or make it. Your score stays the same.",
+    "vocabulary": [
+      {
+        "term": "Concede",
+        "simpleMeaning": "When your friend says you do not have to finish putting, and you can count the next putt as if you got it in."
+      },
+      {
+        "term": "Match Play",
+        "simpleMeaning": "A type of golf game where you play against another person, and see who wins each hole."
+      }
+    ],
+    "teachingTip": "Let children practise what happens when someone says a putt is ‘good’ by role-playing. Remind them they never have to hit the ball after a putt is given.",
+    "likelyMisconceptions": [
+      "Children may think they can still try the putt after a friend says it is good and the score might change.",
+      "Children might think they can change their mind if they see the outcome of their own putt."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:16:38.401Z",
+  "model": "gpt-4.1"
+}

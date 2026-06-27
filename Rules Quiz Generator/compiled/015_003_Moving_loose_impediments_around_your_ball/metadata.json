@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-12.png",
+  "ruleNumber": "Def./R15",
+  "ruleName": "Loose impediments",
+  "group": "Loose impediments",
+  "type": "multiple_choice",
+  "imagePrompt": "A teenage boy gently picks up a twig and a small stone from near his ball in the rough.",
+  "imageAlt": "Boy golfer removing a twig by his golf ball in the rough.",
+  "sceneSpec": {
+    "setting": "rough",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "dark",
+    "clothingTopColour": "white",
+    "clothingBottomColour": "blue",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 95,
+    "issues": [
+      "Handedness is unclear: the illustration does not clearly depict the golfer as left-handed, although the club is correctly present and realistic.",
+      "The golfer does appear feminine and matches ethnicity and dress requirements closely. All other core golf details are strong."
+    ],
+    "repairPrompt": "Ensure the teenage girl is depicted using a left-handed golf stance or grip (even if just resting the club), with clear body language and club orientation that shows left-handedness. Keep all other elements unchanged."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Moving twigs and stones near your ball",
+      "question": "There are twigs or small stones next to your ball. What can you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You can move them, but if your ball rolls or moves, you put it back and add one shot to your score."
+        },
+        {
+          "id": "b",
+          "text": "You can move them, and if your ball moves, just play it from where it stops."
+        },
+        {
+          "id": "c",
+          "text": "You are not allowed to move twigs or stones near your ball."
+        },
+        {
+          "id": "d",
+          "text": "You have to ask someone like a referee before you move twigs or stones."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "You can move things like twigs or stones near your ball. But if your ball moves while you are doing this, you have to put it back and add one shot to your score.",
+      "vocabulary": [
+        {
+          "term": "Loose impediments",
+          "simpleMeaning": "These are small things like twigs, pebbles, leaves, or stones you find on the course that are not fixed to the ground."
+        }
+      ],
+      "teachingTip": "Let children practise gently moving twigs and stones near a ball to see how careful they must be not to move the ball.",
+      "likelyMisconceptions": [
+        "Children may think they do not have to put the ball back if it moves.",
+        "They might forget to add a penalty if the ball moves."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Moving loose impediments around your ball",
+      "question": "If there are loose impediments (like twigs or stones) next to your ball, what does the rule allow you to do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You can remove them, but if the ball moves, you must replace it and take a one-stroke penalty."
+        },
+        {
+          "id": "b",
+          "text": "You can remove them, and if your ball moves, play from wherever it ends up."
+        },
+        {
+          "id": "c",
+          "text": "You are not allowed to remove loose impediments near your ball."
+        },
+        {
+          "id": "d",
+          "text": "You must ask for a referee's permission before moving loose impediments."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "You can remove loose impediments, but if your ball moves in the process, it must be replaced and you receive a one-stroke penalty."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "015_003_Moving_loose_impediments_around_your_ball",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.867Z"
+  }
+}

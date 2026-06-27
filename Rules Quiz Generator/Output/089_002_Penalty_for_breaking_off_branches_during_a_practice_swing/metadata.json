@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-10.png",
+  "ruleNumber": "R8/9",
+  "ruleName": "Do not break anything off or bend anything out of the way",
+  "group": "Do not break anything off or bend anything out of the way",
+  "title": "Penalty for breaking off branches during a practice swing",
+  "question": "If you break a small branch that helps clear your shot while making a practice swing, what penalty do you get?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "There is no penalty."
+    },
+    {
+      "id": "b",
+      "text": "You get 1 penalty stroke."
+    },
+    {
+      "id": "c",
+      "text": "You get 2 penalty strokes."
+    },
+    {
+      "id": "d",
+      "text": "You replay your shot."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "Breaking branches or anything growing or fixed to improve your shot, including during a practice swing, results in a two stroke penalty.",
+  "imagePrompt": "A teenage boy golfer in the rough, next to a bush, finishing a practice swing with a snapped twig on the ground.",
+  "imageAlt": "Teen boy golfer beside golf ball and broken twig on grass after a practice swing next to a bush.",
+  "sceneSpec": {
+    "setting": "rough",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "navy",
+    "clothingBottomColour": "orange",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [],
+    "repairPrompt": "No changes needed; the image matches the prompt and scene specification well."
+  }
+}

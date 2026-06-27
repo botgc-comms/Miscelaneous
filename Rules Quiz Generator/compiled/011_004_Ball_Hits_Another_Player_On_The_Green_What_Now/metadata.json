@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "pageb-09.png",
+  "ruleNumber": "R11",
+  "ruleName": "Ball hits another player or an outside influence",
+  "group": "Ball hits another player or an outside influence",
+  "type": "multiple_choice",
+  "imagePrompt": "A teen boy left-handed golfer watches as his putted ball hits another player standing on the green during play.",
+  "imageAlt": "A golf ball striking a player on the green after a putt, observed by a teenage left-handed golfer.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "replaying_shot",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "medium",
+    "clothingTopColour": "green",
+    "clothingBottomColour": "yellow",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The prompt requests to show the moment the ball hits another player on the green, but the image depicts the golfer about to replay the stroke, not the ball hitting another player.",
+      "Other player on the green is present but not interacting with the ball."
+    ],
+    "repairPrompt": "Depict the moment when the golf ball, after being putted, strikes another player who is also on the green. Show the second player visibly reacting to the ball making contact with them, to clearly illustrate the rules situation. Retain all other original requirements."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What Happens If Your Ball Hits Someone On The Green?",
+      "question": "You putt your ball on the green and it accidentally hits another player who is also on the green. What do you need to do next?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball from where it stopped"
+        },
+        {
+          "id": "b",
+          "text": "Take your putt again with no penalty"
+        },
+        {
+          "id": "c",
+          "text": "Add a penalty stroke and keep playing"
+        },
+        {
+          "id": "d",
+          "text": "Move your ball to the nearest spot"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If your ball hits another player on the green, you get to take your putt again. You don’t get a penalty.",
+      "vocabulary": [
+        {
+          "term": "Green",
+          "simpleMeaning": "The smooth, grassy area where you try to putt the ball into the hole."
+        },
+        {
+          "term": "Putt",
+          "simpleMeaning": "A soft shot on the green to roll the ball toward the hole."
+        }
+      ],
+      "teachingTip": "Ask children to pretend to putt and imagine their ball hits a friend’s shoe on the green. Talk about why the ball needs to be replayed instead of left where it stopped.",
+      "likelyMisconceptions": [
+        "Children may think they have to play from where the ball ends up, like in most places on the course.",
+        "They may think they get a penalty even if it wasn't on purpose."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Ball Hits Another Player On The Green – What Now?",
+      "question": "You putt from the green and your ball accidentally strikes another player who is also on the green. What must you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball from where it comes to rest"
+        },
+        {
+          "id": "b",
+          "text": "Replay the stroke with no penalty"
+        },
+        {
+          "id": "c",
+          "text": "Add a penalty stroke and play on"
+        },
+        {
+          "id": "d",
+          "text": "Move your ball to the nearest spot"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If your ball accidentally hits another player on the putting green, you must replay the stroke and there is no penalty."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "011_004_Ball_Hits_Another_Player_On_The_Green_What_Now",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v4.png",
+    "promptFileName": "final-prompt-v4.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.620Z"
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-21.png",
+  "ruleNumber": "R16",
+  "ruleName": "Abnormal course conditions",
+  "group": "Abnormal course conditions",
+  "title": "Animal holes and relief",
+  "question": "Which of these situations would allow you to take relief as it counts as an animal hole under the Rules?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "A hole dug by a rabbit"
+    },
+    {
+      "id": "b",
+      "text": "A shoe print from a previous player"
+    },
+    {
+      "id": "c",
+      "text": "A sprinkler head"
+    },
+    {
+      "id": "d",
+      "text": "A footprint from a bird"
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "Only a hole made by an animal, such as a rabbit, is classed as an animal hole for relief purposes.",
+  "imagePrompt": "A teenage boy golfer in a bunker, examining his ball lying next to a fresh animal hole in the sand.",
+  "imageAlt": "Teenage boy golfer checks a ball near an animal hole in the bunker.",
+  "sceneSpec": {
+    "setting": "bunker",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "wedge",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": true,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "medium",
+    "clothingTopColour": "red",
+    "clothingBottomColour": "purple",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [],
+    "repairPrompt": "No major repairs needed. Maintain current wedge, posture, ethnicity, skin tone, clothing, and realistic rendering. If possible, add textural detail to the bunker sand for extra realism."
+  }
+}

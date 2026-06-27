@@ -1,0 +1,10 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "sourcePromptFileName": "final-prompt-v2.txt",
+  "promptFileName": "final-prompt-v4.txt",
+  "imageFileName": "illustration-v4.png",
+  "correctionInstructions": "only show one ball in the picture",
+  "generatedAtUtc": "2026-06-26T19:56:26.032Z"
+}

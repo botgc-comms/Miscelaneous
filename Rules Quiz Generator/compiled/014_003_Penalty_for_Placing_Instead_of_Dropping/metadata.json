@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-04.png",
+  "ruleNumber": "R14",
+  "ruleName": "Incorrect drop",
+  "group": "Incorrect drop",
+  "type": "multiple_choice",
+  "imagePrompt": "A teen golfer, right-handed, bends down to place a golf ball on the fairway instead of dropping it as required.",
+  "imageAlt": "Teen golfer places a golf ball on the fairway by hand.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "lifting_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "black",
+    "clothingBottomColour": "red",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "Golfer's posture and orientation could suggest either handedness, but does not forcefully indicate left-handedness."
+    ],
+    "repairPrompt": "Ensure the golfer's body position, orientation, and hand use clearly indicate a left-handed player—for example, show the right hand placing the ball with the left side of the body towards the intended play direction. All other details are accurate."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What Happens If You Put the Ball Down Instead of Dropping It?",
+      "question": "If the rules say you must drop your ball, but you put it on the ground with your hand instead, what happens?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Nothing happens."
+        },
+        {
+          "id": "b",
+          "text": "You get 1 extra shot added."
+        },
+        {
+          "id": "c",
+          "text": "You get 2 extra shots added."
+        },
+        {
+          "id": "d",
+          "text": "You can't finish the hole."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "If you put the ball on the ground when you should have dropped it, and then play your shot, you get 2 extra shots added to your score.",
+      "vocabulary": [
+        {
+          "term": "Drop",
+          "simpleMeaning": "Letting the ball fall from your hand from knee height."
+        },
+        {
+          "term": "Penalty stroke",
+          "simpleMeaning": "An extra shot added to your score for breaking a rule."
+        }
+      ],
+      "teachingTip": "Practise dropping the ball from knee height so you remember not to place it. You can use a toy or a small ball to make it fun.",
+      "likelyMisconceptions": [
+        "Some players think placing and dropping are the same, but in golf, they are different.",
+        "Players might forget to drop from the right height or use their hand instead of letting it fall."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Penalty for Placing Instead of Dropping",
+      "question": "If the rules require you to drop your ball, but you place it instead, what is the penalty?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty"
+        },
+        {
+          "id": "b",
+          "text": "1 penalty stroke"
+        },
+        {
+          "id": "c",
+          "text": "2 penalty strokes"
+        },
+        {
+          "id": "d",
+          "text": "Disqualification"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "Placing the ball when you are supposed to drop it, and then playing from there, results in a two-stroke penalty."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "014_003_Penalty_for_Placing_Instead_of_Dropping",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.814Z"
+  }
+}

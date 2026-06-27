@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\010_001_What_advice_can_you_ask_for_on_the_course\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:07:10.418Z",
+  "title": "What advice can you ask for on the course?",
+  "ruleNumber": "R10",
+  "ruleName": "Advice and line of play",
+  "durationSeconds": 186.054
+}

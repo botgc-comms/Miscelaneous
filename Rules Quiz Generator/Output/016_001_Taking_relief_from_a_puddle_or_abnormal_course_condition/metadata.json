@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-08.png",
+  "ruleNumber": "R16",
+  "ruleName": "Puddles and other abnormal course conditions",
+  "group": "Puddles and other abnormal course conditions",
+  "title": "Taking relief from a puddle or abnormal course condition",
+  "question": "Your ball is on the putting green and there is a puddle between your ball and the hole, affecting your line of play. What do the rules say you are allowed to do?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Place the ball at the nearest spot where the puddle does not affect your line, no closer to the hole, with no penalty."
+    },
+    {
+      "id": "b",
+      "text": "Try to avoid the puddle and play your ball as it lies."
+    },
+    {
+      "id": "c",
+      "text": "Place your ball closer to the hole to find a dry line."
+    },
+    {
+      "id": "d",
+      "text": "Take a penalty stroke and drop your ball anywhere on the green."
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "You are allowed to place your ball at the nearest point where the puddle does not interfere, not nearer the hole, with no penalty.",
+  "imagePrompt": "A teenage golfer placing the ball on the putting green to the nearest point of relief from a puddle affecting the line to the hole.",
+  "imageAlt": "Teen golfer on the green placing ball to avoid puddle, not nearer the hole.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "dropping_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "yellow",
+    "clothingBottomColour": "green",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "The golfer appears to be right-handed instead of left-handed."
+    ],
+    "repairPrompt": "Ensure the teenage boy is clearly left-handed in his action when dropping the ball; the putter should be held in the right hand, with the ball being dropped from the left hand."
+  }
+}

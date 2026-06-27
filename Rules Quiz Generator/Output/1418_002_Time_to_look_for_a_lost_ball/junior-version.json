@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\1418_002_Time_to_look_for_a_lost_ball\\metadata.json",
+  "sourceImageName": "page-09.png",
+  "ruleNumber": "Def./R14/18",
+  "ruleName": "Looking for a ball",
+  "title": "Time to look for a lost ball",
+  "question": "How much time do you have to look for your golf ball before it is considered lost under the Rules of Golf?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "One minute"
+    },
+    {
+      "id": "b",
+      "text": "Three minutes"
+    },
+    {
+      "id": "c",
+      "text": "Five minutes"
+    },
+    {
+      "id": "d",
+      "text": "As long as you like"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You have up to 3 minutes to search for your ball. If you don't find it within 3 minutes, it is classed as lost.",
+  "juniorVersion": {
+    "title": "How long can you look for your ball?",
+    "question": "If you can't see your golf ball after you hit it, how many minutes do you get to look for it before it is lost?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "One minute"
+      },
+      {
+        "id": "b",
+        "text": "Three minutes"
+      },
+      {
+        "id": "c",
+        "text": "Five minutes"
+      },
+      {
+        "id": "d",
+        "text": "As long as you like"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "You have three minutes to find your ball. If you can’t find it in three minutes, the ball is lost. Then you need to play another ball.",
+    "vocabulary": [
+      {
+        "term": "Lost (ball)",
+        "simpleMeaning": "A ball is called lost if you can't find it in three minutes."
+      }
+    ],
+    "teachingTip": "Use a timer or count together with children to show what three minutes feels like when looking for a ball.",
+    "likelyMisconceptions": [
+      "Some children may think they have unlimited time to search.",
+      "Some may think the old five-minute rule still applies."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:28:04.720Z",
+  "model": "gpt-4.1"
+}

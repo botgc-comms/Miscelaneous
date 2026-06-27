@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\013_002_Ball_wedged_against_the_flagstick\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:25:24.522Z",
+  "title": "Ball wedged against the flagstick",
+  "ruleNumber": "R13",
+  "ruleName": "Ball wedged on the flagstick",
+  "durationSeconds": 180.275
+}

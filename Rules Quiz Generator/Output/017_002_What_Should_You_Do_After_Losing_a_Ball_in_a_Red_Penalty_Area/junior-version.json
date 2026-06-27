@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\017_002_What_Should_You_Do_After_Losing_a_Ball_in_a_Red_Penalty_Area\\metadata.json",
+  "sourceImageName": "page-26.png",
+  "ruleNumber": "17",
+  "ruleName": "Penalty Areas",
+  "title": "What Should You Do After Losing a Ball in a Red Penalty Area?",
+  "question": "If your ball goes into a red penalty area and you can't retrieve it, which relief options are allowed under the Rules (each for one penalty stroke)? Select all that apply.",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Replay your shot from the previous spot."
+    },
+    {
+      "id": "b",
+      "text": "Drop a ball within two club-lengths of the point where it crossed into the penalty area."
+    },
+    {
+      "id": "c",
+      "text": "Drop a ball anywhere you like on the course, with no penalty."
+    },
+    {
+      "id": "d",
+      "text": "Drop a ball behind the penalty area, keeping the entry point between you and the hole."
+    }
+  ],
+  "correctAnswers": [
+    "a",
+    "b",
+    "d"
+  ],
+  "explanation": "If your ball is lost in a red penalty area, you may: replay the shot, drop within two club-lengths of the entry point, or drop behind the penalty area on a straight line from the hole—each for one penalty stroke.",
+  "juniorVersion": {
+    "title": "What Can You Do If You Lose Your Ball in a Red Penalty Area?",
+    "question": "Your ball goes into a red penalty area, like a pond marked with red stakes, and you can't get it back. What are you allowed to do for one penalty shot? Pick all the answers that are correct.",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Hit another ball from the same place you last played."
+      },
+      {
+        "id": "b",
+        "text": "Drop a ball within two club-lengths from where your ball went into the red area."
+      },
+      {
+        "id": "c",
+        "text": "Drop a ball anywhere on the course with no penalty."
+      },
+      {
+        "id": "d",
+        "text": "Drop a ball farther away from the hole, in line with where your ball entered the red area."
+      }
+    ],
+    "correctAnswers": [
+      "a",
+      "b",
+      "d"
+    ],
+    "explanation": "If your ball is lost in a red penalty area, you can: hit again from your last spot, drop nearby (within two club-lengths), or drop behind the red area, keeping where your ball went in between you and the hole. Each way costs one penalty shot.",
+    "vocabulary": [
+      {
+        "term": "Penalty area",
+        "simpleMeaning": "A part of the golf course, like a pond or stream, marked by red or yellow lines or stakes."
+      },
+      {
+        "term": "Club-length",
+        "simpleMeaning": "The length of your golf club. It's used to measure where you can drop your ball."
+      }
+    ],
+    "teachingTip": "Walk the children to a real penalty area, show red stakes, and act out the drop choices with them. Use clubs to measure two club-lengths together.",
+    "likelyMisconceptions": [
+      "Thinking you can drop the ball anywhere you want without a penalty.",
+      "Not knowing what a penalty area looks like or where a ball entered it.",
+      "Forgetting you get only two club-lengths to drop beside the entry spot."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:20.805Z",
+  "model": "gpt-4.1"
+}

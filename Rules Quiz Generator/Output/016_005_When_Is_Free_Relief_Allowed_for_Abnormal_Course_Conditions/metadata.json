@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-13.png",
+  "ruleNumber": "16",
+  "ruleName": "Abnormal course conditions",
+  "group": "Abnormal course conditions",
+  "title": "When Is Free Relief Allowed for Abnormal Course Conditions?",
+  "question": "In which of these situations are you allowed to take free relief for an abnormal course condition?",
+  "type": "multi_select",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Your ball is lying in temporary water"
+    },
+    {
+      "id": "b",
+      "text": "Your stance would be on a mole hill"
+    },
+    {
+      "id": "c",
+      "text": "You are distracted by the sight of a path a long way off"
+    },
+    {
+      "id": "d",
+      "text": "Your swing is physically interfered with by an immovable obstruction"
+    }
+  ],
+  "correctAnswer": [
+    "a",
+    "b",
+    "d"
+  ],
+  "correctAnswers": [
+    "a",
+    "b",
+    "d"
+  ],
+  "explanation": "Free relief is allowed if your play is physically interfered with by temporary water, an animal hole, or an immovable obstruction. Mere distraction, such as seeing a path in the distance, does not qualify.",
+  "imagePrompt": "A teen boy golfer on the fairway, with his feet on a mole hill and near a puddle, and an artificial path close to his swing.",
+  "imageAlt": "Teen golfer with stance on mole hill, puddle, and artificial path interfering.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": true,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "dark",
+    "clothingTopColour": "blue",
+    "clothingBottomColour": "orange",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Mole hill could be made slightly more prominent under both feet for emphasis."
+    ],
+    "repairPrompt": "Increase the prominence of the mole hill so that it is clearly under both of the golfer's feet."
+  }
+}

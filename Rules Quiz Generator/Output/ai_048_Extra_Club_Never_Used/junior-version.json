@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_048_Extra_Club_Never_Used\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "4.1b",
+  "ruleName": "Limit of 14 Clubs During Round",
+  "title": "Extra Club Never Used",
+  "question": "You discover on the 5th tee that you have been carrying 15 clubs since the start of the round. You have not used the extra club at any point.\n\nWhat is the correct ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "There is no penalty because the extra club was never used."
+    },
+    {
+      "id": "b",
+      "text": "You receive the normal penalty for starting the round with more than 14 clubs, even though the extra club was never used."
+    },
+    {
+      "id": "c",
+      "text": "You are disqualified."
+    },
+    {
+      "id": "d",
+      "text": "You may simply remove the extra club with no penalty."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "The Rules limit a player to 14 clubs during a round. The breach occurs by carrying more than 14 clubs, not by using them. As soon as you discover the mistake, you must immediately declare the extra club out of play so it cannot be used for the rest of the round. Whether or not you actually played a stroke with the extra club makes no difference to the penalty. Rule Reference: Rule 4.1b.",
+  "juniorVersion": {
+    "title": "Too Many Clubs in Your Golf Bag",
+    "question": "You find out on the 5th tee that you have 15 clubs in your bag since the start, but you never used the extra club. What should happen?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "There is no penalty because you did not use the extra club."
+      },
+      {
+        "id": "b",
+        "text": "You get the normal penalty for having more than 14 clubs, even if you did not use the extra club."
+      },
+      {
+        "id": "c",
+        "text": "You are not allowed to keep playing."
+      },
+      {
+        "id": "d",
+        "text": "You can just take the club out of your bag and there is no penalty."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "You are only allowed 14 clubs in your bag when you play golf. If you start with more than 14 clubs, you get a penalty even if you did not hit any balls with the extra club. When you see the mistake, you must not use the extra club for the rest of the round.",
+    "vocabulary": [
+      {
+        "term": "Club",
+        "simpleMeaning": "A club is what you hit the golf ball with."
+      },
+      {
+        "term": "Penalty",
+        "simpleMeaning": "A penalty means you have to add extra shots to your score for breaking a rule."
+      },
+      {
+        "term": "Round",
+        "simpleMeaning": "A round is when you play all of the holes, like playing the whole course."
+      }
+    ],
+    "teachingTip": "Show kids how to count their clubs before starting a round, and talk about why the 14-club limit is important.",
+    "likelyMisconceptions": [
+      "Some might think there is no penalty if the extra club was never used.",
+      "Some might think you are not allowed to keep playing if you have too many clubs."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:23:47.015Z",
+  "model": "gpt-4.1"
+}

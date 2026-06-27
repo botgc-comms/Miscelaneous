@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-06.png",
+  "ruleNumber": "6",
+  "ruleName": "Wrong ball",
+  "group": "Wrong ball",
+  "title": "Consequences if you hole out with a wrong ball",
+  "question": "If you putt a wrong ball into the hole on the green and do not fix your mistake before starting the next hole or leaving the green (in stroke play), what can happen?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Nothing, you continue the round as normal"
+    },
+    {
+      "id": "b",
+      "text": "You get a two-stroke penalty, but keep playing"
+    },
+    {
+      "id": "c",
+      "text": "You may be disqualified for not correcting the mistake"
+    },
+    {
+      "id": "d",
+      "text": "You subtract two strokes from your score"
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "If you do not correct the mistake of holing out with a wrong ball in stroke play, you can be disqualified.",
+  "imagePrompt": "A teenage boy on the putting green, looking upset while realising he finished the hole with the wrong ball.",
+  "imageAlt": "Teen boy looking worried at the golf hole after making a mistake with the wrong ball.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "dark",
+    "clothingTopColour": "green",
+    "clothingBottomColour": "white",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "Slight ambiguity in skin tone representation for 'dark', but overall presentation is plausible for mixed ethnicity.",
+      "No obvious faults in equipment, clothing, or pose."
+    ],
+    "repairPrompt": "Slightly deepen the golfer's skin tone to better match a dark skin tone for mixed ethnicity. Ensure this does not impact the natural shading or illustrated realism."
+  }
+}

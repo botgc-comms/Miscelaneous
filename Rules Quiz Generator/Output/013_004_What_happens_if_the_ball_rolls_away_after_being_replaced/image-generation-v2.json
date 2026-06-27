@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\013_004_What_happens_if_the_ball_rolls_away_after_being_replaced\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:28:26.287Z",
+  "title": "What happens if the ball rolls away after being replaced?",
+  "ruleNumber": "R13",
+  "ruleName": "Ball moves after being put back",
+  "durationSeconds": 181.761
+}

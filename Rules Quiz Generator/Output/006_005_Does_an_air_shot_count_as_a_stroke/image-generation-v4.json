@@ -1,0 +1,10 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "sourcePromptFileName": "final-prompt-v2.txt",
+  "promptFileName": "final-prompt-v4.txt",
+  "imageFileName": "illustration-v4.png",
+  "correctionInstructions": "the boy has spung his club but missed the ball completely",
+  "generatedAtUtc": "2026-06-26T08:11:41.328Z"
+}

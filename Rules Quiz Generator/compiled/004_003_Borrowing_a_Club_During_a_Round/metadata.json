@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-05.png",
+  "ruleNumber": "R4",
+  "ruleName": "Maximum of 14 clubs",
+  "group": "Maximum of 14 clubs",
+  "type": "multiple_choice",
+  "imagePrompt": "A teenage girl asks to borrow a club from another player, who politely refuses by shaking their head.",
+  "imageAlt": "Teen girl trying to borrow a club from another golfer who is shaking their head no.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "medium",
+    "clothingTopColour": "orange",
+    "clothingBottomColour": "grey",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": false,
+    "score": 80,
+    "issues": [
+      "The refusing player is raising a hand (stop gesture), not shaking their head, which does not fully match the refusal prompt.",
+      "Both clubs and ball details are strong and visually correct.",
+      "The posture and scene are believable and suitable for teaching.",
+      "The teenage girl is in a natural stance near the ball, wearing an orange top and clear grey full-length trousers, with no club in hand.",
+      "The ethnicity and skin tone of the girl are plausible as requested.",
+      "The other player's appearance and white hat are not explicitly ruled out, but the hat is not requested (minor)."
+    ],
+    "repairPrompt": "Change the refusing player's gesture from a raised hand to shaking their head in a clearly visible way. Keep all other scene features as already shown, ensuring the girl in the orange top and grey trousers stands near the single visible golf ball, with no club in her hands."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Can You Use Someone Else's Club?",
+      "question": "If you forget your own club, can you use another player's club to hit your ball during a round?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No, you can't use someone else's club during a round."
+        },
+        {
+          "id": "b",
+          "text": "Yes, if you say please."
+        },
+        {
+          "id": "c",
+          "text": "Yes, but only if you are putting."
+        },
+        {
+          "id": "d",
+          "text": "Yes, but only one time in a round."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "You have to use only your own clubs when you play. You can't take someone else's club to play your shots.",
+      "vocabulary": [
+        {
+          "term": "Club",
+          "simpleMeaning": "A stick you use to hit the golf ball."
+        },
+        {
+          "term": "Round",
+          "simpleMeaning": "Playing all the holes on the golf course during one game."
+        }
+      ],
+      "teachingTip": "Let children choose 14 clubs for their own golf bag before starting play. Discuss why each player needs to use only their own clubs.",
+      "likelyMisconceptions": [
+        "Thinking it's okay to use a friend's club just once or if you ask nicely.",
+        "Believing you can use another player's club just for putting."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Borrowing a Club During a Round",
+      "question": "Are you allowed to borrow a club from another player and use it to make a stroke during a round?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No, you are not allowed to borrow clubs from other players during a round"
+        },
+        {
+          "id": "b",
+          "text": "Yes, as long as you ask politely"
+        },
+        {
+          "id": "c",
+          "text": "Yes, but only for putting"
+        },
+        {
+          "id": "d",
+          "text": "Yes, but only once per round"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "You may not borrow a club from another player to make a stroke during your round. Every player must play only with their own clubs."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "004_003_Borrowing_a_Club_During_a_Round",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.272Z"
+  }
+}

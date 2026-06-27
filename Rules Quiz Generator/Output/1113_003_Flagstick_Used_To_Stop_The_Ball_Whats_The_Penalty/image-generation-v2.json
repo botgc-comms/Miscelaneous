@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\1113_003_Flagstick_Used_To_Stop_The_Ball_Whats_The_Penalty\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:11:16.890Z",
+  "title": "Flagstick Used To Stop The Ball – What's The Penalty?",
+  "ruleNumber": "R11/13",
+  "ruleName": "Ball hits the flagstick or the person tending it",
+  "durationSeconds": 195.7
+}

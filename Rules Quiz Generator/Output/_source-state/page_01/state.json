@@ -1,0 +1,364 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-01.png",
+  "sourceImagePath": "Input\\page-01.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-01.png",
+      "ruleNumber": "R1/3",
+      "ruleName": "Stroke play and match play",
+      "group": "Stroke play and match play",
+      "title": "Penalty differences in stroke play and match play",
+      "question": "If you break a rule during a stroke play competition, what is the general penalty?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You go back to the tee"
+        },
+        {
+          "id": "b",
+          "text": "2 penalty strokes"
+        },
+        {
+          "id": "c",
+          "text": "Loss of hole"
+        },
+        {
+          "id": "d",
+          "text": "Extra shot with no penalty"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "In stroke play, the general penalty for a rule breach is 2 penalty strokes.",
+      "imagePrompt": "A teenage girl in a sunny fairway setting holding a scorecard and looking thoughtful after realising she has broken a rule.",
+      "imageAlt": "Teenage girl golfer on the fairway, reflecting after a rules breach.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "black",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-01.png",
+      "ruleNumber": "R3/21",
+      "ruleName": "Holing out and conceding",
+      "group": "Holing out and conceding",
+      "title": "What must you do with your ball on each hole?",
+      "question": "In general, what must a player do with the ball they teed off with on each hole?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Pick it up after a few shots"
+        },
+        {
+          "id": "b",
+          "text": "Change the ball on the green"
+        },
+        {
+          "id": "c",
+          "text": "Hole it out (play it into the hole)"
+        },
+        {
+          "id": "d",
+          "text": "Give up and move to the next hole"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "The ball that is teed off with must be played into the hole, otherwise the player could be disqualified.",
+      "imagePrompt": "A teenage boy on the putting green lining up a short putt, making sure to finish holing out his original ball.",
+      "imageAlt": "Teenage boy putting on the green with focus on holing out.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "light",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "green",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-01.png",
+      "ruleNumber": "R6/14",
+      "ruleName": "Substituting the ball",
+      "group": "Substituting the ball",
+      "title": "When can you change your golf ball?",
+      "question": "Which situations allow you to substitute your golf ball while playing a hole?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "After you lose your ball"
+        },
+        {
+          "id": "b",
+          "text": "When taking relief"
+        },
+        {
+          "id": "c",
+          "text": "If your ball has a tiny scratch"
+        },
+        {
+          "id": "d",
+          "text": "If your ball is badly damaged (significant cut or crack)"
+        },
+        {
+          "id": "e",
+          "text": "At any moment, just because you want to"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "d"
+      ],
+      "explanation": "You can substitute your ball if it is lost, when taking relief, or if it's severely damaged. A small scratch doesn't count.",
+      "imagePrompt": "A teenage girl on the fairway holding a severely cracked ball and preparing to replace it with a new one.",
+      "imageAlt": "Teenage girl examining a cracked golf ball on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "lifting_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "light",
+        "clothingTopColour": "black",
+        "clothingBottomColour": "green",
+        "hat": false
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-01.png",
+      "ruleNumber": "R1/3",
+      "ruleName": "Stroke play and match play",
+      "group": "Stroke play and match play",
+      "title": "Penalty differences in stroke play and match play",
+      "question": "What is the usual penalty for breaking a rule in stroke play?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You have to return to the tee and replay the shot"
+        },
+        {
+          "id": "b",
+          "text": "You get 2 penalty strokes added to your score"
+        },
+        {
+          "id": "c",
+          "text": "You lose the hole"
+        },
+        {
+          "id": "d",
+          "text": "You retake the shot with no penalty"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "In stroke play, the general penalty for a rule breach is 2 penalty strokes.",
+      "imagePrompt": "A teenage girl golfer on a sunny fairway, holding her scorecard and looking concerned after learning she has broken a rule. The scene focuses on her thoughtful reaction and the open fairway.",
+      "imageAlt": "Teenage girl on a fairway looking at a scorecard after a rules breach.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "yellow",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-01.png",
+      "ruleNumber": "R3/21",
+      "ruleName": "Holing out and conceding",
+      "group": "Holing out and conceding",
+      "title": "What must you do with your ball on each hole?",
+      "question": "In general, what must a player do with the same ball they played from the tee on each hole?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Pick it up after a few shots"
+        },
+        {
+          "id": "b",
+          "text": "Change it for a different one on the putting green"
+        },
+        {
+          "id": "c",
+          "text": "Play it into the hole (hole out)"
+        },
+        {
+          "id": "d",
+          "text": "Skip the putt if it's very short"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "Players must play the same ball from the tee all the way into the hole, unless the rules allow them to change it.",
+      "imagePrompt": "A teenage boy lining up a putt on the green, focusing on playing his original ball into the hole for completion of the hole.",
+      "imageAlt": "Teenage boy putting on the green, concentrating on holing out.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "light",
+        "clothingTopColour": "blue",
+        "clothingBottomColour": "black",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-01.png",
+      "ruleNumber": "R6/14",
+      "ruleName": "Substituting the ball",
+      "group": "Substituting the ball",
+      "title": "When can you change your golf ball?",
+      "question": "On which occasions are you allowed to replace your ball with another one while playing a hole?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "If you can't find your original ball after searching"
+        },
+        {
+          "id": "b",
+          "text": "When taking relief under the Rules (such as from a penalty area or abnormal course condition)"
+        },
+        {
+          "id": "c",
+          "text": "If your ball only has a small scratch"
+        },
+        {
+          "id": "d",
+          "text": "If your ball has a significant cut or crack"
+        },
+        {
+          "id": "e",
+          "text": "Any time you feel like it, even during play of a hole"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "d"
+      ],
+      "explanation": "You may substitute a new ball if your original is lost, when taking relief under the rules, or if it's severely damaged (like a big cut or crack). A minor scratch isn't enough, and you can't just switch at any moment.",
+      "imagePrompt": "A teenage boy golfer standing on the fairway, examining a badly cracked golf ball before replacing it with a new one.",
+      "imageAlt": "Teenage boy inspecting a damaged golf ball on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "lifting_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "white",
+        "hat": false
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "013_001_Penalty_differences_in_stroke_play_and_match_play",
+    "321_002_What_must_you_do_with_your_ball_on_each_hole",
+    "614_003_When_can_you_change_your_golf_ball"
+  ],
+  "updatedAtUtc": "2026-04-24T18:48:11.895Z"
+}

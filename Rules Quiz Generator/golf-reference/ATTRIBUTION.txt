@@ -1,0 +1,24 @@
+Reference image pack assembled for golf image grounding.
+
+Downloaded sources from Wikimedia Commons:
+- driver.jpg — File:Golf drivers old and new.jpg
+- fairway_wood.jpg — File:Golf and 3 wood.JPG
+- hybrid.jpg — File:Golf club, Ping G10 24º hybrid.jpg
+- iron.jpg — File:Golf club, Callaway X-20 4 iron.jpg
+- wedge.jpg — File:Wedge out of sand golf.jpg
+- putter.jpg — File:Golf putter by green.jpg
+- golf_ball.jpg — File:Golf-ball.jpg
+- bunker.jpg — File:Golf bunkers Filton.jpg
+- green.jpg — File:Golf putting on green.jpg
+- fairway.jpg — File:Fairway (golf).jpg
+- rough.jpg — File:Golf-ball in the rough.jpg
+- tee_marker.jpg — File:Golf tee marker.jpg
+- water.jpg — File:Water hazard (golf).jpg
+
+Synthetic reference aids created locally:
+- red_stake.jpg
+- yellow_stake.jpg
+- white_stake.jpg
+
+Note:
+Some downloaded files are under CC0/public domain; others are Creative Commons attribution licences. If you redistribute beyond your own prompt/reference use, check each original file page and preserve attribution where required.

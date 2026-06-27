@@ -1,0 +1,10 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "sourcePromptFileName": "final-prompt-v2.txt",
+  "promptFileName": "final-prompt-v5.txt",
+  "imageFileName": "illustration-v5.png",
+  "correctionInstructions": "the boy has completed his swing, but the ball has not moved",
+  "generatedAtUtc": "2026-06-26T08:15:10.255Z"
+}

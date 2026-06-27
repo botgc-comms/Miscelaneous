@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\015_003_Handling_loose_impediments\\metadata.json",
+  "sourceImageName": "page-20.png",
+  "ruleNumber": "R15",
+  "ruleName": "Loose impediments",
+  "title": "Handling loose impediments",
+  "question": "There are leaves and twigs right next to your ball on the fairway. What are your options?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Remove the leaves and twigs without penalty, as long as you don't move the ball."
+    },
+    {
+      "id": "b",
+      "text": "If your ball moves while removing them, put it back and take a 1-stroke penalty."
+    },
+    {
+      "id": "c",
+      "text": "Ignore the leaves and twigs and play your shot as it is."
+    },
+    {
+      "id": "d",
+      "text": "Clean your ball before playing, even if you haven't marked it."
+    }
+  ],
+  "correctAnswers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "explanation": "You can remove loose impediments like leaves and twigs, but if your ball moves while doing so you must replace it and take a 1-stroke penalty. You can also just choose to play as it lies.",
+  "juniorVersion": {
+    "title": "What can you do with leaves and twigs near your ball?",
+    "question": "Your ball is on the short grass (fairway) and there are leaves and twigs right next to it. What can you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You can move the leaves and twigs, but be careful not to move your ball."
+      },
+      {
+        "id": "b",
+        "text": "If you move your ball by mistake while moving the leaves and twigs, you have to put it back and add one extra shot."
+      },
+      {
+        "id": "c",
+        "text": "You can just leave the leaves and twigs and play the ball as it is."
+      },
+      {
+        "id": "d",
+        "text": "You can clean your ball before your shot, even if you haven't marked it."
+      }
+    ],
+    "correctAnswers": [
+      "a",
+      "b",
+      "c"
+    ],
+    "explanation": "You can take away leaves and twigs around your ball. If you move your ball while you do this, put it back and add one shot to your score. It’s also fine to just play the ball with the leaves and twigs there.",
+    "vocabulary": [
+      {
+        "term": "Fairway",
+        "simpleMeaning": "The short grass area between the tee and the green."
+      },
+      {
+        "term": "Loose impediments",
+        "simpleMeaning": "Small things like leaves or twigs on the ground that aren’t growing or stuck down."
+      }
+    ],
+    "teachingTip": "Show children how to gently move loose things like leaves around their ball using their fingers or a tee without making the ball roll.",
+    "likelyMisconceptions": [
+      "Some kids might think they will always get a penalty for touching leaves and twigs.",
+      "Some might think they can lift and clean the ball whenever they want, even if they didn’t mark it."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:48.403Z",
+  "model": "gpt-4.1"
+}

@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-09.png",
+  "ruleNumber": "R11",
+  "ruleName": "Ball hits another player or an outside influence",
+  "group": "Ball hits another player or an outside influence",
+  "title": "Ball Hits Another Player On The Green – What Now?",
+  "question": "You putt from the green and your ball accidentally strikes another player who is also on the green. What must you do?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball from where it comes to rest"
+    },
+    {
+      "id": "b",
+      "text": "Replay the stroke with no penalty"
+    },
+    {
+      "id": "c",
+      "text": "Add a penalty stroke and play on"
+    },
+    {
+      "id": "d",
+      "text": "Move your ball to the nearest spot"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If your ball accidentally hits another player on the putting green, you must replay the stroke and there is no penalty.",
+  "imagePrompt": "A teen boy left-handed golfer watches as his putted ball hits another player standing on the green during play.",
+  "imageAlt": "A golf ball striking a player on the green after a putt, observed by a teenage left-handed golfer.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "replaying_shot",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "medium",
+    "clothingTopColour": "green",
+    "clothingBottomColour": "yellow",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The prompt requests to show the moment the ball hits another player on the green, but the image depicts the golfer about to replay the stroke, not the ball hitting another player.",
+      "Other player on the green is present but not interacting with the ball."
+    ],
+    "repairPrompt": "Depict the moment when the golf ball, after being putted, strikes another player who is also on the green. Show the second player visibly reacting to the ball making contact with them, to clearly illustrate the rules situation. Retain all other original requirements."
+  }
+}

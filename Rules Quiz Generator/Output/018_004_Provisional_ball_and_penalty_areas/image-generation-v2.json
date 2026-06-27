@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\018_004_Provisional_ball_and_penalty_areas\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:03:16.111Z",
+  "title": "Provisional ball and penalty areas",
+  "ruleNumber": "18",
+  "ruleName": "Playing a provisional ball",
+  "durationSeconds": 198.098
+}

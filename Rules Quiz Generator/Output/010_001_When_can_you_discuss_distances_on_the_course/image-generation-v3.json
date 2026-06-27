@@ -1,0 +1,10 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "sourcePromptFileName": "final-prompt-v2.txt",
+  "promptFileName": "final-prompt-v3.txt",
+  "imageFileName": "illustration-v3.png",
+  "correctionInstructions": "show a boy looking through a range finder",
+  "generatedAtUtc": "2026-06-26T08:05:06.472Z"
+}

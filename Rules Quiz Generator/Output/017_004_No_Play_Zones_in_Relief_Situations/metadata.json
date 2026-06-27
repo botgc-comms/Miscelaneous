@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-14.png",
+  "ruleNumber": "17",
+  "ruleName": "Taking Relief from Abnormal Course Conditions",
+  "group": "Taking Relief from Abnormal Course Conditions",
+  "title": "No Play Zones in Relief Situations",
+  "question": "If your ball, stance or swing is in a no play zone, what must you do?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball as it lies and ignore the no play zone."
+    },
+    {
+      "id": "b",
+      "text": "Take free relief; you are not allowed to play the ball as it lies."
+    },
+    {
+      "id": "c",
+      "text": "Take a penalty stroke before moving the ball."
+    },
+    {
+      "id": "d",
+      "text": "Ask your group for permission to play from there."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You must take free relief if your ball, stance or swing is in a no play zone. Playing from there is not allowed under the rules.",
+  "imagePrompt": "A teen girl golfer, right-handed, preparing to drop a ball for free relief from a yellow-staked no play zone that is clearly next to the fairway.",
+  "imageAlt": "Teen girl taking relief from a marked no play zone next to the fairway.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "dropping_ball",
+    "clubInHand": "wedge",
+    "ballCount": 1,
+    "stakeColour": "yellow",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "asian",
+    "skinTone": "dark",
+    "clothingTopColour": "black",
+    "clothingBottomColour": "navy",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "Minor: The golfer's shorts appear navy but could be made slightly darker for absolute clarity versus black."
+    ],
+    "repairPrompt": "Make the shorts a more distinctly deep navy blue so they are clearly not black. All other details are correct."
+  }
+}

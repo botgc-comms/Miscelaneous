@@ -1,0 +1,44 @@
+{
+  "id": "basic-rules",
+  "title": "Basic rules",
+  "summary": "A simple introduction to the most important golf rules juniors need to know.",
+  "estimatedMinutes": 7,
+  "priority": 1100,
+  "mandatoryFor": [
+    "Junior Course Cadet"
+  ],
+  "version": 1,
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "Rules made simple",
+      "file": "pages/00-title.md"
+    },
+    {
+      "id": "01-play-the-ball",
+      "title": "Play the ball as it lies",
+      "file": "pages/01-play-the-ball.md"
+    },
+    {
+      "id": "02-out-of-bounds",
+      "title": "Out of bounds",
+      "file": "pages/02-out-of-bounds.md"
+    },
+    {
+      "id": "03-penalties",
+      "title": "Penalties and drops",
+      "file": "pages/03-penalties.md"
+    },
+    {
+      "id": "04-order-of-play",
+      "title": "Order of play",
+      "file": "pages/04-order-of-play.md"
+    },
+    {
+      "id": "90-quick-check",
+      "title": "Quick check",
+      "file": "pages/90-quick-check.md",
+      "type": "quiz"
+    }
+  ]
+}

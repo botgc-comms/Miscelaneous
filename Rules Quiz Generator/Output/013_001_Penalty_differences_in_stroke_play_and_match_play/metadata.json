@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-01.png",
+  "ruleNumber": "R1/3",
+  "ruleName": "Stroke play and match play",
+  "group": "Stroke play and match play",
+  "title": "Penalty differences in stroke play and match play",
+  "question": "What is the usual penalty for breaking a rule in stroke play?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You have to return to the tee and replay the shot"
+    },
+    {
+      "id": "b",
+      "text": "You get 2 penalty strokes added to your score"
+    },
+    {
+      "id": "c",
+      "text": "You lose the hole"
+    },
+    {
+      "id": "d",
+      "text": "You retake the shot with no penalty"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "In stroke play, the general penalty for a rule breach is 2 penalty strokes.",
+  "imagePrompt": "A teenage girl golfer on a sunny fairway, holding her scorecard and looking concerned after learning she has broken a rule. The scene focuses on her thoughtful reaction and the open fairway.",
+  "imageAlt": "Teenage girl on a fairway looking at a scorecard after a rules breach.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "red",
+    "clothingBottomColour": "yellow",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": false,
+    "score": 75,
+    "issues": [
+      "Golfer gender does not match (shows a teenage girl, needs to be a teenage boy as per revised sceneSpec).",
+      "Handedness is unclear: club is held in left hand, not clearly a right-handed golfer.",
+      "Golfer's hair is styled and long, typically associated with females (not matching the revised requirement for a teenage boy)."
+    ],
+    "repairPrompt": "Change the golfer to a teenage boy with a light skin tone, wearing a red top and yellow trousers or shorts, and a golf cap. Ensure the boy holds the iron golf club naturally as a right-handed player. Keep all other details (one realistic golf ball near feet, fairway setting, concerned expression, and realistic equipment) the same."
+  }
+}

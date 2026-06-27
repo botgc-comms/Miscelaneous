@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\011_004_Playing_after_your_ball_hits_another_person_or_animal\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:19:27.662Z",
+  "title": "Playing after your ball hits another person or animal",
+  "ruleNumber": "R11",
+  "ruleName": "Ball hits an outside influence or the player",
+  "durationSeconds": 181.787
+}

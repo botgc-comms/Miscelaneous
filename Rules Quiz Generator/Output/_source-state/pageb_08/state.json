@@ -1,0 +1,465 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-08.png",
+  "sourceImagePath": "Input\\pageb-08.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-08.png",
+      "ruleNumber": "R16",
+      "ruleName": "Puddles and other abnormal course conditions",
+      "group": "Puddles and other abnormal course conditions",
+      "title": "Taking relief from a puddle or abnormal course condition",
+      "question": "Your ball is on the green and there is a puddle between your ball and the hole. What should you do according to the rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Place the ball at the nearest point where the puddle doesn't interfere, not nearer the hole, without penalty."
+        },
+        {
+          "id": "b",
+          "text": "Play around the puddle as best you can."
+        },
+        {
+          "id": "c",
+          "text": "Move the ball closer to the hole for a better line."
+        },
+        {
+          "id": "d",
+          "text": "Take a penalty stroke and drop the ball anywhere on the green."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You are allowed to place your ball at the nearest point where the interference is gone, not nearer the hole, with no penalty.",
+      "imagePrompt": "A teenage girl on the putting green, facing a puddle in her line to the hole, moving her ball to the nearest point of relief off the puddle.",
+      "imageAlt": "Girl golfer on putting green moving ball to avoid puddle, not nearer the hole.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "dropping_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "medium",
+        "clothingTopColour": "black",
+        "clothingBottomColour": "purple",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-08.png",
+      "ruleNumber": "R16",
+      "ruleName": "Sprinklers",
+      "group": "Sprinklers",
+      "title": "Interference from a sprinkler near the green",
+      "question": "If a sprinkler by the green is only interfering with your intended putting line, and not your stance or swing, what must you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Take free relief and move your ball."
+        },
+        {
+          "id": "b",
+          "text": "Play your ball as it lies."
+        },
+        {
+          "id": "c",
+          "text": "Move your ball to the fringe without penalty."
+        },
+        {
+          "id": "d",
+          "text": "Take a penalty and move your ball."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You only get free relief if the sprinkler interferes with your stance or swing, not just your line of play.",
+      "imagePrompt": "A teenage boy beside the green with his putter, preparing to putt while a sprinkler head interferes with his line but not his stance or swing.",
+      "imageAlt": "Boy golfer by green, preparing to putt with a sprinkler in his putting line but not in his stance.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "medium",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "yellow",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-08.png",
+      "ruleNumber": "R11",
+      "ruleName": "Ball deflected by marker",
+      "group": "Ball deflected by marker",
+      "title": "Ball hits a ball-marker",
+      "question": "If your ball accidentally hits a ball-marker and is deflected, what should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball as it lies without penalty."
+        },
+        {
+          "id": "b",
+          "text": "Replace your ball and the marker."
+        },
+        {
+          "id": "c",
+          "text": "Move your ball back to its original spot."
+        },
+        {
+          "id": "d",
+          "text": "Add one penalty stroke and replay the shot."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You play the ball from where it ends up with no penalty.",
+      "imagePrompt": "A teen girl on the green watches as her putted ball accidentally hits a small flat ball-marker left by another player.",
+      "imageAlt": "Girl golfer's ball on green deflected by a ball-marker.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "replaying_shot",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "yellow",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-08.png",
+      "ruleNumber": "R11",
+      "ruleName": "Ball hits another ball",
+      "group": "Ball hits another ball",
+      "title": "Ball striking another ball on the green",
+      "question": "You putt from the green and your ball strikes another ball at rest on the green. What happens?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You get 2 penalty strokes and must play your ball as it lies; the moved ball is replaced."
+        },
+        {
+          "id": "b",
+          "text": "You must replay your shot with no penalty."
+        },
+        {
+          "id": "c",
+          "text": "You continue play without penalty."
+        },
+        {
+          "id": "d",
+          "text": "Both balls are played from where they ended up."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "In stroke play, you get 2 penalty strokes and must play your ball as it lies, replacing the ball that was moved.",
+      "imagePrompt": "A teenage boy putting on the green, his ball striking another ball already at rest nearby.",
+      "imageAlt": "Boy golfer's ball striking another ball on the green.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "replaying_shot",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "navy",
+        "hat": false
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-08.png",
+      "ruleNumber": "R16",
+      "ruleName": "Puddles and other abnormal course conditions",
+      "group": "Puddles and other abnormal course conditions",
+      "title": "Taking relief from a puddle or abnormal course condition",
+      "question": "Your ball is on the putting green and there is a puddle between your ball and the hole, affecting your line of play. What do the rules say you are allowed to do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Place the ball at the nearest spot where the puddle does not affect your line, no closer to the hole, with no penalty."
+        },
+        {
+          "id": "b",
+          "text": "Try to avoid the puddle and play your ball as it lies."
+        },
+        {
+          "id": "c",
+          "text": "Place your ball closer to the hole to find a dry line."
+        },
+        {
+          "id": "d",
+          "text": "Take a penalty stroke and drop your ball anywhere on the green."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You are allowed to place your ball at the nearest point where the puddle does not interfere, not nearer the hole, with no penalty.",
+      "imagePrompt": "A teenage golfer placing the ball on the putting green to the nearest point of relief from a puddle affecting the line to the hole.",
+      "imageAlt": "Teen golfer on the green placing ball to avoid puddle, not nearer the hole.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "dropping_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "green",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-08.png",
+      "ruleNumber": "R16",
+      "ruleName": "Sprinklers",
+      "group": "Sprinklers",
+      "title": "Interference from a sprinkler near the green",
+      "question": "If a sprinkler head by the green is only in your putting line but does not affect your stance or the area of your intended swing, what must you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Take free relief and move your ball."
+        },
+        {
+          "id": "b",
+          "text": "Play your ball as it lies."
+        },
+        {
+          "id": "c",
+          "text": "Move your ball to the fringe without penalty."
+        },
+        {
+          "id": "d",
+          "text": "Take a penalty and move your ball."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You only get free relief when the sprinkler interferes with your stance or your area of intended swing, not just your line of play.",
+      "imagePrompt": "A teenage golfer preparing to putt from just off the green with a sprinkler on their intended line, but not in their stance or swing.",
+      "imageAlt": "Teen golfer by the green, sprinkler is only in the putting line and not interfering with stance.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "navy",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-08.png",
+      "ruleNumber": "R11",
+      "ruleName": "Ball deflected by marker",
+      "group": "Ball deflected by marker",
+      "title": "Ball hits a ball-marker",
+      "question": "If your ball accidentally hits a ball-marker on the green and is deflected to a new spot, what should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball from where it comes to rest with no penalty."
+        },
+        {
+          "id": "b",
+          "text": "Replace your ball and the marker."
+        },
+        {
+          "id": "c",
+          "text": "Move the ball back to its original spot and continue."
+        },
+        {
+          "id": "d",
+          "text": "Add one penalty stroke and replay the putt."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "If your ball strikes a ball-marker on the green, you play the ball from where it ends up, with no penalty.",
+      "imagePrompt": "A teenage golfer on the putting green observing their ball after it accidentally strikes a ball-marker left by another player.",
+      "imageAlt": "Teenager's ball on green deflected by a ball-marker.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "replaying_shot",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "white",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-08.png",
+      "ruleNumber": "R11",
+      "ruleName": "Ball hits another ball",
+      "group": "Ball hits another ball",
+      "title": "Ball striking another ball on the green",
+      "question": "In stroke play, you putt from the green and your ball accidentally hits another ball at rest on the green. What do the rules say?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You get 2 penalty strokes. Play your ball as it lies and replace the moved ball."
+        },
+        {
+          "id": "b",
+          "text": "You must replay your shot with no penalty."
+        },
+        {
+          "id": "c",
+          "text": "You continue play with no penalty."
+        },
+        {
+          "id": "d",
+          "text": "Both balls are played from where they finished."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "In stroke play, if your ball played from the putting green hits another at rest on the green, you get two penalty strokes. You play your ball as it lies and replace the other ball.",
+      "imagePrompt": "A teenage golfer putting on the green, with one ball colliding into another ball at rest nearby.",
+      "imageAlt": "Teenager's ball from a putt striking another ball on the green.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "replaying_shot",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "medium",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "green",
+        "hat": true
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "016_001_Taking_relief_from_a_puddle_or_abnormal_course_condition",
+    "016_002_Interference_from_a_sprinkler_near_the_green",
+    "011_003_Ball_hits_a_ball_marker",
+    "011_004_Ball_striking_another_ball_on_the_green"
+  ],
+  "updatedAtUtc": "2026-04-24T23:41:27.805Z"
+}

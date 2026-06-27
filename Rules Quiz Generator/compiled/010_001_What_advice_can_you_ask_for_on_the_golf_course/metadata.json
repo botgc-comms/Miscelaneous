@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-28.png",
+  "ruleNumber": "R10",
+  "ruleName": "Advice and line of play",
+  "group": "Advice and line of play",
+  "type": "multiple_choice",
+  "imagePrompt": "A teen girl golfer stands on the fairway, asking a friend to point out the line of play toward a flag that is hidden from view. The landscape includes short grass and some trees, but the green is not visible.",
+  "imageAlt": "Teen girl golfer on the fairway asking a friend to indicate the direction to the flag she can't see.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "navy",
+    "clothingBottomColour": "blue",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Minor: The friend’s shorts are tan/beige, not blue as specified, but this does not affect rules illustration or equipment accuracy."
+    ],
+    "repairPrompt": "Adjust the golfer's friend's shorts to be blue in color to match the specified clothing bottom color."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What can you ask another player when you can't see the flag?",
+      "question": "Your ball is behind some bushes and you can't see the flag. Which of these can you ask your friend?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "To tell you which club to use for your shot"
+        },
+        {
+          "id": "b",
+          "text": "To point and show you where the hole is"
+        },
+        {
+          "id": "c",
+          "text": "To tell you how to hit the ball"
+        },
+        {
+          "id": "d",
+          "text": "To tell you how many steps it is to the green"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "You are allowed to ask a friend to point and show you the direction of the hole. But they can't tell you which club to use or how to hit your shot.",
+      "vocabulary": [
+        {
+          "term": "Flag",
+          "simpleMeaning": "The flag is the stick with a flag on top that stands in the hole you are aiming for."
+        },
+        {
+          "term": "Club",
+          "simpleMeaning": "A club is what you use to hit the golf ball."
+        },
+        {
+          "term": "Shot",
+          "simpleMeaning": "A shot is when you hit the ball."
+        }
+      ],
+      "teachingTip": "Draw a simple map showing a ball behind bushes and ask kids to point to where the hole might be. Emphasise that showing direction is ok, but choosing clubs is advice and not allowed.",
+      "likelyMisconceptions": [
+        "Some kids may think it is ok to ask which club to use.",
+        "Some kids may think any question is allowed as long as it helps find the flag."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "What advice can you ask for on the golf course?",
+      "question": "You can't see the flag from where your ball is. Which of these are you allowed to ask a fellow player?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "To recommend a club for your next shot"
+        },
+        {
+          "id": "b",
+          "text": "To point out the direction of the hole"
+        },
+        {
+          "id": "c",
+          "text": "To tell you how to play the shot"
+        },
+        {
+          "id": "d",
+          "text": "To tell you how far it is to the green"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "You are allowed to ask someone to physically point out the direction or line of play, but you are not allowed to ask for advice on which club to use or how to play the shot."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "010_001_What_advice_can_you_ask_for_on_the_golf_course",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.502Z"
+  }
+}

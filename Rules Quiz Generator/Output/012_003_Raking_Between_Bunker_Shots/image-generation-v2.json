@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\012_003_Raking_Between_Bunker_Shots\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:22:04.206Z",
+  "title": "Raking Between Bunker Shots",
+  "ruleNumber": "R12",
+  "ruleName": "Ball stays in bunker",
+  "durationSeconds": 180.924
+}

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\009_001_Ball_moved_while_looking_for_it\\metadata.json",
+  "sourceImageName": "pageb-12.png",
+  "ruleNumber": "R9",
+  "ruleName": "Ball at rest is moved",
+  "title": "Ball moved while looking for it",
+  "question": "If you accidentally move your ball while searching for it in the rough, what should you do according to the rules?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball from where it ends up"
+    },
+    {
+      "id": "b",
+      "text": "Replace the ball without penalty"
+    },
+    {
+      "id": "c",
+      "text": "Replace the ball and take a one-stroke penalty"
+    },
+    {
+      "id": "d",
+      "text": "Drop a new ball and play on"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If your ball is accidentally moved while searching for it, you must put it back without penalty.",
+  "juniorVersion": {
+    "title": "What to do if you move your ball by mistake while looking for it",
+    "question": "You are looking for your ball in the long grass. Your foot moves the ball by accident. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Hit the ball from where it stopped"
+      },
+      {
+        "id": "b",
+        "text": "Put the ball back where it was with no penalty"
+      },
+      {
+        "id": "c",
+        "text": "Put the ball back and add one penalty shot"
+      },
+      {
+        "id": "d",
+        "text": "Drop a new ball and keep playing"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If you move your golf ball by mistake when you are looking for it, just put it back where it was. You do not have to count a penalty.",
+    "vocabulary": [
+      {
+        "term": "Penalty",
+        "simpleMeaning": "Extra shots you must add to your score if you break a rule."
+      },
+      {
+        "term": "Rough",
+        "simpleMeaning": "The area with long grass next to the short grass (fairway) on a golf course."
+      }
+    ],
+    "teachingTip": "Show children how to look for a ball in long grass using a club or gently moving grass with a foot, reminding them to watch where the ball is.",
+    "likelyMisconceptions": [
+      "Some might think they have to play the ball from the new spot. Remind them the ball must go back to where it was.",
+      "Some might think they get a penalty every time the ball moves. Explain there is no penalty if it only moves while you are trying to find it."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:48.692Z",
+  "model": "gpt-4.1"
+}

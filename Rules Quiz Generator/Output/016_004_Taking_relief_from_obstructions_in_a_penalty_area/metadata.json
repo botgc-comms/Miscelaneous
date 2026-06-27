@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-28.png",
+  "ruleNumber": "R16",
+  "ruleName": "Abnormal course conditions",
+  "group": "Abnormal course conditions",
+  "title": "Taking relief from obstructions in a penalty area",
+  "question": "Your ball is in a penalty area next to a bridge and a puddle. Which actions are allowed under the rules?",
+  "type": "multi_select",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball as it lies"
+    },
+    {
+      "id": "b",
+      "text": "Take relief by dropping a ball outside the penalty area with a 1-stroke penalty"
+    },
+    {
+      "id": "c",
+      "text": "Take free relief from the bridge"
+    },
+    {
+      "id": "d",
+      "text": "Take free relief from the puddle"
+    }
+  ],
+  "correctAnswer": [
+    "a",
+    "b"
+  ],
+  "correctAnswers": [
+    "a",
+    "b"
+  ],
+  "explanation": "When your ball is in a penalty area, free relief is not available from obstructions or temporary water. You may either play it as it lies or take penalty area relief for one penalty stroke.",
+  "imagePrompt": "A teen boy golfer stands next to a stream in a red penalty area, with his ball close to a small bridge and a puddle. He thinks about what to do.",
+  "imageAlt": "Teen boy in a penalty area by a bridge and puddle, considering his options for playing.",
+  "sceneSpec": {
+    "setting": "penalty_area_edge",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "red",
+    "waterVisible": true,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "dark",
+    "clothingTopColour": "navy",
+    "clothingBottomColour": "yellow",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The puddle near the ball could be depicted as slightly more obvious, but is still present.",
+      "The bridge is present but somewhat in the distance; a slightly clearer proximity to the ball might help the educational context."
+    ],
+    "repairPrompt": "Make the nearby puddle more visually distinct and show the small bridge closer to the ball, emphasizing its proximity to the penalty area situation."
+  }
+}

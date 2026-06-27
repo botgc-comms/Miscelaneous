@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_065_Lateral_Relief_from_a_Red_Penalty_Area\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "17.1d(3)",
+  "ruleName": "Relief for Ball in Penalty Area",
+  "title": "Lateral Relief from a Red Penalty Area",
+  "question": "After your ball comes to rest in a red penalty area, how far from the point where the ball last crossed the edge of the penalty area may you drop under the lateral relief option?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "One club-length."
+    },
+    {
+      "id": "b",
+      "text": "Two club-lengths."
+    },
+    {
+      "id": "c",
+      "text": "Three club-lengths."
+    },
+    {
+      "id": "d",
+      "text": "As far back as you wish."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "When taking lateral relief from a red penalty area under Rule 17.1d(3), you must drop the ball within two club-lengths of the point where the ball last crossed the edge of the penalty area, not nearer the hole.",
+  "juniorVersion": {
+    "title": "Dropping Your Ball Next to a Red Penalty Area",
+    "question": "If your ball goes into a red penalty area, how far from where it went in can you drop your ball to play your next shot?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "One club-length."
+      },
+      {
+        "id": "b",
+        "text": "Two club-lengths."
+      },
+      {
+        "id": "c",
+        "text": "Three club-lengths."
+      },
+      {
+        "id": "d",
+        "text": "As far back as you want."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If your ball stops in a red penalty area, you can drop your ball within two club-lengths from where it went into the area, but not closer to the hole.",
+    "vocabulary": [
+      {
+        "term": "Red penalty area",
+        "simpleMeaning": "A place on the golf course marked with red lines or stakes, like a pond or stream, where it’s hard to play your ball."
+      },
+      {
+        "term": "Club-length",
+        "simpleMeaning": "The length of your longest club, except the putter. You can use it to measure how far to drop your ball."
+      }
+    ],
+    "teachingTip": "Show the two club-length area with clubs on the ground and ask the child to walk where they can drop the ball. Let them help measure with a club.",
+    "likelyMisconceptions": [
+      "Children may think they can drop the ball anywhere or as far as they want from the penalty area.",
+      "They might measure with a putter instead of their longest club (not the putter)."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T19:41:43.239Z",
+  "model": "gpt-4.1"
+}

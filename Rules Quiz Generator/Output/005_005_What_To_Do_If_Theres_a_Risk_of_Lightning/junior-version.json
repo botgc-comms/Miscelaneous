@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\005_005_What_To_Do_If_Theres_a_Risk_of_Lightning\\metadata.json",
+  "sourceImageName": "page-04.png",
+  "ruleNumber": "R5",
+  "ruleName": "Suspension of play/thunderstorm",
+  "title": "What To Do If There's a Risk of Lightning",
+  "question": "If you think there is a risk of lightning nearby while you are playing, what should you do according to the Rules of Golf?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Keep playing until the Committee officially suspends play"
+    },
+    {
+      "id": "b",
+      "text": "Wait for your friends to decide"
+    },
+    {
+      "id": "c",
+      "text": "Stop playing immediately for your own safety"
+    },
+    {
+      "id": "d",
+      "text": "Only stop playing if it starts to rain"
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "If you believe there is a danger from lightning, you should stop play at once, even if the Committee has not yet officially suspended play.",
+  "juniorVersion": {
+    "title": "What Should You Do If There’s Lightning Nearby?",
+    "question": "You hear thunder or see lightning while playing golf. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Keep playing until someone who runs the game tells you to stop"
+      },
+      {
+        "id": "b",
+        "text": "Let your friends decide what to do"
+      },
+      {
+        "id": "c",
+        "text": "Stop playing right away to stay safe"
+      },
+      {
+        "id": "d",
+        "text": "Only stop playing if it starts to rain"
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "If you see lightning or hear thunder, you must stop playing golf straight away, even if the main people in charge haven’t told everyone to stop yet. This keeps you safe.",
+    "vocabulary": [
+      {
+        "term": "Lightning",
+        "simpleMeaning": "A bright flash of electricity during a storm. It can be very dangerous."
+      },
+      {
+        "term": "Committee",
+        "simpleMeaning": "The group of people in charge of the golf competition or course."
+      }
+    ],
+    "teachingTip": "Remind children that safety always comes first. Practise what to do if there’s a thunderstorm before you go out to play.",
+    "likelyMisconceptions": [
+      "Some children may think it’s OK to keep playing if the Committee hasn’t told them to stop.",
+      "Some might wait for rain or for others to choose."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:24.425Z",
+  "model": "gpt-4.1"
+}

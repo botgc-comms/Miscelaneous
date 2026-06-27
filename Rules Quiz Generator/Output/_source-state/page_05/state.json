@@ -1,0 +1,465 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-05.png",
+  "sourceImagePath": "Input\\page-05.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-05.png",
+      "ruleNumber": "R5",
+      "ruleName": "Late arrival",
+      "group": "Late arrival",
+      "title": "Penalty for Arriving Late to the Tee",
+      "question": "If you arrive at the tee 3 minutes after your tee time, what happens?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You can play with no penalty"
+        },
+        {
+          "id": "b",
+          "text": "You get 2 penalty strokes"
+        },
+        {
+          "id": "c",
+          "text": "You are disqualified"
+        },
+        {
+          "id": "d",
+          "text": "You receive a warning only"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "Arriving up to 5 minutes late to the tee results in a 2-stroke penalty.",
+      "imagePrompt": "A teenage girl rushes towards the teeing area where a clock shows she is just a few minutes late. Other players are waiting.",
+      "imageAlt": "Teen girl arriving late at the tee with other golfers waiting and a visible clock.",
+      "sceneSpec": {
+        "setting": "teeing_area",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "medium",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "orange",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-05.png",
+      "ruleNumber": "R4",
+      "ruleName": "Maximum of 14 clubs",
+      "group": "Maximum of 14 clubs",
+      "title": "Too Many Clubs Discovered After Starting Round",
+      "question": "You realise after starting your round that you have 16 clubs in your bag. What should you do to avoid disqualification?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Use all your clubs until the end of the round"
+        },
+        {
+          "id": "b",
+          "text": "Immediately declare the extra clubs out of play"
+        },
+        {
+          "id": "c",
+          "text": "Give the extra clubs to another player"
+        },
+        {
+          "id": "d",
+          "text": "Finish the hole, then remove the extras"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You must instantly declare extra clubs out of play if you discover them after starting the round.",
+      "imagePrompt": "A teenage boy on the fairway counting clubs in his bag, looking surprised, while another player looks on.",
+      "imageAlt": "Teen boy counting golf clubs on the fairway with another player.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "medium",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "navy",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-05.png",
+      "ruleNumber": "R4",
+      "ruleName": "Maximum of 14 clubs",
+      "group": "Maximum of 14 clubs",
+      "title": "Borrowing a Club During a Round",
+      "question": "Can you borrow a club from another player to play a stroke during a round?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, as long as you ask politely"
+        },
+        {
+          "id": "b",
+          "text": "No, borrowing clubs during the round is not allowed"
+        },
+        {
+          "id": "c",
+          "text": "Yes, but only for putting"
+        },
+        {
+          "id": "d",
+          "text": "Yes, but only once per round"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You are not allowed to borrow a club from another player during the round to make a stroke.",
+      "imagePrompt": "A teenage girl gestures to borrow a club from another player's bag but is politely refused.",
+      "imageAlt": "Teen girl trying to borrow a club from another golfer who shakes their head.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "black",
+        "clothingBottomColour": "orange",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-05.png",
+      "ruleNumber": "R6",
+      "ruleName": "The honour/order of play",
+      "group": "The honour/order of play",
+      "title": "Order of Play on the First Tee",
+      "question": "How is the order of play decided for players on the first tee?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Players decide among themselves"
+        },
+        {
+          "id": "b",
+          "text": "The order is based on who arrived first"
+        },
+        {
+          "id": "c",
+          "text": "The order is taken from the list of tee times (the draw)"
+        },
+        {
+          "id": "d",
+          "text": "Based on handicap"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "The order of play on the first tee comes from the draw (list of tee times).",
+      "imagePrompt": "Two teenage boys on the tee, one checking a piece of paper with tee times, the other prepares to play first.",
+      "imageAlt": "Two teen boys at the tee; one checking tee times, the other ready to play.",
+      "sceneSpec": {
+        "setting": "teeing_area",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "dark",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "black",
+        "hat": true
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-05.png",
+      "ruleNumber": "R5",
+      "ruleName": "Late arrival",
+      "group": "Late arrival",
+      "title": "Penalty for Arriving Late to the Tee",
+      "question": "If you arrive at the tee 3 minutes after your starting time, what is the penalty?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You may play but receive a two-stroke penalty"
+        },
+        {
+          "id": "b",
+          "text": "You are disqualified"
+        },
+        {
+          "id": "c",
+          "text": "You can play with no penalty"
+        },
+        {
+          "id": "d",
+          "text": "You receive a warning only"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "If you arrive within five minutes after your starting time, you may play but must add two penalty strokes. Arriving later than five minutes results in disqualification.",
+      "imagePrompt": "A teenage girl hurries towards the teeing ground where a clock shows she is a few minutes late. Another group of players waits by the tee marker, some looking at their watches.",
+      "imageAlt": "Teen girl arriving late at the tee with a clock visible and other golfers waiting.",
+      "sceneSpec": {
+        "setting": "teeing_area",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "light",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "blue",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-05.png",
+      "ruleNumber": "R4",
+      "ruleName": "Maximum of 14 clubs",
+      "group": "Maximum of 14 clubs",
+      "title": "Too Many Clubs Discovered After Starting Round",
+      "question": "During your round you find that you have more than 14 clubs in your bag. What should you do right away to avoid further penalties?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Declare any extra clubs out of play immediately"
+        },
+        {
+          "id": "b",
+          "text": "Keep using all the clubs"
+        },
+        {
+          "id": "c",
+          "text": "Wait until you finish the hole to remove the extras"
+        },
+        {
+          "id": "d",
+          "text": "Give the extra clubs to another player"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You must instantly declare any clubs over the 14-club limit out of play as soon as you realise it. Leaving them in play will cause additional penalties for each hole you play with too many clubs.",
+      "imagePrompt": "A teenage boy on the fairway counting his clubs and looking surprised, while another golfer stands nearby.",
+      "imageAlt": "Teen boy counting golf clubs on the fairway, looking surprised, with another player watching.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "medium",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "purple",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-05.png",
+      "ruleNumber": "R4",
+      "ruleName": "Maximum of 14 clubs",
+      "group": "Maximum of 14 clubs",
+      "title": "Borrowing a Club During a Round",
+      "question": "Are you allowed to borrow a club from another player and use it to make a stroke during a round?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No, you are not allowed to borrow clubs from other players during a round"
+        },
+        {
+          "id": "b",
+          "text": "Yes, as long as you ask politely"
+        },
+        {
+          "id": "c",
+          "text": "Yes, but only for putting"
+        },
+        {
+          "id": "d",
+          "text": "Yes, but only once per round"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You may not borrow a club from another player to make a stroke during your round. Every player must play only with their own clubs.",
+      "imagePrompt": "A teenage girl asks to borrow a club from another player, who politely refuses by shaking their head.",
+      "imageAlt": "Teen girl trying to borrow a club from another golfer who is shaking their head no.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "medium",
+        "clothingTopColour": "orange",
+        "clothingBottomColour": "grey",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-05.png",
+      "ruleNumber": "R6",
+      "ruleName": "The honour/order of play",
+      "group": "The honour/order of play",
+      "title": "Order of Play on the First Tee",
+      "question": "How is the order of play for players decided on the first tee?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "The order is taken from the list of tee times (the draw)"
+        },
+        {
+          "id": "b",
+          "text": "Players decide among themselves"
+        },
+        {
+          "id": "c",
+          "text": "The order is based on who arrived first"
+        },
+        {
+          "id": "d",
+          "text": "Based on handicap"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "On the first tee, player order is based on the official draw or tee time list provided by the organisers.",
+      "imagePrompt": "Two teenage boys stand on the teeing ground. One is checking a paper listing the tee order while the other prepares to hit first.",
+      "imageAlt": "Two teen boys at the tee; one checking the starting order, the other ready to play.",
+      "sceneSpec": {
+        "setting": "teeing_area",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "medium",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "yellow",
+        "hat": true
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "005_001_Penalty_for_Arriving_Late_to_the_Tee",
+    "004_002_Too_Many_Clubs_Discovered_After_Starting_Round",
+    "004_003_Borrowing_a_Club_During_a_Round",
+    "006_004_Order_of_Play_on_the_First_Tee"
+  ],
+  "updatedAtUtc": "2026-04-24T19:28:15.998Z"
+}

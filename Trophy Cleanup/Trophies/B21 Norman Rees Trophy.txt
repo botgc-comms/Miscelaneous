@@ -1,0 +1,5 @@
+{
+  "text": ["Presented By", "N. J. Rees Esq", "In Memory of his Pal", "Stanley Sayer"],
+  "allowText": true,
+  "notes": ""
+}

@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_015_Removing_Loose_Sand_on_the_Fringe\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "13.1c & 8.1a",
+  "ruleName": "Improvements Allowed on the Putting Green; Actions That Improve Conditions Affecting the Stroke",
+  "title": "Removing Loose Sand on the Fringe",
+  "question": "Your ball is just off the putting green on the fringe. There is a patch of loose sand on the fringe directly between your ball and the hole. Before putting, can you brush the sand away?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes. Loose sand may always be removed."
+    },
+    {
+      "id": "b",
+      "text": "Yes. You are putting, so the putting green rules apply."
+    },
+    {
+      "id": "c",
+      "text": "No. You are not allowed to remove loose sand from the fringe to improve your line of play."
+    },
+    {
+      "id": "d",
+      "text": "Yes, but only if you use your hand rather than a towel."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "The special permission to remove sand and loose soil only applies on the putting green. The fringe is part of the general area, so deliberately brushing away loose sand to improve your line of play is not allowed.",
+  "juniorVersion": {
+    "title": "Can You Brush Away Sand Next to the Green?",
+    "question": "Your ball is just outside the putting green, on the short grass next to it (the fringe). There is some loose sand between your ball and the hole. Before you putt, can you brush the sand away?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Yes. You can always remove loose sand."
+      },
+      {
+        "id": "b",
+        "text": "Yes. You are putting, so you can use the putting green rules."
+      },
+      {
+        "id": "c",
+        "text": "No. You can't clear loose sand from the fringe to help your shot."
+      },
+      {
+        "id": "d",
+        "text": "Yes, but only if you use your hand and not a towel."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "You can only brush away loose sand if your ball is on the putting green. The fringe is the grass next to the green, so you can't clear sand from there to make your putt easier.",
+    "vocabulary": [
+      {
+        "term": "fringe",
+        "simpleMeaning": "The short grass around the edge of the putting green."
+      },
+      {
+        "term": "putting green",
+        "simpleMeaning": "The smooth grass around the hole where you putt."
+      },
+      {
+        "term": "loose sand",
+        "simpleMeaning": "Sand that is just lying on top of the ground, not packed down."
+      }
+    ],
+    "teachingTip": "When you are putting from the putting green, you can clear away loose sand, but if your ball is on the fringe, you can't clear sand out of your way for your putt.",
+    "likelyMisconceptions": [
+      "Some think putting rules always let you move sand, but it only works on the putting green.",
+      "Some think you can clear sand anywhere, but the fringe is not the same as the green."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:03:43.090Z",
+  "model": "gpt-4.1"
+}

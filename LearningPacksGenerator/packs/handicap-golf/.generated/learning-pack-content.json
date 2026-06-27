@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "packId": "handicap-golf",
+  "title": "From junior competitions to handicap golf",
+  "audience": "Brand new junior golfers and non-golfing parents",
+  "pages": [
+    {
+      "id": "00-intro",
+      "title": "What a handicap is",
+      "file": "pages/00-intro.md",
+      "type": "content",
+      "assetFile": "intro.png",
+      "imageAlt": "A friendly young golfer smiling next to an adult, both holding golf clubs on a sunny golf course.",
+      "imagePrompt": "A photorealistic image of a smiling junior golfer and a supportive adult on a green golf course, both holding golf clubs, soft natural lighting, no logos or branding, family-friendly atmosphere.",
+      "markdown": "# What a handicap is\n\nA golf handicap is a simple way to help players of all abilities enjoy fair games together. For juniors just starting out, it might sound complicated, but it isn’t hard to understand. \n\nYour handicap is a number that shows how good you are at golf. It doesn’t mean you need a certain skill or fancy clubs. Think of it as your personal score card. The higher your handicap, the more shots you are allowed to take – making it easier to play against people who have been playing golf for longer.\n\nWhen you take part in some competitions, your scores are used to calculate your handicap. This lets everyone, including adults or more experienced juniors, compete together in a fair way, even if someone is new to the game. \n\nAt first, you don’t need to worry too much about getting everything perfect – everyone starts somewhere. Getting a golf handicap shows you are making progress and helps you focus on your own improvement. It’s a positive step in your golfing journey.",
+      "quiz": null
+    },
+    {
+      "id": "01-submitting",
+      "title": "Submitting scores",
+      "file": "pages/01-submitting.md",
+      "type": "content",
+      "assetFile": "submitting.png",
+      "imageAlt": "A young golfer handing a scorecard to a friendly club official near a clubhouse.",
+      "imagePrompt": "A photorealistic image of a young golfer giving a scorecard to a welcoming club official outside a golf clubhouse, both smiling, sunny weather, relaxed atmosphere, no text or brand names.",
+      "markdown": "# Submitting scores\n\nWhen you play in certain competitions or rounds at your club, you’ll be asked to submit your score. This means writing down how many shots you took on each hole, often with the help of an adult or a more experienced junior. You don’t need to remember complicated maths – just play your round and record your scores honestly.\n\nAfter the round, your scores go on a scorecard. This is usually signed by you and someone who watched your game, who is called a 'marker'. Often, this is another player or an adult. Hand the scorecard in at the clubhouse, usually to a friendly club official or through a special collection point.\n\nYour scores are then used to check your progress and help update your handicap. There’s no rush and no pressure – submitting scores is part of learning and helps make play fair for everyone. If you’re not sure what to do, don’t be afraid to ask. Club staff and other golfers are always happy to help junior players!",
+      "quiz": null
+    },
+    {
+      "id": "02-changes",
+      "title": "What changes",
+      "file": "pages/02-changes.md",
+      "type": "content",
+      "assetFile": "changes.png",
+      "imageAlt": "A junior golfer checking a noticeboard or digital screen with updated golf scores at a club.",
+      "imagePrompt": "A photorealistic image of a junior golfer looking at a golf club noticeboard or digital screen that displays golf scores and handicaps, the setting is bright and friendly, no text, no brand names, suitable for children and parents.",
+      "markdown": "# What changes\n\nWhen juniors start submitting scores for a handicap, a few things change in how you take part in golf at your club. Most of all, your scores begin to matter for your personal progress, not just for fun or winning prizes.\n\nFirst, your scores are now used to calculate and update your handicap. This means, over time, your number will adjust as you improve (or have a tougher day on the course). It encourages steady progress rather than worrying about being perfect straight away.\n\nWith a handicap, you might also be able to join more competitions or play from different tees. Some events are just for juniors with handicaps. Others, you may play alongside adults, with your handicap helping to keep things fair.\n\nThere’s nothing to worry about if your scores aren’t brilliant right away. Everyone’s handicap changes as they learn, especially when they are new. It’s all about having fun, learning the game together, and celebrating personal milestones.\n\nIf you ever feel unsure or confused, the club’s junior organiser or staff are there to guide you.",
+      "quiz": null
+    },
+    {
+      "id": "03-support",
+      "title": "Getting support",
+      "file": "pages/03-support.md",
+      "type": "content",
+      "assetFile": "support.png",
+      "imageAlt": "A junior golfer, a parent, and a club organiser talking and smiling near the first tee.",
+      "imagePrompt": "A photorealistic image of a young golfer, a caring parent, and a helpful club organiser having a friendly conversation at the first tee of a golf course, green scenery, sunny day, no signage or branding.",
+      "markdown": "# Getting support\n\nGolf clubs are welcoming places, and junior golfers never need to feel alone. If you’re unsure about anything – whether it’s how to write scores on your card, what a handicap means, or if you just need a bit of encouragement – there are plenty of people ready to help.\n\nParents, even if you don’t know golf yourself, you are still a big help. Encourage your child to ask questions and remind them that everyone started out as a beginner. Club staff, junior organisers, and other families are used to helping new players and will happily show you what to do.\n\nMany clubs also have junior sections or coaching groups. These are great chances to make friends and learn from others at your level. Never feel embarrassed to ask for help or to join in with activities – golf is all about enjoying yourself and making steady progress.\n\nRemember, it takes time to build confidence. Celebrate each small success along the way, and keep open communication with the club team. Everyone at the club wants you and your child to have a positive experience.",
+      "quiz": null
+    }
+  ]
+}

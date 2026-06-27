@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "17.1d(3)",
+  "ruleName": "Relief for Ball in Penalty Area",
+  "group": "Penalty Areas",
+  "title": "Lateral Relief from a Red Penalty Area",
+  "question": "After your ball comes to rest in a red penalty area, how far from the point where the ball last crossed the edge of the penalty area may you drop under the lateral relief option?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "One club-length."
+    },
+    {
+      "id": "b",
+      "text": "Two club-lengths."
+    },
+    {
+      "id": "c",
+      "text": "Three club-lengths."
+    },
+    {
+      "id": "d",
+      "text": "As far back as you wish."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "When taking lateral relief from a red penalty area under Rule 17.1d(3), you must drop the ball within two club-lengths of the point where the ball last crossed the edge of the penalty area, not nearer the hole.",
+  "imagePrompt": "A modern, semi-realistic illustration (75% realistic, 25% stylised) of a golfer taking lateral relief from a red penalty area on a lush green golf hole. The red penalty area, marked by red stakes or a red line, runs beside a pond. The player's original ball sits just inside the penalty area edge. The golfer is holding another ball out over the grass, about to let go and drop it outside the penalty area. The scene is well-lit and visually clear. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer prepares to drop a ball for lateral relief next to a red penalty area, with the original ball visible just inside the red boundary.",
+  "sceneSpec": {
+    "setting": "A golf hole with a visible red penalty area (for example, a pond with red stakes or red lines along the edge).",
+    "players": "One player preparing to drop another ball outside the penalty area, with a club in hand.",
+    "ballPosition": "The original ball is shown just inside the red-staked penalty area near its margin; a second ball is in the process of being dropped outside the penalty area.",
+    "ruleMoment": "The moment just before the player releases the ball to drop it within the allowed area for lateral relief.",
+    "educationalFocus": "Clarifies the specific relief area (two club-lengths) available for a ball last crossing into a red penalty area.",
+    "mustShow": [
+      "Red stakes or red line clearly marking the boundary of the penalty area",
+      "A player holding a ball over the grass just outside the penalty area, ready to drop",
+      "A dropped ball about to land or freshly released"
+    ],
+    "mustNotShow": [
+      "Any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles"
+    ]
+  }
+}

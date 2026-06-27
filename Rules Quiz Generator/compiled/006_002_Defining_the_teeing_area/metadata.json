@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-06.png",
+  "ruleNumber": "6",
+  "ruleName": "Teeing area",
+  "group": "Teeing area",
+  "type": "multiple_choice",
+  "imagePrompt": "A teenage boy is about to hit a tee shot, with the ball placed completely within the area marked by two visible tee markers. His feet are placed just outside the teeing area.",
+  "imageAlt": "Teen boy preparing to tee off with ball correctly inside the space between yellow tee markers.",
+  "sceneSpec": {
+    "setting": "teeing_area",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "driver",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": true,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "light",
+    "clothingTopColour": "grey",
+    "clothingBottomColour": "navy",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "Feet placement very close to line, but outside the teeing area as required.",
+      "Everything else matches the prompt well: girl, correct ethnicity and light skin tone, grey top, navy trousers, realistic driver, plausible posture, single ball, visible tee markers."
+    ],
+    "repairPrompt": "Move the girl's feet slightly further outside the teeing area to make their position more visually unambiguous. Ensure all other prompt details remain unchanged."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Where Can You Place Your Ball When Starting a Hole?",
+      "question": "When you start a hole, where should you put your ball on the tee to hit your first shot?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Anywhere within 2 club-lengths of the tee markers, even if your feet stand outside."
+        },
+        {
+          "id": "b",
+          "text": "Right between the two tee markers, in a straight line."
+        },
+        {
+          "id": "c",
+          "text": "Completely inside the teeing area. This is between the two tee markers and up to two club-lengths behind them."
+        },
+        {
+          "id": "d",
+          "text": "Anywhere on the tee, as long as your feet are inside the teeing area."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "Your ball has to be all the way inside the teeing area before you hit your first shot. Your feet can be outside, but your ball cannot.",
+      "vocabulary": [
+        {
+          "term": "tee markers",
+          "simpleMeaning": "The markers show where the teeing area starts on each side."
+        },
+        {
+          "term": "teeing area",
+          "simpleMeaning": "The space where you start each hole. It is between the tee markers and goes back two club-lengths."
+        },
+        {
+          "term": "club-length",
+          "simpleMeaning": "The length of your golf club. You can use it to measure the teeing area."
+        }
+      ],
+      "teachingTip": "Set up two objects as tee markers and have kids practise placing the ball in the correct spot. Use a club to show how far back the teeing area goes.",
+      "likelyMisconceptions": [
+        "That your feet must also be inside the teeing area when hitting.",
+        "That you have to put the ball right in line between the markers, not behind."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Defining the teeing area",
+      "question": "When starting a hole, where must the ball be placed for your first shot from the teeing area?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Anywhere within 2 club-lengths from the tee markers, even if your feet are outside."
+        },
+        {
+          "id": "b",
+          "text": "Directly on the line joining the two tee markers."
+        },
+        {
+          "id": "c",
+          "text": "Completely inside the teeing area, which is defined by the tee markers and up to two club-lengths behind them."
+        },
+        {
+          "id": "d",
+          "text": "Anywhere on the teeing ground as long as your stance is inside it."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "The ball must be entirely inside the teeing area for your first shot, although your stance can be outside the area."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "006_002_Defining_the_teeing_area",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.334Z"
+  }
+}

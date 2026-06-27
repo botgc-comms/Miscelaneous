@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "16.1",
+  "ruleName": "Relief from Immovable Obstructions",
+  "group": "General Play",
+  "type": "multiple_choice",
+  "imagePrompt": "Illustrate a modern golf course scene where a golf ball is resting on a paved patio attached to a clubhouse, clearly situated behind the green with the flagstick visible. Show a golfer standing close by, looking at the ball on the patio and holding a golf club. The setting should feel realistic with a slight stylised touch; aim for a polished, semi-realistic illustration that is about 75% realistic and 25% stylised. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer observes their ball lying on a paved patio behind the green, next to a modern clubhouse.",
+  "sceneSpec": {
+    "setting": "A modern golf course showing a green with a clubhouse and attached paved patio directly behind the green.",
+    "players": "One golfer, looking at their ball on the patio, taking stock of the situation with a club in hand.",
+    "ballPosition": "The ball is clearly on the paved patio area, not on grass, noticeably long of the green.",
+    "ruleMoment": "The moment after the ball has come to rest on the patio, as the golfer approaches to assess their options.",
+    "educationalFocus": "Highlighting the status of a paved patio as an immovable obstruction and illustrating that free relief is available.",
+    "mustShow": [
+      "Golf ball resting on a paved patio attached to the clubhouse, behind the green",
+      "Golf green, with flagstick visible",
+      "Clubhouse and patio in context, with golfer observing their ball"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Ball on the Clubhouse Patio",
+      "question": "Your ball lands on the clubhouse patio behind the green. The patio is part of the golf course and is not out of bounds. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You have to hit the ball from the patio where it stops."
+        },
+        {
+          "id": "b",
+          "text": "You get to move your ball for free because the patio can't be moved."
+        },
+        {
+          "id": "c",
+          "text": "You must take a one-shot penalty and say your ball can't be played."
+        },
+        {
+          "id": "d",
+          "text": "You can drop your ball anywhere off the patio without a penalty."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "The clubhouse patio is called an immovable obstruction because you can't pick it up or move it. You can move your ball for free when it is on something like this. Find the closest spot off the patio, not nearer the hole, and drop your ball within one club-length of that place.",
+      "vocabulary": [
+        {
+          "term": "Immovable obstruction",
+          "simpleMeaning": "Something on the course you can't move, like a patio or a big sign."
+        },
+        {
+          "term": "Free relief",
+          "simpleMeaning": "You can move your ball without a penalty if it's on or near something like a patio."
+        }
+      ],
+      "teachingTip": "Show children what an immovable obstruction looks like and practise finding the nearest spot where the ball can be dropped.",
+      "likelyMisconceptions": [
+        "Thinking you must play the ball from the patio.",
+        "Believing you can drop the ball anywhere you want off the patio.",
+        "Thinking you always get a penalty here."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Ball Resting on Clubhouse Patio",
+      "question": "Your approach shot goes long and comes to rest on the clubhouse patio behind the green. The patio is part of the course and is not out of bounds or marked as a No Play Zone.\n\nWhat is the correct ruling?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You must play the ball as it lies."
+        },
+        {
+          "id": "b",
+          "text": "You are entitled to free relief because the patio is an immovable obstruction."
+        },
+        {
+          "id": "c",
+          "text": "You must take an unplayable ball with a one-stroke penalty."
+        },
+        {
+          "id": "d",
+          "text": "You may drop anywhere off the patio without penalty."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "A paved clubhouse patio is an immovable obstruction. If your ball lies on the patio, or the patio interferes with your stance or intended swing, you are entitled to free relief under Rule 16.1. You must find the nearest point of complete relief, no closer to the hole, and drop the ball within one club-length of that point in the relief area. Always check Local Rules, as some areas may be defined differently."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "ai_044_Ball_Resting_on_Clubhouse_Patio",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-06-26T20:03:54.193Z"
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_041_Practice_Swing_Accidentally_Moves_Ball_in_the_Fairway\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "9.4b",
+  "ruleName": "Ball Lifted or Moved by Player",
+  "title": "Practice Swing Accidentally Moves Ball in the Fairway",
+  "question": "Your ball is lying on the fairway. Before playing your shot, you take a practice swing and accidentally hit the ball, causing it to roll several yards. What is the correct ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "There is no penalty because it was only a practice swing. Play the ball from its new position."
+    },
+    {
+      "id": "b",
+      "text": "Count it as your next stroke and play the ball from where it came to rest."
+    },
+    {
+      "id": "c",
+      "text": "You receive a one-stroke penalty. Replace the ball on its original spot before playing."
+    },
+    {
+      "id": "d",
+      "text": "Replay the shot without penalty."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "A stroke only occurs when you make a forward movement of the club with the intention of striking the ball. Because this was a practice swing, you had no intention of hitting the ball, so no stroke has been made. However, by accidentally hitting the ball, you caused your ball at rest to move. In the general area, the penalty is one stroke, and you must replace the ball on its original spot before making your next stroke.",
+  "juniorVersion": {
+    "title": "You Knock Your Ball by Mistake When Practising Your Swing",
+    "question": "Your ball is on the short grass (the fairway). Before you hit it, you do a practice swing but your club touches the ball and makes it roll away. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "No penalty because it was practice. Hit the ball from where it stopped."
+      },
+      {
+        "id": "b",
+        "text": "Count it as your next hit and play the ball from where it rolled to."
+      },
+      {
+        "id": "c",
+        "text": "You get one penalty shot. Put your ball back where it was before and then play."
+      },
+      {
+        "id": "d",
+        "text": "Hit again without a penalty."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "If you move your ball by mistake when practising your swing, you must add one penalty shot. You have to put your ball back where it was before it moved, then carry on playing.",
+    "vocabulary": [
+      {
+        "term": "Practice swing",
+        "simpleMeaning": "A swing you do to warm up, but not to hit the ball."
+      },
+      {
+        "term": "Fairway",
+        "simpleMeaning": "The short grass area between the tee and the green."
+      },
+      {
+        "term": "Penalty stroke",
+        "simpleMeaning": "A shot added to your score because you broke a rule."
+      }
+    ],
+    "teachingTip": "Show kids it's OK to practise, but always stand carefully near the ball. Remind them to replace the ball if they move it by accident.",
+    "likelyMisconceptions": [
+      "Some might think a practice swing does not count, so there is no penalty.",
+      "Some may think they should play the ball from where it rolled, not put it back."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:19:44.402Z",
+  "model": "gpt-4.1"
+}

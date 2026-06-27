@@ -1,0 +1,5 @@
+{
+  "text": [],
+  "allowText": true,
+  "notes": "The inscription reads - The Norah Plant Cum Presented by A.B. Plant Esc 1953, Also include the names and dates of past winners on the base"
+}

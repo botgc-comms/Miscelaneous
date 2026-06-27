@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\009_005_Opponent_moves_your_ball_in_match_play\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:08:01.056Z",
+  "title": "Opponent moves your ball in match play",
+  "ruleNumber": "R9",
+  "ruleName": "Ball at rest is moved",
+  "durationSeconds": 246.665
+}

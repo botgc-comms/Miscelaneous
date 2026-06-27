@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\013_002_Ball_wedged_against_the_flagstick\\metadata.json",
+  "sourceImageName": "pageb-10.png",
+  "ruleNumber": "R13",
+  "ruleName": "Ball wedged on the flagstick",
+  "title": "Ball wedged against the flagstick",
+  "question": "Your putt finishes with the ball wedged between the flagstick and the edge of the hole, with some of the ball below the lip. What is the ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You must play the ball from where it stopped"
+    },
+    {
+      "id": "b",
+      "text": "You must remove the flagstick and replay the shot"
+    },
+    {
+      "id": "c",
+      "text": "The ball is considered holed"
+    },
+    {
+      "id": "d",
+      "text": "You get a penalty and remove the ball"
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "If your ball comes to rest wedged between the flagstick and the hole with part of it below the level of the lip, it's considered holed.",
+  "juniorVersion": {
+    "title": "Ball stuck between the flag and the hole",
+    "question": "You hit a putt and your ball gets stuck between the flagstick and the edge of the hole, with part of your ball below the top of the hole. What happens?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You have to play the ball from where it is"
+      },
+      {
+        "id": "b",
+        "text": "You need to take out the flag and hit the putt again"
+      },
+      {
+        "id": "c",
+        "text": "Your ball counts as in the hole"
+      },
+      {
+        "id": "d",
+        "text": "You get a penalty and have to take out the ball"
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "If your ball is stuck between the flagstick and the hole with some of it under the top edge, it counts as being in the hole.",
+    "vocabulary": [
+      {
+        "term": "Flagstick",
+        "simpleMeaning": "The stick that stands in the hole on the green so you can see where the hole is."
+      },
+      {
+        "term": "Holed",
+        "simpleMeaning": "This means your ball has gone in the hole, so you have finished that shot."
+      },
+      {
+        "term": "Lip",
+        "simpleMeaning": "The very top edge of the hole."
+      }
+    ],
+    "teachingTip": "Show what it looks like when the ball gets wedged between the flag and hole. Let children see how much of the ball must be under the lip for it to count.",
+    "likelyMisconceptions": [
+      "Some might think you have to replay the putt.",
+      "Some may think the ball is not in the hole if it is not at the very bottom."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:30.871Z",
+  "model": "gpt-4.1"
+}

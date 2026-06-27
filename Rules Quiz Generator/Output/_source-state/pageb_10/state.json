@@ -1,0 +1,465 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-10.png",
+  "sourceImagePath": "Input\\pageb-10.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-10.png",
+      "ruleNumber": "R9",
+      "ruleName": "Ball at rest moved by an outside influence",
+      "group": "Ball at rest moved by an outside influence",
+      "title": "What to do if your ball is moved by a dog",
+      "question": "You are playing on the fairway when a dog runs past and accidentally moves your ball from its original spot. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball from its new position"
+        },
+        {
+          "id": "b",
+          "text": "Put the ball back where it was, no penalty"
+        },
+        {
+          "id": "c",
+          "text": "Replace the ball and add two penalty strokes"
+        },
+        {
+          "id": "d",
+          "text": "Leave the ball where it is and add a penalty stroke"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If an outside influence (like a dog) moves your ball at rest, you must put it back without penalty.",
+      "imagePrompt": "A teenage golfer looking surprised as a dog runs by and nudges their golf ball on the fairway.",
+      "imageAlt": "Teen golfer watching a dog move their ball on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "medium",
+        "clothingTopColour": "blue",
+        "clothingBottomColour": "purple",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-10.png",
+      "ruleNumber": "R13",
+      "ruleName": "Ball wedged on the flagstick",
+      "group": "Ball wedged on the flagstick",
+      "title": "Ball wedged against the flagstick",
+      "question": "Your ball comes to rest wedged between the flagstick and the rim of the hole, with part of the ball below the lip. What is the result?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You must play the ball as it lies"
+        },
+        {
+          "id": "b",
+          "text": "You must move the flagstick and replay the shot"
+        },
+        {
+          "id": "c",
+          "text": "The ball is considered holed"
+        },
+        {
+          "id": "d",
+          "text": "Add one penalty stroke and remove the ball"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "If your ball is wedged between the flagstick and the rim with part below the lip, it counts as holed.",
+      "imagePrompt": "A golf ball stuck between the flagstick and the side of the hole, part of the ball below the lip, with a teenage boy golfer watching.",
+      "imageAlt": "Golf ball wedged against flagstick at the hole with a teen golfer watching.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "dark",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "white",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-10.png",
+      "ruleNumber": "R13",
+      "ruleName": "Ball on the edge of the hole",
+      "group": "Ball on the edge of the hole",
+      "title": "Waiting time for a ball on the edge of the hole",
+      "question": "You putt the ball and it comes to rest right on the edge of the hole. How long are you allowed to wait to see if it will drop in?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Until your next turn"
+        },
+        {
+          "id": "b",
+          "text": "10 seconds"
+        },
+        {
+          "id": "c",
+          "text": "30 seconds"
+        },
+        {
+          "id": "d",
+          "text": "No waiting allowed"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You are allowed to wait up to 10 seconds for a ball at rest on the edge of the hole to drop in.",
+      "imagePrompt": "A teenage girl golfer watching her golf ball resting right on the edge of the hole, looking at a watch.",
+      "imageAlt": "Teen girl golfer looking at golf ball on hole edge and checking time.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "medium",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "grey",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-10.png",
+      "ruleNumber": "R10",
+      "ruleName": "Careless putting",
+      "group": "Careless putting",
+      "title": "Penalty for pushing or scraping a putt",
+      "question": "If you push or scrape your ball along the green instead of hitting it with a putting stroke, what happens?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty, play on"
+        },
+        {
+          "id": "b",
+          "text": "Add 2 penalty strokes"
+        },
+        {
+          "id": "c",
+          "text": "Play the shot again without penalty"
+        },
+        {
+          "id": "d",
+          "text": "Add 1 penalty stroke"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "Pushing or scraping the ball means 2 penalty strokes are added.",
+      "imagePrompt": "A teenage boy using a putter to push a golf ball along the green instead of making a normal stroke.",
+      "imageAlt": "Teen boy pushing a putt on the green with a putter.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "navy",
+        "hat": true
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-10.png",
+      "ruleNumber": "R9",
+      "ruleName": "Ball at rest moved by an outside influence",
+      "group": "Ball at rest moved by an outside influence",
+      "title": "What to do if your ball is moved by a dog",
+      "question": "While playing from the fairway, a dog runs by and nudges your golf ball, moving it from its original spot. What is the correct action?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball from where the dog moved it to"
+        },
+        {
+          "id": "b",
+          "text": "Place the ball back to its original spot with no penalty"
+        },
+        {
+          "id": "c",
+          "text": "Replace the ball and take a two-stroke penalty"
+        },
+        {
+          "id": "d",
+          "text": "Leave the ball and add a one-stroke penalty"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If an outside influence, such as a dog, moves your ball at rest, you must place the ball back in its original position without penalty.",
+      "imagePrompt": "A teenage girl golfer on the fairway looks surprised as a dog nudges her golf ball out of place. The girl is holding an iron and wearing a blue top, purple shorts, and a hat. The fairway is sunny.",
+      "imageAlt": "Teen golfer watching a dog move her ball on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "green",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-10.png",
+      "ruleNumber": "R13",
+      "ruleName": "Ball wedged on the flagstick",
+      "group": "Ball wedged on the flagstick",
+      "title": "Ball wedged against the flagstick",
+      "question": "Your putt finishes with the ball wedged between the flagstick and the edge of the hole, with some of the ball below the lip. What is the ruling?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You must play the ball from where it stopped"
+        },
+        {
+          "id": "b",
+          "text": "You must remove the flagstick and replay the shot"
+        },
+        {
+          "id": "c",
+          "text": "The ball is considered holed"
+        },
+        {
+          "id": "d",
+          "text": "You get a penalty and remove the ball"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "If your ball comes to rest wedged between the flagstick and the hole with part of it below the level of the lip, it's considered holed.",
+      "imagePrompt": "A teenage boy golfer standing on the green, watching as his golf ball is wedged between the flagstick and the rim of the hole, with part of the ball visible below the cup's edge.",
+      "imageAlt": "Golf ball wedged on the flagstick at the hole with a teenage golfer watching.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "dark",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "navy",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-10.png",
+      "ruleNumber": "R13",
+      "ruleName": "Ball on the edge of the hole",
+      "group": "Ball on the edge of the hole",
+      "title": "Waiting time for a ball on the edge of the hole",
+      "question": "Your ball comes to rest right on the edge of the hole after a putt. How long are you allowed to wait to see if it will fall in?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Until it is your turn again"
+        },
+        {
+          "id": "b",
+          "text": "10 seconds"
+        },
+        {
+          "id": "c",
+          "text": "30 seconds"
+        },
+        {
+          "id": "d",
+          "text": "You cannot wait at all"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You may wait up to 10 seconds to see if a ball hanging on the edge of the hole will drop in. If it falls in after that, extra rules may apply.",
+      "imagePrompt": "A teenage girl golfer stands on the green, watching her ball balance on the edge of the hole while checking her watch. She is wearing a yellow top, grey skort, and a hat, under overcast weather.",
+      "imageAlt": "Teen girl golfer looking at her ball on the hole edge and checking the time.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "dark",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "blue",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-10.png",
+      "ruleNumber": "R10",
+      "ruleName": "Careless putting",
+      "group": "Careless putting",
+      "title": "Penalty for pushing or scraping a putt",
+      "question": "What is the penalty if you push or scrape your ball along the green with your putter instead of making a proper stroke?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty, continue your game"
+        },
+        {
+          "id": "b",
+          "text": "Two penalty strokes"
+        },
+        {
+          "id": "c",
+          "text": "Replay the shot with no penalty"
+        },
+        {
+          "id": "d",
+          "text": "One penalty stroke"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "Pushing or scraping a ball along the putting green rather than making a recognised stroke results in a two-stroke penalty.",
+      "imagePrompt": "On a sunny putting green, a teenage boy is seen moving his ball by pushing it with his putter instead of making a regular stroke. The scene is clear and simple.",
+      "imageAlt": "Teen boy scraping a putt on the green with a putter.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "red",
+        "hat": false
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "009_001_What_to_do_if_your_ball_is_moved_by_a_dog",
+    "013_002_Ball_wedged_against_the_flagstick",
+    "013_003_Waiting_time_for_a_ball_on_the_edge_of_the_hole",
+    "010_004_Penalty_for_pushing_or_scraping_a_putt"
+  ],
+  "updatedAtUtc": "2026-04-25T00:00:32.989Z"
+}

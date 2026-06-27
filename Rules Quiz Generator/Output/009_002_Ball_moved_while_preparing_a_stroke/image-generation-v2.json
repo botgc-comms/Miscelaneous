@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\009_002_Ball_moved_while_preparing_a_stroke\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:04:04.360Z",
+  "title": "Ball moved while preparing a stroke",
+  "ruleNumber": "R9",
+  "ruleName": "Ball at rest is moved",
+  "durationSeconds": 182.512
+}

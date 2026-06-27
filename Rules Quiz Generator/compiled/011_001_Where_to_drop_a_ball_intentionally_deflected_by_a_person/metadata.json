@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "pageb-14.png",
+  "ruleNumber": "11",
+  "ruleName": "Ball in motion intentionally deflected",
+  "group": "Ball in motion intentionally deflected",
+  "type": "multiple_choice",
+  "imagePrompt": "A teenage boy golfer, right-handed, standing on a sunny fairway beside a single golf ball, mid-drop, after it was intentionally deflected by a person off the green.",
+  "imageAlt": "A teen boy golfer on the fairway preparing to drop a ball after it was intentionally stopped by a person.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "dropping_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "blue",
+    "clothingBottomColour": "green",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": false,
+    "score": 60,
+    "issues": [
+      "The golfer's stance and club grip are right-handed, not left-handed as specified in the sceneSpec and final correction.",
+      "The dropping hand is the left hand, but for a correct left-handed dropping posture, it should be the right hand.",
+      "Otherwise, the golf ball, iron club, fairway setting, posture, equipment, and golfer appearance are plausible and realistic.",
+      "Clothing colour and hat are accurate, single golf ball is shown, and the iron club is correct."
+    ],
+    "repairPrompt": "Adjust the illustration so the teenage boy golfer is clearly left-handed: he should hold the iron club with his right hand lower than his left on the grip and stand left of the dropped ball as a left-handed golfer would. Ensure he releases the ball from his right hand for proper left-handed dropping posture."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Where do you drop your ball if someone stops it on purpose?",
+      "question": "If your ball is rolling and a person (not on the green) stops it or knocks it away on purpose, where do you drop your ball?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Where you hit your last shot from"
+        },
+        {
+          "id": "b",
+          "text": "Within 1 club-length of where your ball would have stopped"
+        },
+        {
+          "id": "c",
+          "text": "Anywhere on the fairway"
+        },
+        {
+          "id": "d",
+          "text": "Where you last hit the ball"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "You must drop your ball within 1 club-length of where you think your ball would have stopped if no one had touched it.",
+      "vocabulary": [
+        {
+          "term": "Club-length",
+          "simpleMeaning": "The length of your golf club. You can use your club to measure how far you are allowed to drop the ball from the spot."
+        }
+      ],
+      "teachingTip": "Let children use their own club to measure a club-length on the course, so they see how far that really is.",
+      "likelyMisconceptions": [
+        "Children may think you go back to where you hit the ball, but the correct place is near where the ball would have finished after rolling."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Where to drop a ball intentionally deflected by a person",
+      "question": "If your ball in motion is intentionally stopped or deflected by a person (not on the green), where should you drop it?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "At your original hitting spot"
+        },
+        {
+          "id": "b",
+          "text": "Within 1 club-length of where it would have come to rest"
+        },
+        {
+          "id": "c",
+          "text": "Anywhere on the fairway"
+        },
+        {
+          "id": "d",
+          "text": "At the point where it was struck"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If your ball is intentionally stopped or deflected by a person (not on the green), you must drop a ball within 1 club-length of the estimated spot where it would have come to rest."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "011_001_Where_to_drop_a_ball_intentionally_deflected_by_a_person",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.582Z"
+  }
+}

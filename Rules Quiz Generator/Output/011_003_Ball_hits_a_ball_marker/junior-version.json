@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\011_003_Ball_hits_a_ball_marker\\metadata.json",
+  "sourceImageName": "pageb-08.png",
+  "ruleNumber": "R11",
+  "ruleName": "Ball deflected by marker",
+  "title": "Ball hits a ball-marker",
+  "question": "If your ball accidentally hits a ball-marker on the green and is deflected to a new spot, what should you do?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball from where it comes to rest with no penalty."
+    },
+    {
+      "id": "b",
+      "text": "Replace your ball and the marker."
+    },
+    {
+      "id": "c",
+      "text": "Move the ball back to its original spot and continue."
+    },
+    {
+      "id": "d",
+      "text": "Add one penalty stroke and replay the putt."
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "If your ball strikes a ball-marker on the green, you play the ball from where it ends up, with no penalty.",
+  "juniorVersion": {
+    "title": "Ball hits a marker on the green",
+    "question": "You putt your ball on the green. It accidentally hits another player's small round marker and stops in a new place. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Play your ball from where it stops, with no penalty."
+      },
+      {
+        "id": "b",
+        "text": "Pick up your ball and put it, and the marker, back to where they were."
+      },
+      {
+        "id": "c",
+        "text": "Move your ball back to where it started and keep playing."
+      },
+      {
+        "id": "d",
+        "text": "Add one extra shot and putt again from the start."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "If your ball bumps into a marker on the green, just play your ball from its new spot. You do not get a penalty.",
+    "vocabulary": [
+      {
+        "term": "Marker",
+        "simpleMeaning": "A small, flat object that marks where someone’s ball was on the green."
+      },
+      {
+        "term": "Green",
+        "simpleMeaning": "The short, smooth grass around the hole."
+      }
+    ],
+    "teachingTip": "Show children ball-markers and let them practise marking a ball on the green. Ask them to pretend to putt and help them understand what happens if a ball hits a marker.",
+    "likelyMisconceptions": [
+      "Children might think you always have to move the ball back to where it started.",
+      "They may worry about getting a penalty if their ball hits a marker."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:15.266Z",
+  "model": "gpt-4.1"
+}

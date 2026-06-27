@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\013_002_Repairing_Damage_on_the_Green\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:27:35.782Z",
+  "title": "Repairing Damage on the Green",
+  "ruleNumber": "R13",
+  "ruleName": "Putting Green",
+  "durationSeconds": 175.483
+}

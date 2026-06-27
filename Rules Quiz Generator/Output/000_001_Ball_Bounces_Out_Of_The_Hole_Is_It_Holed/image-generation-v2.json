@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\000_001_Ball_Bounces_Out_Of_The_Hole_Is_It_Holed\\metadata.json",
+  "generatedAtUtc": "2026-06-24T14:04:19.313Z",
+  "title": "Ball Bounces Out Of The Hole – Is It Holed?",
+  "ruleNumber": "Def.",
+  "ruleName": "Ball bounces back out of the hole",
+  "durationSeconds": 171.824
+}

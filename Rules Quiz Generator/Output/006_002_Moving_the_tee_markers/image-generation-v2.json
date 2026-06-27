@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\006_002_Moving_the_tee_markers\\metadata.json",
+  "generatedAtUtc": "2026-06-24T14:53:34.656Z",
+  "title": "Moving the tee-markers",
+  "ruleNumber": "R6",
+  "ruleName": "Tee-markers",
+  "durationSeconds": 171.475
+}

@@ -1,0 +1,173 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-09.png",
+  "ruleNumber": "R2",
+  "ruleName": "General area",
+  "group": "General area",
+  "type": "multi_select",
+  "imagePrompt": "A teenage girl golfer on a fairway, pointing towards semi-rough and a green belonging to a different hole, with a visible tee area in the background.",
+  "imageAlt": "A teen girl golfer on the fairway, with other greens and tee areas visible.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": true,
+    "greenVisible": true,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "asian",
+    "skinTone": "medium",
+    "clothingTopColour": "black",
+    "clothingBottomColour": "red",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": false,
+    "score": 79,
+    "issues": [
+      "Golfer is gripping the club right-handed, not left-handed as specified.",
+      "Golfer's top is grey rather than the required black.",
+      "Club appears visually correct (iron) with realistic proportions.",
+      "Single golf ball clearly present and realistic.",
+      "Tee markers are visible in the background; tee area present.",
+      "Course features are believable (fairway, semi-rough, green, trees, sunny weather).",
+      "Golfer's skin tone, facial features, age, and gender suit the prompt.",
+      "Clothing (bottom) is the required red color and clearly visible.",
+      "No prohibited elements appear."
+    ],
+    "repairPrompt": "Change the golfer's grip and club orientation to clearly left-handed (right hand above left on grip, club angled appropriately). Change the golfer's top to a clearly black color."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Which places are called the 'general area'?",
+      "question": "Pick all the places that are part of the 'general area' on a golf course.",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Fairway"
+        },
+        {
+          "id": "b",
+          "text": "Bunker"
+        },
+        {
+          "id": "c",
+          "text": "Semi-rough"
+        },
+        {
+          "id": "d",
+          "text": "The green for a different hole"
+        },
+        {
+          "id": "e",
+          "text": "Penalty area"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "c",
+        "d"
+      ],
+      "correctAnswer": [
+        "a",
+        "c",
+        "d"
+      ],
+      "explanation": "The 'general area' is most of the golf course. It includes the fairway, the semi-rough, and greens and tee boxes for other holes. Bunkers and penalty areas are not in the general area.",
+      "vocabulary": [
+        {
+          "term": "general area",
+          "simpleMeaning": "Most of the golf course, except for bunkers, penalty areas, greens and teeing areas for the hole you are playing."
+        },
+        {
+          "term": "bunker",
+          "simpleMeaning": "A sand pit on the golf course. It is not part of the general area."
+        },
+        {
+          "term": "penalty area",
+          "simpleMeaning": "Places like ponds or lakes. They are marked and not part of the general area."
+        },
+        {
+          "term": "fairway",
+          "simpleMeaning": "The short grass you aim for when you hit your ball."
+        },
+        {
+          "term": "semi-rough",
+          "simpleMeaning": "The longer grass next to the fairway."
+        }
+      ],
+      "teachingTip": "Show kids different parts of the course and help them name which are part of the general area.",
+      "likelyMisconceptions": [
+        "Some kids may think bunkers or penalty areas are in the general area.",
+        "Some may not realise the green for a different hole is the general area."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "What counts as the general area?",
+      "question": "Which of the following areas is included in the 'general area' according to the Rules of Golf? Select all that apply.",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Fairway"
+        },
+        {
+          "id": "b",
+          "text": "Bunker"
+        },
+        {
+          "id": "c",
+          "text": "Semi-rough"
+        },
+        {
+          "id": "d",
+          "text": "Putting green for a different hole"
+        },
+        {
+          "id": "e",
+          "text": "Penalty area"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "c",
+        "d"
+      ],
+      "correctAnswer": [
+        "a",
+        "c",
+        "d"
+      ],
+      "explanation": "The general area is most of the course, including the fairway, semi-rough and rough, and any green or teeing area for a different hole. Bunkers and penalty areas are not part of the general area."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "002_001_What_counts_as_the_general_area",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.259Z"
+  }
+}

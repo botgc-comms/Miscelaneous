@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\010_004_Advice_about_line_of_play_on_the_green\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:12:34.102Z",
+  "title": "Advice about line of play on the green",
+  "ruleNumber": "10",
+  "ruleName": "Advice and line of play",
+  "durationSeconds": 174.662
+}

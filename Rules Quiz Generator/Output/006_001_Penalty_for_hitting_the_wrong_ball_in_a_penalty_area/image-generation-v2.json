@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\006_001_Penalty_for_hitting_the_wrong_ball_in_a_penalty_area\\metadata.json",
+  "generatedAtUtc": "2026-06-24T14:48:33.049Z",
+  "title": "Penalty for hitting the wrong ball in a penalty area",
+  "ruleNumber": "R6",
+  "ruleName": "Penalty area – Wrong ball",
+  "durationSeconds": 204.286
+}

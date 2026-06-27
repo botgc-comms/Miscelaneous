@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\017_003_What_if_the_nearest_point_is_in_a_bad_lie\\metadata.json",
+  "sourceImageName": "page-14.png",
+  "ruleNumber": "17",
+  "ruleName": "Taking Relief from Abnormal Course Conditions",
+  "title": "What if the nearest point is in a bad lie?",
+  "question": "If the nearest point of complete relief is in thick rough, a bush, or on a steep slope, what are your options?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You can take relief and play from there, even if it's a difficult shot."
+    },
+    {
+      "id": "b",
+      "text": "You may ignore the rules and choose any spot you like."
+    },
+    {
+      "id": "c",
+      "text": "You can decide to play the ball as it lies without taking relief."
+    },
+    {
+      "id": "d",
+      "text": "You can move your ball to the green for an easier shot."
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "You can either take relief at the correct relief point, even if the lie is poor, or you may play the ball as it lies and not take relief.",
+  "juniorVersion": {
+    "title": "What if your free drop puts you in a tricky spot?",
+    "question": "If your nearest place to drop the ball is in long grass, in a bush, or on a steep hill, what can you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You can drop and play the ball from there, even if it’s a hard place to hit from."
+      },
+      {
+        "id": "b",
+        "text": "You can forget the rules and put your ball anywhere you want."
+      },
+      {
+        "id": "c",
+        "text": "You can choose to just hit your ball from where it is now, without moving it."
+      },
+      {
+        "id": "d",
+        "text": "You can move your ball onto the green to make it easier."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "You must either drop at the nearest spot, even if it’s not easy, or just play your ball the way it is. You can’t pick any spot you like.",
+    "vocabulary": [
+      {
+        "term": "relief",
+        "simpleMeaning": "A special rule that lets you move your ball away from things like puddles or paths."
+      },
+      {
+        "term": "nearest point of relief",
+        "simpleMeaning": "The closest place where you are not standing on the thing you get relief from."
+      }
+    ],
+    "teachingTip": "Show children how sometimes the right place to drop means a harder shot. Let them try dropping near rough or bushes safely.",
+    "likelyMisconceptions": [
+      "Some children might think they can always put the ball in a nice spot.",
+      "Children may think they can move the ball to the green or choose any place after taking relief."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:25.222Z",
+  "model": "gpt-4.1"
+}

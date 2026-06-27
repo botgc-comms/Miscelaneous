@@ -1,0 +1,44 @@
+{
+  "id": "care-for-course",
+  "title": "Looking after the course",
+  "summary": "How juniors help protect the course for everyone who plays it.",
+  "estimatedMinutes": 6,
+  "priority": 1010,
+  "mandatoryFor": [
+    "Junior Course Cadet"
+  ],
+  "version": 1,
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "Why it matters",
+      "file": "pages/00-title.md"
+    },
+    {
+      "id": "01-divots",
+      "title": "Divots on fairways",
+      "file": "pages/01-divots.md"
+    },
+    {
+      "id": "02-pitch-marks",
+      "title": "Pitch marks on greens",
+      "file": "pages/02-pitch-marks.md"
+    },
+    {
+      "id": "03-bunkers",
+      "title": "Raking bunkers",
+      "file": "pages/03-bunkers.md"
+    },
+    {
+      "id": "04-tools-and-habits",
+      "title": "Tools and habits",
+      "file": "pages/04-tools-and-habits.md"
+    },
+    {
+      "id": "90-quick-check",
+      "title": "Quick check",
+      "file": "pages/90-quick-check.md",
+      "type": "quiz"
+    }
+  ]
+}

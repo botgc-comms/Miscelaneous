@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-24.png",
+  "ruleNumber": "R17",
+  "ruleName": "In a penalty area",
+  "group": "In a penalty area",
+  "title": "Where does the penalty area begin?",
+  "question": "When is a ball considered to be in a penalty area?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "As soon as any part of the ball touches the edge or line of the penalty area."
+    },
+    {
+      "id": "b",
+      "text": "Only if it comes to rest completely next to the water."
+    },
+    {
+      "id": "c",
+      "text": "Only if it touches a penalty area stake."
+    },
+    {
+      "id": "d",
+      "text": "When it's lost somewhere in the rough."
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "A ball is considered in a penalty area as soon as any part of it touches the edge or the line marking the penalty area, not just if it is in water or touching a stake.",
+  "imagePrompt": "A teenage girl golfer stands at the edge of a penalty area marked with yellow stakes. Her ball is resting right on the painted line marking the penalty area's edge, near a stake, with water inside the penalty area. It's a sunny day.",
+  "imageAlt": "Teen girl at edge of penalty area, ball on boundary line by yellow stake and water.",
+  "sceneSpec": {
+    "setting": "penalty_area_edge",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "yellow",
+    "waterVisible": true,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "grey",
+    "clothingBottomColour": "yellow",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "Golfer is not clearly left-handed (grip/stance could be more distinct)."
+    ],
+    "repairPrompt": "Make sure the teenage girl golfer is standing with a clearly left-handed grip and stance. Her right hand should be above her left on the club, and her body should face right relative to the viewer. Keep all other details the same."
+  }
+}

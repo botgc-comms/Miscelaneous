@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\011_002_Exception_for_balls_intentionally_deflected_on_the_green\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:16:05.811Z",
+  "title": "Exception for balls intentionally deflected on the green",
+  "ruleNumber": "11",
+  "ruleName": "Ball in motion intentionally deflected",
+  "durationSeconds": 174.569
+}

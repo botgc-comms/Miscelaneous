@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\015_004_Removing_Loose_Impediments_on_the_Green\\metadata.json",
+  "sourceImageName": "pageb-07.png",
+  "ruleNumber": "R15",
+  "ruleName": "Loose Impediments",
+  "title": "Removing Loose Impediments on the Green",
+  "question": "On the putting green, which of these items can you remove without penalty when they are next to your ball?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Leaves"
+    },
+    {
+      "id": "b",
+      "text": "Twig"
+    },
+    {
+      "id": "c",
+      "text": "Sand"
+    }
+  ],
+  "correctAnswers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "explanation": "On the green, you may remove leaves, twigs, and even sand or loose soil without penalty.",
+  "juniorVersion": {
+    "title": "Taking Things Away From the Green",
+    "question": "Which of these things can you pick up or brush away when they are next to your golf ball on the green, without getting a penalty?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Leaves"
+      },
+      {
+        "id": "b",
+        "text": "Twig"
+      },
+      {
+        "id": "c",
+        "text": "Sand"
+      }
+    ],
+    "correctAnswers": [
+      "a",
+      "b",
+      "c"
+    ],
+    "explanation": "You can pick up or sweep away leaves, twigs, and even sand or loose dirt on the green and not get a penalty.",
+    "vocabulary": [
+      {
+        "term": "Green",
+        "simpleMeaning": "The smooth grass around the hole where you putt the ball."
+      },
+      {
+        "term": "Penalty",
+        "simpleMeaning": "An extra shot added to your score if you break a rule."
+      },
+      {
+        "term": "Loose Impediment",
+        "simpleMeaning": "Things like sticks, leaves, or stones that are on the ground but not stuck to it."
+      }
+    ],
+    "teachingTip": "Show children how to gently clear away things like leaves or sand near their ball on the green without moving the ball.",
+    "likelyMisconceptions": [
+      "Some children may think you can’t touch anything near your ball.",
+      "Some may not know sand counts as something you can remove on the green."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:52.196Z",
+  "model": "gpt-4.1"
+}

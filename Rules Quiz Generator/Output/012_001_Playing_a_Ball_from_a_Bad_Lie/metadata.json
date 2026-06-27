@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-22.png",
+  "ruleNumber": "R12",
+  "ruleName": "Old footprints, buried lie, etc.",
+  "group": "Old footprints, buried lie, etc.",
+  "title": "Playing a Ball from a Bad Lie",
+  "question": "Your ball comes to rest in an old footprint in a bunker. What are your options under the Rules of Golf?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Take a free drop out of the footprint"
+    },
+    {
+      "id": "b",
+      "text": "Play the ball as it lies or declare it unplayable"
+    },
+    {
+      "id": "c",
+      "text": "Move the ball to a better spot in the bunker without penalty"
+    },
+    {
+      "id": "d",
+      "text": "Ask your opponent for advice and re-drop without penalty"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "When your ball is in a difficult lie such as an old footprint, you must either play it as it lies or declare it unplayable, which comes with a penalty.",
+  "imagePrompt": "A teen boy standing next to his ball in an old footprint in a bunker, looking at the lie thoughtfully, with a wedge in hand.",
+  "imageAlt": "Boy stands in bunker looking at his ball in an old footprint.",
+  "sceneSpec": {
+    "setting": "bunker",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "wedge",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": true,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "dark",
+    "clothingTopColour": "navy",
+    "clothingBottomColour": "yellow",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [],
+    "repairPrompt": "No repair needed; the image fully meets the specifications and accurately depicts a teenage girl with dark skin, navy top, yellow shorts, and a single realistic wedge and golf ball in a natural bunker scene. All elements are accurate and suitable for educational use."
+  }
+}

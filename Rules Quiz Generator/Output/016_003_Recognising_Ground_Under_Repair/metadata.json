@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-13.png",
+  "ruleNumber": "16",
+  "ruleName": "Abnormal course conditions",
+  "group": "Abnormal course conditions",
+  "title": "Recognising Ground Under Repair",
+  "question": "Which area is most likely to be marked as 'ground under repair' where you may get relief?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "A blue-marked area with piles of grass cuttings"
+    },
+    {
+      "id": "b",
+      "text": "A patch of bare earth not marked by anything"
+    },
+    {
+      "id": "c",
+      "text": "A normal bunker filled with sand"
+    },
+    {
+      "id": "d",
+      "text": "A spot of wet grass after rain"
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "Ground under repair is usually marked with lines or stakes (commonly blue or white) and can include areas with piled grass from maintenance.",
+  "imagePrompt": "A teen boy golfer is next to an area surrounded by blue stakes containing grass cuttings, identifying ground under repair.",
+  "imageAlt": "Teen golfer beside marked ground under repair with piles of grass.",
+  "sceneSpec": {
+    "setting": "rough",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "blue",
+    "clothingBottomColour": "red",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 96,
+    "issues": [
+      "Green and flag visible in the background, while the scene spec said 'greenVisible': false, but this is a minor issue that does not detract from the core teaching function.",
+      "All other key requirements, especially equipment, posture, clothing, ball, and ground under repair area, are correct and visually strong."
+    ],
+    "repairPrompt": "Remove the green and flag in the background to fully match the scene specification that requests 'greenVisible': false. Ensure all other scene elements remain unchanged."
+  }
+}

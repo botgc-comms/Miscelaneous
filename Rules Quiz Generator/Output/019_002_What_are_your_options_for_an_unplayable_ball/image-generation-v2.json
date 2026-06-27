@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\019_002_What_are_your_options_for_an_unplayable_ball\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:06:12.079Z",
+  "title": "What are your options for an unplayable ball?",
+  "ruleNumber": "R19",
+  "ruleName": "Unplayable ball",
+  "durationSeconds": 220.705
+}

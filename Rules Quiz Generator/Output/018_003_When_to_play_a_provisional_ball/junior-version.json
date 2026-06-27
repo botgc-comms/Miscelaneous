@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\018_003_When_to_play_a_provisional_ball\\metadata.json",
+  "sourceImageName": "pageb-01.png",
+  "ruleNumber": "18",
+  "ruleName": "Playing a provisional ball",
+  "title": "When to play a provisional ball",
+  "question": "If you hit a shot towards the trees and think your ball might be lost or out of bounds, what should you do before walking forward to look for it?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play a provisional ball and clearly announce it to your group."
+    },
+    {
+      "id": "b",
+      "text": "Go search for your first ball immediately."
+    },
+    {
+      "id": "c",
+      "text": "Drop a ball in the area where you think your ball landed."
+    },
+    {
+      "id": "d",
+      "text": "Wait for your friends to suggest what to do."
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "If you think your ball may be lost or out of bounds, you should play a provisional ball from the place where you played your last shot and make it clear to your group that it is a provisional before you go to look for your original ball.",
+  "juniorVersion": {
+    "title": "What to do if you might lose your ball",
+    "question": "You hit your ball towards the trees and think you might not find it or it could be out of the golf course. What should you do before you walk to go look for it?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Hit another ball from the same spot and tell your friends it is a provisional ball."
+      },
+      {
+        "id": "b",
+        "text": "Go and try to find your first ball straight away."
+      },
+      {
+        "id": "c",
+        "text": "Drop a ball where you think your ball landed."
+      },
+      {
+        "id": "d",
+        "text": "Wait for your friends to tell you what to do."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "If you think your ball might be lost or out of bounds, you should hit another ball from the same spot and make sure to tell your group it is a provisional ball before you go to look for the first one.",
+    "vocabulary": [
+      {
+        "term": "Provisional ball",
+        "simpleMeaning": "A second ball you use if you think your first ball might be lost or out of bounds."
+      },
+      {
+        "term": "Out of bounds",
+        "simpleMeaning": "When your ball goes outside the golf course area marked by white stakes or lines."
+      }
+    ],
+    "teachingTip": "Practise saying 'I'm playing a provisional ball' before you hit it, so you remember to tell everyone.",
+    "likelyMisconceptions": [
+      "Some children think they should search for their ball first before playing a provisional, but you must hit a provisional before you go looking."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:41.423Z",
+  "model": "gpt-4.1"
+}

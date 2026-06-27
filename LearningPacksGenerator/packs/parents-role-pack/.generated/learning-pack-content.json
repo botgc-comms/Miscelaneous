@@ -1,0 +1,236 @@
+{
+  "schemaVersion": 1,
+  "packId": "junior-golf-starter-pack",
+  "title": "Junior Golf Starter Pack: A Guide for Juniors and Parents",
+  "audience": "New junior golfers and their parents (with no golf experience)",
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "Welcome to Junior Golf",
+      "file": "pages/00-title.md",
+      "type": "content",
+      "assetFile": "welcome.png",
+      "imageAlt": "A happy family walking on a green golf course with a child carrying a small golf bag.",
+      "imagePrompt": "A cheerful, photorealistic image of a young child with parents walking together on a sunny golf course. The child has a small golf bag. Everyone is smiling and the setting is relaxed, with green grass and trees.",
+      "markdown": "# Welcome to Junior Golf\n\nGolf is a wonderful game that juniors and their families can enjoy together, whether you are aiming to play for fun, friendship, or future competitions. This pack is here to guide both children and parents who are new to the game. Don’t worry if you haven’t played before—golf is for everyone, and you don’t need fancy equipment or lots of experience to get started.\n\nWe will explain the basics of playing, how to behave on the course, and what parents can do to help their children enjoy and learn. Every golfer was once a beginner, and every new skill takes time to grow.\n\nTake your first steps with confidence. This learning pack is designed to support and encourage you as you start your journey in junior golf.",
+      "quiz": null
+    },
+    {
+      "id": "01-getting-started",
+      "title": "Getting Started: What You Need",
+      "file": "pages/01-getting-started.md",
+      "type": "content",
+      "assetFile": "getting-started.png",
+      "imageAlt": "A child golfer and parent at the practice area with a few basic golf clubs and balls, both looking at the clubs and smiling.",
+      "imagePrompt": "Photorealistic image of a young child and their parent standing at a golf club practice area, looking at a small selection of golf clubs and balls on the ground. The setting is friendly and relaxed.",
+      "markdown": "# Getting Started: What You Need\n\nStarting golf is simple. You don't need anything expensive or special to begin. Juniors usually just need:\n\n- Some comfortable weather-appropriate clothes\n- Trainers (flat shoes are fine; special golf shoes aren’t needed when learning)\n- A few golf clubs (clubs can often be borrowed from your club or coach)\n- A few golf balls and tees (your coach or club can often provide these)\n\nBefore your first lesson or trip to the range, let your club or coach know you’re new. Most clubs have spare junior equipment you can use. Don’t worry if you don’t know what each club does at first — your coach will show you.\n\nGolf is played outdoors, so bring a drink, a snack, and a hat or sun cream if it’s sunny. It’s a good idea to arrive a little early, so you have time to settle in and get comfortable.\n\nMost of all, remember: it’s fine to feel nervous when trying something new. Everyone in golf wants to help you enjoy your start.",
+      "quiz": null
+    },
+    {
+      "id": "02-basic-rules-and-etiquette",
+      "title": "Basic Rules and Etiquette",
+      "file": "pages/02-basic-rules-and-etiquette.md",
+      "type": "content",
+      "assetFile": "rules.png",
+      "imageAlt": "A junior golfer standing on the green, waiting for their turn while watching quietly as another child prepares to putt. Nearby, an adult watches supportively.",
+      "imagePrompt": "Photorealistic image of two junior golfers on a golf green. One child is preparing to putt while another waits politely, hands behind back. An adult stands nearby, offering gentle encouragement with a smile.",
+      "markdown": "# Basic Rules and Etiquette\n\nGolf has a few simple rules and ways of behaving, called ‘etiquette’. This is mostly about being fair, safe, and respectful to others.\n\n**Here are some key points for new juniors and parents:**\n\n- Always wait until it is your turn before hitting.\n- Stand quietly and safely aside when someone else is playing.\n- Look after the course: replace divots (bits of grass), rake bunkers after use, and avoid damaging greens.\n- Be careful swinging clubs: check no one is near before you swing.\n- Don’t run or shout on the course—quiet helps everyone focus and stay safe.\n- If you lose a ball and look for it, call the group behind to play through if you’re taking a long time.\n\nEveryone makes mistakes and no one expects beginners to know all the rules right away. If you are ever unsure, just ask your coach or another adult. People will be pleased to help.\n\nEnjoy learning together, and remember: good etiquette helps make golf fun for everyone.",
+      "quiz": null
+    },
+    {
+      "id": "03-parent-support",
+      "title": "How Parents Can Help",
+      "file": "pages/03-parent-support.md",
+      "type": "content",
+      "assetFile": "parent-support.png",
+      "imageAlt": "A parent watching supportively as their child takes a golf swing, offering a high-five after the shot.",
+      "imagePrompt": "Photorealistic image of a parent and child on a golf practice area. The parent stands nearby, smiling, as the child swings a club, and afterwards they share a high-five. The scene is relaxed and positive.",
+      "markdown": "# How Parents Can Help\n\nGolf is more fun and rewarding when families get involved. Even if you do not play golf yourself, there are lots of ways you can support your child on their golfing journey.\n\n- Encourage effort, not just results. Let your child know you are proud of their practice and progress, whatever the outcome.\n- Stay positive. Children develop confidence when adults around them show patience and understanding, especially after mistakes.\n- Be present, but don’t take over. Offer practical help—carry water, help find balls, or offer a snack—without giving golf advice unless your coach suggests it.\n- Help with routines like remembering equipment and sun cream, and set a good example by treating staff, coaches, and other juniors with respect.\n- Support your child’s friendships by arranging social games and joining club events if you’re able to.\n- Encourage rest and enjoyment: golf is more than scores; it’s also about being outdoors and having fun.\n\nParents are partners in the learning journey, helping children gain skills and confidence in a friendly, supportive way.",
+      "quiz": null
+    },
+    {
+      "id": "04-first-round",
+      "title": "Your First Hole or Round",
+      "file": "pages/04-first-round.md",
+      "type": "content",
+      "assetFile": "first-round.png",
+      "imageAlt": "A junior taking a tee shot for the first time on a short hole, with a parent standing to the side, offering a thumbs up.",
+      "imagePrompt": "Photorealistic image of a child standing on a golf tee, ready to take their first shot, while a parent stands to the side giving a friendly thumbs up. The scene is sunny and welcoming.",
+      "markdown": "# Your First Hole or Round\n\nYour first time playing on the course can feel exciting and new. It doesn’t matter how far you hit the ball or what your score is—the important thing is to enjoy the experience and try your best.\n\nHere are a few tips for your first round:\n\n- Play fewer holes at the start (for example, just 3 or 6 holes). This helps juniors stay energised and happy.\n- Keep moving. If you get stuck, pick up the ball and walk to the next shot—this is perfectly OK.\n- Ask questions. If you are unsure what to do, ask your playing partners or coach.\n- Celebrate little achievements, like hitting the ball or finishing each hole.\n- Help each other. Cheer on your friends and thank those who play with you.\n\nParents, remember to focus on fun and encouragement. The more relaxed and positive the experience, the more your junior will want to play again.\n\nEvery round is an opportunity to learn and grow, not just in golf, but in life skills too.",
+      "quiz": null
+    },
+    {
+      "id": "05-review-quiz",
+      "title": "Check Your Learning: Junior Golf Quiz",
+      "file": "pages/05-review-quiz.md",
+      "type": "quiz",
+      "assetFile": "review-quiz.png",
+      "imageAlt": "A group of smiling junior golfers and a parent gently celebrating together after playing.",
+      "imagePrompt": "A photorealistic group of junior golfers and a parent sharing a gentle celebration or group high-five at the end of a round, standing together on a golf course. The atmosphere is friendly and relaxed.",
+      "markdown": "# Check Your Learning: Junior Golf Quiz\n\nLet’s see what you remember about starting out in junior golf! Try these friendly questions. Don’t worry if you’re not sure—use them to start a discussion or check the earlier pages.",
+      "quiz": {
+        "questions": [
+          {
+            "question": "What is the most important thing to bring to your first golf lesson?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "A positive attitude and willingness to try"
+              },
+              {
+                "id": "b",
+                "text": "Expensive equipment"
+              },
+              {
+                "id": "c",
+                "text": "Golf shoes only"
+              },
+              {
+                "id": "d",
+                "text": "Lots of snacks"
+              }
+            ],
+            "correctAnswer": "a",
+            "explanation": "A positive attitude is the most important when starting to learn golf."
+          },
+          {
+            "question": "If another player is about to hit the ball, what should you do?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Run up close to see better"
+              },
+              {
+                "id": "b",
+                "text": "Stand quietly and safely to the side"
+              },
+              {
+                "id": "c",
+                "text": "Shout encouragement"
+              },
+              {
+                "id": "d",
+                "text": "Hit your ball at the same time"
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "Always stand quietly and safely aside when someone else is playing."
+          },
+          {
+            "question": "How can parents best support junior golfers on the course?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Do everything for their child"
+              },
+              {
+                "id": "b",
+                "text": "Stay positive and encourage effort"
+              },
+              {
+                "id": "c",
+                "text": "Give technical advice during play"
+              },
+              {
+                "id": "d",
+                "text": "Focus on winning"
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "Encouraging effort and staying positive helps juniors enjoy learning."
+          },
+          {
+            "question": "What should you do if you’re unsure about a rule on the course?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Guess and keep playing"
+              },
+              {
+                "id": "b",
+                "text": "Ignore it"
+              },
+              {
+                "id": "c",
+                "text": "Ask your coach or another adult"
+              },
+              {
+                "id": "d",
+                "text": "Make up new rules"
+              }
+            ],
+            "correctAnswer": "c",
+            "explanation": "It’s always best to ask your coach or another adult if you’re unsure."
+          },
+          {
+            "question": "What is a good number of holes for a beginner’s first round?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "18 holes – the full round"
+              },
+              {
+                "id": "b",
+                "text": "As many as possible"
+              },
+              {
+                "id": "c",
+                "text": "3 or 6 holes to start with"
+              },
+              {
+                "id": "d",
+                "text": "Only one hole"
+              }
+            ],
+            "correctAnswer": "c",
+            "explanation": "Starting with 3 or 6 holes helps juniors enjoy and manage their first rounds."
+          }
+        ]
+      }
+    },
+    {
+      "id": "01-what-helps",
+      "title": "What helps",
+      "file": "pages/01-what-helps.md",
+      "type": "content",
+      "assetFile": "what-helps.png",
+      "imageAlt": "What helps illustration",
+      "imagePrompt": "A realistic junior golf learning image showing what helps in a welcoming golf club setting.",
+      "markdown": "# What helps\n\nThis page should help brand new junior golfers and non-golfing parents understand what helps in a simple, practical way.",
+      "quiz": null
+    },
+    {
+      "id": "02-what-to-avoid",
+      "title": "What to avoid",
+      "file": "pages/02-what-to-avoid.md",
+      "type": "content",
+      "assetFile": "what-to-avoid.png",
+      "imageAlt": "What to avoid illustration",
+      "imagePrompt": "A realistic junior golf learning image showing what to avoid in a welcoming golf club setting.",
+      "markdown": "# What to avoid\n\nThis page should help brand new junior golfers and non-golfing parents understand what to avoid in a simple, practical way.",
+      "quiz": null
+    },
+    {
+      "id": "03-emotions",
+      "title": "Managing emotions",
+      "file": "pages/03-emotions.md",
+      "type": "content",
+      "assetFile": "emotions.png",
+      "imageAlt": "Managing emotions illustration",
+      "imagePrompt": "A realistic junior golf learning image showing managing emotions in a welcoming golf club setting.",
+      "markdown": "# Managing emotions\n\nThis page should help brand new junior golfers and non-golfing parents understand managing emotions in a simple, practical way.",
+      "quiz": null
+    },
+    {
+      "id": "04-long-term",
+      "title": "Taking the long-term view",
+      "file": "pages/04-long-term.md",
+      "type": "content",
+      "assetFile": "long-term.png",
+      "imageAlt": "Taking the long-term view illustration",
+      "imagePrompt": "A realistic junior golf learning image showing taking the long-term view in a welcoming golf club setting.",
+      "markdown": "# Taking the long-term view\n\nThis page should help brand new junior golfers and non-golfing parents understand taking the long-term view in a simple, practical way.",
+      "quiz": null
+    }
+  ]
+}

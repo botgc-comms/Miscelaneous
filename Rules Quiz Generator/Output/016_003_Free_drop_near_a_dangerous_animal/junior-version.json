@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\016_003_Free_drop_near_a_dangerous_animal\\metadata.json",
+  "sourceImageName": "page-27.png",
+  "ruleNumber": "R16",
+  "ruleName": "Dangerous situation",
+  "title": "Free drop near a dangerous animal",
+  "question": "Your ball stops in a penalty area right next to a dangerous animal, but it’s still playable. What is allowed according to the rules?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Leave the ball and skip to the next hole."
+    },
+    {
+      "id": "b",
+      "text": "Find the nearest safe spot in the same penalty area (not closer to the hole) and take a free drop within one club-length."
+    },
+    {
+      "id": "c",
+      "text": "Drop your ball outside the penalty area for free."
+    },
+    {
+      "id": "d",
+      "text": "You must try to play the ball where it is, even if unsafe."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "When there is a dangerous animal making it unsafe to play your ball, you can take free relief by finding the nearest safe spot in the same penalty area (not closer to the hole) and dropping the ball within one club-length of that point.",
+  "juniorVersion": {
+    "title": "What to do if a scary animal is near your ball?",
+    "question": "Your ball stops in a penalty area, and there’s a scary animal, like a snake, right next to it. You could reach your ball, but it’s not safe. What can you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Leave the ball alone and just go to the next hole."
+      },
+      {
+        "id": "b",
+        "text": "Find the nearest safe place in the same penalty area (not closer to the hole) and take a free drop with your ball within one club-length."
+      },
+      {
+        "id": "c",
+        "text": "Drop your ball outside the penalty area for free."
+      },
+      {
+        "id": "d",
+        "text": "You have to try to play the ball, even if it isn’t safe."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If there is a dangerous animal next to your ball, you can move your ball to a safe spot in the same penalty area. Drop your ball within one club-length from that safe spot, not closer to the hole. This is called a free drop.",
+    "vocabulary": [
+      {
+        "term": "Penalty area",
+        "simpleMeaning": "A part of the golf course marked with red or yellow lines or stakes, usually with water or rough ground, where special rules apply."
+      },
+      {
+        "term": "Free drop",
+        "simpleMeaning": "When you are allowed to move your ball to another spot without a penalty."
+      },
+      {
+        "term": "Club-length",
+        "simpleMeaning": "The length of your golf club. You measure how far you can drop your ball using this length."
+      }
+    ],
+    "teachingTip": "Remind children that their safety is the most important thing. If they see a dangerous animal, they should ask an adult for help and not get too close.",
+    "likelyMisconceptions": [
+      "Children might think they can drop the ball anywhere for free, but it must stay in the same penalty area and not go closer to the hole.",
+      "Children could believe they must always play the ball where it is, even if it’s dangerous, which is not safe."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:04.960Z",
+  "model": "gpt-4.1"
+}

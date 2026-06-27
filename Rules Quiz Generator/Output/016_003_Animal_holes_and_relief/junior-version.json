@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\016_003_Animal_holes_and_relief\\metadata.json",
+  "sourceImageName": "page-21.png",
+  "ruleNumber": "R16",
+  "ruleName": "Abnormal course conditions",
+  "title": "Animal holes and relief",
+  "question": "Which of these situations would allow you to take relief as it counts as an animal hole under the Rules?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "A hole dug by a rabbit"
+    },
+    {
+      "id": "b",
+      "text": "A shoe print from a previous player"
+    },
+    {
+      "id": "c",
+      "text": "A sprinkler head"
+    },
+    {
+      "id": "d",
+      "text": "A footprint from a bird"
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "Only a hole made by an animal, such as a rabbit, is classed as an animal hole for relief purposes.",
+  "juniorVersion": {
+    "title": "What is an animal hole?",
+    "question": "Which of these is a hole made by an animal, so you can move your ball without penalty?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "A hole dug by a rabbit"
+      },
+      {
+        "id": "b",
+        "text": "A shoe print left by someone walking"
+      },
+      {
+        "id": "c",
+        "text": "A metal sprinkler on the ground"
+      },
+      {
+        "id": "d",
+        "text": "A footprint from a bird"
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "A hole made by an animal, like a rabbit, is called an animal hole. You can move your ball if it lands in this kind of hole. Prints or marks made by shoes or birds do not count as animal holes.",
+    "vocabulary": [
+      {
+        "term": "Animal hole",
+        "simpleMeaning": "A hole in the ground made by an animal, like a rabbit."
+      },
+      {
+        "term": "Relief",
+        "simpleMeaning": "When the rules let you move your ball to a better spot without a penalty."
+      }
+    ],
+    "teachingTip": "Show pictures of real animal holes and other marks, so kids can practise telling which get relief.",
+    "likelyMisconceptions": [
+      "Some children may think any hole or mark (like shoe prints or bird footprints) lets them move the ball.",
+      "Kids might think animal footprints are counted the same as animal holes."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:07.309Z",
+  "model": "gpt-4.1"
+}

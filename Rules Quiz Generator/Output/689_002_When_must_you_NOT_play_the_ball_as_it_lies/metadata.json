@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-02.png",
+  "ruleNumber": "6/8/9",
+  "ruleName": "Playing the ball as it lies",
+  "group": "Playing the ball as it lies",
+  "title": "When must you NOT play the ball as it lies?",
+  "question": "Which situation means you are NOT allowed to play the ball as it lies?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "The ball is out of bounds"
+    },
+    {
+      "id": "b",
+      "text": "The ball is on the wrong green"
+    },
+    {
+      "id": "c",
+      "text": "The ball is in a no play zone, like a protected young tree area"
+    },
+    {
+      "id": "d",
+      "text": "All of these"
+    }
+  ],
+  "correctAnswer": "d",
+  "correctAnswers": [
+    "d"
+  ],
+  "explanation": "You must not play a ball as it lies if it is out of bounds, on the wrong green, or in a designated no play zone. In these cases, you must take relief or apply the relevant rule.",
+  "imagePrompt": "A teen boy golfer, right-handed, standing near his ball which is inside a roped-off no play zone clearly marked with a sign. He looks unsure of what to do.",
+  "imageAlt": "A boy golfer near a ball in a protected area marked as no play zone.",
+  "sceneSpec": {
+    "setting": "rough",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "medium",
+    "clothingTopColour": "green",
+    "clothingBottomColour": "yellow",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "Posture does not strongly indicate left-handedness, although the absence of a club minimizes this issue."
+    ],
+    "repairPrompt": "Slightly adjust the golfer's stance or hand position to imply she is left-handed, even though no club is present, for increased clarity."
+  }
+}

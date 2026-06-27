@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\012_001_Playing_a_Ball_from_a_Bad_Lie\\metadata.json",
+  "sourceImageName": "page-22.png",
+  "ruleNumber": "R12",
+  "ruleName": "Old footprints, buried lie, etc.",
+  "title": "Playing a Ball from a Bad Lie",
+  "question": "Your ball comes to rest in an old footprint in a bunker. What are your options under the Rules of Golf?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Take a free drop out of the footprint"
+    },
+    {
+      "id": "b",
+      "text": "Play the ball as it lies or declare it unplayable"
+    },
+    {
+      "id": "c",
+      "text": "Move the ball to a better spot in the bunker without penalty"
+    },
+    {
+      "id": "d",
+      "text": "Ask your opponent for advice and re-drop without penalty"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "When your ball is in a difficult lie such as an old footprint, you must either play it as it lies or declare it unplayable, which comes with a penalty.",
+  "juniorVersion": {
+    "title": "Ball in a Footprint in the Bunker",
+    "question": "Your ball stops in a footprint made by someone else in the sand bunker. What can you do by the rules?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Pick up your ball and drop it for free outside the footprint"
+      },
+      {
+        "id": "b",
+        "text": "Play the ball from the footprint or choose to say it’s unplayable"
+      },
+      {
+        "id": "c",
+        "text": "Move your ball to a better place in the bunker without any penalty"
+      },
+      {
+        "id": "d",
+        "text": "Ask your friend what to do and drop your ball again for free"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If your ball is in a footprint in the bunker, you have two choices: play it where it is, or call it unplayable, which means you add a penalty and follow the unplayable ball rule.",
+    "vocabulary": [
+      {
+        "term": "Bunker",
+        "simpleMeaning": "A bunker is a sandy area on the golf course, like a big sandpit."
+      },
+      {
+        "term": "Unplayable",
+        "simpleMeaning": "Unplayable means you think it's too hard to hit the ball from where it is, and you take a penalty to move it."
+      }
+    ],
+    "teachingTip": "Let children practise playing balls out of footprints in a bunker, and also discuss what declaring 'unplayable' means and how to do it.",
+    "likelyMisconceptions": [
+      "Some children might think they can always move the ball to a better place in the bunker if it lands in a footprint.",
+      "Some might believe they get a free drop when the ball is in a footprint."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:21.414Z",
+  "model": "gpt-4.1"
+}

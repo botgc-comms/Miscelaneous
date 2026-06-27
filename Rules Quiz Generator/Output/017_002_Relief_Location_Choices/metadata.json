@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-14.png",
+  "ruleNumber": "17",
+  "ruleName": "Taking Relief from Abnormal Course Conditions",
+  "group": "Taking Relief from Abnormal Course Conditions",
+  "title": "Relief Location Choices",
+  "question": "Your ball has stopped on a road. The nearest point of relief is in the rough, but you could stand partly on the road and drop onto the fairway. Where must you actually drop the ball?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "On the fairway, even if you are still partly standing on the road."
+    },
+    {
+      "id": "b",
+      "text": "In the rough, at the nearest place where there is no interference at all."
+    },
+    {
+      "id": "c",
+      "text": "Wherever your shot will be easier, as long as you are not closer to the hole."
+    },
+    {
+      "id": "d",
+      "text": "On the road, if that's the best spot for your next shot."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You must drop the ball at the nearest point of full relief, even if that means playing from the rough, not just where it is easier.",
+  "imagePrompt": "A teen boy golfer, right-handed, working out the nearest full relief spot from a road, with fairway and rough clearly shown.",
+  "imageAlt": "Teen boy checking for the nearest full relief from a road, fairway and rough visible.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "asian",
+    "skinTone": "dark",
+    "clothingTopColour": "white",
+    "clothingBottomColour": "green",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "None of note. All critical details and course features are correct, and the golfer fits the specified requirements."
+    ],
+    "repairPrompt": "None needed. The golfer is a right-handed Asian teenage girl with a dark skin tone, in correct golf attire (white top, green shorts), wearing a cap, holding a realistic iron club. The scene clearly shows rough, fairway, and a road in a sunny, authentic golf course."
+  }
+}

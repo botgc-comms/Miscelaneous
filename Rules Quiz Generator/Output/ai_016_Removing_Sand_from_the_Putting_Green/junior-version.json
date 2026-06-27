@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_016_Removing_Sand_from_the_Putting_Green\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "13.1c",
+  "ruleName": "Actions Allowed on Putting Green",
+  "title": "Removing Sand from the Putting Green",
+  "question": "Your ball is just off the putting green. You decide to putt, but there is a patch of loose sand on the putting green directly on your line of play. Can you brush the sand away before making your stroke?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No. Your ball is not on the putting green."
+    },
+    {
+      "id": "b",
+      "text": "No. Sand may never be removed from your line of play."
+    },
+    {
+      "id": "c",
+      "text": "Yes. Sand may be removed from the putting green, even if your ball is off the green."
+    },
+    {
+      "id": "d",
+      "text": "Yes, but only if another player agrees."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "Rule 13.1c allows players to remove sand and loose soil from the putting green, regardless of whether their ball is on or off the putting green.",
+  "juniorVersion": {
+    "title": "Brushing Sand Off the Green",
+    "question": "Your ball is just next to the putting green. You want to use your putter, but there is sand on the green in your way. Can you brush away the sand before you putt?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "No. Your ball is not on the green."
+      },
+      {
+        "id": "b",
+        "text": "No. You can never move sand on your line."
+      },
+      {
+        "id": "c",
+        "text": "Yes. You can move sand off the green, even if your ball is not on it."
+      },
+      {
+        "id": "d",
+        "text": "Yes, but only if another player says it’s okay."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "You are allowed to brush away sand from the putting green, even if your ball is not sitting on the green.",
+    "vocabulary": [
+      {
+        "term": "putting green",
+        "simpleMeaning": "The short grass around the hole where you try to putt the ball in."
+      },
+      {
+        "term": "putter",
+        "simpleMeaning": "A special club for rolling the ball on the green."
+      }
+    ],
+    "teachingTip": "You can clear sand away from the putting green to help your putt, even when your ball is just off the green.",
+    "likelyMisconceptions": [
+      "Some think you can only move sand if your ball is on the green.",
+      "Some think you can never move sand from your line."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:03:42.664Z",
+  "model": "gpt-4.1"
+}

@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\012_001_Playing_a_Ball_from_a_Bad_Lie\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:21:47.636Z",
+  "title": "Playing a Ball from a Bad Lie",
+  "ruleNumber": "R12",
+  "ruleName": "Old footprints, buried lie, etc.",
+  "durationSeconds": 181.978
+}

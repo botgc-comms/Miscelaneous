@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "Rule 14.7",
+  "ruleName": "Playing from Wrong Place",
+  "group": "Putting Green",
+  "title": "Forgetting to Move Ball Marker Back",
+  "question": "A player moves their ball marker one putter head to the side to avoid another player's line on the putting green. They forget to move the marker back, replace their ball at the wrong spot and hole the putt. What is the correct ruling in stroke play?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "The holed putt counts, and the player must add two penalty strokes. No replay is required."
+    },
+    {
+      "id": "b",
+      "text": "The holed putt does not count, and the player must replay the putt from the correct spot with no penalty."
+    },
+    {
+      "id": "c",
+      "text": "The holed putt counts, but the player is disqualified for playing from a wrong place."
+    },
+    {
+      "id": "d",
+      "text": "The player adds two penalty strokes and must replay the putt from the correct spot."
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "When a player forgets to move their ball marker back to its original position on the putting green and holes out from the wrong spot, the holed putt counts, and the player receives the general penalty (two strokes in stroke play). There is no requirement to replay the putt because the ball was only a few inches from its correct place, so it is rarely a serious breach.",
+  "imagePrompt": "A modern, semi-realistic illustration (approximately 75% realistic, 25% stylised) in the junior golf quiz style, showing a putting green scene in soft afternoon light. Two junior golfers are present: one is finishing a putt a few inches to the side of their small, round ball marker, clearly not at the original spot. The other junior stands nearby with a putter, watching. The incorrect ball position is clear, but do not highlight it explicitly. The hole and flagstick are visible on the green. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A junior golfer putting from a position a few inches to the side of their ball marker on a putting green, with another junior golfer watching nearby. The incorrect ball position is visible, and the hole and flagstick are shown.",
+  "sceneSpec": {
+    "setting": "Putting green, late afternoon with soft shadows.",
+    "players": "Two players visible: one is standing and watching with a putter, the other is finishing a putt near the hole.",
+    "ballPosition": "The ball is positioned a few inches to the side of a small, visible marker, not in its original place.",
+    "ruleMoment": "The moment after the ball has been putted from the wrong place but before it is holed.",
+    "educationalFocus": "Shows the common mistake of forgetting to move the marker back and holing out from the wrong spot on the green.",
+    "mustShow": [
+      "Putting green with a hole and flagstick",
+      "A ball placed a small distance from a visible ball marker",
+      "A player putting towards the hole from this incorrect position",
+      "Another player observing"
+    ],
+    "mustNotShow": [
+      "text",
+      "labels",
+      "numbers",
+      "arrows",
+      "captions",
+      "diagrams",
+      "badges",
+      "logos",
+      "watermarks",
+      "club crests",
+      "scorecards",
+      "speech bubbles"
+    ]
+  }
+}

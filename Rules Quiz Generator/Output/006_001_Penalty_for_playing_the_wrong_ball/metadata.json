@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-17.png",
+  "ruleNumber": "R6",
+  "ruleName": "Wrong ball",
+  "group": "Wrong ball",
+  "title": "Penalty for playing the wrong ball",
+  "question": "If you discover you have played a wrong ball during your round, what is the correct penalty and procedure?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "The stroke counts, but there is no penalty"
+    },
+    {
+      "id": "b",
+      "text": "The stroke does not count, you get two penalty strokes, and you must play the correct ball"
+    },
+    {
+      "id": "c",
+      "text": "You can keep playing the wrong ball, no penalty"
+    },
+    {
+      "id": "d",
+      "text": "You automatically lose the hole"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "When you play a wrong ball, the stroke does not count. You get two penalty strokes and must continue the hole with your correct ball (or take further action if you cannot find it).",
+  "imagePrompt": "A teen girl golfer on the fairway, holding an iron club and looking confused as she realises she has played a wrong golf ball, with one ball at her feet, trees in the background, and sunny weather.",
+  "imageAlt": "Teen girl golfer realises she played the wrong ball on the fairway.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "asian",
+    "skinTone": "medium",
+    "clothingTopColour": "blue",
+    "clothingBottomColour": "green",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The golfer is holding the club in a right-handed manner rather than left-handed as specified."
+    ],
+    "repairPrompt": "Show the teen girl holding the iron club in a clearly left-handed manner, with the club position and grip reflecting a left-handed stance."
+  }
+}

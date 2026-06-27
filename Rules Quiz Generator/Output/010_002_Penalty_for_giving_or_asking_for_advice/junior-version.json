@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\010_002_Penalty_for_giving_or_asking_for_advice\\metadata.json",
+  "sourceImageName": "page-11.png",
+  "ruleNumber": "R10",
+  "ruleName": "Advice and line of play",
+  "title": "Penalty for giving or asking for advice",
+  "question": "You ask your playing partner, 'Which club should I use for this shot?' What happens according to the rules?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No penalty."
+    },
+    {
+      "id": "b",
+      "text": "You get a 2-stroke penalty."
+    },
+    {
+      "id": "c",
+      "text": "Your partner gets a 2-stroke penalty."
+    },
+    {
+      "id": "d",
+      "text": "Both you and your partner get 1 penalty stroke."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If you ask for or receive advice like club selection during a round, you get a 2-stroke penalty.",
+  "juniorVersion": {
+    "title": "What happens if you ask your friend which club to use?",
+    "question": "You say to your friend, 'Which club should I use for this shot?' What does the rule say will happen?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Nothing happens. No penalty."
+      },
+      {
+        "id": "b",
+        "text": "You get 2 extra shots added to your score."
+      },
+      {
+        "id": "c",
+        "text": "Your friend gets 2 extra shots added to their score."
+      },
+      {
+        "id": "d",
+        "text": "You and your friend each get 1 extra shot added."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "The rules say you must choose your club on your own. If you ask your friend which club to use, you get 2 shots added to your score.",
+    "vocabulary": [
+      {
+        "term": "Penalty",
+        "simpleMeaning": "Extra shots added to your score if you break a rule."
+      },
+      {
+        "term": "Advice",
+        "simpleMeaning": "When someone tells you what to do, like which club to use."
+      }
+    ],
+    "teachingTip": "Explain that golf is about making choices for yourself. Remind children not to ask or tell friends what club to use during a round.",
+    "likelyMisconceptions": [
+      "Children may think it's okay to ask friends for help during play.",
+      "They might believe both players are penalised."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:01.402Z",
+  "model": "gpt-4.1"
+}

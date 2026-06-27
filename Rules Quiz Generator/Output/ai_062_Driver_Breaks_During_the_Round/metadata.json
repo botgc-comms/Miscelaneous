@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "4.1a(2)",
+  "ruleName": "Clubs – Damage During Round",
+  "group": "Equipment",
+  "title": "Driver Breaks During the Round",
+  "question": "On the 7th hole, your driver shaft snaps after you hit a tee shot. The damage occurred during the normal course of play. What are you allowed to do?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Continue using the damaged club if possible."
+    },
+    {
+      "id": "b",
+      "text": "Repair the club."
+    },
+    {
+      "id": "c",
+      "text": "Replace the damaged club with another club."
+    },
+    {
+      "id": "d",
+      "text": "Any of the above."
+    }
+  ],
+  "correctAnswer": "d",
+  "correctAnswers": [
+    "d"
+  ],
+  "explanation": "If a club is damaged during the normal course of play, you may continue using the club in its damaged state, repair it provided you do not unduly delay play, or replace it with another club as long as obtaining a replacement does not result in unreasonable delay or borrowing from another player on the course. (Rule 4.1a(2))",
+  "imagePrompt": "Create a modern, semi-realistic (about 75% realistic, 25% stylised) illustration in the established junior golf quiz style. Show a golfer on the tee box just after a drive, holding a driver with a clearly snapped or bent shaft. The golfer should be looking at the damage. Two other players stand nearby, watching curiously. In the background, the fairway and trees of a typical golf course are visible, with a golf ball lying in the distance where the shot landed. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer on a tee box holds a driver with a broken shaft, examining the damage, while two other players look on. The ball is visible down the fairway.",
+  "sceneSpec": {
+    "setting": "A tee box on the 7th hole of a typical golf course, with trees and fairway visible in the background.",
+    "players": "A golfer holding a driver with a visibly snapped or bent shaft, looking at the damage. Two other players are nearby, watching.",
+    "ballPosition": "A golf ball is visible on the fairway in the distance, showing the shot has already been played.",
+    "ruleMoment": "Immediately after the tee shot, when the player discovers the driver has broken due to the swing.",
+    "educationalFocus": "Options available to a player when their club is damaged during the course of play.",
+    "mustShow": [
+      "A golfer holding a broken driver shaft, examining it",
+      "Two other golfers in the vicinity",
+      "Tee box and fairway environment",
+      "Golf ball visible further down the fairway"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  }
+}

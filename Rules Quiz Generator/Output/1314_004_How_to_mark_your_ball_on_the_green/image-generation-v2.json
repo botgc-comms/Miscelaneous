@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\1314_004_How_to_mark_your_ball_on_the_green\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:12:17.082Z",
+  "title": "How to mark your ball on the green",
+  "ruleNumber": "R13/14",
+  "ruleName": "Marking and picking up the ball",
+  "durationSeconds": 189.73
+}

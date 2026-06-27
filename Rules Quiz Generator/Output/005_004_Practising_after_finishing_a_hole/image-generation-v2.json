@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\005_004_Practising_after_finishing_a_hole\\metadata.json",
+  "generatedAtUtc": "2026-06-24T14:53:18.748Z",
+  "title": "Practising after finishing a hole",
+  "ruleNumber": "R5",
+  "ruleName": "Practice putting and chipping",
+  "durationSeconds": 155.648
+}

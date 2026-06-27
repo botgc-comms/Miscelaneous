@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-27.png",
+  "ruleNumber": "R16",
+  "ruleName": "Dangerous situation",
+  "group": "Dangerous situation",
+  "title": "Free drop near a dangerous animal",
+  "question": "Your ball stops in a penalty area right next to a dangerous animal, but it’s still playable. What is allowed according to the rules?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Leave the ball and skip to the next hole."
+    },
+    {
+      "id": "b",
+      "text": "Find the nearest safe spot in the same penalty area (not closer to the hole) and take a free drop within one club-length."
+    },
+    {
+      "id": "c",
+      "text": "Drop your ball outside the penalty area for free."
+    },
+    {
+      "id": "d",
+      "text": "You must try to play the ball where it is, even if unsafe."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "When there is a dangerous animal making it unsafe to play your ball, you can take free relief by finding the nearest safe spot in the same penalty area (not closer to the hole) and dropping the ball within one club-length of that point.",
+  "imagePrompt": "A teenage right-handed boy golfer stands at the yellow-staked edge of a sunny penalty area with water and trees, measuring a club-length for a free drop with a dangerous animal nearby.",
+  "imageAlt": "Teenage boy golfer preparing for a free drop near a dangerous animal.",
+  "sceneSpec": {
+    "setting": "penalty_area_edge",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "dropping_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "yellow",
+    "waterVisible": true,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "white",
+    "clothingBottomColour": "black",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": false,
+    "score": 60,
+    "issues": [
+      "Wrong golfer gender and handedness: illustration shows a right-handed boy, but spec requires a left-handed girl.",
+      "Golfer clothing does not match: top is blue instead of specified white, and bottom colour is ambiguous compared to required black.",
+      "Golfer is wearing a hat, but hat is not allowed.",
+      "Scene otherwise accurately represents penalty area, yellow stake, water, trees, and drop action with one ball, and overall scene is suitable for educational purposes."
+    ],
+    "repairPrompt": "Change the golfer to a left-handed teenage girl with light skin, white top, and black bottom, and remove the hat. Ensure the posture and drop action are natural."
+  }
+}

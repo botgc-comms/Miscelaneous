@@ -1,0 +1,44 @@
+{
+  "id": "scoring-and-competitions",
+  "title": "Scoring and competitions",
+  "summary": "How scoring works and what to expect in junior competitions.",
+  "estimatedMinutes": 7,
+  "priority": 1400,  
+  "mandatoryFor": [
+    "Junior Course Cadet"
+  ],
+  "version": 1,
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "Scoring basics",
+      "file": "pages/00-title.md"
+    },
+    {
+      "id": "01-counting-strokes",
+      "title": "Counting strokes",
+      "file": "pages/01-counting-strokes.md"
+    },
+    {
+      "id": "02-scorecards",
+      "title": "Using a scorecard",
+      "file": "pages/02-scorecards.md"
+    },
+    {
+      "id": "03-competitions",
+      "title": "Junior competitions",
+      "file": "pages/03-competitions.md"
+    },
+    {
+      "id": "04-stableford",
+      "title": "Stableford scoring",
+      "file": "pages/04-stableford.md"
+    },
+    {
+      "id": "90-quick-check",
+      "title": "Quick check",
+      "file": "pages/90-quick-check.md",
+      "type": "quiz"
+    }
+  ]
+}

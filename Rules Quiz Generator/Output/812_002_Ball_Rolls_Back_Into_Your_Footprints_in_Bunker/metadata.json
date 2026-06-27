@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-23.png",
+  "ruleNumber": "R8/12",
+  "ruleName": "Ball rolls into your own footprints",
+  "group": "Ball rolls into your own footprints",
+  "title": "Ball Rolls Back Into Your Footprints in Bunker",
+  "question": "After playing a shot from a bunker, your ball rolls back and comes to rest in the footprints you made. What are your options?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Smooth out the footprints before your next shot"
+    },
+    {
+      "id": "b",
+      "text": "Take a free drop"
+    },
+    {
+      "id": "c",
+      "text": "Play the ball as it lies or declare it unplayable"
+    },
+    {
+      "id": "d",
+      "text": "Move the ball to a nicer patch of sand"
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "You must play the ball as it lies, even if it is in your own footprints, unless you declare the ball unplayable under the rules.",
+  "imagePrompt": "A teen boy stands in a bunker, considering a shot to a ball that has settled in his own deep footprints.",
+  "imageAlt": "Teen boy golfer in a bunker, looking down at a ball resting in his footprints.",
+  "sceneSpec": {
+    "setting": "bunker",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "wedge",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": true,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "medium",
+    "clothingTopColour": "purple",
+    "clothingBottomColour": "green",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The boy's skin tone could be slightly more medium for a stronger 'mixed' appearance, but it is within reasonable range.",
+      "The footprints could be a bit deeper/more visually distinct to strengthen the context of the quiz scenario (ball in deep footprints)."
+    ],
+    "repairPrompt": "Increase the visibility and depth of the footprints around the ball to make it clear the ball is in the boy's own deep footprints. Slightly enhance the medium tone and mixed ethnicity appearance of the teen boy for greater clarity."
+  }
+}

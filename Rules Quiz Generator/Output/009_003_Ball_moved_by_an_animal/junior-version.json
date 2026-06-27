@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\009_003_Ball_moved_by_an_animal\\metadata.json",
+  "sourceImageName": "pageb-12.png",
+  "ruleNumber": "R9",
+  "ruleName": "Ball at rest is moved",
+  "title": "Ball moved by an animal",
+  "question": "A dog runs onto the fairway and knocks your ball out of its spot. According to the rules, what should you do?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball from its new spot"
+    },
+    {
+      "id": "b",
+      "text": "Replace the ball without penalty"
+    },
+    {
+      "id": "c",
+      "text": "Add a penalty and replace the ball"
+    },
+    {
+      "id": "d",
+      "text": "Replay your previous shot"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If an outside influence, such as an animal, moves your ball at rest, you must replace it without penalty.",
+  "juniorVersion": {
+    "title": "Dog moves your ball",
+    "question": "You are playing golf and a dog runs onto the grass, bumping your ball out of its place. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Hit your ball from where it stopped"
+      },
+      {
+        "id": "b",
+        "text": "Put your ball back where it was, no penalty"
+      },
+      {
+        "id": "c",
+        "text": "Add a penalty and put your ball back"
+      },
+      {
+        "id": "d",
+        "text": "Play your last shot again"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If an animal like a dog moves your ball, you must put the ball back where it was. You do not get a penalty.",
+    "vocabulary": [
+      {
+        "term": "Penalty",
+        "simpleMeaning": "When you have to add extra shots to your score because you broke a rule."
+      },
+      {
+        "term": "Fairway",
+        "simpleMeaning": "The short grass between the start and the green."
+      }
+    ],
+    "teachingTip": "Remind juniors that animals and people are called 'outside influences' in golf. Only replace the ball when an outside influence moves it.",
+    "likelyMisconceptions": [
+      "Some juniors may think you always play the ball from wherever it ends up, but that's not true if an animal moves it.",
+      "Some may think you get a penalty, but you don't if an animal moves your ball."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:51.024Z",
+  "model": "gpt-4.1"
+}

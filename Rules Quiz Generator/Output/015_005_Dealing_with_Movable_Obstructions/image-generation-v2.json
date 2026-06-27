@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\015_005_Dealing_with_Movable_Obstructions\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:40:09.789Z",
+  "title": "Dealing with Movable Obstructions",
+  "ruleNumber": "R15",
+  "ruleName": "Movable Obstructions",
+  "durationSeconds": 173.397
+}

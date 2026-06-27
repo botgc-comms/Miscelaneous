@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-13.png",
+  "ruleNumber": "16",
+  "ruleName": "Abnormal course conditions",
+  "group": "Abnormal course conditions",
+  "title": "Identifying Immovable Obstructions",
+  "question": "Which of the following is considered an immovable obstruction, entitling you to free relief under the Rules?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "A path with an artificial (man-made) surface"
+    },
+    {
+      "id": "b",
+      "text": "A pile of leaves gathered by the wind"
+    },
+    {
+      "id": "c",
+      "text": "A divot hole in the fairway"
+    },
+    {
+      "id": "d",
+      "text": "A mole hill"
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "A path with a man-made surface is classed as an immovable obstruction. You are allowed free relief from it. The other options are either loose impediments, natural damage, or animal holes.",
+  "imagePrompt": "A teenage girl golfer stands next to a paved pathway on the fairway, her ball lying beside it as she prepares to drop the ball for free relief.",
+  "imageAlt": "Teen girl golfer next to an artificial-path taking free relief.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "dropping_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "dark",
+    "clothingTopColour": "black",
+    "clothingBottomColour": "navy",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The golfer's shorts appear navy but could be very slightly more distinctly navy to avoid ambiguity under some lighting."
+    ],
+    "repairPrompt": "Ensure the golfer's shorts are a clearly visible navy colour, even in bright daylight. All other elements are accurate."
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_009_Can_You_Clean_Your_Ball_on_the_Fairway\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "9.4",
+  "ruleName": "Ball Lifted or Deliberately Touched by Player",
+  "title": "Can You Clean Your Ball on the Fairway?",
+  "question": "Your ball comes to rest on the fairway. You pick it up to clean some mud off before replacing it. What is the correct ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "This is always allowed."
+    },
+    {
+      "id": "b",
+      "text": "This is only allowed if a Local Rule, such as Preferred Lies (Pick and Place), is in effect or another Rule allows you to lift the ball."
+    },
+    {
+      "id": "c",
+      "text": "This is never allowed on the fairway."
+    },
+    {
+      "id": "d",
+      "text": "You may clean the ball, but you must add one penalty stroke."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "Under the normal Rules of Golf, you cannot simply lift your ball on the fairway to clean it. Unless another Rule allows you to lift the ball (for example, to take relief), lifting it just to clean it results in a penalty. However, if a local Preferred Lies Rule (Model Local Rule E-3) is in effect, you may mark, lift, clean, and place your ball as specified in that Local Rule. Always check the Local Rules before starting your round.",
+  "juniorVersion": {
+    "title": "Can You Pick Up Your Ball to Clean It on the Fairway?",
+    "question": "Your ball lands on the fairway and it has some mud on it. You pick it up to clean it before putting it back. Is this OK?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You can always do this."
+      },
+      {
+        "id": "b",
+        "text": "You can only do this if there is a special rule for the day or another rule lets you pick up your ball."
+      },
+      {
+        "id": "c",
+        "text": "You can never do this on the fairway."
+      },
+      {
+        "id": "d",
+        "text": "You can clean your ball, but you must add one extra stroke."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "Normally, you are not allowed to pick up your ball just to clean it on the fairway. You can only do this if there is a special rule, like Preferred Lies, or another rule lets you pick up your ball. Ask an adult or look at the Local Rules before you start.",
+    "vocabulary": [
+      {
+        "term": "Fairway",
+        "simpleMeaning": "The short grass between the tee and the green, where it is easier to hit your ball."
+      },
+      {
+        "term": "Local Rule",
+        "simpleMeaning": "A special rule for a certain day or golf course."
+      },
+      {
+        "term": "Preferred Lies",
+        "simpleMeaning": "A Local Rule that lets you pick up, clean, and place your ball in a better spot on the fairway."
+      }
+    ],
+    "teachingTip": "Show where the fairway is on the course and talk about why it is usually not allowed to pick up your ball unless a special rule says it’s OK.",
+    "likelyMisconceptions": [
+      "Children may think you can always pick up and clean your ball on the fairway.",
+      "Children may think you get a penalty stroke just for cleaning the ball."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T17:59:14.196Z",
+  "model": "gpt-4.1"
+}

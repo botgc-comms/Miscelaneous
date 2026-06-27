@@ -1,0 +1,449 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-10.png",
+  "sourceImagePath": "Input\\page-10.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-10.png",
+      "ruleNumber": "R8/9",
+      "ruleName": "Do not break anything off or bend anything out of the way",
+      "group": "Do not break anything off or bend anything out of the way",
+      "title": "Moving or bending grass before your shot",
+      "question": "You find your ball in tall grass. Are you allowed to move or bend the grass if it makes your shot easier?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, you can move or bend the grass to help your shot."
+        },
+        {
+          "id": "b",
+          "text": "No, you must play the ball as it lies and not move the grass."
+        },
+        {
+          "id": "c",
+          "text": "Yes, but only if you tell your playing partners first."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You must accept the lie as you find it and are not allowed to move, bend, or break anything growing or fixed to help your shot. Doing so means two penalty strokes.",
+      "imagePrompt": "A teenage girl golfer on the fairway, ball in long grass, considering bending some tall grass away from her ball, looking unsure.",
+      "imageAlt": "Teen girl golfer near golf ball surrounded by tall grass, hesitating to touch the grass.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "white",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-10.png",
+      "ruleNumber": "R8/9",
+      "ruleName": "Do not break anything off or bend anything out of the way",
+      "group": "Do not break anything off or bend anything out of the way",
+      "title": "Penalty for breaking off branches during a practice swing",
+      "question": "You make a practice swing and snap a small branch, which gives you an easier shot. What is the penalty?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty."
+        },
+        {
+          "id": "b",
+          "text": "1 penalty stroke."
+        },
+        {
+          "id": "c",
+          "text": "2 penalty strokes."
+        },
+        {
+          "id": "d",
+          "text": "You must replay the shot."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "If you break or bend something during a practice swing that improves your shot, it is two penalty strokes.",
+      "imagePrompt": "A teenage boy golfer next to a bush, finishing a practice swing with a broken twig lying on the ground nearby.",
+      "imageAlt": "Teen boy golfer near golf ball and broken twig, after a practice swing beside a bush.",
+      "sceneSpec": {
+        "setting": "rough",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "light",
+        "clothingTopColour": "black",
+        "clothingBottomColour": "purple",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-10.png",
+      "ruleNumber": "R6",
+      "ruleName": "Playing in the wrong order",
+      "group": "Playing in the wrong order",
+      "title": "Playing out of turn to save time",
+      "question": "You and your friends agree to play out of turn to speed up play. Is there a penalty if no one gets a special advantage?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, everyone gets a penalty."
+        },
+        {
+          "id": "b",
+          "text": "No penalty as long as it’s just to save time."
+        },
+        {
+          "id": "c",
+          "text": "Only the first player receives a penalty."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "No penalty if playing out of turn is just to save time and not to give anyone a tactical advantage.",
+      "imagePrompt": "Three teenage golfers on the fairway, happily deciding who will play first out of order to save time.",
+      "imageAlt": "Three teens golfing, chatting and smiling while picking who will play first out of order.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "medium",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "grey",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-10.png",
+      "ruleNumber": "R6",
+      "ruleName": "Playing in the wrong order",
+      "group": "Playing in the wrong order",
+      "title": "Penalty for taking advantage with wrong order of play",
+      "question": "Two players agree to play out of turn to help one get a tactical advantage. What happens?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty as long as they both agree."
+        },
+        {
+          "id": "b",
+          "text": "Only the player who played early gets a penalty."
+        },
+        {
+          "id": "c",
+          "text": "Both players receive 2 penalty strokes."
+        },
+        {
+          "id": "d",
+          "text": "They must replay their shots."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "If players agree to play out of order to give an advantage, each gets two penalty strokes.",
+      "imagePrompt": "Two teenage golfers on the fairway, quietly discussing playing out of order while glancing at the flag, as one lines up an important shot.",
+      "imageAlt": "Two teen golfers talking near their balls on the fairway, one preparing to play out of turn for an advantage.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "dark",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "orange",
+        "hat": true
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-10.png",
+      "ruleNumber": "R8/9",
+      "ruleName": "Do not break anything off or bend anything out of the way",
+      "group": "Do not break anything off or bend anything out of the way",
+      "title": "Moving or bending grass before your shot",
+      "question": "Your ball is deep in tall grass on the fairway. Are you allowed to move or bend the grass out of your way before hitting your shot?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, you can move or bend the grass to get a better shot."
+        },
+        {
+          "id": "b",
+          "text": "No, you must play the ball as it lies and not move the grass."
+        },
+        {
+          "id": "c",
+          "text": "Yes, but only if your group agrees."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You have to play the ball as it lies. You're not allowed to move, bend or break anything growing or fixed to make your shot easier. If you do, you get two penalty strokes.",
+      "imagePrompt": "A teenage boy golfer on the fairway, standing next to his ball which is surrounded by tall grass, appearing to consider moving the grass.",
+      "imageAlt": "Teen boy golfer near golf ball surrounded by long grass, thinking about touching the grass.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "dark",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "grey",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-10.png",
+      "ruleNumber": "R8/9",
+      "ruleName": "Do not break anything off or bend anything out of the way",
+      "group": "Do not break anything off or bend anything out of the way",
+      "title": "Penalty for breaking off branches during a practice swing",
+      "question": "If you break a small branch that helps clear your shot while making a practice swing, what penalty do you get?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "There is no penalty."
+        },
+        {
+          "id": "b",
+          "text": "You get 1 penalty stroke."
+        },
+        {
+          "id": "c",
+          "text": "You get 2 penalty strokes."
+        },
+        {
+          "id": "d",
+          "text": "You replay your shot."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "Breaking branches or anything growing or fixed to improve your shot, including during a practice swing, results in a two stroke penalty.",
+      "imagePrompt": "A teenage boy golfer in the rough, next to a bush, finishing a practice swing with a snapped twig on the ground.",
+      "imageAlt": "Teen boy golfer beside golf ball and broken twig on grass after a practice swing next to a bush.",
+      "sceneSpec": {
+        "setting": "rough",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "orange",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-10.png",
+      "ruleNumber": "R6",
+      "ruleName": "Playing in the wrong order",
+      "group": "Playing in the wrong order",
+      "title": "Playing out of turn to save time",
+      "question": "You and your friends decide to play out of turn just to speed up play. If no one is trying to get an advantage, is there a penalty?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, everyone gets a penalty."
+        },
+        {
+          "id": "b",
+          "text": "No penalty as long as it is only to speed up play."
+        },
+        {
+          "id": "c",
+          "text": "Only the first person gets a penalty."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "When playing out of turn to save time, with no special advantage gained, there is no penalty.",
+      "imagePrompt": "Three teenagers on the fairway, smiling and discussing who should play out of turn to make play faster.",
+      "imageAlt": "Three teen golfers chatting and smiling on fairway, deciding order to speed up.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "medium",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "yellow",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-10.png",
+      "ruleNumber": "R6",
+      "ruleName": "Playing in the wrong order",
+      "group": "Playing in the wrong order",
+      "title": "Penalty for taking advantage with wrong order of play",
+      "question": "If two players agree to play out of order so that one of them can get a clear advantage, what is the penalty?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty if they both agree."
+        },
+        {
+          "id": "b",
+          "text": "Only the player who played early gets a penalty."
+        },
+        {
+          "id": "c",
+          "text": "Both players get two penalty strokes."
+        },
+        {
+          "id": "d",
+          "text": "They must replay their shots."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "If players play out of order to give an advantage, both get two penalty strokes. It doesn't matter if they agree.",
+      "imagePrompt": "Two teenage golfers on the fairway, quietly discussing their shots while one seems poised to play out of order for an advantage.",
+      "imageAlt": "Two teen golfers talking by their balls on the fairway, one preparing to play before the other for tactical reasons.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "dark",
+        "clothingTopColour": "orange",
+        "clothingBottomColour": "navy",
+        "hat": false
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "089_001_Moving_or_bending_grass_before_your_shot",
+    "089_002_Penalty_for_breaking_off_branches_during_a_practice_swing",
+    "006_003_Playing_out_of_turn_to_save_time",
+    "006_004_Penalty_for_taking_advantage_with_wrong_order_of_play"
+  ],
+  "updatedAtUtc": "2026-04-24T20:09:29.193Z"
+}

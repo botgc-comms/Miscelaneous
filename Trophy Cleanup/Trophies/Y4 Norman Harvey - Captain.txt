@@ -1,0 +1,5 @@
+﻿{
+  "text": [],
+  "allowText": true,
+  "notes": "the inscription reads - Normal Harvey - November 1984 - Club Captain 1991"
+}

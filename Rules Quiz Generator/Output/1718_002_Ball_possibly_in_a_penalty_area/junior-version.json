@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\1718_002_Ball_possibly_in_a_penalty_area\\metadata.json",
+  "sourceImageName": "page-24.png",
+  "ruleNumber": "R17/18",
+  "ruleName": "In a penalty area",
+  "title": "Ball possibly in a penalty area",
+  "question": "If your ball is heading towards a penalty area and you can't see where it stopped, when are you allowed to take penalty area relief?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Only if you are virtually certain your ball is in the penalty area."
+    },
+    {
+      "id": "b",
+      "text": "Any time you're unsure where the ball is."
+    },
+    {
+      "id": "c",
+      "text": "If there's a chance it may be outside the penalty area."
+    },
+    {
+      "id": "d",
+      "text": "Only if you find your ball inside the penalty area."
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "You are only allowed to use penalty area relief if it is virtually certain the ball is in the penalty area. Otherwise, you must treat it as a lost ball if it's not found.",
+  "juniorVersion": {
+    "title": "When can you drop a new ball for a penalty area?",
+    "question": "If you hit your ball towards a water hazard or other penalty area and you don't know where it stopped, when are you allowed to drop another ball and take a penalty?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Only if you are almost sure your ball is in the penalty area."
+      },
+      {
+        "id": "b",
+        "text": "Any time you are not sure where your ball is."
+      },
+      {
+        "id": "c",
+        "text": "If you think your ball might be outside the penalty area."
+      },
+      {
+        "id": "d",
+        "text": "Only if you find your ball inside the penalty area."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "You can only drop a new ball and take a penalty if you are almost sure your ball went into the penalty area. If you don't know for sure, you have to look for your ball, and if you can't find it, it's a lost ball.",
+    "vocabulary": [
+      {
+        "term": "Penalty area",
+        "simpleMeaning": "Places like ponds, lakes, or rivers on the course that usually have red or yellow stakes around them."
+      },
+      {
+        "term": "Virtually certain",
+        "simpleMeaning": "You are almost completely sure, with very little doubt, that something happened."
+      }
+    ],
+    "teachingTip": "Ask children to look for the red or yellow lines and stakes that show a penalty area. Remind them to think about where their ball is most likely to have stopped before dropping a new one.",
+    "likelyMisconceptions": [
+      "Kids may think they can drop a new ball any time they lose sight of it.",
+      "Some may believe they need to actually see their ball go in the water to take relief.",
+      "They may not understand what 'virtually certain' means."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:28:06.128Z",
+  "model": "gpt-4.1"
+}

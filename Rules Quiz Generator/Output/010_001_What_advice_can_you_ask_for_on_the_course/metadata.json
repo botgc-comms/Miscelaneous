@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-11.png",
+  "ruleNumber": "R10",
+  "ruleName": "Advice and line of play",
+  "group": "Advice and line of play",
+  "title": "What advice can you ask for on the course?",
+  "question": "You can't see the flag from your ball on the fairway. Which action are you allowed to ask your friend to do?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Tell you which club to use."
+    },
+    {
+      "id": "b",
+      "text": "Point out the direction of the flag."
+    },
+    {
+      "id": "c",
+      "text": "Suggest which type of shot you should play."
+    },
+    {
+      "id": "d",
+      "text": "Explain the golf rules for you."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You are allowed to ask someone to show you the line of play (such as pointing towards the flag). You can't ask what club to use or what shot to play, as that's giving advice.",
+  "imagePrompt": "A teenage golfer standing on the fairway with a friend pointing towards the hidden flag; the friend is clearly not discussing clubs or shots.",
+  "imageAlt": "Teen golfer on the fairway with a friend pointing out the flag direction.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "light",
+    "clothingTopColour": "orange",
+    "clothingBottomColour": "grey",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "Golfer's ethnicity could be shown as more clearly mixed to improve prompt compliance."
+    ],
+    "repairPrompt": "Make the golfer's mixed ethnicity more visually distinct while maintaining a light skin tone. Ensure the friend does not appear to be discussing clubs or shots."
+  }
+}

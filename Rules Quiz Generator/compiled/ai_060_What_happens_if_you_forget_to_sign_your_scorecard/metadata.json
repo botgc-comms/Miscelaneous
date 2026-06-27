@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "3.3b(4)",
+  "ruleName": "Certification of Hole Scores",
+  "group": "Scoring in Stroke Play",
+  "type": "multiple_choice",
+  "imagePrompt": "A polished, semi-realistic (about 75% realistic and 25% stylised) illustration in the established junior golf quiz style, showing a golfer standing at a table in the clubhouse or scorer's station, handing over a scorecard to a competition official. The player's side of the scorecard should have a blank (unsigned) signature box clearly visible. The official is accepting the scorecard across the table. The golfer appears satisfied, as if the round is over. The scene focuses on the handover moment. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer in a clubhouse hands an unsigned scorecard to an official across a table, with the signature area clearly blank, illustrating the moment before disqualification for not signing the scorecard.",
+  "sceneSpec": {
+    "setting": "A golf clubhouse or scorer's area after a round.",
+    "players": "One golfer handing a scorecard to a competition official across a table, looking satisfied or relieved after finishing the round.",
+    "ballPosition": "Not applicable – the focus is on the scorecard hand-in process.",
+    "ruleMoment": "The moment the player gives the unsigned scorecard to the official.",
+    "educationalFocus": "Highlighting the importance of the player signing the scorecard before returning it.",
+    "mustShow": [
+      "A player handing a scorecard across a table to an official",
+      "The official accepting the scorecard",
+      "The player's expression should indicate that they think the round is complete",
+      "A clearly visible blank signature area on the part of the scorecard for the player's signature"
+    ],
+    "mustNotShow": [
+      "Text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles",
+      "Any indication that the player is about to sign or has signed the scorecard"
+    ]
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What if you forget to sign your scorecard?",
+      "question": "You finish your round in a golf competition and hand in your scorecard, but you forget to sign your name. What happens?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You get two extra shots added to your score."
+        },
+        {
+          "id": "b",
+          "text": "Your scorecard still counts because your scorer signed it."
+        },
+        {
+          "id": "c",
+          "text": "You are out of the competition."
+        },
+        {
+          "id": "d",
+          "text": "You can sign it later when you remember."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "In golf, you must sign your scorecard before handing it in. If you forget to sign it, you are out of the competition and your scores don’t count. You can’t just sign it later. Both you and your scorer need to sign it before you hand it in.",
+      "vocabulary": [
+        {
+          "term": "scorecard",
+          "simpleMeaning": "A card where you write your scores for each hole."
+        },
+        {
+          "term": "scorer (marker)",
+          "simpleMeaning": "The person who writes your scores as you play and checks they are right."
+        },
+        {
+          "term": "competition",
+          "simpleMeaning": "A game where you play against others to see who does best."
+        }
+      ],
+      "teachingTip": "Show kids how to check their scorecard with their scorer, then both sign it before handing it in. Practise this after each round.",
+      "likelyMisconceptions": [
+        "Thinking the scorer’s signature is enough.",
+        "Thinking you can go back later to sign the scorecard if you forgot."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "What happens if you forget to sign your scorecard?",
+      "question": "After finishing your round in a stroke play competition, you hand in your scorecard but forget to sign it. What is the correct ruling?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You receive a two-stroke penalty."
+        },
+        {
+          "id": "b",
+          "text": "Your scorecard is accepted because the marker signed it."
+        },
+        {
+          "id": "c",
+          "text": "You are disqualified from the competition."
+        },
+        {
+          "id": "d",
+          "text": "You may sign it later when you realise your mistake."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "In a stroke play competition, both the player and the marker must sign the scorecard before it is returned. If the player fails to sign the scorecard before it is returned to the Committee, the player is disqualified, unless the Committee decides that an exceptional circumstance applies. Once the scorecard has been returned, you cannot simply add your signature later. Rule Reference: Rule 3.3b(4)."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "ai_060_What_happens_if_you_forget_to_sign_your_scorecard",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-06-26T20:03:54.304Z"
+  }
+}

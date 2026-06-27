@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\000_001_Ball_Bounces_Out_Of_The_Hole_Is_It_Holed\\metadata.json",
+  "sourceImageName": "pageb-09.png",
+  "ruleNumber": "Def.",
+  "ruleName": "Ball bounces back out of the hole",
+  "title": "Ball Bounces Out Of The Hole – Is It Holed?",
+  "question": "Your ball drops into the hole but bounces out and comes to rest outside. What do you need to do next?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Count the ball as holed and move to the next hole"
+    },
+    {
+      "id": "b",
+      "text": "Play the ball as it lies and try to hole out"
+    },
+    {
+      "id": "c",
+      "text": "Add a penalty stroke and pick up your ball"
+    },
+    {
+      "id": "d",
+      "text": "Place the ball in the hole and continue"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "A ball is only considered holed if it comes to rest within the hole. If it bounces out and stops outside the hole, you must play the ball as it lies and try to hole out.",
+  "juniorVersion": {
+    "title": "Ball Pops Out of the Hole – What Now?",
+    "question": "You hit your ball and it drops into the hole, but then it jumps back out and stops on the grass. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Count the ball as in the hole and go to the next hole"
+      },
+      {
+        "id": "b",
+        "text": "Play the ball from where it stopped and try to get it in the hole"
+      },
+      {
+        "id": "c",
+        "text": "Add a penalty and pick up your ball"
+      },
+      {
+        "id": "d",
+        "text": "Put the ball in the hole and move on"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "Your ball has to stay in the hole and stop there to count as in. If it bounces out and stops outside the hole, you have to hit your next shot from where your ball is now.",
+    "vocabulary": [
+      {
+        "term": "Holed",
+        "simpleMeaning": "Your ball is holed when it is all the way in the hole and stops there."
+      }
+    ],
+    "teachingTip": "Show children how a ball must stay in the hole to be counted. You could use a cup and drop a ball in to show when it counts.",
+    "likelyMisconceptions": [
+      "Thinking the ball counts even if it just drops in the hole for a second.",
+      "Thinking you add a penalty if the ball bounces out of the hole."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:17.142Z",
+  "model": "gpt-4.1"
+}

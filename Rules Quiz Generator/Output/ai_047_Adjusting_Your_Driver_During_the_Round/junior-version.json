@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_047_Adjusting_Your_Driver_During_the_Round\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "4.1a(3)",
+  "ruleName": "Deliberately Changing Club's Performance Characteristics During Round",
+  "title": "Adjusting Your Driver During the Round",
+  "question": "Halfway through your round, you decide to increase the loft of your adjustable driver using the manufacturer's adjustment tool to help get the ball higher in the air. Is this allowed?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes. You may adjust your clubs at any time during the round."
+    },
+    {
+      "id": "b",
+      "text": "Yes, but only between holes."
+    },
+    {
+      "id": "c",
+      "text": "No. Deliberately changing the playing characteristics of a club during a round is not allowed."
+    },
+    {
+      "id": "d",
+      "text": "Yes, provided you only change the loft once."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "If a club has adjustable features, such as an adjustable loft or lie, those settings must not be changed during a round. Altering the club's playing characteristics after the round has started is a breach of the Rules. You may only adjust the club before the round begins. If a club is damaged during normal play, it may be repaired or replaced in certain circumstances, but you cannot use the adjustment mechanism to change how the club is designed to play. (Rule 4.1a(3))",
+  "juniorVersion": {
+    "title": "Can You Change Your Driver?",
+    "question": "You are playing and want to make your driver hit the ball higher. You take out a tool and change the driver’s loft during your round. Are you allowed to do this?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Yes. You can change your clubs whenever you want during the round."
+      },
+      {
+        "id": "b",
+        "text": "Yes, but only when you are walking between holes."
+      },
+      {
+        "id": "c",
+        "text": "No. You can’t change how your club plays once your round has started."
+      },
+      {
+        "id": "d",
+        "text": "Yes, but only if you change the loft once."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "You are not allowed to change your club to make it work differently during your round. For example, you can’t use a tool to make your driver hit the ball higher after you start playing. You can only make these changes before you start your round.",
+    "vocabulary": [
+      {
+        "term": "Loft",
+        "simpleMeaning": "Loft is the angle of the clubface that helps decide how high the ball goes."
+      },
+      {
+        "term": "Driver",
+        "simpleMeaning": "The driver is a club used to hit the ball a long way, often at the start of a hole."
+      }
+    ],
+    "teachingTip": "Explain that the Rules want everyone to play with the clubs they start with—not to change them during the round.",
+    "likelyMisconceptions": [
+      "Some children may think they can use tools to change their clubs during play if they see someone else do it.",
+      "They may believe small changes, like changing just once, are okay."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:22:46.614Z",
+  "model": "gpt-4.1"
+}

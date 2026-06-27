@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\011_004_Ball_Hits_Another_Player_On_The_Green_What_Now\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:19:00.715Z",
+  "title": "Ball Hits Another Player On The Green – What Now?",
+  "ruleNumber": "R11",
+  "ruleName": "Ball hits another player or an outside influence",
+  "durationSeconds": 189.69
+}

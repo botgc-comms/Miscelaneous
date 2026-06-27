@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "18.3c",
+  "ruleName": "Provisional Ball – Actions Before Original Ball Is Found or Lost",
+  "group": "Ball Lost or Out of Bounds; Provisional Ball",
+  "title": "Playing a Provisional Ball Before Reaching the Original Ball's Likely Position",
+  "question": "Your tee shot may be lost outside a penalty area, so you correctly announce and play a provisional ball. The provisional only travels about 100 yards, while your original drive is thought to be around 250 yards away. Can you continue playing the provisional ball?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No. You must wait until you have searched for your original ball."
+    },
+    {
+      "id": "b",
+      "text": "Yes. You may continue playing the provisional ball until you reach the place where your original ball is likely to be."
+    },
+    {
+      "id": "c",
+      "text": "Yes, but only one more stroke is allowed with the provisional."
+    },
+    {
+      "id": "d",
+      "text": "No. A provisional ball may only be played once before searching."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "A provisional ball may be played as many times as necessary until the player reaches the place where the original ball is likely to be. However, if the provisional ball is played from a point nearer the hole than where the original is estimated to lie, it automatically becomes the ball in play under penalty of stroke and distance. If the original ball is found before the provisional has been played from nearer the hole, the provisional must be abandoned and play continues with the original ball. (Rule 18.3c)",
+  "imagePrompt": "A modern, polished semi-realistic illustration (about 75% realistic and 25% stylised) in the established junior golf quiz style, depicting a golf hole from the teeing area down the fairway. In the foreground, one adult golfer is playing a stroke from 100 yards down the fairway, with another golfer watching. The first ball is further up the fairway in light rough, visible in the distance. The scene should clearly show the provisional ball being played before the players have reached the area where the original might be. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer plays a provisional shot from 100 yards down the fairway while an original ball sits further ahead in the distance, another player watches.",
+  "sceneSpec": {
+    "setting": "Teeing area and fairway of a typical parkland golf hole with some trees and light rough on one side.",
+    "players": "Two adult golfers. One player is in the act of playing a provisional ball from well behind the spot where the first ball was likely to land. The other watches from the tee or side of the fairway.",
+    "ballPosition": "One ball (labelled in art reference only, not in artwork) rests further up the fairway in longish rough, about 250 yards from the tee. Another ball is being played by the player, about 100 yards from the tee in light fairway or light semi-rough.",
+    "ruleMoment": "The provisional ball is being played for a second time, before the players have reached the area where the original ball might be.",
+    "educationalFocus": "Illustrate that a provisional ball can be played multiple times until the area of the original ball is reached, as long as it's not played from closer to the hole than the estimated spot of the original.",
+    "mustShow": [
+      "Golfer playing a stroke from 100 yards down the fairway (provisional ball)",
+      "Another golfer observing the action",
+      "Fairway stretching ahead with distant trees and light rough"
+    ],
+    "mustNotShow": [
+      "Text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards, speech bubbles"
+    ]
+  }
+}

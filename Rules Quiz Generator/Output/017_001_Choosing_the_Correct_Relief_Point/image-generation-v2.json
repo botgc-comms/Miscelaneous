@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\017_001_Choosing_the_Correct_Relief_Point\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:50:06.611Z",
+  "title": "Choosing the Correct Relief Point",
+  "ruleNumber": "17",
+  "ruleName": "Taking Relief from Abnormal Course Conditions",
+  "durationSeconds": 194.16
+}

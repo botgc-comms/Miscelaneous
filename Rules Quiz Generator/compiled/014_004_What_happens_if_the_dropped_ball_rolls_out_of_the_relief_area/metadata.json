@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-03.png",
+  "ruleNumber": "14",
+  "ruleName": "Dropping and re-dropping",
+  "group": "Dropping and re-dropping",
+  "type": "multiple_choice",
+  "imagePrompt": "A teenage golfer watches as a dropped ball rolls out of a clearly marked relief area on the fairway.",
+  "imageAlt": "Golf ball rolling out of a marked relief area after a drop.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "dropping_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "grey",
+    "clothingBottomColour": "navy",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [],
+    "repairPrompt": "No repair needed. The illustration accurately shows a teenage white boy on a fairway, wearing a grey top, navy shorts, and a cap. He is releasing one realistic golf ball from about knee height outside a clearly marked relief area, with no club in hand. The scene is bright and believable, with all prompt details correctly shown."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What if your ball rolls out of the right place after you drop it?",
+      "question": "You drop your ball in the spot you should. But the ball rolls out of the area you can use. What should you do now?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop the ball again inside the area you are allowed"
+        },
+        {
+          "id": "b",
+          "text": "Put the ball down with your hand where it stopped"
+        },
+        {
+          "id": "c",
+          "text": "Hit the ball from where it ended up"
+        },
+        {
+          "id": "d",
+          "text": "Move the ball back to the first place you dropped it"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "If your ball rolls out of the area after you drop it, you have to drop it again inside the right area.",
+      "vocabulary": [
+        {
+          "term": "Relief area",
+          "simpleMeaning": "The special part of the ground where you are allowed to drop and play your ball from."
+        },
+        {
+          "term": "Drop",
+          "simpleMeaning": "Letting the ball go from your hand so it falls to the ground."
+        }
+      ],
+      "teachingTip": "Use a hoop or some ropes to show the edges of the relief area. Let the junior practise dropping and see if the ball stays in the area.",
+      "likelyMisconceptions": [
+        "Children may think the ball stays where it stops, even if it is outside the relief area.",
+        "Some may want to place the ball by hand instead of dropping it again."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "What happens if the dropped ball rolls out of the relief area?",
+      "question": "After you drop your ball in the correct place, it rolls out of the relief area. What do you do next?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop the ball again in the relief area"
+        },
+        {
+          "id": "b",
+          "text": "Place the ball where it stopped"
+        },
+        {
+          "id": "c",
+          "text": "Hit it from where it finished"
+        },
+        {
+          "id": "d",
+          "text": "Move it back to the original spot"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "If your dropped ball comes to rest outside the relief area, you must drop it again within the relief area."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "014_004_What_happens_if_the_dropped_ball_rolls_out_of_the_relief_area",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.829Z"
+  }
+}

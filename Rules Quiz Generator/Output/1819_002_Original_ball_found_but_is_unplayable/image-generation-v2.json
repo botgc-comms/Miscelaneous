@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\1819_002_Original_ball_found_but_is_unplayable\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:16:14.646Z",
+  "title": "Original ball found but is unplayable",
+  "ruleNumber": "R18/19",
+  "ruleName": "Provisional Ball / Unplayable Ball",
+  "durationSeconds": 216.874
+}

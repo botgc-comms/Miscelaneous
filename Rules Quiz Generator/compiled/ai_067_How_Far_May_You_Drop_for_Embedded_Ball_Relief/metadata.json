@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "16.3b",
+  "ruleName": "Embedded Ball Relief",
+  "group": "Relief Situations",
+  "type": "multiple_choice",
+  "imagePrompt": "A semi-realistic illustration in a modern style (about 75% realistic, 25% stylised) showing a golfer on a fairway where a golf ball is visibly embedded in its own pitch mark. The golfer is dressed in typical golf attire and is preparing to drop a ball, holding a ball in one hand and a club in the other. There is a visible reference point next to the embedded ball, such as a tee or small marker. The fairway grass looks neatly mown under sunny daylight. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer prepares to drop a ball for relief from an embedded ball in the fairway, with the embedded ball, a visible reference point, and short-cut green grass, under bright daylight.",
+  "sceneSpec": {
+    "setting": "Short-cut grass of the fairway on a golf hole in daylight.",
+    "players": "One golfer in golf attire preparing to take a drop, holding a ball and a club.",
+    "ballPosition": "A ball visibly embedded in its own pitch mark in the fairway, next to the reference point for relief.",
+    "ruleMoment": "The moment before the player drops the ball, after identifying the reference point for relief.",
+    "educationalFocus": "Illustrates the relief procedure for an embedded ball, with clear distance for correct dropping location.",
+    "mustShow": [
+      "Golf ball embedded in the fairway",
+      "Reference point for relief marked by a tee or divot",
+      "Golfer holding a ball and club, preparing to drop"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "How Far Can You Drop Your Ball When It’s Stuck in the Ground?",
+      "question": "Your ball got stuck (embedded) in the fairway grass. You want to move and drop it for free. How far from where it was stuck are you allowed to drop your ball?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "One club-length away."
+        },
+        {
+          "id": "b",
+          "text": "Two club-lengths away."
+        },
+        {
+          "id": "c",
+          "text": "As far as you want."
+        },
+        {
+          "id": "d",
+          "text": "Right where it was stuck."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "When your ball is stuck in the ground on the fairway, you can pick it up and drop it, but only within one club-length from right behind where it was stuck, and not closer to the hole.",
+      "vocabulary": [
+        {
+          "term": "Embedded Ball",
+          "simpleMeaning": "A ball that is stuck in the ground and is not quickly moving, with part of it below the ground’s surface."
+        },
+        {
+          "term": "Club-length",
+          "simpleMeaning": "The length of your biggest club (not your putter). You can use it to measure how far you can drop your ball."
+        },
+        {
+          "term": "Fairway",
+          "simpleMeaning": "The short grass between the tee and the green."
+        },
+        {
+          "term": "Relief",
+          "simpleMeaning": "A way to move your ball to a better spot when the rules say you are allowed to."
+        }
+      ],
+      "teachingTip": "Let children use a club to measure a club-length on the fairway before showing where to drop the ball.",
+      "likelyMisconceptions": [
+        "Children may think they can drop anywhere or as far as they want.",
+        "Children may not know how to measure a club-length properly.",
+        "Children may think they have to drop exactly where the ball was stuck."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "How Far May You Drop for Embedded Ball Relief?",
+      "question": "Your ball is embedded in the fairway and you take free relief. How far from the reference point may you drop?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "One club-length."
+        },
+        {
+          "id": "b",
+          "text": "Two club-lengths."
+        },
+        {
+          "id": "c",
+          "text": "As far as needed."
+        },
+        {
+          "id": "d",
+          "text": "Exactly where it plugged."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "When taking free relief for a ball embedded in the general area, including the fairway, the player must drop a ball within one club-length of the reference point (the spot right behind where the ball was embedded), not nearer the hole."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "ai_067_How_Far_May_You_Drop_for_Embedded_Ball_Relief",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v4.png",
+    "promptFileName": "final-prompt-v4.txt",
+    "compiledAtUtc": "2026-06-26T20:03:54.354Z"
+  }
+}

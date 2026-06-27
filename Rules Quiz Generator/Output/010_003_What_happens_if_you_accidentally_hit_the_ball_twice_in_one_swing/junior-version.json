@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\010_003_What_happens_if_you_accidentally_hit_the_ball_twice_in_one_swing\\metadata.json",
+  "sourceImageName": "page-18.png",
+  "ruleNumber": "R10",
+  "ruleName": "Double hit",
+  "title": "What happens if you accidentally hit the ball twice in one swing?",
+  "question": "During a tricky chip, your club accidentally hits the ball twice in the same swing. How many strokes do you count and is there a penalty?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Count two strokes and add a penalty stroke"
+    },
+    {
+      "id": "b",
+      "text": "Count one stroke with no penalty"
+    },
+    {
+      "id": "c",
+      "text": "Count one stroke and add a penalty stroke"
+    },
+    {
+      "id": "d",
+      "text": "Ignore the shot and play again without penalty"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If you double-hit the ball in a single swing, it counts as just one stroke and there is no penalty.",
+  "juniorVersion": {
+    "title": "What if my club hits the ball twice, but I only swung once?",
+    "question": "You try a hard chip shot, but your club taps the ball two times in the same swing. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Count two hits and add an extra penalty point"
+      },
+      {
+        "id": "b",
+        "text": "Count only one hit with no extra points"
+      },
+      {
+        "id": "c",
+        "text": "Count one hit and add an extra penalty point"
+      },
+      {
+        "id": "d",
+        "text": "Don’t count the shot; play again for free"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If you hit the ball twice but only took one swing, it just counts as one shot. You don’t get any extra penalty.",
+    "vocabulary": [
+      {
+        "term": "chip shot",
+        "simpleMeaning": "A short hit to make the ball go in the air and land on the green."
+      },
+      {
+        "term": "penalty",
+        "simpleMeaning": "Extra points added for breaking a rule."
+      }
+    ],
+    "teachingTip": "You can show this with a slow-motion video or by having kids practise slow chip shots, so they see when the club might hit the ball more than once.",
+    "likelyMisconceptions": [
+      "Kids may think you have to add extra points if the club taps the ball twice.",
+      "Some might feel like they need to replay the shot, but they do not."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:02.276Z",
+  "model": "gpt-4.1"
+}

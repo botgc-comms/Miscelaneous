@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\321_002_What_must_you_do_with_your_ball_on_each_hole\\metadata.json",
+  "sourceImageName": "page-01.png",
+  "ruleNumber": "R3/21",
+  "ruleName": "Holing out and conceding",
+  "title": "What must you do with your ball on each hole?",
+  "question": "In general, what must a player do with the same ball they played from the tee on each hole?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Pick it up after a few shots"
+    },
+    {
+      "id": "b",
+      "text": "Change it for a different one on the putting green"
+    },
+    {
+      "id": "c",
+      "text": "Play it into the hole (hole out)"
+    },
+    {
+      "id": "d",
+      "text": "Skip the putt if it's very short"
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "Players must play the same ball from the tee all the way into the hole, unless the rules allow them to change it.",
+  "juniorVersion": {
+    "title": "What should you do with your ball on each hole?",
+    "question": "When you start playing a hole, what do you need to do with the same ball you hit from the tee?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Pick up your ball after a few shots"
+      },
+      {
+        "id": "b",
+        "text": "Swap your ball for another on the green"
+      },
+      {
+        "id": "c",
+        "text": "Keep hitting it until it goes in the hole"
+      },
+      {
+        "id": "d",
+        "text": "Miss your putt if it is really close"
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "You need to use the same ball from the start (tee) all the way until you hit it into the hole, unless the rules say you can switch balls.",
+    "vocabulary": [
+      {
+        "term": "Tee",
+        "simpleMeaning": "Where you start each hole in golf."
+      },
+      {
+        "term": "Hole out",
+        "simpleMeaning": "When your ball goes into the hole."
+      },
+      {
+        "term": "Green",
+        "simpleMeaning": "The short grass around the hole."
+      }
+    ],
+    "teachingTip": "Remind juniors to try not to change their ball unless a coach or rule tells them it's OK.",
+    "likelyMisconceptions": [
+      "Thinking you can change balls any time you want.",
+      "Thinking you can skip tapping in a short putt."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:28:07.828Z",
+  "model": "gpt-4.1"
+}

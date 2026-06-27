@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-28.png",
+  "ruleNumber": "R15",
+  "ruleName": "Loose impediments",
+  "group": "Loose impediments",
+  "title": "Moving loose impediments",
+  "question": "You find some leaves and twigs touching your ball on the fairway. What can you do according to the rules?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Remove them with no penalty"
+    },
+    {
+      "id": "b",
+      "text": "You can remove them but will get a penalty"
+    },
+    {
+      "id": "c",
+      "text": "You must leave them alone"
+    },
+    {
+      "id": "d",
+      "text": "Only remove them after asking your marker"
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "Loose impediments like leaves and twigs may be removed anywhere on the course, including the fairway, without penalty.",
+  "imagePrompt": "A teen girl golfer on the fairway carefully picks up a twig and some leaves from next to her ball before taking her shot.",
+  "imageAlt": "Teen girl golfer removing a twig and leaves from beside her golf ball on short grass.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "dark",
+    "clothingTopColour": "green",
+    "clothingBottomColour": "black",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [],
+    "repairPrompt": "No significant repairs needed. Maintain current high accuracy in club details, posture, ball size, outfit colours, and skin tone."
+  }
+}

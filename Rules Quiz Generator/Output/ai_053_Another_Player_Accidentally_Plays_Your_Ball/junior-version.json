@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_053_Another_Player_Accidentally_Plays_Your_Ball\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "6.3c",
+  "ruleName": "Wrong Ball",
+  "title": "Another Player Accidentally Plays Your Ball",
+  "question": "After your tee shot, your ball cannot be found until you discover that it was accidentally played by a player on a neighbouring fairway who thought it was theirs. What is the correct ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Your ball is lost, so you must play under stroke and distance."
+    },
+    {
+      "id": "b",
+      "text": "You must play your next shot from where the other player hit your ball."
+    },
+    {
+      "id": "c",
+      "text": "There is no penalty to you. You must replace your ball on its original spot and continue play."
+    },
+    {
+      "id": "d",
+      "text": "Both players receive a two-stroke penalty."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "If another player accidentally plays your ball as a wrong ball, you are not penalised. You must replace your ball (or another ball if the original cannot be recovered) on its original spot, estimating the spot if necessary. The player who played your ball is penalised under the Rules. Your ball is not considered lost in this situation.",
+  "juniorVersion": {
+    "title": "Someone Else Hits Your Ball by Mistake",
+    "question": "After you hit from the tee, you can't find your ball. Then you see another player from a different hole hit it, thinking it was theirs. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Your ball is lost, so you need to play from the tee again."
+      },
+      {
+        "id": "b",
+        "text": "You have to hit your next shot from where that other player hit your ball."
+      },
+      {
+        "id": "c",
+        "text": "You are not in trouble. Put a new ball down where your ball was and keep playing."
+      },
+      {
+        "id": "d",
+        "text": "Both of you get a two-shot penalty."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "If another golfer hits your ball by mistake, you don't get a penalty. Just put a new ball (or your own ball if you find it) where your ball was and play from there. The other golfer gets a penalty but you do not.",
+    "vocabulary": [
+      {
+        "term": "Tee",
+        "simpleMeaning": "The starting place for each hole where you take your first shot."
+      },
+      {
+        "term": "Penalty",
+        "simpleMeaning": "A punishment in golf, usually adding extra shots to your score."
+      },
+      {
+        "term": "Fairway",
+        "simpleMeaning": "The part of the golf course between the tee and the green where the grass is cut short."
+      }
+    ],
+    "teachingTip": "Explain that golf balls can sometimes get mixed up, so it's important to put a special mark on your ball so you can tell it apart from others.",
+    "likelyMisconceptions": [
+      "Kids might think their ball is lost if someone else plays it by mistake.",
+      "They might not know they don't get a penalty in this case.",
+      "They might think they must play from where the other player hit their ball."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T19:08:42.368Z",
+  "model": "gpt-4.1"
+}

@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-17.png",
+  "ruleNumber": "R6",
+  "ruleName": "Wrong ball",
+  "group": "Wrong ball",
+  "title": "Consequence of not correcting a wrong ball mistake",
+  "question": "What is the result if you finish a hole without correcting your mistake of playing the wrong ball?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You receive four penalty strokes"
+    },
+    {
+      "id": "b",
+      "text": "You must replay the hole"
+    },
+    {
+      "id": "c",
+      "text": "You are disqualified"
+    },
+    {
+      "id": "d",
+      "text": "There is no penalty"
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "If you fail to correct your mistake and finish the hole with a wrong ball, you are disqualified.",
+  "imagePrompt": "A teen girl golfer on the green, holing out a different ball while other players look on, with a putter in hand and one ball near the hole under sunny weather.",
+  "imageAlt": "Teen girl golfer holes out a wrong ball on the green.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "replaying_shot",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "dark",
+    "clothingTopColour": "blue",
+    "clothingBottomColour": "red",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 94,
+    "issues": [
+      "The golf ball is correctly sized and singular.",
+      "The putter is realistic with a correct putter head, proper shaft and grip length.",
+      "Teen girl golfer has a natural, plausible golf stance and posture.",
+      "Golfer matches mixed ethnicity and dark skin tone, with blue top and red trousers.",
+      "The scene is clearly a sunny putting green with believable course features.",
+      "Other players are looking on in the distance per the prompt."
+    ],
+    "repairPrompt": "Ensure the action more clearly communicates that the golfer is holing out with a different ball (for greater story clarity), and show the hole nearer to the ball or in the frame if currently cropped."
+  }
+}

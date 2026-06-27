@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\018_003_When_to_play_a_provisional_ball\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:03:22.680Z",
+  "title": "When to play a provisional ball",
+  "ruleNumber": "18",
+  "ruleName": "Playing a provisional ball",
+  "durationSeconds": 216.576
+}

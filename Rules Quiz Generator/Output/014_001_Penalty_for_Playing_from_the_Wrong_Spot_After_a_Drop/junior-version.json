@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\014_001_Penalty_for_Playing_from_the_Wrong_Spot_After_a_Drop\\metadata.json",
+  "sourceImageName": "page-04.png",
+  "ruleNumber": "R14",
+  "ruleName": "Incorrect drop",
+  "title": "Penalty for Playing from the Wrong Spot After a Drop",
+  "question": "If you drop your ball outside the relief area and then play it from there, what penalty do you receive?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No penalty"
+    },
+    {
+      "id": "b",
+      "text": "1 penalty stroke"
+    },
+    {
+      "id": "c",
+      "text": "2 penalty strokes"
+    },
+    {
+      "id": "d",
+      "text": "Disqualification"
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "There is a two-stroke penalty for playing a ball from the wrong place after a drop, according to the Rules of Golf.",
+  "juniorVersion": {
+    "title": "What happens if you play from the wrong spot after a drop?",
+    "question": "You need to drop your ball in the right place to keep playing. If you drop your ball in the wrong place and hit it from there, what happens?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Nothing happens, you can keep playing."
+      },
+      {
+        "id": "b",
+        "text": "You get 1 extra penalty shot."
+      },
+      {
+        "id": "c",
+        "text": "You get 2 extra penalty shots."
+      },
+      {
+        "id": "d",
+        "text": "You stop playing in the game."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "If you drop your ball in the wrong place and then hit it, you get 2 extra shots added to your score.",
+    "vocabulary": [
+      {
+        "term": "Drop",
+        "simpleMeaning": "When you let go of the ball from your knee to put it back in play."
+      },
+      {
+        "term": "Relief area",
+        "simpleMeaning": "The special spot where you must drop your ball."
+      }
+    ],
+    "teachingTip": "Show the difference between a correct and incorrect drop area using cones or markers, and have children practise dropping balls in the right spot.",
+    "likelyMisconceptions": [
+      "Children may think a drop can be made anywhere on the course.",
+      "They might believe the penalty is less than 2 strokes, or not know there is a penalty."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:38.589Z",
+  "model": "gpt-4.1"
+}

@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-16.png",
+  "ruleNumber": "R19",
+  "ruleName": "Unplayable ball",
+  "group": "Unplayable ball",
+  "title": "What are your options for an unplayable ball?",
+  "question": "If you declare your ball unplayable, which of the following actions are allowed for a one-stroke penalty? (Select all that apply)",
+  "type": "multi_select",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Drop the ball within two club-lengths of where it lies"
+    },
+    {
+      "id": "b",
+      "text": "Go back as far as you like in line with the hole and drop there"
+    },
+    {
+      "id": "c",
+      "text": "Replay the shot from where you last played"
+    },
+    {
+      "id": "d",
+      "text": "Drop the ball on the green without penalty"
+    },
+    {
+      "id": "e",
+      "text": "Ask your friend to choose for you"
+    }
+  ],
+  "correctAnswer": [
+    "a",
+    "b",
+    "c"
+  ],
+  "correctAnswers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "explanation": "You may drop within two club-lengths, go back on a straight line keeping the spot between you and the hole, or replay the last shot, all for one penalty stroke.",
+  "imagePrompt": "A teenage girl golfer with a ball under a bush, visualising three possible relief options: dropping within two club-lengths, going back on the line, or replaying from the previous spot.",
+  "imageAlt": "Teen golfer has a ball under a bush and is imagining three possible drop choices.",
+  "sceneSpec": {
+    "setting": "rough",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "wedge",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "dark",
+    "clothingTopColour": "white",
+    "clothingBottomColour": "grey",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [],
+    "repairPrompt": "No major repairs needed. If additional improvement desired, ensure the ball is clearly under the bush and the golfer's stance interacts slightly more directly with the bush to enhance the sense of 'unplayability'."
+  }
+}

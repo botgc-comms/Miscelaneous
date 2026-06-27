@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-08.png",
+  "ruleNumber": "R10",
+  "ruleName": "Advice and line of play",
+  "group": "Advice and line of play",
+  "title": "When can you discuss distances on the course?",
+  "question": "Can players share information like distances to the green or the position of hazards with each other during a round?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, sharing information about distance or the layout of the course is allowed."
+    },
+    {
+      "id": "b",
+      "text": "No, any conversation about the course is not allowed."
+    },
+    {
+      "id": "c",
+      "text": "Only if both players are on the putting green."
+    },
+    {
+      "id": "d",
+      "text": "Only in team matches."
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "You are allowed to discuss distance, the position of bunkers or other course features, and general information with other players. This is not considered giving advice.",
+  "imagePrompt": "Two teenage boys stand together on the fairway, one pointing out towards the green while they talk about the distance. A well-kept golf course stretches ahead.",
+  "imageAlt": "Two teenage boys discuss distance to the green on a fairway.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [
+      "crowds",
+      "caddies"
+    ],
+    "ethnicity": "mixed",
+    "skinTone": "light",
+    "clothingTopColour": "yellow",
+    "clothingBottomColour": "red",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 96,
+    "issues": [
+      "The boy in yellow (the main golfer) is wearing a hat, yellow top, and red shorts, matching prompt specifications.",
+      "One golf ball and one iron club are visible, both realistically proportioned and positioned.",
+      "The club has a single, believable iron head with correct shaft and grip proportions.",
+      "Posture of both teens is natural and plausible for golf conversation.",
+      "Golf course features – fairway, green, and trees – are realistic and clear.",
+      "No illegal elements, extra balls, malformed clubs, or prohibited features are present.",
+      "The ethnicity and skin tone of the boys matches the 'mixed' and 'light' requirements.",
+      "Both teens' appearances are plausible, though the second boy's trousers are not red as required (prompt wanted both in red bottoms)."
+    ],
+    "repairPrompt": "Ensure both teenage boys are wearing red trousers or shorts as specified, in addition to the yellow top and hat on the primary golfer. Other details are correct."
+  }
+}

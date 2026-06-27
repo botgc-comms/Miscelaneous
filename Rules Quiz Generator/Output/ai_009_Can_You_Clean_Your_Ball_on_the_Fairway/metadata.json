@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "9.4",
+  "ruleName": "Ball Lifted or Deliberately Touched by Player",
+  "group": "General Play – Playing the Ball as It Lies",
+  "title": "Can You Clean Your Ball on the Fairway?",
+  "question": "Your ball comes to rest on the fairway. You pick it up to clean some mud off before replacing it. What is the correct ruling?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "This is always allowed."
+    },
+    {
+      "id": "b",
+      "text": "This is only allowed if a Local Rule, such as Preferred Lies (Pick and Place), is in effect or another Rule allows you to lift the ball."
+    },
+    {
+      "id": "c",
+      "text": "This is never allowed on the fairway."
+    },
+    {
+      "id": "d",
+      "text": "You may clean the ball, but you must add one penalty stroke."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "Under the normal Rules of Golf, you cannot simply lift your ball on the fairway to clean it. Unless another Rule allows you to lift the ball (for example, to take relief), lifting it just to clean it results in a penalty. However, if a local Preferred Lies Rule (Model Local Rule E-3) is in effect, you may mark, lift, clean, and place your ball as specified in that Local Rule. Always check the Local Rules before starting your round.",
+  "imagePrompt": "A junior golfer on a bright UK golf fairway is kneeling next to their original spot, holding their muddy golf ball, appearing about to clean it. The scene should clearly show the well-maintained fairway and the muddy ball, but avoid any suggestion of local rules in effect. Style should be modern and semi-realistic, around 75% realistic and 25% stylised. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A junior golfer kneels on a clean fairway, holding a muddy golf ball beside its original position, about to clean it.",
+  "sceneSpec": {
+    "setting": "A well-maintained fairway on a bright, typical UK golf course day.",
+    "players": "One junior golfer wearing standard golf attire, preparing to clean his or her golf ball.",
+    "ballPosition": "A golf ball at rest on the fairway, a distinct muddy patch visible on it.",
+    "ruleMoment": "The player is holding the ball, appearing about to clean off mud, kneeling beside the original spot where it lay.",
+    "educationalFocus": "Demonstrates the situation of lifting a ball on the fairway to clean it, highlighting the rules restriction unless a local rule applies.",
+    "mustShow": [
+      "Player kneeling on fairway next to original spot of their golf ball",
+      "Golf ball being held with visible mud",
+      "Fairway surface clearly visible",
+      "No clear indication of a local rule in place"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  }
+}

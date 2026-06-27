@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-08.png",
+  "ruleNumber": "R5",
+  "ruleName": "Chipping and putting while waiting",
+  "group": "Chipping and putting while waiting",
+  "type": "multiple_choice",
+  "imagePrompt": "A left-handed teenage boy practises a chip shot with a wedge on the grass next to the tee markers, waiting for his turn.",
+  "imageAlt": "Teenage boy chipping the ball near the tee markers before starting his round.",
+  "sceneSpec": {
+    "setting": "teeing_area",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "wedge",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": true,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [
+      "other players hitting",
+      "caddies"
+    ],
+    "ethnicity": "mixed",
+    "skinTone": "dark",
+    "clothingTopColour": "blue",
+    "clothingBottomColour": "red",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": false,
+    "score": 74,
+    "issues": [
+      "Golfer is set up as right-handed, not left-handed as required (left hand is higher, not lower; facing direction for a right-handed chip shot).",
+      "Club posture and hand placement do not match left-handed setup.",
+      "The scene itself looks believable for golf and all other visual requirements (attire, club, ball, course elements) are met.",
+      "Only one visible golf ball and one realistic wedge present.",
+      "Tee marker is visible and course setting is plausible.",
+      "Golfer's posture is physically plausible for a chip, but only for a right-handed golfer."
+    ],
+    "repairPrompt": "Change the golfer's setup to left-handed: ensure the golfer is facing the opposite direction, with the right hand lower on the grip, addressing the ball naturally for a left-handed chip shot. Clothing, skin tone, and club details are correct; do not change these."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Practising chips and putts while waiting at the tee",
+      "question": "Can you practise a chip or a putt on or near the tee box while you wait for your turn to hit?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, you can practise chipping or putting there."
+        },
+        {
+          "id": "b",
+          "text": "No, you have to wait without hitting any shots."
+        },
+        {
+          "id": "c",
+          "text": "Only if no other players are waiting to play."
+        },
+        {
+          "id": "d",
+          "text": "Only if your coach is standing with you."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "You can practise chipping or putting on or near the tee box if it is not your turn to play, as long as you do not slow down the game.",
+      "vocabulary": [
+        {
+          "term": "chip",
+          "simpleMeaning": "A short golf shot to make the ball go softly onto the green."
+        },
+        {
+          "term": "putt",
+          "simpleMeaning": "A soft shot on the green to roll the ball into the hole."
+        },
+        {
+          "term": "tee box",
+          "simpleMeaning": "The area where you start a hole and play your first shot."
+        }
+      ],
+      "teachingTip": "Let children try a few chip or putt shots near the tee before starting a hole so they know when it is okay. Remind them to be quick so no one has to wait long.",
+      "likelyMisconceptions": [
+        "Children might think they must always just wait and not play any shots before their turn.",
+        "Children might think they can only practise if their coach says so.",
+        "Children might believe they can only practise if the teeing area is empty."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Chipping and putting before your tee shot",
+      "question": "Is it allowed to chip or putt on or near the teeing area while waiting for your turn to play?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, you are allowed to practise chipping or putting there."
+        },
+        {
+          "id": "b",
+          "text": "No, you must wait without playing any shots."
+        },
+        {
+          "id": "c",
+          "text": "Only if no one else is waiting to play."
+        },
+        {
+          "id": "d",
+          "text": "Only if your coach is present."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "You are allowed to practise chipping or putting on or near the teeing area while waiting to tee off, provided it doesn't delay play."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "005_005_Chipping_and_putting_before_your_tee_shot",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.299Z"
+  }
+}

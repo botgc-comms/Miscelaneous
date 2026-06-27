@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "pageb-13.png",
+  "ruleNumber": "R11",
+  "ruleName": "Ball in motion accidentally hits ...",
+  "group": "Ball in motion accidentally hits ...",
+  "type": "multiple_choice",
+  "imagePrompt": "A teenage left-handed boy golfer on the fairway watches as his ball accidentally strikes a dog running past. The dog looks startled, and the ball has come to rest near the incident.",
+  "imageAlt": "Teen boy golfer watches as his golf ball hits a dog on the fairway.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "hybrid",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "medium",
+    "clothingTopColour": "red",
+    "clothingBottomColour": "purple",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "The scene, golfer posture, and club all meet strict realism requirements. The hybrid club is believable with a single realistic club head, correct shaft and grip length. The golf ball is realistic in size and there is exactly one shown. The golfer is a teenage right-handed girl, mixed ethnicity, with medium skin tone, wearing a red top and purple trousers. The course looks like a fairway and has natural features, with visible trees and clear daylight. The dog, posed startled, is near the single golf ball."
+    ],
+    "repairPrompt": "Maintain all current details. For absolute clarity, ensure the hybrid club head shape is distinctly different from that of a long iron or wood. Double-check the club head profile to avoid even slight ambiguity in future versions."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Your Ball Hits a Dog on the Golf Course",
+      "question": "If you hit the ball and it accidentally hits a dog running across the grass, what should you do next?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball where it stops. There is no penalty."
+        },
+        {
+          "id": "b",
+          "text": "Hit the shot again and add a penalty."
+        },
+        {
+          "id": "c",
+          "text": "Drop the ball within two club lengths of where it hit the dog."
+        },
+        {
+          "id": "d",
+          "text": "Miss your next turn."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "If your ball hits something like a dog on the course, just play your ball where it lands. You do not get a penalty.",
+      "vocabulary": [
+        {
+          "term": "Penalty",
+          "simpleMeaning": "A penalty means you have to add extra shots to your score because of breaking a rule."
+        },
+        {
+          "term": "Outside influence",
+          "simpleMeaning": "Something or someone not part of your game, like a dog or a bird, that can change where your ball goes."
+        }
+      ],
+      "teachingTip": "Remind children that sometimes things happen by accident on the course. The rules help keep the game fair and fun.",
+      "likelyMisconceptions": [
+        "Some children might think they have to replay the shot or drop a new ball.",
+        "Some might think there is a penalty for hitting an animal, but there is not for this rule."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Ball strikes an outside influence",
+      "question": "Suppose your ball accidentally strikes a dog running across the course. What does the Rule say you must do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball as it lies, with no penalty."
+        },
+        {
+          "id": "b",
+          "text": "Replay the shot and add a penalty."
+        },
+        {
+          "id": "c",
+          "text": "Drop a ball within two club lengths of where it hit the dog."
+        },
+        {
+          "id": "d",
+          "text": "Skip your next shot."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "If your ball in motion hits an outside influence such as a dog, you must play your ball as it lies with no penalty."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "011_002_Ball_strikes_an_outside_influence",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.588Z"
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_014_Repairing_a_Pitch_Mark_When_Ball_is_Off_the_Green\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "13.1c(2)",
+  "ruleName": "Repairs Allowed on Putting Green",
+  "title": "Repairing a Pitch Mark When Ball is Off the Green",
+  "question": "Your ball lies just off the putting green and there is a pitch mark on the green directly on your line of play. Before playing your next stroke, are you allowed to repair the pitch mark?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No. You can only repair damage if your ball is on the putting green."
+    },
+    {
+      "id": "b",
+      "text": "Yes. Damage on the putting green may be repaired at any time, even if your ball is off the green."
+    },
+    {
+      "id": "c",
+      "text": "Yes, but only if another player gives permission."
+    },
+    {
+      "id": "d",
+      "text": "No. Repairing the pitch mark would improve your line of play."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "According to Rule 13.1c(2), a player is allowed to repair almost any damage on the putting green at any time, regardless of where their ball lies. This includes repairing pitch marks directly on your line of play, even if your ball is off the putting green. The only restriction is not to cause undue delay when making the repair.",
+  "juniorVersion": {
+    "title": "Fixing a Pitch Mark on the Green When Your Ball Is Not On the Green",
+    "question": "Your ball is just next to the putting green. There's a small hole (pitch mark) from another ball right on your path to the hole, but it’s on the green. Can you fix the pitch mark before you hit your ball?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "No. You can only fix marks if your ball is on the green."
+      },
+      {
+        "id": "b",
+        "text": "Yes. You can always fix damage on the green, even if your ball is off it."
+      },
+      {
+        "id": "c",
+        "text": "Yes, but only if another player says you can."
+      },
+      {
+        "id": "d",
+        "text": "No. Fixing the mark would help your shot."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "You are allowed to fix damage like pitch marks on the putting green whenever you want, even if your ball is not on the green. This helps keep the green nice and fair for everyone. Just don’t take too long fixing it.",
+    "vocabulary": [
+      {
+        "term": "putting green",
+        "simpleMeaning": "The smooth grass area around the hole where you use your putter."
+      },
+      {
+        "term": "pitch mark",
+        "simpleMeaning": "A small hole or dent made when a golf ball lands on the green."
+      }
+    ],
+    "teachingTip": "Let juniors practise fixing pitch marks on the green in different situations, including when their ball is off the green.",
+    "likelyMisconceptions": [
+      "Kids might think you can only fix pitch marks if your ball is on the green.",
+      "Some might believe you must ask other players before fixing a mark."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:01:35.747Z",
+  "model": "gpt-4.1"
+}

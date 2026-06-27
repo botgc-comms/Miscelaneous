@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-19.png",
+  "ruleNumber": "R7",
+  "ruleName": "Ball disappeared in the sand",
+  "group": "Bunker",
+  "title": "What can you do if your ball sinks into the bunker?",
+  "question": "After your shot, you can't see your ball because it's buried under the sand in a bunker. What are you allowed to do to find it?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Use your club or feet to search for it; if the ball moves, you must replace it and recreate the lie"
+    },
+    {
+      "id": "b",
+      "text": "Leave it hidden and play a different ball"
+    },
+    {
+      "id": "c",
+      "text": "Dig out the ball and just play it from where it ends up"
+    },
+    {
+      "id": "d",
+      "text": "Ask someone else to find your ball, but you can't move any sand"
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "You can carefully use your club or feet to find your buried ball. If you move it while searching, you must put it back where it was and recreate the original lie without penalty.",
+  "imagePrompt": "A teenage boy searching for a buried golf ball in a bunker, gently pushing sand with his club.",
+  "imageAlt": "A boy golfer using his club in a bunker to find a hidden ball.",
+  "sceneSpec": {
+    "setting": "bunker",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "dropping_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": true,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "asian",
+    "skinTone": "medium",
+    "clothingTopColour": "black",
+    "clothingBottomColour": "orange",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": false,
+    "score": 62,
+    "issues": [
+      "The boy is not actively using the club to search for or uncover the buried ball; he appears to be addressing or preparing to hit the ball instead.",
+      "The golf ball is fully visible and sitting cleanly on the sand instead of being partially buried or uncovered, failing to depict the intended 'searching for a buried ball' scenario.",
+      "The club action does not clearly show gentle pushing or movement of sand for searching.",
+      "While the club, ball, and scene are believable and the correct ethnicity, age, and clothing are present, the core search action required by the prompt (gently pushing sand with the club to find the ball) is missing."
+    ],
+    "repairPrompt": "Depict the teenage boy in the bunker gently pushing or moving sand with the head of his iron club while searching for a buried, partially visible golf ball. Show the ball partially buried in the sand or just being uncovered, not resting cleanly on top. The main action should clearly be searching for a buried ball with the club, not preparing to hit or drop the ball."
+  }
+}

@@ -1,0 +1,5 @@
+﻿{
+  "text": [],
+  "allowText": true,
+  "notes": "the inscription reads - lookers Vase"
+}

@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\020_003_What_should_you_do_if_youre_unsure_which_rule_applies_stroke_play\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:06:46.644Z",
+  "title": "What should you do if you’re unsure which rule applies (stroke play)?",
+  "ruleNumber": "20",
+  "ruleName": "When in doubt about the rules",
+  "durationSeconds": 173.109
+}

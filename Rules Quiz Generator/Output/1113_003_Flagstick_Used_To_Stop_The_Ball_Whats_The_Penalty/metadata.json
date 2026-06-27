@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-09.png",
+  "ruleNumber": "R11/13",
+  "ruleName": "Ball hits the flagstick or the person tending it",
+  "group": "Ball hits the flagstick or the person tending it",
+  "title": "Flagstick Used To Stop The Ball – What's The Penalty?",
+  "question": "If the flagstick is deliberately placed behind the hole to stop your ball, and your ball hits it, what is the ruling?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No penalty, play as it lies"
+    },
+    {
+      "id": "b",
+      "text": "Two penalty strokes and you must replay the stroke"
+    },
+    {
+      "id": "c",
+      "text": "Move the flagstick and keep playing"
+    },
+    {
+      "id": "d",
+      "text": "Add one penalty stroke and continue"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If someone sets the flagstick behind the hole on purpose to stop the ball and your ball hits it, you get a two stroke penalty and must replay the shot, as the previous stroke does not count.",
+  "imagePrompt": "A teen boy putts and his golf ball strikes a flagstick intentionally placed a short distance behind the hole.",
+  "imageAlt": "A golf ball hitting a flagstick purposefully set behind the hole to stop it, with a teen golfer putting.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "dark",
+    "clothingTopColour": "grey",
+    "clothingBottomColour": "red",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": false,
+    "score": 62,
+    "issues": [
+      "The golfer is depicted as a boy, not a girl as specified in the sceneSpec.",
+      "The scene shows the flagstick in the hole, not intentionally placed behind it as described and required.",
+      "The moment of impact between the ball and a flagstick behind the hole is not clearly depicted.",
+      "Golfer's appearance does not match the requested gender."
+    ],
+    "repairPrompt": "Change the golfer to a teenage girl with natural female proportions, dark skin tone, and white ethnicity. Make sure she is wearing a grey top, red trousers or shorts, and a golf cap. Adjust the scene so the flagstick is clearly and intentionally placed a short distance behind the hole (not in the hole). Show the golf ball making visible contact with the flagstick at that spot, capturing the moment of impact. Double-check that all other golf equipment, posture, and course features remain accurate and realistic."
+  }
+}

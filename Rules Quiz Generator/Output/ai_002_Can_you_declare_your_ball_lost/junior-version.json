@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_002_Can_you_declare_your_ball_lost\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "18.2a(1)",
+  "ruleName": "When Ball Is Lost",
+  "title": "Can you declare your ball lost?",
+  "question": "A player's tee shot goes into deep rough and may be hard to find. After a quick glance, the player says, \"I'll declare my ball lost\" and plays a provisional ball. After one minute, another player finds the original ball in the rough. Which of the following is true under the Rules of Golf?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "The original ball must be played; the player cannot declare it lost."
+    },
+    {
+      "id": "b",
+      "text": "The player may continue with the provisional ball if they do not want to play the original."
+    },
+    {
+      "id": "c",
+      "text": "The player is penalised for playing a wrong ball if they play the provisional."
+    },
+    {
+      "id": "d",
+      "text": "The original ball is only in play if the player chooses it."
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "According to Rule 18.2a(1), a ball is only lost if it is not found within three minutes of the player or their caddie beginning to search for it. There is no Rule that allows a player to declare their ball lost. If the original ball is found and identified within three minutes, it must be played. The player must abandon the provisional ball.",
+  "juniorVersion": {
+    "title": "Can you just say your ball is lost?",
+    "question": "You hit your ball into tall grass, and it's hard to find. You look quickly and say, \"My ball is lost!\" and hit another ball just in case. After one minute, your friend finds your first ball in the grass. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You must play your first ball. You can't just say it is lost."
+      },
+      {
+        "id": "b",
+        "text": "You can keep playing the second ball if you don't want to use your first one."
+      },
+      {
+        "id": "c",
+        "text": "You get a penalty if you play the second ball."
+      },
+      {
+        "id": "d",
+        "text": "Your first ball is only used if you want it."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "You can't just say your ball is lost. If you find your first ball in less than three minutes, you have to use it. The second ball is not in play.",
+    "vocabulary": [
+      {
+        "term": "Provisional ball",
+        "simpleMeaning": "A second ball you play if you think your first ball might be lost or out of bounds."
+      },
+      {
+        "term": "Lost ball",
+        "simpleMeaning": "A ball that can't be found in three minutes after you start looking."
+      }
+    ],
+    "teachingTip": "Show what three minutes feels like using a timer so everyone knows how long it is to look for a ball.",
+    "likelyMisconceptions": [
+      "Thinking you can decide a ball is lost whenever you want.",
+      "Believing you can choose which ball to play after hitting a second one."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T16:37:45.141Z",
+  "model": "gpt-4.1"
+}

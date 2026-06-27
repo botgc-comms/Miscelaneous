@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\011_004_Objects_as_ball_stoppers\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:19:03.278Z",
+  "title": "Objects as ball stoppers",
+  "ruleNumber": "11",
+  "ruleName": "Ball in motion intentionally deflected",
+  "durationSeconds": 177.463
+}

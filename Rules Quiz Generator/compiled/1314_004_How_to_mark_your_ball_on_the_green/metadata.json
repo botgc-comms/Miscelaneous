@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "pageb-04.png",
+  "ruleNumber": "R13/14",
+  "ruleName": "Marking and picking up the ball",
+  "group": "Marking and picking up the ball",
+  "type": "multi_select",
+  "imagePrompt": "A close-up of a golf ball on the green with a teen boy kneeling to mark its position using a coin. A tee and a ball-marker are on the ground nearby.",
+  "imageAlt": "Boy golfer kneeling to mark ball on green with a coin.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "lifting_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "light",
+    "clothingTopColour": "green",
+    "clothingBottomColour": "orange",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The teen golfer is lifting the ball near a tee, a coin, and a ball marker, as specified.",
+      "Golfer is clearly female and of correct ethnicity and skin tone.",
+      "Clothing and hat are as specified: green top, orange bottoms, cap.",
+      "Exactly one golf ball present, correctly sized and placed.",
+      "Putter is present, correctly proportioned, and looks realistic.",
+      "Posture is plausible for marking/lifting the ball.",
+      "Golf course features (putting green, grass) look believable.",
+      "Left-handed posture is shown, though hand positioning on the club could be adjusted very slightly to reinforce left-handedness more strongly."
+    ],
+    "repairPrompt": "Adjust the golfer's grip and hand placement on the putter to more clearly reinforce a left-handed posture."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What can you use to show where your ball is on the green?",
+      "question": "Pick all the things you are allowed to use to show your ball's spot on the green before you pick it up.",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "A coin"
+        },
+        {
+          "id": "b",
+          "text": "A ball-marker"
+        },
+        {
+          "id": "c",
+          "text": "A tee"
+        },
+        {
+          "id": "d",
+          "text": "Your putter behind the ball"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "c"
+      ],
+      "correctAnswer": [
+        "a",
+        "b",
+        "c"
+      ],
+      "explanation": "You can use a coin, a round ball-marker, or a tee to show where your ball is before you pick it up on the green. You can't just put your putter behind the ball to mark it—that does not count.",
+      "vocabulary": [
+        {
+          "term": "Green",
+          "simpleMeaning": "The smooth, short grass area where you try to putt the ball into the hole."
+        },
+        {
+          "term": "Ball-marker",
+          "simpleMeaning": "A small, flat object you put behind your ball to remember its place."
+        },
+        {
+          "term": "Tee",
+          "simpleMeaning": "A small stick you use to hold the ball up, but you can also use it to mark where your ball is on the green."
+        }
+      ],
+      "teachingTip": "Show children how to mark their ball by using a coin, marker, or tee, and explain why a club is not okay.",
+      "likelyMisconceptions": [
+        "Some children might think it's okay to just use their putter as a marker.",
+        "Some might wonder if they can use anything, not just the items listed."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "How to mark your ball on the green",
+      "question": "Which of these can you use to mark your ball’s position on the green? Select all that apply.",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "A coin"
+        },
+        {
+          "id": "b",
+          "text": "A ball-marker"
+        },
+        {
+          "id": "c",
+          "text": "A tee"
+        },
+        {
+          "id": "d",
+          "text": "Your putter placed behind the ball"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "c"
+      ],
+      "correctAnswer": [
+        "a",
+        "b",
+        "c"
+      ],
+      "explanation": "You are allowed to use a coin, a ball-marker, or a tee to mark your ball on the putting green. Placing your putter down does not count as a proper marker."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "1314_004_How_to_mark_your_ball_on_the_green",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:53.728Z"
+  }
+}

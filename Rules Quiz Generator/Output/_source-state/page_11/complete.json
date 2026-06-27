@@ -1,0 +1,578 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-11.png",
+  "sourceImagePath": "Input\\page-11.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-11.png",
+      "ruleNumber": "R10",
+      "ruleName": "Advice and line of play",
+      "group": "Advice and line of play",
+      "title": "What advice can you ask for on the course?",
+      "question": "You are standing on the fairway and can’t see the flag. What are you allowed to ask your friend to do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Ask them which club they think you should use."
+        },
+        {
+          "id": "b",
+          "text": "Ask them to indicate the line of play to the flag."
+        },
+        {
+          "id": "c",
+          "text": "Ask them what shot to play."
+        },
+        {
+          "id": "d",
+          "text": "Ask them to read the rules for you aloud."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You are allowed to ask someone to indicate the line of play if you can't see the flag. You can't ask for advice about which club or shot to play.",
+      "imagePrompt": "A teenage golfer standing on the fairway with a friend pointing out the direction of the flag, no clubs being discussed.",
+      "imageAlt": "Teen golfer on the fairway with friend pointing out the flag direction.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "orange",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-11.png",
+      "ruleNumber": "R10",
+      "ruleName": "Advice and line of play",
+      "group": "Advice and line of play",
+      "title": "Penalty for giving or asking for advice",
+      "question": "Before hitting your shot, you ask your playing partner, 'Which club should I play?' What is the correct outcome?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty for either player."
+        },
+        {
+          "id": "b",
+          "text": "You get 2 penalty strokes."
+        },
+        {
+          "id": "c",
+          "text": "Your partner gets 2 penalty strokes."
+        },
+        {
+          "id": "d",
+          "text": "Both you and your partner get 1 penalty stroke."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "Asking for or giving advice about club selection results in a 2-stroke penalty for the player who asks or receives the advice.",
+      "imagePrompt": "A teenage golfer on the fairway talking to a friend and asking for advice about which club to use.",
+      "imageAlt": "Teen golfer holding a club and asking friend for club choice advice.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "medium",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "navy",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-11.png",
+      "ruleNumber": "R10",
+      "ruleName": "Advice and line of play",
+      "group": "Advice and line of play",
+      "title": "What happens if you get advice without asking?",
+      "question": "Imagine another player gives you advice before your shot, even though you didn’t ask for it. What penalty do you get?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty."
+        },
+        {
+          "id": "b",
+          "text": "1 penalty stroke."
+        },
+        {
+          "id": "c",
+          "text": "2 penalty strokes."
+        },
+        {
+          "id": "d",
+          "text": "Both players get 2 penalty strokes."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "A player who receives unsolicited advice does not get a penalty.",
+      "imagePrompt": "A teenage golfer looking surprised as another player offers advice while standing on the fairway.",
+      "imageAlt": "Teen golfer surprised as another player gives unasked advice on fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "red",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-11.png",
+      "ruleNumber": "R9",
+      "ruleName": "Ball moved when taking a practice swing",
+      "group": "Ball at rest moved",
+      "title": "What happens if you move your ball on a practice swing?",
+      "question": "You accidentally move your ball while taking a practice swing on the fairway. What must you do next?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball from its new position."
+        },
+        {
+          "id": "b",
+          "text": "Put the ball back and add 1 penalty stroke."
+        },
+        {
+          "id": "c",
+          "text": "Do nothing, no penalty."
+        },
+        {
+          "id": "d",
+          "text": "Move the ball to a better spot."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You must replace the ball and add 1 penalty stroke if you move it with a practice swing.",
+      "imagePrompt": "A teenage golfer accidentally moving their ball while practising a swing on the fairway.",
+      "imageAlt": "Teen golfer brushing the ball with a club on a practice swing on fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "replaying_shot",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "blue",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-11.png",
+      "ruleNumber": "R9",
+      "ruleName": "Ball moved when grounding the club",
+      "group": "Ball at rest moved",
+      "title": "Penalty for moving the ball when grounding the club",
+      "question": "On the fairway, you accidentally move your ball when you ground your club behind it. What is the result?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty, just play from new spot."
+        },
+        {
+          "id": "b",
+          "text": "Put the ball back and add 1 penalty stroke."
+        },
+        {
+          "id": "c",
+          "text": "Two penalty strokes and play on."
+        },
+        {
+          "id": "d",
+          "text": "Put the ball back with no penalty."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If you move your ball by grounding your club, you must replace it and add one penalty stroke.",
+      "imagePrompt": "A teenage golfer grounding their club behind the ball on the fairway, causing the ball to move slightly.",
+      "imageAlt": "Teen golfer causes ball to roll by grounding club behind it on fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "navy",
+        "hat": true
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-11.png",
+      "ruleNumber": "R10",
+      "ruleName": "Advice and line of play",
+      "group": "Advice and line of play",
+      "title": "What advice can you ask for on the course?",
+      "question": "You can't see the flag from your ball on the fairway. Which action are you allowed to ask your friend to do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Tell you which club to use."
+        },
+        {
+          "id": "b",
+          "text": "Point out the direction of the flag."
+        },
+        {
+          "id": "c",
+          "text": "Suggest which type of shot you should play."
+        },
+        {
+          "id": "d",
+          "text": "Explain the golf rules for you."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You are allowed to ask someone to show you the line of play (such as pointing towards the flag). You can't ask what club to use or what shot to play, as that's giving advice.",
+      "imagePrompt": "A teenage golfer standing on the fairway with a friend pointing towards the hidden flag; the friend is clearly not discussing clubs or shots.",
+      "imageAlt": "Teen golfer on the fairway with a friend pointing out the flag direction.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "light",
+        "clothingTopColour": "orange",
+        "clothingBottomColour": "grey",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-11.png",
+      "ruleNumber": "R10",
+      "ruleName": "Advice and line of play",
+      "group": "Advice and line of play",
+      "title": "Penalty for giving or asking for advice",
+      "question": "You ask your playing partner, 'Which club should I use for this shot?' What happens according to the rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty."
+        },
+        {
+          "id": "b",
+          "text": "You get a 2-stroke penalty."
+        },
+        {
+          "id": "c",
+          "text": "Your partner gets a 2-stroke penalty."
+        },
+        {
+          "id": "d",
+          "text": "Both you and your partner get 1 penalty stroke."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If you ask for or receive advice like club selection during a round, you get a 2-stroke penalty.",
+      "imagePrompt": "A teenage golfer on the fairway holding a club and asking their friend for advice about which club to use.",
+      "imageAlt": "Teen golfer holding a club and asking friend for club choice advice.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "black",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-11.png",
+      "ruleNumber": "R10",
+      "ruleName": "Advice and line of play",
+      "group": "Advice and line of play",
+      "title": "What happens if you get advice without asking?",
+      "question": "If another player gives you advice before your shot—but you didn't ask for it—what do the rules say happens?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty for you."
+        },
+        {
+          "id": "b",
+          "text": "You get 1 penalty stroke."
+        },
+        {
+          "id": "c",
+          "text": "You get 2 penalty strokes."
+        },
+        {
+          "id": "d",
+          "text": "Both players get 2 penalty strokes."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You do not get a penalty if another player gives you unsolicited advice.",
+      "imagePrompt": "A teenage golfer looking surprised as another player offers advice while she stands near her ball on the fairway.",
+      "imageAlt": "Teen golfer surprised as another player gives unasked advice on fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "grey",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-11.png",
+      "ruleNumber": "R9",
+      "ruleName": "Ball moved when taking a practice swing",
+      "group": "Ball at rest moved",
+      "title": "What happens if you move your ball on a practice swing?",
+      "question": "On the fairway, you accidentally move your ball by brushing it during a practice swing. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball from where it moved to."
+        },
+        {
+          "id": "b",
+          "text": "Replace the ball and add 1 penalty stroke."
+        },
+        {
+          "id": "c",
+          "text": "Ignore it and keep playing."
+        },
+        {
+          "id": "d",
+          "text": "Move the ball to a place you like better."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You must return the ball to its original spot and add 1 penalty stroke if you move it while making a practice swing.",
+      "imagePrompt": "A teenage golfer on the fairway accidentally brushing and moving their golf ball while attempting a practice swing.",
+      "imageAlt": "Teen golfer brushing the ball with a club on a practice swing on fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "replaying_shot",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "medium",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "navy",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-11.png",
+      "ruleNumber": "R9",
+      "ruleName": "Ball moved when grounding the club",
+      "group": "Ball at rest moved",
+      "title": "Penalty for moving the ball when grounding the club",
+      "question": "You accidentally move your ball on the fairway by grounding your club behind it. What must you do according to the rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty, play the ball from where it moved to."
+        },
+        {
+          "id": "b",
+          "text": "Replace the ball and add 1 penalty stroke."
+        },
+        {
+          "id": "c",
+          "text": "Add two penalty strokes and carry on."
+        },
+        {
+          "id": "d",
+          "text": "Replace the ball with no penalty."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If you move your ball by grounding your club behind it on the fairway, the correct action is to replace the ball and add one penalty stroke.",
+      "imagePrompt": "A teenage golfer on the fairway unintentionally makes the golf ball move while grounding their club behind it.",
+      "imageAlt": "Teen golfer causes ball to roll by grounding club behind it on fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "red",
+        "hat": true
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "010_001_What_advice_can_you_ask_for_on_the_course",
+    "010_002_Penalty_for_giving_or_asking_for_advice",
+    "010_003_What_happens_if_you_get_advice_without_asking",
+    "009_004_What_happens_if_you_move_your_ball_on_a_practice_swing",
+    "009_005_Penalty_for_moving_the_ball_when_grounding_the_club"
+  ],
+  "updatedAtUtc": "2026-04-24T20:19:24.143Z"
+}

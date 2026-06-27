@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_004_Accidentally_Touching_the_Sand_in_a_Bunker\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "12.2b",
+  "ruleName": "Restrictions on Touching Sand in Bunker",
+  "title": "Accidentally Touching the Sand in a Bunker",
+  "question": "Your ball is in a bunker. As you walk towards it, you accidentally lose your balance and your hand touches the sand beside your ball. What is the correct ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You receive the general penalty because you touched the sand in the bunker."
+    },
+    {
+      "id": "b",
+      "text": "You receive a one-stroke penalty because you touched the sand before making a stroke."
+    },
+    {
+      "id": "c",
+      "text": "There is no penalty because the contact with the sand was accidental and did not improve the conditions affecting your stroke."
+    },
+    {
+      "id": "d",
+      "text": "You must rake the area before playing your shot."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "The Rules no longer prohibit every contact with the sand in a bunker. There is no penalty if you accidentally touch the sand, such as keeping your balance, entering or leaving the bunker, or placing your clubs in the bunker, provided you do not improve the conditions affecting your stroke. Penalty only applies if you deliberately touch the sand to test its condition, or improve conditions affecting your stroke. Rule Reference: Rule 12.2b.",
+  "juniorVersion": {
+    "title": "Oops! I Touched the Sand in the Bunker",
+    "question": "Your ball is in a bunker (the sandy place). As you walk to your ball, you slip and your hand touches the sand next to your ball by accident. What happens now?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You get a big penalty because you touched the sand in the bunker."
+      },
+      {
+        "id": "b",
+        "text": "You get a one-shot penalty for touching the sand before hitting your ball."
+      },
+      {
+        "id": "c",
+        "text": "You do not get a penalty because it was an accident and you did not make things better for your next shot."
+      },
+      {
+        "id": "d",
+        "text": "You have to rake the sand before you hit your shot."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "You don’t get a penalty if you touch the sand by accident, like if you slipped or lost balance. You only get a penalty if you touch the sand to make it easier for your swing or to test it. Just be careful not to change the sand to help your shot.",
+    "vocabulary": [
+      {
+        "term": "Bunker",
+        "simpleMeaning": "A bunker is a special sandy area on the golf course. If your ball lands here, it is harder to hit."
+      },
+      {
+        "term": "Penalty",
+        "simpleMeaning": "A penalty means you add extra shots to your score for breaking a rule."
+      }
+    ],
+    "teachingTip": "Let children practise standing safely in bunkers and talk them through what is and isn’t allowed before they swing.",
+    "likelyMisconceptions": [
+      "Children might think any touch of sand is a penalty, but it only matters if it helps your next shot or if you do it on purpose.",
+      "Some might believe they have to rake every time before hitting – raking is for after your shot."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T16:52:36.234Z",
+  "model": "gpt-4.1"
+}

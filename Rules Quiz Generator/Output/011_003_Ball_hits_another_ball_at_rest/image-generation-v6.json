@@ -1,0 +1,10 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "sourcePromptFileName": "final-prompt-v2.txt",
+  "promptFileName": "final-prompt-v6.txt",
+  "imageFileName": "illustration-v6.png",
+  "correctionInstructions": "the girl has taken her shot, in the distance you can see her ball has collided with her opponents ball",
+  "generatedAtUtc": "2026-06-26T08:36:54.791Z"
+}

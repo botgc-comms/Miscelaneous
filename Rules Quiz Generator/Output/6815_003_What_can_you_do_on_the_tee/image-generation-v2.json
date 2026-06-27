@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\6815_003_What_can_you_do_on_the_tee\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:17:48.808Z",
+  "title": "What can you do on the tee?",
+  "ruleNumber": "R6/8/15",
+  "ruleName": "Relief",
+  "durationSeconds": 182.314
+}

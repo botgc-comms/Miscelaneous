@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\019_001_Who_decides_if_a_ball_is_unplayable\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:03:53.530Z",
+  "title": "Who decides if a ball is unplayable?",
+  "ruleNumber": "R19",
+  "ruleName": "Unplayable ball",
+  "durationSeconds": 210.126
+}

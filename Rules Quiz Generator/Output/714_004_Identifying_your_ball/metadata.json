@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-09.png",
+  "ruleNumber": "R7/14",
+  "ruleName": "Identifying the ball",
+  "group": "Identifying the ball",
+  "title": "Identifying your ball",
+  "question": "When are you allowed to lift your golf ball to check if it is yours?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Only if it is on the putting green"
+    },
+    {
+      "id": "b",
+      "text": "If you first mark its position and need to identify it"
+    },
+    {
+      "id": "c",
+      "text": "Never; you must always play it as it lies"
+    },
+    {
+      "id": "d",
+      "text": "Only with your opponent’s permission"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If you cannot identify your ball, you may mark its position and lift it anywhere on the course to check – not just on the putting green.",
+  "imagePrompt": "A teen boy golfer marking his ball’s position in the rough before picking it up to check if it is his.",
+  "imageAlt": "Teen boy golfer marking and identifying his ball in the rough.",
+  "sceneSpec": {
+    "setting": "rough",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "lifting_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "asian",
+    "skinTone": "dark",
+    "clothingTopColour": "navy",
+    "clothingBottomColour": "white",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The left-handedness is not strongly indicated in the posture given no club is present, but this is acceptably minor for this specific scenario."
+    ],
+    "repairPrompt": "Ensure the golfer’s posture more clearly suggests left-handedness, such as marking/lifting with the left hand more prominently if possible."
+  }
+}

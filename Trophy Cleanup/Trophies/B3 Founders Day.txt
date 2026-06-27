@@ -1,0 +1,5 @@
+{
+  "text": ["The institute of Brewing Golf Society", "Burton on Trent Section"],
+  "allowText": true,
+  "notes": "The inscription reads - The institute of Brewing Golf Society - Burton on Trent Section"
+}

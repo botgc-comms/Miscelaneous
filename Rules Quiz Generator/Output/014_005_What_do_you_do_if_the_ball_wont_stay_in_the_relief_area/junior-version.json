@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\014_005_What_do_you_do_if_the_ball_wont_stay_in_the_relief_area\\metadata.json",
+  "sourceImageName": "page-03.png",
+  "ruleNumber": "14",
+  "ruleName": "Dropping and re-dropping",
+  "title": "What do you do if the ball won't stay in the relief area?",
+  "question": "If you drop the ball twice and it still won’t stay in the relief area, what does the Rule require you to do?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Place the ball on the spot where it first touched the ground after the second drop"
+    },
+    {
+      "id": "b",
+      "text": "Drop it a third time"
+    },
+    {
+      "id": "c",
+      "text": "Place it anywhere in the relief area"
+    },
+    {
+      "id": "d",
+      "text": "Take a penalty and continue"
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "If a dropped ball twice fails to stay within the defined relief area, you must place it on the spot where it touched the ground after the second drop.",
+  "juniorVersion": {
+    "title": "What if your ball rolls out of the area two times?",
+    "question": "You drop your ball, but it rolls out of the marked spot. You drop it again, but it rolls out again. What should you do next?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Put the ball down on the spot where it hit the ground after the second drop"
+      },
+      {
+        "id": "b",
+        "text": "Drop it a third time"
+      },
+      {
+        "id": "c",
+        "text": "Put it anywhere inside the marked spot"
+      },
+      {
+        "id": "d",
+        "text": "Take a penalty and keep playing"
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "If you drop the ball two times and it won’t stay inside the lines, you should place the ball on the spot where it landed after your second drop.",
+    "vocabulary": [
+      {
+        "term": "relief area",
+        "simpleMeaning": "The place on the ground where you are allowed to drop your ball, marked by lines or spots."
+      },
+      {
+        "term": "drop",
+        "simpleMeaning": "Letting the ball fall from your knee height so it can bounce and roll."
+      }
+    ],
+    "teachingTip": "Use a rope or hoops to show what a relief area looks like, then practice dropping a ball and seeing what happens if it rolls out.",
+    "likelyMisconceptions": [
+      "Some players think you can just keep dropping the ball more than two times.",
+      "Some think you can put the ball anywhere in the area after two drops."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:45.075Z",
+  "model": "gpt-4.1"
+}

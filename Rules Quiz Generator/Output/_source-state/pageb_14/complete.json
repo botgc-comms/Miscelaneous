@@ -1,0 +1,467 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-14.png",
+  "sourceImagePath": "Input\\pageb-14.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-14.png",
+      "ruleNumber": "11",
+      "ruleName": "Ball in motion intentionally deflected",
+      "group": "Ball in motion intentionally deflected",
+      "title": "Where to drop a ball intentionally deflected by a person",
+      "question": "If your ball is intentionally stopped by a person (not on the green), where should you drop it?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "At your original hitting spot"
+        },
+        {
+          "id": "b",
+          "text": "Within 1 club-length of where it would have come to rest"
+        },
+        {
+          "id": "c",
+          "text": "Anywhere on the fairway"
+        },
+        {
+          "id": "d",
+          "text": "Near the nearest point of relief"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "The ball must be dropped within 1 club-length of the estimated spot it would have come to rest without being deflected.",
+      "imagePrompt": "A teenage boy golfer, right-handed, standing on the fairway next to a golf ball, ready to drop the ball after it was intentionally stopped by a person.",
+      "imageAlt": "A golfer on the fairway preparing to drop a ball after it was intentionally stopped by a person.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "dropping_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "light",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "navy",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-14.png",
+      "ruleNumber": "11",
+      "ruleName": "Ball in motion intentionally deflected",
+      "group": "Ball in motion intentionally deflected",
+      "title": "Exception for balls intentionally deflected on the green",
+      "question": "What should be done if a ball on the green is intentionally deflected after a stroke?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop the ball within 1 club-length from the estimated spot"
+        },
+        {
+          "id": "b",
+          "text": "Place the ball where it was deflected"
+        },
+        {
+          "id": "c",
+          "text": "Replay the stroke"
+        },
+        {
+          "id": "d",
+          "text": "Play the ball as it lies"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "If the ball is intentionally deflected after a stroke on the green, the player must replay the stroke.",
+      "imagePrompt": "A teenage girl golfer, left-handed, on the putting green preparing to replay her stroke after her ball was intentionally stopped.",
+      "imageAlt": "A girl golfer on the green preparing to replay a putt after the ball was intentionally stopped.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "replaying_shot",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "medium",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "orange",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-14.png",
+      "ruleNumber": "11",
+      "ruleName": "Ball in motion intentionally deflected",
+      "group": "Ball in motion intentionally deflected",
+      "title": "Penalty for intentionally deflecting a moving ball",
+      "question": "If someone intentionally stops or deflects a ball in motion, how many penalty strokes do they get?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "1 penalty stroke"
+        },
+        {
+          "id": "b",
+          "text": "2 penalty strokes"
+        },
+        {
+          "id": "c",
+          "text": "Loss of hole"
+        },
+        {
+          "id": "d",
+          "text": "No penalty"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "A person who intentionally deflects or stops a moving ball gets 2 penalty strokes.",
+      "imagePrompt": "A teenage boy golfer, right-handed, with another person standing close to his ball, indicating the ball has just been deflected in motion.",
+      "imageAlt": "A boy golfer and another person near a moving ball that was intentionally stopped.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "blue",
+        "clothingBottomColour": "white",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-14.png",
+      "ruleNumber": "11",
+      "ruleName": "Ball in motion intentionally deflected",
+      "group": "Ball in motion intentionally deflected",
+      "title": "Objects as ball stoppers",
+      "question": "Which of the following counts as intentional deflection of a moving golf ball?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "A person kicking the ball"
+        },
+        {
+          "id": "b",
+          "text": "A club dropped by accident blocking the ball"
+        },
+        {
+          "id": "c",
+          "text": "A water bottle purposefully put to stop the ball"
+        },
+        {
+          "id": "d",
+          "text": "The wind blowing the ball off course"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "c"
+      ],
+      "explanation": "Intentionally kicking the ball or placing an object to stop it both count as intentional deflection.",
+      "imagePrompt": "A teenage girl golfer, right-handed, seeing her golf ball hit a deliberately placed water bottle on the fairway.",
+      "imageAlt": "A girl golfer watches as her ball strikes a water bottle on the fairway that was purposefully placed as a stopper.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "light",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "white",
+        "hat": true
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-14.png",
+      "ruleNumber": "11",
+      "ruleName": "Ball in motion intentionally deflected",
+      "group": "Ball in motion intentionally deflected",
+      "title": "Where to drop a ball intentionally deflected by a person",
+      "question": "If your ball in motion is intentionally stopped or deflected by a person (not on the green), where should you drop it?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "At your original hitting spot"
+        },
+        {
+          "id": "b",
+          "text": "Within 1 club-length of where it would have come to rest"
+        },
+        {
+          "id": "c",
+          "text": "Anywhere on the fairway"
+        },
+        {
+          "id": "d",
+          "text": "At the point where it was struck"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If your ball is intentionally stopped or deflected by a person (not on the green), you must drop a ball within 1 club-length of the estimated spot where it would have come to rest.",
+      "imagePrompt": "A teenage boy golfer, right-handed, standing on a sunny fairway beside a single golf ball, mid-drop, after it was intentionally deflected by a person off the green.",
+      "imageAlt": "A teen boy golfer on the fairway preparing to drop a ball after it was intentionally stopped by a person.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "dropping_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "blue",
+        "clothingBottomColour": "green",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-14.png",
+      "ruleNumber": "11",
+      "ruleName": "Ball in motion intentionally deflected",
+      "group": "Ball in motion intentionally deflected",
+      "title": "Exception for balls intentionally deflected on the green",
+      "question": "If your ball is on the putting green and is intentionally stopped or deflected after a stroke, what is the correct procedure?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop a ball within 1 club-length from the estimated spot"
+        },
+        {
+          "id": "b",
+          "text": "Place the ball where it was deflected"
+        },
+        {
+          "id": "c",
+          "text": "Replay the stroke"
+        },
+        {
+          "id": "d",
+          "text": "Play the ball as it lies"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "If your ball played from the green is intentionally deflected or stopped, the stroke is cancelled and you must replay the shot.",
+      "imagePrompt": "A teenage golfer, left-handed, standing on the putting green preparing to replay their stroke after their ball was intentionally stopped.",
+      "imageAlt": "A teen golfer on the putting green preparing to replay a putt after the ball was intentionally stopped.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "replaying_shot",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "light",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "purple",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-14.png",
+      "ruleNumber": "11",
+      "ruleName": "Ball in motion intentionally deflected",
+      "group": "Ball in motion intentionally deflected",
+      "title": "Penalty for intentionally deflecting a moving ball",
+      "question": "What is the general penalty if a player deliberately stops or deflects a ball in motion?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "1 penalty stroke"
+        },
+        {
+          "id": "b",
+          "text": "2 penalty strokes"
+        },
+        {
+          "id": "c",
+          "text": "Loss of hole"
+        },
+        {
+          "id": "d",
+          "text": "No penalty"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "A player who deliberately stops or deflects their own ball in motion receives the general penalty of two strokes.",
+      "imagePrompt": "A teenage boy golfer, right-handed, standing on a sunny fairway with another person shown near a golf ball, highlighting a deliberate stop or deflection.",
+      "imageAlt": "A teen boy golfer with another person near a golf ball that was intentionally stopped or deflected.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "orange",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-14.png",
+      "ruleNumber": "11",
+      "ruleName": "Ball in motion intentionally deflected",
+      "group": "Ball in motion intentionally deflected",
+      "title": "Objects as ball stoppers",
+      "question": "In which of these situations does it count as intentional deflection of a golf ball in motion?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "A person kicks the golf ball on purpose"
+        },
+        {
+          "id": "b",
+          "text": "A club dropped by accident blocks the ball"
+        },
+        {
+          "id": "c",
+          "text": "Someone puts a water bottle in the ball's path to stop it"
+        },
+        {
+          "id": "d",
+          "text": "The wind blows the ball in another direction"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "c"
+      ],
+      "explanation": "Intentional actions, like kicking the ball or placing an object to stop it, count as intentional deflection. Accidents or natural influences like wind do not.",
+      "imagePrompt": "A teenage golfer, right-handed, watches their golf ball on the fairway as it strikes a water bottle that was purposely set as a barrier.",
+      "imageAlt": "A teen golfer watches their ball strike a water bottle purposefully placed to stop it.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "black",
+        "clothingBottomColour": "red",
+        "hat": true
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "011_001_Where_to_drop_a_ball_intentionally_deflected_by_a_person",
+    "011_002_Exception_for_balls_intentionally_deflected_on_the_green",
+    "011_003_Penalty_for_intentionally_deflecting_a_moving_ball",
+    "011_004_Objects_as_ball_stoppers"
+  ],
+  "updatedAtUtc": "2026-04-25T00:40:51.244Z"
+}

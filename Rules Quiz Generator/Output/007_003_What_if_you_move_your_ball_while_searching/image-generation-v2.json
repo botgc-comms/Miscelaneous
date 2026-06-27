@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\007_003_What_if_you_move_your_ball_while_searching\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:03:23.750Z",
+  "title": "What if you move your ball while searching?",
+  "ruleNumber": "R7",
+  "ruleName": "Ball moved during a search",
+  "durationSeconds": 229.447
+}

@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\015_003_Moving_loose_impediments_around_your_ball\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:38:00.392Z",
+  "title": "Moving loose impediments around your ball",
+  "ruleNumber": "Def./R15",
+  "ruleName": "Loose impediments",
+  "durationSeconds": 224.316
+}

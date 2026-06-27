@@ -1,0 +1,5 @@
+{
+  "text": [],
+  "allowText": true,
+  "notes": "The inscription at the top of the trophy reads The Melles Cup. The guide dogs for the blind. presented to the burton golf club. 1938"
+}

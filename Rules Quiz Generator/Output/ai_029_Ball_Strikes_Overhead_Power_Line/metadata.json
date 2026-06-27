@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "Model Local Rule E-11, Rule 11.1",
+  "ruleName": "Ball Played from Anywhere Other Than Putting Green Strikes Power Line; Ball in Motion Accidentally Hits Person, Animal or Object",
+  "group": "General Play",
+  "title": "Ball Strikes Overhead Power Line",
+  "question": "Your tee shot strikes an overhead power line stretching across the fairway before bouncing into the rough. What is the correct ruling?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You must always replay the stroke."
+    },
+    {
+      "id": "b",
+      "text": "You always play the ball as it lies."
+    },
+    {
+      "id": "c",
+      "text": "It depends. If the Committee has adopted a Local Rule requiring a replay, you must replay the stroke. Otherwise, you play the ball as it lies."
+    },
+    {
+      "id": "d",
+      "text": "You receive a one-stroke penalty and play the ball from where it finished."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "There is no Rule of Golf that automatically requires a stroke to be replayed after a ball hits an overhead power line or cable. However, many golf courses adopt Model Local Rule E-11, which requires a player to cancel the stroke and replay it if the ball hits a specified power line or supporting structure. If no such Local Rule is in force, the ball is played as it lies after striking the power line. Always check the Local Rules before starting your round.",
+  "imagePrompt": "Create a polished modern semi-realistic illustration, about 75% realistic and 25% stylised, showing a single golfer on the teeing ground having just played a tee shot. The setting is a clear blue sky day with an overhead power line stretching across the fairway. The golf ball is visibly bouncing on the edge of the rough, having just come down from striking the power line above. The power line is shown clearly above the fairway, with the golfer watching the ball. Emphasise the scene's clarity and focus on the golf rules moment, without including text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer stands on the tee watching their ball after it hits an overhead power line stretching across the fairway, the ball bouncing into the rough under a clear blue sky.",
+  "sceneSpec": {
+    "setting": "A fairway with a clear blue sky and an overhead power line stretching across the middle of the fairway.",
+    "players": "One golfer is shown having just played a tee shot from the teeing area. The golfer is standing with their club extended and watching the shot.",
+    "ballPosition": "The golf ball is shown bouncing on the edge of the rough, after rebounding down from the power line above.",
+    "ruleMoment": "The key moment is the ball striking the power line above the fairway on its way from the tee.",
+    "educationalFocus": "Demonstrate a ball in motion striking an overhead power line and ending up in the rough, focusing on the possible need to replay the stroke depending on local rules.",
+    "mustShow": [
+      "The power line suspended across the fairway",
+      "The ball visibly coming down from the power line",
+      "The golfer at the teeing ground watching the ball's trajectory",
+      "The ball landing in the rough"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  }
+}

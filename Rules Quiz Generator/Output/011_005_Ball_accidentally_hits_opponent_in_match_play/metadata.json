@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-13.png",
+  "ruleNumber": "R11",
+  "ruleName": "Ball in motion accidentally hits ... the opponent in match play",
+  "group": "Ball in motion accidentally hits ...",
+  "title": "Ball accidentally hits opponent in match play",
+  "question": "During match play, if your ball accidentally hits your opponent, what should you do according to the Rules?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Replay the stroke only if both balls were on the putting green."
+    },
+    {
+      "id": "b",
+      "text": "Always replay the shot, wherever you are on the course."
+    },
+    {
+      "id": "c",
+      "text": "Play the ball as it lies unless both balls were on the green."
+    },
+    {
+      "id": "d",
+      "text": "Add a penalty stroke and replay the shot."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "In match play, if your ball accidentally hits your opponent, play your ball as it lies except when both balls were on the green before the stroke. Then, you must replay the shot.",
+  "imagePrompt": "A teenage girl golfer on the fairway, having just played a shot that accidentally struck her match play opponent. The players are looking at where the ball came to rest.",
+  "imageAlt": "Teen girl golfer's ball hits her opponent on the fairway during match play.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "addressing_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "dark",
+    "clothingTopColour": "blue",
+    "clothingBottomColour": "purple",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 95,
+    "issues": [
+      "Both players are present and appear focused on the ball's position, but the golfer is in address posture rather than post-shot, which slightly reduces narrative clarity.",
+      "Club, ball, proportions, posture, and scene are all visually believable and accurate for real golf."
+    ],
+    "repairPrompt": "Adjust the girl's posture so it is clearer that she has just finished a shot (not addressing the ball), and ensure both players' attention is focused where the struck ball has come to rest on the fairway. Otherwise, all equipment and scene elements are accurate."
+  }
+}

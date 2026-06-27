@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-17.png",
+  "ruleNumber": "R6",
+  "ruleName": "Wrong ball",
+  "group": "Wrong ball",
+  "type": "multiple_choice",
+  "imagePrompt": "A teen girl golfer on the fairway, holding an iron club and looking confused as she realises she has played a wrong golf ball, with one ball at her feet, trees in the background, and sunny weather.",
+  "imageAlt": "Teen girl golfer realises she played the wrong ball on the fairway.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "asian",
+    "skinTone": "medium",
+    "clothingTopColour": "blue",
+    "clothingBottomColour": "green",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The golfer is holding the club in a right-handed manner rather than left-handed as specified."
+    ],
+    "repairPrompt": "Show the teen girl holding the iron club in a clearly left-handed manner, with the club position and grip reflecting a left-handed stance."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What happens if you hit the wrong ball?",
+      "question": "You hit a ball, but then you see it is not your ball. What should you do, and what is the penalty?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "The shot counts, and there is no penalty."
+        },
+        {
+          "id": "b",
+          "text": "The shot does not count, you get two extra shots, and you must play your own ball."
+        },
+        {
+          "id": "c",
+          "text": "You can keep playing the wrong ball, no penalty."
+        },
+        {
+          "id": "d",
+          "text": "You lose the hole right away."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If you hit the wrong ball, your shot does not count. You must add two shots to your score. Then you must play your own ball. If you cannot find your ball, you must follow the rules to keep playing.",
+      "vocabulary": [
+        {
+          "term": "wrong ball",
+          "simpleMeaning": "A ball that is not your own ball you should be playing."
+        },
+        {
+          "term": "penalty",
+          "simpleMeaning": "Extra shots added to your score when you break a rule."
+        }
+      ],
+      "teachingTip": "Remind children to always check the ball’s markings before every shot. Maybe use stickers or colourful dots to help find their own ball more easily.",
+      "likelyMisconceptions": [
+        "Thinking they can just keep playing the wrong ball.",
+        "Believing the shot with the wrong ball still counts.",
+        "Thinking there is no penalty for this mistake."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Penalty for playing the wrong ball",
+      "question": "If you discover you have played a wrong ball during your round, what is the correct penalty and procedure?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "The stroke counts, but there is no penalty"
+        },
+        {
+          "id": "b",
+          "text": "The stroke does not count, you get two penalty strokes, and you must play the correct ball"
+        },
+        {
+          "id": "c",
+          "text": "You can keep playing the wrong ball, no penalty"
+        },
+        {
+          "id": "d",
+          "text": "You automatically lose the hole"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "When you play a wrong ball, the stroke does not count. You get two penalty strokes and must continue the hole with your correct ball (or take further action if you cannot find it)."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "006_001_Penalty_for_playing_the_wrong_ball",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.317Z"
+  }
+}

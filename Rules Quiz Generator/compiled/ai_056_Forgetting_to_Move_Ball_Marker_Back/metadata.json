@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "Rule 14.7",
+  "ruleName": "Playing from Wrong Place",
+  "group": "Putting Green",
+  "type": "multiple_choice",
+  "imagePrompt": "A modern, semi-realistic illustration (approximately 75% realistic, 25% stylised) in the junior golf quiz style, showing a putting green scene in soft afternoon light. Two junior golfers are present: one is finishing a putt a few inches to the side of their small, round ball marker, clearly not at the original spot. The other junior stands nearby with a putter, watching. The incorrect ball position is clear, but do not highlight it explicitly. The hole and flagstick are visible on the green. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A junior golfer putting from a position a few inches to the side of their ball marker on a putting green, with another junior golfer watching nearby. The incorrect ball position is visible, and the hole and flagstick are shown.",
+  "sceneSpec": {
+    "setting": "Putting green, late afternoon with soft shadows.",
+    "players": "Two players visible: one is standing and watching with a putter, the other is finishing a putt near the hole.",
+    "ballPosition": "The ball is positioned a few inches to the side of a small, visible marker, not in its original place.",
+    "ruleMoment": "The moment after the ball has been putted from the wrong place but before it is holed.",
+    "educationalFocus": "Shows the common mistake of forgetting to move the marker back and holing out from the wrong spot on the green.",
+    "mustShow": [
+      "Putting green with a hole and flagstick",
+      "A ball placed a small distance from a visible ball marker",
+      "A player putting towards the hole from this incorrect position",
+      "Another player observing"
+    ],
+    "mustNotShow": [
+      "text",
+      "labels",
+      "numbers",
+      "arrows",
+      "captions",
+      "diagrams",
+      "badges",
+      "logos",
+      "watermarks",
+      "club crests",
+      "scorecards",
+      "speech bubbles"
+    ]
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Forgetting to Put Marker Back in the Right Spot",
+      "question": "On the green, you move your ball marker to the side so you don't block your friend's putt. You forgot to move your marker back and put your ball in the wrong place. You putt from there and get your ball in the hole. What happens now?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Your ball in the hole counts, but you must add two extra shots. You do not have to putt again."
+        },
+        {
+          "id": "b",
+          "text": "Your putt does not count, and you have to try the putt again from the right place. No extra shots."
+        },
+        {
+          "id": "c",
+          "text": "Your putt counts, but you are out of the game for playing from the wrong place."
+        },
+        {
+          "id": "d",
+          "text": "You must add two extra shots and try the putt again from the right place."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "Because you putted from the wrong spot, your putt counts, but you get two extra shots added to your score. You do not have to putt again because your ball was close to the right place.",
+      "vocabulary": [
+        {
+          "term": "ball marker",
+          "simpleMeaning": "A small thing (like a coin or disc) that shows where your ball was on the green."
+        },
+        {
+          "term": "putting green",
+          "simpleMeaning": "The short grass around the hole where you use your putter."
+        },
+        {
+          "term": "general penalty",
+          "simpleMeaning": "In this case, it means two shots added to your score."
+        }
+      ],
+      "teachingTip": "Remind children to always move their marker back before putting so their score does not get extra shots.",
+      "likelyMisconceptions": [
+        "Some kids might think they have to putt again if they play from the wrong place, but if the ball was just a little bit away, the shot counts with two extra shots.",
+        "Kids might think they are out of the game for this mistake, but they just add two shots."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Forgetting to Move Ball Marker Back",
+      "question": "A player moves their ball marker one putter head to the side to avoid another player's line on the putting green. They forget to move the marker back, replace their ball at the wrong spot and hole the putt. What is the correct ruling in stroke play?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "The holed putt counts, and the player must add two penalty strokes. No replay is required."
+        },
+        {
+          "id": "b",
+          "text": "The holed putt does not count, and the player must replay the putt from the correct spot with no penalty."
+        },
+        {
+          "id": "c",
+          "text": "The holed putt counts, but the player is disqualified for playing from a wrong place."
+        },
+        {
+          "id": "d",
+          "text": "The player adds two penalty strokes and must replay the putt from the correct spot."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "When a player forgets to move their ball marker back to its original position on the putting green and holes out from the wrong spot, the holed putt counts, and the player receives the general penalty (two strokes in stroke play). There is no requirement to replay the putt because the ball was only a few inches from its correct place, so it is rarely a serious breach."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "ai_056_Forgetting_to_Move_Ball_Marker_Back",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-06-26T20:03:54.278Z"
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-06.png",
+  "ruleNumber": "13",
+  "ruleName": "Ball accidentally moved",
+  "group": "Ball accidentally moved",
+  "title": "What happens if you accidentally move your ball on the green?",
+  "question": "If you accidentally move your ball on the green, like while taking a practice swing too close to it, what must you do next?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball from its new position, no penalty"
+    },
+    {
+      "id": "b",
+      "text": "Replace the ball to its original spot, no penalty"
+    },
+    {
+      "id": "c",
+      "text": "Replace the ball and add a penalty stroke"
+    },
+    {
+      "id": "d",
+      "text": "Leave the ball and skip your turn"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If you accidentally move your ball on the green, there is no penalty but you must put it back to its original spot before continuing.",
+  "imagePrompt": "A teenage girl golfer accidentally nudges her ball on the green with her putter, then carefully puts it back in its original place.",
+  "imageAlt": "Girl golfer replaces her golf ball on the green after moving it accidentally.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "lifting_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "purple",
+    "clothingBottomColour": "blue",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [],
+    "repairPrompt": "No corrections necessary; the image meets all requirements. Ensure future illustrations maintain a realistic putter head shape and that golfer posture remains consistent with authentic putting green behavior."
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "1.2a, 10.2",
+  "ruleName": "Standards of Player Conduct; Advice and Other Help",
+  "group": "Playing the Game",
+  "title": "Opponent watching your putt",
+  "question": "You and your opponent both have similar putts. It is your turn to play first, and your opponent stands behind you so they can watch how your putt breaks before playing their own. What is the correct ruling?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Your opponent is not allowed to stand behind you while you putt."
+    },
+    {
+      "id": "b",
+      "text": "Your opponent may stand behind you and watch your putt. There is no penalty."
+    },
+    {
+      "id": "c",
+      "text": "Your opponent must stand at least two club-lengths away."
+    },
+    {
+      "id": "d",
+      "text": "You may require your opponent to move before you play."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "There is no Rule of Golf preventing your opponent from standing behind you to observe how your putt breaks. In match play, this is often strategic. As long as your opponent does not deliberately distract you or interfere with your stroke, they are entitled to watch and learn from your play.",
+  "imagePrompt": "Illustrate a modern, semi-realistic (about 75% realistic, 25% stylised) scene on a putting green in daylight. Show two golfers: one is at address preparing to putt, and the other stands several feet directly behind, observing closely. Both players’ golf balls should be visible on the green, within a few metres of the hole, making it clear whose turn it is. The illustration should depict the moment just before the stroke, focusing on the interaction and positions of the two players. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "Two golfers on a putting green: one preparing to putt, the other standing directly behind and watching closely, with both golf balls and the hole visible.",
+  "sceneSpec": {
+    "setting": "Putting green on a golf course in daylight, with a clear view of the hole and green.",
+    "players": "Two players: One is at address preparing to putt, the other is standing several feet directly behind the player putting, observing closely.",
+    "ballPosition": "The ball belonging to the player preparing to putt is on the green, within a few metres of the hole.",
+    "ruleMoment": "The moment just before the stroke is made, when the opponent is standing behind the player about to putt.",
+    "educationalFocus": "Whether it is allowed for an opponent to stand behind a player about to putt in a match play situation.",
+    "mustShow": [
+      "Golfer at address preparing to putt",
+      "Opponent standing behind the golfer, watching intently",
+      "Putting green, with the hole visible",
+      "Golf balls on the green with clear distinction between the two players’ positions"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-01.png",
+  "ruleNumber": "R6/14",
+  "ruleName": "Substituting the ball",
+  "group": "Substituting the ball",
+  "title": "When can you change your golf ball?",
+  "question": "On which occasions are you allowed to replace your ball with another one while playing a hole?",
+  "type": "multi_select",
+  "choices": [
+    {
+      "id": "a",
+      "text": "If you can't find your original ball after searching"
+    },
+    {
+      "id": "b",
+      "text": "When taking relief under the Rules (such as from a penalty area or abnormal course condition)"
+    },
+    {
+      "id": "c",
+      "text": "If your ball only has a small scratch"
+    },
+    {
+      "id": "d",
+      "text": "If your ball has a significant cut or crack"
+    },
+    {
+      "id": "e",
+      "text": "Any time you feel like it, even during play of a hole"
+    }
+  ],
+  "correctAnswer": [
+    "a",
+    "b",
+    "d"
+  ],
+  "correctAnswers": [
+    "a",
+    "b",
+    "d"
+  ],
+  "explanation": "You may substitute a new ball if your original is lost, when taking relief under the rules, or if it's severely damaged (like a big cut or crack). A minor scratch isn't enough, and you can't just switch at any moment.",
+  "imagePrompt": "A teenage boy golfer standing on the fairway, examining a badly cracked golf ball before replacing it with a new one.",
+  "imageAlt": "Teenage boy inspecting a damaged golf ball on the fairway.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "lifting_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "green",
+    "clothingBottomColour": "white",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 96,
+    "issues": [
+      "The scene meets all main requirements: one teenage girl golfer, right-handed, visibly examining one damaged golf ball, with a realistic iron, on a fairway.",
+      "The golf club is believable in size, grip, and proportion, with a single iron head.",
+      "The golfer is wearing a green top and white bottoms with no hat, matching the clothing spec.",
+      "Posture is natural and golf-appropriate.",
+      "The fairway is realistic and nothing extraneous (no stakes, water, bunker, etc.).",
+      "Apparent age and skin tone fit the prompt.",
+      "The golfer's hair and facial features are appropriate for a teenage girl.",
+      "Lighting and course background are consistent with the description."
+    ],
+    "repairPrompt": "No repair needed. All specifications are met in this illustration, including accurate depiction of a right-handed teenage girl golfer with a green top and white bottoms, holding a realistic iron, and examining one cracked golf ball on a fairway."
+  }
+}

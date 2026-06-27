@@ -1,0 +1,578 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-13.png",
+  "sourceImagePath": "Input\\pageb-13.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-13.png",
+      "ruleNumber": "R11",
+      "ruleName": "Ball in motion accidentally hits ...",
+      "group": "Ball in motion accidentally hits ...",
+      "title": "Ball hits player's own equipment",
+      "question": "If you hit your shot and your ball accidentally bounces off your golf bag, what do you do next?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Add a one-shot penalty and replay the shot."
+        },
+        {
+          "id": "b",
+          "text": "Play the ball as it lies, with no penalty."
+        },
+        {
+          "id": "c",
+          "text": "Pick up the ball and drop it nearby."
+        },
+        {
+          "id": "d",
+          "text": "Move your equipment and replay the shot."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You must play the ball as it lies with no penalty if it accidentally hits you or your equipment.",
+      "imagePrompt": "A teenage girl golfer on the fairway accidentally has her ball bounce off her golf bag after a shot. She looks surprised but ready to play the ball from where it stopped.",
+      "imageAlt": "Teen girl golfer on fairway, golf ball has bounced off her bag, ready to play the ball as it lies.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "black",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-13.png",
+      "ruleNumber": "R11",
+      "ruleName": "Ball in motion accidentally hits ...",
+      "group": "Ball in motion accidentally hits ...",
+      "title": "Ball strikes an outside influence",
+      "question": "Your ball accidentally hits a dog running across the course. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball as it lies, no penalty."
+        },
+        {
+          "id": "b",
+          "text": "Replay the shot and add a penalty."
+        },
+        {
+          "id": "c",
+          "text": "Drop a ball two club lengths from the spot."
+        },
+        {
+          "id": "d",
+          "text": "Leave the ball and skip your next shot."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "If your ball accidentally hits an outside influence, like an animal, play the ball as it lies without penalty.",
+      "imagePrompt": "A teenage boy golfer on the fairway watches as his golf ball accidentally hits a running dog. The dog looks startled, and the ball has come to rest nearby.",
+      "imageAlt": "Teen boy golfer watches as his golf ball hits a dog on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "hybrid",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "green",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-13.png",
+      "ruleNumber": "R11",
+      "ruleName": "Ball in motion accidentally hits ...",
+      "group": "Ball in motion accidentally hits ...",
+      "title": "Ball hits another ball at rest",
+      "question": "What should you do if your ball in motion hits another ball that was at rest, not on the green?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Add two penalty strokes."
+        },
+        {
+          "id": "b",
+          "text": "Play your ball as it lies, without penalty."
+        },
+        {
+          "id": "c",
+          "text": "Replay the shot."
+        },
+        {
+          "id": "d",
+          "text": "Drop your ball at the nearest point."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If your ball hits another ball at rest (not on the green), play your ball as it lies with no penalty.",
+      "imagePrompt": "A teenage girl golfer on the fairway has just played a shot and her ball has hit a stationary ball belonging to another player.",
+      "imageAlt": "Teen girl golfer's ball hits another ball at rest on fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "light",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "yellow",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-13.png",
+      "ruleNumber": "R13",
+      "ruleName": "Ball in motion accidentally hits ... the flagstick",
+      "group": "Ball in motion accidentally hits ...",
+      "title": "Your ball hits the flagstick in the hole",
+      "question": "What happens if your ball accidentally hits the flagstick left in the hole after your shot?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You must replay the shot."
+        },
+        {
+          "id": "b",
+          "text": "You get a penalty stroke."
+        },
+        {
+          "id": "c",
+          "text": "You play the ball as it lies, no penalty."
+        },
+        {
+          "id": "d",
+          "text": "You must remove the flagstick and replace your ball."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "If your ball hits the flagstick in the hole, play the ball as it lies without penalty.",
+      "imagePrompt": "A teenage boy on the putting green has just putted and his ball accidentally hits the flagstick which was left in the hole.",
+      "imageAlt": "Teen boy's golf ball hits flagstick in the hole on green.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "medium",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "purple",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-13.png",
+      "ruleNumber": "R11",
+      "ruleName": "Ball in motion accidentally hits ... the opponent in match play",
+      "group": "Ball in motion accidentally hits ...",
+      "title": "Ball accidentally hits opponent in match play",
+      "question": "During match play, your ball accidentally hits your opponent. What do you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Replay the stroke only if both are on the green."
+        },
+        {
+          "id": "b",
+          "text": "Always replay the shot."
+        },
+        {
+          "id": "c",
+          "text": "Play the ball as it lies unless on the green."
+        },
+        {
+          "id": "d",
+          "text": "Add a penalty stroke and replay the shot."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "Play the ball as it lies with no penalty, except if both were on the green before the stroke; then you replay the shot.",
+      "imagePrompt": "Two teenage golfers on the fairway, one has just played a shot that accidentally hits their match play opponent.",
+      "imageAlt": "Teen golfer's ball hits their opponent on the fairway during match play.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "light",
+        "clothingTopColour": "blue",
+        "clothingBottomColour": "black",
+        "hat": false
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-13.png",
+      "ruleNumber": "R11",
+      "ruleName": "Ball in motion accidentally hits ...",
+      "group": "Ball in motion accidentally hits ...",
+      "title": "Ball hits player's own equipment",
+      "question": "If you hit a shot and your ball accidentally hits your own golf bag, what should you do under the Rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Add one penalty stroke and replay the shot."
+        },
+        {
+          "id": "b",
+          "text": "Play the ball from where it comes to rest, with no penalty."
+        },
+        {
+          "id": "c",
+          "text": "Pick up the ball and drop it as close as possible to the bag."
+        },
+        {
+          "id": "d",
+          "text": "Move your bag and replay the shot."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "According to the Rules, if your ball in motion accidentally hits your own equipment, you must play the ball as it lies without penalty.",
+      "imagePrompt": "A teenage boy golfer on the fairway, looking surprised after his shot has deflected off his golf bag. He is preparing to play the ball as it lies.",
+      "imageAlt": "Teen boy golfer on fairway, golf ball has bounced off his bag, ready to play the ball as it lies.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "dark",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "orange",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-13.png",
+      "ruleNumber": "R11",
+      "ruleName": "Ball in motion accidentally hits ...",
+      "group": "Ball in motion accidentally hits ...",
+      "title": "Ball strikes an outside influence",
+      "question": "Suppose your ball accidentally strikes a dog running across the course. What does the Rule say you must do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball as it lies, with no penalty."
+        },
+        {
+          "id": "b",
+          "text": "Replay the shot and add a penalty."
+        },
+        {
+          "id": "c",
+          "text": "Drop a ball within two club lengths of where it hit the dog."
+        },
+        {
+          "id": "d",
+          "text": "Skip your next shot."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "If your ball in motion hits an outside influence such as a dog, you must play your ball as it lies with no penalty.",
+      "imagePrompt": "A teenage left-handed boy golfer on the fairway watches as his ball accidentally strikes a dog running past. The dog looks startled, and the ball has come to rest near the incident.",
+      "imageAlt": "Teen boy golfer watches as his golf ball hits a dog on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "hybrid",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "medium",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "purple",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-13.png",
+      "ruleNumber": "R11",
+      "ruleName": "Ball in motion accidentally hits ...",
+      "group": "Ball in motion accidentally hits ...",
+      "title": "Ball hits another ball at rest",
+      "question": "If your ball in motion strikes another player's ball that was at rest, and neither ball was on the green, what should you do under the Rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Add two penalty strokes and play your ball from where it comes to rest."
+        },
+        {
+          "id": "b",
+          "text": "Play your ball as it lies, with no penalty."
+        },
+        {
+          "id": "c",
+          "text": "Replay your shot from the original spot."
+        },
+        {
+          "id": "d",
+          "text": "Drop your ball as close as possible to where the balls made contact."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If your ball accidentally strikes another ball at rest (not on the green), you play your ball from its resting place without penalty.",
+      "imagePrompt": "A teenage left-handed boy golfer on the fairway, with his shot just having hit another stationary ball. Both balls are visible on the fairway.",
+      "imageAlt": "Teen boy golfer's ball hits another ball at rest on fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "light",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "blue",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-13.png",
+      "ruleNumber": "R13",
+      "ruleName": "Ball in motion accidentally hits ... the flagstick",
+      "group": "Ball in motion accidentally hits ...",
+      "title": "Your ball hits the flagstick in the hole",
+      "question": "On the putting green, if your ball accidentally hits the flagstick that is left in the hole, what should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Replay the shot from the same spot."
+        },
+        {
+          "id": "b",
+          "text": "Add a penalty stroke and play the ball from where it stops."
+        },
+        {
+          "id": "c",
+          "text": "Play the ball as it lies, no penalty."
+        },
+        {
+          "id": "d",
+          "text": "Remove the flagstick and replace your ball before playing on."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "There is no penalty if your ball hits the flagstick left in the hole. You simply play the ball from where it comes to rest.",
+      "imagePrompt": "A teenage girl golfer on the putting green has just putted and her ball has struck the flagstick left in the hole. She prepares to play the next putt.",
+      "imageAlt": "Teen girl golfer's ball hits flagstick in the hole on green.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "medium",
+        "clothingTopColour": "blue",
+        "clothingBottomColour": "red",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-13.png",
+      "ruleNumber": "R11",
+      "ruleName": "Ball in motion accidentally hits ... the opponent in match play",
+      "group": "Ball in motion accidentally hits ...",
+      "title": "Ball accidentally hits opponent in match play",
+      "question": "During match play, if your ball accidentally hits your opponent, what should you do according to the Rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Replay the stroke only if both balls were on the putting green."
+        },
+        {
+          "id": "b",
+          "text": "Always replay the shot, wherever you are on the course."
+        },
+        {
+          "id": "c",
+          "text": "Play the ball as it lies unless both balls were on the green."
+        },
+        {
+          "id": "d",
+          "text": "Add a penalty stroke and replay the shot."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "In match play, if your ball accidentally hits your opponent, play your ball as it lies except when both balls were on the green before the stroke. Then, you must replay the shot.",
+      "imagePrompt": "A teenage girl golfer on the fairway, having just played a shot that accidentally struck her match play opponent. The players are looking at where the ball came to rest.",
+      "imageAlt": "Teen girl golfer's ball hits her opponent on the fairway during match play.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "dark",
+        "clothingTopColour": "blue",
+        "clothingBottomColour": "purple",
+        "hat": false
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "011_001_Ball_hits_players_own_equipment",
+    "011_002_Ball_strikes_an_outside_influence",
+    "011_003_Ball_hits_another_ball_at_rest",
+    "013_004_Your_ball_hits_the_flagstick_in_the_hole",
+    "011_005_Ball_accidentally_hits_opponent_in_match_play"
+  ],
+  "updatedAtUtc": "2026-04-25T00:30:36.180Z"
+}

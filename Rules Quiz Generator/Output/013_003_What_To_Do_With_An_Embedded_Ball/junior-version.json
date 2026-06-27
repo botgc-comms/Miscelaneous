@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\013_003_What_To_Do_With_An_Embedded_Ball\\metadata.json",
+  "sourceImageName": "pageb-07.png",
+  "ruleNumber": "R13",
+  "ruleName": "Putting Green",
+  "title": "What To Do With An Embedded Ball",
+  "question": "If your ball is embedded on the putting green after a shot, what is the correct thing to do?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Leave it and play it as it lies"
+    },
+    {
+      "id": "b",
+      "text": "Mark its position, lift the ball, repair the pitch-mark, and replace the ball"
+    },
+    {
+      "id": "c",
+      "text": "Pick it up and drop it two club lengths away"
+    },
+    {
+      "id": "d",
+      "text": "Ask another player to move it for you"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You should mark where the ball is, lift it, repair the pitch-mark, and then replace the ball without any penalty.",
+  "juniorVersion": {
+    "title": "What Should You Do If Your Ball Stuck Into The Green?",
+    "question": "If your ball lands on the putting green and gets stuck in its own hole, what should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Leave it where it is and hit it from there."
+      },
+      {
+        "id": "b",
+        "text": "Put a marker where your ball is, pick it up, fix the little hole, and put your ball back."
+      },
+      {
+        "id": "c",
+        "text": "Pick up the ball and drop it two club lengths away."
+      },
+      {
+        "id": "d",
+        "text": "Ask someone else to move it for you."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "You should put a marker next to your ball, pick it up, fix the hole it made, and then put your ball back in the same spot.",
+    "vocabulary": [
+      {
+        "term": "Putting green",
+        "simpleMeaning": "The short, smooth grass around the hole where you finish the hole."
+      },
+      {
+        "term": "Embedded",
+        "simpleMeaning": "When your ball is stuck down in the ground after it lands."
+      },
+      {
+        "term": "Pitch-mark",
+        "simpleMeaning": "A small hole made when the ball lands hard on the green."
+      },
+      {
+        "term": "Marker",
+        "simpleMeaning": "A small flat object you use to show where your ball was."
+      }
+    ],
+    "teachingTip": "Let children practise marking their golf ball, fixing a pitch-mark, and replacing the ball on the green in a safe space.",
+    "likelyMisconceptions": [
+      "Some children may think they have to play the ball while it is still stuck in the ground.",
+      "Some may think they need to drop the ball somewhere else.",
+      "Some may think someone else should pick up their ball."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:37.937Z",
+  "model": "gpt-4.1"
+}

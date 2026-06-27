@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\017_001_Where_does_the_penalty_area_begin\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:50:25.584Z",
+  "title": "Where does the penalty area begin?",
+  "ruleNumber": "R17",
+  "ruleName": "In a penalty area",
+  "durationSeconds": 201.37
+}

@@ -1,0 +1,5 @@
+﻿{
+  "text": [],
+  "allowText": true,
+  "notes": "an old hickory putter with gold tags containing the names of past winners. there is an old leather handle.  "
+}

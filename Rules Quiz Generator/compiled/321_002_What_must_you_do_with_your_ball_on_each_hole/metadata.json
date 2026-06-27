@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-01.png",
+  "ruleNumber": "R3/21",
+  "ruleName": "Holing out and conceding",
+  "group": "Holing out and conceding",
+  "type": "multiple_choice",
+  "imagePrompt": "A teenage boy lining up a putt on the green, focusing on playing his original ball into the hole for completion of the hole.",
+  "imageAlt": "Teenage boy putting on the green, concentrating on holing out.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "light",
+    "clothingTopColour": "blue",
+    "clothingBottomColour": "black",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [],
+    "repairPrompt": "The illustration is already visually accurate. If further refinement is desired, ensure the putting green is clearly differentiated from the surrounding fairway with a slightly more vibrant and closely-mown texture typical of real greens."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What should you do with your ball on each hole?",
+      "question": "When you start playing a hole, what do you need to do with the same ball you hit from the tee?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Pick up your ball after a few shots"
+        },
+        {
+          "id": "b",
+          "text": "Swap your ball for another on the green"
+        },
+        {
+          "id": "c",
+          "text": "Keep hitting it until it goes in the hole"
+        },
+        {
+          "id": "d",
+          "text": "Miss your putt if it is really close"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "You need to use the same ball from the start (tee) all the way until you hit it into the hole, unless the rules say you can switch balls.",
+      "vocabulary": [
+        {
+          "term": "Tee",
+          "simpleMeaning": "Where you start each hole in golf."
+        },
+        {
+          "term": "Hole out",
+          "simpleMeaning": "When your ball goes into the hole."
+        },
+        {
+          "term": "Green",
+          "simpleMeaning": "The short grass around the hole."
+        }
+      ],
+      "teachingTip": "Remind juniors to try not to change their ball unless a coach or rule tells them it's OK.",
+      "likelyMisconceptions": [
+        "Thinking you can change balls any time you want.",
+        "Thinking you can skip tapping in a short putt."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "What must you do with your ball on each hole?",
+      "question": "In general, what must a player do with the same ball they played from the tee on each hole?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Pick it up after a few shots"
+        },
+        {
+          "id": "b",
+          "text": "Change it for a different one on the putting green"
+        },
+        {
+          "id": "c",
+          "text": "Play it into the hole (hole out)"
+        },
+        {
+          "id": "d",
+          "text": "Skip the putt if it's very short"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "Players must play the same ball from the tee all the way into the hole, unless the rules allow them to change it."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "321_002_What_must_you_do_with_your_ball_on_each_hole",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:53.795Z"
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-12.png",
+  "ruleNumber": "R15",
+  "ruleName": "Movable obstructions",
+  "group": "Movable obstructions",
+  "title": "Dealing with movable obstructions on the course",
+  "question": "Your golf ball stops against a can on the course. What should you do according to the rules?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball as it lies with the can in place."
+    },
+    {
+      "id": "b",
+      "text": "Remove the can and, if your ball moves because of this, replace it with no penalty."
+    },
+    {
+      "id": "c",
+      "text": "Remove the can and take a one-stroke penalty if the ball moves."
+    },
+    {
+      "id": "d",
+      "text": "You must not move the can as it is now part of the course."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "When a movable obstruction like a can is interfering, you may remove it. If your ball moves as a direct result, just replace your ball with no penalty.",
+  "imagePrompt": "A teenage girl bends down to remove a can from right next to her golf ball in the rough.",
+  "imageAlt": "Girl golfer removing a can that is next to her ball in the rough.",
+  "sceneSpec": {
+    "setting": "rough",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "lifting_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "light",
+    "clothingTopColour": "red",
+    "clothingBottomColour": "blue",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The left-handedness of the golfer is not exceptionally clear from the posture, as the actual golf action is not being performed and the hand used to remove the can is not obviously specific to handedness."
+    ],
+    "repairPrompt": "Make it visually clear that the teenage boy is left-handed, such as ensuring the left hand is more dominant in the action or implying left-handed golf posture more clearly while bending. Emphasize a visually 'left-handed' approach as he removes the can from beside the golf ball."
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_035_Ball_in_Tyre_Tracks_on_Fairway\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "16.1",
+  "ruleName": "Relief from Abnormal Course Conditions",
+  "title": "Ball in Tyre Tracks on Fairway",
+  "question": "Your tee shot finishes in deep tyre tracks left by a maintenance vehicle in the fairway. Can you take free relief?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes. Tyre tracks are always ground under repair."
+    },
+    {
+      "id": "b",
+      "text": "Yes. Any damage caused by greenkeeping equipment qualifies for free relief."
+    },
+    {
+      "id": "c",
+      "text": "No. Unless the tyre tracks have been marked as Ground Under Repair or the Committee has declared them to be an abnormal course condition, you must play the ball as it lies."
+    },
+    {
+      "id": "d",
+      "text": "Yes, but only if the tyre tracks are deep."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "Tyre tracks do not automatically entitle a player to free relief. Relief is only available if the Committee has marked the area as Ground Under Repair (GUR) or has otherwise declared it to be an abnormal course condition under Rule 16.1. If not, the ball must be played as it lies, or relief may be taken under another rule (such as unplayable ball, with penalty). Many golfers mistakenly believe any course machinery damage qualifies for free relief, but this is not the case.",
+  "juniorVersion": {
+    "title": "Ball Stuck in Tractor Tracks",
+    "question": "Your ball lands in some big, muddy tyre tracks on the fairway after you hit your shot. Are you allowed to pick up your ball and drop it for free?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Yes. Tyre tracks are always a special area where you get a free drop."
+      },
+      {
+        "id": "b",
+        "text": "Yes. You can always get a free drop if the ground was messed up by a course machine."
+      },
+      {
+        "id": "c",
+        "text": "No. Only if the club put a sign or said the tyre tracks are Ground Under Repair, you can have a free drop. Otherwise, you have to play the ball where it is."
+      },
+      {
+        "id": "d",
+        "text": "Yes, but only if the tyre tracks are really deep."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "You can't always pick up your ball from tyre tracks, even if they look bad. You only get a free drop if the club says the tyre tracks are Ground Under Repair, or if the club says they are a special problem in that spot. If they don't, you have to hit the ball from where it is.",
+    "vocabulary": [
+      {
+        "term": "Ground Under Repair",
+        "simpleMeaning": "A part of the course the club has marked with a line, rope or sign where you can move your ball for free because the grass is damaged or has work happening."
+      },
+      {
+        "term": "Relief",
+        "simpleMeaning": "When you are allowed to move your ball without a penalty because something on the course is not normal."
+      }
+    ],
+    "teachingTip": "Use string or pegs to mark a pretend Ground Under Repair area so children can see when a free drop is allowed.",
+    "likelyMisconceptions": [
+      "Any tyre track or damaged grass from machines means you get a free drop.",
+      "Deep tyre tracks always let you move your ball for free."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:15:51.369Z",
+  "model": "gpt-4.1"
+}

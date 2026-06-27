@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\017_002_What_Should_You_Do_After_Losing_a_Ball_in_a_Red_Penalty_Area\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:53:26.496Z",
+  "title": "What Should You Do After Losing a Ball in a Red Penalty Area?",
+  "ruleNumber": "17",
+  "ruleName": "Penalty Areas",
+  "durationSeconds": 188.843
+}

@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_006_Waiting_Time_When_Ball_Is_Hanging_on_the_Edge_of_the_Hole\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "13.3a",
+  "ruleName": "Ball Overhanging Hole",
+  "title": "Waiting Time When Ball Is Hanging on the Edge of the Hole",
+  "question": "How long are you allowed to wait to see if your ball that is hanging on the edge of the hole will fall in?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Up to 10 seconds from when the ball stopped moving."
+    },
+    {
+      "id": "b",
+      "text": "A reasonable time to reach the hole, plus an additional 10 seconds."
+    },
+    {
+      "id": "c",
+      "text": "As long as you like, provided you do not delay play."
+    },
+    {
+      "id": "d",
+      "text": "You must play the ball immediately without waiting."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "When a ball comes to rest hanging over the hole, you are allowed a reasonable time to reach the hole without unreasonable delay, and then an additional 10 seconds to see whether the ball falls into the hole. If the ball falls into the hole within that time, it is considered holed. If it falls in after that period, add one penalty stroke. (Rule 13.3a)",
+  "juniorVersion": {
+    "title": "How long can you wait for your ball to drop in the hole?",
+    "question": "If your ball is right on the edge of the hole and can't decide if it will fall in, how long can you wait to see if it goes in?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You have 10 seconds to wait after the ball stops moving."
+      },
+      {
+        "id": "b",
+        "text": "You get enough time to walk over to the hole, then you can wait 10 more seconds."
+      },
+      {
+        "id": "c",
+        "text": "You can wait as long as you want, as long as you don't slow down play."
+      },
+      {
+        "id": "d",
+        "text": "You must hit the ball right away, no waiting."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If your ball is hanging on the edge, you can take the time to walk up to the hole, then you get 10 more seconds to see if it falls in. If the ball drops in during that time, it's a good putt!",
+    "vocabulary": [
+      {
+        "term": "Edge of the hole",
+        "simpleMeaning": "When your ball is right next to the hole and almost in."
+      }
+    ],
+    "teachingTip": "Show kids how to count 10 seconds after they reach the hole and role-play this situation on the green.",
+    "likelyMisconceptions": [
+      "Kids may think they can wait forever for the ball to drop in.",
+      "Some might think they have to hit the ball right away with no waiting."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T16:53:33.460Z",
+  "model": "gpt-4.1"
+}

@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-09.png",
+  "ruleNumber": "R7",
+  "ruleName": "Ball moved during a search",
+  "group": "Ball moved during a search",
+  "title": "What if you move your ball while searching?",
+  "question": "If you accidentally move your ball while searching for it in the rough, what must you do according to the Rules of Golf?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Leave it where it stops"
+    },
+    {
+      "id": "b",
+      "text": "Replace it as close as possible to its original spot, with no penalty"
+    },
+    {
+      "id": "c",
+      "text": "Take a penalty stroke and play from where it stops"
+    },
+    {
+      "id": "d",
+      "text": "Drop a new ball"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If you move your ball by accident while searching, you must replace it on its original spot without penalty.",
+  "imagePrompt": "A teen boy golfer carefully replacing his ball in the rough after accidentally moving it while searching.",
+  "imageAlt": "Teen boy golfer replacing a golf ball in the rough.",
+  "sceneSpec": {
+    "setting": "rough",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "lifting_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "medium",
+    "clothingTopColour": "blue",
+    "clothingBottomColour": "white",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "Barely visible club grip end (could be clearer)."
+    ],
+    "repairPrompt": "Slightly increase the visibility and definition of the club grip end to ensure it is fully visible and realistic, clearly showing the full length of the iron club."
+  }
+}

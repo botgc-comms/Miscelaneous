@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\006_001_Penalty_for_hitting_the_wrong_ball_in_a_penalty_area\\metadata.json",
+  "sourceImageName": "page-29.png",
+  "ruleNumber": "R6",
+  "ruleName": "Penalty area – Wrong ball",
+  "title": "Penalty for hitting the wrong ball in a penalty area",
+  "question": "If you play the wrong ball from a penalty area, what penalty do you get?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "There is no penalty, just play the correct ball"
+    },
+    {
+      "id": "b",
+      "text": "1-stroke penalty and replay the shot"
+    },
+    {
+      "id": "c",
+      "text": "2-stroke penalty and you must play the correct ball"
+    },
+    {
+      "id": "d",
+      "text": "You are disqualified from the hole"
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "Hitting a wrong ball from a penalty area means you get a two-stroke penalty and must play the correct ball.",
+  "juniorVersion": {
+    "title": "What happens if you hit the wrong ball in a penalty area?",
+    "question": "If you hit someone else’s ball or a ball that isn’t yours from a penalty area, what happens?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Nothing happens, just find your own ball and play it"
+      },
+      {
+        "id": "b",
+        "text": "You get 1 extra shot and hit again"
+      },
+      {
+        "id": "c",
+        "text": "You get 2 extra shots and you must play your own ball"
+      },
+      {
+        "id": "d",
+        "text": "You can’t play the rest of the hole"
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "If you play the wrong ball in a penalty area, you get 2 extra shots added to your score. Then, you must find and play your own golf ball.",
+    "vocabulary": [
+      {
+        "term": "Penalty area",
+        "simpleMeaning": "A place on the course with water or sand marked with yellow or red lines. It can be a pond, stream, or wet ground."
+      },
+      {
+        "term": "Wrong ball",
+        "simpleMeaning": "A golf ball that is not yours, like another player’s ball or a practice ball."
+      }
+    ],
+    "teachingTip": "Remind children to always check their ball before hitting, especially in tricky places like penalty areas.",
+    "likelyMisconceptions": [
+      "Children might think there is no penalty if the wrong ball is in a penalty area.",
+      "Some might think you can just keep playing with the wrong ball."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:25.737Z",
+  "model": "gpt-4.1"
+}

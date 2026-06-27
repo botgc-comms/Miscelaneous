@@ -1,0 +1,354 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-24.png",
+  "sourceImagePath": "Input\\page-24.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-24.png",
+      "ruleNumber": "R17",
+      "ruleName": "In a penalty area",
+      "group": "In a penalty area",
+      "title": "Where does the penalty area begin?",
+      "question": "When does a ball count as being in a penalty area?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "As soon as it touches the edge of the penalty area."
+        },
+        {
+          "id": "b",
+          "text": "Only if it comes to rest by the water."
+        },
+        {
+          "id": "c",
+          "text": "Only if it touches a stake."
+        },
+        {
+          "id": "d",
+          "text": "When it's lost in the rough."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "A ball is in a penalty area as soon as it touches its edge, not just when it touches a stake or lands in water.",
+      "imagePrompt": "A teenage girl golfer stands near the edge of a penalty area marked with yellow stakes. Her ball sits on the ground just touching the line by the stake. There is water inside the penalty area. It's a sunny day.",
+      "imageAlt": "Teen girl at edge of penalty area, ball on boundary line with yellow stake and water.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "yellow",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "black",
+        "clothingBottomColour": "white",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-24.png",
+      "ruleNumber": "R17/18",
+      "ruleName": "In a penalty area",
+      "group": "In a penalty area",
+      "title": "Ball possibly in a penalty area",
+      "question": "If your ball heads towards a penalty area, but you can't see exactly where it stopped, when can you use the penalty area rule?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Only if you're virtually certain your ball is in the penalty area."
+        },
+        {
+          "id": "b",
+          "text": "Any time you think it might be in the penalty area."
+        },
+        {
+          "id": "c",
+          "text": "If it's just as likely it is outside the penalty area."
+        },
+        {
+          "id": "d",
+          "text": "Only if you find your ball."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You can only use the penalty area rule if it is virtually certain the ball is in the penalty area. If not, it's treated as a lost ball.",
+      "imagePrompt": "A teenage boy looks towards a penalty area with water and tall grass, searching for his ball after hitting a shot in that direction. Yellow stakes outline the penalty area. The weather is overcast.",
+      "imageAlt": "Teen boy looking at penalty area edge, wondering where his ball ended up, yellow stakes and water visible.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "yellow",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "medium",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "red",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-24.png",
+      "ruleNumber": "R17",
+      "ruleName": "In a penalty area",
+      "group": "In a penalty area",
+      "title": "Options for playing from a penalty area",
+      "question": "If your ball is in a penalty area, what options do you have?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball as it lies, without penalty."
+        },
+        {
+          "id": "b",
+          "text": "Take a drop outside the penalty area for one penalty stroke."
+        },
+        {
+          "id": "c",
+          "text": "Drop a second ball in the penalty area without penalty."
+        },
+        {
+          "id": "d",
+          "text": "You must return to the tee and replay the shot."
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b"
+      ],
+      "explanation": "You may play the ball as it lies (without penalty) or take a drop outside the penalty area with a one-stroke penalty.",
+      "imagePrompt": "A teenage girl stands just inside the edge of a penalty area marked by yellow stakes, choosing between hitting her ball from the rough or taking a drop outside the area. Water and trees are visible. The weather is sunny.",
+      "imageAlt": "Teen girl faces choice in yellow-staked penalty area, ball lies near water, considering drop or play.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "yellow",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "white",
+        "hat": true
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-24.png",
+      "ruleNumber": "R17",
+      "ruleName": "In a penalty area",
+      "group": "In a penalty area",
+      "title": "Where does the penalty area begin?",
+      "question": "When is a ball considered to be in a penalty area?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "As soon as any part of the ball touches the edge or line of the penalty area."
+        },
+        {
+          "id": "b",
+          "text": "Only if it comes to rest completely next to the water."
+        },
+        {
+          "id": "c",
+          "text": "Only if it touches a penalty area stake."
+        },
+        {
+          "id": "d",
+          "text": "When it's lost somewhere in the rough."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "A ball is considered in a penalty area as soon as any part of it touches the edge or the line marking the penalty area, not just if it is in water or touching a stake.",
+      "imagePrompt": "A teenage girl golfer stands at the edge of a penalty area marked with yellow stakes. Her ball is resting right on the painted line marking the penalty area's edge, near a stake, with water inside the penalty area. It's a sunny day.",
+      "imageAlt": "Teen girl at edge of penalty area, ball on boundary line by yellow stake and water.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "yellow",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "yellow",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-24.png",
+      "ruleNumber": "R17/18",
+      "ruleName": "In a penalty area",
+      "group": "In a penalty area",
+      "title": "Ball possibly in a penalty area",
+      "question": "If your ball is heading towards a penalty area and you can't see where it stopped, when are you allowed to take penalty area relief?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Only if you are virtually certain your ball is in the penalty area."
+        },
+        {
+          "id": "b",
+          "text": "Any time you're unsure where the ball is."
+        },
+        {
+          "id": "c",
+          "text": "If there's a chance it may be outside the penalty area."
+        },
+        {
+          "id": "d",
+          "text": "Only if you find your ball inside the penalty area."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You are only allowed to use penalty area relief if it is virtually certain the ball is in the penalty area. Otherwise, you must treat it as a lost ball if it's not found.",
+      "imagePrompt": "A teenage boy stands on the fairway looking at a penalty area with yellow stakes, water, and tall grass, searching for his ball after hitting towards it. The weather is overcast.",
+      "imageAlt": "Teen boy eyeing penalty area edge, wondering if his ball ended up there, yellow stakes and water visible.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "yellow",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "dark",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "blue",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-24.png",
+      "ruleNumber": "R17",
+      "ruleName": "In a penalty area",
+      "group": "In a penalty area",
+      "title": "Options for playing from a penalty area",
+      "question": "After your ball is found in a penalty area, what choices do you have about playing your next shot?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball as it lies inside the penalty area, with no extra penalty."
+        },
+        {
+          "id": "b",
+          "text": "Take a drop outside the penalty area, with a one-stroke penalty."
+        },
+        {
+          "id": "c",
+          "text": "Drop a second ball anywhere in the penalty area, without penalty."
+        },
+        {
+          "id": "d",
+          "text": "You must return to the teeing area and replay the shot."
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b"
+      ],
+      "explanation": "You may play the ball as it lies in the penalty area (with no extra penalty) or take penalty area relief by dropping outside the penalty area for one penalty stroke.",
+      "imagePrompt": "A teenage boy stands just inside the edge of a penalty area marked by yellow stakes. His golf ball is on the grass near water. He is deciding whether to play the ball as it lies or take a penalty drop outside the area. Trees are visible in the background and it's a sunny day.",
+      "imageAlt": "Teen boy considering playing or dropping in yellow-staked penalty area, ball near water.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "yellow",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "blue",
+        "clothingBottomColour": "black",
+        "hat": true
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "017_001_Where_does_the_penalty_area_begin",
+    "1718_002_Ball_possibly_in_a_penalty_area",
+    "017_003_Options_for_playing_from_a_penalty_area"
+  ],
+  "updatedAtUtc": "2026-04-24T21:59:32.136Z"
+}

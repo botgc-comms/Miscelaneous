@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\009_004_Ball_moved_by_the_wind_after_a_stroke\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:05:54.576Z",
+  "title": "Ball moved by the wind after a stroke",
+  "ruleNumber": "R9",
+  "ruleName": "Ball at rest is moved",
+  "durationSeconds": 184.86
+}

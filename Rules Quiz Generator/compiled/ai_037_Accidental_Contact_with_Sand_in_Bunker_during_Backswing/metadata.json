@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "12.2b",
+  "ruleName": "Restrictions on Touching Sand in Bunker",
+  "group": "Bunkers",
+  "type": "multiple_choice",
+  "imagePrompt": "Create a polished modern semi-realistic illustration (about 75% realistic, 25% stylised) showing a golfer in a well-defined sand bunker preparing a stroke. The player's club should be depicted just brushing the sand behind the ball during the backswing, with the golfer in mid-backswing. The ball is lying in the centre of the bunker, and the green with a flag is visible in the background. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer in a sand bunker mid-backswing with the club just brushing the sand behind the ball, green and flag in background.",
+  "sceneSpec": {
+    "setting": "A sand bunker on a golf course, clearly defined with a green and flag visible in the background.",
+    "players": "One golfer preparing to play a stroke from inside the bunker.",
+    "ballPosition": "The ball is lying in the centre of the bunker, a short distance from the player's stance.",
+    "ruleMoment": "The precise moment when the golfer's club has just brushed the sand behind the ball during the backswing, before making contact with the ball.",
+    "educationalFocus": "Demonstrates accidental touch of sand during the backswing and highlights that this is not penalised under the Rules.",
+    "mustShow": [
+      "A golfer in a bunker",
+      "A golf ball in the sand",
+      "The player's club just brushing the sand behind the ball during the backswing",
+      "A clear impression that the golfer is mid-backswing about to play the shot"
+    ],
+    "mustNotShow": [
+      "Any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles",
+      "Deliberate testing of the sand",
+      "The club resting on the sand before the backswing"
+    ]
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Your Club Touches Sand During Backswing in a Bunker",
+      "question": "Your ball is in a bunker (a sandy area). When you swing your club back to hit the ball, your club accidentally brushes the sand before you hit the ball. You didn’t do this on purpose. What happens?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You get one extra shot because your club touched the sand."
+        },
+        {
+          "id": "b",
+          "text": "You get a penalty for touching the sand in the bunker."
+        },
+        {
+          "id": "c",
+          "text": "There is no penalty because your club only touched the sand in your backswing."
+        },
+        {
+          "id": "d",
+          "text": "You have to hit the shot again."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "You do not get a penalty if your club touches the sand in the bunker during your backswing, as long as you didn’t do it on purpose to test the sand or make things easier.",
+      "vocabulary": [
+        {
+          "term": "bunker",
+          "simpleMeaning": "A hollow area filled with sand, usually near the green or fairway."
+        },
+        {
+          "term": "backswing",
+          "simpleMeaning": "When you swing the club away from the ball to get ready to hit it."
+        }
+      ],
+      "teachingTip": "Show children how to make a backswing in a bunker. Explain the difference between an accident and touching the sand on purpose.",
+      "likelyMisconceptions": [
+        "You get a penalty any time your club touches sand in a bunker.",
+        "You must always replay your shot if you touch the sand by accident."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Accidental Contact with Sand in Bunker during Backswing",
+      "question": "Your ball is in a bunker. As you start your backswing, your club accidentally brushes the sand before reaching the ball. You did not deliberately test the sand or ground your club before making the stroke. What is the correct ruling?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You receive a one-stroke penalty because your club touched the sand."
+        },
+        {
+          "id": "b",
+          "text": "You receive the general penalty because you touched the sand in a bunker."
+        },
+        {
+          "id": "c",
+          "text": "There is no penalty because the club only touched the sand during the backswing for the stroke."
+        },
+        {
+          "id": "d",
+          "text": "You must replay the stroke."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "There is no penalty if a player's club brushes the sand in a bunker during the backswing for a stroke, provided the player does not deliberately test the condition of the sand or improve the conditions affecting the stroke. Rule 12.2b allows incidental contact with sand during the backswing, and no penalty is applied in this scenario."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "ai_037_Accidental_Contact_with_Sand_in_Bunker_during_Backswing",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-06-26T20:03:54.144Z"
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "Rule 15.2a",
+  "ruleName": "Moving Loose Impediments and Movable Obstructions",
+  "group": "General Play",
+  "title": "Can You Move a Worm Before Playing?",
+  "question": "Your ball comes to rest in the rough. A large worm is lying directly behind your ball and is likely to interfere with your next shot. Can you move the worm before playing?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No. Animals on the course must never be moved."
+    },
+    {
+      "id": "b",
+      "text": "Yes. A live worm is an animal and may be moved without penalty."
+    },
+    {
+      "id": "c",
+      "text": "Yes, but only if your ball is on the putting green."
+    },
+    {
+      "id": "d",
+      "text": "No. You must either play the ball as it lies or take an unplayable ball."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "A live worm is an animal and may be moved without penalty, regardless of where the ball lies. However, if moving the worm causes your ball at rest to move, you must replace the ball and may incur a penalty unless an exception applies. This is detailed in the Definition of Animal, and Rules 9 and 8.1a of the Rules of Golf.",
+  "imagePrompt": "A modern, polished semi-realistic illustration (about 75% realistic, 25% stylised) of a junior golfer standing in the rough, preparing to play a golf shot. The golf ball is at rest on the grass, with a large, distinct worm lying directly behind the ball. The environment clearly suggests the edge of a fairway and rough, with subtle course detail in the background. The illustration must not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A junior golfer in the rough beside a fairway, preparing to play a shot with a golf ball at rest on the grass and a large worm lying directly behind the ball.",
+  "sceneSpec": {
+    "setting": "A patch of rough beside a fairway on a golf course.",
+    "players": "One junior golfer viewed from the side, preparing to play a shot from the rough.",
+    "ballPosition": "A golf ball at rest on grass in the rough, with a large worm lying directly behind it.",
+    "ruleMoment": "Just before the player takes their next stroke, considering whether to move the worm.",
+    "educationalFocus": "Whether a golfer is allowed to move a live worm that is interfering with play.",
+    "mustShow": [
+      "A clear view of a golf ball in the rough with a sizable worm behind it",
+      "A junior golfer standing ready to play, considering the situation"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "sourcePromptFileName": "final-prompt-v2.txt",
+  "promptFileName": "final-prompt-v3.txt",
+  "imageFileName": "illustration-v3.png",
+  "correctionInstructions": "it should show the girl hitting the ball within the penalty area, this shows her hitting it outside the penalty area",
+  "generatedAtUtc": "2026-06-26T07:27:15.611Z"
+}

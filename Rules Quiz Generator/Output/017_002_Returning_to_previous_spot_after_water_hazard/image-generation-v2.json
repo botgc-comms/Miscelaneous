@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\017_002_Returning_to_previous_spot_after_water_hazard\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:52:42.802Z",
+  "title": "Returning to previous spot after water hazard",
+  "ruleNumber": "17",
+  "ruleName": "Penalty area rule",
+  "durationSeconds": 186.303
+}

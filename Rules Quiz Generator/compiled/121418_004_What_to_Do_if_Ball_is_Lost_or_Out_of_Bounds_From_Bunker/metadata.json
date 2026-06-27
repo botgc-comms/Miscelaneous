@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-23.png",
+  "ruleNumber": "R12/14/18",
+  "ruleName": "Ball hit out of bounds/lost ball",
+  "group": "Ball hit out of bounds/lost ball",
+  "type": "multiple_choice",
+  "imagePrompt": "A teen girl prepares to drop a new ball in a bunker after her previous shot went out of bounds.",
+  "imageAlt": "Teen girl in bunker getting ready to drop a ball for her next shot after hitting out of bounds.",
+  "sceneSpec": {
+    "setting": "bunker",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "dropping_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": true,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "dark",
+    "clothingTopColour": "grey",
+    "clothingBottomColour": "yellow",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 96,
+    "issues": [
+      "Golfer appears as a teen girl, but 'sceneSpec' requests a teen boy (while image prompt asks for a girl). Other specifications (no club in hand, one ball from knee height, pose, outfit, skin tone, and hat) are accurate. All golf elements are believable and realistic for rules education."
+    ],
+    "repairPrompt": "Change the golfer to a teenage boy, maintaining mixed ethnicity and dark skin tone, with a grey top, yellow trousers or shorts, golf cap, and no club in hand. Preserve the realistic dropping action from knee height in the bunker."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What do you do if your ball from the bunker goes out of bounds?",
+      "question": "You hit your ball out of a bunker and it goes out of bounds. What should you do next?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop your ball anywhere inside the bunker without losing a shot"
+        },
+        {
+          "id": "b",
+          "text": "Play your shot again from the bunker. Drop your ball in the bunker within one club's length of where you last hit and add one extra shot"
+        },
+        {
+          "id": "c",
+          "text": "Keep playing from out of bounds with no extra shots"
+        },
+        {
+          "id": "d",
+          "text": "Drop your ball for free outside the bunker"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If your ball goes out of bounds or you lose your ball after hitting from the bunker, you have to go back to the bunker. Drop your ball in the bunker within one club's length of where you hit last, and add one more shot to your score.",
+      "vocabulary": [
+        {
+          "term": "Bunker",
+          "simpleMeaning": "A sandy area on the golf course. You try not to hit your ball in here."
+        },
+        {
+          "term": "Out of bounds",
+          "simpleMeaning": "A place outside the golf course where you cannot play your ball."
+        },
+        {
+          "term": "Drop",
+          "simpleMeaning": "Letting the ball go from your hand at knee height so you can play again."
+        },
+        {
+          "term": "Club-length",
+          "simpleMeaning": "The length of one of your golf clubs. You measure how far you can drop the ball using your club."
+        }
+      ],
+      "teachingTip": "Show children where out of bounds is on the course and practise the right way to drop a ball in the bunker using a club-length.",
+      "likelyMisconceptions": [
+        "Some children may think they can play from where the ball went out or from outside the bunker.",
+        "They might think they don't need to add a penalty shot."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "What to Do if Ball is Lost or Out of Bounds From Bunker",
+      "question": "You hit a shot from a bunker and your ball goes out of bounds. What do the rules require you to do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop a ball anywhere in the bunker with no penalty"
+        },
+        {
+          "id": "b",
+          "text": "Replay your shot from the bunker, dropping a ball within one club-length, and add one penalty stroke"
+        },
+        {
+          "id": "c",
+          "text": "Play on from out of bounds without penalty"
+        },
+        {
+          "id": "d",
+          "text": "Take a free drop outside the bunker"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If your ball is lost or out of bounds, you must return to where you last played (the bunker), drop a ball within one club-length, and add one penalty stroke."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "121418_004_What_to_Do_if_Ball_is_Lost_or_Out_of_Bounds_From_Bunker",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:53.720Z"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\018_002_What_do_you_have_to_do_if_your_ball_is_out_of_bounds\\metadata.json",
+  "sourceImageName": "page-30.png",
+  "ruleNumber": "R18",
+  "ruleName": "Out of bounds and provisional ball",
+  "title": "What do you have to do if your ball is out of bounds?",
+  "question": "If you find out your ball is out of bounds, what should you do next according to the rules?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Drop a ball at the spot where your ball went out of bounds and keep playing."
+    },
+    {
+      "id": "b",
+      "text": "Go back to where you played your last shot, play another ball, and add a one-stroke penalty."
+    },
+    {
+      "id": "c",
+      "text": "Move the ball back in bounds and keep playing with no penalty."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "When a ball is out of bounds, you must go back to the place you last played from, play again, and add a one-stroke penalty.",
+  "juniorVersion": {
+    "title": "What do you do if your ball goes out of bounds?",
+    "question": "If your ball goes outside the golf course (out of bounds), what should you do next?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Drop a new ball where the old ball went out and keep playing."
+      },
+      {
+        "id": "b",
+        "text": "Go back to where you hit your last shot, hit another ball, and add one extra shot to your score."
+      },
+      {
+        "id": "c",
+        "text": "Put your ball back on the course and keep playing with no extra shot."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If your ball goes out of bounds, you have to go back to where you last hit and play again. You add one extra shot to your score.",
+    "vocabulary": [
+      {
+        "term": "Out of bounds",
+        "simpleMeaning": "When your ball goes outside the golf course area, usually past white stakes or lines."
+      },
+      {
+        "term": "Penalty stroke",
+        "simpleMeaning": "An extra shot added to your score when you break a rule."
+      }
+    ],
+    "teachingTip": "Walk the player to the boundary, show the white stakes or lines, and explain what out of bounds means. Let them practise replaying a shot and counting the extra stroke.",
+    "likelyMisconceptions": [
+      "Thinking they can just keep playing from out of bounds.",
+      "Thinking they can move the ball back onto the course without a penalty."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:31.461Z",
+  "model": "gpt-4.1"
+}

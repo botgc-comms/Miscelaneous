@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_058_Playing_a_Provisional_Ball_Before_Reaching_the_Original_Balls_Likely_Position\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "18.3c",
+  "ruleName": "Provisional Ball – Actions Before Original Ball Is Found or Lost",
+  "title": "Playing a Provisional Ball Before Reaching the Original Ball's Likely Position",
+  "question": "Your tee shot may be lost outside a penalty area, so you correctly announce and play a provisional ball. The provisional only travels about 100 yards, while your original drive is thought to be around 250 yards away. Can you continue playing the provisional ball?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No. You must wait until you have searched for your original ball."
+    },
+    {
+      "id": "b",
+      "text": "Yes. You may continue playing the provisional ball until you reach the place where your original ball is likely to be."
+    },
+    {
+      "id": "c",
+      "text": "Yes, but only one more stroke is allowed with the provisional."
+    },
+    {
+      "id": "d",
+      "text": "No. A provisional ball may only be played once before searching."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "A provisional ball may be played as many times as necessary until the player reaches the place where the original ball is likely to be. However, if the provisional ball is played from a point nearer the hole than where the original is estimated to lie, it automatically becomes the ball in play under penalty of stroke and distance. If the original ball is found before the provisional has been played from nearer the hole, the provisional must be abandoned and play continues with the original ball. (Rule 18.3c)",
+  "juniorVersion": {
+    "title": "Can You Keep Hitting Your Provisional Ball Before Getting to Where Your First Ball Might Be?",
+    "question": "You hit your first ball a really long way, but you think it might be lost somewhere outside a water area. You say you want to play a provisional ball, and you hit it, but it only goes a short way. Can you keep hitting this provisional ball until you get to the place where you think your first ball landed?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "No. You have to wait and look for your first ball before hitting the provisional ball again."
+      },
+      {
+        "id": "b",
+        "text": "Yes. You can keep hitting your provisional ball until you get to the spot where you think your first ball is."
+      },
+      {
+        "id": "c",
+        "text": "Yes, but you can only hit your provisional ball one more time."
+      },
+      {
+        "id": "d",
+        "text": "No. You can only hit the provisional ball once before searching for your first ball."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "You can keep hitting your provisional ball as many times as you need, but only until you get to the spot where you think your first ball is. If you find your first ball before passing that spot, you must stop using the provisional and play your first ball. If you hit the provisional ball from in front of where your first ball could be, then your provisional ball becomes the one you have to play.",
+    "vocabulary": [
+      {
+        "term": "Provisional Ball",
+        "simpleMeaning": "A second ball you play just in case your first one is lost or out of bounds."
+      },
+      {
+        "term": "Penalty Area",
+        "simpleMeaning": "A place on the golf course with water or special markings, like a pond or stream."
+      }
+    ],
+    "teachingTip": "Set up a simple example on the practice field: hit two balls, mark their spots, and show when it’s okay to keep hitting the provisional.",
+    "likelyMisconceptions": [
+      "You can only hit the provisional once.",
+      "You have to find your ball before using a provisional.",
+      "Hitting the provisional too far means you can't use your first ball anymore."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T19:20:38.721Z",
+  "model": "gpt-4.1"
+}

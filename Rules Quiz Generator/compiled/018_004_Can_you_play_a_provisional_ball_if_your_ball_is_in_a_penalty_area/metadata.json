@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-08.png",
+  "ruleNumber": "R18",
+  "ruleName": "Provisional/lost ball",
+  "group": "Provisional/lost ball",
+  "type": "multiple_choice",
+  "imagePrompt": "A teenage boy stands at the edge of a water hazard marked by red stakes, looking uncertainly towards the water.",
+  "imageAlt": "Teen golfer stands at the edge of a penalty area, wondering about playing a provisional ball.",
+  "sceneSpec": {
+    "setting": "penalty_area_edge",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "hybrid",
+    "ballCount": 1,
+    "stakeColour": "red",
+    "waterVisible": true,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [
+      "spectators"
+    ],
+    "ethnicity": "asian",
+    "skinTone": "medium",
+    "clothingTopColour": "white",
+    "clothingBottomColour": "orange",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [],
+    "repairPrompt": "None needed; all relevant scene, equipment, and specification details are accurate."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Can you hit a second ball if your ball might be in the water or a penalty area?",
+      "question": "If you hit your ball and think it might be in a pond or a penalty area, can you hit another ball just in case?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, you always need to hit another (provisional) ball."
+        },
+        {
+          "id": "b",
+          "text": "No, you cannot hit another ball if it might be in the water or penalty area."
+        },
+        {
+          "id": "c",
+          "text": "Only if your ball went into tall grass."
+        },
+        {
+          "id": "d",
+          "text": "Yes, but only after looking for 5 minutes."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "You cannot play a provisional ball if your ball might be in a pond or penalty area. You have to use the penalty area rules instead.",
+      "vocabulary": [
+        {
+          "term": "Provisional ball",
+          "simpleMeaning": "A second ball you play if you think your first ball might be lost or out of bounds."
+        },
+        {
+          "term": "Penalty area",
+          "simpleMeaning": "An area on the course like a pond or stream, marked with red or yellow lines or stakes."
+        }
+      ],
+      "teachingTip": "Show children where penalty areas are marked on the course. Let them practise dropping balls and talk about what to do if their ball goes into water.",
+      "likelyMisconceptions": [
+        "Thinking you can always hit a provisional ball if you can't see your ball.",
+        "Not knowing you have to follow different rules for balls in penalty areas."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Can you play a provisional ball if your ball is in a penalty area?",
+      "question": "If you think your ball might be in a penalty area (like a water hazard), can you play a provisional ball?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, you must always play a provisional ball."
+        },
+        {
+          "id": "b",
+          "text": "No, you are not allowed to play a provisional ball in this case."
+        },
+        {
+          "id": "c",
+          "text": "Only if your ball is in long grass."
+        },
+        {
+          "id": "d",
+          "text": "Yes, but only after searching for 5 minutes."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "A provisional ball cannot be played if it is known or virtually certain your ball is in a penalty area. Instead, you must follow the penalty area rules."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "018_004_Can_you_play_a_provisional_ball_if_your_ball_is_in_a_penalty_area",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:53.611Z"
+  }
+}

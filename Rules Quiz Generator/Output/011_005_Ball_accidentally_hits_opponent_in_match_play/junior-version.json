@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\011_005_Ball_accidentally_hits_opponent_in_match_play\\metadata.json",
+  "sourceImageName": "pageb-13.png",
+  "ruleNumber": "R11",
+  "ruleName": "Ball in motion accidentally hits ... the opponent in match play",
+  "title": "Ball accidentally hits opponent in match play",
+  "question": "During match play, if your ball accidentally hits your opponent, what should you do according to the Rules?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Replay the stroke only if both balls were on the putting green."
+    },
+    {
+      "id": "b",
+      "text": "Always replay the shot, wherever you are on the course."
+    },
+    {
+      "id": "c",
+      "text": "Play the ball as it lies unless both balls were on the green."
+    },
+    {
+      "id": "d",
+      "text": "Add a penalty stroke and replay the shot."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "In match play, if your ball accidentally hits your opponent, play your ball as it lies except when both balls were on the green before the stroke. Then, you must replay the shot.",
+  "juniorVersion": {
+    "title": "What if your ball hits your opponent in a match?",
+    "question": "You are playing match play. You hit the ball, and it accidentally hits your opponent. What do you do now?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Only hit again if both balls were on the putting green."
+      },
+      {
+        "id": "b",
+        "text": "Always hit the shot again, no matter where you are on the course."
+      },
+      {
+        "id": "c",
+        "text": "Keep playing from where your ball stopped, unless both balls were on the green."
+      },
+      {
+        "id": "d",
+        "text": "Add a penalty and hit the shot again."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "If you are playing match play and your ball accidentally hits your opponent, just play your ball from where it stopped. But if both balls were on the putting green before you hit, then you need to play the shot again.",
+    "vocabulary": [
+      {
+        "term": "Opponent",
+        "simpleMeaning": "The person you are playing against in your match."
+      },
+      {
+        "term": "Match play",
+        "simpleMeaning": "A kind of golf game where each hole is like a separate point against your opponent."
+      },
+      {
+        "term": "Putting green",
+        "simpleMeaning": "The smooth, short grass area around the hole where you use your putter."
+      }
+    ],
+    "teachingTip": "Act out the situation on the putting green and off it so players remember what to do in both spots.",
+    "likelyMisconceptions": [
+      "Some might think you always replay the shot when your ball hits someone.",
+      "Some might think you must add a penalty, but you usually don't."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:20.132Z",
+  "model": "gpt-4.1"
+}

@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "pageb-06.png",
+  "ruleNumber": "13",
+  "ruleName": "Ball accidentally moved",
+  "group": "Ball accidentally moved",
+  "type": "multiple_choice",
+  "imagePrompt": "A teenage girl golfer accidentally nudges her ball on the green with her putter, then carefully puts it back in its original place.",
+  "imageAlt": "Girl golfer replaces her golf ball on the green after moving it accidentally.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "lifting_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "purple",
+    "clothingBottomColour": "blue",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [],
+    "repairPrompt": "No corrections necessary; the image meets all requirements. Ensure future illustrations maintain a realistic putter head shape and that golfer posture remains consistent with authentic putting green behavior."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What do you do if you accidentally move your ball on the green?",
+      "question": "You are on the green and your ball rolls away because you touched it by mistake, like with your club. What should you do next?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Hit the ball from where it rolled to, no penalty"
+        },
+        {
+          "id": "b",
+          "text": "Put the ball back where it was, no penalty"
+        },
+        {
+          "id": "c",
+          "text": "Put the ball back and add a penalty stroke"
+        },
+        {
+          "id": "d",
+          "text": "Leave the ball there and miss your go"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If you move your ball by accident on the green, you do not get a penalty. You just have to put the ball back where it was before it moved and then carry on playing.",
+      "vocabulary": [
+        {
+          "term": "Green",
+          "simpleMeaning": "The soft, short grass around the hole where you putt your ball."
+        },
+        {
+          "term": "Penalty",
+          "simpleMeaning": "Extra shots added to your score for breaking a rule."
+        }
+      ],
+      "teachingTip": "Show kids an example by rolling a ball with a club and explaining why it must go back to the same spot on the green.",
+      "likelyMisconceptions": [
+        "Some think they can just play from the new spot.",
+        "Others may think they always get a penalty.",
+        "Some might try to skip their turn or just leave the ball."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "What happens if you accidentally move your ball on the green?",
+      "question": "If you accidentally move your ball on the green, like while taking a practice swing too close to it, what must you do next?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball from its new position, no penalty"
+        },
+        {
+          "id": "b",
+          "text": "Replace the ball to its original spot, no penalty"
+        },
+        {
+          "id": "c",
+          "text": "Replace the ball and add a penalty stroke"
+        },
+        {
+          "id": "d",
+          "text": "Leave the ball and skip your turn"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If you accidentally move your ball on the green, there is no penalty but you must put it back to its original spot before continuing."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "013_001_What_happens_if_you_accidentally_move_your_ball_on_the_green",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.705Z"
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\010_001_When_can_you_discuss_distances_on_the_course\\metadata.json",
+  "sourceImageName": "page-08.png",
+  "ruleNumber": "R10",
+  "ruleName": "Advice and line of play",
+  "title": "When can you discuss distances on the course?",
+  "question": "Can players share information like distances to the green or the position of hazards with each other during a round?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, sharing information about distance or the layout of the course is allowed."
+    },
+    {
+      "id": "b",
+      "text": "No, any conversation about the course is not allowed."
+    },
+    {
+      "id": "c",
+      "text": "Only if both players are on the putting green."
+    },
+    {
+      "id": "d",
+      "text": "Only in team matches."
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "You are allowed to discuss distance, the position of bunkers or other course features, and general information with other players. This is not considered giving advice.",
+  "juniorVersion": {
+    "title": "Can you talk to your friends about how far it is to the green?",
+    "question": "When you are playing golf, can you tell your friend how far the hole is, or show where the sand or water is on the course?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Yes, it’s okay to help each other with how far things are or where things are on the course."
+      },
+      {
+        "id": "b",
+        "text": "No, you can’t talk about anything on the course."
+      },
+      {
+        "id": "c",
+        "text": "Only if you’re both standing on the green."
+      },
+      {
+        "id": "d",
+        "text": "Only if you are playing as a team."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "It’s okay to talk to other players about things like distance to the hole or where the bunkers are. This is not giving advice. You just can’t tell them what club to use or how to hit the shot.",
+    "vocabulary": [
+      {
+        "term": "Distance",
+        "simpleMeaning": "How far something is away from you. In golf, it's how far your ball is from the hole or another point."
+      },
+      {
+        "term": "Bunker",
+        "simpleMeaning": "A sandy area on the course. It is also called a sand trap."
+      }
+    ],
+    "teachingTip": "Show children how using a distance marker or a map helps everyone know where they are on the course. Emphasise that these are facts, not advice.",
+    "likelyMisconceptions": [
+      "Children might think they can’t talk to anyone about the course at all.",
+      "They may think sharing any information, even if it’s just pointing to the water, is not allowed."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:56.900Z",
+  "model": "gpt-4.1"
+}

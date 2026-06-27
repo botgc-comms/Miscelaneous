@@ -1,0 +1,33 @@
+{
+  "id": "handicap-golf",
+  "title": "From junior competitions to handicap golf",
+  "summary": "How handicaps work and what changes when juniors start submitting scores.",
+  "estimatedMinutes": 6,
+  "priority": 900,
+  "mandatoryFor": [
+    "Junior Course Cadet"
+  ],
+  "version": 1,
+  "pages": [
+    {
+      "id": "00-intro",
+      "title": "What a handicap is",
+      "file": "pages/00-intro.md"
+    },
+    {
+      "id": "01-submitting",
+      "title": "Submitting scores",
+      "file": "pages/01-submitting.md"
+    },
+    {
+      "id": "02-changes",
+      "title": "What changes",
+      "file": "pages/02-changes.md"
+    },
+    {
+      "id": "03-support",
+      "title": "Getting support",
+      "file": "pages/03-support.md"
+    }
+  ]
+}

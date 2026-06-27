@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\018_001_What_happens_if_you_find_your_original_ball_on_the_course\\metadata.json",
+  "sourceImageName": "pageb-03.png",
+  "ruleNumber": "R18",
+  "ruleName": "Provisional Ball",
+  "title": "What happens if you find your original ball on the course?",
+  "question": "You hit a provisional ball, but then find your original ball on the course (not out of bounds) within 3 minutes. What should you do next?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Continue playing the provisional ball"
+    },
+    {
+      "id": "b",
+      "text": "Pick up the provisional ball and play the original ball"
+    },
+    {
+      "id": "c",
+      "text": "Play whichever ball is in a better position"
+    },
+    {
+      "id": "d",
+      "text": "Play both balls and choose the best result"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You must stop playing the provisional ball and continue with your original ball. Any strokes played with the provisional ball do not count.",
+  "juniorVersion": {
+    "title": "What do you do if you find your first ball?",
+    "question": "You hit a second ball just in case, but then you find your first ball on the grass before 3 minutes are up. What should you do now?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Keep playing the second ball you hit"
+      },
+      {
+        "id": "b",
+        "text": "Pick up the second ball and play your first ball"
+      },
+      {
+        "id": "c",
+        "text": "Choose to play whichever ball is in a nicer spot"
+      },
+      {
+        "id": "d",
+        "text": "Play both balls and choose the better score"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If you find your first ball, you have to use it. Pick up the second ball you played. Shots with the second ball do not count.",
+    "vocabulary": [
+      {
+        "term": "provisional ball",
+        "simpleMeaning": "A ball you hit just in case you cannot find your first ball."
+      }
+    ],
+    "teachingTip": "Explain that a provisional ball is only used if the first ball cannot be found or goes out of bounds. If the first ball is found in time, the player must use it.",
+    "likelyMisconceptions": [
+      "Kids might think they can always choose the better ball.",
+      "Some might not know they must stop playing the provisional ball if the first one is found."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:29.690Z",
+  "model": "gpt-4.1"
+}

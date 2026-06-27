@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "16.2",
+  "ruleName": "Dangerous Animal Condition",
+  "group": "Abnormal Course Conditions & Relief",
+  "type": "multiple_choice",
+  "imagePrompt": "Create a polished, modern, semi-realistic golf illustration (75% realistic, 25% stylised) in the established junior golf quiz style. The scene shows a golfer standing cautiously at a distance from their golf ball, which lies in the grass of a general area. A large, prominent swarm of bees is hovering or clustering very close to the ball. The golfer, holding a club, shows hesitation or concern. The background includes some trees and basic course features, but the focus is on the bee swarm next to the ball and the player's position. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer stands a safe distance from their ball, which is next to a visible swarm of bees in the grass, illustrating a dangerous animal condition on the course.",
+  "sceneSpec": {
+    "setting": "General area of a golf hole with some rough grass and a few trees visible in the background.",
+    "players": "One golfer looking towards their golf ball, holding a club but standing back, showing hesitation or cautious body language.",
+    "ballPosition": "Golf ball is clearly visible on the ground in the general area, close to a large swarm of bees hovering low to the grass.",
+    "ruleMoment": "The moment the player is considering their options due to the dangerous animal condition (the bees) interfering with the ball.",
+    "educationalFocus": "Visual demonstration that free relief may be taken due to a dangerous animal (the bees) affecting play, without the player needing to risk a sting.",
+    "mustShow": [
+      "Golf ball on the ground in general play area",
+      "Obvious swarm of bees close to the ball",
+      "Golfer at a safe distance, hesitating to approach the ball"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Ball Close to Bees – What Can You Do?",
+      "question": "Your ball stops next to a big group of bees. If you try to hit your ball, you might get stung. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You must hit your ball where it is or take a penalty to move it."
+        },
+        {
+          "id": "b",
+          "text": "You can move your ball away for free because the bees make it dangerous."
+        },
+        {
+          "id": "c",
+          "text": "You can only move your ball for free if the bees are in a water area."
+        },
+        {
+          "id": "d",
+          "text": "You can chase away the bees before playing."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "You can move your ball for free if there are dangerous animals like bees close to your ball. This is to keep you safe. You do not have to play your ball from where it is if it could hurt you.",
+      "vocabulary": [
+        {
+          "term": "Dangerous Animal Condition",
+          "simpleMeaning": "When an animal or insects like bees, snakes, or alligators make it unsafe to play your ball."
+        },
+        {
+          "term": "Free Relief",
+          "simpleMeaning": "You can move your ball to a safe spot without getting a penalty."
+        }
+      ],
+      "teachingTip": "Remind young golfers that their safety is always important. If anything on the course could hurt them, like a swarm of bees, they should tell an adult and take free relief.",
+      "likelyMisconceptions": [
+        "Some children may think they always must hit the ball where it is, even if there are bees.",
+        "Some children may think they can just move or chase away the animals themselves to play."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Ball Next to a Swarm of Bees – Dangerous Animal Condition Relief",
+      "question": "Your ball comes to rest next to a large swarm of bees. You could play the ball, but doing so would put you at serious risk of being stung. What is the correct ruling?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You must play the ball as it lies or take an unplayable ball with a one-stroke penalty."
+        },
+        {
+          "id": "b",
+          "text": "You are entitled to free relief because a swarm of bees is a dangerous animal condition."
+        },
+        {
+          "id": "c",
+          "text": "You may only take free relief if the bees are in a penalty area."
+        },
+        {
+          "id": "d",
+          "text": "You may move the bees away before playing."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "The Rules of Golf provide free relief from a dangerous animal condition, such as a swarm of bees, if the condition interferes with your lie, stance or area of intended swing. Free relief is granted except when the ball lies in a penalty area. Rule 16.2 clarifies that players do not have to risk injury by playing the ball as it lies when a dangerous animal is present."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "ai_031_Ball_Next_to_a_Swarm_of_Bees_Dangerous_Animal_Condition_Relief",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-06-26T20:03:54.099Z"
+  }
+}

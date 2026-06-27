@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-13.png",
+  "ruleNumber": "R11",
+  "ruleName": "Ball in motion accidentally hits ...",
+  "group": "Ball in motion accidentally hits ...",
+  "title": "Ball hits another ball at rest",
+  "question": "If your ball in motion strikes another player's ball that was at rest, and neither ball was on the green, what should you do under the Rules?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Add two penalty strokes and play your ball from where it comes to rest."
+    },
+    {
+      "id": "b",
+      "text": "Play your ball as it lies, with no penalty."
+    },
+    {
+      "id": "c",
+      "text": "Replay your shot from the original spot."
+    },
+    {
+      "id": "d",
+      "text": "Drop your ball as close as possible to where the balls made contact."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If your ball accidentally strikes another ball at rest (not on the green), you play your ball from its resting place without penalty.",
+  "imagePrompt": "A teenage left-handed boy golfer on the fairway, with his shot just having hit another stationary ball. Both balls are visible on the fairway.",
+  "imageAlt": "Teen boy golfer's ball hits another ball at rest on fairway.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "light",
+    "clothingTopColour": "navy",
+    "clothingBottomColour": "blue",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Scene, club, stance, golfer appearance, and clothing are all correct.",
+      "Right-handed, teenage girl, navy top, blue shorts, light skin tone, and iron club are displayed accurately.",
+      "Only one golf ball is present as required.",
+      "No duplicated balls or clubs.",
+      "Golf course and fairway look realistic, with correct light and setting.",
+      "The only tiny issue is shorts instead of trousers, but shorts are acceptable for teens and do not impact teaching intent."
+    ],
+    "repairPrompt": "Change the golfer's blue shorts to blue trousers if stricter adherence to clothing is needed."
+  }
+}

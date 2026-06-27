@@ -1,0 +1,518 @@
+"Achievements": {
+    "DefaultAchievementKey": "first-handicap",
+    "Images": {
+        "BaseUrl": "https://static-botgcapps-prd-fsa3hfezfkdnfddk.z02.azurefd.net/achievements/rosettes/"
+    },
+    "Items": [
+        {
+            "Group": "Scoring Milestones",
+            "Achievements": [
+                {
+                    "Key": "first-gross-par",
+                    "Name": "1st Gross Par",
+                    "Description": "An early scoring milestone and a memorable sign that your game is coming together.",
+                    "PrimaryColour": "blue",
+                    "Prestige": 2,
+                    "RosetteKey": "rosette-03",
+                    "RowNumber": 1,
+                    "Sort": 1
+                },
+                {
+                    "Key": "first-gross-birdie",
+                    "Name": "1st Gross Birdie",
+                    "Description": "A proper scoring breakthrough and a sign of growing confidence and control on the course.",
+                    "PrimaryColour": "green",
+                    "Prestige": 3,
+                    "RosetteKey": "rosette-06",
+                    "RowNumber": 1,
+                    "Sort": 2
+                },
+                {
+                    "Key": "first-gross-eagle",
+                    "Name": "1st Gross Eagle",
+                    "Description": "A rare and memorable scoring moment that shows real skill and confidence on the course.",
+                    "PrimaryColour": "red",
+                    "Prestige": 4,
+                    "RosetteKey": "rosette-10",
+                    "RowNumber": 1,
+                    "Sort": 3
+                },
+                {
+                    "Key": "5-par-streak",
+                    "Name": "5 Pars in a Row",
+                    "Description": "Five consecutive holes played at level par. A strong demonstration of consistency, control, and composure across a sustained stretch of play.",
+                    "PrimaryColour": "orange",
+                    "Prestige": 4,
+                    "RosetteKey": "rosette-09",
+                    "RowNumber": 2,
+                    "Sort": 1
+                },
+                {
+                    "Key": "hole-in-one",
+                    "Name": "Hole-in-One",
+                    "Description": "One shot. In the hole. A genuinely exceptional achievement that stands above almost anything else in the game.",
+                    "PrimaryColour": "gold",
+                    "Prestige": 5,
+                    "RosetteKey": "rosette-12",
+                    "RowNumber": 2,
+                    "Sort": 2
+                }
+            ]
+        },
+        {
+            "Group": "Leadership and Contribution",
+            "Achievements": [
+                {
+                    "Key": "volunteer-badge",
+                    "Name": "Volunteer Badge",
+                    "Description": "Recognition for stepping forward and helping contribute to the club community.",
+                    "PrimaryColour": "blue",
+                    "Prestige": 1,
+                    "RosetteKey": "rosette-01",
+                    "RowNumber": 1,
+                    "Sort": 1
+                },
+                {
+                    "Key": "five-volunteering-activities",
+                    "Name": "Five Volunteering Activities",
+                    "Description": "A meaningful contribution milestone that reflects time, effort, and support for the club.",
+                    "PrimaryColour": "orange",
+                    "Prestige": 2,
+                    "RosetteKey": "rosette-04",
+                    "RowNumber": 1,
+                    "Sort": 2
+                },
+                {
+                    "Key": "junior-mentor",
+                    "Name": "Junior Mentor",
+                    "Description": "Recognition for helping support and guide other juniors, showing leadership and setting a strong example.",
+                    "PrimaryColour": "green",
+                    "Prestige": 4,
+                    "RosetteKey": "rosette-10",
+                    "RowNumber": 2,
+                    "Sort": 1
+                },
+                {
+                    "Key": "junior-captain",
+                    "Name": "Junior Captain",
+                    "Description": "A special honour awarded to a junior member who represents the section with leadership, responsibility, and pride.",
+                    "PrimaryColour": "gold",
+                    "Prestige": 5,
+                    "RosetteKey": "rosette-11",
+                    "RowNumber": 2,
+                    "Sort": 2
+                }
+            ]
+        },
+        {
+            "Group": "Competition and Performance",
+            "Achievements": [
+                {
+                    "Key": "first-competition-entered",
+                    "Name": "1st Competition Entered",
+                    "Description": "An important milestone that marks your first step into organised competition.",
+                    "PrimaryColour": "blue",
+                    "Prestige": 2,
+                    "RosetteKey": "rosette-03",
+                    "RowNumber": 1,
+                    "Sort": 1
+                },
+                {
+                    "Key": "five-competitions-entered",
+                    "Name": "5 Competitions Entered",
+                    "Description": "A sign of growing confidence and regular involvement in competitive golf.",
+                    "PrimaryColour": "green",
+                    "Prestige": 2,
+                    "RosetteKey": "rosette-04",
+                    "RowNumber": 1,
+                    "Sort": 2
+                },
+                {
+                    "Key": "ten-competitions-entered",
+                    "Name": "10 Competitions Entered",
+                    "Description": "A clear sign of regular competitive engagement and confidence in entering events.",
+                    "PrimaryColour": "orange",
+                    "Prestige": 3,
+                    "RosetteKey": "rosette-05",
+                    "RowNumber": 1,
+                    "Sort": 3
+                },
+                {
+                    "Key": "first-stableford",
+                    "Name": "1st Stableford",
+                    "Description": "Your first step into one of the most common and important competition formats in golf.",
+                    "PrimaryColour": "orange",
+                    "Prestige": 2,
+                    "RosetteKey": "rosette-05",
+                    "RowNumber": 2,
+                    "Sort": 1
+                },
+                {
+                    "Key": "first-medal",
+                    "Name": "1st Medal",
+                    "Description": "A key milestone in competitive golf through one of the game's most traditional formats.",
+                    "PrimaryColour": "blue",
+                    "Prestige": 2,
+                    "RosetteKey": "rosette-06",
+                    "RowNumber": 2,
+                    "Sort": 2
+                },
+                {
+                    "Key": "first-nine-hole-competition",
+                    "Name": "1st 9-Hole Competition",
+                    "Description": "A great introduction to competition play and an important confidence-building step.",
+                    "PrimaryColour": "blue",
+                    "Prestige": 2,
+                    "RosetteKey": "rosette-03",
+                    "RowNumber": 3,
+                    "Sort": 1
+                },
+                {
+                    "Key": "first-eighteen-hole-competition",
+                    "Name": "1st 18-Hole Competition",
+                    "Description": "A big step into a more demanding format and a great milestone in your development.",
+                    "PrimaryColour": "green",
+                    "Prestige": 2,
+                    "RosetteKey": "rosette-07",
+                    "RowNumber": 3,
+                    "Sort": 2
+                },
+                {
+                    "Key": "first-top-ten-finish",
+                    "Name": "1st Top Ten Finish",
+                    "Description": "A strong early competitive result that shows you are beginning to perform well in the field.",
+                    "PrimaryColour": "blue",
+                    "Prestige": 2,
+                    "RosetteKey": "rosette-04",
+                    "RowNumber": 4,
+                    "Sort": 1
+                },
+                {
+                    "Key": "first-runner-up-finish",
+                    "Name": "1st Runner-Up Finish",
+                    "Description": "A strong result that shows you can compete near the top of the field.",
+                    "PrimaryColour": "green",
+                    "Prestige": 3,
+                    "RosetteKey": "rosette-06",
+                    "RowNumber": 4,
+                    "Sort": 2
+                },
+                {
+                    "Key": "five-top-three-finishes",
+                    "Name": "5 Top Three Finishes",
+                    "Description": "A sign of consistent competitive performance across multiple events.",
+                    "PrimaryColour": "orange",
+                    "Prestige": 3,
+                    "RosetteKey": "rosette-08",
+                    "RowNumber": 4,
+                    "Sort": 3
+                },
+                {
+                    "Key": "first-division-top-three-finish",
+                    "Name": "1st Division Top Three Finish",
+                    "Description": "A great result in division competition and an important competitive breakthrough.",
+                    "PrimaryColour": "red",
+                    "Prestige": 3,
+                    "RosetteKey": "rosette-07",
+                    "RowNumber": 5,
+                    "Sort": 1
+                },
+                {
+                    "Key": "first-division-runner-up",
+                    "Name": "1st Division Runner-Up",
+                    "Description": "A strong competitive result and a sign that you can perform at a high level.",
+                    "PrimaryColour": "orange",
+                    "Prestige": 3,
+                    "RosetteKey": "rosette-09",
+                    "RowNumber": 5,
+                    "Sort": 2
+                },
+                {
+                    "Key": "first-division-win",
+                    "Name": "1st Division Win",
+                    "Description": "A major competitive milestone and a memorable breakthrough that shows you can finish at the very top in division play.",
+                    "PrimaryColour": "gold",
+                    "Prestige": 4,
+                    "RosetteKey": "rosette-08",
+                    "RowNumber": 5,
+                    "Sort": 3
+                },
+                {
+                    "Key": "five-division-top-three-finishes",
+                    "Name": "5 Division Top Three Finishes",
+                    "Description": "A strong record of sustained performance in competitive play at division level.",
+                    "PrimaryColour": "red",
+                    "Prestige": 4,
+                    "RosetteKey": "rosette-11",
+                    "RowNumber": 5,
+                    "Sort": 4
+                },
+                {
+                    "Key": "first-team-match-played",
+                    "Name": "1st Team Match Played",
+                    "Description": "A proud moment representing the club in team competition.",
+                    "PrimaryColour": "blue",
+                    "Prestige": 2,
+                    "RosetteKey": "rosette-02",
+                    "RowNumber": 6,
+                    "Sort": 1
+                },
+                {
+                    "Key": "first-win",
+                    "Name": "1st Win",
+                    "Description": "A standout competitive milestone and a memorable moment that marks your first victory in club competition.",
+                    "PrimaryColour": "red",
+                    "Prestige": 4,
+                    "RosetteKey": "rosette-08",
+                    "RowNumber": 6,
+                    "Sort": 2
+                }
+            ]
+        },
+        {
+            "Group": "Participation and Playing Milestones",
+            "Achievements": [
+                {
+                    "Key": "first-nine-holes-completed",
+                    "Name": "1st 9 Holes Completed",
+                    "Description": "An exciting early milestone and the start of your journey on the course.",
+                    "PrimaryColour": "blue",
+                    "Prestige": 1,
+                    "RosetteKey": "rosette-01",
+                    "RowNumber": 1,
+                    "Sort": 1
+                },
+                {
+                    "Key": "first-round-completed",
+                    "Name": "1st Round Completed",
+                    "Description": "A foundational playing milestone that marks the completion of your first recorded round in club play.",
+                    "PrimaryColour": "green",
+                    "Prestige": 2,
+                    "RosetteKey": "rosette-02",
+                    "RowNumber": 1,
+                    "Sort": 2
+                },
+                {
+                    "Key": "first-eighteen-holes-completed",
+                    "Name": "1st 18 Holes Completed",
+                    "Description": "A significant physical and mental milestone that shows real perseverance on the course.",
+                    "PrimaryColour": "orange",
+                    "Prestige": 2,
+                    "RosetteKey": "rosette-04",
+                    "RowNumber": 1,
+                    "Sort": 3
+                },
+                {
+                    "Key": "five-rounds-played",
+                    "Name": "5 Rounds Played",
+                    "Description": "An early participation milestone that shows you are building momentum on the course.",
+                    "PrimaryColour": "blue",
+                    "Prestige": 2,
+                    "RosetteKey": "rosette-03",
+                    "RowNumber": 2,
+                    "Sort": 1
+                },
+                {
+                    "Key": "ten-rounds-played",
+                    "Name": "10 Rounds Played",
+                    "Description": "A meaningful participation milestone that shows golf is becoming a regular part of your routine.",
+                    "PrimaryColour": "green",
+                    "Prestige": 2,
+                    "RosetteKey": "rosette-05",
+                    "RowNumber": 2,
+                    "Sort": 2
+                },
+                {
+                    "Key": "twenty-five-rounds-played",
+                    "Name": "25 Rounds Played",
+                    "Description": "A strong playing milestone that shows a regular habit of getting out on the course.",
+                    "PrimaryColour": "orange",
+                    "Prestige": 3,
+                    "RosetteKey": "rosette-07",
+                    "RowNumber": 2,
+                    "Sort": 3
+                },
+                {
+                    "Key": "fifty-rounds-played",
+                    "Name": "50 Rounds Played",
+                    "Description": "A huge participation milestone that reflects long-term commitment to playing and improving.",
+                    "PrimaryColour": "gold",
+                    "Prestige": 4,
+                    "RosetteKey": "rosette-08",
+                    "RowNumber": 2,
+                    "Sort": 4
+                }
+            ]
+        },
+        {
+            "Group": "Handicap Milestones",
+            "Achievements": [
+                {
+                    "Key": "first-handicap",
+                    "Name": "1st Handicap",
+                    "Description": "A major early milestone. This marks the point where your golf starts to become measurable, trackable, and ready to build on.",
+                    "PrimaryColour": "blue",
+                    "Prestige": 2,
+                    "RosetteKey": "rosette-01",
+                    "RowNumber": 1,
+                    "Sort": 1
+                },
+                {
+                    "Key": "handicap-of-36-or-better",
+                    "Name": "Handicap of 36 or Better",
+                    "Description": "A meaningful step forward that shows steady progress within formal handicap golf.",
+                    "PrimaryColour": "green",
+                    "Prestige": 2,
+                    "RosetteKey": "rosette-03",
+                    "RowNumber": 1,
+                    "Sort": 2
+                },
+                {
+                    "Key": "handicap-of-25-or-better",
+                    "Name": "Handicap of 25 or Better",
+                    "Description": "A strong step forward that shows real improvement and growing playing ability.",
+                    "PrimaryColour": "orange",
+                    "Prestige": 3,
+                    "RosetteKey": "rosette-06",
+                    "RowNumber": 1,
+                    "Sort": 3
+                },
+                {
+                    "Key": "handicap-of-10-or-better",
+                    "Name": "Handicap of 10 or Better",
+                    "Description": "A superb standard of golf that reflects advanced ability, consistency, and commitment.",
+                    "PrimaryColour": "red",
+                    "Prestige": 4,
+                    "RosetteKey": "rosette-08",
+                    "RowNumber": 1,
+                    "Sort": 4
+                },
+                {
+                    "Key": "most-improved-spring",
+                    "Name": "Most Improved Spring",
+                    "Description": "Awarded for being the most improved junior golfer across the spring quarter.",
+                    "PrimaryColour": "green",
+                    "Prestige": 3,
+                    "RosetteKey": "rosette-04",
+                    "RowNumber": 2,
+                    "Sort": 1
+                },
+                {
+                    "Key": "most-improved-summer",
+                    "Name": "Most Improved Summer",
+                    "Description": "Awarded for being the most improved junior golfer across the summer quarter.",
+                    "PrimaryColour": "orange",
+                    "Prestige": 3,
+                    "RosetteKey": "rosette-05",
+                    "RowNumber": 2,
+                    "Sort": 2
+                },
+                {
+                    "Key": "most-improved-autumn",
+                    "Name": "Most Improved Autumn",
+                    "Description": "Awarded for being the most improved junior golfer across the autumn quarter.",
+                    "PrimaryColour": "red",
+                    "Prestige": 3,
+                    "RosetteKey": "rosette-06",
+                    "RowNumber": 2,
+                    "Sort": 3
+                },
+                {
+                    "Key": "most-improved-winter",
+                    "Name": "Most Improved Winter",
+                    "Description": "Awarded for being the most improved junior golfer across the winter quarter.",
+                    "PrimaryColour": "blue",
+                    "Prestige": 3,
+                    "RosetteKey": "rosette-03",
+                    "RowNumber": 2,
+                    "Sort": 4
+                },
+                {
+                    "Key": "most-improved-year",
+                    "Name": "Most Improved Year",
+                    "Description": "Awarded for being the most improved junior golfer across the full year.",
+                    "PrimaryColour": "gold",
+                    "Prestige": 5,
+                    "RosetteKey": "rosette-07",
+                    "RowNumber": 2,
+                    "Sort": 5
+                }
+            ]
+        },
+        {
+            "Group": "Development and Progression",
+            "Achievements": [
+                {
+                    "Key": "cadet-rosette",
+                    "Name": "Cadet Rosette",
+                    "Description": "An entry-level progression milestone that marks the start of structured junior development.",
+                    "PrimaryColour": "blue",
+                    "Prestige": 1,
+                    "RosetteKey": "rosette-01",
+                    "RowNumber": 1,
+                    "Sort": 1
+                },
+                {
+                    "Key": "course-cadet-rosette",
+                    "Name": "Course Cadet Rosette",
+                    "Description": "An important progression milestone showing you are moving forward with greater confidence and ability.",
+                    "PrimaryColour": "green",
+                    "Prestige": 2,
+                    "RosetteKey": "rosette-02",
+                    "RowNumber": 1,
+                    "Sort": 2
+                },
+                {
+                    "Key": "unrestricted-junior-rosette",
+                    "Name": "Unrestricted Junior Rosette",
+                    "Description": "A major progression point that reflects full playing independence and trust.",
+                    "PrimaryColour": "red",
+                    "Prestige": 3,
+                    "RosetteKey": "rosette-04",
+                    "RowNumber": 1,
+                    "Sort": 3
+                },
+                {
+                    "Key": "first-coaching-session",
+                    "Name": "1st Coaching Session",
+                    "Description": "The beginning of your development journey and the first step towards improving your game.",
+                    "PrimaryColour": "blue",
+                    "Prestige": 1,
+                    "RosetteKey": "rosette-03",
+                    "RowNumber": 2,
+                    "Sort": 1
+                },
+                {
+                    "Key": "five-coaching-sessions",
+                    "Name": "5 Coaching Sessions",
+                    "Description": "An early sign of commitment to learning and developing your golf.",
+                    "PrimaryColour": "green",
+                    "Prestige": 1,
+                    "RosetteKey": "rosette-04",
+                    "RowNumber": 2,
+                    "Sort": 2
+                },
+                {
+                    "Key": "ten-coaching-sessions",
+                    "Name": "10 Coaching Sessions",
+                    "Description": "A strong sign of developing commitment and a great foundation for future improvement.",
+                    "PrimaryColour": "orange",
+                    "Prestige": 2,
+                    "RosetteKey": "rosette-06",
+                    "RowNumber": 2,
+                    "Sort": 3
+                },
+                {
+                    "Key": "twenty-five-coaching-sessions",
+                    "Name": "25 Coaching Sessions",
+                    "Description": "A major development milestone that reflects long-term effort and commitment to improving.",
+                    "PrimaryColour": "red",
+                    "Prestige": 3,
+                    "RosetteKey": "rosette-08",
+                    "RowNumber": 2,
+                    "Sort": 4
+                }
+            ]
+        }
+    ]
+}

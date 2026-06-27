@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "16.1",
+  "ruleName": "Relief from Immovable Obstructions",
+  "group": "General Play",
+  "title": "Ball Resting on Clubhouse Patio",
+  "question": "Your approach shot goes long and comes to rest on the clubhouse patio behind the green. The patio is part of the course and is not out of bounds or marked as a No Play Zone.\n\nWhat is the correct ruling?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You must play the ball as it lies."
+    },
+    {
+      "id": "b",
+      "text": "You are entitled to free relief because the patio is an immovable obstruction."
+    },
+    {
+      "id": "c",
+      "text": "You must take an unplayable ball with a one-stroke penalty."
+    },
+    {
+      "id": "d",
+      "text": "You may drop anywhere off the patio without penalty."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "A paved clubhouse patio is an immovable obstruction. If your ball lies on the patio, or the patio interferes with your stance or intended swing, you are entitled to free relief under Rule 16.1. You must find the nearest point of complete relief, no closer to the hole, and drop the ball within one club-length of that point in the relief area. Always check Local Rules, as some areas may be defined differently.",
+  "imagePrompt": "Illustrate a modern golf course scene where a golf ball is resting on a paved patio attached to a clubhouse, clearly situated behind the green with the flagstick visible. Show a golfer standing close by, looking at the ball on the patio and holding a golf club. The setting should feel realistic with a slight stylised touch; aim for a polished, semi-realistic illustration that is about 75% realistic and 25% stylised. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer observes their ball lying on a paved patio behind the green, next to a modern clubhouse.",
+  "sceneSpec": {
+    "setting": "A modern golf course showing a green with a clubhouse and attached paved patio directly behind the green.",
+    "players": "One golfer, looking at their ball on the patio, taking stock of the situation with a club in hand.",
+    "ballPosition": "The ball is clearly on the paved patio area, not on grass, noticeably long of the green.",
+    "ruleMoment": "The moment after the ball has come to rest on the patio, as the golfer approaches to assess their options.",
+    "educationalFocus": "Highlighting the status of a paved patio as an immovable obstruction and illustrating that free relief is available.",
+    "mustShow": [
+      "Golf ball resting on a paved patio attached to the clubhouse, behind the green",
+      "Golf green, with flagstick visible",
+      "Clubhouse and patio in context, with golfer observing their ball"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  }
+}

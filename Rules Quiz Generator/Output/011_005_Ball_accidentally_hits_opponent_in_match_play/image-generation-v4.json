@@ -1,0 +1,10 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "sourcePromptFileName": "final-prompt-v2.txt",
+  "promptFileName": "final-prompt-v4.txt",
+  "imageFileName": "illustration-v4.png",
+  "correctionInstructions": "the boy hit a bad shot and the ball rolled and struck his opponend on the leg. noone is hurt",
+  "generatedAtUtc": "2026-06-26T08:33:12.898Z"
+}

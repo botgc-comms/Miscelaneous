@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-10.png",
+  "ruleNumber": "R6",
+  "ruleName": "Playing in the wrong order",
+  "group": "Playing in the wrong order",
+  "type": "multiple_choice",
+  "imagePrompt": "Three teenagers on the fairway, smiling and discussing who should play out of turn to make play faster.",
+  "imageAlt": "Three teen golfers chatting and smiling on fairway, deciding order to speed up.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "asian",
+    "skinTone": "medium",
+    "clothingTopColour": "purple",
+    "clothingBottomColour": "yellow",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The golfer is not depicted very clearly as left-handed; the stance and club grip could more strongly suggest left-handedness."
+    ],
+    "repairPrompt": "Ensure the teenage boy holding the iron golf club appears clearly left-handed, with the correct hand positions and stance for a left-handed golfer."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Playing shots in a different order to play faster",
+      "question": "You and your friends play your shots in a different order to help everyone go faster. No one is trying to win by going first. Does anyone get a penalty?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, everyone gets a penalty."
+        },
+        {
+          "id": "b",
+          "text": "No, there is no penalty if you are just playing faster."
+        },
+        {
+          "id": "c",
+          "text": "Only the first person gets a penalty."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If you and your friends play out of order only to help play faster, that is okay. No one gets a penalty.",
+      "vocabulary": [
+        {
+          "term": "Penalty",
+          "simpleMeaning": "Something you get if you break a rule, like adding a stroke to your score."
+        },
+        {
+          "term": "Order",
+          "simpleMeaning": "The way players decide who hits their ball first, second, and so on."
+        }
+      ],
+      "teachingTip": "Let children know that in friendly games, playing out of order to keep the game moving is okay if everyone agrees and no unfair advantage is taken.",
+      "likelyMisconceptions": [
+        "Children may think you always get a penalty for playing out of order, but you don't if you are just trying to play faster and everyone agrees."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Playing out of turn to save time",
+      "question": "You and your friends decide to play out of turn just to speed up play. If no one is trying to get an advantage, is there a penalty?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, everyone gets a penalty."
+        },
+        {
+          "id": "b",
+          "text": "No penalty as long as it is only to speed up play."
+        },
+        {
+          "id": "c",
+          "text": "Only the first person gets a penalty."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "When playing out of turn to save time, with no special advantage gained, there is no penalty."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "006_003_Playing_out_of_turn_to_save_time",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.377Z"
+  }
+}

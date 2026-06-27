@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "16.1",
+  "ruleName": "Relief from Abnormal Course Conditions (Including Immovable Obstructions)",
+  "group": "General Play – Abnormal Course Conditions",
+  "title": "Ball Under Water in Temporary Water on the Fairway",
+  "question": "Your ball comes to rest completely under water in a shallow puddle on the fairway. You can see the ball and are able to make a stroke. Can you play the ball?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No. A ball under water must always be lifted and dropped."
+    },
+    {
+      "id": "b",
+      "text": "Yes. You may play the ball as it lies or choose to take free relief from the temporary water."
+    },
+    {
+      "id": "c",
+      "text": "No. You must take free relief because the ball is submerged."
+    },
+    {
+      "id": "d",
+      "text": "Yes, but you receive a one-stroke penalty."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "The Rules permit you to play a ball as it lies, even when it is completely under water in temporary water. There is no requirement to take relief, but you may choose to do so as the ball lies in an abnormal course condition. You do not receive a penalty for playing it or for taking free relief under Rule 16.1.",
+  "imagePrompt": "Create a polished, modern, semi-realistic golf illustration (about 75% realistic, 25% stylised) in the established junior golf quiz illustration style. Show a golfer on the fairway, preparing to play a shot with a ball that is completely submerged in a shallow puddle on short green fairway grass. The clear water should make the ball visible under the surface, and the puddle should blend naturally into the fairway. The golfer stands ready at address, considering their options. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles. Show only the fairway, golfer, club, puddle with ball, and natural surroundings.",
+  "imageAlt": "A golfer on a fairway prepares to play a shot at a golf ball fully submerged under water in a shallow puddle on short grass. The ball is visible through the puddle, with the golfer ready to make a stroke.",
+  "sceneSpec": {
+    "setting": "Fairway of a golf course with short, green grass. A shallow puddle containing water is visible.",
+    "players": "One golfer standing at address, ready to play a shot, looking at the ball submerged in a shallow puddle.",
+    "ballPosition": "Golf ball resting completely under clear water in the centre of a puddle on the short fairway grass.",
+    "ruleMoment": "The moment just before the player decides whether to play the ball as it lies or take relief, with the ball visible and accessible under water.",
+    "educationalFocus": "Show that the ball under water in a puddle on the fairway can be played as it lies (or relief may be taken).",
+    "mustShow": [
+      "A clearly submerged golf ball in a puddle on closely-mown fairway grass",
+      "A golfer addressing the ball and appearing ready to play",
+      "Puddle and surroundings are clearly on the fairway, not in a penalty area or bunker",
+      "The ball is visible under the water"
+    ],
+    "mustNotShow": [
+      "Penalty area markings",
+      "Bunkers",
+      "Text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles"
+    ]
+  }
+}

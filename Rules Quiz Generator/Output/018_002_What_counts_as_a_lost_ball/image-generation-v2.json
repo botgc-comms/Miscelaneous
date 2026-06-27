@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\018_002_What_counts_as_a_lost_ball\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:59:31.272Z",
+  "title": "What counts as a lost ball?",
+  "ruleNumber": "R18",
+  "ruleName": "Lost ball",
+  "durationSeconds": 208.665
+}

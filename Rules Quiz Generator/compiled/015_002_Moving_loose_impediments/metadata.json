@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-28.png",
+  "ruleNumber": "R15",
+  "ruleName": "Loose impediments",
+  "group": "Loose impediments",
+  "type": "multiple_choice",
+  "imagePrompt": "A teen girl golfer on the fairway carefully picks up a twig and some leaves from next to her ball before taking her shot.",
+  "imageAlt": "Teen girl golfer removing a twig and leaves from beside her golf ball on short grass.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "dark",
+    "clothingTopColour": "green",
+    "clothingBottomColour": "black",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [],
+    "repairPrompt": "No significant repairs needed. Maintain current high accuracy in club details, posture, ball size, outfit colours, and skin tone."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Taking away leaves and sticks",
+      "question": "You see some leaves and little sticks next to your ball on the fairway. What can you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You can move them away and don’t get a penalty"
+        },
+        {
+          "id": "b",
+          "text": "You can move them, but you get a penalty"
+        },
+        {
+          "id": "c",
+          "text": "You have to leave them there"
+        },
+        {
+          "id": "d",
+          "text": "You can only move them if your friend says yes"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "You are allowed to pick up and move leaves and little sticks near your ball on the fairway. You do not get a penalty for this.",
+      "vocabulary": [
+        {
+          "term": "Loose impediments",
+          "simpleMeaning": "Things like leaves, twigs, or stones that are not stuck down and can be moved."
+        },
+        {
+          "term": "Fairway",
+          "simpleMeaning": "The short grass area between the tee and the green where you hit the ball."
+        }
+      ],
+      "teachingTip": "Let children try removing leaves and stones from next to a ball in practice, so they get used to what a loose impediment is and how to do this safely.",
+      "likelyMisconceptions": [
+        "Some children may think they cannot touch anything near the ball.",
+        "Some may believe they always need an adult or friend’s permission to remove leaves or twigs.",
+        "Children might think they will always get a penalty for moving things around their ball."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Moving loose impediments",
+      "question": "You find some leaves and twigs touching your ball on the fairway. What can you do according to the rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Remove them with no penalty"
+        },
+        {
+          "id": "b",
+          "text": "You can remove them but will get a penalty"
+        },
+        {
+          "id": "c",
+          "text": "You must leave them alone"
+        },
+        {
+          "id": "d",
+          "text": "Only remove them after asking your marker"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "Loose impediments like leaves and twigs may be removed anywhere on the course, including the fairway, without penalty."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "015_002_Moving_loose_impediments",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.854Z"
+  }
+}

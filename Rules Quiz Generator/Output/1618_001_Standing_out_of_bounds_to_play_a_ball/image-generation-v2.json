@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\1618_001_Standing_out_of_bounds_to_play_a_ball\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:14:46.484Z",
+  "title": "Standing out of bounds to play a ball",
+  "ruleNumber": "16/18",
+  "ruleName": "Player out of bounds but ball on the course",
+  "durationSeconds": 209.59
+}

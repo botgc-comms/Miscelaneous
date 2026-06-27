@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-04.png",
+  "ruleNumber": "R13/14",
+  "ruleName": "Marking and picking up the ball",
+  "group": "Marking and picking up the ball",
+  "title": "How to mark your ball on the green",
+  "question": "Which of these can you use to mark your ball’s position on the green? Select all that apply.",
+  "type": "multi_select",
+  "choices": [
+    {
+      "id": "a",
+      "text": "A coin"
+    },
+    {
+      "id": "b",
+      "text": "A ball-marker"
+    },
+    {
+      "id": "c",
+      "text": "A tee"
+    },
+    {
+      "id": "d",
+      "text": "Your putter placed behind the ball"
+    }
+  ],
+  "correctAnswer": [
+    "a",
+    "b",
+    "c"
+  ],
+  "correctAnswers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "explanation": "You are allowed to use a coin, a ball-marker, or a tee to mark your ball on the putting green. Placing your putter down does not count as a proper marker.",
+  "imagePrompt": "A close-up of a golf ball on the green with a teen boy kneeling to mark its position using a coin. A tee and a ball-marker are on the ground nearby.",
+  "imageAlt": "Boy golfer kneeling to mark ball on green with a coin.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "lifting_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "light",
+    "clothingTopColour": "green",
+    "clothingBottomColour": "orange",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The teen golfer is lifting the ball near a tee, a coin, and a ball marker, as specified.",
+      "Golfer is clearly female and of correct ethnicity and skin tone.",
+      "Clothing and hat are as specified: green top, orange bottoms, cap.",
+      "Exactly one golf ball present, correctly sized and placed.",
+      "Putter is present, correctly proportioned, and looks realistic.",
+      "Posture is plausible for marking/lifting the ball.",
+      "Golf course features (putting green, grass) look believable.",
+      "Left-handed posture is shown, though hand positioning on the club could be adjusted very slightly to reinforce left-handedness more strongly."
+    ],
+    "repairPrompt": "Adjust the golfer's grip and hand placement on the putter to more clearly reinforce a left-handed posture."
+  }
+}

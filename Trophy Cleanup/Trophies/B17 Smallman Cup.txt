@@ -1,0 +1,5 @@
+{
+  "text": ["W.T.Smallman", "Memorial Cup"],
+  "allowText": true,
+  "notes": "The inscription reads - W.T.Smallman Memorial Cup. The base contains two separate silver plaques containing the inscriptions of past winners"
+}

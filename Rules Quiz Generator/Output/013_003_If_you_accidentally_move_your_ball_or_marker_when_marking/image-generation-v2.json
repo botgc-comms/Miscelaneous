@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\013_003_If_you_accidentally_move_your_ball_or_marker_when_marking\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:27:53.936Z",
+  "title": "If you accidentally move your ball or marker when marking",
+  "ruleNumber": "R13",
+  "ruleName": "Ball moved when marking it",
+  "durationSeconds": 173.308
+}

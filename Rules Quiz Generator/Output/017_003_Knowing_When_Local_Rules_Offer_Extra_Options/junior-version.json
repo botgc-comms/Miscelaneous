@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\017_003_Knowing_When_Local_Rules_Offer_Extra_Options\\metadata.json",
+  "sourceImageName": "page-26.png",
+  "ruleNumber": "17",
+  "ruleName": "Penalty Areas",
+  "title": "Knowing When Local Rules Offer Extra Options",
+  "question": "True or false? Local Rules at some golf courses can give you extra options for dropping in penalty areas, like using a special dropping zone.",
+  "choices": [
+    {
+      "id": "a",
+      "text": "True"
+    },
+    {
+      "id": "b",
+      "text": "False"
+    },
+    {
+      "id": "c",
+      "text": "Only if you ask the referee"
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "Local Rules may allow additional relief options, such as using special dropping zones, beyond the standard penalty area rules.",
+  "juniorVersion": {
+    "title": "Can the Course Have Extra Dropping Spots?",
+    "question": "True or false? Some golf courses might let you drop your ball in a special spot, like a dropping zone, if your ball goes into a penalty area.",
+    "choices": [
+      {
+        "id": "a",
+        "text": "True"
+      },
+      {
+        "id": "b",
+        "text": "False"
+      },
+      {
+        "id": "c",
+        "text": "Only if you ask the referee"
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "Some golf courses have local rules that let you drop your ball in a certain spot, called a dropping zone, if your ball goes in a penalty area.",
+    "vocabulary": [
+      {
+        "term": "Penalty area",
+        "simpleMeaning": "A place on the golf course, like a pond or stream, where special rules say what you do if your ball goes in."
+      },
+      {
+        "term": "Dropping zone",
+        "simpleMeaning": "A marked spot where you are allowed to drop your ball after it goes in a penalty area."
+      },
+      {
+        "term": "Local rules",
+        "simpleMeaning": "Special rules made just for a certain golf course."
+      }
+    ],
+    "teachingTip": "Show a scorecard or a sign from a golf course where local rules or dropping zones are written down, and ask the child to spot them.",
+    "likelyMisconceptions": [
+      "Kids might think you can only use a dropping zone if there is a referee, but you can use it if the local rules say so.",
+      "Some might think every course has dropping zones, but only courses that say so in their local rules do."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:22.337Z",
+  "model": "gpt-4.1"
+}

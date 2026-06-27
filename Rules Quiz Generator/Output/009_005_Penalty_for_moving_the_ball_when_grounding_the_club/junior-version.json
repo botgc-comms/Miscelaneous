@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\009_005_Penalty_for_moving_the_ball_when_grounding_the_club\\metadata.json",
+  "sourceImageName": "page-11.png",
+  "ruleNumber": "R9",
+  "ruleName": "Ball moved when grounding the club",
+  "title": "Penalty for moving the ball when grounding the club",
+  "question": "You accidentally move your ball on the fairway by grounding your club behind it. What must you do according to the rules?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No penalty, play the ball from where it moved to."
+    },
+    {
+      "id": "b",
+      "text": "Replace the ball and add 1 penalty stroke."
+    },
+    {
+      "id": "c",
+      "text": "Add two penalty strokes and carry on."
+    },
+    {
+      "id": "d",
+      "text": "Replace the ball with no penalty."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If you move your ball by grounding your club behind it on the fairway, the correct action is to replace the ball and add one penalty stroke.",
+  "juniorVersion": {
+    "title": "What happens if you move your ball with your club?",
+    "question": "You put your club down behind your ball on the fairway and the ball rolls away by accident. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "No penalty. Hit your ball from its new place."
+      },
+      {
+        "id": "b",
+        "text": "Put your ball back where it was and add 1 penalty shot."
+      },
+      {
+        "id": "c",
+        "text": "Add two penalty shots and keep playing."
+      },
+      {
+        "id": "d",
+        "text": "Put your ball back and no penalty."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If you make your ball move by putting your club on the ground behind it, you must put your ball back and add one penalty shot.",
+    "vocabulary": [
+      {
+        "term": "Fairway",
+        "simpleMeaning": "The short grass you aim for between the tee and the green."
+      },
+      {
+        "term": "Grounding your club",
+        "simpleMeaning": "Letting your club touch the ground before you swing."
+      }
+    ],
+    "teachingTip": "Show the children how to carefully put their club behind the ball without moving it. Practise where to rest the club gently.",
+    "likelyMisconceptions": [
+      "Children may think they can hit the ball from where it moved to.",
+      "Some may forget to add the penalty stroke."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:56.394Z",
+  "model": "gpt-4.1"
+}

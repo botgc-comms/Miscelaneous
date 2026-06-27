@@ -1,0 +1,10 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "sourcePromptFileName": "final-prompt-v2.txt",
+  "promptFileName": "final-prompt-v3.txt",
+  "imageFileName": "illustration-v3.png",
+  "correctionInstructions": "the bunker should be filled with water, and the girl should be dropping the ball behind it",
+  "generatedAtUtc": "2026-06-26T08:34:00.633Z"
+}

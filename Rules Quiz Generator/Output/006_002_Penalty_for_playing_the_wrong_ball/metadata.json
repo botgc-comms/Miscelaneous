@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-06.png",
+  "ruleNumber": "6",
+  "ruleName": "Wrong ball",
+  "group": "Wrong ball",
+  "title": "Penalty for playing the wrong ball",
+  "question": "While playing a hole, you hit a shot and then realise you played a ball that isn't yours. What should you do next according to the rules?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Keep playing with the wrong ball for the rest of the hole"
+    },
+    {
+      "id": "b",
+      "text": "Stop, find your own ball, play it from where it was, add two penalty strokes, and ignore any strokes made with the wrong ball"
+    },
+    {
+      "id": "c",
+      "text": "Go back to the last tee and replay your shot"
+    },
+    {
+      "id": "d",
+      "text": "Put the wrong ball back where you found it and continue with that ball"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You must stop and play your own ball from where it lay, adding two penalty strokes. Any strokes made with the wrong ball do not count.",
+  "imagePrompt": "A teenage girl golfer on the fairway, looking thoughtfully at a golf ball with a different marking, realising it's not hers.",
+  "imageAlt": "Teen girl realises she played the wrong golf ball on the fairway.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "dark",
+    "clothingTopColour": "white",
+    "clothingBottomColour": "blue",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The club grip could be slightly longer for absolute realism, but the proportions are overall sound.",
+      "Golf ball marking is not obvious, so the 'realising it is not his' point could be visually stronger if the ball's unusual marking was clearer."
+    ],
+    "repairPrompt": "Make the golf ball's distinctive marking clearer and more visually obvious to show the player realising it is not his. Optionally, lengthen the club grip by a small amount for perfect realism."
+  }
+}

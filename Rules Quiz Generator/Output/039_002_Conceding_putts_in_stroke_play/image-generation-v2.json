@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\039_002_Conceding_putts_in_stroke_play\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:09:07.348Z",
+  "title": "Conceding putts in stroke play",
+  "ruleNumber": "R3/9",
+  "ruleName": "Putt conceded/ball not holed",
+  "durationSeconds": 175.265
+}

@@ -1,0 +1,10 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "sourcePromptFileName": "final-prompt-v2.txt",
+  "promptFileName": "final-prompt-v5.txt",
+  "imageFileName": "illustration-v5.png",
+  "correctionInstructions": "the black circular sprinkler head is in her line. if she continues to put the ball will roll over it. the sprinkler head and the girl are off the green",
+  "generatedAtUtc": "2026-06-26T19:38:29.641Z"
+}

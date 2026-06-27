@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-10.png",
+  "ruleNumber": "R10",
+  "ruleName": "Careless putting",
+  "group": "Careless putting",
+  "title": "Penalty for pushing or scraping a putt",
+  "question": "What is the penalty if you push or scrape your ball along the green with your putter instead of making a proper stroke?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No penalty, continue your game"
+    },
+    {
+      "id": "b",
+      "text": "Two penalty strokes"
+    },
+    {
+      "id": "c",
+      "text": "Replay the shot with no penalty"
+    },
+    {
+      "id": "d",
+      "text": "One penalty stroke"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "Pushing or scraping a ball along the putting green rather than making a recognised stroke results in a two-stroke penalty.",
+  "imagePrompt": "On a sunny putting green, a teenage boy is seen moving his ball by pushing it with his putter instead of making a regular stroke. The scene is clear and simple.",
+  "imageAlt": "Teen boy scraping a putt on the green with a putter.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "dark",
+    "clothingTopColour": "yellow",
+    "clothingBottomColour": "red",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [],
+    "repairPrompt": "No major repairs needed. If further improvement is desired, you may slightly exaggerate the motion to make it slightly more obvious that the putter is being used to push (not strike) the ball, for even better educational clarity."
+  }
+}

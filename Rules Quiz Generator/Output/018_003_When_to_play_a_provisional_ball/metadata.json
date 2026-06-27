@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-01.png",
+  "ruleNumber": "18",
+  "ruleName": "Playing a provisional ball",
+  "group": "Playing a provisional ball",
+  "title": "When to play a provisional ball",
+  "question": "If you hit a shot towards the trees and think your ball might be lost or out of bounds, what should you do before walking forward to look for it?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play a provisional ball and clearly announce it to your group."
+    },
+    {
+      "id": "b",
+      "text": "Go search for your first ball immediately."
+    },
+    {
+      "id": "c",
+      "text": "Drop a ball in the area where you think your ball landed."
+    },
+    {
+      "id": "d",
+      "text": "Wait for your friends to suggest what to do."
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "If you think your ball may be lost or out of bounds, you should play a provisional ball from the place where you played your last shot and make it clear to your group that it is a provisional before you go to look for your original ball.",
+  "imagePrompt": "A teenage girl golfer gets ready to play a provisional ball after hitting a shot towards the trees, and she tells her friends it's a provisional.",
+  "imageAlt": "Girl golfer explaining to her friends she will play a provisional ball after previous shot went into the trees.",
+  "sceneSpec": {
+    "setting": "rough",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "dropping_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "orange",
+    "clothingBottomColour": "blue",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "The left-handedness may not be entirely clear, as the club is held in the right hand (though this is plausible for dropping, a more left-handed visual cue would make it clearer)."
+    ],
+    "repairPrompt": "Ensure the boy's stance and grip on the iron club are more obviously left-handed, such as holding the club in his left hand with the right hand dropping the ball. Otherwise, all other details are accurate."
+  }
+}

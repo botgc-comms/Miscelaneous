@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "4.2c",
+  "ruleName": "Ball Becomes Cut or Cracked While Playing Hole",
+  "group": "Equipment – The Ball",
+  "title": "Damaged Ball During Play of Hole",
+  "question": "After playing an approach shot, you discover that your golf ball has developed a large crack, but remains in one piece. What is the correct ruling?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You must continue playing the damaged ball until the end of the hole."
+    },
+    {
+      "id": "b",
+      "text": "You may replace the damaged ball with another ball without penalty before playing your next stroke."
+    },
+    {
+      "id": "c",
+      "text": "You must take a one-stroke penalty to replace the ball."
+    },
+    {
+      "id": "d",
+      "text": "You must replay your previous stroke."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If a ball becomes cut or cracked during the play of a hole, you may replace it with another ball without penalty before your next stroke. Before lifting the ball, you should mark its position, then lift and inspect it. If the ball is found to be cut or cracked, it may be replaced. Only if it is scuffed, scratched, or discoloured, must it not be replaced under this Rule.",
+  "imagePrompt": "Create a polished, modern semi-realistic illustration in a style that is about 75% realistic and 25% stylised. Show a golfer on a short-cut grassy fairway, carefully inspecting a golf ball that is marked by a small tee or ball marker. The ball should clearly display a large crack on its surface. The golfer should be kneeling or crouched and focused on the ball. Do NOT include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles. The scene must contain only the described elements and should avoid cartoon effects or exaggerated expressions.",
+  "imageAlt": "A golfer kneels on a short grass fairway, inspecting a golf ball marked by a tee, with a large visible crack on the ball's surface.",
+  "sceneSpec": {
+    "setting": "Short-cut grass near the green, fairway approach shot setting under clear weather.",
+    "players": "One player, reacting to inspecting their golf ball.",
+    "ballPosition": "Ball at rest on the fairway, player crouched nearby marked its position with a small tee or ball marker.",
+    "ruleMoment": "The moment after a shot, when the player has marked and is inspecting a cracked golf ball before deciding what to do.",
+    "educationalFocus": "Illustrate inspection of a possibly cracked or cut ball and the appropriate action.",
+    "mustShow": [
+      "Clearly visible golf ball with a realistic large crack in the surface.",
+      "Player kneeling or crouched next to the ball, focused on its inspection.",
+      "A small tee or ball marker placed next to the ball indicating the position is marked."
+    ],
+    "mustNotShow": [
+      "No text, numbers, labels, captions, arrows, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+      "No cartoon effects or highly exaggerated facial expressions.",
+      "No replacement ball being dropped or in play yet."
+    ]
+  }
+}

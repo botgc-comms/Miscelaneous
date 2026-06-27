@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-11.png",
+  "ruleNumber": "R5",
+  "ruleName": "Practice putting and chipping",
+  "group": "Practice putting and chipping",
+  "title": "Practising after finishing a hole",
+  "question": "After finishing a hole, which types of practice are allowed on the green, and where are you not allowed to practise from?",
+  "type": "multi_select",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Practising extra putts on the green."
+    },
+    {
+      "id": "b",
+      "text": "Practising extra chips on or just beside the green."
+    },
+    {
+      "id": "c",
+      "text": "Playing practice shots from a bunker beside the green."
+    },
+    {
+      "id": "d",
+      "text": "Practising putts or chips unless banned by Local Rules."
+    }
+  ],
+  "correctAnswer": [
+    "a",
+    "b",
+    "d"
+  ],
+  "correctAnswers": [
+    "a",
+    "b",
+    "d"
+  ],
+  "explanation": "You may practise extra putts or chips on or near the putting green after completing a hole, unless local rules ban it. You can't practise from a bunker.",
+  "imagePrompt": "A boy golfer practising putts on a green after finishing the hole; a bunker can be seen nearby but is not used.",
+  "imageAlt": "Boy practising putts on a green with bunker nearby.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": true,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "asian",
+    "skinTone": "light",
+    "clothingTopColour": "yellow",
+    "clothingBottomColour": "white",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [],
+    "repairPrompt": "No repair needed; the image accurately depicts a teenage Asian boy practising putts on a green after finishing a hole, with correct putter type, posture, skin tone, clothing colour, and a realistic golf course setting including a visible bunker."
+  }
+}

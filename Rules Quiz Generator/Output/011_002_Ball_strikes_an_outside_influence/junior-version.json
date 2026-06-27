@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\011_002_Ball_strikes_an_outside_influence\\metadata.json",
+  "sourceImageName": "pageb-13.png",
+  "ruleNumber": "R11",
+  "ruleName": "Ball in motion accidentally hits ...",
+  "title": "Ball strikes an outside influence",
+  "question": "Suppose your ball accidentally strikes a dog running across the course. What does the Rule say you must do?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball as it lies, with no penalty."
+    },
+    {
+      "id": "b",
+      "text": "Replay the shot and add a penalty."
+    },
+    {
+      "id": "c",
+      "text": "Drop a ball within two club lengths of where it hit the dog."
+    },
+    {
+      "id": "d",
+      "text": "Skip your next shot."
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "If your ball in motion hits an outside influence such as a dog, you must play your ball as it lies with no penalty.",
+  "juniorVersion": {
+    "title": "Your Ball Hits a Dog on the Golf Course",
+    "question": "If you hit the ball and it accidentally hits a dog running across the grass, what should you do next?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Play the ball where it stops. There is no penalty."
+      },
+      {
+        "id": "b",
+        "text": "Hit the shot again and add a penalty."
+      },
+      {
+        "id": "c",
+        "text": "Drop the ball within two club lengths of where it hit the dog."
+      },
+      {
+        "id": "d",
+        "text": "Miss your next turn."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "If your ball hits something like a dog on the course, just play your ball where it lands. You do not get a penalty.",
+    "vocabulary": [
+      {
+        "term": "Penalty",
+        "simpleMeaning": "A penalty means you have to add extra shots to your score because of breaking a rule."
+      },
+      {
+        "term": "Outside influence",
+        "simpleMeaning": "Something or someone not part of your game, like a dog or a bird, that can change where your ball goes."
+      }
+    ],
+    "teachingTip": "Remind children that sometimes things happen by accident on the course. The rules help keep the game fair and fun.",
+    "likelyMisconceptions": [
+      "Some children might think they have to replay the shot or drop a new ball.",
+      "Some might think there is a penalty for hitting an animal, but there is not for this rule."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:11.732Z",
+  "model": "gpt-4.1"
+}

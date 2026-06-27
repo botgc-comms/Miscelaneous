@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\121418_004_What_to_Do_if_Ball_is_Lost_or_Out_of_Bounds_From_Bunker\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:12:33.535Z",
+  "title": "What to Do if Ball is Lost or Out of Bounds From Bunker",
+  "ruleNumber": "R12/14/18",
+  "ruleName": "Ball hit out of bounds/lost ball",
+  "durationSeconds": 211.173
+}

@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-09.png",
+  "ruleNumber": "Def./R14/18",
+  "ruleName": "Looking for a ball",
+  "group": "Looking for a ball",
+  "title": "Time to look for a lost ball",
+  "question": "How much time do you have to look for your golf ball before it is considered lost under the Rules of Golf?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "One minute"
+    },
+    {
+      "id": "b",
+      "text": "Three minutes"
+    },
+    {
+      "id": "c",
+      "text": "Five minutes"
+    },
+    {
+      "id": "d",
+      "text": "As long as you like"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You have up to 3 minutes to search for your ball. If you don't find it within 3 minutes, it is classed as lost.",
+  "imagePrompt": "A teenage girl golfer searching in the rough while a clock beside her shows 3 minutes.",
+  "imageAlt": "A teen girl golfer looking for a golf ball in long grass with a clock.",
+  "sceneSpec": {
+    "setting": "rough",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "red",
+    "clothingBottomColour": "navy",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "Slightly stylised clock does not exist in real play, but is useful for educational intent per the prompt."
+    ],
+    "repairPrompt": "Ensure the clock used in the background appears more subtle and secondary, blended well with the course and does not distract from the realism of the golf scene."
+  }
+}

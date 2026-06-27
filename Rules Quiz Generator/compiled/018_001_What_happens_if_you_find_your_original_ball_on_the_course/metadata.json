@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "pageb-03.png",
+  "ruleNumber": "R18",
+  "ruleName": "Provisional Ball",
+  "group": "Provisional Ball",
+  "type": "multiple_choice",
+  "imagePrompt": "Teenage girl golfer on the sunny fairway, using an iron to pick up her provisional ball after finding her original ball. Only one ball left visible on the fairway.",
+  "imageAlt": "Teenage girl golfer on the fairway picking up a second ball, original ball in play.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "lifting_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "asian",
+    "skinTone": "light",
+    "clothingTopColour": "orange",
+    "clothingBottomColour": "navy",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [],
+    "repairPrompt": "No repairs needed. The illustration is visually accurate: one golf ball visible, a teenage Asian boy in an orange top and navy trousers, right-handed plausible golf posture while lifting the ball, a realistic iron club with a single believable metal club head, natural daylight, and a fairway background. The image is well-suited for teaching golf rules to teenagers."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What do you do if you find your first ball?",
+      "question": "You hit a second ball just in case, but then you find your first ball on the grass before 3 minutes are up. What should you do now?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Keep playing the second ball you hit"
+        },
+        {
+          "id": "b",
+          "text": "Pick up the second ball and play your first ball"
+        },
+        {
+          "id": "c",
+          "text": "Choose to play whichever ball is in a nicer spot"
+        },
+        {
+          "id": "d",
+          "text": "Play both balls and choose the better score"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If you find your first ball, you have to use it. Pick up the second ball you played. Shots with the second ball do not count.",
+      "vocabulary": [
+        {
+          "term": "provisional ball",
+          "simpleMeaning": "A ball you hit just in case you cannot find your first ball."
+        }
+      ],
+      "teachingTip": "Explain that a provisional ball is only used if the first ball cannot be found or goes out of bounds. If the first ball is found in time, the player must use it.",
+      "likelyMisconceptions": [
+        "Kids might think they can always choose the better ball.",
+        "Some might not know they must stop playing the provisional ball if the first one is found."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "What happens if you find your original ball on the course?",
+      "question": "You hit a provisional ball, but then find your original ball on the course (not out of bounds) within 3 minutes. What should you do next?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Continue playing the provisional ball"
+        },
+        {
+          "id": "b",
+          "text": "Pick up the provisional ball and play the original ball"
+        },
+        {
+          "id": "c",
+          "text": "Play whichever ball is in a better position"
+        },
+        {
+          "id": "d",
+          "text": "Play both balls and choose the best result"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "You must stop playing the provisional ball and continue with your original ball. Any strokes played with the provisional ball do not count."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "018_001_What_happens_if_you_find_your_original_ball_on_the_course",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-06-26T20:03:53.531Z"
+  }
+}

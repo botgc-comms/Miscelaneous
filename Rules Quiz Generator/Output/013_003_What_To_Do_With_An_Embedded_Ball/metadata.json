@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-07.png",
+  "ruleNumber": "R13",
+  "ruleName": "Putting Green",
+  "group": "Putting Green",
+  "title": "What To Do With An Embedded Ball",
+  "question": "If your ball is embedded on the putting green after a shot, what is the correct thing to do?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Leave it and play it as it lies"
+    },
+    {
+      "id": "b",
+      "text": "Mark its position, lift the ball, repair the pitch-mark, and replace the ball"
+    },
+    {
+      "id": "c",
+      "text": "Pick it up and drop it two club lengths away"
+    },
+    {
+      "id": "d",
+      "text": "Ask another player to move it for you"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You should mark where the ball is, lift it, repair the pitch-mark, and then replace the ball without any penalty.",
+  "imagePrompt": "A teenage girl marking the position of her embedded ball on the green while preparing to lift it.",
+  "imageAlt": "Teen girl marking spot of embedded ball on the putting green.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "lifting_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "dark",
+    "clothingTopColour": "grey",
+    "clothingBottomColour": "black",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The left-handed grip and stance could be emphasized slightly more to make it even clearer, as the putter is angled in a way that could be interpreted as either hand dominant (but it does read as left-handed overall).",
+      "The putting green is a little generic but authentic enough for context; some more detailed putting green features could enhance realism."
+    ],
+    "repairPrompt": "Clarify the left-handed grip and stance with the putter held more distinctly in the left hand and make the putting green surface slightly more detailed to enhance realism."
+  }
+}

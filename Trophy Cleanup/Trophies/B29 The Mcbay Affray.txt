@@ -1,0 +1,5 @@
+{
+  "text": ["Burton", "Challenge", "Trophy"],
+  "allowText": true,
+  "notes": ""
+}

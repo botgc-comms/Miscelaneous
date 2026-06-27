@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_031_Ball_Next_to_a_Swarm_of_Bees_Dangerous_Animal_Condition_Relief\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "16.2",
+  "ruleName": "Dangerous Animal Condition",
+  "title": "Ball Next to a Swarm of Bees – Dangerous Animal Condition Relief",
+  "question": "Your ball comes to rest next to a large swarm of bees. You could play the ball, but doing so would put you at serious risk of being stung. What is the correct ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You must play the ball as it lies or take an unplayable ball with a one-stroke penalty."
+    },
+    {
+      "id": "b",
+      "text": "You are entitled to free relief because a swarm of bees is a dangerous animal condition."
+    },
+    {
+      "id": "c",
+      "text": "You may only take free relief if the bees are in a penalty area."
+    },
+    {
+      "id": "d",
+      "text": "You may move the bees away before playing."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "The Rules of Golf provide free relief from a dangerous animal condition, such as a swarm of bees, if the condition interferes with your lie, stance or area of intended swing. Free relief is granted except when the ball lies in a penalty area. Rule 16.2 clarifies that players do not have to risk injury by playing the ball as it lies when a dangerous animal is present.",
+  "juniorVersion": {
+    "title": "Ball Close to Bees – What Can You Do?",
+    "question": "Your ball stops next to a big group of bees. If you try to hit your ball, you might get stung. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You must hit your ball where it is or take a penalty to move it."
+      },
+      {
+        "id": "b",
+        "text": "You can move your ball away for free because the bees make it dangerous."
+      },
+      {
+        "id": "c",
+        "text": "You can only move your ball for free if the bees are in a water area."
+      },
+      {
+        "id": "d",
+        "text": "You can chase away the bees before playing."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "You can move your ball for free if there are dangerous animals like bees close to your ball. This is to keep you safe. You do not have to play your ball from where it is if it could hurt you.",
+    "vocabulary": [
+      {
+        "term": "Dangerous Animal Condition",
+        "simpleMeaning": "When an animal or insects like bees, snakes, or alligators make it unsafe to play your ball."
+      },
+      {
+        "term": "Free Relief",
+        "simpleMeaning": "You can move your ball to a safe spot without getting a penalty."
+      }
+    ],
+    "teachingTip": "Remind young golfers that their safety is always important. If anything on the course could hurt them, like a swarm of bees, they should tell an adult and take free relief.",
+    "likelyMisconceptions": [
+      "Some children may think they always must hit the ball where it is, even if there are bees.",
+      "Some children may think they can just move or chase away the animals themselves to play."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:13:45.271Z",
+  "model": "gpt-4.1"
+}

@@ -1,0 +1,5 @@
+{
+  "text": [],
+  "allowText": true,
+  "notes": "The 4 hoops that go around the barrel are copper. Show three small brass plaques with inscriptions between the first and second hoop"
+}

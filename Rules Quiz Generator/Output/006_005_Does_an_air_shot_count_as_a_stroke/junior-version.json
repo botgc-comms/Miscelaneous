@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\006_005_Does_an_air_shot_count_as_a_stroke\\metadata.json",
+  "sourceImageName": "page-07.png",
+  "ruleNumber": "Def./R6",
+  "ruleName": "Air shot",
+  "title": "Does an air shot count as a stroke?",
+  "question": "If you swing at your ball on the tee and miss completely, does it count as a stroke?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No, because you did not hit the ball."
+    },
+    {
+      "id": "b",
+      "text": "Yes, it counts as a stroke."
+    },
+    {
+      "id": "c",
+      "text": "You must re-tee your ball without penalty."
+    },
+    {
+      "id": "d",
+      "text": "You can try again for free, but only once."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "Whenever you make a swing at the ball with the intention of hitting it, even if you miss (an air shot), it counts as a stroke.",
+  "juniorVersion": {
+    "title": "If you swing and miss, does it count as a shot?",
+    "question": "You try to hit your ball from the tee, but you miss and don't touch it. Does that count as a shot?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "No, because you did not hit the ball."
+      },
+      {
+        "id": "b",
+        "text": "Yes, it counts as a shot."
+      },
+      {
+        "id": "c",
+        "text": "You must put your ball back on the tee and there's no penalty."
+      },
+      {
+        "id": "d",
+        "text": "You can try again for free, but only once."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If you swing at the ball and try to hit it but miss, it still counts as a shot. This is called an air shot.",
+    "vocabulary": [
+      {
+        "term": "Air shot",
+        "simpleMeaning": "When you try to hit the ball but miss and do not touch it."
+      },
+      {
+        "term": "Stroke",
+        "simpleMeaning": "Another word for a shot. Every time you swing and mean to hit the ball, it counts as one stroke."
+      }
+    ],
+    "teachingTip": "Let children try some swings where they purposely miss the ball so they learn what an air shot feels like and understand that it counts.",
+    "likelyMisconceptions": [
+      "Some might think missing the ball does not count, but it does if you tried to hit it."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:41.686Z",
+  "model": "gpt-4.1"
+}

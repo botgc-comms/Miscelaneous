@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\014_005_What_do_you_do_if_the_ball_wont_stay_in_the_relief_area\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:34:27.912Z",
+  "title": "What do you do if the ball won't stay in the relief area?",
+  "ruleNumber": "14",
+  "ruleName": "Dropping and re-dropping",
+  "durationSeconds": 181.273
+}

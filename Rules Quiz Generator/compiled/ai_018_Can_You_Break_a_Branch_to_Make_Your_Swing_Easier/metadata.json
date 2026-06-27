@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "8.1a",
+  "ruleName": "Actions That Improve Conditions Affecting the Stroke",
+  "group": "Playing the Ball as It Lies",
+  "type": "multiple_choice",
+  "imagePrompt": "Create a polished modern semi-realistic illustration (about 75% realistic, 25% stylised) in the established junior golf quiz style. Depict a clearly dressed golfer standing under a large tree, using their hands to break off a low branch that is blocking their backswing. The golf ball is on the grass directly beneath the tree, positioned so the branch would affect the swing. The focus must be on the act of snapping off the living branch still attached to the tree. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer under a tree using their hands to break a low branch before playing a shot, with a golf ball on the ground beneath the tree.",
+  "sceneSpec": {
+    "setting": "Golf hole beneath a tree with overhanging low branches.",
+    "players": "One golfer preparing to play a shot under the tree.",
+    "ballPosition": "The ball is on the ground directly beneath the tree, obstructed by a low branch in the player’s backswing.",
+    "ruleMoment": "The golfer is snapping a low branch off the tree with their hands, just before preparing for the stroke.",
+    "educationalFocus": "Clearly depict that the player is breaking a growing branch that would block the backswing.",
+    "mustShow": [
+      "A golfer dressed for play, under a large tree with low branches.",
+      "A golf ball on the grass directly under the branches.",
+      "The golfer using their hands to break a branch that is obstructing their swing path.",
+      "Obvious obstruction of the swing by the branch before removal."
+    ],
+    "mustNotShow": [
+      "Any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+      "Other players or caddies.",
+      "Detached branches already on the ground."
+    ]
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Can You Snap a Tree Branch to Make Hitting the Ball Easier?",
+      "question": "Your golf ball stops under a tree. A low branch is in the way of your backswing, so you break the branch off before you hit your shot. What is the correct thing to do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty because the branch was just a small stick."
+        },
+        {
+          "id": "b",
+          "text": "No penalty because the branch was already dead."
+        },
+        {
+          "id": "c",
+          "text": "You get the normal penalty because you made it easier for yourself to hit the ball."
+        },
+        {
+          "id": "d",
+          "text": "You get a one-stroke penalty."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "You are not allowed to break, bend, or move things like branches or grass to make your shot easier. If you break off a branch that is still attached to the tree so your swing is easier, you get the normal penalty. But if the branch was already on the ground, you could move it.",
+      "vocabulary": [
+        {
+          "term": "backswing",
+          "simpleMeaning": "The first part of your swing when you bring your club back before hitting the ball."
+        },
+        {
+          "term": "penalty",
+          "simpleMeaning": "Something added to your score because you broke a rule."
+        },
+        {
+          "term": "attached",
+          "simpleMeaning": "Still connected, like a branch that is still growing on the tree."
+        }
+      ],
+      "teachingTip": "Remind juniors that they must play the course as they find it. Don’t break or bend branches to get a better shot.",
+      "likelyMisconceptions": [
+        "Some kids may think they can break small or dead branches without any penalty.",
+        "Kids might think it's okay as long as it makes the swing easier."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Can You Break a Branch to Make Your Swing Easier?",
+      "question": "Your ball comes to rest under a tree. A low branch is blocking your backswing, so you snap the branch off before playing your shot. What is the correct ruling?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "There is no penalty because the branch was only a small twig."
+        },
+        {
+          "id": "b",
+          "text": "There is no penalty because the branch was dead."
+        },
+        {
+          "id": "c",
+          "text": "You receive the general penalty because you improved the conditions affecting your stroke."
+        },
+        {
+          "id": "d",
+          "text": "You receive a one-stroke penalty."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "A player must not deliberately improve the conditions affecting their stroke by moving, bending or breaking a growing or attached natural object. Breaking a branch to create room for your swing is a breach of Rule 8.1a. If the branch had already been detached from the tree, it would be a loose impediment and could normally be removed."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "ai_018_Can_You_Break_a_Branch_to_Make_Your_Swing_Easier",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-06-26T20:03:53.988Z"
+  }
+}

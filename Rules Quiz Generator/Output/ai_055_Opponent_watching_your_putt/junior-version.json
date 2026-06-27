@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_055_Opponent_watching_your_putt\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "1.2a, 10.2",
+  "ruleName": "Standards of Player Conduct; Advice and Other Help",
+  "title": "Opponent watching your putt",
+  "question": "You and your opponent both have similar putts. It is your turn to play first, and your opponent stands behind you so they can watch how your putt breaks before playing their own. What is the correct ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Your opponent is not allowed to stand behind you while you putt."
+    },
+    {
+      "id": "b",
+      "text": "Your opponent may stand behind you and watch your putt. There is no penalty."
+    },
+    {
+      "id": "c",
+      "text": "Your opponent must stand at least two club-lengths away."
+    },
+    {
+      "id": "d",
+      "text": "You may require your opponent to move before you play."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "There is no Rule of Golf preventing your opponent from standing behind you to observe how your putt breaks. In match play, this is often strategic. As long as your opponent does not deliberately distract you or interfere with your stroke, they are entitled to watch and learn from your play.",
+  "juniorVersion": {
+    "title": "Can your opponent watch your putt from behind?",
+    "question": "You and your friend both have putts that go the same way. It’s your turn first. Your friend stands behind you to see how your putt rolls, so they know what their ball might do. Is this allowed?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Your friend is not allowed to stand behind you while you putt."
+      },
+      {
+        "id": "b",
+        "text": "Your friend can stand behind you and watch your putt. There is no penalty."
+      },
+      {
+        "id": "c",
+        "text": "Your friend must stay at least two club-lengths away."
+      },
+      {
+        "id": "d",
+        "text": "You can tell your friend to move before you putt."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "Your friend is allowed to watch your putt from behind to see if it goes left or right. As long as they don’t make noise or get in your way, it’s OK for them to watch and learn before it’s their turn.",
+    "vocabulary": [
+      {
+        "term": "putt",
+        "simpleMeaning": "A light stroke used to roll the ball on the green towards the hole."
+      },
+      {
+        "term": "penalty",
+        "simpleMeaning": "A punishment in golf when you break a rule, like adding extra shots to your score."
+      }
+    ],
+    "teachingTip": "Let children watch their friends putt to learn how the ball moves, but remind them not to talk or move when someone is putting.",
+    "likelyMisconceptions": [
+      "Kids might think it’s unfair if someone watches their putt closely.",
+      "Children could think the other player must stay far away and not look at all."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T19:16:06.539Z",
+  "model": "gpt-4.1"
+}

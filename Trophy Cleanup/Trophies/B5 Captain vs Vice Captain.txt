@@ -1,0 +1,5 @@
+{
+  "text": ["Captain", "vs", "Vice-Captain"],
+  "allowText": true,
+  "notes": ""
+}

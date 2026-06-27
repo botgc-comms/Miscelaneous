@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "packId": "whats-in-the-bag",
+  "title": "What’s in the bag",
+  "audience": "Brand new junior golfers and non-golfing parents",
+  "teachingJourney": [
+    "Understand the basics of golf equipment",
+    "Learn about different club types",
+    "Know how to get fitted for clubs",
+    "Identify clubs in a bag",
+    "Engage in a knowledge check"
+  ],
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "A simple guide",
+      "file": "pages/00-title.md",
+      "pageRole": "introduction",
+      "previousPageBridge": "N/A",
+      "coreMessage": "Welcome to your journey in junior golf! This guide will help you understand the essential equipment needed for golfing.",
+      "visualPurpose": "Introduce the learning pack",
+      "visualSlot": "simple-recap-scene",
+      "recommendedReferences": [],
+      "mustUseReference": false,
+      "avoidInImage": [
+        "complex golf scenes"
+      ]
+    },
+    {
+      "id": "01-clubs-overview",
+      "title": "Clubs in a golf bag",
+      "file": "pages/01-clubs-overview.md",
+      "pageRole": "overview",
+      "previousPageBridge": "This section shows what equipment is typically found in a junior golfer's bag.",
+      "coreMessage": "A golf bag commonly contains various clubs tailored for different shots.",
+      "visualPurpose": "Show an overview of clubs in a bag",
+      "visualSlot": "equipment-flat-lay",
+      "recommendedReferences": [],
+      "mustUseReference": true,
+      "avoidInImage": [
+        "people"
+      ]
+    },
+    {
+      "id": "02-woods-irons",
+      "title": "Woods, irons and hybrids",
+      "file": "pages/02-woods-irons.md",
+      "pageRole": "detailed clubs",
+      "previousPageBridge": "Learn about the main types of clubs: woods, irons, and hybrids.",
+      "coreMessage": "Woods are for long-distance shots, irons for accuracy, and hybrids combine features of both.",
+      "visualPurpose": "Focus on the different wood and iron types",
+      "visualSlot": "clean-object-reference",
+      "recommendedReferences": [
+        "equipment-hybrid-c422f0",
+        "equipment-iron-acb065"
+      ],
+      "mustUseReference": true,
+      "avoidInImage": [
+        "golfers"
+      ]
+    },
+    {
+      "id": "03-wedges-putter",
+      "title": "Wedges and putter",
+      "file": "pages/03-wedges-putter.md",
+      "pageRole": "detailed clubs",
+      "previousPageBridge": "Next up, let's explore the wedges and the putter.",
+      "coreMessage": "Wedges help with short, high shots, while putters are designed for use on the green.",
+      "visualPurpose": "Detail the usage of wedges and putter",
+      "visualSlot": "clean-object-reference",
+      "recommendedReferences": [
+        "equipment-putter-c94b8c"
+      ],
+      "mustUseReference": true,
+      "avoidInImage": [
+        "golfers"
+      ]
+    },
+    {
+      "id": "04-fitting",
+      "title": "Getting fitted",
+      "file": "pages/04-fitting.md",
+      "pageRole": "fitting importance",
+      "previousPageBridge": "Understanding your clubs is crucial, but getting fitted properly is equally important.",
+      "coreMessage": "Fitting ensures clubs match a junior golfer's height, strength, and swing style.",
+      "visualPurpose": "Illustrate the fitting process",
+      "visualSlot": "parent-understanding-scene",
+      "recommendedReferences": [],
+      "mustUseReference": false,
+      "avoidInImage": [
+        "golfers"
+      ]
+    },
+    {
+      "id": "90-quick-check",
+      "title": "Quick check",
+      "file": "pages/90-quick-check.md",
+      "pageRole": "quiz",
+      "previousPageBridge": "Finally, let's recap what you've learned with a quick check.",
+      "coreMessage": "Test your knowledge about golf equipment.",
+      "visualPurpose": "Engage through a quiz format",
+      "visualSlot": "simple-recap-scene",
+      "recommendedReferences": [],
+      "mustUseReference": false,
+      "avoidInImage": [
+        "complex golf scenes"
+      ]
+    }
+  ]
+}

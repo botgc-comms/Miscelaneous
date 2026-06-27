@@ -1,0 +1,5 @@
+{
+  "text": [],
+  "allowText": true,
+  "notes": "The inscription at the top of the cop reads Roland Goodall Millennium Trophy"
+}

@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "packId": "equipment-growth",
+  "title": "Equipment as you grow",
+  "audience": "Brand new junior golfers and parents",
+  "pages": [
+    {
+      "id": "00-growth",
+      "title": "Growth matters",
+      "file": "pages/00-growth.md",
+      "type": "content",
+      "assetFile": "growth.png",
+      "imageAlt": "A smiling junior golfer standing next to a set of golf clubs, with an adult parent adjusting the clubs to match the child's height on a golf course.",
+      "imagePrompt": "A photorealistic scene of a junior golfer standing beside their parent on a golf course. The parent is adjusting the height of a golf club next to the child's side, with both smiling. The clubs look clean and simple, and the course looks welcoming and green.",
+      "markdown": "# Growth matters\n\nGrowing up is an exciting adventure, and your golf equipment needs to grow with you! For junior golfers, it’s really important that clubs and kit match your size rather than your age. Clubs that are too long or heavy can make playing golf difficult and less enjoyable. If clubs are too short, you might find it harder to play well and could even hurt yourself.\n\nAs you grow taller, your swing changes and so does the way you hold and use your golf clubs. Don’t worry—you don’t need expensive equipment. There are many options for juniors, including clubs that are specially sized or can be adjusted as you grow. Even simple changes, like using lighter clubs or a different sized glove, can make golf more fun and comfortable.\n\nParents, it’s perfectly normal for children to outgrow their kit from season to season. Clubs and bags do not need to be new every time—pre-loved items from the pro shop, club friends, or family can work just as well. If you’re ever unsure, ask a coach or experienced club member for help. Feeling comfortable with your clubs will help every junior golfer learn better and enjoy the game!",
+      "quiz": null
+    },
+    {
+      "id": "01-signs",
+      "title": "Signs equipment needs changing",
+      "file": "pages/01-signs.md",
+      "type": "content",
+      "assetFile": "signs.png",
+      "imageAlt": "A junior golfer trying to swing an oversized club with difficulty, watched by a parent. A smaller club lies nearby, illustrating the need for a change.",
+      "imagePrompt": "A photorealistic image of a junior golfer struggling to swing a club that is clearly too long. A parent looks on supportively. In the foreground, a smaller club lies on the grass. The course is bright and inviting.",
+      "markdown": "# Signs equipment needs changing\n\nHow do you know when it’s time to check your clubs and kit? Here are some easy signs to watch for:\n\n- **Clubs feel heavy or awkward**: If a club feels hard to lift or swing, it may be too heavy or long for you.\n- **Hands or arms get tired quickly**: Using the wrong size or type of club can make you feel tired sooner than you should.\n- **Club head drags along the ground**: If the bottom of the club scrapes the grass before you hit the ball, it’s probably too long.\n- **Standing posture looks strange**: If a golfer must bend a lot or stand up really straight to use the club, size may be wrong.\n- **Grip is hard to hold**: If your hand can’t wrap round the grip or it feels slippery, you may need a smaller grip or glove.\n\nParents, watch your child as they swing. If it looks uncomfortable, awkward or like they’re working too hard, equipment could be the problem. Junior golfers grow faster than you think! Checking in regularly helps keep play enjoyable and safe.",
+      "quiz": null
+    },
+    {
+      "id": "02-advice",
+      "title": "Getting advice",
+      "file": "pages/02-advice.md",
+      "type": "content",
+      "assetFile": "advice.png",
+      "imageAlt": "A golf coach gently helping a junior golfer try different sizes of clubs while a parent looks on, all smiling at a practice area.",
+      "imagePrompt": "A near-photorealistic image of a friendly golf coach showing a junior golfer how to try different sized clubs. The parent stands nearby watching. The atmosphere is warm and encouraging, and the setting is a practice area with golf balls and several striped junior clubs.",
+      "markdown": "# Getting advice\n\nYou don’t need to be an expert or buy new clubs each year. At most golf clubs, help is always available if you have questions about equipment. Coaches and pro shop staff are trained to help juniors find the right fit. They can check how a club lines up with your height and swing, and help you try different options.\n\nParents, don’t worry if you’re unsure. Simply asking someone at the club is a great first step. Many clubs even have junior ‘try before you buy’ clubs, lending kits, or second-hand sections.\n\nWatching how your child plays can also give good clues about what works. If something doesn’t look right or your child doesn’t seem comfortable, mention it to the coach or a friendly member. Other parents are a fantastic source of advice too, especially those whose children have grown through the same stages.\n\nRemember, growing children will almost always need club adjustments sooner or later. It’s normal, and part of what makes junior golf so rewarding for everyone involved!",
+      "quiz": null
+    },
+    {
+      "id": "03-cost",
+      "title": "Managing cost",
+      "file": "pages/03-cost.md",
+      "type": "content",
+      "assetFile": "cost.png",
+      "imageAlt": "A family comparing junior golf clubs of different lengths at a club's pro shop, with used and new clubs displayed. The scene is friendly and informal.",
+      "imagePrompt": "A photorealistic image of parents and a junior golfer in a golf club's pro shop, looking at both used and new junior golf clubs. The junior smiles as they handle a club while a parent discusses options with staff. The background shows organised racks of different-sized clubs.",
+      "markdown": "# Managing cost\n\nGolf does not have to be expensive, especially for growing juniors. Many clubs and families make it affordable by swapping, sharing or buying used golf equipment rather than buying brand new every time. Pre-loved junior clubs, bags and even clothing can be found at the pro shop, club noticeboard, or local golf community.\n\nIt’s fine to start with a simple set of clubs—just a few that your child can use comfortably. There is no need to buy a full matching set. Ask friends, other parents or club staff if they have clubs your child could borrow or try out.\n\nSome golf clubs run kit-swaps or have a section set aside for outgrown equipment. It always helps to ask before spending money. Sometimes, club staff can make light adjustments to a used club so that it fits better, saving you even more.\n\nEnjoying the game and learning skills is what matters most. As long as your junior golfer is playing happily and safely, you’re doing everything right—regardless of the kit!",
+      "quiz": null
+    }
+  ]
+}

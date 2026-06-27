@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\013_001_What_happens_if_you_accidentally_move_your_ball_on_the_green\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:25:05.948Z",
+  "title": "What happens if you accidentally move your ball on the green?",
+  "ruleNumber": "13",
+  "ruleName": "Ball accidentally moved",
+  "durationSeconds": 181.739
+}

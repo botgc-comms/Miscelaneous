@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-07.png",
+  "ruleNumber": "R6",
+  "ruleName": "Tee-markers",
+  "group": "Tee-markers",
+  "title": "Moving the tee-markers",
+  "question": "Is it allowed to move the tee-markers to improve your position before teeing off?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, there is no penalty for moving them."
+    },
+    {
+      "id": "b",
+      "text": "No, moving them to gain an advantage results in a two stroke penalty."
+    },
+    {
+      "id": "c",
+      "text": "Only if all players agree."
+    },
+    {
+      "id": "d",
+      "text": "Yes, but only if it is raining."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You must not move the tee-markers to improve your position. If you do, you receive a two-stroke penalty in stroke play.",
+  "imagePrompt": "A teen golfer prepares to tee off with two tee-markers clearly set in their original position, unmoved.",
+  "imageAlt": "A teen golfer on the teeing ground with unmoved tee-markers.",
+  "sceneSpec": {
+    "setting": "teeing_area",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "driver",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": true,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "blue",
+    "clothingBottomColour": "orange",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [],
+    "repairPrompt": "No significant issues. If improvement is needed, ensure both tee-markers are perfectly identical in size and color, and the club grip detail is visible for added realism."
+  }
+}

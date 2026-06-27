@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-26.png",
+  "ruleNumber": "17",
+  "ruleName": "Penalty Areas",
+  "group": "Penalty Areas",
+  "title": "Knowing When Local Rules Offer Extra Options",
+  "question": "True or false? Local Rules at some golf courses can give you extra options for dropping in penalty areas, like using a special dropping zone.",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "True"
+    },
+    {
+      "id": "b",
+      "text": "False"
+    },
+    {
+      "id": "c",
+      "text": "Only if you ask the referee"
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "Local Rules may allow additional relief options, such as using special dropping zones, beyond the standard penalty area rules.",
+  "imagePrompt": "A left-handed teen girl reading Local Rules on a signboard near the edge of a red-staked penalty area, with trees and water visible.",
+  "imageAlt": "Teen golfer reading Local Rules sign near a red penalty area.",
+  "sceneSpec": {
+    "setting": "penalty_area_edge",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "red",
+    "waterVisible": true,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "dark",
+    "clothingTopColour": "black",
+    "clothingBottomColour": "red",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The golfer's left-handedness is implied by posture (left foot slightly forward) but not explicitly shown, since she is not holding a club.",
+      "Signboard is blank but convincingly serves as a Local Rules sign."
+    ],
+    "repairPrompt": "Ensure the girl's left-handedness is more visually explicit, such as by turning her slightly more to show her dominant left side, and consider adding small details to the signboard to boost realism, keeping the sign content ambiguous (no legible text)."
+  }
+}

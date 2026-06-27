@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\006_003_Consequence_of_not_correcting_a_wrong_ball_mistake\\metadata.json",
+  "sourceImageName": "page-17.png",
+  "ruleNumber": "R6",
+  "ruleName": "Wrong ball",
+  "title": "Consequence of not correcting a wrong ball mistake",
+  "question": "What is the result if you finish a hole without correcting your mistake of playing the wrong ball?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You receive four penalty strokes"
+    },
+    {
+      "id": "b",
+      "text": "You must replay the hole"
+    },
+    {
+      "id": "c",
+      "text": "You are disqualified"
+    },
+    {
+      "id": "d",
+      "text": "There is no penalty"
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "If you fail to correct your mistake and finish the hole with a wrong ball, you are disqualified.",
+  "juniorVersion": {
+    "title": "What happens if you play the wrong ball and finish the hole?",
+    "question": "If you hit someone else’s ball by mistake and keep playing it until you finish the hole, what happens?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You get four extra shots added"
+      },
+      {
+        "id": "b",
+        "text": "You need to play the hole again"
+      },
+      {
+        "id": "c",
+        "text": "You are out of the game"
+      },
+      {
+        "id": "d",
+        "text": "Nothing happens"
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "If you play a hole with the wrong ball and don’t fix it, you are out of the game for that round.",
+    "vocabulary": [
+      {
+        "term": "wrong ball",
+        "simpleMeaning": "A ball that is not your own, like another player’s ball."
+      },
+      {
+        "term": "disqualified",
+        "simpleMeaning": "You have to stop playing in the game or round."
+      }
+    ],
+    "teachingTip": "Help children mark their own balls with a special mark so they do not play the wrong one.",
+    "likelyMisconceptions": [
+      "Children might think they can just add penalty shots if they finish the hole with a wrong ball.",
+      "Children may believe they can fix the mistake after the hole is done."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:31.780Z",
+  "model": "gpt-4.1"
+}

@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "15.2a",
+  "ruleName": "Relief from Movable Obstructions",
+  "group": "Obstructions & Loose Impediments",
+  "title": "Can You Remove a Rake Before Playing?",
+  "question": "Your ball comes to rest next to a bunker. A rake is lying on the ground beside your ball and is in the way of your swing. Can you move the rake before playing your shot?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No. Once your ball has come to rest, nothing nearby may be moved."
+    },
+    {
+      "id": "b",
+      "text": "Yes. A rake is a movable obstruction and may be moved without penalty."
+    },
+    {
+      "id": "c",
+      "text": "Yes, but only if your ball does not move."
+    },
+    {
+      "id": "d",
+      "text": "No. You must either play around the rake or take unplayable ball relief."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "A bunker rake is a movable obstruction. You may move it at any time without penalty. If moving the rake causes your ball to move, you must replace the ball on its original spot, and there is no penalty for causing it to move while removing a movable obstruction. Many golfers think they have to leave the rake where it is once the ball has come to rest, but that is incorrect. (Rule 15.2a, Rule 15.2a(1))",
+  "imagePrompt": "A semi-realistic, modern, and polished illustration (about 75% realistic and 25% stylised) of a golf ball at rest on closely mown grass, right next to the edge of a bunker. A standard rake is lying on the grass close to the ball, positioned so that it interferes with a golfer's intended swing. One golfer is standing, preparing to play the shot with a club in hand, looking towards the ball. The golf course background should be clear, with no text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards, or speech bubbles.",
+  "imageAlt": "A golfer prepares to play a shot with the ball at rest next to a bunker, and a rake lying close by, interfering with the intended swing.",
+  "sceneSpec": {
+    "setting": "Edge of a bunker on a golf course with closely mown grass nearby.",
+    "players": "One golfer preparing to play a shot, visible with a club in hand, standing near the ball.",
+    "ballPosition": "Ball at rest on the grass, close to the bunker edge.",
+    "ruleMoment": "Rake lying on the grass beside the ball, in line with or interfering with the intended swing.",
+    "educationalFocus": "Clarifies that a rake may be moved as a movable obstruction, even when next to a ball at rest.",
+    "mustShow": [
+      "Golf ball at rest near the bunker edge.",
+      "Rake lying next to the ball, clearly interfering with a potential swing.",
+      "Golfer preparing to play the shot."
+    ],
+    "mustNotShow": [
+      "Text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles."
+    ]
+  }
+}

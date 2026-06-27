@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "8.1a",
+  "ruleName": "Actions That Improve Conditions Affecting the Stroke",
+  "group": "General Play",
+  "title": "Can You Remove an Out of Bounds Post?",
+  "question": "Your ball comes to rest next to a white out of bounds post. The post is stopping you from making a full swing. Can you remove the post to play your shot?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, because it is an artificial object and therefore a movable obstruction."
+    },
+    {
+      "id": "b",
+      "text": "Yes, but only if you replace it before leaving the hole."
+    },
+    {
+      "id": "c",
+      "text": "No. Out of bounds posts are boundary objects and must not be moved to improve your shot."
+    },
+    {
+      "id": "d",
+      "text": "Yes, but you must add one penalty stroke."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "White out of bounds posts are boundary objects, not obstructions. Boundary objects are treated as fixed parts of the course and no free relief is available from them. Players must not move or remove a boundary object to improve the conditions affecting their stroke. Even if a boundary object is movable (such as a removable fence panel or gate), it is still treated as a boundary object when defining the course boundary and must not be moved. (Rule 8.1a and the Definition of Boundary Object)",
+  "imagePrompt": "Create a polished, modern semi-realistic illustration (about 75% realistic, 25% stylised) in the established junior golf quiz style. The scene takes place on a lush golf course under clear skies. Show one golfer preparing to play a shot with their ball lying on grass close to a white out of bounds post, with the post clearly interfering with the player's swing. The post should look firmly in place. Do not show anyone moving or removing the post. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer stands about to play a shot with their ball lying close to a white out of bounds post that is obstructing their swing. The post is firmly planted in the ground, demonstrating that it cannot be moved.",
+  "sceneSpec": {
+    "setting": "A golf hole on a bright day with trimmed grass and a clear out of bounds line marked with white posts.",
+    "players": "One player in a standard golf outfit preparing to take a shot near the out of bounds post.",
+    "ballPosition": "A golf ball resting on grass close to a white out of bounds post, with the post obstructing the player's backswing.",
+    "ruleMoment": "The moment before the player attempts to play the shot, showing the challenge presented by the post.",
+    "educationalFocus": "Highlighting that out of bounds posts are boundary objects and must not be moved, even if they interfere with the player's swing.",
+    "mustShow": [
+      "A white out of bounds post firmly stuck in the ground",
+      "A golf ball close to the post",
+      "A player preparing to swing with the post interfering"
+    ],
+    "mustNotShow": [
+      "Any player or person moving or removing the post",
+      "Text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles"
+    ]
+  }
+}

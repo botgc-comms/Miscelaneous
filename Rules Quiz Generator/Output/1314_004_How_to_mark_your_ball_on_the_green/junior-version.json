@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\1314_004_How_to_mark_your_ball_on_the_green\\metadata.json",
+  "sourceImageName": "pageb-04.png",
+  "ruleNumber": "R13/14",
+  "ruleName": "Marking and picking up the ball",
+  "title": "How to mark your ball on the green",
+  "question": "Which of these can you use to mark your ball’s position on the green? Select all that apply.",
+  "choices": [
+    {
+      "id": "a",
+      "text": "A coin"
+    },
+    {
+      "id": "b",
+      "text": "A ball-marker"
+    },
+    {
+      "id": "c",
+      "text": "A tee"
+    },
+    {
+      "id": "d",
+      "text": "Your putter placed behind the ball"
+    }
+  ],
+  "correctAnswers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "explanation": "You are allowed to use a coin, a ball-marker, or a tee to mark your ball on the putting green. Placing your putter down does not count as a proper marker.",
+  "juniorVersion": {
+    "title": "What can you use to show where your ball is on the green?",
+    "question": "Pick all the things you are allowed to use to show your ball's spot on the green before you pick it up.",
+    "choices": [
+      {
+        "id": "a",
+        "text": "A coin"
+      },
+      {
+        "id": "b",
+        "text": "A ball-marker"
+      },
+      {
+        "id": "c",
+        "text": "A tee"
+      },
+      {
+        "id": "d",
+        "text": "Your putter behind the ball"
+      }
+    ],
+    "correctAnswers": [
+      "a",
+      "b",
+      "c"
+    ],
+    "explanation": "You can use a coin, a round ball-marker, or a tee to show where your ball is before you pick it up on the green. You can't just put your putter behind the ball to mark it—that does not count.",
+    "vocabulary": [
+      {
+        "term": "Green",
+        "simpleMeaning": "The smooth, short grass area where you try to putt the ball into the hole."
+      },
+      {
+        "term": "Ball-marker",
+        "simpleMeaning": "A small, flat object you put behind your ball to remember its place."
+      },
+      {
+        "term": "Tee",
+        "simpleMeaning": "A small stick you use to hold the ball up, but you can also use it to mark where your ball is on the green."
+      }
+    ],
+    "teachingTip": "Show children how to mark their ball by using a coin, marker, or tee, and explain why a club is not okay.",
+    "likelyMisconceptions": [
+      "Some children might think it's okay to just use their putter as a marker.",
+      "Some might wonder if they can use anything, not just the items listed."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:28:00.012Z",
+  "model": "gpt-4.1"
+}

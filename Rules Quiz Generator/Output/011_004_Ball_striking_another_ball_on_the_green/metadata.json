@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-08.png",
+  "ruleNumber": "R11",
+  "ruleName": "Ball hits another ball",
+  "group": "Ball hits another ball",
+  "title": "Ball striking another ball on the green",
+  "question": "In stroke play, you putt from the green and your ball accidentally hits another ball at rest on the green. What do the rules say?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You get 2 penalty strokes. Play your ball as it lies and replace the moved ball."
+    },
+    {
+      "id": "b",
+      "text": "You must replay your shot with no penalty."
+    },
+    {
+      "id": "c",
+      "text": "You continue play with no penalty."
+    },
+    {
+      "id": "d",
+      "text": "Both balls are played from where they finished."
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "In stroke play, if your ball played from the putting green hits another at rest on the green, you get two penalty strokes. You play your ball as it lies and replace the other ball.",
+  "imagePrompt": "A teenage golfer putting on the green, with one ball colliding into another ball at rest nearby.",
+  "imageAlt": "Teenager's ball from a putt striking another ball on the green.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "replaying_shot",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "asian",
+    "skinTone": "medium",
+    "clothingTopColour": "navy",
+    "clothingBottomColour": "green",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "Both golf balls are resting directly in contact, but the impact could be depicted with slightly more dynamic visual cues (e.g., subtle motion blur or contact spark) to clearly show an active collision."
+    ],
+    "repairPrompt": "Add a subtle visual indication (such as slight motion blur on one ball or a small impact highlight) to make the collision between the moving ball and the stationary ball more visually dynamic and clear, while maintaining all other scene accuracy and realism."
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\012_001_When_is_a_ball_in_the_bunker\\metadata.json",
+  "sourceImageName": "page-19.png",
+  "ruleNumber": "R12",
+  "ruleName": "Bunker",
+  "title": "When is a ball 'in the bunker'?",
+  "question": "Your ball comes to rest on the border between the sand and some grass that's inside the edge of the bunker. When is your ball officially classed as 'in the bunker'?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Only if the whole ball is inside the sand area"
+    },
+    {
+      "id": "b",
+      "text": "If any part of the ball touches the sand in the bunker"
+    },
+    {
+      "id": "c",
+      "text": "If the ball is fully on grass even if inside the edge"
+    },
+    {
+      "id": "d",
+      "text": "Any time the ball is within the boundary, even if not touching sand"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "The ball is classed as being in the bunker if any part of it touches sand inside the edge of the bunker, no matter where the rest of the ball lies.",
+  "juniorVersion": {
+    "title": "When Is Your Ball Inside the Bunker?",
+    "question": "Your ball stops where the sand meets the grass next to the bunker. When do we say your ball is in the bunker?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Only if your whole ball is on the sand"
+      },
+      {
+        "id": "b",
+        "text": "If any part of your ball is touching the sand in the bunker"
+      },
+      {
+        "id": "c",
+        "text": "If your ball is all the way on the grass, even if it’s still inside the edge"
+      },
+      {
+        "id": "d",
+        "text": "Any time your ball is inside the line, even if it’s not touching the sand"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "Your ball is 'in the bunker' if any part of it is touching the sand inside the bunker, even if the rest is on grass.",
+    "vocabulary": [
+      {
+        "term": "Bunker",
+        "simpleMeaning": "A bunker is a sandy area on a golf course. If your ball lands in the sand, that’s the bunker."
+      }
+    ],
+    "teachingTip": "Show kids a real bunker or use a picture. Place a ball partly in the sand and partly on the grass to let them see when it counts as 'in the bunker.'",
+    "likelyMisconceptions": [
+      "Some children may think the whole ball must be on the sand to be 'in the bunker.'",
+      "They might believe the ball is not 'in the bunker' if it is touching grass, even inside the edge."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:22.492Z",
+  "model": "gpt-4.1"
+}

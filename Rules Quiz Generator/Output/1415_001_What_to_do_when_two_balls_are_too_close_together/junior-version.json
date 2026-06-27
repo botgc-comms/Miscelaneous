@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\1415_001_What_to_do_when_two_balls_are_too_close_together\\metadata.json",
+  "sourceImageName": "page-20.png",
+  "ruleNumber": "R14/15",
+  "ruleName": "Balls close to each other",
+  "title": "What to do when two balls are too close together",
+  "question": "You and another player both have balls so close together in a bunker that you can't hit your shot properly. What are you allowed to do?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Mark and pick up one ball, then recreate the original lie before playing."
+    },
+    {
+      "id": "b",
+      "text": "Play both balls as they lie, even if you have to hit the other ball."
+    },
+    {
+      "id": "c",
+      "text": "Clean the ball before putting it back after picking it up."
+    },
+    {
+      "id": "d",
+      "text": "Move both balls away to a clear spot in the bunker."
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "If two balls are so close they interfere with play, you may mark and lift one ball, then recreate and return it to its original spot after the other is played, but you must not clean it.",
+  "juniorVersion": {
+    "title": "What if my ball and my friend's ball are almost touching in a bunker?",
+    "question": "You and your friend both hit balls into a bunker and they end up so close that you can't swing at yours without hitting the other ball. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Mark where one ball is, pick it up, and then after the other person hits, put it back the way it was before."
+      },
+      {
+        "id": "b",
+        "text": "Try to hit your ball even if you have to hit your friend's ball too."
+      },
+      {
+        "id": "c",
+        "text": "Pick up your ball and clean it before putting it back."
+      },
+      {
+        "id": "d",
+        "text": "Move both balls to a different spot in the bunker where they aren't touching."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "If the balls are really close in a bunker, you can mark and lift one ball, but you must put it back just like it was after your friend hits. You aren't allowed to clean it.",
+    "vocabulary": [
+      {
+        "term": "Bunker",
+        "simpleMeaning": "A sandy area on the golf course, like a sandpit."
+      },
+      {
+        "term": "Mark",
+        "simpleMeaning": "Put something, like a coin or marker, where your ball is so you know where to put it back."
+      },
+      {
+        "term": "Lie",
+        "simpleMeaning": "The way your ball is resting on the ground."
+      }
+    ],
+    "teachingTip": "Have two kids gently place balls close together in the sand and act out marking, lifting, and replacing a ball. Remind them not to clean the sand off the ball before putting it back.",
+    "likelyMisconceptions": [
+      "Kids might think it's okay to clean the ball before putting it back.",
+      "Some might think both balls can be moved somewhere else in the bunker.",
+      "Children may try to play their ball without moving the other, possibly hitting both."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:28:02.881Z",
+  "model": "gpt-4.1"
+}

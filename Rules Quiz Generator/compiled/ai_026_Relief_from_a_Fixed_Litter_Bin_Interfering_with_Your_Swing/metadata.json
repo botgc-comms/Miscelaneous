@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "16.1",
+  "ruleName": "Relief from Abnormal Course Conditions (Immovable Obstructions)",
+  "group": "Abnormal Course Conditions",
+  "type": "multiple_choice",
+  "imagePrompt": "Create a polished, modern semi-realistic illustration in the established junior golf quiz style: show a junior golfer on a fairway preparing to take a shot, with their ball lying very close to a large metal litter bin that is obviously bolted to the ground. The litter bin is interfering with the player's ability to make a normal swing. The illustration should make it clear that the bin is permanent and immovable, and the player is considering how to proceed. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "Junior golfer on a fairway preparing to play a shot with their ball lying next to a fixed metal litter bin that is interfering with their swing.",
+  "sceneSpec": {
+    "setting": "A closely mown area of fairway on a golf course, with short, well-maintained grass and a distant green visible.",
+    "players": "One junior golfer dressed in smart golf attire, preparing to play a shot.",
+    "ballPosition": "The player's ball is lying on the fairway close to a fixed metal litter bin that is bolted to the ground.",
+    "ruleMoment": "The player is addressing the ball and the litter bin is clearly interfering with their swing.",
+    "educationalFocus": "Immovable obstructions and the correct procedure when an immovable object interferes with play.",
+    "mustShow": [
+      "A bolted metal litter bin near the golf ball",
+      "Junior golfer in a ready-to-play pose with club extended",
+      "Ball on the fairway, close to the bin",
+      "Clear indication that the bin would prevent a normal swing"
+    ],
+    "mustNotShow": [
+      "Any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles",
+      "Any moveable or temporary obstructions",
+      "Other players nearby"
+    ]
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What if a Big Bin Stops Your Swing?",
+      "question": "Your golf ball stops right next to a big bin that cannot be moved. The bin stops you from making your normal swing. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You have to hit the ball from where it is because the bin is part of the course."
+        },
+        {
+          "id": "b",
+          "text": "You can pick up the bin and move it before you play your shot."
+        },
+        {
+          "id": "c",
+          "text": "You can move your ball for free because the bin is fixed and is blocking your swing."
+        },
+        {
+          "id": "d",
+          "text": "You can move your ball, but you must add one extra shot to your score."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "If a big bin is stuck to the ground and gets in the way of your swing, you can move your ball for free. Find the closest place (not nearer the hole) where the bin does not bother you, then drop your ball there. The bin is called an 'immovable obstruction.'",
+      "vocabulary": [
+        {
+          "term": "Immovable obstruction",
+          "simpleMeaning": "Something like a bin or bench that is stuck to the ground and cannot be moved."
+        },
+        {
+          "term": "Relief",
+          "simpleMeaning": "A rule that lets you move your ball to a better spot when something like a bin is in your way."
+        }
+      ],
+      "teachingTip": "Point to and name different things on the course that are 'immovable obstructions.' Practise finding the nearest spot where the obstruction does not get in the way.",
+      "likelyMisconceptions": [
+        "Some children might think they have to play the ball as it is, even when a big object blocks their swing.",
+        "Some might try to move the big bin, but only loose objects that are not stuck can be moved."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Relief from a Fixed Litter Bin Interfering with Your Swing",
+      "question": "Your ball comes to rest next to a fixed litter bin that is bolted to the ground. The bin is preventing you from making your normal swing. What is the correct ruling?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You must play the ball as it lies because the bin is part of the course."
+        },
+        {
+          "id": "b",
+          "text": "You may move the bin before playing your shot."
+        },
+        {
+          "id": "c",
+          "text": "You are entitled to free relief because the fixed bin is an immovable obstruction interfering with your swing."
+        },
+        {
+          "id": "d",
+          "text": "You may take relief, but only with a one-stroke penalty."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "A litter bin that is fixed to the ground is an immovable obstruction. If it interferes with your lie, stance, or area of intended swing, you are entitled to free relief. To take relief, find the nearest point of complete relief, no nearer the hole, and drop the ball within one club-length of that point in the relief area. The Rules provide relief from the obstruction itself, not from other elements of the course that may still affect your next shot."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "ai_026_Relief_from_a_Fixed_Litter_Bin_Interfering_with_Your_Swing",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-06-26T20:03:54.066Z"
+  }
+}

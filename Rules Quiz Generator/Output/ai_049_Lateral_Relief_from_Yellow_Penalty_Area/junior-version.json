@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_049_Lateral_Relief_from_Yellow_Penalty_Area\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "17.1d",
+  "ruleName": "Relief for Ball in Penalty Area",
+  "title": "Lateral Relief from Yellow Penalty Area",
+  "question": "Your ball comes to rest in a yellow-staked penalty area. You would like to take lateral relief by dropping within two club-lengths of where the ball last crossed the edge of the penalty area.\n\nIs this allowed?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes. You may always take lateral relief from any penalty area."
+    },
+    {
+      "id": "b",
+      "text": "Yes, but only if the ball cannot be found."
+    },
+    {
+      "id": "c",
+      "text": "No. Lateral relief is only available from a red penalty area."
+    },
+    {
+      "id": "d",
+      "text": "Yes, but only if you add two penalty strokes."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "Lateral relief (dropping within two club-lengths of where the ball last crossed the edge) is available only from red penalty areas. For yellow penalty areas, you may take stroke-and-distance relief or back-on-the-line relief, both for one penalty stroke. Lateral relief is not allowed from a yellow penalty area under Rule 17.1d.",
+  "juniorVersion": {
+    "title": "Can You Drop to the Side from a Yellow Penalty Area?",
+    "question": "Your ball lands in a yellow penalty area (like a pond with yellow stakes). Can you drop your ball to the side (within two club-lengths) from where it went in?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Yes. You can always drop to the side from any penalty area."
+      },
+      {
+        "id": "b",
+        "text": "Yes, but only if you can’t find your ball."
+      },
+      {
+        "id": "c",
+        "text": "No. You can only drop to the side if the penalty area has red stakes."
+      },
+      {
+        "id": "d",
+        "text": "Yes, but only if you add two penalty shots."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "If you see yellow stakes or lines, you cannot drop your ball to the side. Dropping to the side (lateral relief) is only for red penalty areas. For yellow penalty areas, you have to drop farther back in line with the flag or go back and play another ball.",
+    "vocabulary": [
+      {
+        "term": "Penalty area",
+        "simpleMeaning": "Parts of the course marked with yellow or red stakes or lines, often with water or mud, where special rules apply."
+      },
+      {
+        "term": "Lateral relief",
+        "simpleMeaning": "Dropping the ball to the side, not back, after it goes into trouble."
+      }
+    ],
+    "teachingTip": "Show children the different colour stakes on the course and help them remember what to do for red and yellow penalty areas.",
+    "likelyMisconceptions": [
+      "Thinking you can always drop to the side no matter the stake colour.",
+      "Believing the same relief options apply for yellow and red penalty areas."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:24:38.109Z",
+  "model": "gpt-4.1"
+}

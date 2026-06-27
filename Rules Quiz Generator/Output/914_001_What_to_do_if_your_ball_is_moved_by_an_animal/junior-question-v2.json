@@ -1,0 +1,51 @@
+{
+  "generatedAtUtc": "2026-06-26T11:23:13.502Z",
+  "model": "gpt-4.1",
+  "reviewerInstructions": "should be a squirell",
+  "sourceQuestionFileName": "question-v2.json",
+  "juniorSuggestion": {
+    "title": "What to do if an animal moves your golf ball",
+    "question": "A squirrel comes onto the course and moves your golf ball from where it was sitting. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Play the ball from where the squirrel left it"
+      },
+      {
+        "id": "b",
+        "text": "Put the ball back where it was, with no penalty"
+      },
+      {
+        "id": "c",
+        "text": "Add one shot and drop the ball anywhere nearby"
+      },
+      {
+        "id": "d",
+        "text": "Skip this hole and go to the next one"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If an animal like a squirrel moves your ball, you put your ball back where it was. You do not get a penalty.",
+    "vocabulary": [
+      {
+        "term": "penalty",
+        "simpleMeaning": "An extra shot added to your score for breaking a rule"
+      },
+      {
+        "term": "replace",
+        "simpleMeaning": "To put the ball back in the same spot it was before"
+      },
+      {
+        "term": "outside influence",
+        "simpleMeaning": "Something not part of your game, like an animal or the wind, that changes your ball"
+      }
+    ],
+    "teachingTip": "You can ask the child to show you where they would put the ball back if an animal moved it, so they understand 'replace.'",
+    "likelyMisconceptions": [
+      "Thinking you have to play the ball where the animal left it.",
+      "Thinking you get a penalty shot for the animal's action."
+    ]
+  }
+}

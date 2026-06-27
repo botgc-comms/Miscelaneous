@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\016_004_What_Kind_of_Animal_Holes_Give_Free_Relief\\metadata.json",
+  "sourceImageName": "page-13.png",
+  "ruleNumber": "16",
+  "ruleName": "Abnormal course conditions",
+  "title": "What Kind of Animal Holes Give Free Relief?",
+  "question": "For which of these is free relief generally given if it interferes with your ball or stance?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "A mole hill"
+    },
+    {
+      "id": "b",
+      "text": "Worm casts"
+    },
+    {
+      "id": "c",
+      "text": "An insect nest"
+    },
+    {
+      "id": "d",
+      "text": "A divot made by a golf shot"
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "Holes or hills made by burrowing animals such as moles, rabbits, or similar, entitle you to relief. Worms, insects, and divots do not qualify.",
+  "juniorVersion": {
+    "title": "Which Animal Hole Means You Can Move Your Ball?",
+    "question": "If one of these things gets in the way of your ball or where you stand, for which do you get to move your ball without a penalty?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "A hill made by a mole"
+      },
+      {
+        "id": "b",
+        "text": "Worm dirt piles"
+      },
+      {
+        "id": "c",
+        "text": "A bunch of bugs together"
+      },
+      {
+        "id": "d",
+        "text": "A chunk of grass taken out by a golf shot"
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "If a burrowing animal, like a mole, makes a hill or hole and it gets in your way, you can move your ball for free. Things made by worms, insects, or marks left by other golf shots do not let you move the ball without a penalty.",
+    "vocabulary": [
+      {
+        "term": "Free relief",
+        "simpleMeaning": "You can move your ball away from the problem without a penalty."
+      },
+      {
+        "term": "Burrowing animal",
+        "simpleMeaning": "An animal that digs holes or tunnels in the ground, like a mole or rabbit."
+      }
+    ],
+    "teachingTip": "Ask children to spot examples of animal holes on the course to practise recognising when they can get free relief.",
+    "likelyMisconceptions": [
+      "Some children might think you get to move your ball for any type of animal or insect mark.",
+      "They might not know the difference between a chunk of grass (divot) and an animal hole."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:11.530Z",
+  "model": "gpt-4.1"
+}

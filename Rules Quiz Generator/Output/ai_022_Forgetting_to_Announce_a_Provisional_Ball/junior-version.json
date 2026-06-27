@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_022_Forgetting_to_Announce_a_Provisional_Ball\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "18.3b",
+  "ruleName": "Announcing a Provisional Ball",
+  "title": "Forgetting to Announce a Provisional Ball",
+  "question": "You believe your tee shot may be lost outside a penalty area, so you play another ball from the tee without announcing that it is a provisional ball. You find your original ball within the three-minute search time. What is the correct ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You must continue playing the original ball because it was found in time."
+    },
+    {
+      "id": "b",
+      "text": "You may choose whether to play the original ball or the second ball."
+    },
+    {
+      "id": "c",
+      "text": "The second ball is in play under stroke and distance because you did not announce it was a provisional ball. The original ball must not be played."
+    },
+    {
+      "id": "d",
+      "text": "There is no penalty because everyone knew the second ball was intended to be provisional."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "Before playing another ball because your original might be lost outside a penalty area, you must clearly announce that the next ball is a provisional. If you fail to do so, the Rules treat the second ball as played under stroke and distance and it immediately becomes the ball in play. Even if you find your original ball within the permitted search time, you must continue with the second ball and not play the original. Rule 18.3b applies.",
+  "juniorVersion": {
+    "title": "Playing Another Ball Without Saying 'Provisional'",
+    "question": "You hit your ball from the tee and think it might be lost (not in water or a penalty area). You hit another ball from the tee, but you don’t say it’s a provisional ball. Then you find your first ball within three minutes. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You must play your first ball, because you found it in time."
+      },
+      {
+        "id": "b",
+        "text": "You can choose to play either the first ball or the second ball."
+      },
+      {
+        "id": "c",
+        "text": "You must play the second ball, because you did not say it was provisional. Now the first ball cannot be played."
+      },
+      {
+        "id": "d",
+        "text": "There is no problem if everyone knew it was meant to be a provisional ball."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "If you want to hit a provisional ball because your first ball might be lost, you need to say 'this is a provisional ball' before hitting it. If you don’t say this, your second ball is the one you have to play, even if you find your first ball.",
+    "vocabulary": [
+      {
+        "term": "Provisional Ball",
+        "simpleMeaning": "A ball you play just in case your first ball is lost or out of bounds."
+      },
+      {
+        "term": "Penalty Area",
+        "simpleMeaning": "Places like water hazards or places marked by red or yellow lines on the course."
+      }
+    ],
+    "teachingTip": "Remind juniors to always say out loud 'This is a provisional ball' before hitting another ball if they think their first ball may be lost or out of bounds.",
+    "likelyMisconceptions": [
+      "Thinking you only have to say 'provisional' if playing with others.",
+      "Thinking you can choose which ball to play if you find both.",
+      "Thinking it is okay as long as other people know what you meant."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:07:55.315Z",
+  "model": "gpt-4.1"
+}

@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_057_Two_Balls_in_the_Hole_Which_Counts\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "6.5",
+  "ruleName": "When a Hole Is Completed",
+  "title": "Two Balls in the Hole – Which Counts?",
+  "question": "You play an approach shot towards the green but do not find your ball. Thinking it is lost, you return and play another ball under stroke and distance. After holing out with the second ball, you discover your original ball was already in the hole. What is the correct ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Your second ball counts because you putted it into the hole."
+    },
+    {
+      "id": "b",
+      "text": "You may choose which ball to count."
+    },
+    {
+      "id": "c",
+      "text": "Your original ball was holed when it came to rest in the hole. The strokes with the second ball do not matter."
+    },
+    {
+      "id": "d",
+      "text": "You receive the general penalty for playing a wrong ball."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "A ball is holed as soon as it comes to rest in the hole after a stroke. If your original ball was already in the hole, the hole was completed at that moment. Returning to play another ball under stroke and distance does not change this. Rule 6.5 states that the original ball being holed ends the play of that hole.",
+  "juniorVersion": {
+    "title": "Which Ball Counts If Both Are In the Hole?",
+    "question": "You hit a shot to the green but can't find your ball, so you think it is lost. You play another ball from where you last hit. After putting this second ball in the hole, you find out your first ball was already in the hole. Which ball should count for your score?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "The second ball counts because you putted it in the hole."
+      },
+      {
+        "id": "b",
+        "text": "You can choose which ball you want to count."
+      },
+      {
+        "id": "c",
+        "text": "Your first ball counts because it was already in the hole before the other one."
+      },
+      {
+        "id": "d",
+        "text": "You get a penalty for playing the wrong ball."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "When your first ball was in the hole, your turn for that hole was already finished. The second ball doesn't change your score. Only the first ball counts.",
+    "vocabulary": [
+      {
+        "term": "Green",
+        "simpleMeaning": "The smooth grass area around the hole where you putt."
+      },
+      {
+        "term": "Stroke and Distance",
+        "simpleMeaning": "This means you play a new ball from where you last hit, adding a penalty shot."
+      },
+      {
+        "term": "Holed",
+        "simpleMeaning": "When your ball is in the hole and has stopped moving."
+      }
+    ],
+    "teachingTip": "Talk about how it’s important to look for your ball carefully before playing a new one, especially near the hole.",
+    "likelyMisconceptions": [
+      "Some kids think if they put the second ball in the hole, that’s the one that counts.",
+      "Kids might think they can choose which ball to use for their score."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T19:19:27.913Z",
+  "model": "gpt-4.1"
+}

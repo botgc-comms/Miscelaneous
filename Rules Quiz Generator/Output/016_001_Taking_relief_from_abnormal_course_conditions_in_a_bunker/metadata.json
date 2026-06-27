@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-21.png",
+  "ruleNumber": "R16",
+  "ruleName": "Abnormal course conditions",
+  "group": "Abnormal course conditions",
+  "title": "Taking relief from abnormal course conditions in a bunker",
+  "question": "Your ball is in a bunker and there is a puddle of water interfering with your stance. What options do you have under the Rules of Golf?",
+  "type": "multi_select",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Drop within one club-length in the bunker without penalty"
+    },
+    {
+      "id": "b",
+      "text": "Drop outside the bunker without penalty"
+    },
+    {
+      "id": "c",
+      "text": "Drop outside the bunker for one penalty stroke"
+    },
+    {
+      "id": "d",
+      "text": "Play the ball as it lies without penalty"
+    }
+  ],
+  "correctAnswer": [
+    "a",
+    "c",
+    "d"
+  ],
+  "correctAnswers": [
+    "a",
+    "c",
+    "d"
+  ],
+  "explanation": "You can drop in the bunker within one club-length with no penalty, or drop outside the bunker but take one penalty stroke. You may also choose to play the ball as it lies.",
+  "imagePrompt": "A teenage girl golfer in a bunker with a puddle, preparing to drop a ball within the bunker to take relief, with a rake and club nearby.",
+  "imageAlt": "Teenage girl golfer dropping a ball in a bunker with a puddle, considering her relief options.",
+  "sceneSpec": {
+    "setting": "bunker",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "dropping_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": true,
+    "bunkerVisible": true,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "medium",
+    "clothingTopColour": "green",
+    "clothingBottomColour": "black",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": false,
+    "score": 60,
+    "issues": [
+      "Golfer is depicted as a girl instead of a boy as required by sceneSpec",
+      "Golfer is not the correct gender",
+      "All other scene and equipment details are correctly depicted: one golf ball, clear bunker with puddle, realistic club and rake on ground, golfer not holding a club, believable golfing posture, accurate proportions, correct clothing colours, proper skin tone, and suitable environment."
+    ],
+    "repairPrompt": "Change the golfer to a teenage black boy with medium skin tone, wearing a green top and black trousers or shorts, no hat, dropping the ball in the same manner. All other scene elements (bunker, puddle, club on ground, rake nearby, one golf ball being dropped at knee height) should remain unchanged."
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\089_002_Penalty_for_breaking_off_branches_during_a_practice_swing\\metadata.json",
+  "sourceImageName": "page-10.png",
+  "ruleNumber": "R8/9",
+  "ruleName": "Do not break anything off or bend anything out of the way",
+  "title": "Penalty for breaking off branches during a practice swing",
+  "question": "If you break a small branch that helps clear your shot while making a practice swing, what penalty do you get?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "There is no penalty."
+    },
+    {
+      "id": "b",
+      "text": "You get 1 penalty stroke."
+    },
+    {
+      "id": "c",
+      "text": "You get 2 penalty strokes."
+    },
+    {
+      "id": "d",
+      "text": "You replay your shot."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "Breaking branches or anything growing or fixed to improve your shot, including during a practice swing, results in a two stroke penalty.",
+  "juniorVersion": {
+    "title": "What happens if you break a branch while practising your swing?",
+    "question": "You are getting ready to hit and make a practice swing. If you break a small branch that would have made your next shot easier, what happens?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Nothing happens. No penalty."
+      },
+      {
+        "id": "b",
+        "text": "You get 1 penalty shot."
+      },
+      {
+        "id": "c",
+        "text": "You get 2 penalty shots."
+      },
+      {
+        "id": "d",
+        "text": "You try your shot again."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "If you break off a branch or bend something growing to help your shot, even when practising your swing, you get a two-shot penalty.",
+    "vocabulary": [
+      {
+        "term": "Practice swing",
+        "simpleMeaning": "Swinging your club before you hit, to get ready."
+      },
+      {
+        "term": "Penalty stroke",
+        "simpleMeaning": "Extra shots added to your score for breaking a rule."
+      }
+    ],
+    "teachingTip": "Remind kids not to break or bend anything growing on the golf course, even when practising swings near trees or bushes.",
+    "likelyMisconceptions": [
+      "Some children may think there is no penalty for breaking a branch during practice swings.",
+      "They may believe a penalty only happens if you break something while making your real shot."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:56.331Z",
+  "model": "gpt-4.1"
+}

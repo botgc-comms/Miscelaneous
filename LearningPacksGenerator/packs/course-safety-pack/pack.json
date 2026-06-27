@@ -1,0 +1,50 @@
+{
+  "id": "course-safety",
+  "title": "Staying safe on the course",
+  "summary": "Safety around blind shots, bells, lightning and other players.",
+  "estimatedMinutes": 7,
+  "priority": 800,
+  "mandatoryFor": [
+    "Junior Cadet", 
+    "Junior Course Cadet"
+  ],
+  "version": 1,
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "Before you start",
+      "file": "pages/00-title.md"
+    },
+    {
+      "id": "01-shouting-fore",
+      "title": "Shouting \u2018Fore!\u2019",
+      "file": "pages/01-shouting-fore.md"
+    },
+    {
+      "id": "02-hearing-fore",
+      "title": "If someone shouts \u2018Fore!\u2019",
+      "file": "pages/02-hearing-fore.md"
+    },
+    {
+      "id": "03-bells-and-blind-shots",
+      "title": "Bells and blind shots",
+      "file": "pages/03-bells-and-blind-shots.md"
+    },
+    {
+      "id": "04-lightning-and-horns",
+      "title": "Lightning and warning horns",
+      "file": "pages/04-lightning-and-horns.md"
+    },
+    {
+      "id": "05-hazards-and-rough",
+      "title": "Tree roots, ditches and rough",
+      "file": "pages/05-hazards-and-rough.md"
+    },
+    {
+      "id": "90-quick-check",
+      "title": "Quick check",
+      "file": "pages/90-quick-check.md",
+      "type": "quiz"
+    }
+  ]
+}

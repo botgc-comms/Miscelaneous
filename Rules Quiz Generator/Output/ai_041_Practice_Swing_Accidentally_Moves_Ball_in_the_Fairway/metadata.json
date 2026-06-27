@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "9.4b",
+  "ruleName": "Ball Lifted or Moved by Player",
+  "group": "General Play",
+  "title": "Practice Swing Accidentally Moves Ball in the Fairway",
+  "question": "Your ball is lying on the fairway. Before playing your shot, you take a practice swing and accidentally hit the ball, causing it to roll several yards. What is the correct ruling?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "There is no penalty because it was only a practice swing. Play the ball from its new position."
+    },
+    {
+      "id": "b",
+      "text": "Count it as your next stroke and play the ball from where it came to rest."
+    },
+    {
+      "id": "c",
+      "text": "You receive a one-stroke penalty. Replace the ball on its original spot before playing."
+    },
+    {
+      "id": "d",
+      "text": "Replay the shot without penalty."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "A stroke only occurs when you make a forward movement of the club with the intention of striking the ball. Because this was a practice swing, you had no intention of hitting the ball, so no stroke has been made. However, by accidentally hitting the ball, you caused your ball at rest to move. In the general area, the penalty is one stroke, and you must replace the ball on its original spot before making your next stroke.",
+  "imagePrompt": "A modern, polished semi-realistic (about 75% realistic, 25% stylised) illustration in the junior golf quiz style. Show a golfer on a neat fairway who has just taken a practice swing and accidentally struck the ball. The golfer should look surprised or concerned. Make the original ball position obvious, for example with a slight grass depression or mark, and show the ball a few yards further away on the fairway. Include a visible golf bag in the background and the course scenery, but no text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer on a fairway looking surprised after taking a practice swing and accidentally moving the ball several yards ahead. The previous spot is visible on the grass, and the golf bag stands nearby.",
+  "sceneSpec": {
+    "setting": "Fairway on a golf course, clearly not the teeing area or putting green, with neatly cut grass and a view of the hole in the distance.",
+    "players": "One golfer addressing the ball, wearing typical golf clothing, with a golf bag nearby.",
+    "ballPosition": "Golf ball on short grass of the fairway, some distance ahead of the golfer after having been accidentally moved by a practice swing.",
+    "ruleMoment": "The moment after the practice swing when the ball has been accidentally struck and is rolling or has come to rest several yards away.",
+    "educationalFocus": "Illustrate a practice swing causing an accidental movement of the ball in the fairway (general area), making it clear no stroke was intended.",
+    "mustShow": [
+      "Golfer having just taken a practice swing with a surprised or concerned expression",
+      "Original ball position on the fairway with a small visible depression or changed grass mark",
+      "Golf ball visible a few yards away from its original spot, showing it has moved"
+    ],
+    "mustNotShow": [
+      "Tee markers, greens, bunkers, water hazards",
+      "Text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards, speech bubbles",
+      "Other golfers interacting"
+    ]
+  }
+}

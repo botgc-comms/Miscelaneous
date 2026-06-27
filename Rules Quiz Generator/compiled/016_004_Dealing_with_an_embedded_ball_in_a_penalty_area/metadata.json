@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-27.png",
+  "ruleNumber": "R16",
+  "ruleName": "Embedded ball",
+  "group": "Embedded ball",
+  "type": "multi_select",
+  "imagePrompt": "A teenage left-handed boy golfer and his wedge stand near a ball embedded in soft ground inside a red-staked penalty area with trees and overcast sky, thinking about his relief options.",
+  "imageAlt": "Teenage boy golfer faces an embedded ball in a penalty area.",
+  "sceneSpec": {
+    "setting": "penalty_area_edge",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "wedge",
+    "ballCount": 1,
+    "stakeColour": "red",
+    "waterVisible": true,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "medium",
+    "clothingTopColour": "yellow",
+    "clothingBottomColour": "green",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "The boy is holding the club in his right hand and left hand is free, which may suggest right-handedness unless clarified by subtle stance (should ideally be more clearly left-handed for absolute accuracy)."
+    ],
+    "repairPrompt": "Ensure the teenage boy clearly appears left-handed, such as holding the wedge in his left hand or standing with a left-handed golf stance. Otherwise, keep all other elements the same."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What can you do if your ball is stuck in the ground in a penalty area?",
+      "question": "Your ball has landed in a penalty area, like a pond or a muddy place, and is stuck in the ground (plugged). What can you do?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball as it is, without touching it first."
+        },
+        {
+          "id": "b",
+          "text": "Take a penalty and drop a ball, following penalty area rules."
+        },
+        {
+          "id": "c",
+          "text": "Fix the ground before you hit your shot."
+        },
+        {
+          "id": "d",
+          "text": "Move the ball out of the penalty area without a penalty."
+        },
+        {
+          "id": "e",
+          "text": "Take a penalty and hit a new ball from where you last hit."
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "e"
+      ],
+      "correctAnswer": [
+        "a",
+        "b",
+        "e"
+      ],
+      "explanation": "If your ball is stuck in the ground in a penalty area, you can play it as it is, or you can take a penalty and drop or play a new ball. You are not allowed to fix the ground or move the ball out for free.",
+      "vocabulary": [
+        {
+          "term": "Penalty area",
+          "simpleMeaning": "A special place on the course, like a lake, pond, or very muddy ground, where different rules apply."
+        },
+        {
+          "term": "Embedded ball (plugged ball)",
+          "simpleMeaning": "A ball that is stuck in the ground so you see only part or none of it above the surface."
+        }
+      ],
+      "teachingTip": "Show what it looks like when a ball is plugged in soft ground. Practise what you can do inside and outside a penalty area.",
+      "likelyMisconceptions": [
+        "Thinking you always get to fix the ground when your ball is plugged.",
+        "Thinking you can always move the ball with no penalty when it is stuck.",
+        "Thinking a plugged ball can always be dropped for free from a penalty area."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Dealing with an embedded ball in a penalty area",
+      "question": "Your ball is plugged in the ground inside a penalty area. What are your options according to the rules?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball as it lies."
+        },
+        {
+          "id": "b",
+          "text": "Take relief under the penalty area rule for a penalty stroke."
+        },
+        {
+          "id": "c",
+          "text": "Repair the ground before you play your shot."
+        },
+        {
+          "id": "d",
+          "text": "Move the ball outside the penalty area without penalty."
+        },
+        {
+          "id": "e",
+          "text": "Take a penalty stroke and play another ball from where you last played."
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "e"
+      ],
+      "correctAnswer": [
+        "a",
+        "b",
+        "e"
+      ],
+      "explanation": "You can play the embedded ball as it lies, or take penalty relief under the penalty area rule by dropping outside for one penalty stroke, or take stroke-and-distance relief by playing a new ball from the original spot for a penalty stroke. Free embedded ball relief is not allowed in a penalty area."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "016_004_Dealing_with_an_embedded_ball_in_a_penalty_area",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-06-26T20:03:53.381Z"
+  }
+}

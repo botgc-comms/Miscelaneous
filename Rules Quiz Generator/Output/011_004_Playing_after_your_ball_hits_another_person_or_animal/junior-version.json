@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\011_004_Playing_after_your_ball_hits_another_person_or_animal\\metadata.json",
+  "sourceImageName": "page-17.png",
+  "ruleNumber": "R11",
+  "ruleName": "Ball hits an outside influence or the player",
+  "title": "Playing after your ball hits another person or animal",
+  "question": "Your golf ball accidentally hits a person or an animal while in play. What does the rule say you should do?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Add a penalty and replay the shot"
+    },
+    {
+      "id": "b",
+      "text": "Play the ball as it lies, no penalty"
+    },
+    {
+      "id": "c",
+      "text": "Drop a new ball near where the incident happened"
+    },
+    {
+      "id": "d",
+      "text": "Add two penalty strokes and continue"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If your ball hits a person or animal by chance, you play the ball from where it rests with no penalty.",
+  "juniorVersion": {
+    "title": "What to Do If Your Ball Hits Someone or an Animal",
+    "question": "You hit your golf ball and it accidentally bumps into a person or an animal. What should you do next?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Add a penalty and hit the shot again"
+      },
+      {
+        "id": "b",
+        "text": "Play your ball from where it stopped, no penalty"
+      },
+      {
+        "id": "c",
+        "text": "Drop a new ball nearby and play from there"
+      },
+      {
+        "id": "d",
+        "text": "Add two extra shots and keep going"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If your golf ball accidentally hits a person or animal, just play your ball from where it stopped. You do not get a penalty.",
+    "vocabulary": [
+      {
+        "term": "Penalty",
+        "simpleMeaning": "Extra shots added to your score because of a rule mistake."
+      },
+      {
+        "term": "Play the ball as it lies",
+        "simpleMeaning": "Hit the ball from where it finished after your shot."
+      }
+    ],
+    "teachingTip": "Help kids learn that sometimes things happen by accident in golf, and the rules tell us what to do. Use soft toys or cones for safe practice when showing examples.",
+    "likelyMisconceptions": [
+      "Children might think they always get a penalty if the ball hits something.",
+      "Some might try to hit the shot again instead of playing from where the ball stopped."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:19.203Z",
+  "model": "gpt-4.1"
+}

@@ -1,0 +1,328 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-30.png",
+  "sourceImagePath": "Input\\page-30.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-30.png",
+      "ruleNumber": "R18",
+      "ruleName": "Out of bounds and provisional ball",
+      "group": "Out of bounds and provisional ball",
+      "title": "When is a ball out of bounds?",
+      "question": "Which of these situations means your ball is out of bounds?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "The entire ball is outside the line formed by the out of bounds posts."
+        },
+        {
+          "id": "b",
+          "text": "Part of the ball is still on the course side of the out of bounds posts."
+        },
+        {
+          "id": "c",
+          "text": "The ball is touching an out of bounds post but not fully beyond the line."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "A ball is only out of bounds if the entire ball is outside the line formed by the out of bounds (white) posts.",
+      "imagePrompt": "A teenage girl golfer stands behind a white post on the edge of a golf course fairway, checking if her ball, which is just beyond the post, is fully out of bounds.",
+      "imageAlt": "Teen girl golfer checking if her ball is out of bounds beyond a white post on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "white",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "light",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "black",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-30.png",
+      "ruleNumber": "R18",
+      "ruleName": "Out of bounds and provisional ball",
+      "group": "Out of bounds and provisional ball",
+      "title": "What do you do if your ball is out of bounds?",
+      "question": "If your ball is found to be out of bounds, what must you do next?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop a ball where it went out of bounds and play on."
+        },
+        {
+          "id": "b",
+          "text": "Return to where you played your last shot, play again, and take a 1-stroke penalty."
+        },
+        {
+          "id": "c",
+          "text": "Move the ball back in bounds and keep playing with no penalty."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You must return to where you last played, play another ball, and add a 1-stroke penalty if your original ball is out of bounds.",
+      "imagePrompt": "A teenage boy golfer walks back towards the teeing area after discovering his ball is out of bounds just beyond some white posts.",
+      "imageAlt": "Teen boy golfer heading back to replay his shot because his ball is out of bounds past white posts.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "replaying_shot",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "white",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "light",
+        "clothingTopColour": "orange",
+        "clothingBottomColour": "navy",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-30.png",
+      "ruleNumber": "R18",
+      "ruleName": "Out of bounds and provisional ball",
+      "group": "Out of bounds and provisional ball",
+      "title": "Provisional ball becomes the ball in play",
+      "question": "You play a provisional ball after hitting your first shot toward out of bounds. If your first ball is definitely out of bounds, what happens to your provisional ball?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "The provisional ball becomes the ball in play with a 1-stroke penalty."
+        },
+        {
+          "id": "b",
+          "text": "You must pick up the provisional ball and drop another ball at the out of bounds spot."
+        },
+        {
+          "id": "c",
+          "text": "You continue playing your original ball with no penalty."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "If your first ball is out of bounds, your provisional ball becomes the ball in play with a 1-stroke penalty added.",
+      "imagePrompt": "A teenage girl hits a provisional ball from the teeing area after her first shot goes toward the out of bounds area marked with white posts.",
+      "imageAlt": "Teen girl golfer hitting a provisional ball from the tee because her first ball might be out of bounds.",
+      "sceneSpec": {
+        "setting": "teeing_area",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "replaying_shot",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "white",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "dark",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "black",
+        "hat": true
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-30.png",
+      "ruleNumber": "R18",
+      "ruleName": "Out of bounds and provisional ball",
+      "group": "Out of bounds and provisional ball",
+      "title": "When is a ball out of bounds?",
+      "question": "Which of these situations means your ball is out of bounds?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "The entire ball is over the line made by the out of bounds posts."
+        },
+        {
+          "id": "b",
+          "text": "Part of the ball is still on the course side of the line marked by the out of bounds posts."
+        },
+        {
+          "id": "c",
+          "text": "The ball is touching an out of bounds post but most of it is still on the course side."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "A ball is only out of bounds if its entire location is over the line defined by the out of bounds (white) posts. If any part of the ball is in bounds, it is not out of bounds.",
+      "imagePrompt": "A teenage girl golfer stands near a white post on the edge of the fairway, carefully checking if her golf ball is fully sitting past the imaginary line made by the posts.",
+      "imageAlt": "Teen girl golfer checking if her ball is completely out of bounds beyond a white post at the edge of a fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "white",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "black",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-30.png",
+      "ruleNumber": "R18",
+      "ruleName": "Out of bounds and provisional ball",
+      "group": "Out of bounds and provisional ball",
+      "title": "What do you have to do if your ball is out of bounds?",
+      "question": "If you find out your ball is out of bounds, what should you do next according to the rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop a ball at the spot where your ball went out of bounds and keep playing."
+        },
+        {
+          "id": "b",
+          "text": "Go back to where you played your last shot, play another ball, and add a one-stroke penalty."
+        },
+        {
+          "id": "c",
+          "text": "Move the ball back in bounds and keep playing with no penalty."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "When a ball is out of bounds, you must go back to the place you last played from, play again, and add a one-stroke penalty.",
+      "imagePrompt": "A teenage boy golfer is seen walking back toward the teeing area after finding out his ball has ended up out of bounds past white posts on the side of the fairway.",
+      "imageAlt": "Teen boy golfer walking back to replay his shot because his ball is out of bounds past white posts.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "replaying_shot",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "white",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "light",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "navy",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-30.png",
+      "ruleNumber": "R18",
+      "ruleName": "Out of bounds and provisional ball",
+      "group": "Out of bounds and provisional ball",
+      "title": "What happens to your provisional ball?",
+      "question": "After you've played a provisional ball because your first shot might be out of bounds, what do you do if it's clear your first ball is definitely out?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Your provisional ball becomes your ball in play and you get a one-stroke penalty."
+        },
+        {
+          "id": "b",
+          "text": "You must pick up your provisional ball and drop another ball at the out of bounds spot."
+        },
+        {
+          "id": "c",
+          "text": "You can keep playing your original ball with no penalty."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "If your original ball is confirmed out of bounds, your provisional ball becomes your ball in play, and you must add a one-stroke penalty.",
+      "imagePrompt": "A teenage girl stands on the teeing area, hitting a provisional ball after her first shot heads toward an out of bounds area marked by white posts.",
+      "imageAlt": "Teen girl golfer hitting a provisional ball from the tee with white out of bounds posts in the background.",
+      "sceneSpec": {
+        "setting": "teeing_area",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "replaying_shot",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "white",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "dark",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "navy",
+        "hat": true
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "018_001_When_is_a_ball_out_of_bounds",
+    "018_002_What_do_you_have_to_do_if_your_ball_is_out_of_bounds",
+    "018_003_What_happens_to_your_provisional_ball"
+  ],
+  "updatedAtUtc": "2026-04-24T22:36:22.748Z"
+}

@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\689_002_When_must_you_NOT_play_the_ball_as_it_lies\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:19:00.768Z",
+  "title": "When must you NOT play the ball as it lies?",
+  "ruleNumber": "6/8/9",
+  "ruleName": "Playing the ball as it lies",
+  "durationSeconds": 204.328
+}

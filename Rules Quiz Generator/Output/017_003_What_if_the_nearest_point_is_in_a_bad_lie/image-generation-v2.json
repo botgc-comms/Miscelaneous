@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\017_003_What_if_the_nearest_point_is_in_a_bad_lie\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:56:57.909Z",
+  "title": "What if the nearest point is in a bad lie?",
+  "ruleNumber": "17",
+  "ruleName": "Taking Relief from Abnormal Course Conditions",
+  "durationSeconds": 226.153
+}

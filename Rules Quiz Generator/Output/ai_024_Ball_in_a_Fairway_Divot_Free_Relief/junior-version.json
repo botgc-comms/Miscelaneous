@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_024_Ball_in_a_Fairway_Divot_Free_Relief\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "9.1",
+  "ruleName": "Ball Played as It Lies; Ball at Rest Lifted or Moved",
+  "title": "Ball in a Fairway Divot: Free Relief?",
+  "question": "Your tee shot finishes in the middle of the fairway, but unfortunately the ball comes to rest in a deep divot left by another player. Can you take free relief?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes. A divot is ground under repair."
+    },
+    {
+      "id": "b",
+      "text": "Yes. You are entitled to relief because your ball is on the fairway."
+    },
+    {
+      "id": "c",
+      "text": "No. You must play the ball as it lies unless a Local Rule says otherwise."
+    },
+    {
+      "id": "d",
+      "text": "Yes, but only if the divot has not yet started to grow back."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "A common misconception is that free relief is allowed from a divot in the fairway. Under the Rules of Golf, however, a divot is not ground under repair and there is no automatic entitlement to free relief. The ball must be played as it lies unless a Local Rule gives additional options.",
+  "juniorVersion": {
+    "title": "Stuck in a Hole on the Fairway",
+    "question": "You hit your shot and your ball stops right in the middle of the fairway, but it's stuck in a hole made by someone else's shot (a divot). Can you pick up your ball and move it for free?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Yes. A divot is a special area that lets you move your ball."
+      },
+      {
+        "id": "b",
+        "text": "Yes. If your ball is on the fairway, you can always move it."
+      },
+      {
+        "id": "c",
+        "text": "No. You must play the ball where it is, unless there's a special rule."
+      },
+      {
+        "id": "d",
+        "text": "Yes, but only if grass isn’t growing back in the hole yet."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "In golf, if your ball lands in a hole (divot) on the fairway, you have to play it as it is. You can only move it if there's a special rule at your golf course.",
+    "vocabulary": [
+      {
+        "term": "Divot",
+        "simpleMeaning": "A chunk of grass and dirt removed when someone hits the ball, leaving a hole."
+      },
+      {
+        "term": "Fairway",
+        "simpleMeaning": "The nice short grass between the tee and the green."
+      }
+    ],
+    "teachingTip": "Tell children that golf is about playing the course as you find it, including any holes left by other players. Practice hitting from tricky spots so they feel confident.",
+    "likelyMisconceptions": [
+      "Thinking the hole in the fairway is always a special spot where you can move your ball.",
+      "Thinking you always get to move your ball if you don't like where it landed."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:09:10.941Z",
+  "model": "gpt-4.1"
+}

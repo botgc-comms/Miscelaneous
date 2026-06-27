@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\016_005_When_Is_Free_Relief_Allowed_for_Abnormal_Course_Conditions\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:49:36.494Z",
+  "title": "When Is Free Relief Allowed for Abnormal Course Conditions?",
+  "ruleNumber": "16",
+  "ruleName": "Abnormal course conditions",
+  "durationSeconds": 185.446
+}

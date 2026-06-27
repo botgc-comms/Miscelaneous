@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "pageb-10.png",
+  "ruleNumber": "R9",
+  "ruleName": "Ball at rest moved by an outside influence",
+  "group": "Ball at rest moved by an outside influence",
+  "type": "multiple_choice",
+  "imagePrompt": "A teenage girl golfer on the fairway looks surprised as a dog nudges her golf ball out of place. The girl is holding an iron and wearing a blue top, purple shorts, and a hat. The fairway is sunny.",
+  "imageAlt": "Teen golfer watching a dog move her ball on the fairway.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "navy",
+    "clothingBottomColour": "green",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "Club and ball are visually strong and accurate.",
+      "Golfer's posture, proportions, ethnicity, and clothing match requirements.",
+      "Scene is a realistic fairway with no visual golf errors.",
+      "No hat is present, clothing colors are navy and green as required.",
+      "Dog, ball (one only), and iron club are clear.",
+      "Extremely minor: facial surprise expression could be emphasized a touch more for teaching intent."
+    ],
+    "repairPrompt": "Increase the girl's visible surprise to make her reaction to the dog nudging the golf ball more expressive, while keeping all other details unchanged."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What should you do if a dog moves your golf ball?",
+      "question": "You are playing golf and your ball is sitting still on the grass. A dog runs over and bumps your ball, and it rolls away. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Hit the ball from where the dog left it"
+        },
+        {
+          "id": "b",
+          "text": "Put the ball back where it was before the dog moved it, with no penalty"
+        },
+        {
+          "id": "c",
+          "text": "Put the ball back and add two shots to your score"
+        },
+        {
+          "id": "d",
+          "text": "Leave the ball and add one shot to your score"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If a dog (or something else not part of your game) moves your golf ball, you just put the ball back where it was before. You don’t get any penalty.",
+      "vocabulary": [
+        {
+          "term": "Penalty",
+          "simpleMeaning": "Extra shots added to your score because of a mistake or breaking a rule."
+        },
+        {
+          "term": "Original spot",
+          "simpleMeaning": "The place where your ball was before it got moved."
+        },
+        {
+          "term": "Outside influence",
+          "simpleMeaning": "Something or someone, like a dog, that is not playing golf with you, which changes how your ball is resting."
+        }
+      ],
+      "teachingTip": "You can remind children that animals or wind are outside influences and you just put your ball back if they move it.",
+      "likelyMisconceptions": [
+        "Children may think they have to play the ball from where the dog left it.",
+        "Some may believe they get a penalty when an animal moves their ball."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "What to do if your ball is moved by a dog",
+      "question": "While playing from the fairway, a dog runs by and nudges your golf ball, moving it from its original spot. What is the correct action?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball from where the dog moved it to"
+        },
+        {
+          "id": "b",
+          "text": "Place the ball back to its original spot with no penalty"
+        },
+        {
+          "id": "c",
+          "text": "Replace the ball and take a two-stroke penalty"
+        },
+        {
+          "id": "d",
+          "text": "Leave the ball and add a one-stroke penalty"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If an outside influence, such as a dog, moves your ball at rest, you must place the ball back in its original position without penalty."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "009_001_What_to_do_if_your_ball_is_moved_by_a_dog",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.453Z"
+  }
+}

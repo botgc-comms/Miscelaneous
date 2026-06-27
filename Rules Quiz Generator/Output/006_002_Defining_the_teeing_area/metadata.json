@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-06.png",
+  "ruleNumber": "6",
+  "ruleName": "Teeing area",
+  "group": "Teeing area",
+  "title": "Defining the teeing area",
+  "question": "When starting a hole, where must the ball be placed for your first shot from the teeing area?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Anywhere within 2 club-lengths from the tee markers, even if your feet are outside."
+    },
+    {
+      "id": "b",
+      "text": "Directly on the line joining the two tee markers."
+    },
+    {
+      "id": "c",
+      "text": "Completely inside the teeing area, which is defined by the tee markers and up to two club-lengths behind them."
+    },
+    {
+      "id": "d",
+      "text": "Anywhere on the teeing ground as long as your stance is inside it."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "The ball must be entirely inside the teeing area for your first shot, although your stance can be outside the area.",
+  "imagePrompt": "A teenage boy is about to hit a tee shot, with the ball placed completely within the area marked by two visible tee markers. His feet are placed just outside the teeing area.",
+  "imageAlt": "Teen boy preparing to tee off with ball correctly inside the space between yellow tee markers.",
+  "sceneSpec": {
+    "setting": "teeing_area",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "driver",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": true,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "light",
+    "clothingTopColour": "grey",
+    "clothingBottomColour": "navy",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "Feet placement very close to line, but outside the teeing area as required.",
+      "Everything else matches the prompt well: girl, correct ethnicity and light skin tone, grey top, navy trousers, realistic driver, plausible posture, single ball, visible tee markers."
+    ],
+    "repairPrompt": "Move the girl's feet slightly further outside the teeing area to make their position more visually unambiguous. Ensure all other prompt details remain unchanged."
+  }
+}

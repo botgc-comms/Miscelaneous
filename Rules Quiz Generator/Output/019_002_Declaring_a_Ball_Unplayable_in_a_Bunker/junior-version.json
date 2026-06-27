@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\019_002_Declaring_a_Ball_Unplayable_in_a_Bunker\\metadata.json",
+  "sourceImageName": "page-22.png",
+  "ruleNumber": "R19",
+  "ruleName": "Unplayable ball",
+  "title": "Declaring a Ball Unplayable in a Bunker",
+  "question": "If your ball is unplayable in a bunker and you choose to drop it outside the bunker behind where it lay, how many penalty strokes must you add?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No penalty"
+    },
+    {
+      "id": "b",
+      "text": "1 penalty stroke"
+    },
+    {
+      "id": "c",
+      "text": "2 penalty strokes"
+    },
+    {
+      "id": "d",
+      "text": "3 penalty strokes"
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "According to the rules, choosing to drop outside the bunker behind the original spot incurs a two-stroke penalty.",
+  "juniorVersion": {
+    "title": "What if you can’t hit your golf ball out of the sand?",
+    "question": "Your ball is stuck in a bunker and you decide to move it and drop it behind the bunker on the grass. How many extra shots do you have to add to your score for doing this?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "No extra shots"
+      },
+      {
+        "id": "b",
+        "text": "1 extra shot"
+      },
+      {
+        "id": "c",
+        "text": "2 extra shots"
+      },
+      {
+        "id": "d",
+        "text": "3 extra shots"
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "If you choose to move your ball out of the bunker and drop it behind the bunker, you must add 2 shots to your score.",
+    "vocabulary": [
+      {
+        "term": "bunker",
+        "simpleMeaning": "A bunker is a sandy area on a golf course. It is sometimes called a sand trap."
+      },
+      {
+        "term": "drop",
+        "simpleMeaning": "To drop means to let your ball fall from your hand when you are allowed to move it according to the rules."
+      }
+    ],
+    "teachingTip": "Let children practise dropping and counting strokes for different relief options. Use toys or cones to mark bunker and drop areas.",
+    "likelyMisconceptions": [
+      "Many children think dropping outside the bunker is just one extra shot, but it is actually two.",
+      "Some may think you can always drop on the grass with one penalty, but only dropping outside the bunker is two."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:45.454Z",
+  "model": "gpt-4.1"
+}

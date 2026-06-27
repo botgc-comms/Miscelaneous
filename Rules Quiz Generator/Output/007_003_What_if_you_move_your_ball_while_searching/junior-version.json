@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\007_003_What_if_you_move_your_ball_while_searching\\metadata.json",
+  "sourceImageName": "page-09.png",
+  "ruleNumber": "R7",
+  "ruleName": "Ball moved during a search",
+  "title": "What if you move your ball while searching?",
+  "question": "If you accidentally move your ball while searching for it in the rough, what must you do according to the Rules of Golf?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Leave it where it stops"
+    },
+    {
+      "id": "b",
+      "text": "Replace it as close as possible to its original spot, with no penalty"
+    },
+    {
+      "id": "c",
+      "text": "Take a penalty stroke and play from where it stops"
+    },
+    {
+      "id": "d",
+      "text": "Drop a new ball"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If you move your ball by accident while searching, you must replace it on its original spot without penalty.",
+  "juniorVersion": {
+    "title": "What should you do if you move your ball while looking for it?",
+    "question": "You are looking for your golf ball in the long grass. Oops! You accidentally move it. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Leave your ball where it ended up"
+      },
+      {
+        "id": "b",
+        "text": "Put your ball back where it was, with no penalty"
+      },
+      {
+        "id": "c",
+        "text": "Add a penalty and play your ball from where it stopped"
+      },
+      {
+        "id": "d",
+        "text": "Drop a different ball and keep playing"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If you move your ball while you are looking for it, put it back where it was. You do not get a penalty.",
+    "vocabulary": [
+      {
+        "term": "Penalty",
+        "simpleMeaning": "This is when you have to add extra shots to your score for breaking a rule."
+      },
+      {
+        "term": "Replace",
+        "simpleMeaning": "To put your ball back to the place where it was before."
+      },
+      {
+        "term": "Original spot",
+        "simpleMeaning": "The place where your golf ball was before it moved."
+      }
+    ],
+    "teachingTip": "Practise putting your ball back in the right place if you move it while searching, so you learn to remember the spot.",
+    "likelyMisconceptions": [
+      "Some players think you must take a penalty if you move your ball, but there is no penalty if you are just looking for it.",
+      "Some might believe you can leave your ball where it rolls to, but you must put it back."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:53.065Z",
+  "model": "gpt-4.1"
+}

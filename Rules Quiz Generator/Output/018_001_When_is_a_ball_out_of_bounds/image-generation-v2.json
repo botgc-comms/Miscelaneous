@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\018_001_When_is_a_ball_out_of_bounds\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:57:43.902Z",
+  "title": "When is a ball out of bounds?",
+  "ruleNumber": "R18",
+  "ruleName": "Out of bounds and provisional ball",
+  "durationSeconds": 234.545
+}

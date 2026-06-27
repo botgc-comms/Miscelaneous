@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "1.2a, 10.2",
+  "ruleName": "Standards of Player Conduct; Advice and Other Help",
+  "group": "Playing the Game",
+  "type": "multiple_choice",
+  "imagePrompt": "Illustrate a modern, semi-realistic (about 75% realistic, 25% stylised) scene on a putting green in daylight. Show two golfers: one is at address preparing to putt, and the other stands several feet directly behind, observing closely. Both players’ golf balls should be visible on the green, within a few metres of the hole, making it clear whose turn it is. The illustration should depict the moment just before the stroke, focusing on the interaction and positions of the two players. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "Two golfers on a putting green: one preparing to putt, the other standing directly behind and watching closely, with both golf balls and the hole visible.",
+  "sceneSpec": {
+    "setting": "Putting green on a golf course in daylight, with a clear view of the hole and green.",
+    "players": "Two players: One is at address preparing to putt, the other is standing several feet directly behind the player putting, observing closely.",
+    "ballPosition": "The ball belonging to the player preparing to putt is on the green, within a few metres of the hole.",
+    "ruleMoment": "The moment just before the stroke is made, when the opponent is standing behind the player about to putt.",
+    "educationalFocus": "Whether it is allowed for an opponent to stand behind a player about to putt in a match play situation.",
+    "mustShow": [
+      "Golfer at address preparing to putt",
+      "Opponent standing behind the golfer, watching intently",
+      "Putting green, with the hole visible",
+      "Golf balls on the green with clear distinction between the two players’ positions"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Can your opponent watch your putt from behind?",
+      "question": "You and your friend both have putts that go the same way. It’s your turn first. Your friend stands behind you to see how your putt rolls, so they know what their ball might do. Is this allowed?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Your friend is not allowed to stand behind you while you putt."
+        },
+        {
+          "id": "b",
+          "text": "Your friend can stand behind you and watch your putt. There is no penalty."
+        },
+        {
+          "id": "c",
+          "text": "Your friend must stay at least two club-lengths away."
+        },
+        {
+          "id": "d",
+          "text": "You can tell your friend to move before you putt."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "Your friend is allowed to watch your putt from behind to see if it goes left or right. As long as they don’t make noise or get in your way, it’s OK for them to watch and learn before it’s their turn.",
+      "vocabulary": [
+        {
+          "term": "putt",
+          "simpleMeaning": "A light stroke used to roll the ball on the green towards the hole."
+        },
+        {
+          "term": "penalty",
+          "simpleMeaning": "A punishment in golf when you break a rule, like adding extra shots to your score."
+        }
+      ],
+      "teachingTip": "Let children watch their friends putt to learn how the ball moves, but remind them not to talk or move when someone is putting.",
+      "likelyMisconceptions": [
+        "Kids might think it’s unfair if someone watches their putt closely.",
+        "Children could think the other player must stay far away and not look at all."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Opponent watching your putt",
+      "question": "You and your opponent both have similar putts. It is your turn to play first, and your opponent stands behind you so they can watch how your putt breaks before playing their own. What is the correct ruling?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Your opponent is not allowed to stand behind you while you putt."
+        },
+        {
+          "id": "b",
+          "text": "Your opponent may stand behind you and watch your putt. There is no penalty."
+        },
+        {
+          "id": "c",
+          "text": "Your opponent must stand at least two club-lengths away."
+        },
+        {
+          "id": "d",
+          "text": "You may require your opponent to move before you play."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "There is no Rule of Golf preventing your opponent from standing behind you to observe how your putt breaks. In match play, this is often strategic. As long as your opponent does not deliberately distract you or interfere with your stroke, they are entitled to watch and learn from your play."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "ai_055_Opponent_watching_your_putt",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-06-26T20:03:54.272Z"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\015_002_Marking_to_the_side_to_avoid_another_players_line\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:34:48.113Z",
+  "title": "Marking to the side to avoid another player's line",
+  "ruleNumber": "R15",
+  "ruleName": "Marking to the side",
+  "durationSeconds": 184.12
+}

@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-19.png",
+  "ruleNumber": "R12",
+  "ruleName": "Do not touch or test the sand",
+  "group": "Bunker",
+  "title": "What is not allowed before your bunker shot?",
+  "question": "Before playing from a bunker, which of these are you not allowed to do?",
+  "type": "multi_select",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Touch the sand with your hand to see how soft it is"
+    },
+    {
+      "id": "b",
+      "text": "Make a practice swing that touches the sand"
+    },
+    {
+      "id": "c",
+      "text": "Rest your club on the sand behind your ball before hitting"
+    },
+    {
+      "id": "d",
+      "text": "Play your shot without touching the sand first"
+    },
+    {
+      "id": "e",
+      "text": "Lean on your club while standing outside the bunker"
+    }
+  ],
+  "correctAnswer": [
+    "a",
+    "b",
+    "c"
+  ],
+  "correctAnswers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "explanation": "You are not allowed to test or touch the sand with your hand, touch the sand with your club during practice swings, or ground your club behind your ball before you hit.",
+  "imagePrompt": "A teenage boy golfer in a bunker making a practice swing that brushes the sand near his ball.",
+  "imageAlt": "A boy golfer in a bunker whose club touches sand in a practice swing.",
+  "sceneSpec": {
+    "setting": "bunker",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "addressing_ball",
+    "clubInHand": "wedge",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": true,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "yellow",
+    "clothingBottomColour": "white",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": false,
+    "score": 75,
+    "issues": [
+      "Golfer is a boy rather than the specified girl",
+      "Golfer is right-handed, not left-handed as required in the scene spec",
+      "Clothing, wedge, bunker, and golf ball are all accurate and believable",
+      "Golf posture, proportions, and sand movement are plausible",
+      "Only one club and one ball are visible"
+    ],
+    "repairPrompt": "Depict a left-handed teenage girl (not a boy) in the bunker, wearing a yellow top and white trousers or shorts, making a visible practice swing so the wedge clearly brushes the sand near the ball, leaving a mark or visible sand movement. Ensure the golfer appears left-handed and matches the specified gender and appearance."
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "id": "parents-role",
+  "title": "The parent\u2019s role on the course",
+  "summary": "How parents can best support juniors on the course.",
+  "estimatedMinutes": 6,
+  "priority": 1300,  
+  "mandatoryFor": [
+    "Junior Cadet", 
+    "Junior Course Cadet"
+  ],
+  "version": 1,
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "Supporting, not steering",
+      "file": "pages/00-title.md"
+    },
+    {
+      "id": "01-what-helps",
+      "title": "What helps",
+      "file": "pages/01-what-helps.md"
+    },
+    {
+      "id": "02-what-to-avoid",
+      "title": "What to avoid",
+      "file": "pages/02-what-to-avoid.md"
+    },
+    {
+      "id": "03-emotions",
+      "title": "Managing emotions",
+      "file": "pages/03-emotions.md"
+    },
+    {
+      "id": "04-long-term",
+      "title": "Taking the long-term view",
+      "file": "pages/04-long-term.md"
+    }
+  ]
+}

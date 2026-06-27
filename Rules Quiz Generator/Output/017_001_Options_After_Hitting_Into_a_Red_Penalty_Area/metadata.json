@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-26.png",
+  "ruleNumber": "17",
+  "ruleName": "Penalty Areas",
+  "group": "Penalty Areas",
+  "title": "Options After Hitting Into a Red Penalty Area",
+  "question": "Your ball lands in a red penalty area. Which of the following relief options is available for a red penalty area but not for a yellow penalty area?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball as it lies, if possible."
+    },
+    {
+      "id": "b",
+      "text": "Drop a ball within two club-lengths of where it last crossed into the area, for one penalty stroke."
+    },
+    {
+      "id": "c",
+      "text": "Replay the shot from your previous spot, for one penalty stroke."
+    },
+    {
+      "id": "d",
+      "text": "Drop anywhere on the course for one penalty stroke."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "Only red penalty areas allow the option to drop a ball within two club-lengths of where it last crossed into the area, with a one-stroke penalty. This option is not allowed for yellow penalty areas.",
+  "imagePrompt": "A left-handed teen boy about to drop a ball within two club-lengths of the edge of a red-staked penalty area, with water clearly visible and red stakes marking the edge.",
+  "imageAlt": "Left-handed teen golfer preparing to drop a ball by a red-staked penalty area next to water.",
+  "sceneSpec": {
+    "setting": "penalty_area_edge",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "dropping_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "red",
+    "waterVisible": true,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "medium",
+    "clothingTopColour": "navy",
+    "clothingBottomColour": "purple",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "Prompt intent mentions 'left-handed teen boy,' but the sceneSpec and illustration correctly show a right-handed teenage girl based on the detailed requirements.",
+      "The posture and action clearly match the requirement to drop a ball from knee height, in line with golf rules.",
+      "Skin tone, clothing colours, and hat all match the description.",
+      "Only one golf ball is visible and there is no club in hand.",
+      "Red stakes and water are clearly shown."
+    ],
+    "repairPrompt": "No major repairs needed. To match the original intent wording even more precisely, consider slightly adjusting the ball drop posture to emphasize knee height, and optionally show a clearer drop angle. Ensure the golfer is always clearly shown as right-handed teenage girl with mixed ethnicity and medium skin tone, wearing a navy top, purple bottoms, and a golf cap, with one red-staked penalty area and visible water."
+  }
+}

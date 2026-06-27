@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-01.png",
+  "ruleNumber": "R3/21",
+  "ruleName": "Holing out and conceding",
+  "group": "Holing out and conceding",
+  "title": "What must you do with your ball on each hole?",
+  "question": "In general, what must a player do with the same ball they played from the tee on each hole?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Pick it up after a few shots"
+    },
+    {
+      "id": "b",
+      "text": "Change it for a different one on the putting green"
+    },
+    {
+      "id": "c",
+      "text": "Play it into the hole (hole out)"
+    },
+    {
+      "id": "d",
+      "text": "Skip the putt if it's very short"
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "Players must play the same ball from the tee all the way into the hole, unless the rules allow them to change it.",
+  "imagePrompt": "A teenage boy lining up a putt on the green, focusing on playing his original ball into the hole for completion of the hole.",
+  "imageAlt": "Teenage boy putting on the green, concentrating on holing out.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "light",
+    "clothingTopColour": "blue",
+    "clothingBottomColour": "black",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [],
+    "repairPrompt": "The illustration is already visually accurate. If further refinement is desired, ensure the putting green is clearly differentiated from the surrounding fairway with a slightly more vibrant and closely-mown texture typical of real greens."
+  }
+}

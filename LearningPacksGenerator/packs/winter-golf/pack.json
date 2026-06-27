@@ -1,0 +1,30 @@
+{
+  "id": "winter-golf",
+  "title": "Preparing for winter golf",
+  "summary": "What to expect during winter playing conditions.",
+  "estimatedMinutes": 6,
+  "mandatoryFor": [],
+  "version": 1,
+  "pages": [
+    {
+      "id": "00-conditions",
+      "title": "Winter conditions",
+      "file": "pages/00-conditions.md"
+    },
+    {
+      "id": "01-clothing",
+      "title": "Clothing and equipment",
+      "file": "pages/01-clothing.md"
+    },
+    {
+      "id": "02-rules",
+      "title": "Temporary rules",
+      "file": "pages/02-rules.md"
+    },
+    {
+      "id": "03-expectations",
+      "title": "Expectations",
+      "file": "pages/03-expectations.md"
+    }
+  ]
+}

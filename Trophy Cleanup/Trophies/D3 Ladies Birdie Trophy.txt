@@ -1,0 +1,5 @@
+﻿{
+  "text": [],
+  "allowText": false,
+  "notes": "The tophy is a bird (robin) standing next to a twig of cherry blossom. the base is black. the trophy is colourful."
+}

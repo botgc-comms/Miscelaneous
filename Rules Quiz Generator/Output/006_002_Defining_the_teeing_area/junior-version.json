@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\006_002_Defining_the_teeing_area\\metadata.json",
+  "sourceImageName": "page-06.png",
+  "ruleNumber": "6",
+  "ruleName": "Teeing area",
+  "title": "Defining the teeing area",
+  "question": "When starting a hole, where must the ball be placed for your first shot from the teeing area?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Anywhere within 2 club-lengths from the tee markers, even if your feet are outside."
+    },
+    {
+      "id": "b",
+      "text": "Directly on the line joining the two tee markers."
+    },
+    {
+      "id": "c",
+      "text": "Completely inside the teeing area, which is defined by the tee markers and up to two club-lengths behind them."
+    },
+    {
+      "id": "d",
+      "text": "Anywhere on the teeing ground as long as your stance is inside it."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "The ball must be entirely inside the teeing area for your first shot, although your stance can be outside the area.",
+  "juniorVersion": {
+    "title": "Where Can You Place Your Ball When Starting a Hole?",
+    "question": "When you start a hole, where should you put your ball on the tee to hit your first shot?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Anywhere within 2 club-lengths of the tee markers, even if your feet stand outside."
+      },
+      {
+        "id": "b",
+        "text": "Right between the two tee markers, in a straight line."
+      },
+      {
+        "id": "c",
+        "text": "Completely inside the teeing area. This is between the two tee markers and up to two club-lengths behind them."
+      },
+      {
+        "id": "d",
+        "text": "Anywhere on the tee, as long as your feet are inside the teeing area."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "Your ball has to be all the way inside the teeing area before you hit your first shot. Your feet can be outside, but your ball cannot.",
+    "vocabulary": [
+      {
+        "term": "tee markers",
+        "simpleMeaning": "The markers show where the teeing area starts on each side."
+      },
+      {
+        "term": "teeing area",
+        "simpleMeaning": "The space where you start each hole. It is between the tee markers and goes back two club-lengths."
+      },
+      {
+        "term": "club-length",
+        "simpleMeaning": "The length of your golf club. You can use it to measure the teeing area."
+      }
+    ],
+    "teachingTip": "Set up two objects as tee markers and have kids practise placing the ball in the correct spot. Use a club to show how far back the teeing area goes.",
+    "likelyMisconceptions": [
+      "That your feet must also be inside the teeing area when hitting.",
+      "That you have to put the ball right in line between the markers, not behind."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:28.331Z",
+  "model": "gpt-4.1"
+}

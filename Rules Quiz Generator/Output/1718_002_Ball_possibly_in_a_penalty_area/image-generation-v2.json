@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\1718_002_Ball_possibly_in_a_penalty_area\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:15:36.432Z",
+  "title": "Ball possibly in a penalty area",
+  "ruleNumber": "R17/18",
+  "ruleName": "In a penalty area",
+  "durationSeconds": 182.89
+}

@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-04.png",
+  "ruleNumber": "R5",
+  "ruleName": "Suspension of play/thunderstorm",
+  "group": "Suspension of play/thunderstorm",
+  "title": "What to Do When Play Is Suspended Due to a Thunderstorm",
+  "question": "What must you do with your ball if play is stopped because of a thunderstorm warning signal?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Leave it where it is and return to the clubhouse"
+    },
+    {
+      "id": "b",
+      "text": "Pick it up and take it with you without marking"
+    },
+    {
+      "id": "c",
+      "text": "Mark its position, lift it, and replace it later"
+    },
+    {
+      "id": "d",
+      "text": "Play your shot quickly before leaving"
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "You must mark where your ball lies, lift it, and later return it to exactly the same spot when play resumes.",
+  "imagePrompt": "A teen golfer, right-handed, uses a ball marker to mark his ball's position on the fairway as dark thunderclouds gather.",
+  "imageAlt": "Teen golfer marks a golf ball on the fairway with storm clouds above.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "lifting_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "red",
+    "clothingBottomColour": "black",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 99,
+    "issues": [],
+    "repairPrompt": "No repair needed. The illustration matches all core golf details, posture, clothing color, ball count, and setting precisely. Scene is appropriate for rules teaching."
+  }
+}

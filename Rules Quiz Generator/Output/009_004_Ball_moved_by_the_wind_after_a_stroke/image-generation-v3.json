@@ -1,0 +1,10 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "sourcePromptFileName": "final-prompt-v2.txt",
+  "promptFileName": "final-prompt-v3.txt",
+  "imageFileName": "illustration-v3.png",
+  "correctionInstructions": "show a gust of wind that moves the ball from near to the boy to a couple of feet away",
+  "generatedAtUtc": "2026-06-26T08:04:48.790Z"
+}

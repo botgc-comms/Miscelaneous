@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-12.png",
+  "ruleNumber": "R9",
+  "ruleName": "Ball at rest is moved",
+  "group": "Ball at rest is moved",
+  "title": "Ball moved by an animal",
+  "question": "A dog runs onto the fairway and knocks your ball out of its spot. According to the rules, what should you do?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball from its new spot"
+    },
+    {
+      "id": "b",
+      "text": "Replace the ball without penalty"
+    },
+    {
+      "id": "c",
+      "text": "Add a penalty and replace the ball"
+    },
+    {
+      "id": "d",
+      "text": "Replay your previous shot"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If an outside influence, such as an animal, moves your ball at rest, you must replace it without penalty.",
+  "imagePrompt": "A teenage left-handed girl looks surprised as a dog knocks her resting golf ball on a sunny fairway.",
+  "imageAlt": "Teen left-handed girl on the fairway, watching a dog move her resting golf ball.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "medium",
+    "clothingTopColour": "white",
+    "clothingBottomColour": "navy",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "The golfer's stance is not overtly right-handed; it's a generally neutral surprised stance, but this is minor as she is not holding a club.",
+      "No club is present, as correctly specified."
+    ],
+    "repairPrompt": "Ensure the teenager's surprised posture subtly but clearly suggests she is a right-handed player, even when not holding a club."
+  }
+}

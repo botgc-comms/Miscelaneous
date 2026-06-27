@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\006_003_Consequence_of_not_correcting_a_wrong_ball_mistake\\metadata.json",
+  "generatedAtUtc": "2026-06-24T14:56:25.469Z",
+  "title": "Consequence of not correcting a wrong ball mistake",
+  "ruleNumber": "R6",
+  "ruleName": "Wrong ball",
+  "durationSeconds": 172.965
+}

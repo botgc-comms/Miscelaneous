@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-25.png",
+  "ruleNumber": "17",
+  "ruleName": "Penalty area rule",
+  "group": "Penalty area rule",
+  "title": "Where to drop after yellow penalty area",
+  "question": "Your ball has gone into a yellow penalty area. Which of these is a correct place to drop your ball under the rules, with a one-stroke penalty?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "On a straight line, going as far back as you wish, keeping where your ball last crossed into the penalty area between you and the flag."
+    },
+    {
+      "id": "b",
+      "text": "Directly on the green, closest to the hole."
+    },
+    {
+      "id": "c",
+      "text": "Within one club-length in any direction from where your ball entered the penalty area, even if it's nearer the hole."
+    },
+    {
+      "id": "d",
+      "text": "Anywhere you like on the course."
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "For a yellow penalty area, you can drop on the line from the hole through the point where your ball last crossed into the penalty area, going as far back as you want, but not closer to the hole.",
+  "imagePrompt": "A teen girl golfer stands on the fairway, preparing to drop a ball on a straight line behind a yellow-staked water hazard, keeping the entry point between herself and the flag.",
+  "imageAlt": "Teen girl golfer preparing to drop a ball behind a yellow penalty area near water.",
+  "sceneSpec": {
+    "setting": "penalty_area_edge",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "dropping_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "yellow",
+    "waterVisible": true,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "medium",
+    "clothingTopColour": "orange",
+    "clothingBottomColour": "black",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 96,
+    "issues": [
+      "The golfer appears to be dropping the ball with the left hand rather than the right, which is less common for a left-handed golfer performing an official drop (should use right hand)."
+    ],
+    "repairPrompt": "Depict the teenage boy golfer dropping the ball with his right hand (as required by the rules), while holding the iron club in his left hand, to clearly indicate he is left-handed."
+  }
+}

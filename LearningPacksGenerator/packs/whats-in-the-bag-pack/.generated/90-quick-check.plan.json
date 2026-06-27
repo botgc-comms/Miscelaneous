@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "packId": "whats-in-the-bag",
+  "pageId": "90-quick-check",
+  "pageTitle": "Quick check",
+  "pageFile": "pages/90-quick-check.md",
+  "assetFile": "quick-check.png",
+  "audience": "brand new junior golfers and non-golfing parents",
+  "learningGoal": "To help junior golfers and their parents understand essential items in a golf bag through a friendly quiz.",
+  "markdown": "# Quick check\n\nWelcome to the \"Quick Check\" quiz! This fun quiz will help you learn more about what’s in your golf bag. Each question has friendly options to choose from. Let’s have a go!\n\n### Question 1: What is the main purpose of a golf club?\n- A) To hit the ball  \n- B) To stand on  \n- C) To carry the bag  \n\n**Correct Answer:** A) To hit the ball  \n**Explanation:** Golf clubs are specially designed tools used to strike the ball, helping you get it towards the hole.\n\n---\n\n### Question 2: Which club would you use for very short distances?\n- A) Driver  \n- B) Putter  \n- C) Iron  \n\n**Correct Answer:** B) Putter  \n**Explanation:** A putter is used on the green for precise control to get the ball into the hole.\n\n---\n\n### Question 3: What should be in your golf bag besides clubs?\n- A) Snacks  \n- B) Golf balls  \n- C) A book  \n\n**Correct Answer:** B) Golf balls  \n**Explanation:** Extra golf balls are essential to replace lost ones during play, making your game smoother.\n\n---\n\n### Question 4: What is the purpose of tees in golf?\n- A) To mark the hole  \n- B) To hold the ball off the ground  \n- C) To help your swing  \n\n**Correct Answer:** B) To hold the ball off the ground  \n**Explanation:** Tees raise the ball slightly for easier striking, especially at the start of a hole.\n\n---\n\n### Question 5: Which is usually NOT in your golf bag?\n- A) Sunscreen  \n- B) A ladder  \n- C) Water bottle  \n\n**Correct Answer:** B) A ladder  \n**Explanation:** A ladder is not used in golf, while sunscreen and a water bottle are important for staying comfortable.\n\nGreat effort! Now you know a bit more about the essentials for junior golfers. Happy golfing!",
+  "imageAlt": "A junior golfer preparing to tee off, showcasing a clear golf course in the background with a well-stocked golf bag nearby, highlighting the importance of proper equipment.",
+  "imagePrompt": "A low-angle photograph of a young junior golfer in a bright, sunny golf course, ready to tee off with a club. The golf bag is prominently displayed next to them, filled with various clubs and equipment, illustrating what a well-equipped junior golfer looks like."
+}

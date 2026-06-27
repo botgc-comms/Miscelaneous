@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\020_004_Is_playing_two_balls_allowed_in_match_play\\metadata.json",
+  "sourceImageName": "page-02.png",
+  "ruleNumber": "20",
+  "ruleName": "When in doubt about the rules",
+  "title": "Is playing two balls allowed in match play?",
+  "question": "If you’re playing match play and are not sure what the correct rule is for your situation, are you allowed to play two balls and count both scores?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, you can always play two balls in match play"
+    },
+    {
+      "id": "b",
+      "text": "No, you must work out the situation with your opponent or ask for a ruling"
+    },
+    {
+      "id": "c",
+      "text": "Only if your marker gives permission"
+    },
+    {
+      "id": "d",
+      "text": "Only if you are playing alone"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "In match play, you are not allowed to play two balls. You and your opponent must agree what to do, or ask for a ruling from a referee if you can’t agree.",
+  "juniorVersion": {
+    "title": "Can you play two balls in match play if you’re not sure of the rules?",
+    "question": "In match play, if you don’t know what rule to use, are you allowed to hit two balls and use both scores?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Yes, you can always hit two balls in match play"
+      },
+      {
+        "id": "b",
+        "text": "No, you should talk with your opponent or ask a referee"
+      },
+      {
+        "id": "c",
+        "text": "Only if your marker says it's okay"
+      },
+      {
+        "id": "d",
+        "text": "Only if you are playing by yourself"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "You can’t play two balls in match play. If you are not sure about a rule, you and your opponent decide what to do, or you can ask a referee to help.",
+    "vocabulary": [
+      {
+        "term": "Match play",
+        "simpleMeaning": "A golf game where you try to win more holes than your opponent."
+      },
+      {
+        "term": "Referee",
+        "simpleMeaning": "A person who helps players follow the rules in golf."
+      }
+    ],
+    "teachingTip": "Act out talking with an opponent when not sure of a rule, to show what to do instead of playing two balls.",
+    "likelyMisconceptions": [
+      "Some kids think you can always play two balls if there is a problem.",
+      "Some think their marker (scorekeeper) can say it’s okay to play two balls."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:53.553Z",
+  "model": "gpt-4.1"
+}

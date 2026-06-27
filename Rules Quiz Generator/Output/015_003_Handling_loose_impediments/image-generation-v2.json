@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\015_003_Handling_loose_impediments\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:37:20.552Z",
+  "title": "Handling loose impediments",
+  "ruleNumber": "R15",
+  "ruleName": "Loose impediments",
+  "durationSeconds": 194.675
+}

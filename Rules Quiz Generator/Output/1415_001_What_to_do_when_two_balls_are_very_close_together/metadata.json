@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-12.png",
+  "ruleNumber": "14/15",
+  "ruleName": "Balls close to each other",
+  "group": "Balls close to each other",
+  "title": "What to do when two balls are very close together",
+  "question": "Two golf balls are so close together on the fairway that one player's stroke would be affected. What should happen next?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Pick up and clean both balls, then play."
+    },
+    {
+      "id": "b",
+      "text": "Mark and lift the other player's ball (without cleaning it), play your own shot, then replace their ball."
+    },
+    {
+      "id": "c",
+      "text": "Try to play without moving either ball, even if it's difficult."
+    },
+    {
+      "id": "d",
+      "text": "Both balls must be dropped in a different spot."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "When two balls interfere with each other, one player's ball can be marked and lifted (without cleaning). After the other player's shot, the ball is replaced in its original spot.",
+  "imagePrompt": "A teenage girl golfer on the fairway marks a golf ball with a coin because it is close to another player's ball.",
+  "imageAlt": "Girl golfer marks her ball with a coin near another golf ball on the fairway.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "lifting_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "dark",
+    "clothingTopColour": "yellow",
+    "clothingBottomColour": "orange",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "Scene is visually accurate: the fairway is present, the golfer is a teenage girl with a realistic dark skin tone and mixed appearance.",
+      "Golfer posture is natural and physically plausible for marking a golf ball.",
+      "Only one golf ball is visible, sized and positioned realistically.",
+      "The iron golf club is realistic in length, grip, and head type.",
+      "No duplicated, floating, malformed, or toy-like equipment is visible.",
+      "Clothing colours (yellow top, orange bottoms) and white cap are correct.",
+      "No prohibited elements are present.",
+      "No stakes, course features, or markers are missing or false.",
+      "Scene is clearly suitable for teaching golf rules to teenagers."
+    ],
+    "repairPrompt": "The illustration is almost perfect. To enhance educational clarity, ensure the coin used for marking is distinctly visible near the ball."
+  }
+}

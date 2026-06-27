@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-05.png",
+  "ruleNumber": "R4",
+  "ruleName": "Maximum of 14 clubs",
+  "group": "Maximum of 14 clubs",
+  "title": "Too Many Clubs Discovered After Starting Round",
+  "question": "During your round you find that you have more than 14 clubs in your bag. What should you do right away to avoid further penalties?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Declare any extra clubs out of play immediately"
+    },
+    {
+      "id": "b",
+      "text": "Keep using all the clubs"
+    },
+    {
+      "id": "c",
+      "text": "Wait until you finish the hole to remove the extras"
+    },
+    {
+      "id": "d",
+      "text": "Give the extra clubs to another player"
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "You must instantly declare any clubs over the 14-club limit out of play as soon as you realise it. Leaving them in play will cause additional penalties for each hole you play with too many clubs.",
+  "imagePrompt": "A teenage boy on the fairway counting his clubs and looking surprised, while another golfer stands nearby.",
+  "imageAlt": "Teen boy counting golf clubs on the fairway, looking surprised, with another player watching.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "asian",
+    "skinTone": "medium",
+    "clothingTopColour": "navy",
+    "clothingBottomColour": "purple",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 95,
+    "issues": [
+      "The image is strong overall but the golf bag in the background could be seen as having clubs that appear slightly large or emphasized, which may mildly distract from strict realism."
+    ],
+    "repairPrompt": "Ensure that all visible golf clubs, especially those in the background golf bag, are depicted with realistic proportions and do not appear exaggerated or toy-like."
+  }
+}

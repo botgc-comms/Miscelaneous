@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\004_003_Borrowing_a_Club_During_a_Round\\metadata.json",
+  "generatedAtUtc": "2026-06-24T14:15:18.671Z",
+  "title": "Borrowing a Club During a Round",
+  "ruleNumber": "R4",
+  "ruleName": "Maximum of 14 clubs",
+  "durationSeconds": 182.154
+}

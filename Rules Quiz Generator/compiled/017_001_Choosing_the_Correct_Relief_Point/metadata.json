@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-14.png",
+  "ruleNumber": "17",
+  "ruleName": "Taking Relief from Abnormal Course Conditions",
+  "group": "Taking Relief from Abnormal Course Conditions",
+  "type": "multiple_choice",
+  "imagePrompt": "A teen girl golfer, left-handed, standing near her ball on the fairway, pointing towards possible relief areas from a patch of abnormal ground condition.",
+  "imageAlt": "Teen girl golfer on the fairway assessing where to take relief from an abnormal course condition.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "medium",
+    "clothingTopColour": "orange",
+    "clothingBottomColour": "green",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 96,
+    "issues": [
+      "Golfer is clearly left-handed, teen girl, mixed ethnicity, medium skin tone. Orange top and green shorts, golf cap present. Scene is a realistic fairway in bright daylight. One golf ball, size and position correct. One iron club with realistic proportions and single metal iron head, held naturally by the golfer. Posture plausible. No extra, duplicated, or toy-like equipment. No teaching graphics or overlays. Abnormal ground condition patch visible. Clothing and appearance are distinct. Overall illustration style and golf accuracy are strong."
+    ],
+    "repairPrompt": "No major repairs needed. May subtly enhance left-handed club grip visibility for maximum clarity."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Where To Drop When Something Is In The Way",
+      "question": "If something like a puddle or mud is stopping you from taking your normal shot, where do you drop your ball for free?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "The closest spot where nothing blocks your feet or swing."
+        },
+        {
+          "id": "b",
+          "text": "Anywhere you like, as long as it is nearer to the hole."
+        },
+        {
+          "id": "c",
+          "text": "The farthest spot away from where your ball is now."
+        },
+        {
+          "id": "d",
+          "text": "A comfy spot, even if your feet are still in the wet or muddy area."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "You must drop your ball at the closest place where the puddle or mud does not get in the way of your feet or swing. You cannot just pick any place you like.",
+      "vocabulary": [
+        {
+          "term": "Abnormal course condition",
+          "simpleMeaning": "Something on the golf course that is not usually there and gets in your way, like puddles, mud, or animal holes."
+        },
+        {
+          "term": "Relief",
+          "simpleMeaning": "A free drop you get when something on the course is in your way."
+        }
+      ],
+      "teachingTip": "Show children how to find the nearest spot away from puddles or mud where they can swing without touching the wet or dirty area.",
+      "likelyMisconceptions": [
+        "Children may think they can pick any spot they like if something is in the way.",
+        "They may try to move closer to the hole or farther away."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Choosing the Correct Relief Point",
+      "question": "When taking free relief from an abnormal course condition, which point should you use to find where to drop your ball?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "The nearest point with no interference from the condition for your stance or swing."
+        },
+        {
+          "id": "b",
+          "text": "Any point you want, as long as it is closer to the hole."
+        },
+        {
+          "id": "c",
+          "text": "The furthest place from where your ball lies."
+        },
+        {
+          "id": "d",
+          "text": "A comfortable place, even if you are still standing in the condition."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "The rules say you must use the nearest point where there is no interference with your stance or swing from the abnormal condition, not just anywhere you prefer."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "017_001_Choosing_the_Correct_Relief_Point",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:53.427Z"
+  }
+}

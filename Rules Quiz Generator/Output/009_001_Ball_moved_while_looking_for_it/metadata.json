@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-12.png",
+  "ruleNumber": "R9",
+  "ruleName": "Ball at rest is moved",
+  "group": "Ball at rest is moved",
+  "title": "Ball moved while looking for it",
+  "question": "If you accidentally move your ball while searching for it in the rough, what should you do according to the rules?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball from where it ends up"
+    },
+    {
+      "id": "b",
+      "text": "Replace the ball without penalty"
+    },
+    {
+      "id": "c",
+      "text": "Replace the ball and take a one-stroke penalty"
+    },
+    {
+      "id": "d",
+      "text": "Drop a new ball and play on"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If your ball is accidentally moved while searching for it, you must put it back without penalty.",
+  "imagePrompt": "A teenage left-handed boy in the rough searching for his ball among long grass, close-up on him noticing the ball has moved.",
+  "imageAlt": "Teenage left-handed boy in the rough searching for his golf ball, noticing it has been accidentally moved.",
+  "sceneSpec": {
+    "setting": "rough",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "light",
+    "clothingTopColour": "navy",
+    "clothingBottomColour": "yellow",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [],
+    "repairPrompt": "None needed. The image now correctly depicts a teenage right-handed girl of mixed ethnicity with light skin, wearing a navy top and yellow bottoms, without a club, addressing a single golf ball in the rough naturally. Suitable for educational use."
+  }
+}

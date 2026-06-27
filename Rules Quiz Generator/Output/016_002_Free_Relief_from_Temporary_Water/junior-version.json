@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\016_002_Free_Relief_from_Temporary_Water\\metadata.json",
+  "sourceImageName": "page-13.png",
+  "ruleNumber": "16",
+  "ruleName": "Abnormal course conditions",
+  "title": "Free Relief from Temporary Water",
+  "question": "When can you take free relief for temporary water on the course?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You can see water on the ground under your feet or the ball when taking your stance"
+    },
+    {
+      "id": "b",
+      "text": "You notice water in a nearby ditch"
+    },
+    {
+      "id": "c",
+      "text": "It has rained at some point earlier that day"
+    },
+    {
+      "id": "d",
+      "text": "You hear squelching under your shoes"
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "You must be able to see water physically under your feet or the ball when taking your stance for it to be temporary water. Just dampness, sound, or distant puddles aren't enough.",
+  "juniorVersion": {
+    "title": "When Can You Get a Free Drop Because of Water?",
+    "question": "When are you allowed to move your ball without a penalty because of water on the ground?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You can see water under your ball or under your feet when you stand to hit"
+      },
+      {
+        "id": "b",
+        "text": "You see water in a ditch near your ball"
+      },
+      {
+        "id": "c",
+        "text": "It rained earlier today"
+      },
+      {
+        "id": "d",
+        "text": "You hear a squishy noise under your shoes"
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "You only get a free drop when you can actually see water under your ball or feet when you are getting ready to play. Just hearing or feeling squishy grass is not enough.",
+    "vocabulary": [
+      {
+        "term": "Free Relief",
+        "simpleMeaning": "A chance to move your ball without a penalty because of a special problem."
+      },
+      {
+        "term": "Temporary Water",
+        "simpleMeaning": "Water on the ground you can see outside a water hazard, like puddles after rain."
+      },
+      {
+        "term": "Stance",
+        "simpleMeaning": "Where you stand and place your feet when you get ready to hit the ball."
+      }
+    ],
+    "teachingTip": "Show children a puddle and ask them to stand over it to check if they can see water under their feet or ball.",
+    "likelyMisconceptions": [
+      "Thinking the ground just feels wet is enough for a free drop.",
+      "Believing any water nearby, like in a ditch, means free relief.",
+      "Thinking free relief is allowed just because it rained earlier."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:01.402Z",
+  "model": "gpt-4.1"
+}

@@ -1,0 +1,10 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "sourcePromptFileName": "final-prompt-v2.txt",
+  "promptFileName": "final-prompt-v4.txt",
+  "imageFileName": "illustration-v4.png",
+  "correctionInstructions": "the sprinkler would not normally be on the green. the girl is actually further away from the green, still putting but the sprinkler is in the fringe in her line",
+  "generatedAtUtc": "2026-06-26T19:34:45.192Z"
+}

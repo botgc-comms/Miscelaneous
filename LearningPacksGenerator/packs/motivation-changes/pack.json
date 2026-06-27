@@ -1,0 +1,30 @@
+{
+  "id": "motivation-changes",
+  "title": "When motivation changes",
+  "summary": "Understanding changing motivation as juniors grow older.",
+  "estimatedMinutes": 6,
+  "mandatoryFor": [],
+  "version": 1,
+  "pages": [
+    {
+      "id": "00-changes",
+      "title": "Motivation changes",
+      "file": "pages/00-changes.md"
+    },
+    {
+      "id": "01-pressure",
+      "title": "Reducing pressure",
+      "file": "pages/01-pressure.md"
+    },
+    {
+      "id": "02-choices",
+      "title": "Giving choice",
+      "file": "pages/02-choices.md"
+    },
+    {
+      "id": "03-support",
+      "title": "Supporting through change",
+      "file": "pages/03-support.md"
+    }
+  ]
+}

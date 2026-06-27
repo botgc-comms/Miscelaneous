@@ -1,0 +1,465 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-01.png",
+  "sourceImagePath": "Input\\pageb-01.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-01.png",
+      "ruleNumber": "16/18",
+      "ruleName": "Player out of bounds but ball on the course",
+      "group": "Player out of bounds but ball on the course",
+      "title": "Standing out of bounds to play a ball",
+      "question": "You hit your ball and it stays on the course, but to play your next shot you must stand outside the white out of bounds line. Is this allowed?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, you can stand out of bounds to play a ball that is on the course."
+        },
+        {
+          "id": "b",
+          "text": "No, you must not stand out of bounds for your shot."
+        },
+        {
+          "id": "c",
+          "text": "Yes, but only if your ball is also out of bounds."
+        },
+        {
+          "id": "d",
+          "text": "No, you may only stand on the course to play."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You can stand out of bounds to play a ball that is still in bounds.",
+      "imagePrompt": "A teenage girl golfer stands with her feet out of bounds but her golf ball is just inside the boundary line on the fairway. She is preparing to hit the ball.",
+      "imageAlt": "Girl golfer standing out of bounds hitting a ball that is on the course.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "white",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "black",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-01.png",
+      "ruleNumber": "16/18",
+      "ruleName": "Player out of bounds but ball on the course",
+      "group": "Player out of bounds but ball on the course",
+      "title": "Relief from movable obstructions outside the course",
+      "question": "If there is a movable obstruction (like a rubbish bin) out of bounds but close to your stance as you play a ball still in bounds, can you move it?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, you can move movable obstructions out of bounds."
+        },
+        {
+          "id": "b",
+          "text": "No, you cannot touch or move anything out of bounds."
+        },
+        {
+          "id": "c",
+          "text": "Only if it's a natural object."
+        },
+        {
+          "id": "d",
+          "text": "Only if you get permission from another player."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You are allowed to move movable obstructions out of bounds to make your stroke.",
+      "imagePrompt": "A teenage boy prepares to play a shot with his ball just inside the boundary, moving an artificial object like a rubbish bin that is just outside the white line.",
+      "imageAlt": "Boy golfer moving an artificial object just outside the out of bounds line.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "white",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "medium",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "purple",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-01.png",
+      "ruleNumber": "18",
+      "ruleName": "Playing a provisional ball",
+      "group": "Playing a provisional ball",
+      "title": "When to play a provisional ball",
+      "question": "After hitting a shot towards the trees and thinking your ball might be lost or out of bounds, what should you do before going to look for it?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play a provisional ball and tell your group it's provisional."
+        },
+        {
+          "id": "b",
+          "text": "Immediately go look for your ball without saying anything."
+        },
+        {
+          "id": "c",
+          "text": "Automatically drop a ball where you think it went missing."
+        },
+        {
+          "id": "d",
+          "text": "Ask your friends to look for your ball without playing another shot."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You should play a provisional ball and let your group know it’s a provisional ball before you search for your first ball.",
+      "imagePrompt": "A teenage girl golfer announces to her friends that she will play a provisional ball after her shot heads towards the trees.",
+      "imageAlt": "Girl golfer explaining to group that she is playing a provisional ball after a shot towards the trees.",
+      "sceneSpec": {
+        "setting": "rough",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "dropping_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "red",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-01.png",
+      "ruleNumber": "18",
+      "ruleName": "Playing a provisional ball",
+      "group": "Playing a provisional ball",
+      "title": "Can you play a provisional ball after hitting into a penalty area?",
+      "question": "Your ball lands in a penalty area (like a pond). Are you allowed to play a provisional ball in this situation?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, you can always play a provisional ball."
+        },
+        {
+          "id": "b",
+          "text": "No, you must follow the penalty area rules and cannot play a provisional ball."
+        },
+        {
+          "id": "c",
+          "text": "Only if your ball might be lost in the penalty area."
+        },
+        {
+          "id": "d",
+          "text": "Only if you ask the referee first."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You cannot play a provisional ball if your ball might be in a penalty area. You must use the penalty area rules.",
+      "imagePrompt": "A teenage boy golfer looking at a pond marked with red stakes, unsure about what to do next after hitting his ball into the water.",
+      "imageAlt": "Boy golfer looking at a penalty area with red stakes, wondering about his options.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "red",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "blue",
+        "hat": true
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-01.png",
+      "ruleNumber": "16/18",
+      "ruleName": "Player out of bounds but ball on the course",
+      "group": "Player out of bounds but ball on the course",
+      "title": "Standing out of bounds to play a ball",
+      "question": "Your ball is lying just inside the boundary line on the fairway, but to take your next shot, you need to stand with your feet outside the white out of bounds line. Is this allowed?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, you can stand out of bounds to play a ball that is still on the course."
+        },
+        {
+          "id": "b",
+          "text": "No, you must keep your feet on the course when hitting."
+        },
+        {
+          "id": "c",
+          "text": "Yes, but only if part of your feet are still in bounds."
+        },
+        {
+          "id": "d",
+          "text": "No, both you and the ball must be within the boundary."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You are allowed to stand out of bounds to play a ball that is in bounds, as only the position of the ball matters.",
+      "imagePrompt": "A teenage girl golfer stands with both feet out of bounds, but her golf ball sits just inside the fairway boundary marked by a white stake. She prepares her swing.",
+      "imageAlt": "Girl golfer standing out of bounds, preparing to hit a ball that is on the fairway inside the white boundary line.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "white",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "medium",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "white",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-01.png",
+      "ruleNumber": "16/18",
+      "ruleName": "Player out of bounds but ball on the course",
+      "group": "Player out of bounds but ball on the course",
+      "title": "Relief from movable obstructions outside the course",
+      "question": "If a movable obstruction, like a rubbish bin, is out of bounds but interferes with your stance when you play your ball on the course, can you move it?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, you can move movable obstructions even if they're out of bounds."
+        },
+        {
+          "id": "b",
+          "text": "No, you cannot move anything that is located out of bounds."
+        },
+        {
+          "id": "c",
+          "text": "Yes, but only if the bin is partly in bounds."
+        },
+        {
+          "id": "d",
+          "text": "No, you must play around it."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You are allowed to move moveable obstructions, even when they are out of bounds, if they affect your stroke at a ball on the course.",
+      "imagePrompt": "A teenage boy golfer is about to play his ball, which sits inside the white out of bounds line. He moves a rubbish bin just outside the line to clear space for his stance.",
+      "imageAlt": "Boy golfer moving a rubbish bin located just outside the white out of bounds line as he prepares to hit a ball inside the line.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "white",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "light",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "blue",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-01.png",
+      "ruleNumber": "18",
+      "ruleName": "Playing a provisional ball",
+      "group": "Playing a provisional ball",
+      "title": "When to play a provisional ball",
+      "question": "If you hit a shot towards the trees and think your ball might be lost or out of bounds, what should you do before walking forward to look for it?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play a provisional ball and clearly announce it to your group."
+        },
+        {
+          "id": "b",
+          "text": "Go search for your first ball immediately."
+        },
+        {
+          "id": "c",
+          "text": "Drop a ball in the area where you think your ball landed."
+        },
+        {
+          "id": "d",
+          "text": "Wait for your friends to suggest what to do."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "If you think your ball may be lost or out of bounds, you should play a provisional ball from the place where you played your last shot and make it clear to your group that it is a provisional before you go to look for your original ball.",
+      "imagePrompt": "A teenage girl golfer gets ready to play a provisional ball after hitting a shot towards the trees, and she tells her friends it's a provisional.",
+      "imageAlt": "Girl golfer explaining to her friends she will play a provisional ball after previous shot went into the trees.",
+      "sceneSpec": {
+        "setting": "rough",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "dropping_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "orange",
+        "clothingBottomColour": "blue",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-01.png",
+      "ruleNumber": "18",
+      "ruleName": "Playing a provisional ball",
+      "group": "Playing a provisional ball",
+      "title": "Provisional ball and penalty areas",
+      "question": "If your ball goes into a penalty area, such as a pond marked with red stakes, can you decide to play a provisional ball?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, you can always play a provisional ball in any situation."
+        },
+        {
+          "id": "b",
+          "text": "No, you cannot play a provisional ball if your ball might be in a penalty area."
+        },
+        {
+          "id": "c",
+          "text": "Yes, but only if your ball is not found."
+        },
+        {
+          "id": "d",
+          "text": "Only if you are playing in a team competition."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You are not allowed to play a provisional ball when your ball is likely in a penalty area. Instead, you must use the penalty relief options.",
+      "imagePrompt": "A teenage girl golfer stands at the edge of a pond marked with red stakes, looking at the penalty area after her ball has landed in the water.",
+      "imageAlt": "Girl golfer at the edge of a pond marked with red stakes, thinking about what to do after her ball goes into the water.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "red",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "black",
+        "clothingBottomColour": "orange",
+        "hat": true
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "1618_001_Standing_out_of_bounds_to_play_a_ball",
+    "1618_002_Relief_from_movable_obstructions_outside_the_course",
+    "018_003_When_to_play_a_provisional_ball",
+    "018_004_Provisional_ball_and_penalty_areas"
+  ],
+  "updatedAtUtc": "2026-04-24T22:42:41.300Z"
+}

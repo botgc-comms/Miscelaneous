@@ -1,0 +1,5 @@
+{
+  "text": [],
+  "allowText": true,
+  "notes": "The inscription reads - Leicestershire & Rutland Professional Golf Championship - T.H.Richards Oct 9th 1929"
+}

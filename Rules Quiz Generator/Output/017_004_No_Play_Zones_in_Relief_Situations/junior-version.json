@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\017_004_No_Play_Zones_in_Relief_Situations\\metadata.json",
+  "sourceImageName": "page-14.png",
+  "ruleNumber": "17",
+  "ruleName": "Taking Relief from Abnormal Course Conditions",
+  "title": "No Play Zones in Relief Situations",
+  "question": "If your ball, stance or swing is in a no play zone, what must you do?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball as it lies and ignore the no play zone."
+    },
+    {
+      "id": "b",
+      "text": "Take free relief; you are not allowed to play the ball as it lies."
+    },
+    {
+      "id": "c",
+      "text": "Take a penalty stroke before moving the ball."
+    },
+    {
+      "id": "d",
+      "text": "Ask your group for permission to play from there."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You must take free relief if your ball, stance or swing is in a no play zone. Playing from there is not allowed under the rules.",
+  "juniorVersion": {
+    "title": "What to Do If Your Ball Is in a No Play Zone",
+    "question": "If your ball, your feet, or your swing are in a no play zone, what should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Hit your ball from there and forget about the no play zone."
+      },
+      {
+        "id": "b",
+        "text": "Move your ball out for free; you are not allowed to hit from a no play zone."
+      },
+      {
+        "id": "c",
+        "text": "Take a penalty before picking up your ball."
+      },
+      {
+        "id": "d",
+        "text": "Ask your friends if you can play there."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "You must move your ball for free if it is in a no play zone, or if you would have to stand or swing there. You are not allowed to hit your ball from a no play zone.",
+    "vocabulary": [
+      {
+        "term": "No play zone",
+        "simpleMeaning": "A place on the golf course where you are not allowed to play your ball from at all."
+      },
+      {
+        "term": "Relief",
+        "simpleMeaning": "Moving your ball to a new spot because of a special rule, often for free."
+      }
+    ],
+    "teachingTip": "Show children signs or markings for no play zones on a golf course. Practise taking relief together near a marked area.",
+    "likelyMisconceptions": [
+      "Children may think they can just play their ball from a no play zone if it is easier.",
+      "Some may believe they need to take a penalty to move their ball, but moving out of a no play zone is free."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:26.586Z",
+  "model": "gpt-4.1"
+}

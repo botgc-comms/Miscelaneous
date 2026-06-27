@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_005_Accidental_Double_Hit_During_Stroke\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "10.1a",
+  "ruleName": "Fairly Striking the Ball",
+  "title": "Accidental Double Hit During Stroke",
+  "question": "You are playing a chip shot from just off the green. As you swing, your club accidentally strikes the ball twice in the same stroke. The ball finishes just a few feet from the hole. What is the correct ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Count the stroke and add a one-stroke penalty."
+    },
+    {
+      "id": "b",
+      "text": "Count the stroke and add a two-stroke penalty."
+    },
+    {
+      "id": "c",
+      "text": "Count it as one stroke with no penalty."
+    },
+    {
+      "id": "d",
+      "text": "Cancel the stroke and play the shot again."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "If a player accidentally hits the ball more than once during a single stroke, there is no penalty. The stroke counts as one stroke only, regardless of how many times the club contacts the ball during that swing. This changed in 2019; previously there was a penalty.",
+  "juniorVersion": {
+    "title": "Your Club Hits the Ball Twice by Accident",
+    "question": "You are chipping from just off the green. As you swing, your club taps the ball two times in one swing by mistake. The ball stops close to the hole. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Count your shot and add one more shot as a penalty."
+      },
+      {
+        "id": "b",
+        "text": "Count your shot and add two more shots as a penalty."
+      },
+      {
+        "id": "c",
+        "text": "Count only one shot. No penalty."
+      },
+      {
+        "id": "d",
+        "text": "Forget that shot and play again."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "If your club hits the ball more than once in just one swing and it's an accident, you only count one shot. There is no penalty. The rules changed, so this is fair for everyone.",
+    "vocabulary": [
+      {
+        "term": "chip shot",
+        "simpleMeaning": "A soft hit that makes the ball fly a short way and then roll on the green."
+      },
+      {
+        "term": "swing",
+        "simpleMeaning": "Moving your club to hit the ball."
+      }
+    ],
+    "teachingTip": "Show how sometimes the club can hit the ball twice by accident. Let children try gentle chip shots, and talk about what to do when this happens.",
+    "likelyMisconceptions": [
+      "Some children may think they have to add a penalty shot if they hit the ball twice in one swing.",
+      "Some may believe they must hit the shot again if this happens."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T16:52:58.981Z",
+  "model": "gpt-4.1"
+}

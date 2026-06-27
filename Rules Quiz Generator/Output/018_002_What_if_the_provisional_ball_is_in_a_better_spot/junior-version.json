@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\018_002_What_if_the_provisional_ball_is_in_a_better_spot\\metadata.json",
+  "sourceImageName": "pageb-02.png",
+  "ruleNumber": "R18",
+  "ruleName": "Provisional Balls",
+  "title": "What if the provisional ball is in a better spot?",
+  "question": "You hit a great shot with your provisional ball, but haven't looked for your original ball yet. If the original is found in bounds within 3 minutes, can you choose to play the provisional ball instead?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No, you must play the original ball if found in time and in bounds."
+    },
+    {
+      "id": "b",
+      "text": "Yes, you can choose whichever ball you like."
+    },
+    {
+      "id": "c",
+      "text": "Yes, but only if everyone agrees."
+    },
+    {
+      "id": "d",
+      "text": "No, the provisional ball always has to be abandoned."
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "If you find your original ball in bounds within 3 minutes, you must play it, even if the provisional ball is in a better position.",
+  "juniorVersion": {
+    "title": "Which ball do you use if you find your first ball?",
+    "question": "You hit your first ball and think it might be lost, so you hit another ball called a provisional ball. The provisional ball lands in a great spot. But then you find your first ball on the course after looking for it. Can you choose to play the provisional ball because it's in a better spot?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "No, you have to use your first ball if you find it in time and it's not out of bounds."
+      },
+      {
+        "id": "b",
+        "text": "Yes, you can pick whichever ball you want."
+      },
+      {
+        "id": "c",
+        "text": "Yes, but only if everyone in your group says it's okay."
+      },
+      {
+        "id": "d",
+        "text": "No, you always have to stop playing with the provisional ball."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "If you find your first ball on the course within 3 minutes, and it's in bounds, you must keep playing with your first ball, even if your provisional ball is in a better place.",
+    "vocabulary": [
+      {
+        "term": "Provisional ball",
+        "simpleMeaning": "A spare ball you hit if you think your first shot might be lost or out of bounds."
+      },
+      {
+        "term": "In bounds",
+        "simpleMeaning": "The ball is still on the golf course, not out of play."
+      }
+    ],
+    "teachingTip": "Practise using a provisional ball when playing with friends. Remind everyone which ball is the first one and which is the provisional.",
+    "likelyMisconceptions": [
+      "Some players might think you can pick the ball in the best spot, but you have to play your first ball if you find it in time."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:32.785Z",
+  "model": "gpt-4.1"
+}

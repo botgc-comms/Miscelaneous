@@ -1,0 +1,580 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-28.png",
+  "sourceImagePath": "Input\\page-28.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-28.png",
+      "ruleNumber": "R10",
+      "ruleName": "Advice and line of play",
+      "group": "Advice and line of play",
+      "title": "What advice can you ask for on the golf course?",
+      "question": "You can't see the flag from where your ball is. Which of these are you allowed to ask someone?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "To tell you which club to use"
+        },
+        {
+          "id": "b",
+          "text": "To show you the line of play"
+        },
+        {
+          "id": "c",
+          "text": "How to play the shot"
+        },
+        {
+          "id": "d",
+          "text": "What the weather will do"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You may ask someone to show you the line of play, but not for advice on which club to use or how to play the shot.",
+      "imagePrompt": "A teen girl golfer stands on the fairway, asking a friend to point out the line of play toward a flag that is hidden from view.",
+      "imageAlt": "Teen girl golfer on the fairway asking a friend to indicate the direction to the flag she can't see.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "black",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-28.png",
+      "ruleNumber": "R15",
+      "ruleName": "Loose impediments",
+      "group": "Loose impediments",
+      "title": "Moving loose impediments",
+      "question": "You find some leaves and twigs next to your ball on the fairway. What can you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Remove them without penalty"
+        },
+        {
+          "id": "b",
+          "text": "Remove them but get a penalty"
+        },
+        {
+          "id": "c",
+          "text": "Leave them alone"
+        },
+        {
+          "id": "d",
+          "text": "Only remove them if your opponent agrees"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You can remove natural objects like leaves and twigs without penalty.",
+      "imagePrompt": "A teen boy golfer on the fairway picks up a twig and some leaves carefully before playing a shot.",
+      "imageAlt": "Teen boy golfer removing a twig and leaves from next to his golf ball on short grass.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "blue",
+        "clothingBottomColour": "white",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-28.png",
+      "ruleNumber": "R15",
+      "ruleName": "Movable obstructions",
+      "group": "Movable obstructions",
+      "title": "Removing artificial objects",
+      "question": "You spot a drinks can and a yellow stake near your ball. What are you allowed to do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Remove both without penalty"
+        },
+        {
+          "id": "b",
+          "text": "Only remove the can, not the stake"
+        },
+        {
+          "id": "c",
+          "text": "Remove both, but get a penalty"
+        },
+        {
+          "id": "d",
+          "text": "Leave both where they are"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "Artificial objects like cans and course stakes can be removed without penalty.",
+      "imagePrompt": "A teen girl golfer on grass picks up a drinks can and a yellow stake lying near her ball.",
+      "imageAlt": "Teen girl picking up a drinks can and a yellow stake near her golf ball on the course.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "yellow",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "yellow",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-28.png",
+      "ruleNumber": "R16",
+      "ruleName": "Abnormal course conditions",
+      "group": "Abnormal course conditions",
+      "title": "Taking relief from obstructions in a penalty area",
+      "question": "Your ball lies in a penalty area next to a bridge. What are your options?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball as it lies"
+        },
+        {
+          "id": "b",
+          "text": "Drop the ball with a 1-stroke penalty"
+        },
+        {
+          "id": "c",
+          "text": "Get free relief from the bridge"
+        },
+        {
+          "id": "d",
+          "text": "Get free relief from a puddle"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b"
+      ],
+      "explanation": "You can't get free relief from immovable obstructions or puddles in a penalty area; you must play it as it lies or take penalty area relief.",
+      "imagePrompt": "A teen boy golfer stands next to a stream in a penalty area, with their ball close to a small bridge.",
+      "imageAlt": "Teen boy golfer in a penalty area near a bridge, considering how to play his next shot.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "red",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "light",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "red",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-28.png",
+      "ruleNumber": "R19",
+      "ruleName": "Unplayable lie",
+      "group": "Unplayable lie",
+      "title": "Declaring a ball unplayable in a penalty area",
+      "question": "Your ball is in a penalty area and stuck behind some rocks. Can you declare it unplayable?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, at any time"
+        },
+        {
+          "id": "b",
+          "text": "No, you cannot declare it unplayable"
+        },
+        {
+          "id": "c",
+          "text": "Only if your opponent agrees"
+        },
+        {
+          "id": "d",
+          "text": "Only if it is underwater"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You are not allowed to declare a ball unplayable in a penalty area. You must use the penalty area rule instead.",
+      "imagePrompt": "A teen girl golfer looks at her ball stuck among rocks next to water in a marked penalty area.",
+      "imageAlt": "Teen girl golfer standing next to her ball among rocks in a penalty area by the water.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "wedge",
+        "ballCount": 1,
+        "stakeColour": "red",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "white",
+        "hat": true
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-28.png",
+      "ruleNumber": "R10",
+      "ruleName": "Advice and line of play",
+      "group": "Advice and line of play",
+      "title": "What advice can you ask for on the golf course?",
+      "question": "You can't see the flag from where your ball is. Which of these are you allowed to ask a fellow player?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "To recommend a club for your next shot"
+        },
+        {
+          "id": "b",
+          "text": "To point out the direction of the hole"
+        },
+        {
+          "id": "c",
+          "text": "To tell you how to play the shot"
+        },
+        {
+          "id": "d",
+          "text": "To tell you how far it is to the green"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You are allowed to ask someone to physically point out the direction or line of play, but you are not allowed to ask for advice on which club to use or how to play the shot.",
+      "imagePrompt": "A teen girl golfer stands on the fairway, asking a friend to point out the line of play toward a flag that is hidden from view. The landscape includes short grass and some trees, but the green is not visible.",
+      "imageAlt": "Teen girl golfer on the fairway asking a friend to indicate the direction to the flag she can't see.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "blue",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-28.png",
+      "ruleNumber": "R15",
+      "ruleName": "Loose impediments",
+      "group": "Loose impediments",
+      "title": "Moving loose impediments",
+      "question": "You find some leaves and twigs touching your ball on the fairway. What can you do according to the rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Remove them with no penalty"
+        },
+        {
+          "id": "b",
+          "text": "You can remove them but will get a penalty"
+        },
+        {
+          "id": "c",
+          "text": "You must leave them alone"
+        },
+        {
+          "id": "d",
+          "text": "Only remove them after asking your marker"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "Loose impediments like leaves and twigs may be removed anywhere on the course, including the fairway, without penalty.",
+      "imagePrompt": "A teen girl golfer on the fairway carefully picks up a twig and some leaves from next to her ball before taking her shot.",
+      "imageAlt": "Teen girl golfer removing a twig and leaves from beside her golf ball on short grass.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "black",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-28.png",
+      "ruleNumber": "R15",
+      "ruleName": "Movable obstructions",
+      "group": "Movable obstructions",
+      "title": "Removing artificial objects",
+      "question": "There is a drinks can and a yellow course stake lying near your ball on the fairway. What does the rule allow?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You may remove both the can and the stake without penalty"
+        },
+        {
+          "id": "b",
+          "text": "You may only remove the can, not the stake"
+        },
+        {
+          "id": "c",
+          "text": "You can remove both, but get a penalty"
+        },
+        {
+          "id": "d",
+          "text": "You must leave both where they are"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "Both the drinks can and the course stake are movable obstructions and may be removed without penalty.",
+      "imagePrompt": "A teen boy golfer on the fairway picks up a drinks can and a yellow stake that are next to his golf ball, preparing for his next shot.",
+      "imageAlt": "Teen boy picking up a drinks can and a yellow stake near his golf ball on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "yellow",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "medium",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "red",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-28.png",
+      "ruleNumber": "R16",
+      "ruleName": "Abnormal course conditions",
+      "group": "Abnormal course conditions",
+      "title": "Taking relief from obstructions in a penalty area",
+      "question": "Your ball is in a penalty area next to a bridge and a puddle. Which actions are allowed under the rules?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball as it lies"
+        },
+        {
+          "id": "b",
+          "text": "Take relief by dropping a ball outside the penalty area with a 1-stroke penalty"
+        },
+        {
+          "id": "c",
+          "text": "Take free relief from the bridge"
+        },
+        {
+          "id": "d",
+          "text": "Take free relief from the puddle"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b"
+      ],
+      "explanation": "When your ball is in a penalty area, free relief is not available from obstructions or temporary water. You may either play it as it lies or take penalty area relief for one penalty stroke.",
+      "imagePrompt": "A teen boy golfer stands next to a stream in a red penalty area, with his ball close to a small bridge and a puddle. He thinks about what to do.",
+      "imageAlt": "Teen boy in a penalty area by a bridge and puddle, considering his options for playing.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "red",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "yellow",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-28.png",
+      "ruleNumber": "R19",
+      "ruleName": "Unplayable lie",
+      "group": "Unplayable lie",
+      "title": "Declaring a ball unplayable in a penalty area",
+      "question": "Your ball is in a penalty area, stuck behind rocks. Are you allowed to declare it unplayable?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, at any time"
+        },
+        {
+          "id": "b",
+          "text": "No, you cannot declare it unplayable in a penalty area"
+        },
+        {
+          "id": "c",
+          "text": "Only if another player agrees"
+        },
+        {
+          "id": "d",
+          "text": "Only if the ball is lost"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You cannot declare a ball unplayable in a penalty area. You must use the penalty area relief options instead.",
+      "imagePrompt": "A teen girl golfer near the water in a clearly marked red penalty area is looking at her ball stuck behind rocks, deciding what to do.",
+      "imageAlt": "Teen girl standing next to her ball among rocks in a penalty area by the water.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "wedge",
+        "ballCount": 1,
+        "stakeColour": "red",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "medium",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "blue",
+        "hat": true
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "010_001_What_advice_can_you_ask_for_on_the_golf_course",
+    "015_002_Moving_loose_impediments",
+    "015_003_Removing_artificial_objects",
+    "016_004_Taking_relief_from_obstructions_in_a_penalty_area",
+    "019_005_Declaring_a_ball_unplayable_in_a_penalty_area"
+  ],
+  "updatedAtUtc": "2026-04-24T22:24:22.184Z"
+}

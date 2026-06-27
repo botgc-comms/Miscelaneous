@@ -1,0 +1,479 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-22.png",
+  "sourceImagePath": "Input\\page-22.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-22.png",
+      "ruleNumber": "R12",
+      "ruleName": "Old footprints, buried lie, etc.",
+      "group": "Old footprints, buried lie, etc.",
+      "title": "Playing a Ball from a Bad Lie",
+      "question": "Your ball lands in an old footprint in a bunker, but there is no specific rule. What must you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Take a free drop out of the footprint"
+        },
+        {
+          "id": "b",
+          "text": "Play the ball as it lies or declare it unplayable"
+        },
+        {
+          "id": "c",
+          "text": "Move the ball to a better spot without penalty"
+        },
+        {
+          "id": "d",
+          "text": "Ask your opponent for help and re-drop without penalty"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If a bad lie is not covered by other rules, you must play the ball as it lies or declare it unplayable, with penalties as per unplayable ball rules.",
+      "imagePrompt": "A teen girl standing next to her ball in an old footprint in a bunker, looking at the lie thoughtfully.",
+      "imageAlt": "Girl stands in bunker looking at her ball in an old footprint.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "wedge",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "dark",
+        "clothingTopColour": "black",
+        "clothingBottomColour": "green",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-22.png",
+      "ruleNumber": "R19",
+      "ruleName": "Unplayable ball",
+      "group": "Unplayable ball",
+      "title": "Declaring a Ball Unplayable in a Bunker",
+      "question": "If your ball is unplayable in a bunker, how many penalty strokes does it cost to drop the ball outside the bunker?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty"
+        },
+        {
+          "id": "b",
+          "text": "1 penalty stroke"
+        },
+        {
+          "id": "c",
+          "text": "2 penalty strokes"
+        },
+        {
+          "id": "d",
+          "text": "3 penalty strokes"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "Dropping outside the bunker on the extension of the line costs 2 penalty strokes.",
+      "imagePrompt": "A teen boy preparing to drop a ball behind a bunker after declaring his ball unplayable, holding an iron.",
+      "imageAlt": "Boy drops a golf ball behind a bunker with a club in hand.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "dropping_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "light",
+        "clothingTopColour": "blue",
+        "clothingBottomColour": "green",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-22.png",
+      "ruleNumber": "R19",
+      "ruleName": "Unplayable ball",
+      "group": "Unplayable ball",
+      "title": "Options for an Unplayable Ball in a Bunker",
+      "question": "Which of these are options you have if your ball is unplayable in a bunker?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop within 2 club-lengths in the bunker (1 penalty stroke)"
+        },
+        {
+          "id": "b",
+          "text": "Go back on the line in the bunker and drop (1 penalty stroke)"
+        },
+        {
+          "id": "c",
+          "text": "Replay from your last spot, even from the tee (1 penalty stroke)"
+        },
+        {
+          "id": "d",
+          "text": "Drop outside the bunker going back on the line (2 penalty strokes)"
+        },
+        {
+          "id": "e",
+          "text": "Take a free drop outside the bunker"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "explanation": "All except a free drop outside the bunker are correct options, with different penalties.",
+      "imagePrompt": "A teen girl standing in a bunker weighing her options for an unplayable ball, visualising various drop choices.",
+      "imageAlt": "Girl in bunker looking at possible places to drop her ball.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "wedge",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "black",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-22.png",
+      "ruleNumber": "R19",
+      "ruleName": "Unplayable ball",
+      "group": "Unplayable ball",
+      "title": "Dropping After Returning to Last Stroke Location",
+      "question": "If you decide to return to the spot of your last stroke from a bunker and declare the ball unplayable, how far are you allowed to drop from that spot?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Exactly on the same spot"
+        },
+        {
+          "id": "b",
+          "text": "Within 1 club-length"
+        },
+        {
+          "id": "c",
+          "text": "Within 2 club-lengths"
+        },
+        {
+          "id": "d",
+          "text": "Anywhere on the green"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You may drop within 1 club-length from the spot of your last stroke.",
+      "imagePrompt": "A teen boy on the fairway about to drop a new ball within one club-length from where he just hit his last shot.",
+      "imageAlt": "Boy measures and drops a new ball near his last shot location on fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "dropping_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "black",
+        "clothingBottomColour": "red",
+        "hat": false
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-22.png",
+      "ruleNumber": "R12",
+      "ruleName": "Old footprints, buried lie, etc.",
+      "group": "Old footprints, buried lie, etc.",
+      "title": "Playing a Ball from a Bad Lie",
+      "question": "Your ball comes to rest in an old footprint in a bunker. What are your options under the Rules of Golf?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Take a free drop out of the footprint"
+        },
+        {
+          "id": "b",
+          "text": "Play the ball as it lies or declare it unplayable"
+        },
+        {
+          "id": "c",
+          "text": "Move the ball to a better spot in the bunker without penalty"
+        },
+        {
+          "id": "d",
+          "text": "Ask your opponent for advice and re-drop without penalty"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "When your ball is in a difficult lie such as an old footprint, you must either play it as it lies or declare it unplayable, which comes with a penalty.",
+      "imagePrompt": "A teen boy standing next to his ball in an old footprint in a bunker, looking at the lie thoughtfully, with a wedge in hand.",
+      "imageAlt": "Boy stands in bunker looking at his ball in an old footprint.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "wedge",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "yellow",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-22.png",
+      "ruleNumber": "R19",
+      "ruleName": "Unplayable ball",
+      "group": "Unplayable ball",
+      "title": "Declaring a Ball Unplayable in a Bunker",
+      "question": "If your ball is unplayable in a bunker and you choose to drop it outside the bunker behind where it lay, how many penalty strokes must you add?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty"
+        },
+        {
+          "id": "b",
+          "text": "1 penalty stroke"
+        },
+        {
+          "id": "c",
+          "text": "2 penalty strokes"
+        },
+        {
+          "id": "d",
+          "text": "3 penalty strokes"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "According to the rules, choosing to drop outside the bunker behind the original spot incurs a two-stroke penalty.",
+      "imagePrompt": "A teen girl preparing to drop a ball on the grass behind a bunker after declaring her ball unplayable, holding an iron club.",
+      "imageAlt": "Girl drops a golf ball behind a bunker with a club in hand.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "dropping_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "black",
+        "clothingBottomColour": "green",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-22.png",
+      "ruleNumber": "R19",
+      "ruleName": "Unplayable ball",
+      "group": "Unplayable ball",
+      "title": "Options for an Unplayable Ball in a Bunker",
+      "question": "If your ball is unplayable in a bunker, which of these are legal options you can choose? Select all that apply.",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop within 2 club-lengths in the bunker (1 penalty stroke)"
+        },
+        {
+          "id": "b",
+          "text": "Go back on the line in the bunker and drop (1 penalty stroke)"
+        },
+        {
+          "id": "c",
+          "text": "Replay from your last spot, even from the tee (1 penalty stroke)"
+        },
+        {
+          "id": "d",
+          "text": "Drop outside the bunker going back on the line (2 penalty strokes)"
+        },
+        {
+          "id": "e",
+          "text": "Take a free drop outside the bunker"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "explanation": "You may drop within the bunker using either the two club-length or back-on-the-line options, replay the shot, or drop outside the bunker with a two-stroke penalty. A free drop outside the bunker is not allowed.",
+      "imagePrompt": "A teen girl standing in a bunker thinking over her options for an unplayable ball, considering various legal drop spots within and outside the bunker.",
+      "imageAlt": "Girl in bunker looking at possible places to drop her ball.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "wedge",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "dark",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "blue",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-22.png",
+      "ruleNumber": "R19",
+      "ruleName": "Unplayable ball",
+      "group": "Unplayable ball",
+      "title": "Dropping After Returning to Last Stroke Location",
+      "question": "If you decide to return to the spot of your last shot and declare your ball unplayable, how far from that spot are you allowed to drop your ball under the rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Exactly on the same spot"
+        },
+        {
+          "id": "b",
+          "text": "Within 1 club-length"
+        },
+        {
+          "id": "c",
+          "text": "Within 2 club-lengths"
+        },
+        {
+          "id": "d",
+          "text": "Anywhere on the green"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You must drop the ball within one club-length of where your last shot was played, not closer to the hole.",
+      "imagePrompt": "A teen boy on the fairway about to drop a new ball within one club-length from where he just played his previous shot.",
+      "imageAlt": "Boy measures and drops a new ball near his last shot location on fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "dropping_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "light",
+        "clothingTopColour": "black",
+        "clothingBottomColour": "navy",
+        "hat": false
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "012_001_Playing_a_Ball_from_a_Bad_Lie",
+    "019_002_Declaring_a_Ball_Unplayable_in_a_Bunker",
+    "019_003_Options_for_an_Unplayable_Ball_in_a_Bunker",
+    "019_004_Dropping_After_Returning_to_Last_Stroke_Location"
+  ],
+  "updatedAtUtc": "2026-04-24T21:49:25.402Z"
+}

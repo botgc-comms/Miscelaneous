@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\1415_001_What_to_do_when_two_balls_are_very_close_together\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:12:50.693Z",
+  "title": "What to do when two balls are very close together",
+  "ruleNumber": "14/15",
+  "ruleName": "Balls close to each other",
+  "durationSeconds": 185.703
+}

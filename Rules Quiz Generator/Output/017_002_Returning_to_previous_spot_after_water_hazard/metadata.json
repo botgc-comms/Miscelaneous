@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-25.png",
+  "ruleNumber": "17",
+  "ruleName": "Penalty area rule",
+  "group": "Penalty area rule",
+  "title": "Returning to previous spot after water hazard",
+  "question": "If your shot ends up in a yellow penalty area and you don't want to drop behind the hazard, what other relief option do you have?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You must play the ball where it lies in the penalty area."
+    },
+    {
+      "id": "b",
+      "text": "You can go back to where you last played the shot and play again, taking a one-stroke penalty."
+    },
+    {
+      "id": "c",
+      "text": "You may drop the ball on the green without penalty."
+    },
+    {
+      "id": "d",
+      "text": "You can only keep playing if you find your original ball."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You can go back to the spot of your last shot and play again from there for a one-stroke penalty. If your previous shot was from the tee, you are allowed to tee up as well.",
+  "imagePrompt": "A teen boy golfer is on the fairway where he previously played a shot, preparing to drop a ball near his original divot with a water hazard and yellow stakes in the background.",
+  "imageAlt": "Teen boy golfer preparing to drop a ball at his previous shot location after landing in a yellow penalty area.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "dropping_ball",
+    "clubInHand": "fairway_wood",
+    "ballCount": 1,
+    "stakeColour": "yellow",
+    "waterVisible": true,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "yellow",
+    "clothingBottomColour": "grey",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Golfer's posture and action are correct for dropping a ball.",
+      "Exactly one golf ball is visible, mid-drop at knee height.",
+      "The fairway wood is realistic in size, shape, and is not cartoonish or malformed.",
+      "Club head is believable for a fairway wood (smaller than driver, wood-style).",
+      "Shaft and grip lengths appear natural and realistic.",
+      "Only one club is present, held naturally by the golfer.",
+      "The golfer is a white teen boy with light skin tone, yellow top, grey shorts, and a cap, as specified.",
+      "Yellow penalty stakes are present, realistic, and appropriately placed for a water hazard.",
+      "Water hazard is clearly visible in the background.",
+      "Course setting is a believable fairway with authentic grass texture and environmental features.",
+      "Image style matches an educational, semi-realistic illustration.",
+      "No duplicated or floating equipment, malformed clubs, or mis-sized balls apparent.",
+      "No teaching graphics, overlays, or extraneous text."
+    ],
+    "repairPrompt": "Make the fairway wood's club head slightly smaller and less driver-like to more accurately match a typical fairway wood, while ensuring all proportions remain realistic. Ensure the golfer's shorts are clearly visible as grey and not misread as another color."
+  }
+}

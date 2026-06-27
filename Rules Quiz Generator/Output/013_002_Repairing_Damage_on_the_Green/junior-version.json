@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\013_002_Repairing_Damage_on_the_Green\\metadata.json",
+  "sourceImageName": "pageb-07.png",
+  "ruleNumber": "R13",
+  "ruleName": "Putting Green",
+  "title": "Repairing Damage on the Green",
+  "question": "On the putting green, which types of damage can you repair without penalty?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Pitch-marks and spike marks"
+    },
+    {
+      "id": "b",
+      "text": "Aeration holes"
+    },
+    {
+      "id": "c",
+      "text": "Old hole plugs"
+    },
+    {
+      "id": "d",
+      "text": "Natural imperfections"
+    }
+  ],
+  "correctAnswers": [
+    "a",
+    "c"
+  ],
+  "explanation": "You are permitted to fix pitch-marks, spike marks, and old hole plugs, but not aeration holes or natural imperfections.",
+  "juniorVersion": {
+    "title": "Fixing Damage on the Green",
+    "question": "When your ball is on the putting green, which things are you allowed to fix before you putt?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Marks made by a ball hitting the green or someone’s shoes (pitch-marks and spike marks)"
+      },
+      {
+        "id": "b",
+        "text": "Holes made by special tools to help the grass get air (aeration holes)"
+      },
+      {
+        "id": "c",
+        "text": "Old holes that were used for the flag before (old hole plugs)"
+      },
+      {
+        "id": "d",
+        "text": "Bumpy spots or dips that have always been there (natural imperfections)"
+      }
+    ],
+    "correctAnswers": [
+      "a",
+      "c"
+    ],
+    "explanation": "You can fix places where a ball or shoe made a mark, and old flagstick holes. But you can’t fix air holes or bumpy spots that have always been there.",
+    "vocabulary": [
+      {
+        "term": "Pitch-mark",
+        "simpleMeaning": "A dent in the ground made when a ball lands on the green."
+      },
+      {
+        "term": "Spike mark",
+        "simpleMeaning": "A small mark or scratch made by someone’s shoes on the green."
+      },
+      {
+        "term": "Aeration hole",
+        "simpleMeaning": "A tiny hole made by a tool to help grass breathe and grow."
+      },
+      {
+        "term": "Old hole plug",
+        "simpleMeaning": "The spot where the hole for the flag used to be on the green."
+      }
+    ],
+    "teachingTip": "Ask children to show you which marks on the green they think they are allowed to fix before they putt.",
+    "likelyMisconceptions": [
+      "Children may think they can fix any funny spot on the green.",
+      "They might try to fix holes made by special tools or bumpy areas from nature."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:35.489Z",
+  "model": "gpt-4.1"
+}

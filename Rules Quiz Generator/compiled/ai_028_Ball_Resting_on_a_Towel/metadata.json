@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "15.2a(1)",
+  "ruleName": "Relief from a Movable Obstruction",
+  "group": "Obstructions",
+  "type": "multiple_choice",
+  "imagePrompt": "A polished, modern semi-realistic illustration in the junior golf quiz style, showing a golf ball at rest on top of a light-coloured towel lying on a closely-mown fairway. One golfer stands nearby, looking at the ball, clearly contemplating their next move. The setting is bright and clear, around midday, and there are no crowds. The illustration is about 75% realistic and 25% stylised, with clean lines and inviting colours. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer on a fairway looking at a golf ball that has come to rest on a towel lying on the grass, preparing to decide what to do next according to the Rules of Golf.",
+  "sceneSpec": {
+    "setting": "Fairway area of a golf course, neatly mown green grass with ball in view.",
+    "players": "One golfer visible, standing near the ball, preparing to consider their options.",
+    "ballPosition": "Golf ball clearly resting on top of a light-coloured towel that has accidentally been left behind.",
+    "ruleMoment": "The moment before the golfer attempts to remove the towel from under the ball.",
+    "educationalFocus": "Identifying a movable obstruction and correct procedure if the ball is resting on it.",
+    "mustShow": [
+      "Golf ball at rest on a towel on the fairway",
+      "Golfer nearby observing the situation"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Ball Sitting on a Towel",
+      "question": "Your golf ball stops on top of a towel that someone left on the grass. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You have to hit the ball while it's on the towel."
+        },
+        {
+          "id": "b",
+          "text": "You can move the towel. If the ball rolls or moves when you do, just put the ball back where it was. No penalty."
+        },
+        {
+          "id": "c",
+          "text": "You must drop the ball somewhere else for free, using one club-length."
+        },
+        {
+          "id": "d",
+          "text": "If the ball moves when you take away the towel, you get a one-shot penalty."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "A towel is something you can move. You can take it away. If your ball moves while you do this, you won't get in trouble. Just put your ball back where it was before you play your shot.",
+      "vocabulary": [
+        {
+          "term": "Movable Obstruction",
+          "simpleMeaning": "Anything on the course, like a towel or can, that isn’t stuck to the ground and can be moved."
+        }
+      ],
+      "teachingTip": "Show children a towel or bottle on the ground and ask them what they could do if their ball lands on it, helping them see what a movable obstruction is.",
+      "likelyMisconceptions": [
+        "Children may think they have to play the ball from on top of the towel.",
+        "They may think it's always a penalty if the ball moves."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Ball Resting on a Towel",
+      "question": "Your approach shot comes to rest on a towel left on the course by another player. What is the correct ruling?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You must play the ball as it lies on the towel."
+        },
+        {
+          "id": "b",
+          "text": "You may remove the towel. If the ball moves as a result, replace it on its original spot without penalty."
+        },
+        {
+          "id": "c",
+          "text": "You must take free relief and drop the ball within one club-length."
+        },
+        {
+          "id": "d",
+          "text": "You receive a one-stroke penalty if the ball moves when the towel is removed."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "A towel is a movable obstruction. You may remove it at any time. If removing the towel causes your ball to move, there is no penalty. Simply replace the ball on its original spot before making your next stroke. Rule Reference: Rule 15.2a(1)."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "ai_028_Ball_Resting_on_a_Towel",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-06-26T20:03:54.079Z"
+  }
+}

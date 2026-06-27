@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "13.1e",
+  "ruleName": "No Deliberate Testing of Greens",
+  "group": "The Putting Green",
+  "type": "multiple_choice",
+  "imagePrompt": "A polished, modern semi-realistic (about 75% realistic, 25% stylised) illustration in the established junior golf quiz style. Depict a single golfer crouched on a golf putting green, wiping mud off their golf ball by gently rubbing it on the surface of the green. The green should clearly be a maintained golf putting green with the hole and flagstick visible. The golfer should be focused on cleaning, not testing the green's condition. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer crouched on the putting green, cleaning mud off their golf ball by rubbing it on the green near the hole with the flagstick in place.",
+  "sceneSpec": {
+    "setting": "A maintained golf putting green area with a visible hole and flagstick in place.",
+    "players": "One player crouched beside their ball on the green, holding the ball and apparently cleaning it by gently rubbing it on the green surface.",
+    "ballPosition": "On the putting green, close to the player's hand as it is being cleaned.",
+    "ruleMoment": "The moment the player wipes mud off the ball by rubbing it gently on the green.",
+    "educationalFocus": "Clarifies the distinction between permitted cleaning actions on the green and prohibited testing actions.",
+    "mustShow": [
+      "A player crouched on the green with a ball in hand, visibly rubbing the ball on the green's surface to wipe off mud.",
+      "A visible putting green with a hole and flagstick."
+    ],
+    "mustNotShow": [
+      "Multiple balls",
+      "Any testing tools or equipment",
+      "Spectators",
+      "Text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards, speech bubbles"
+    ]
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Wiping Mud Off Your Ball on the Green",
+      "question": "Can you clean mud off your golf ball by rubbing it on the putting green, if you are not trying to find out how smooth or bumpy the green is?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, you can rub your ball on the green to clean mud, if you are not trying to test the green."
+        },
+        {
+          "id": "b",
+          "text": "No, you cannot ever rub your ball on the putting green."
+        },
+        {
+          "id": "c",
+          "text": "Yes, but only if someone in charge says it is okay each time."
+        },
+        {
+          "id": "d",
+          "text": "No, you can only do it after you finish the hole."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "You can clean mud off your ball by rubbing it on the green, if you are not checking how the grass feels or rolls. Just make sure you are only cleaning and not trying to learn about the green.",
+      "vocabulary": [
+        {
+          "term": "putting green",
+          "simpleMeaning": "The special grass area where you try to hit the ball into the hole."
+        },
+        {
+          "term": "test the green",
+          "simpleMeaning": "To find out how smooth, bumpy, fast, or slow the green is for putting."
+        }
+      ],
+      "teachingTip": "Remind children the difference between just cleaning their ball and trying to find out how the green will affect their putt.",
+      "likelyMisconceptions": [
+        "Some may think it is always bad to touch the green with the ball.",
+        "Some might believe you can only use a towel to clean the ball, not the green."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Cleaning Mud Off a Ball Using the Putting Green Surface",
+      "question": "While on the putting green, may you rub your golf ball on the surface of the green to wipe off mud, as long as you are not doing it to test the condition of the green?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, you may rub your ball on the putting green to clean off mud, provided you are not testing the green."
+        },
+        {
+          "id": "b",
+          "text": "No, you are never allowed to rub your ball on the putting green surface."
+        },
+        {
+          "id": "c",
+          "text": "Yes, but only if the Committee gives you permission each time."
+        },
+        {
+          "id": "d",
+          "text": "No, it is only permitted between holes after completing your putt."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "You are permitted to rub your golf ball on the putting green to clean off mud, as long as you are not deliberately testing the condition of the green. This does not breach Rule 13.1e. However, you must not rub the surface of the green or roll a ball on it to gain information about its condition during play."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "ai_001_Cleaning_Mud_Off_a_Ball_Using_the_Putting_Green_Surface",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-06-26T20:03:53.867Z"
+  }
+}

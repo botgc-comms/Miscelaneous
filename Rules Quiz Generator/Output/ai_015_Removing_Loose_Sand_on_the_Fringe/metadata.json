@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "13.1c & 8.1a",
+  "ruleName": "Improvements Allowed on the Putting Green; Actions That Improve Conditions Affecting the Stroke",
+  "group": "General Area and Putting Green",
+  "title": "Removing Loose Sand on the Fringe",
+  "question": "Your ball is just off the putting green on the fringe. There is a patch of loose sand on the fringe directly between your ball and the hole. Before putting, can you brush the sand away?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes. Loose sand may always be removed."
+    },
+    {
+      "id": "b",
+      "text": "Yes. You are putting, so the putting green rules apply."
+    },
+    {
+      "id": "c",
+      "text": "No. You are not allowed to remove loose sand from the fringe to improve your line of play."
+    },
+    {
+      "id": "d",
+      "text": "Yes, but only if you use your hand rather than a towel."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "The special permission to remove sand and loose soil only applies on the putting green. The fringe is part of the general area, so deliberately brushing away loose sand to improve your line of play is not allowed.",
+  "imagePrompt": "Produce a polished, modern, semi-realistic (approximately 75% realistic, 25% stylised) junior golf rules illustration. Show a golfer preparing to putt from the fringe, just off the putting green. The golf ball sits on the fringe, and there is a visible patch of loose sand on the fringe between the ball and the hole. The putting green, flagstick and hole should be clearly visible beyond the fringe. Ensure the focus is on the situation: golfer, ball, sand patch, fringe, and putting green. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards, or speech bubbles.",
+  "imageAlt": "A golfer preparing to putt from the fringe with a patch of loose sand between the ball on the fringe and the hole on the putting green.",
+  "sceneSpec": {
+    "setting": "Golf green and immediate fringe area.",
+    "players": "One golfer preparing to putt, standing just off the putting green.",
+    "ballPosition": "On the fringe, near the edge of the green.",
+    "ruleMoment": "Golfer considers brushing away a visible patch of loose sand from the fringe before putting.",
+    "educationalFocus": "Clarifies where the rules permit removal of loose sand: only on the putting green, not the fringe.",
+    "mustShow": [
+      "Golf ball sitting on the fringe just off the putting green",
+      "Distinct patch of loose sand on the fringe in a line between the ball and the hole",
+      "Hole and flagstick clearly visible on the putting green",
+      "Golfer positioned as if preparing to putt from the fringe"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  }
+}

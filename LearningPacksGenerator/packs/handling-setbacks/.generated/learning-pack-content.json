@@ -1,0 +1,224 @@
+{
+  "schemaVersion": 1,
+  "packId": "junior-golf-basics",
+  "title": "Junior Golf: A Friendly Start for Children and Parents",
+  "audience": "Brand new junior golfers and non-golfing parents",
+  "pages": [
+    {
+      "id": "00-welcome",
+      "title": "Welcome to Junior Golf!",
+      "file": "pages/00-welcome.md",
+      "type": "content",
+      "assetFile": "welcome.png",
+      "imageAlt": "A family with children at a golf course, smiling together near a green, holding basic golf clubs.",
+      "imagePrompt": "A photorealistic image of a diverse family, including young children, happily standing on a golf course green, each holding a basic golf club. The atmosphere is welcoming and friendly, with gentle sunshine. No logos or brand names are visible.",
+      "markdown": "# Welcome to Junior Golf!\n\nThank you for taking this first step into the world of golf with your child. Whether you are completely new to golf or just helping your young golfer get started, this pack is designed to support you. Here, you will find simple explanations and practical guidance for both children and parents. You do not need to be an expert, and fancy equipment isn’t required. All you need is curiosity and a willingness to have fun as a family on the golf course.\n\nGolf is a sport for all ages and abilities. It can be relaxing, exciting, and helps children learn valuable skills such as patience and fair play. In the following pages, you'll discover what to expect on your first visit, basic equipment, key rules, and tips for safe and enjoyable play. If you stick with it—one swing at a time—golf can provide many happy moments together.",
+      "quiz": null
+    },
+    {
+      "id": "01-golf-explained",
+      "title": "What is Golf?",
+      "file": "pages/01-golf-explained.md",
+      "type": "content",
+      "assetFile": "golf-explained.png",
+      "imageAlt": "A junior golfer swinging a club towards a flag on a sunny golf course, with parents watching nearby.",
+      "imagePrompt": "A photorealistic image of a young child swinging a golf club on a sunny green fairway, aiming towards a flag. Parents stand nearby, watching supportively. The setting is friendly and open, with visible golf course features like bunkers and the green.",
+      "markdown": "# What is Golf?\n\nGolf is a game played outdoors, where players use clubs to hit a small ball into a series of holes on a course, aiming to use as few shots as possible. Each hole has its own starting point (called a tee) and a target area (the green), marked by a flag. Courses usually have nine or eighteen holes, but beginners often practise on smaller sections or at the driving range.\n\nGolf is played at your own pace. There’s no need to rush. It’s enjoyed by children and adults of all abilities and has a strong focus on manners and respect. Players take turns, wait patiently, and try to improve a little with each round. The aim is not only to play well, but also to enjoy spending time outdoors. Sharing golf as a family is a great way to learn together, laugh about funny shots, and celebrate each other’s successes.",
+      "quiz": null
+    },
+    {
+      "id": "02-basic-equipment",
+      "title": "Basic Golf Equipment",
+      "file": "pages/02-basic-equipment.md",
+      "type": "content",
+      "assetFile": "basic-equipment.png",
+      "imageAlt": "A simple set of junior golf clubs, golf balls, and a small golf bag arranged neatly on grass, suitable for children.",
+      "imagePrompt": "A photorealistic image showing a small set of junior golf clubs, several white golf balls, and a child-sized golf bag lying on green grass. The equipment appears clean, unbranded, and suitable for beginners. Sunlight highlights the scene.",
+      "markdown": "# Basic Golf Equipment\n\nStarting golf does not require expensive or complicated gear. For new junior golfers, only a few items are needed:\n\n• **Clubs:** Many beginners start with just one or two clubs (such as a putter and an iron). Children’s clubs are a bit shorter and lighter, making them easier to use. Some courses and clubs can lend junior sets to try out.\n\n• **Golf balls:** Choose basic practice or soft golf balls—there’s no need for special ones at the start.\n\n• **Bag:** A small, light bag will hold clubs and make carrying easy for little ones.\n\n• **Clothes:** Comfortable trousers, shorts or a skirt, and a polo shirt or jumper are just fine. Trainers work well if you don’t have golf shoes.\n\nThere’s no need to rush out and buy anything before the first session. Most golf clubs and coaching sessions provide what you need. Remember: the key is to keep things simple, light, and fun.",
+      "quiz": null
+    },
+    {
+      "id": "03-on-the-course",
+      "title": "First Visit: What to Expect",
+      "file": "pages/03-on-the-course.md",
+      "type": "content",
+      "assetFile": "on-the-course.png",
+      "imageAlt": "Children and their parents walking together on a golf course path, with one child preparing to hit a ball on the green.",
+      "imagePrompt": "A photorealistic scene of a family with children walking along a golf course path, with one child about to putt a ball towards the hole on the green. Parents look on supportively, with trees and gentle hills in the background. No text or logos present.",
+      "markdown": "# First Visit: What to Expect\n\nGoing to a golf course for the first time can feel exciting and a bit strange. Most clubs are very welcoming and used to helping beginners. When you arrive, you’ll often check in at the clubhouse or pro shop. Staff will guide you to where juniors can start.\n\nYou may head to a practice area, called the driving range, or try the putting green. Sessions may start with simple swings or short, fun games focusing on safety and enjoyment. Don’t worry about perfect shots—everyone starts as a beginner, and making mistakes is part of learning.\n\nParents are usually encouraged to watch and support, especially with younger children. The main aim is for everyone to feel comfortable and safe. If you’re not sure about anything, just ask—the golf team is there to help. The lessons will be in small, clear steps, with lots of encouragement along the way.",
+      "quiz": null
+    },
+    {
+      "id": "04-rules-manners",
+      "title": "Key Rules and Good Manners",
+      "file": "pages/04-rules-manners.md",
+      "type": "content",
+      "assetFile": "rules-manners.png",
+      "imageAlt": "A group of children taking turns on a putting green and a parent quietly watching, with everyone standing well apart.",
+      "imagePrompt": "A photorealistic image of several junior golfers taking turns putting on a green, while a parent quietly observes from the side. The children are waiting at a respectful distance, showing patience and good manners. Everyone looks friendly and relaxed.",
+      "markdown": "# Key Rules and Good Manners\n\nGolf is famous for its focus on fair play and respect. Here are a few basics every junior and parent can understand:\n\n• **Take turns:** Wait for others to have their go, and pay attention to whose turn it is.\n\n• **Be quiet while others hit:** Stay still and silent so everyone can concentrate.\n\n• **Look after the course:** Pick up any rubbish, gently replace any turf (grass) you move when swinging, and don’t run or shout near greens.\n\n• **Be honest:** Keep count of your shots and practice being honest, even if no one is looking. Golfers pride themselves on honesty.\n\nGood manners help everyone have a better time. Mistakes happen—what matters most is trying your best and showing respect for others on the course.",
+      "quiz": null
+    },
+    {
+      "id": "05-safety",
+      "title": "Golf Safety for Families",
+      "file": "pages/05-safety.md",
+      "type": "content",
+      "assetFile": "safety.png",
+      "imageAlt": "A young child and a parent standing safely behind another child preparing to swing a golf club on the practice range.",
+      "imagePrompt": "A photorealistic image of two children and a parent on a golf practice range. One child is about to swing a club, while the other child and adult watch safely from a distance behind. Everyone looks alert and calm. The background is open and green, with no text or logos.",
+      "markdown": "# Golf Safety for Families\n\nSafety on the golf course is very important, especially for young players. Here are some simple rules for everyone:\n\n• Always stand well back and to the side when someone else is swinging a club—never in front.\n• Check that the area is clear before swinging. Look around for people, buggies (small golf cars), and animals.\n• Only swing a club when you’re told it’s your turn.\n• Walk, don’t run, near other people on the course.\n• Listen carefully to your coach and any instructions from staff.\n\nA parent’s role is to watch out for their own child and help with reminders if needed. Don’t worry—if you forget something or make a mistake, a kind reminder or quick pause keeps everyone learning and safe. Safety is part of having fun together.",
+      "quiz": null
+    },
+    {
+      "id": "06-quiz",
+      "title": "Junior Golf Starter Quiz",
+      "file": "pages/06-quiz.md",
+      "type": "quiz",
+      "assetFile": "quiz.png",
+      "imageAlt": "A smiling child thinking on a sunny golf course, holding a ball and club, with a parent smiling in the background.",
+      "imagePrompt": "A photorealistic image of a happy child holding a golf ball and club, pausing thoughtfully on a sunlit golf course green. In the background, a parent smiles supportively from a short distance away. The scene is calm and educational.",
+      "markdown": "# Junior Golf Starter Quiz\n\nLet’s check what you’ve learned! Try these friendly questions. Don’t worry if you’re not sure—every answer helps you learn more about golf.\n",
+      "quiz": {
+        "questions": [
+          {
+            "question": "What is the main goal in golf?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "To hit the ball as far as possible every time"
+              },
+              {
+                "id": "b",
+                "text": "To get the ball in each hole using the fewest shots"
+              },
+              {
+                "id": "c",
+                "text": "To run around the course quickly"
+              },
+              {
+                "id": "d",
+                "text": "To shout loudly while playing"
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "Golf is about getting the ball in the hole in as few shots as possible."
+          },
+          {
+            "question": "Which of these is NOT needed to start playing golf?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "A set of clubs sized for children"
+              },
+              {
+                "id": "b",
+                "text": "Trainers or comfortable shoes"
+              },
+              {
+                "id": "c",
+                "text": "Expensive, professional clothes"
+              },
+              {
+                "id": "d",
+                "text": "A few practice golf balls"
+              }
+            ],
+            "correctAnswer": "c",
+            "explanation": "Professional or expensive clothes are not needed. Comfortable clothes will do."
+          },
+          {
+            "question": "What is one important rule when someone else is swinging a club?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Stand in front of them"
+              },
+              {
+                "id": "b",
+                "text": "Swing your club at the same time"
+              },
+              {
+                "id": "c",
+                "text": "Stand safely to the side or behind"
+              },
+              {
+                "id": "d",
+                "text": "Shout to distract them"
+              }
+            ],
+            "correctAnswer": "c",
+            "explanation": "Always stand safely to the side or behind to stay safe."
+          },
+          {
+            "question": "Why is honesty important in golf?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Because people are always watching"
+              },
+              {
+                "id": "b",
+                "text": "Because it’s a tradition to be honest and fair"
+              },
+              {
+                "id": "c",
+                "text": "Because it makes the game confusing"
+              },
+              {
+                "id": "d",
+                "text": "Because you get a prize"
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "Golfers value honesty and fair play, even when no one is watching."
+          }
+        ]
+      }
+    },
+    {
+      "id": "00-normal",
+      "title": "Setbacks are normal",
+      "file": "pages/00-normal.md",
+      "type": "content",
+      "assetFile": "normal.png",
+      "imageAlt": "Setbacks are normal illustration",
+      "imagePrompt": "A realistic junior golf learning image showing setbacks are normal in a welcoming golf club setting.",
+      "markdown": "# Setbacks are normal\n\nThis page should help brand new junior golfers and non-golfing parents understand setbacks are normal in a simple, practical way.",
+      "quiz": null
+    },
+    {
+      "id": "01-comparison",
+      "title": "Avoid comparison",
+      "file": "pages/01-comparison.md",
+      "type": "content",
+      "assetFile": "comparison.png",
+      "imageAlt": "Avoid comparison illustration",
+      "imagePrompt": "A realistic junior golf learning image showing avoid comparison in a welcoming golf club setting.",
+      "markdown": "# Avoid comparison\n\nThis page should help brand new junior golfers and non-golfing parents understand avoid comparison in a simple, practical way.",
+      "quiz": null
+    },
+    {
+      "id": "02-support",
+      "title": "How parents can help",
+      "file": "pages/02-support.md",
+      "type": "content",
+      "assetFile": "support.png",
+      "imageAlt": "How parents can help illustration",
+      "imagePrompt": "A realistic junior golf learning image showing how parents can help in a welcoming golf club setting.",
+      "markdown": "# How parents can help\n\nThis page should help brand new junior golfers and non-golfing parents understand how parents can help in a simple, practical way.",
+      "quiz": null
+    },
+    {
+      "id": "03-confidence",
+      "title": "Rebuilding confidence",
+      "file": "pages/03-confidence.md",
+      "type": "content",
+      "assetFile": "confidence.png",
+      "imageAlt": "Rebuilding confidence illustration",
+      "imagePrompt": "A realistic junior golf learning image showing rebuilding confidence in a welcoming golf club setting.",
+      "markdown": "# Rebuilding confidence\n\nThis page should help brand new junior golfers and non-golfing parents understand rebuilding confidence in a simple, practical way.",
+      "quiz": null
+    }
+  ]
+}

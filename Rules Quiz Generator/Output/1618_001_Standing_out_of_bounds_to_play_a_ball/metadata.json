@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-01.png",
+  "ruleNumber": "16/18",
+  "ruleName": "Player out of bounds but ball on the course",
+  "group": "Player out of bounds but ball on the course",
+  "title": "Standing out of bounds to play a ball",
+  "question": "Your ball is lying just inside the boundary line on the fairway, but to take your next shot, you need to stand with your feet outside the white out of bounds line. Is this allowed?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, you can stand out of bounds to play a ball that is still on the course."
+    },
+    {
+      "id": "b",
+      "text": "No, you must keep your feet on the course when hitting."
+    },
+    {
+      "id": "c",
+      "text": "Yes, but only if part of your feet are still in bounds."
+    },
+    {
+      "id": "d",
+      "text": "No, both you and the ball must be within the boundary."
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "You are allowed to stand out of bounds to play a ball that is in bounds, as only the position of the ball matters.",
+  "imagePrompt": "A teenage girl golfer stands with both feet out of bounds, but her golf ball sits just inside the fairway boundary marked by a white stake. She prepares her swing.",
+  "imageAlt": "Girl golfer standing out of bounds, preparing to hit a ball that is on the fairway inside the white boundary line.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "addressing_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "white",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "medium",
+    "clothingTopColour": "red",
+    "clothingBottomColour": "white",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The girl's stance and address position are appropriate and physically plausible for golf.",
+      "She is outside the white stake (out of bounds) while the ball is inside (in bounds), matching the rule explanation.",
+      "Only one golf ball is visible and its size and position are accurate relative to club and golfer.",
+      "She is holding one iron club with a single, realistic metal head and believably proportioned shaft and grip.",
+      "The white stake marking the boundary is the correct color and realistic.",
+      "Setting, clothing colors, ethnicity, and skin tone are all consistent with the prompt.",
+      "Golf course features (fairway, rough) are believable."
+    ],
+    "repairPrompt": "Ensure the club is held clearly in a left-handed position for a left-handed swing. Make slight adjustments to hand and club orientation if necessary to emphasize left-handedness."
+  }
+}

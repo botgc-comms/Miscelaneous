@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-11.png",
+  "ruleNumber": "R10",
+  "ruleName": "Advice and line of play",
+  "group": "Advice and line of play",
+  "type": "multiple_choice",
+  "imagePrompt": "A teenage golfer looking surprised as another player offers advice while she stands near her ball on the fairway.",
+  "imageAlt": "Teen golfer surprised as another player gives unasked advice on fairway.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "yellow",
+    "clothingBottomColour": "grey",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The left-handed posture is slightly ambiguous but plausible; the club appears in the left hand and the stance is generally correct.",
+      "The golfer's skin tone and clothing match the requirements, but could possibly be made a little more medium-toned as per the brief for greater clarity."
+    ],
+    "repairPrompt": "Clarify the left-handed stance by ensuring the lead hand on the club is clearly the left hand, with a corresponding left-handed golf stance. Adjust the skin tone to be a more distinctly medium tone as described."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What if someone gives you golf tips without you asking?",
+      "question": "If another player tells you what club to use or where to aim before you hit your shot, but you did not ask them, what happens?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You don’t get a penalty."
+        },
+        {
+          "id": "b",
+          "text": "You get 1 penalty shot."
+        },
+        {
+          "id": "c",
+          "text": "You get 2 penalty shots."
+        },
+        {
+          "id": "d",
+          "text": "Both of you get 2 penalty shots."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "You don’t get a penalty if someone gives you advice and you didn’t ask for it.",
+      "vocabulary": [
+        {
+          "term": "Advice",
+          "simpleMeaning": "Advice is when someone tells you how to play your shot, like what club to pick or where to hit your ball."
+        }
+      ],
+      "teachingTip": "Act out a situation where someone blurts out tips, and discuss what the rule says to help kids remember they won't get in trouble if they didn't ask for help.",
+      "likelyMisconceptions": [
+        "Children may think they get a penalty any time someone talks to them about their shot."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "What happens if you get advice without asking?",
+      "question": "If another player gives you advice before your shot—but you didn't ask for it—what do the rules say happens?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No penalty for you."
+        },
+        {
+          "id": "b",
+          "text": "You get 1 penalty stroke."
+        },
+        {
+          "id": "c",
+          "text": "You get 2 penalty strokes."
+        },
+        {
+          "id": "d",
+          "text": "Both players get 2 penalty strokes."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "You do not get a penalty if another player gives you unsolicited advice."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "010_003_What_happens_if_you_get_advice_without_asking",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.546Z"
+  }
+}

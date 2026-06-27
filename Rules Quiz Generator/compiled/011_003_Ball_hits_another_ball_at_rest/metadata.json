@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "pageb-13.png",
+  "ruleNumber": "R11",
+  "ruleName": "Ball in motion accidentally hits ...",
+  "group": "Ball in motion accidentally hits ...",
+  "type": "multiple_choice",
+  "imagePrompt": "A teenage left-handed boy golfer on the fairway, with his shot just having hit another stationary ball. Both balls are visible on the fairway.",
+  "imageAlt": "Teen boy golfer's ball hits another ball at rest on fairway.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "light",
+    "clothingTopColour": "navy",
+    "clothingBottomColour": "blue",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Scene, club, stance, golfer appearance, and clothing are all correct.",
+      "Right-handed, teenage girl, navy top, blue shorts, light skin tone, and iron club are displayed accurately.",
+      "Only one golf ball is present as required.",
+      "No duplicated balls or clubs.",
+      "Golf course and fairway look realistic, with correct light and setting.",
+      "The only tiny issue is shorts instead of trousers, but shorts are acceptable for teens and do not impact teaching intent."
+    ],
+    "repairPrompt": "Change the golfer's blue shorts to blue trousers if stricter adherence to clothing is needed."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Your ball rolls into another ball that's not on the green",
+      "question": "Your ball rolls and bumps into another ball that is sitting still, and both balls are not on the green. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Add two extra shots and hit your ball from where it stopped."
+        },
+        {
+          "id": "b",
+          "text": "Hit your next shot from where your ball stopped. No extra shots."
+        },
+        {
+          "id": "c",
+          "text": "Go back and hit that shot again from the same place."
+        },
+        {
+          "id": "d",
+          "text": "Pick up your ball and drop it near where the balls touched."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If your ball bumps into another ball that is resting and they are both not on the green, you just play your next shot from where your ball stopped. You don’t have to add any extra shots.",
+      "vocabulary": [
+        {
+          "term": "Green",
+          "simpleMeaning": "The smooth grass area around the hole where you putt."
+        },
+        {
+          "term": "At rest",
+          "simpleMeaning": "A ball that is not moving."
+        }
+      ],
+      "teachingTip": "You can show a ball rolling and stopping after bumping into another still ball on fairway. Remind juniors 'no extra shots' if it's not on the green.",
+      "likelyMisconceptions": [
+        "Some players think you must add extra shots when any balls touch.",
+        "Some children think you need to move your ball to where the balls hit each other."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Ball hits another ball at rest",
+      "question": "If your ball in motion strikes another player's ball that was at rest, and neither ball was on the green, what should you do under the Rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Add two penalty strokes and play your ball from where it comes to rest."
+        },
+        {
+          "id": "b",
+          "text": "Play your ball as it lies, with no penalty."
+        },
+        {
+          "id": "c",
+          "text": "Replay your shot from the original spot."
+        },
+        {
+          "id": "d",
+          "text": "Drop your ball as close as possible to where the balls made contact."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If your ball accidentally strikes another ball at rest (not on the green), you play your ball from its resting place without penalty."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "011_003_Ball_hits_another_ball_at_rest",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v6.png",
+    "promptFileName": "final-prompt-v6.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.607Z"
+  }
+}

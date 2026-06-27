@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "19.2c",
+  "ruleName": "Unplayable Ball Relief – Lateral Relief",
+  "group": "Relief Procedures",
+  "title": "How far may you drop for lateral relief from an unplayable ball?",
+  "question": "Your ball is under a bush. You decide to declare it unplayable and take lateral relief. How far may you drop?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "One club-length."
+    },
+    {
+      "id": "b",
+      "text": "Two club-lengths."
+    },
+    {
+      "id": "c",
+      "text": "Three club-lengths."
+    },
+    {
+      "id": "d",
+      "text": "Nearest point of relief."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "When taking lateral relief for an unplayable ball, you must drop the ball within two club-lengths of where the ball lies, no nearer the hole.",
+  "imagePrompt": "A modern, semi-realistic golf illustration (about 75% realistic and 25% stylised) in a parkland setting. Show one golfer on the course, looking at a golf ball that is clearly under a thick bush, with no way to play the ball out. The golfer's bag is resting nearby. The focus is on visualising the scenario where the ball is unplayable and the golfer is about to measure for lateral relief. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer examines their golf ball lying under a bush, deciding how to take relief.",
+  "sceneSpec": {
+    "setting": "A parkland golf hole bordered by bushes and long grass.",
+    "players": "One golfer, shown deciding on their next action, with a bag resting nearby.",
+    "ballPosition": "The ball is clearly under a dense bush, partly visible.",
+    "ruleMoment": "Just before the player measures their lateral relief area to drop the ball.",
+    "educationalFocus": "Visualising the scenario when a ball is unplayable and lateral relief is chosen.",
+    "mustShow": [
+      "A golfer assessing a ball under a thick bush.",
+      "A visible golf ball lodged under the bush.",
+      "The situation making further play impossible without relief."
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles",
+      "A dropped ball or any actual measurement."
+    ]
+  }
+}

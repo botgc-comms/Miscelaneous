@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\005_005_Chipping_and_putting_before_your_tee_shot\\metadata.json",
+  "generatedAtUtc": "2026-06-24T14:43:40.878Z",
+  "title": "Chipping and putting before your tee shot",
+  "ruleNumber": "R5",
+  "ruleName": "Chipping and putting while waiting",
+  "durationSeconds": 181.266
+}

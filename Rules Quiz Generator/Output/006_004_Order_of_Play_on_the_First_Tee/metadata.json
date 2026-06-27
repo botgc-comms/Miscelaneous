@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-05.png",
+  "ruleNumber": "R6",
+  "ruleName": "The honour/order of play",
+  "group": "The honour/order of play",
+  "title": "Order of Play on the First Tee",
+  "question": "How is the order of play for players decided on the first tee?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "The order is taken from the list of tee times (the draw)"
+    },
+    {
+      "id": "b",
+      "text": "Players decide among themselves"
+    },
+    {
+      "id": "c",
+      "text": "The order is based on who arrived first"
+    },
+    {
+      "id": "d",
+      "text": "Based on handicap"
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "On the first tee, player order is based on the official draw or tee time list provided by the organisers.",
+  "imagePrompt": "Two teenage boys stand on the teeing ground. One is checking a paper listing the tee order while the other prepares to hit first.",
+  "imageAlt": "Two teen boys at the tee; one checking the starting order, the other ready to play.",
+  "sceneSpec": {
+    "setting": "teeing_area",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "driver",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": true,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "medium",
+    "clothingTopColour": "white",
+    "clothingBottomColour": "yellow",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "Tee markers are a plain brown color, which is uncommon but not inherently unrealistic; standard colors (white, yellow, blue, red) might be preferable for clarity."
+    ],
+    "repairPrompt": "Make the tee markers a more standard golf color (such as white, yellow, blue, or red) to match typical teeing ground conventions."
+  }
+}

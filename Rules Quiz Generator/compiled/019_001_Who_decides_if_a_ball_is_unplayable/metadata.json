@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-16.png",
+  "ruleNumber": "R19",
+  "ruleName": "Unplayable ball",
+  "group": "Unplayable ball",
+  "type": "multiple_choice",
+  "imagePrompt": "A teenage golfer stands next to a ball that is stuck under tree roots, looking puzzled and weighing their choices about declaring the ball unplayable.",
+  "imageAlt": "A teen golfer next to a ball under tree roots, appearing unsure.",
+  "sceneSpec": {
+    "setting": "rough",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "dark",
+    "clothingTopColour": "purple",
+    "clothingBottomColour": "white",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Golfer club grip/hand positioning is not fully clear for left-handedness, but generally plausible."
+    ],
+    "repairPrompt": "Ensure that the golfer's grip and club orientation unambiguously show a left-handed posture and stance. Maintain all other prompt specifications."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Who can say their ball can’t be played?",
+      "question": "If your ball goes somewhere really tricky, like under a bush, who gets to say 'I can’t play that ball'?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You (the player)"
+        },
+        {
+          "id": "b",
+          "text": "The person keeping score (the marker)"
+        },
+        {
+          "id": "c",
+          "text": "The person you are playing against (your opponent)"
+        },
+        {
+          "id": "d",
+          "text": "The referee"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "Only you, the player, can decide if your ball can’t be played. No one else can choose for you.",
+      "vocabulary": [
+        {
+          "term": "Unplayable",
+          "simpleMeaning": "When you think you can’t hit your ball because it’s in a very hard place, like under a tree or bush."
+        }
+      ],
+      "teachingTip": "Give children a plastic ball and ask them to roll it under a chair—let them decide if they could play it or need to call it unplayable.",
+      "likelyMisconceptions": [
+        "Children might think the referee or another player can make their ball unplayable for them."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Who decides if a ball is unplayable?",
+      "question": "If your ball ends up in a really tough spot, like under a tree, who is allowed to declare it unplayable?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "The player"
+        },
+        {
+          "id": "b",
+          "text": "The marker"
+        },
+        {
+          "id": "c",
+          "text": "Your opponent"
+        },
+        {
+          "id": "d",
+          "text": "A referee"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "Only the player can decide if their ball is unplayable, no one else can make this decision for them."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "019_001_Who_decides_if_a_ball_is_unplayable",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:53.624Z"
+  }
+}

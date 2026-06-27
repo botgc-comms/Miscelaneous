@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-10.png",
+  "ruleNumber": "R9",
+  "ruleName": "Ball at rest moved by an outside influence",
+  "group": "Ball at rest moved by an outside influence",
+  "title": "What to do if your ball is moved by a dog",
+  "question": "While playing from the fairway, a dog runs by and nudges your golf ball, moving it from its original spot. What is the correct action?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball from where the dog moved it to"
+    },
+    {
+      "id": "b",
+      "text": "Place the ball back to its original spot with no penalty"
+    },
+    {
+      "id": "c",
+      "text": "Replace the ball and take a two-stroke penalty"
+    },
+    {
+      "id": "d",
+      "text": "Leave the ball and add a one-stroke penalty"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If an outside influence, such as a dog, moves your ball at rest, you must place the ball back in its original position without penalty.",
+  "imagePrompt": "A teenage girl golfer on the fairway looks surprised as a dog nudges her golf ball out of place. The girl is holding an iron and wearing a blue top, purple shorts, and a hat. The fairway is sunny.",
+  "imageAlt": "Teen golfer watching a dog move her ball on the fairway.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "navy",
+    "clothingBottomColour": "green",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "Club and ball are visually strong and accurate.",
+      "Golfer's posture, proportions, ethnicity, and clothing match requirements.",
+      "Scene is a realistic fairway with no visual golf errors.",
+      "No hat is present, clothing colors are navy and green as required.",
+      "Dog, ball (one only), and iron club are clear.",
+      "Extremely minor: facial surprise expression could be emphasized a touch more for teaching intent."
+    ],
+    "repairPrompt": "Increase the girl's visible surprise to make her reaction to the dog nudging the golf ball more expressive, while keeping all other details unchanged."
+  }
+}

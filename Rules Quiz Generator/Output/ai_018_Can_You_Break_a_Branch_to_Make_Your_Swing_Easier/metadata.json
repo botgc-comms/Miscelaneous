@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "8.1a",
+  "ruleName": "Actions That Improve Conditions Affecting the Stroke",
+  "group": "Playing the Ball as It Lies",
+  "title": "Can You Break a Branch to Make Your Swing Easier?",
+  "question": "Your ball comes to rest under a tree. A low branch is blocking your backswing, so you snap the branch off before playing your shot. What is the correct ruling?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "There is no penalty because the branch was only a small twig."
+    },
+    {
+      "id": "b",
+      "text": "There is no penalty because the branch was dead."
+    },
+    {
+      "id": "c",
+      "text": "You receive the general penalty because you improved the conditions affecting your stroke."
+    },
+    {
+      "id": "d",
+      "text": "You receive a one-stroke penalty."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "A player must not deliberately improve the conditions affecting their stroke by moving, bending or breaking a growing or attached natural object. Breaking a branch to create room for your swing is a breach of Rule 8.1a. If the branch had already been detached from the tree, it would be a loose impediment and could normally be removed.",
+  "imagePrompt": "Create a polished modern semi-realistic illustration (about 75% realistic, 25% stylised) in the established junior golf quiz style. Depict a clearly dressed golfer standing under a large tree, using their hands to break off a low branch that is blocking their backswing. The golf ball is on the grass directly beneath the tree, positioned so the branch would affect the swing. The focus must be on the act of snapping off the living branch still attached to the tree. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer under a tree using their hands to break a low branch before playing a shot, with a golf ball on the ground beneath the tree.",
+  "sceneSpec": {
+    "setting": "Golf hole beneath a tree with overhanging low branches.",
+    "players": "One golfer preparing to play a shot under the tree.",
+    "ballPosition": "The ball is on the ground directly beneath the tree, obstructed by a low branch in the player’s backswing.",
+    "ruleMoment": "The golfer is snapping a low branch off the tree with their hands, just before preparing for the stroke.",
+    "educationalFocus": "Clearly depict that the player is breaking a growing branch that would block the backswing.",
+    "mustShow": [
+      "A golfer dressed for play, under a large tree with low branches.",
+      "A golf ball on the grass directly under the branches.",
+      "The golfer using their hands to break a branch that is obstructing their swing path.",
+      "Obvious obstruction of the swing by the branch before removal."
+    ],
+    "mustNotShow": [
+      "Any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+      "Other players or caddies.",
+      "Detached branches already on the ground."
+    ]
+  }
+}

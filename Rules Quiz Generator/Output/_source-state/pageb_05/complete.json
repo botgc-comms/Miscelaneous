@@ -1,0 +1,465 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-05.png",
+  "sourceImagePath": "Input\\pageb-05.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-05.png",
+      "ruleNumber": "R14",
+      "ruleName": "Ball marked by another person",
+      "group": "Ball marked by another person",
+      "title": "Who can put the ball back?",
+      "question": "You're allowed to ask another player to mark and pick up your ball. Who must put the ball back in its place afterwards?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "The player only"
+        },
+        {
+          "id": "b",
+          "text": "The person who picked it up only"
+        },
+        {
+          "id": "c",
+          "text": "Either the player or the person who picked it up"
+        },
+        {
+          "id": "d",
+          "text": "Anyone watching"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "Either the person who picked up the ball or the player can put it back.",
+      "imagePrompt": "A teenage girl golfer on the putting green, asking a friend standing nearby to pick up and mark her golf ball.",
+      "imageAlt": "Teenage golfer asking another to mark her ball on the green.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "dark",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "black",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-05.png",
+      "ruleNumber": "R15",
+      "ruleName": "Marking to the side",
+      "group": "Marking to the side",
+      "title": "Marking to the side to avoid another player's line",
+      "question": "Your ball-marker is on another player's line on the green. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Leave it and play as normal"
+        },
+        {
+          "id": "b",
+          "text": "Mark the ball to the side by one or two putter head lengths"
+        },
+        {
+          "id": "c",
+          "text": "Move the ball anywhere you like"
+        },
+        {
+          "id": "d",
+          "text": "Mark it with a tee"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You should mark the ball to the side by one or two putter head lengths to clear the other player's line.",
+      "imagePrompt": "A teenage boy on the putting green, marking his ball to the side with his putter to avoid another player's line.",
+      "imageAlt": "Teen golfer moving marker to the side to avoid a line on the green.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "lifting_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "navy",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-05.png",
+      "ruleNumber": "R13",
+      "ruleName": "Ball moved when marking it",
+      "group": "Ball moved when marking it",
+      "title": "Accidentally moving the ball or marker while marking",
+      "question": "If you accidentally move your ball or marker while marking, picking up, or replacing the ball, what should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play from where it ends up"
+        },
+        {
+          "id": "b",
+          "text": "Leave it where it is"
+        },
+        {
+          "id": "c",
+          "text": "Put it back without penalty"
+        },
+        {
+          "id": "d",
+          "text": "Add a penalty stroke"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "If the ball or marker is moved accidentally while marking, picking up, or replacing the ball, you put it back without penalty.",
+      "imagePrompt": "A teen girl golfer on the green, accidentally nudging her ball while placing a marker, looking surprised.",
+      "imageAlt": "Girl golfer accidentally moving her ball while marking.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "dark",
+        "clothingTopColour": "black",
+        "clothingBottomColour": "purple",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-05.png",
+      "ruleNumber": "R13",
+      "ruleName": "Ball moves after being put back",
+      "group": "Ball moves after being put back",
+      "title": "What happens if the ball rolls away after being replaced?",
+      "question": "After you've marked, picked up, and put your ball back on the green, it rolls away on its own. What do you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play it from the new spot"
+        },
+        {
+          "id": "b",
+          "text": "Put it back without penalty"
+        },
+        {
+          "id": "c",
+          "text": "Take a penalty stroke"
+        },
+        {
+          "id": "d",
+          "text": "Get disqualified"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You must put the ball back on its original spot without penalty.",
+      "imagePrompt": "A teenage golfer kneeling on the green, watching her ball roll away after being replaced, looking unsure.",
+      "imageAlt": "Teen golfer seeing her ball roll away after being replaced on the green.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "dark",
+        "clothingTopColour": "orange",
+        "clothingBottomColour": "blue",
+        "hat": true
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-05.png",
+      "ruleNumber": "R14",
+      "ruleName": "Ball marked by another person",
+      "group": "Ball marked by another person",
+      "title": "Who can put the ball back?",
+      "question": "If you ask another player to mark and lift your ball for you, who is allowed to put the ball back on its spot afterwards?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Only the player whose ball it is"
+        },
+        {
+          "id": "b",
+          "text": "Only the person who marked and picked up the ball"
+        },
+        {
+          "id": "c",
+          "text": "Either the player or the person who picked it up"
+        },
+        {
+          "id": "d",
+          "text": "Any player in the group"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "Either the person who marked and lifted the ball or the player themselves can put the ball back on its spot.",
+      "imagePrompt": "A teenage girl golfer on the putting green gestures to a friend who is picking up her marked golf ball to clean it.",
+      "imageAlt": "Teenage golfer having her ball marked and picked up by another player on the green.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "dark",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "red",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-05.png",
+      "ruleNumber": "R15",
+      "ruleName": "Marking to the side",
+      "group": "Marking to the side",
+      "title": "Marking to the side to avoid another player's line",
+      "question": "If your ball-marker is on another player's putting line on the green, what should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Leave it on their line and wait for your turn"
+        },
+        {
+          "id": "b",
+          "text": "Move your marker to the side by one or two putter head lengths"
+        },
+        {
+          "id": "c",
+          "text": "Pick up your ball and marker without replacing them"
+        },
+        {
+          "id": "d",
+          "text": "Mark it with any item, not just a marker"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You should move your marker to the side by one or two putter head lengths to avoid interfering with the other player's line.",
+      "imagePrompt": "A teenage girl golfer on the putting green moving her marker to the side with her putter so it is off another player's line.",
+      "imageAlt": "Teen girl golfer on green moving marker to avoid another player's line.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "lifting_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "white",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-05.png",
+      "ruleNumber": "R13",
+      "ruleName": "Ball moved when marking it",
+      "group": "Ball moved when marking it",
+      "title": "If you accidentally move your ball or marker when marking",
+      "question": "You are marking your ball on the green and accidentally move the ball or the marker. What is the correct action?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball from its new position"
+        },
+        {
+          "id": "b",
+          "text": "Leave everything as it is and continue play"
+        },
+        {
+          "id": "c",
+          "text": "Replace the ball or marker to their correct spot without penalty"
+        },
+        {
+          "id": "d",
+          "text": "Add one penalty stroke and continue"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "If you accidentally move your ball or marker when marking, picking up, or replacing it on the green, you must put it back on the correct spot without penalty.",
+      "imagePrompt": "A teenage boy on the green, looking surprised as his hand nudges the ball while marking with a small coin.",
+      "imageAlt": "Teen boy accidentally moving his ball while marking it on the putting green.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "medium",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "black",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-05.png",
+      "ruleNumber": "R13",
+      "ruleName": "Ball moves after being put back",
+      "group": "Ball moves after being put back",
+      "title": "What happens if the ball rolls away after being replaced?",
+      "question": "After you have marked, lifted, and replaced your ball on the green, it suddenly rolls away on its own before you take your putt. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball from its new position"
+        },
+        {
+          "id": "b",
+          "text": "Replace the ball on its original spot with no penalty"
+        },
+        {
+          "id": "c",
+          "text": "Take a penalty stroke and put it back"
+        },
+        {
+          "id": "d",
+          "text": "Start the hole over from the tee"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If the ball moves on its own after being replaced, you must put it back on its original spot with no penalty.",
+      "imagePrompt": "A teenage girl kneeling on the green, watching in surprise as her ball gently rolls away after she has already replaced it and isn't near it.",
+      "imageAlt": "Teen girl golfer on green, watching her replaced ball roll away before putting.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "dark",
+        "clothingTopColour": "orange",
+        "clothingBottomColour": "blue",
+        "hat": true
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "014_001_Who_can_put_the_ball_back",
+    "015_002_Marking_to_the_side_to_avoid_another_players_line",
+    "013_003_If_you_accidentally_move_your_ball_or_marker_when_marking",
+    "013_004_What_happens_if_the_ball_rolls_away_after_being_replaced"
+  ],
+  "updatedAtUtc": "2026-04-24T23:15:03.575Z"
+}

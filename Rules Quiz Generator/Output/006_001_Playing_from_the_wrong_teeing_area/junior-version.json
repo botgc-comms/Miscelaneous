@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\006_001_Playing_from_the_wrong_teeing_area\\metadata.json",
+  "sourceImageName": "page-07.png",
+  "ruleNumber": "R6",
+  "ruleName": "Playing from the teeing area",
+  "title": "Playing from the wrong teeing area",
+  "question": "If you play your ball from the wrong teeing area, what is the correct ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You can continue playing your ball with no penalty if the shot was good."
+    },
+    {
+      "id": "b",
+      "text": "You must cancel your shot and play again from the correct teeing area, with a penalty."
+    },
+    {
+      "id": "c",
+      "text": "You must retake the shot without any penalty."
+    },
+    {
+      "id": "d",
+      "text": "You receive a reward for being original."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If you play from the wrong teeing area, your shot does not count. In stroke play, you must cancel the shot, play from the correct teeing area, and add a two-stroke penalty.",
+  "juniorVersion": {
+    "title": "What happens if you hit your ball from the wrong tee box?",
+    "question": "If you start your shot from the wrong tee box (not the right place to start), what should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You can keep playing your ball with no penalty if your shot was good."
+      },
+      {
+        "id": "b",
+        "text": "You must stop, ignore your last shot, and hit again from the right tee box, but you have to add extra shots to your score."
+      },
+      {
+        "id": "c",
+        "text": "You can hit your shot again from the right spot without any extra shots given to you."
+      },
+      {
+        "id": "d",
+        "text": "You get a prize for being different."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If you hit from the wrong tee box, your shot doesn't count. You have to hit again from the correct place and add two extra shots to your score.",
+    "vocabulary": [
+      {
+        "term": "tee box",
+        "simpleMeaning": "The special area where you start each hole in golf."
+      },
+      {
+        "term": "penalty",
+        "simpleMeaning": "Extra shots added to your score because of a mistake."
+      }
+    ],
+    "teachingTip": "Show children where the correct tee box is by using tee markers and let them practise checking their position before hitting.",
+    "likelyMisconceptions": [
+      "Kids may think the shot counts if it was a good one.",
+      "Kids may think there is no penalty or that they get a prize for starting from the wrong spot."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:27.651Z",
+  "model": "gpt-4.1"
+}

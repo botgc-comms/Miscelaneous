@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "17.1d",
+  "ruleName": "Relief Options for Ball in Penalty Area",
+  "group": "Penalty Areas",
+  "type": "multiple_choice",
+  "imagePrompt": "A semi-realistic, polished illustration of a golf hole with a body of water clearly marked by yellow stakes and closely-mown grass around the edge. One golfer in standard golf attire stands at the edge of this yellow penalty area, visibly considering their next move while holding their club. The golf ball is just inside the edge of the yellow penalty area, near a yellow stake. There are no red stakes, drop area markers, or any evidence of relief areas being measured. No text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer stands beside a yellow-staked penalty area, with their ball just inside the marked area near a yellow stake and a body of water. There are no red stakes or relief area markers present.",
+  "sceneSpec": {
+    "setting": "Golf hole with body of water marked by yellow stakes and mown grass around.",
+    "players": "One golfer standing at the edge of the yellow penalty area holding their club, considering relief options.",
+    "ballPosition": "Ball just inside the edge of the yellow penalty area, near a yellow stake.",
+    "ruleMoment": "Golfer is deliberating where to take relief after the ball enters the yellow penalty area.",
+    "educationalFocus": "Demonstrate that lateral relief is not available for yellow penalty areas.",
+    "mustShow": [
+      "Yellow stakes indicating penalty area",
+      "Ball inside the yellow penalty area near the edge",
+      "Golfer considering options"
+    ],
+    "mustNotShow": [
+      "Red stakes",
+      "Any drop area markers",
+      "Relief area measured from the edge"
+    ]
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "How Can You Drop Out of a Yellow Penalty Area?",
+      "question": "Your ball stops in a yellow penalty area, like a pond marked with yellow stakes. Can you drop your ball one or two club-lengths from where it went in?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "One club-length."
+        },
+        {
+          "id": "b",
+          "text": "Two club-lengths."
+        },
+        {
+          "id": "c",
+          "text": "You can't. That way of dropping isn't allowed here."
+        },
+        {
+          "id": "d",
+          "text": "Three club-lengths."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "For yellow penalty areas, you cannot drop your ball by measuring one or two club-lengths from where it went in. Instead, you need to go back in line with the flag and where your ball crossed the edge, or go back to where you last hit the shot.",
+      "vocabulary": [
+        {
+          "term": "Penalty area",
+          "simpleMeaning": "A spot on the course, like a pond or stream, marked by yellow or red stakes or lines."
+        },
+        {
+          "term": "Club-length",
+          "simpleMeaning": "The length of your longest club, except the putter. Used to measure where you can drop the ball."
+        }
+      ],
+      "teachingTip": "Show children the difference between yellow and red penalty areas on the course, and where they can or cannot drop their ball.",
+      "likelyMisconceptions": [
+        "Children may think they can always drop their ball up to two club-lengths from where the ball went into any penalty area.",
+        "Children might not know that yellow and red penalty areas have different rules for dropping."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Options for Relief from a Yellow Penalty Area",
+      "question": "Your ball comes to rest in a yellow penalty area. You wish to take relief. How many club-lengths may you drop from where the ball last crossed the edge of the penalty area?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "One club-length."
+        },
+        {
+          "id": "b",
+          "text": "Two club-lengths."
+        },
+        {
+          "id": "c",
+          "text": "You can't. That relief option isn't available."
+        },
+        {
+          "id": "d",
+          "text": "Three club-lengths."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "When taking relief from a yellow penalty area, the only options are to play from the designated relief area under back-on-the-line relief or to play from where the previous stroke was made (stroke-and-distance). Lateral relief (a two club-length drop from where the ball last crossed the edge) is only available for red penalty areas, not yellow."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "ai_068_Options_for_Relief_from_a_Yellow_Penalty_Area",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-06-26T20:03:54.360Z"
+  }
+}

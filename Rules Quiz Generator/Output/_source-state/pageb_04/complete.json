@@ -1,0 +1,469 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-04.png",
+  "sourceImagePath": "Input\\pageb-04.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-04.png",
+      "ruleNumber": "R13",
+      "ruleName": "Green and fringe",
+      "group": "Green and fringe",
+      "title": "Is the fringe part of the green?",
+      "question": "If your ball is on the fringe right next to the green, is it considered to be on the green according to the rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, the fringe counts as the green"
+        },
+        {
+          "id": "b",
+          "text": "No, the fringe is not part of the green"
+        },
+        {
+          "id": "c",
+          "text": "Only if your ball touches both areas"
+        },
+        {
+          "id": "d",
+          "text": "It depends on the club you use"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "The fringe is not classed as the green, even if it's right next to it. Only the green itself counts.",
+      "imagePrompt": "A ball sitting on the fringe very close to the putting green with a flagstick in the green. A teen girl golfer stands looking at the ball.",
+      "imageAlt": "Ball on the fringe near green, with teen girl golfer.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "medium",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "orange",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-04.png",
+      "ruleNumber": "R13",
+      "ruleName": "Wrong green",
+      "group": "Wrong green",
+      "title": "What should you do if your ball lands on the wrong green?",
+      "question": "Your ball lands on a different putting green from the one you're playing. What MUST you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play it as it lies"
+        },
+        {
+          "id": "b",
+          "text": "Move the ball with a penalty"
+        },
+        {
+          "id": "c",
+          "text": "Take a free drop off the wrong green"
+        },
+        {
+          "id": "d",
+          "text": "Ask an official"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "If your ball ends up on a wrong green, you must take a free drop and cannot play the ball from there.",
+      "imagePrompt": "A teen boy golfer stands next to a ball on the wrong green, with another green and flagstick in the background. He is preparing to take a drop.",
+      "imageAlt": "Boy golfer with ball on wrong green, preparing to take free drop.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "dropping_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "purple",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-04.png",
+      "ruleNumber": "R6",
+      "ruleName": "Order of play",
+      "group": "Order of play",
+      "title": "Who plays first on the green?",
+      "question": "You and your friend are on the green. Whose turn is it to play first?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Whoever is closer to the hole"
+        },
+        {
+          "id": "b",
+          "text": "Whoever is furthest from the hole"
+        },
+        {
+          "id": "c",
+          "text": "Whoever putted last"
+        },
+        {
+          "id": "d",
+          "text": "Whoever chooses"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "It's always the turn of the player whose ball is furthest away from the hole.",
+      "imagePrompt": "Two balls on the green, one closer and one further from the hole. A teen girl golfer is about to putt the ball furthest from the hole.",
+      "imageAlt": "Girl golfer putting from furthest ball on green.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "dark",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "purple",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-04.png",
+      "ruleNumber": "R13/14",
+      "ruleName": "Marking and picking up the ball",
+      "group": "Marking and picking up the ball",
+      "title": "How to mark your ball on the green",
+      "question": "Which of the following items can you use to mark your ball’s position on the green? Select all that apply.",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "A coin"
+        },
+        {
+          "id": "b",
+          "text": "A ball-marker"
+        },
+        {
+          "id": "c",
+          "text": "A tee"
+        },
+        {
+          "id": "d",
+          "text": "Your putter placed behind the ball"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "d"
+      ],
+      "explanation": "You can use a coin, a ball-marker, or your putter placed behind the ball to mark its position on the green.",
+      "imagePrompt": "A close-up of a golf ball on the green. A teen boy is marking its position with a coin, with a putter beside him.",
+      "imageAlt": "Boy golfer marking ball position on green with coin.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "lifting_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "black",
+        "clothingBottomColour": "orange",
+        "hat": false
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-04.png",
+      "ruleNumber": "R13",
+      "ruleName": "Green and fringe",
+      "group": "Green and fringe",
+      "title": "Is the fringe part of the green?",
+      "question": "If your ball comes to rest on the fringe just beside the green, is it treated as being on the putting green according to the rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, the fringe is part of the green"
+        },
+        {
+          "id": "b",
+          "text": "No, only the green itself counts"
+        },
+        {
+          "id": "c",
+          "text": "Only if any part of your ball touches the green and the fringe at the same time"
+        },
+        {
+          "id": "d",
+          "text": "It depends where your feet are standing"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "According to the rules, the fringe is not part of the putting green, even if it is right next to it. Only the area marked as the putting green counts.",
+      "imagePrompt": "A golf ball sits on the fringe close to the edge of the putting green with a flagstick in the hole. A teen girl golfer stands nearby looking at the ball.",
+      "imageAlt": "Ball on the fringe near putting green, with teen girl golfer.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "medium",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "blue",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-04.png",
+      "ruleNumber": "R13",
+      "ruleName": "Wrong green",
+      "group": "Wrong green",
+      "title": "What should you do if your ball lands on the wrong green?",
+      "question": "If your ball comes to rest on a putting green for a different hole than the one you’re playing, what are you required to do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play your shot from the wrong green"
+        },
+        {
+          "id": "b",
+          "text": "Take a free drop off the wrong green"
+        },
+        {
+          "id": "c",
+          "text": "Move your ball with a one shot penalty"
+        },
+        {
+          "id": "d",
+          "text": "Ask another player for advice"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If your ball is on a wrong green, you must take free relief and drop off the green; you are not allowed to play the ball from the wrong green.",
+      "imagePrompt": "A teen boy golfer stands next to a ball on the wrong green, with a different putting green and flagstick visible in the distance. He is preparing to take a drop.",
+      "imageAlt": "Boy golfer with ball on wrong green preparing to take free drop.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "dropping_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "blue",
+        "clothingBottomColour": "orange",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-04.png",
+      "ruleNumber": "R6",
+      "ruleName": "Order of play",
+      "group": "Order of play",
+      "title": "Who plays first on the green?",
+      "question": "When players have their balls on the green, whose turn is it to putt first?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Whoever is closer to the hole"
+        },
+        {
+          "id": "b",
+          "text": "Whoever is furthest from the hole"
+        },
+        {
+          "id": "c",
+          "text": "Whoever played their last shot first"
+        },
+        {
+          "id": "d",
+          "text": "Whoever wants to go first"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "On the green, the player whose ball is furthest from the hole plays first. This helps keep play fair and safe.",
+      "imagePrompt": "Two golf balls on the green, one closer and one further from the hole. A teen girl golfer is set up to putt from the ball farthest from the hole.",
+      "imageAlt": "Girl golfer about to putt from furthest ball on green.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "light",
+        "clothingTopColour": "blue",
+        "clothingBottomColour": "yellow",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-04.png",
+      "ruleNumber": "R13/14",
+      "ruleName": "Marking and picking up the ball",
+      "group": "Marking and picking up the ball",
+      "title": "How to mark your ball on the green",
+      "question": "Which of these can you use to mark your ball’s position on the green? Select all that apply.",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "A coin"
+        },
+        {
+          "id": "b",
+          "text": "A ball-marker"
+        },
+        {
+          "id": "c",
+          "text": "A tee"
+        },
+        {
+          "id": "d",
+          "text": "Your putter placed behind the ball"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "c"
+      ],
+      "explanation": "You are allowed to use a coin, a ball-marker, or a tee to mark your ball on the putting green. Placing your putter down does not count as a proper marker.",
+      "imagePrompt": "A close-up of a golf ball on the green with a teen boy kneeling to mark its position using a coin. A tee and a ball-marker are on the ground nearby.",
+      "imageAlt": "Boy golfer kneeling to mark ball on green with a coin.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "lifting_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "light",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "orange",
+        "hat": true
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "013_001_Is_the_fringe_part_of_the_green",
+    "013_002_What_should_you_do_if_your_ball_lands_on_the_wrong_green",
+    "006_003_Who_plays_first_on_the_green",
+    "1314_004_How_to_mark_your_ball_on_the_green"
+  ],
+  "updatedAtUtc": "2026-04-24T23:06:20.604Z"
+}

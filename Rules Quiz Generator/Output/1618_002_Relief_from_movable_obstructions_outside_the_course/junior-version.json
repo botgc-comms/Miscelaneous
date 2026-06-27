@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\1618_002_Relief_from_movable_obstructions_outside_the_course\\metadata.json",
+  "sourceImageName": "pageb-01.png",
+  "ruleNumber": "16/18",
+  "ruleName": "Player out of bounds but ball on the course",
+  "title": "Relief from movable obstructions outside the course",
+  "question": "If a movable obstruction, like a rubbish bin, is out of bounds but interferes with your stance when you play your ball on the course, can you move it?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, you can move movable obstructions even if they're out of bounds."
+    },
+    {
+      "id": "b",
+      "text": "No, you cannot move anything that is located out of bounds."
+    },
+    {
+      "id": "c",
+      "text": "Yes, but only if the bin is partly in bounds."
+    },
+    {
+      "id": "d",
+      "text": "No, you must play around it."
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "You are allowed to move moveable obstructions, even when they are out of bounds, if they affect your stroke at a ball on the course.",
+  "juniorVersion": {
+    "title": "Moving things like bins that are out of bounds",
+    "question": "If there is something you can move, like a rubbish bin, and it is out of bounds but is in your way when you stand to hit your ball that is on the course, can you move it?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Yes, you can move things you are allowed to move, even if they are out of bounds."
+      },
+      {
+        "id": "b",
+        "text": "No, you cannot move anything that is out of bounds."
+      },
+      {
+        "id": "c",
+        "text": "Yes, but only if the bin is partly on the course."
+      },
+      {
+        "id": "d",
+        "text": "No, you have to play with it in the way."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "You can move things like bins, even if they are out of bounds, if they get in your way when you hit your ball from the course.",
+    "vocabulary": [
+      {
+        "term": "out of bounds",
+        "simpleMeaning": "An area outside the edge of the course where you can't play your ball."
+      },
+      {
+        "term": "movable obstruction",
+        "simpleMeaning": "Something you are allowed to move, like a bin, a branch, or a bottle."
+      }
+    ],
+    "teachingTip": "Show the difference between things you can move (like a bin or bottle) and things that can't be moved (like trees or fences). Ask kids to spot movable obstructions on the course.",
+    "likelyMisconceptions": [
+      "Kids may think you can’t move anything that is out of bounds.",
+      "Some may think you have to play around it even if it is not on the course."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:28:06.103Z",
+  "model": "gpt-4.1"
+}

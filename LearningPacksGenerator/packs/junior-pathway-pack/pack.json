@@ -1,0 +1,45 @@
+{
+  "id": "junior-pathway",
+  "title": "Junior pathway",
+  "summary": "How juniors progress and who supports them.",
+  "estimatedMinutes": 6,
+  "priority": 700,  
+  "mandatoryFor": [
+    "Junior Cadet", 
+    "Junior Course Cadet"
+  ],
+  "version": 1,
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "The junior pathway",
+      "file": "pages/00-title.md"
+    },
+    {
+      "id": "01-cadet",
+      "title": "Cadet stage",
+      "file": "pages/01-cadet.md"
+    },
+    {
+      "id": "02-course-cadet",
+      "title": "Course Cadet stage",
+      "file": "pages/02-course-cadet.md"
+    },
+    {
+      "id": "03-expectations",
+      "title": "Expectations and support",
+      "file": "pages/03-expectations.md"
+    },
+    {
+      "id": "04-meet-the-team",
+      "title": "Meet the team",
+      "file": "pages/04-meet-the-team.md"
+    },
+    {
+      "id": "90-quick-check",
+      "title": "Quick check",
+      "file": "pages/90-quick-check.md",
+      "type": "quiz"
+    }
+  ]
+}

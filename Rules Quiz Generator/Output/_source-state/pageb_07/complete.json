@@ -1,0 +1,580 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-07.png",
+  "sourceImagePath": "Input\\pageb-07.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-07.png",
+      "ruleNumber": "R13",
+      "ruleName": "Putting Green",
+      "group": "Putting Green",
+      "title": "Testing the Green",
+      "question": "You are about to putt. Can you test the green by rolling a ball or making the surface rough with your hand?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, you can do either"
+        },
+        {
+          "id": "b",
+          "text": "No, both actions are not allowed"
+        },
+        {
+          "id": "c",
+          "text": "Only rolling a ball is allowed"
+        },
+        {
+          "id": "d",
+          "text": "Only roughening the surface is allowed"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "Testing the green by rolling a ball or roughening the surface is not allowed and costs 2 penalty strokes.",
+      "imagePrompt": "A teenage girl on a putting green, kneeling next to her golf ball, with her hand close to the green as if about to touch or roughen it, looking unsure.",
+      "imageAlt": "Teen girl near golf ball on the green, hand close to surface, appearing unsure if she can touch it.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "medium",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "blue",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-07.png",
+      "ruleNumber": "R13",
+      "ruleName": "Putting Green",
+      "group": "Putting Green",
+      "title": "Repairing Damage on the Green",
+      "question": "Which of these types of damage are you allowed to repair on the green without any penalty?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Pitch-marks and spike marks"
+        },
+        {
+          "id": "b",
+          "text": "Aeration holes"
+        },
+        {
+          "id": "c",
+          "text": "Old hole plugs"
+        },
+        {
+          "id": "d",
+          "text": "Natural imperfections"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "c"
+      ],
+      "explanation": "You can repair things like pitch-marks, spike marks, and old hole plugs, but not aeration holes or natural imperfections.",
+      "imagePrompt": "A teenage boy using a pitch mark repair tool on the putting green where his ball has landed.",
+      "imageAlt": "Teen boy repairing a pitch mark next to his golf ball on the green.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "dark",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "orange",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-07.png",
+      "ruleNumber": "R13",
+      "ruleName": "Putting Green",
+      "group": "Putting Green",
+      "title": "What To Do With An Embedded Ball",
+      "question": "Your ball has become embedded in the putting green after a shot. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Leave it where it is and play it as it lies"
+        },
+        {
+          "id": "b",
+          "text": "Mark its position, pick it up, repair the pitch-mark, and put the ball back"
+        },
+        {
+          "id": "c",
+          "text": "Pick it up and drop it two club lengths away"
+        },
+        {
+          "id": "d",
+          "text": "Ask another player to move it"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You should mark the spot, lift the ball, repair the pitch-mark, and replace the ball without penalty.",
+      "imagePrompt": "A teenage girl marking the spot of her embedded golf ball on the green, preparing to pick it up.",
+      "imageAlt": "Teen girl marking position of embedded golf ball on the green.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "lifting_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "white",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-07.png",
+      "ruleNumber": "R13/15",
+      "ruleName": "Loose Impediments",
+      "group": "Loose Impediments",
+      "title": "Removing Loose Impediments",
+      "question": "You're on the green and your ball is next to some leaves, a twig, and a bit of sand. Which can you remove without penalty?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Leaves"
+        },
+        {
+          "id": "b",
+          "text": "Twig"
+        },
+        {
+          "id": "c",
+          "text": "Sand"
+        },
+        {
+          "id": "d",
+          "text": "All of them"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "c"
+      ],
+      "explanation": "On the putting green, you may remove leaves, twigs, and even sand or loose soil without penalty.",
+      "imagePrompt": "A teenage boy carefully picking up a twig and leaves beside his ball on the putting green.",
+      "imageAlt": "Teen boy removing natural debris from around his golf ball on the green.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "dark",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "grey",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-07.png",
+      "ruleNumber": "R15",
+      "ruleName": "Movable Obstructions",
+      "group": "Movable Obstructions",
+      "title": "Dealing with Movable Obstructions",
+      "question": "You find a lost glove and a scorecard near your ball on the green. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play your ball as it lies, without moving anything"
+        },
+        {
+          "id": "b",
+          "text": "Move the glove and scorecard and play your shot"
+        },
+        {
+          "id": "c",
+          "text": "Call for a penalty before touching them"
+        },
+        {
+          "id": "d",
+          "text": "Ask your friend to move them for you"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You can remove movable obstructions like gloves and scorecards without penalty. If your ball moves, just put it back.",
+      "imagePrompt": "A teenage girl gently picking up a glove and a scorecard next to her golf ball on the putting green.",
+      "imageAlt": "Teen girl lifting a glove and scorecard away from a golf ball on the green.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "dark",
+        "clothingTopColour": "black",
+        "clothingBottomColour": "navy",
+        "hat": true
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-07.png",
+      "ruleNumber": "R13",
+      "ruleName": "Putting Green",
+      "group": "Putting Green",
+      "title": "Testing the Green",
+      "question": "Before putting, are you allowed to test the putting green by rolling a ball or making the surface rough with your hand?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, both actions are allowed"
+        },
+        {
+          "id": "b",
+          "text": "No, neither action is allowed"
+        },
+        {
+          "id": "c",
+          "text": "Only rolling a ball is allowed"
+        },
+        {
+          "id": "d",
+          "text": "Only making the surface rough is allowed"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You are not allowed to test the green by rolling a ball or roughening the surface. Doing so results in a two-stroke penalty.",
+      "imagePrompt": "A teenage girl on the putting green, kneeling beside her golf ball, hesitating with her hand close to the grass as if unsure about touching it.",
+      "imageAlt": "Teen girl near her ball on the green, hand close to the surface, looking uncertain.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "green",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-07.png",
+      "ruleNumber": "R13",
+      "ruleName": "Putting Green",
+      "group": "Putting Green",
+      "title": "Repairing Damage on the Green",
+      "question": "On the putting green, which types of damage can you repair without penalty?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Pitch-marks and spike marks"
+        },
+        {
+          "id": "b",
+          "text": "Aeration holes"
+        },
+        {
+          "id": "c",
+          "text": "Old hole plugs"
+        },
+        {
+          "id": "d",
+          "text": "Natural imperfections"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "c"
+      ],
+      "explanation": "You are permitted to fix pitch-marks, spike marks, and old hole plugs, but not aeration holes or natural imperfections.",
+      "imagePrompt": "A teenage boy using a repair tool to fix a pitch mark next to his ball on the putting green.",
+      "imageAlt": "Teen boy repairing a pitch mark beside his golf ball on the putting green.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "medium",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "grey",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-07.png",
+      "ruleNumber": "R13",
+      "ruleName": "Putting Green",
+      "group": "Putting Green",
+      "title": "What To Do With An Embedded Ball",
+      "question": "If your ball is embedded on the putting green after a shot, what is the correct thing to do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Leave it and play it as it lies"
+        },
+        {
+          "id": "b",
+          "text": "Mark its position, lift the ball, repair the pitch-mark, and replace the ball"
+        },
+        {
+          "id": "c",
+          "text": "Pick it up and drop it two club lengths away"
+        },
+        {
+          "id": "d",
+          "text": "Ask another player to move it for you"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You should mark where the ball is, lift it, repair the pitch-mark, and then replace the ball without any penalty.",
+      "imagePrompt": "A teenage girl marking the position of her embedded ball on the green while preparing to lift it.",
+      "imageAlt": "Teen girl marking spot of embedded ball on the putting green.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "lifting_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "black",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-07.png",
+      "ruleNumber": "R15",
+      "ruleName": "Loose Impediments",
+      "group": "Loose Impediments",
+      "title": "Removing Loose Impediments on the Green",
+      "question": "On the putting green, which of these items can you remove without penalty when they are next to your ball?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Leaves"
+        },
+        {
+          "id": "b",
+          "text": "Twig"
+        },
+        {
+          "id": "c",
+          "text": "Sand"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "c"
+      ],
+      "explanation": "On the green, you may remove leaves, twigs, and even sand or loose soil without penalty.",
+      "imagePrompt": "A teenage girl carefully picking up a twig and leaves next to her ball on the putting green, with a small amount of sand also present.",
+      "imageAlt": "Teen girl removing debris and sand from around her golf ball on the green.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "orange",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-07.png",
+      "ruleNumber": "R15",
+      "ruleName": "Movable Obstructions",
+      "group": "Movable Obstructions",
+      "title": "Dealing with Movable Obstructions",
+      "question": "You find a lost glove and a scorecard near your ball on the putting green. Are you allowed to move them?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "No, you must play your ball as it lies"
+        },
+        {
+          "id": "b",
+          "text": "Yes, you can remove both without penalty"
+        },
+        {
+          "id": "c",
+          "text": "You must call for a penalty before touching them"
+        },
+        {
+          "id": "d",
+          "text": "Only other players can move them"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You are allowed to remove movable obstructions like a glove or a scorecard with no penalty. If the ball moves while doing so, you simply replace it.",
+      "imagePrompt": "A teenage girl lifting a glove and a scorecard from beside her golf ball on the putting green.",
+      "imageAlt": "Teen girl moving a glove and scorecard away from her ball on the green.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "blue",
+        "hat": false
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "013_001_Testing_the_Green",
+    "013_002_Repairing_Damage_on_the_Green",
+    "013_003_What_To_Do_With_An_Embedded_Ball",
+    "015_004_Removing_Loose_Impediments_on_the_Green",
+    "015_005_Dealing_with_Movable_Obstructions"
+  ],
+  "updatedAtUtc": "2026-04-24T23:33:41.010Z"
+}

@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "13.3a",
+  "ruleName": "Ball Overhanging Hole",
+  "group": "Putting Green",
+  "title": "Waiting Time When Ball Is Hanging on the Edge of the Hole",
+  "question": "How long are you allowed to wait to see if your ball that is hanging on the edge of the hole will fall in?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Up to 10 seconds from when the ball stopped moving."
+    },
+    {
+      "id": "b",
+      "text": "A reasonable time to reach the hole, plus an additional 10 seconds."
+    },
+    {
+      "id": "c",
+      "text": "As long as you like, provided you do not delay play."
+    },
+    {
+      "id": "d",
+      "text": "You must play the ball immediately without waiting."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "When a ball comes to rest hanging over the hole, you are allowed a reasonable time to reach the hole without unreasonable delay, and then an additional 10 seconds to see whether the ball falls into the hole. If the ball falls into the hole within that time, it is considered holed. If it falls in after that period, add one penalty stroke. (Rule 13.3a)",
+  "imagePrompt": "A modern, semi-realistic golf illustration (about 75% realistic and 25% stylised) showing a golf ball hanging on the lip of the hole on a manicured putting green. A golfer stands nearby, holding a putter and watching the ball intently to see if it will fall in. The focus is on the ball balanced over the hole's edge. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer stands by the hole on a putting green, watching a golf ball as it balances on the edge of the hole, about to drop in.",
+  "sceneSpec": {
+    "setting": "Modern putting green with clear hole and cup visible",
+    "players": "One golfer approaching the hole, putter in hand, looking at the ball",
+    "ballPosition": "Golf ball hanging on the lip of the hole, clearly overhanging but not yet dropped",
+    "ruleMoment": "Golfer has just walked to the hole and is watching the ball to see if it will drop in",
+    "educationalFocus": "Demonstrate the scenario where the ball is balanced over the edge of the hole and the correct waiting procedure",
+    "mustShow": [
+      "Golf ball on the lip of the hole",
+      "Golfer standing by the hole, watching the ball"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  }
+}

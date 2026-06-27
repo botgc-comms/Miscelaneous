@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\011_003_Ball_hits_another_ball_at_rest\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:18:18.914Z",
+  "title": "Ball hits another ball at rest",
+  "ruleNumber": "R11",
+  "ruleName": "Ball in motion accidentally hits ...",
+  "durationSeconds": 172.542
+}

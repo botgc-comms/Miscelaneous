@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\016_001_Taking_relief_from_abnormal_course_conditions_in_a_bunker\\metadata.json",
+  "sourceImageName": "page-21.png",
+  "ruleNumber": "R16",
+  "ruleName": "Abnormal course conditions",
+  "title": "Taking relief from abnormal course conditions in a bunker",
+  "question": "Your ball is in a bunker and there is a puddle of water interfering with your stance. What options do you have under the Rules of Golf?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Drop within one club-length in the bunker without penalty"
+    },
+    {
+      "id": "b",
+      "text": "Drop outside the bunker without penalty"
+    },
+    {
+      "id": "c",
+      "text": "Drop outside the bunker for one penalty stroke"
+    },
+    {
+      "id": "d",
+      "text": "Play the ball as it lies without penalty"
+    }
+  ],
+  "correctAnswers": [
+    "a",
+    "c",
+    "d"
+  ],
+  "explanation": "You can drop in the bunker within one club-length with no penalty, or drop outside the bunker but take one penalty stroke. You may also choose to play the ball as it lies.",
+  "juniorVersion": {
+    "title": "What can you do if your ball is in a bunker with a big puddle?",
+    "question": "Your ball is in a bunker and there is a puddle where you want to stand. What can you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Drop your ball in the bunker, not too far from its spot, with no extra shots added."
+      },
+      {
+        "id": "b",
+        "text": "Drop your ball outside the bunker, with no extra shots added."
+      },
+      {
+        "id": "c",
+        "text": "Drop your ball outside the bunker, but add one extra shot to your score."
+      },
+      {
+        "id": "d",
+        "text": "Play your ball from where it is, with no extra shots added."
+      }
+    ],
+    "correctAnswers": [
+      "a",
+      "c",
+      "d"
+    ],
+    "explanation": "You can drop your ball in the bunker near where it was, without any extra shots. Or, you can drop outside the bunker, but this means you add one extra shot to your score. You can also just play the ball as it is.",
+    "vocabulary": [
+      {
+        "term": "Bunker",
+        "simpleMeaning": "A sandy area on the golf course, often called a sand trap."
+      },
+      {
+        "term": "Drop",
+        "simpleMeaning": "Letting the ball fall from your hand at knee height to put it back in play."
+      },
+      {
+        "term": "Relief",
+        "simpleMeaning": "A way to move your ball to a better spot because something is in the way, following the rules."
+      }
+    ],
+    "teachingTip": "Let children walk through the options near a real bunker so they can see how much space one club-length is.",
+    "likelyMisconceptions": [
+      "Some children may think you can always drop outside the bunker with no penalty.",
+      "Some may not realise you can play the ball as it lies if you want to."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:59.102Z",
+  "model": "gpt-4.1"
+}

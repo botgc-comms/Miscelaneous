@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "13.1c",
+  "ruleName": "Actions Allowed on Putting Green",
+  "group": "Putting Green",
+  "title": "Removing Sand from the Putting Green",
+  "question": "Your ball is just off the putting green. You decide to putt, but there is a patch of loose sand on the putting green directly on your line of play. Can you brush the sand away before making your stroke?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No. Your ball is not on the putting green."
+    },
+    {
+      "id": "b",
+      "text": "No. Sand may never be removed from your line of play."
+    },
+    {
+      "id": "c",
+      "text": "Yes. Sand may be removed from the putting green, even if your ball is off the green."
+    },
+    {
+      "id": "d",
+      "text": "Yes, but only if another player agrees."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "Rule 13.1c allows players to remove sand and loose soil from the putting green, regardless of whether their ball is on or off the putting green.",
+  "imagePrompt": "A polished, modern semi-realistic golf illustration (about 75% realistic, 25% stylised) showing a golfer preparing to putt from just off the putting green, standing on the fringe or collar, looking toward the hole. There is a visible patch of loose sand spread over the putting green directly between the ball and the flagstick. The green is lush and smooth, the flagstick is upright in the hole, and the golfer is holding a putter, lining up the putt. No text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards, or speech bubbles.",
+  "imageAlt": "A golfer holding a putter prepares to putt from just off the green. There is a clear patch of loose sand on the putting green directly in their line to the hole, with the flagstick in the hole.",
+  "sceneSpec": {
+    "setting": "A well-maintained golf green with an adjacent collar/fringe and a visible flagstick.",
+    "players": "One player preparing to putt from just off the green, looking at the line of play toward the hole.",
+    "ballPosition": "The player's ball is positioned just off the green, on the collar/fringe.",
+    "ruleMoment": "Before the stroke, player is considering brushing away a visible patch of sand located on the putting green directly between their ball and the hole.",
+    "educationalFocus": "Rules regarding removing loose sand from the putting green, specifically when the ball is off the green.",
+    "mustShow": [
+      "The player's ball clearly off the putting green but near the edge",
+      "A distinct patch of loose sand on the putting green, on the player's line of play",
+      "The flagstick in the hole",
+      "Putter in the player's hand"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  }
+}

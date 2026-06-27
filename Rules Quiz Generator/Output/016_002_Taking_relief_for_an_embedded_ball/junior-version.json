@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\016_002_Taking_relief_for_an_embedded_ball\\metadata.json",
+  "sourceImageName": "page-12.png",
+  "ruleNumber": "16",
+  "ruleName": "Embedded ball",
+  "title": "Taking relief for an embedded ball",
+  "question": "If your ball is embedded in the ground after landing in the fairway, what are you allowed to do according to the rules?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball as it lies, even though it is embedded."
+    },
+    {
+      "id": "b",
+      "text": "Pick it up, clean it, and drop it within one club-length of its original spot, not nearer the hole, with no penalty."
+    },
+    {
+      "id": "c",
+      "text": "Take a two-stroke penalty and drop it anywhere on the green."
+    },
+    {
+      "id": "d",
+      "text": "Replace it exactly where it is embedded, without cleaning it."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If your ball is embedded in the fairway, you may lift, clean, and drop it within one club-length no nearer the hole without penalty.",
+  "juniorVersion": {
+    "title": "What to do if your ball is stuck in the ground",
+    "question": "If your ball lands in the fairway and is stuck in the ground, what can you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Play the ball just as it is, even though it is stuck."
+      },
+      {
+        "id": "b",
+        "text": "Pick up your ball, clean it, and drop it within one club-length from where it was, but not closer to the hole, with no penalty."
+      },
+      {
+        "id": "c",
+        "text": "Add two strokes and drop your ball anywhere on the green."
+      },
+      {
+        "id": "d",
+        "text": "Put the ball back in the same spot where it was stuck, without cleaning it."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If your ball is stuck in the ground on the fairway, you can pick it up, wipe it clean, and drop it back on the ground within one club-length from where it was, but not closer to the hole. You do not get a penalty.",
+    "vocabulary": [
+      {
+        "term": "Embedded",
+        "simpleMeaning": "When the ball is stuck in the ground, often making a little hole."
+      },
+      {
+        "term": "Club-length",
+        "simpleMeaning": "The length of a golf club. You can use your club to measure how far you can drop the ball."
+      },
+      {
+        "term": "Fairway",
+        "simpleMeaning": "The short grass area between where you start (the tee) and the green."
+      }
+    ],
+    "teachingTip": "Show players how to check if the ball is really embedded and practise how to measure a club-length for the drop.",
+    "likelyMisconceptions": [
+      "Some players might think they have to play the ball as it is, even when it is stuck.",
+      "Some might think they can just drop the ball anywhere on the green.",
+      "They may not know that the drop must be no closer to the hole."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:02.669Z",
+  "model": "gpt-4.1"
+}

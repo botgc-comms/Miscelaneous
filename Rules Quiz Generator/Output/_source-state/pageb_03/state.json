@@ -1,0 +1,352 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-03.png",
+  "sourceImagePath": "Input\\pageb-03.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-03.png",
+      "ruleNumber": "R18",
+      "ruleName": "Provisional Ball",
+      "group": "Provisional Ball",
+      "title": "What happens if you find your original ball on the course?",
+      "question": "You hit a provisional ball, but then find your original ball on the course (not out of bounds) within 3 minutes. What should you do next?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Continue playing the provisional ball"
+        },
+        {
+          "id": "b",
+          "text": "Pick up the provisional ball and play the original ball"
+        },
+        {
+          "id": "c",
+          "text": "Play whichever ball is in a better position"
+        },
+        {
+          "id": "d",
+          "text": "Play both balls and choose the best result"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You must abandon the provisional ball and continue playing with your original ball. Strokes made with the provisional ball do not count.",
+      "imagePrompt": "A teenage girl golfer picking up her provisional ball after finding her original ball on the fairway.",
+      "imageAlt": "Teenage girl golfer on the fairway picking up a second ball, original ball in play.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "lifting_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "dark",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "purple",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-03.png",
+      "ruleNumber": "R18/19",
+      "ruleName": "Provisional Ball / Unplayable Ball",
+      "group": "Provisional Ball",
+      "title": "Original ball found but is unplayable",
+      "question": "You find your original ball within 3 minutes, but it is stuck against a tree and unplayable. Can you play the provisional ball instead?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, you can play the provisional ball instead of the original"
+        },
+        {
+          "id": "b",
+          "text": "No, you must continue with the original ball and use the unplayable ball rule"
+        },
+        {
+          "id": "c",
+          "text": "Yes, but only with a penalty stroke"
+        },
+        {
+          "id": "d",
+          "text": "You can declare both balls lost and replay your shot"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You have to continue with your original ball, even if it's unplayable. You must then use the unplayable ball rule.",
+      "imagePrompt": "A teenage boy golfer looking at his ball stuck under tree roots, deciding what to do.",
+      "imageAlt": "Teen boy golfer with golf ball stuck by a tree root, thinking about his next move.",
+      "sceneSpec": {
+        "setting": "rough",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "dark",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "yellow",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-03.png",
+      "ruleNumber": "R18",
+      "ruleName": "Provisional Ball",
+      "group": "Provisional Ball",
+      "title": "What if your original ball is out of bounds or not found?",
+      "question": "You play a provisional ball. Your original ball is later found to be out of bounds, or you don't find it within 3 minutes. What happens now?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "The provisional ball becomes your ball in play, with a 1-stroke penalty"
+        },
+        {
+          "id": "b",
+          "text": "You must replay your shot from the previous spot with no penalty"
+        },
+        {
+          "id": "c",
+          "text": "You can choose to play either ball with no penalty"
+        },
+        {
+          "id": "d",
+          "text": "You must drop a new ball where the original went out of bounds, with a 2-stroke penalty"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "If your original ball is out of bounds or not found within 3 minutes, your provisional ball is now in play with a 1-stroke penalty.",
+      "imagePrompt": "A teenage boy golfer standing at the edge of the fairway, looking at the out-of-bounds markers, holding a golf club.",
+      "imageAlt": "Teenage boy golfer at the edge of the course looking towards white out-of-bounds markers.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "white",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "orange",
+        "hat": false
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-03.png",
+      "ruleNumber": "R18",
+      "ruleName": "Provisional Ball",
+      "group": "Provisional Ball",
+      "title": "What happens if you find your original ball on the course?",
+      "question": "You hit a provisional ball, but then find your original ball on the course (not out of bounds) within 3 minutes. What should you do next?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Continue playing the provisional ball"
+        },
+        {
+          "id": "b",
+          "text": "Pick up the provisional ball and play the original ball"
+        },
+        {
+          "id": "c",
+          "text": "Play whichever ball is in a better position"
+        },
+        {
+          "id": "d",
+          "text": "Play both balls and choose the best result"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You must stop playing the provisional ball and continue with your original ball. Any strokes played with the provisional ball do not count.",
+      "imagePrompt": "Teenage girl golfer on the sunny fairway, using an iron to pick up her provisional ball after finding her original ball. Only one ball left visible on the fairway.",
+      "imageAlt": "Teenage girl golfer on the fairway picking up a second ball, original ball in play.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "lifting_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "light",
+        "clothingTopColour": "orange",
+        "clothingBottomColour": "navy",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-03.png",
+      "ruleNumber": "R18/19",
+      "ruleName": "Provisional Ball / Unplayable Ball",
+      "group": "Provisional Ball",
+      "title": "Original ball found but is unplayable",
+      "question": "You find your original ball within 3 minutes, but it's stuck up against a tree and you can't play it. Are you allowed to keep playing your provisional ball instead?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, you can play the provisional ball instead of the original"
+        },
+        {
+          "id": "b",
+          "text": "No, you must continue with the original ball and use the unplayable ball rule"
+        },
+        {
+          "id": "c",
+          "text": "Yes, but only with a penalty stroke"
+        },
+        {
+          "id": "d",
+          "text": "You can declare both balls lost and replay your shot"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You must continue with your original ball, even if it’s unplayable. If you can't play it, you have to use the options under the unplayable ball rule.",
+      "imagePrompt": "Teenage boy golfer in the rough, near trees, looking at his golf ball which is up against tree roots and appears unplayable.",
+      "imageAlt": "Teen boy golfer with golf ball stuck by a tree root, thinking about his next move.",
+      "sceneSpec": {
+        "setting": "rough",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "light",
+        "clothingTopColour": "orange",
+        "clothingBottomColour": "grey",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-03.png",
+      "ruleNumber": "R18",
+      "ruleName": "Provisional Ball",
+      "group": "Provisional Ball",
+      "title": "What if your original ball is out of bounds or not found?",
+      "question": "You play a provisional ball. Your original ball is later found to be out of bounds, or you don't find it within 3 minutes. What should you do next?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "The provisional ball becomes your ball in play, with a 1-stroke penalty"
+        },
+        {
+          "id": "b",
+          "text": "You must replay your shot from the previous spot with no penalty"
+        },
+        {
+          "id": "c",
+          "text": "You can choose to play either ball with no penalty"
+        },
+        {
+          "id": "d",
+          "text": "You must drop a new ball where the original went out of bounds, with a 2-stroke penalty"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "If your original ball is out of bounds or lost (not found within 3 minutes), the provisional ball becomes the ball in play and you count a one-stroke penalty.",
+      "imagePrompt": "Teenage girl golfer on a sunny fairway, near white out-of-bounds stakes, holding a driver club and standing by her provisional ball.",
+      "imageAlt": "Teenage girl golfer at the edge of the fairway by white out-of-bounds markers, preparing to play the provisional ball.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "white",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "yellow",
+        "hat": false
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "018_001_What_happens_if_you_find_your_original_ball_on_the_course",
+    "1819_002_Original_ball_found_but_is_unplayable",
+    "018_003_What_if_your_original_ball_is_out_of_bounds_or_not_found"
+  ],
+  "updatedAtUtc": "2026-04-24T22:54:09.942Z"
+}

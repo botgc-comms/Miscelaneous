@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\013_004_Your_ball_hits_the_flagstick_in_the_hole\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:30:48.320Z",
+  "title": "Your ball hits the flagstick in the hole",
+  "ruleNumber": "R13",
+  "ruleName": "Ball in motion accidentally hits ... the flagstick",
+  "durationSeconds": 192.534
+}

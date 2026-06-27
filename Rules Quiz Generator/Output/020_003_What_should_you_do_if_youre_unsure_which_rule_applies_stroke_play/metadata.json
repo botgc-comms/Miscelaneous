@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-02.png",
+  "ruleNumber": "20",
+  "ruleName": "When in doubt about the rules",
+  "group": "When in doubt about the rules",
+  "title": "What should you do if you’re unsure which rule applies (stroke play)?",
+  "question": "In stroke play, if you’re unsure about what the rules require and can’t find help straight away, what is the correct thing to do?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play two balls, record both scores, and ask an official afterwards"
+    },
+    {
+      "id": "b",
+      "text": "Guess a rule and continue playing"
+    },
+    {
+      "id": "c",
+      "text": "Ignore the situation and move on"
+    },
+    {
+      "id": "d",
+      "text": "Mark your ball and wait for a referee without finishing the hole"
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "If you’re in doubt about a rule in stroke play, play two balls (declaring which you want to count before doing so), finish the hole with both, then get a ruling before submitting your score.",
+  "imagePrompt": "A teen boy golfer, right-handed, on the fairway, looking thoughtfully at his scorecard with his wedge by his side, appearing unsure what the rules allow, one ball on the ground.",
+  "imageAlt": "A boy golfer looking unsure, checking his scorecard beside a single ball on the fairway.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "wedge",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "asian",
+    "skinTone": "light",
+    "clothingTopColour": "white",
+    "clothingBottomColour": "black",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": false,
+    "score": 83,
+    "issues": [
+      "Golfer appears to be holding the wedge in a right-handed manner rather than left-handed as required in the scene spec.",
+      "All other major details (wedge type, ball count, ethnicity, skin tone, clothing colors, course setting) are correct.",
+      "Golfer's posture and club proportion are believable and the scene is otherwise practical for teaching."
+    ],
+    "repairPrompt": "Adjust the golfer so he is clearly holding the wedge in a left-handed manner, with a left-handed stance and grip. Ensure the grip and body orientation match a left-handed golfer while keeping all other details intact."
+  }
+}

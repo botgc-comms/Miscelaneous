@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_068_Options_for_Relief_from_a_Yellow_Penalty_Area\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "17.1d",
+  "ruleName": "Relief Options for Ball in Penalty Area",
+  "title": "Options for Relief from a Yellow Penalty Area",
+  "question": "Your ball comes to rest in a yellow penalty area. You wish to take relief. How many club-lengths may you drop from where the ball last crossed the edge of the penalty area?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "One club-length."
+    },
+    {
+      "id": "b",
+      "text": "Two club-lengths."
+    },
+    {
+      "id": "c",
+      "text": "You can't. That relief option isn't available."
+    },
+    {
+      "id": "d",
+      "text": "Three club-lengths."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "When taking relief from a yellow penalty area, the only options are to play from the designated relief area under back-on-the-line relief or to play from where the previous stroke was made (stroke-and-distance). Lateral relief (a two club-length drop from where the ball last crossed the edge) is only available for red penalty areas, not yellow.",
+  "juniorVersion": {
+    "title": "How Can You Drop Out of a Yellow Penalty Area?",
+    "question": "Your ball stops in a yellow penalty area, like a pond marked with yellow stakes. Can you drop your ball one or two club-lengths from where it went in?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "One club-length."
+      },
+      {
+        "id": "b",
+        "text": "Two club-lengths."
+      },
+      {
+        "id": "c",
+        "text": "You can't. That way of dropping isn't allowed here."
+      },
+      {
+        "id": "d",
+        "text": "Three club-lengths."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "For yellow penalty areas, you cannot drop your ball by measuring one or two club-lengths from where it went in. Instead, you need to go back in line with the flag and where your ball crossed the edge, or go back to where you last hit the shot.",
+    "vocabulary": [
+      {
+        "term": "Penalty area",
+        "simpleMeaning": "A spot on the course, like a pond or stream, marked by yellow or red stakes or lines."
+      },
+      {
+        "term": "Club-length",
+        "simpleMeaning": "The length of your longest club, except the putter. Used to measure where you can drop the ball."
+      }
+    ],
+    "teachingTip": "Show children the difference between yellow and red penalty areas on the course, and where they can or cannot drop their ball.",
+    "likelyMisconceptions": [
+      "Children may think they can always drop their ball up to two club-lengths from where the ball went into any penalty area.",
+      "Children might not know that yellow and red penalty areas have different rules for dropping."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T19:42:10.762Z",
+  "model": "gpt-4.1"
+}

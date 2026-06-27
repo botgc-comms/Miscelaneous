@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_025_Ball_Next_to_a_Movable_Bench\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "15.2a",
+  "ruleName": "Movable Obstructions",
+  "title": "Ball Next to a Movable Bench",
+  "question": "Your ball comes to rest next to a bench that is preventing you from making your normal swing. The bench can easily be picked up and moved. What is the correct ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Take free relief because the bench interferes with your swing."
+    },
+    {
+      "id": "b",
+      "text": "Move the bench and play the ball. If the ball moves while the bench is being moved, replace it without penalty."
+    },
+    {
+      "id": "c",
+      "text": "Play the ball as it lies."
+    },
+    {
+      "id": "d",
+      "text": "Take a one-stroke penalty and drop away from the bench."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "Benches that can be easily moved are movable obstructions. You may move the bench and play the ball as it lies. If the ball moves while moving the bench, replace the ball without penalty (Rule 15.2a).",
+  "juniorVersion": {
+    "title": "Ball Beside a Moveable Bench",
+    "question": "Your ball stops right next to a bench, and the bench is in the way of your swing. You can pick up and move the bench easily. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You get free relief because the bench is blocking your swing."
+      },
+      {
+        "id": "b",
+        "text": "Move the bench out of the way and play your ball. If your ball rolls or moves when you move the bench, put it back where it was, with no penalty."
+      },
+      {
+        "id": "c",
+        "text": "Leave the ball and the bench where they are and hit your ball as it is."
+      },
+      {
+        "id": "d",
+        "text": "Take a one-shot penalty and drop the ball further away from the bench."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "A bench you can pick up and move is called a 'moveable obstruction'. You are allowed to move the bench. If your ball moves while you are moving the bench, you can put the ball back where it was, with no penalty. Then play your shot.",
+    "vocabulary": [
+      {
+        "term": "Moveable obstruction",
+        "simpleMeaning": "An object on the course that can be moved, like a bench, bottle, or bag."
+      },
+      {
+        "term": "Relief",
+        "simpleMeaning": "A way to move your ball or yourself away from something that is in the way."
+      }
+    ],
+    "teachingTip": "Show children different things they can and cannot move on the course. Practice moving an object like a tee or a bench near their ball.",
+    "likelyMisconceptions": [
+      "Children may think they must always play the ball with objects in their way.",
+      "Children may believe they cannot move anything on the course.",
+      "Children might think moving their ball by accident is always a penalty."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:10:00.948Z",
+  "model": "gpt-4.1"
+}

@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\010_002_Giving_advice_before_a_shot\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:09:56.384Z",
+  "title": "Giving advice before a shot",
+  "ruleNumber": "R10",
+  "ruleName": "Advice and line of play",
+  "durationSeconds": 177.586
+}

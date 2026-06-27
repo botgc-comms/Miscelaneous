@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\016_001_Relief_from_wrong_hole_on_a_double_green\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:40:46.239Z",
+  "title": "Relief from wrong hole on a double green",
+  "ruleNumber": "R16",
+  "ruleName": "Double green",
+  "durationSeconds": 165.844
+}

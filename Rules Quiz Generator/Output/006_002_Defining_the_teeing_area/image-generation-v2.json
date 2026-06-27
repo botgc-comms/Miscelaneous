@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\006_002_Defining_the_teeing_area\\metadata.json",
+  "generatedAtUtc": "2026-06-24T14:53:32.499Z",
+  "title": "Defining the teeing area",
+  "ruleNumber": "6",
+  "ruleName": "Teeing area",
+  "durationSeconds": 169.322
+}

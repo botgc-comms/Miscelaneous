@@ -1,0 +1,5 @@
+{
+  "text": ["Jack Ling", "Memorial Trophy"],
+  "allowText": true,
+  "notes": "The inscription is at the top of the cup"
+}

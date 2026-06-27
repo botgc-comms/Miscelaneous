@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-04.png",
+  "ruleNumber": "R14",
+  "ruleName": "Incorrect drop",
+  "group": "Incorrect drop",
+  "title": "Penalty for Dropping Incorrectly but Playing from the Right Spot",
+  "question": "If you drop your ball using the wrong procedure (for example, not from knee height), but it comes to rest in the right relief area and you play it, what is the penalty?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No penalty"
+    },
+    {
+      "id": "b",
+      "text": "1 penalty stroke"
+    },
+    {
+      "id": "c",
+      "text": "2 penalty strokes"
+    },
+    {
+      "id": "d",
+      "text": "Disqualification"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "Dropping incorrectly but playing the ball from the correct relief area results in a one-stroke penalty.",
+  "imagePrompt": "A left-handed teen golfer on a fairway drops a ball carelessly from shoulder height, but the ball stays inside the suitable relief area.",
+  "imageAlt": "Teen golfer next to a ball dropped in the correct spot but not from knee height.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "dropping_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "light",
+    "clothingTopColour": "red",
+    "clothingBottomColour": "grey",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The golfer is not clearly depicted as left-handed, though the hand position in this neutral dropping pose could plausibly allow for either handedness. No golf club is needed or shown as specified.",
+      "The action of dropping the ball from above knee height is clearly shown; the ball is naturally released from a height closer to shoulder than knee, in keeping with the prompt.",
+      "All other scene, course, clothing, and ethnic appearance details are accurate."
+    ],
+    "repairPrompt": "Ensure the dropping stance or context clarifies that the golfer is left-handed—for example, show the girl holding the ball in her right hand for a left-handed drop or otherwise visually reinforce left-handedness. Otherwise, keep all elements as shown."
+  }
+}

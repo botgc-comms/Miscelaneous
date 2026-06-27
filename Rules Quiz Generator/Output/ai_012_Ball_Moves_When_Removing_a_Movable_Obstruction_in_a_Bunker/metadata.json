@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "15.2a(1), 14.2e",
+  "ruleName": "Movable Obstructions; Replacing Ball on Spot",
+  "group": "Bunkers",
+  "title": "Ball Moves When Removing a Movable Obstruction in a Bunker",
+  "question": "Your ball comes to rest against a rake lying in a bunker. Before playing, you carefully lift the rake away. As you do, the ball rolls a few inches down the slope. What is the correct ruling?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball from its new position because it moved naturally."
+    },
+    {
+      "id": "b",
+      "text": "Replace the ball on its original spot with no penalty."
+    },
+    {
+      "id": "c",
+      "text": "Replace the ball and add a one-stroke penalty."
+    },
+    {
+      "id": "d",
+      "text": "The ball is unplayable and must be dropped under penalty."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "A bunker rake is a movable obstruction, which you are allowed to remove at any time. If the ball moves as a result of removing the rake, there is no penalty. You must simply replace the ball on its original spot before playing. If the ball will not stay at rest on its original spot, it must be placed on the nearest spot where it will remain at rest, no nearer the hole and still in the bunker. (Rule 15.2a(1), Rule 14.2e)",
+  "imagePrompt": "A modern semi-realistic, stylised illustration showing a lone golfer wearing contemporary golf attire inside a sandy bunker on a sunny golf course. The golfer is crouched and is carefully lifting a standard metal bunker rake that was lying next to or touching a white golf ball on a sloping part of the sand. The golf ball has just rolled a short distance from its original spot, with a faint track or disturbance in the sand marking its movement. The rake, the disturbed sand, and the player's careful handling of the rake should be clearly visible. The illustration should be about 75% realistic and 25% stylised, with a polished look. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer in a bunker carefully lifts a rake, causing the ball nearby to roll a short distance down the sandy slope.",
+  "sceneSpec": {
+    "setting": "Sandy bunker on a golf course, with a visible slope",
+    "players": "One golfer in a modern outfit inside the bunker, crouched and lifting a rake with care",
+    "ballPosition": "A golf ball resting just against or touching the head of a standard bunker rake on the sand slope",
+    "ruleMoment": "The moment the player is lifting the bunker rake away and the ball has just started to roll a few inches down the slope",
+    "educationalFocus": "Ball movement caused specifically by the removal of a movable obstruction in a bunker",
+    "mustShow": [
+      "Golfer inside a bunker",
+      "Golf ball initially positioned touching or next to a bunker rake",
+      "Golfer carefully lifting the rake away",
+      "Slight sand mark or track showing the ball rolling a short distance from its original spot"
+    ],
+    "mustNotShow": [
+      "Any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles",
+      "Any penalty strokes or signs of rules breaches",
+      "Additional people or caddies"
+    ]
+  }
+}

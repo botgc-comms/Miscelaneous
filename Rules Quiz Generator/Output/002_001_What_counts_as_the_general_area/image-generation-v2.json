@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\002_001_What_counts_as_the_general_area\\metadata.json",
+  "generatedAtUtc": "2026-06-24T14:07:34.958Z",
+  "title": "What counts as the general area?",
+  "ruleNumber": "R2",
+  "ruleName": "General area",
+  "durationSeconds": 195.638
+}

@@ -1,0 +1,465 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-06.png",
+  "sourceImagePath": "Input\\page-06.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-06.png",
+      "ruleNumber": "6",
+      "ruleName": "Playing in the wrong order",
+      "group": "Playing in the wrong order",
+      "title": "What happens if you tee off in the wrong order?",
+      "question": "You're playing in a competition and accidentally tee off before it's your turn. What happens to your score?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You have to replay your shot with a penalty stroke."
+        },
+        {
+          "id": "b",
+          "text": "Your shot counts and there is no penalty."
+        },
+        {
+          "id": "c",
+          "text": "You are disqualified from the hole."
+        },
+        {
+          "id": "d",
+          "text": "You must replay your shot, but no penalty."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "Teeing off out of order is not penalised unless done for tactical advantage.",
+      "imagePrompt": "A teenage girl golfer standing on the teeing area, having just played a shot while two friends look on waiting for their turn.",
+      "imageAlt": "Teen girl golfer playing out of turn on the tee with two other junior golfers watching.",
+      "sceneSpec": {
+        "setting": "teeing_area",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "orange",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-06.png",
+      "ruleNumber": "6",
+      "ruleName": "Teeing area",
+      "group": "Teeing area",
+      "title": "Defining the teeing area",
+      "question": "Where must the ball be when you play your first shot from the teeing area?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Anywhere within 2 club-lengths of the markers, even if your stance is outside."
+        },
+        {
+          "id": "b",
+          "text": "On the line between the tee markers."
+        },
+        {
+          "id": "c",
+          "text": "Entirely inside the teeing area, which is between the tee markers and up to 2 club-lengths behind them."
+        },
+        {
+          "id": "d",
+          "text": "Anywhere, as long as your feet are inside the teeing area."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "The ball must be entirely inside the teeing area, but you may take your stance outside it.",
+      "imagePrompt": "A teen boy about to hit a tee shot, with his ball placed inside the area between two tee markers. His feet are just outside the box.",
+      "imageAlt": "Teen boy preparing to tee off with ball correctly placed between yellow tee markers.",
+      "sceneSpec": {
+        "setting": "teeing_area",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "medium",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "black",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-06.png",
+      "ruleNumber": "6",
+      "ruleName": "Playing from outside the teeing area",
+      "group": "Playing from outside the teeing area",
+      "title": "Penalty for playing from outside the teeing area",
+      "question": "What is the penalty if you play your tee shot from outside the teeing area and you don't correct it?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You get no penalty, your shot counts."
+        },
+        {
+          "id": "b",
+          "text": "You must replay your shot with 2 penalty strokes."
+        },
+        {
+          "id": "c",
+          "text": "You are disqualified if you don't fix the mistake."
+        },
+        {
+          "id": "d",
+          "text": "You only have to add 1 penalty stroke and play the next shot."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "If you don't correct playing from outside the teeing area, you will be disqualified.",
+      "imagePrompt": "A teenage girl golfer has just hit a shot with her ball placed well outside the tee markers.",
+      "imageAlt": "Teen girl making a drive with her ball outside the yellow tee markers.",
+      "sceneSpec": {
+        "setting": "teeing_area",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "replaying_shot",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "orange",
+        "clothingBottomColour": "blue",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-06.png",
+      "ruleNumber": "6",
+      "ruleName": "Playing from outside the teeing area",
+      "group": "Playing from outside the teeing area",
+      "title": "Correcting a teeing area mistake",
+      "question": "After teeing off from outside the teeing area, what must you do to avoid being disqualified?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Walk to your ball and continue playing, no penalty."
+        },
+        {
+          "id": "b",
+          "text": "Replay your shot from within the teeing area (now your 3rd stroke)."
+        },
+        {
+          "id": "c",
+          "text": "Replay from anywhere you like with only a warning."
+        },
+        {
+          "id": "d",
+          "text": "Ask your opponent if you can continue with no penalty."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You must correct the error by teeing off again from within the teeing area, counting two penalty strokes.",
+      "imagePrompt": "A teen boy preparing to replay his tee shot after realising he played from outside the markers.",
+      "imageAlt": "Teen boy resetting for a tee shot inside the marker after error.",
+      "sceneSpec": {
+        "setting": "teeing_area",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "replaying_shot",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "medium",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "orange",
+        "hat": true
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-06.png",
+      "ruleNumber": "6",
+      "ruleName": "Playing in the wrong order",
+      "group": "Playing in the wrong order",
+      "title": "What happens if you tee off in the wrong order?",
+      "question": "In a stroke play competition, you accidentally play your tee shot before it's your turn. What is the correct outcome?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You must replay the shot with a one-stroke penalty added."
+        },
+        {
+          "id": "b",
+          "text": "The shot stands and there is no penalty."
+        },
+        {
+          "id": "c",
+          "text": "You are disqualified from the hole."
+        },
+        {
+          "id": "d",
+          "text": "You have to replay the shot, but there is no penalty."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "In stroke play, playing out of order is allowed and there is no penalty. Your shot counts as played.",
+      "imagePrompt": "A teenage girl golfer on the teeing area having just played a shot, while two other players watch and wait behind her. Both tee markers are clearly visible showing a tee box setting.",
+      "imageAlt": "Teen girl golfer playing out of turn on the tee with two other junior golfers watching and the tee markers visible.",
+      "sceneSpec": {
+        "setting": "teeing_area",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "light",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "black",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-06.png",
+      "ruleNumber": "6",
+      "ruleName": "Teeing area",
+      "group": "Teeing area",
+      "title": "Defining the teeing area",
+      "question": "When starting a hole, where must the ball be placed for your first shot from the teeing area?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Anywhere within 2 club-lengths from the tee markers, even if your feet are outside."
+        },
+        {
+          "id": "b",
+          "text": "Directly on the line joining the two tee markers."
+        },
+        {
+          "id": "c",
+          "text": "Completely inside the teeing area, which is defined by the tee markers and up to two club-lengths behind them."
+        },
+        {
+          "id": "d",
+          "text": "Anywhere on the teeing ground as long as your stance is inside it."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "The ball must be entirely inside the teeing area for your first shot, although your stance can be outside the area.",
+      "imagePrompt": "A teenage boy is about to hit a tee shot, with the ball placed completely within the area marked by two visible tee markers. His feet are placed just outside the teeing area.",
+      "imageAlt": "Teen boy preparing to tee off with ball correctly inside the space between yellow tee markers.",
+      "sceneSpec": {
+        "setting": "teeing_area",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "light",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "navy",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-06.png",
+      "ruleNumber": "6",
+      "ruleName": "Playing from outside the teeing area",
+      "group": "Playing from outside the teeing area",
+      "title": "Penalty for playing from outside the teeing area",
+      "question": "If you play your tee shot from outside the teeing area and do not fix the mistake before finishing the hole, what is the penalty in stroke play?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "There is no penalty, your shot counts."
+        },
+        {
+          "id": "b",
+          "text": "You must replay your shot with 2 penalty strokes."
+        },
+        {
+          "id": "c",
+          "text": "You are disqualified from the competition."
+        },
+        {
+          "id": "d",
+          "text": "You get a two-stroke penalty but the shot still counts."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "If you fail to correct a tee shot played from outside the teeing area in stroke play, you are disqualified.",
+      "imagePrompt": "A teenage girl golfer finishing a shot with her ball obviously placed completely outside the lines set by the tee markers.",
+      "imageAlt": "Teen girl making a drive with her ball outside the yellow tee markers.",
+      "sceneSpec": {
+        "setting": "teeing_area",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "replaying_shot",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "yellow",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-06.png",
+      "ruleNumber": "6",
+      "ruleName": "Playing from outside the teeing area",
+      "group": "Playing from outside the teeing area",
+      "title": "Correcting a teeing area mistake",
+      "question": "After realising you hit your tee shot from outside the teeing area in stroke play, what should you do to avoid being disqualified?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Go to your ball and continue playing, no penalty."
+        },
+        {
+          "id": "b",
+          "text": "Replay your shot from within the teeing area and add two penalty strokes."
+        },
+        {
+          "id": "c",
+          "text": "Replay from anywhere you like with just a warning."
+        },
+        {
+          "id": "d",
+          "text": "Ask your opponent for permission to keep playing from where you are."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You must replay your shot from within the teeing area and take two penalty strokes to avoid disqualification.",
+      "imagePrompt": "A teen boy preparing to replay his tee shot, with the ball now correctly positioned inside the tee markers after fixing a previous mistake.",
+      "imageAlt": "Teen boy resetting for a tee shot inside the marker after error.",
+      "sceneSpec": {
+        "setting": "teeing_area",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "replaying_shot",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": true,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "dark",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "orange",
+        "hat": true
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "006_001_What_happens_if_you_tee_off_in_the_wrong_order",
+    "006_002_Defining_the_teeing_area",
+    "006_003_Penalty_for_playing_from_outside_the_teeing_area",
+    "006_004_Correcting_a_teeing_area_mistake"
+  ],
+  "updatedAtUtc": "2026-04-24T19:37:16.095Z"
+}

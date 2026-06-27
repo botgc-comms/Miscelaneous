@@ -1,0 +1,486 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-27.png",
+  "sourceImagePath": "Input\\page-27.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-27.png",
+      "ruleNumber": "R7",
+      "ruleName": "Identifying the ball",
+      "group": "Identifying the ball",
+      "title": "What to do if you can't tell if the ball is yours",
+      "question": "You find a golf ball that might be yours, but you're not sure. What should you do to identify it without getting a penalty?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Pick it up and clean it as much as you want, then replace it anywhere nearby."
+        },
+        {
+          "id": "b",
+          "text": "Mark its position, pick it up to check, only clean enough to identify, then put it back exactly where it was."
+        },
+        {
+          "id": "c",
+          "text": "Leave it alone and keep playing with a different ball."
+        },
+        {
+          "id": "d",
+          "text": "Pick it up, wipe it clean fully, and place it closer to the hole."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You must mark the ball first, then pick it up and only clean it enough to identify it. Replace it on the exact spot.",
+      "imagePrompt": "A teenage girl golfer marks her golf ball with a small tee, gently picks it up and looks closely, standing on the fairway.",
+      "imageAlt": "Teenage girl golfer marking and identifying her ball.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "lifting_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "dark",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "orange",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-27.png",
+      "ruleNumber": "R8/9/17",
+      "ruleName": "Playing the ball as it lies",
+      "group": "Playing the ball as it lies",
+      "title": "Playing a ball in a penalty area",
+      "question": "You decide to play your ball from inside a penalty area. Which of these actions can you take without penalty?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Move plants to improve your swing path"
+        },
+        {
+          "id": "b",
+          "text": "Bend tall grass out of the way with your hand"
+        },
+        {
+          "id": "c",
+          "text": "Ground your club in the water next to the ball"
+        },
+        {
+          "id": "d",
+          "text": "Play the ball as it lies without changing the area"
+        },
+        {
+          "id": "e",
+          "text": "Break a bush to clear space for your stance"
+        }
+      ],
+      "correctAnswers": [
+        "c",
+        "d"
+      ],
+      "explanation": "You must not move, bend, or break anything to improve your situation, but grounding your club in or out of the water is allowed.",
+      "imagePrompt": "A teenage boy golfer stands in a penalty area with tall grass, preparing to play his ball as it lies with his club grounded gently beside it.",
+      "imageAlt": "Teenage boy golfer playing a ball as it lies in a penalty area with grounded club.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "red",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "medium",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "black",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-27.png",
+      "ruleNumber": "R16",
+      "ruleName": "Dangerous situation",
+      "group": "Dangerous situation",
+      "title": "Free drop near a dangerous animal",
+      "question": "Your ball lands in a penalty area very close to a dangerous animal, but it is playable. What are you allowed to do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Leave the ball and move to another hole."
+        },
+        {
+          "id": "b",
+          "text": "Take a free drop within one club-length in the penalty area, not nearer the hole."
+        },
+        {
+          "id": "c",
+          "text": "Drop the ball outside the penalty area with no penalty."
+        },
+        {
+          "id": "d",
+          "text": "Play the ball as it lies, even if it is dangerous."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If there is a dangerous animal, you may find the nearest safe spot in the penalty area (not nearer the hole) and take a free drop within one club-length.",
+      "imagePrompt": "A teenage girl golfer stands on the edge of a penalty area, looking at her ball near a large animal, preparing to measure a club length for a free drop.",
+      "imageAlt": "Teenage girl golfer preparing for a free drop near a dangerous animal.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "dropping_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "yellow",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "dark",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "grey",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-27.png",
+      "ruleNumber": "R16",
+      "ruleName": "Embedded ball",
+      "group": "Embedded ball",
+      "title": "Dealing with an embedded ball in a penalty area",
+      "question": "Your ball is embedded in the ground in a penalty area. What are your options?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball as it lies."
+        },
+        {
+          "id": "b",
+          "text": "Drop the ball using the penalty area rule."
+        },
+        {
+          "id": "c",
+          "text": "Repair the ground before hitting your shot."
+        },
+        {
+          "id": "d",
+          "text": "Move the ball outside the penalty area without penalty."
+        },
+        {
+          "id": "e",
+          "text": "Take a penalty and play another ball from the tee."
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b"
+      ],
+      "explanation": "You must either play the embedded ball as it lies or drop the ball under the penalty area rule. You can't repair the ground or move the ball outside the area without penalty for free.",
+      "imagePrompt": "A teenage boy golfer stands next to his ball embedded in soft ground inside a penalty area, deciding how to play or drop the ball.",
+      "imageAlt": "Teenage boy golfer facing an embedded ball in a penalty area.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "wedge",
+        "ballCount": 1,
+        "stakeColour": "red",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "red",
+        "hat": true
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-27.png",
+      "ruleNumber": "R7",
+      "ruleName": "Identifying the ball",
+      "group": "Identifying the ball",
+      "title": "What to do if you can't tell if the ball is yours",
+      "question": "You find a golf ball that might be yours, but you're not sure. What is the correct way to identify it without getting a penalty?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Pick it up and clean it however you like, then replace it anywhere nearby."
+        },
+        {
+          "id": "b",
+          "text": "Mark where the ball is, carefully lift it to check, clean only as much as needed to identify it, and put it back on the exact spot."
+        },
+        {
+          "id": "c",
+          "text": "Ignore the ball and continue play with a different ball."
+        },
+        {
+          "id": "d",
+          "text": "Pick it up, fully clean it, and place it closer to the hole."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You must mark the position of the ball first, then lift and clean it just enough to see if it's yours. Afterwards, you have to put it back where it was. If you skip marking or clean it more than necessary, you could get a penalty.",
+      "imagePrompt": "A teenage left-handed boy golfer marks his golf ball with a tee, gently lifts the ball to check for identification, standing on a sunny fairway near some trees. No club in hand.",
+      "imageAlt": "Teenage boy golfer marking and identifying his ball.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "lifting_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "medium",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "red",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-27.png",
+      "ruleNumber": "R8/9/17",
+      "ruleName": "Playing the ball as it lies",
+      "group": "Playing the ball as it lies",
+      "title": "Playing a ball in a penalty area",
+      "question": "You decide to play your ball from inside a penalty area. Which actions are allowed without penalty?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Move plants out of your way to improve your swing"
+        },
+        {
+          "id": "b",
+          "text": "Bend tall grass away with your hand to make space"
+        },
+        {
+          "id": "c",
+          "text": "Ground your club in the water beside the ball"
+        },
+        {
+          "id": "d",
+          "text": "Play the ball exactly as it lies without changing the area"
+        },
+        {
+          "id": "e",
+          "text": "Break branches to clear a better shot"
+        }
+      ],
+      "correctAnswers": [
+        "c",
+        "d"
+      ],
+      "explanation": "You are allowed to ground your club in a penalty area and play the ball as it lies, even if the club touches water or the ground. But you must not move, bend or break anything growing or attached to improve your lie or swing.",
+      "imagePrompt": "A teenage right-handed girl golfer, in a hat, prepares to play her ball as it lies at the edge of a red-staked penalty area with water and trees nearby, lightly grounding her iron club next to the ball.",
+      "imageAlt": "Teenage girl golfer playing a ball as it lies in a penalty area with her club grounded.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "red",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "grey",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-27.png",
+      "ruleNumber": "R16",
+      "ruleName": "Dangerous situation",
+      "group": "Dangerous situation",
+      "title": "Free drop near a dangerous animal",
+      "question": "Your ball stops in a penalty area right next to a dangerous animal, but it’s still playable. What is allowed according to the rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Leave the ball and skip to the next hole."
+        },
+        {
+          "id": "b",
+          "text": "Find the nearest safe spot in the same penalty area (not closer to the hole) and take a free drop within one club-length."
+        },
+        {
+          "id": "c",
+          "text": "Drop your ball outside the penalty area for free."
+        },
+        {
+          "id": "d",
+          "text": "You must try to play the ball where it is, even if unsafe."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "When there is a dangerous animal making it unsafe to play your ball, you can take free relief by finding the nearest safe spot in the same penalty area (not closer to the hole) and dropping the ball within one club-length of that point.",
+      "imagePrompt": "A teenage right-handed boy golfer stands at the yellow-staked edge of a sunny penalty area with water and trees, measuring a club-length for a free drop with a dangerous animal nearby.",
+      "imageAlt": "Teenage boy golfer preparing for a free drop near a dangerous animal.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "dropping_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "yellow",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "black",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-27.png",
+      "ruleNumber": "R16",
+      "ruleName": "Embedded ball",
+      "group": "Embedded ball",
+      "title": "Dealing with an embedded ball in a penalty area",
+      "question": "Your ball is plugged in the ground inside a penalty area. What are your options according to the rules?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball as it lies."
+        },
+        {
+          "id": "b",
+          "text": "Take relief under the penalty area rule for a penalty stroke."
+        },
+        {
+          "id": "c",
+          "text": "Repair the ground before you play your shot."
+        },
+        {
+          "id": "d",
+          "text": "Move the ball outside the penalty area without penalty."
+        },
+        {
+          "id": "e",
+          "text": "Take a penalty stroke and play another ball from where you last played."
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "e"
+      ],
+      "explanation": "You can play the embedded ball as it lies, or take penalty relief under the penalty area rule by dropping outside for one penalty stroke, or take stroke-and-distance relief by playing a new ball from the original spot for a penalty stroke. Free embedded ball relief is not allowed in a penalty area.",
+      "imagePrompt": "A teenage left-handed boy golfer and his wedge stand near a ball embedded in soft ground inside a red-staked penalty area with trees and overcast sky, thinking about his relief options.",
+      "imageAlt": "Teenage boy golfer faces an embedded ball in a penalty area.",
+      "sceneSpec": {
+        "setting": "penalty_area_edge",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "wedge",
+        "ballCount": 1,
+        "stakeColour": "red",
+        "waterVisible": true,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "medium",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "green",
+        "hat": false
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "007_001_What_to_do_if_you_cant_tell_if_the_ball_is_yours",
+    "8917_002_Playing_a_ball_in_a_penalty_area",
+    "016_003_Free_drop_near_a_dangerous_animal",
+    "016_004_Dealing_with_an_embedded_ball_in_a_penalty_area"
+  ],
+  "updatedAtUtc": "2026-04-24T22:17:18.761Z"
+}

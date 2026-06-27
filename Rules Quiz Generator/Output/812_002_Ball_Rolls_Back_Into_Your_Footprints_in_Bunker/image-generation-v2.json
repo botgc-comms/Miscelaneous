@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\812_002_Ball_Rolls_Back_Into_Your_Footprints_in_Bunker\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:20:03.142Z",
+  "title": "Ball Rolls Back Into Your Footprints in Bunker",
+  "ruleNumber": "R8/12",
+  "ruleName": "Ball rolls into your own footprints",
+  "durationSeconds": 180.863
+}

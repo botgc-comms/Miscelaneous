@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\006_002_What_to_do_if_you_cant_find_your_original_ball_after_hitting_a_wrong_ball\\metadata.json",
+  "generatedAtUtc": "2026-06-24T14:57:23.569Z",
+  "title": "What to do if you can't find your original ball after hitting a wrong ball",
+  "ruleNumber": "R6",
+  "ruleName": "Wrong ball",
+  "durationSeconds": 244.815
+}

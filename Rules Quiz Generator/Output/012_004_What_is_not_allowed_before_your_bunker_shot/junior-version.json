@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\012_004_What_is_not_allowed_before_your_bunker_shot\\metadata.json",
+  "sourceImageName": "page-19.png",
+  "ruleNumber": "R12",
+  "ruleName": "Do not touch or test the sand",
+  "title": "What is not allowed before your bunker shot?",
+  "question": "Before playing from a bunker, which of these are you not allowed to do?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Touch the sand with your hand to see how soft it is"
+    },
+    {
+      "id": "b",
+      "text": "Make a practice swing that touches the sand"
+    },
+    {
+      "id": "c",
+      "text": "Rest your club on the sand behind your ball before hitting"
+    },
+    {
+      "id": "d",
+      "text": "Play your shot without touching the sand first"
+    },
+    {
+      "id": "e",
+      "text": "Lean on your club while standing outside the bunker"
+    }
+  ],
+  "correctAnswers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "explanation": "You are not allowed to test or touch the sand with your hand, touch the sand with your club during practice swings, or ground your club behind your ball before you hit.",
+  "juniorVersion": {
+    "title": "What must you NOT do before you hit from the bunker?",
+    "question": "Before you hit your ball out of the sand bunker, which of these things are not allowed?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Touch the sand with your hand to check if it’s soft"
+      },
+      {
+        "id": "b",
+        "text": "Make a practice swing and hit the sand with your club"
+      },
+      {
+        "id": "c",
+        "text": "Let your golf club rest on the sand behind your ball before you swing"
+      },
+      {
+        "id": "d",
+        "text": "Take your shot without touching the sand at all before"
+      },
+      {
+        "id": "e",
+        "text": "Lean on your club while you’re standing outside the bunker"
+      }
+    ],
+    "correctAnswers": [
+      "a",
+      "b",
+      "c"
+    ],
+    "explanation": "You must not touch or play with the sand using your hand, or with your club when practising or just before you hit. You can’t rest your club behind your ball in the sand before your shot. These things might make it easier to play, so they are not allowed.",
+    "vocabulary": [
+      {
+        "term": "Bunker",
+        "simpleMeaning": "A hole or dip filled with sand on the golf course."
+      },
+      {
+        "term": "Ground your club",
+        "simpleMeaning": "Letting your club touch the ground or sand before you hit."
+      }
+    ],
+    "teachingTip": "Show children how to keep their club above the sand before a bunker shot. Practise safe swings outside the bunker to build good habits.",
+    "likelyMisconceptions": [
+      "Some may think it’s okay to test the sand or practise touching it because it doesn’t move the ball.",
+      "Children might not know that resting their club on the sand counts as touching or 'grounding' the club."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:23.994Z",
+  "model": "gpt-4.1"
+}

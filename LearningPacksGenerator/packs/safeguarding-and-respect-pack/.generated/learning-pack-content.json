@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "packId": "safeguarding-and-respect",
+  "title": "Safeguarding",
+  "audience": "Junior golfers and their parents",
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "A safe and respectful environment",
+      "file": "pages/00-title.md",
+      "type": "content",
+      "assetFile": "title.png",
+      "imageAlt": "A welcoming golf club scene with children and adults smiling together outdoors on the course.",
+      "imagePrompt": "A photorealistic image showing children and adults at a golf club, smiling and interacting in a friendly, safe environment on green grass with a clubhouse in the background. No logos, no text.",
+      "markdown": "# A safe and respectful environment\n\nWelcome to the golf club! We want every junior golfer and their family to feel safe, included and respected here. This guide is here to help you understand what to expect at our club and how everyone can contribute to a positive atmosphere.\n\nGolf is a sport built on honesty, respect and enjoyment for people of all ages. Every member, from beginners to experienced players, should feel free to ask for help and know that their wellbeing matters.\n\nBy learning and following a few simple guidelines, you will help make the club friendly and welcoming. Remember: questions are always encouraged! Keeping everyone safe and happy is a team effort.\n\nLet’s explore how we can all support each other and enjoy golf together as a community.",
+      "quiz": null
+    },
+    {
+      "id": "01-respectful-behaviour",
+      "title": "Respectful behaviour",
+      "file": "pages/01-respectful-behaviour.md",
+      "type": "content",
+      "assetFile": "respectful-behaviour.png",
+      "imageAlt": "Children listening to an adult instructor at a golf course, showing attentive and polite behaviour.",
+      "imagePrompt": "A photorealistic scene of children and a parent or instructor on a golf practice area. The children are listening politely and paying attention, with a backdrop of green fairway and trees. No text, no logos.",
+      "markdown": "# Respectful behaviour\n\nRespectful behaviour is very important in golf. We show respect by listening to coaches, following club rules, and treating everyone kindly – whether they are players, coaches, staff or other families.\n\nSome simple ways to show respect:\n- Wait your turn and be patient when others are playing.\n- Use polite language and speak calmly to everyone.\n- Take care of the golf course and equipment, leaving everything tidy for others.\n- Listen carefully to instructions, whether from adults or fellow juniors.\n- Celebrate others’ good shots and offer encouragement if someone finds it tricky.\n\nEveryone can help keep the club welcoming by looking out for each other. If you see behaviour that isn’t respectful, it’s alright to mention it politely or let an adult know. Working together, we can create a happy, positive place to enjoy golf.",
+      "quiz": null
+    },
+    {
+      "id": "02-boundaries",
+      "title": "Boundaries and appropriate behaviour",
+      "file": "pages/02-boundaries.md",
+      "type": "content",
+      "assetFile": "boundaries.png",
+      "imageAlt": "An instructor giving a thumbs up while keeping a comfortable distance from juniors at a golf course.",
+      "imagePrompt": "A photorealistic image of a golf coach and several children on a golf course or practice area. The coach gives a thumbs up and stands at a friendly but appropriate distance; everyone looks comfortable with clear personal space. No text, no logos.",
+      "markdown": "# Boundaries and appropriate behaviour\n\nEveryone at the club deserves to feel safe and comfortable. “Boundaries” means knowing what kind of behaviour is appropriate and what is not.\n\nAt our club:\n- Adults (even coaches) will always be respectful and will not touch juniors unless it is necessary and always in a safe, open way (for example, to show a hand position with permission).\n- It’s fine to say if you feel uncomfortable with something, like a hug or a joke you don’t like.\n- Everyone’s personal space is important. We use words instead of touch if someone wants help or support.\n- Adults shouldn’t spend time alone with just one child unless it is unavoidable, and parents are usually nearby.\n\nIf anyone worries about someone’s behaviour—no matter how small the concern—please speak up. We want the golf club to be a safe place for everyone.",
+      "quiz": null
+    },
+    {
+      "id": "03-speaking-up",
+      "title": "Speaking up",
+      "file": "pages/03-speaking-up.md",
+      "type": "content",
+      "assetFile": "speaking-up.png",
+      "imageAlt": "A junior golfer talking confidently to a friendly adult at a golf club, both looking understanding and supportive.",
+      "imagePrompt": "A photorealistic scene of a junior golfer talking openly to a supportive adult (like a coach or staff member) at a golf club, with both people looking calm and kind. No text, no logos.",
+      "markdown": "# Speaking up\n\nIf something happens at the club that makes you feel worried, sad or unsafe, please talk to someone you trust. This could be a parent, a coach, or any friendly adult at the club.\n\nIt is always okay to ask questions or say, “I’m not sure about this.” Even small worries matter and should be listened to. Speaking up helps everyone in the club look after each other.\n\nYou can also:\n- Speak to our Welfare Officer (every club has one – just ask if you’re not sure who it is).\n- Write down your worry and give it to an adult you trust.\n- Ask for a parent or carer to be close by if you feel more comfortable.\n\nYou should never feel alone with your concerns. We want the golf club to be a safe place for you to learn, play and make friends.",
+      "quiz": null
+    },
+    {
+      "id": "04-support",
+      "title": "Getting support",
+      "file": "pages/04-support.md",
+      "type": "content",
+      "assetFile": "support.png",
+      "imageAlt": "Two children and a parent walking together on a golf course, looking happy and reassuring.",
+      "imagePrompt": "A photorealistic image of two children and an adult (parent or guardian) walking together supportively on a golf course, smiling in the sunshine. They look relaxed and safe. No text, no logos.",
+      "markdown": "# Getting support\n\nThe golf club is here to help you. If you ever need support—whether it’s about golf, friendships, worries or even just understanding a rule—there are lots of people who can listen and help.\n\nYour first stop can always be your parent or a trusted adult. Coaches, staff, and the club’s Welfare Officer are happy to help, too. You can always ask someone to explain things again or help you talk over a problem.\n\nEveryone at the club works together to make sure you feel welcome, safe and respected. If anything feels not right, it’s good to get support early so little worries do not become big ones. Helping each other is what makes our club a special place to play golf and grow as a team.",
+      "quiz": null
+    }
+  ]
+}

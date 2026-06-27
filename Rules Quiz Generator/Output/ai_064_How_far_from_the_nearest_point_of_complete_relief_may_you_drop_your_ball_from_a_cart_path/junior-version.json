@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_064_How_far_from_the_nearest_point_of_complete_relief_may_you_drop_your_ball_from_a_cart_path\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "16.1b",
+  "ruleName": "Relief from Abnormal Course Conditions (Including Immovable Obstructions)",
+  "title": "How far from the nearest point of complete relief may you drop your ball from a cart path?",
+  "question": "Your ball is on a cart path. You are entitled to free relief. How far from the nearest point of complete relief may you drop your ball?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "One club-length."
+    },
+    {
+      "id": "b",
+      "text": "Two club-lengths."
+    },
+    {
+      "id": "c",
+      "text": "As far as you like, provided it is no nearer the hole."
+    },
+    {
+      "id": "d",
+      "text": "Exactly one club-length."
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "When taking free relief from a cart path, the ball must be dropped within one club-length of the nearest point of complete relief, not nearer the hole, as specified under Rule 16.1b.",
+  "juniorVersion": {
+    "title": "How far can you drop your ball from the cart path?",
+    "question": "Your ball is on a cart path. You get to move it without a penalty. How far away from where you get complete relief can you drop your ball?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "One club-length."
+      },
+      {
+        "id": "b",
+        "text": "Two club-lengths."
+      },
+      {
+        "id": "c",
+        "text": "As far as you want, as long as it is not closer to the hole."
+      },
+      {
+        "id": "d",
+        "text": "Exactly one club-length."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "When your ball is on a cart path, you must drop it within one club-length from the nearest spot where you are not touching the path, your feet and ball are both off the path, and you are not closer to the hole.",
+    "vocabulary": [
+      {
+        "term": "Cart Path",
+        "simpleMeaning": "A hard road on the golf course where buggies or golf carts drive."
+      },
+      {
+        "term": "Relief",
+        "simpleMeaning": "Moving your ball to get away from something on the course, like a puddle or a path, without a penalty."
+      },
+      {
+        "term": "Nearest Point of Complete Relief",
+        "simpleMeaning": "The closest spot where you can stand and the ball can be without touching the path or thing you are moving from."
+      },
+      {
+        "term": "Club-length",
+        "simpleMeaning": "The distance from one end of your club to the other, used to measure how far you can drop the ball."
+      }
+    ],
+    "teachingTip": "Show them how to use their own club to measure the dropping area. Remind them that they can't go closer to the hole.",
+    "likelyMisconceptions": [
+      "Thinking you can move the ball as far as you want.",
+      "Dropping farther away than one club-length.",
+      "Forgetting to measure with your own club."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T19:41:29.064Z",
+  "model": "gpt-4.1"
+}

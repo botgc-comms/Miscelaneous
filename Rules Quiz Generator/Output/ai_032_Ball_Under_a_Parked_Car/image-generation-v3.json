@@ -1,0 +1,10 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "sourcePromptFileName": "final-prompt-v2.txt",
+  "promptFileName": "final-prompt-v3.txt",
+  "imageFileName": "illustration-v3.png",
+  "correctionInstructions": "Generate the first illustration for this newly created quiz item using the existing junior golf quiz illustration style.",
+  "generatedAtUtc": "2026-06-26T18:17:14.090Z"
+}

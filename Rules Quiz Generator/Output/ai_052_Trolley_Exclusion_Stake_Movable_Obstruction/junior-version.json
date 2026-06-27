@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_052_Trolley_Exclusion_Stake_Movable_Obstruction\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "15.2",
+  "ruleName": "Movable Obstructions",
+  "title": "Trolley Exclusion Stake – Movable Obstruction",
+  "question": "Your ball is lying beside a blue and white trolley exclusion stake. The stake does not interfere with your lie, stance or swing, but you believe your shot might strike it. The stake is easily removable. What is the correct ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You must leave the stake where it is because it doesn't interfere with your stance or swing."
+    },
+    {
+      "id": "b",
+      "text": "You may remove the stake before playing because it is a movable obstruction."
+    },
+    {
+      "id": "c",
+      "text": "You are entitled to free relief from the stake."
+    },
+    {
+      "id": "d",
+      "text": "You may only remove the stake if your opponent agrees."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "A blue and white trolley exclusion stake that can be moved is treated as a movable obstruction under Rule 15.2. Movable obstructions may be removed anywhere on the course. Free relief is not required unless the obstruction is immovable and interferes with your stroke, lie, stance or area of intended swing.",
+  "juniorVersion": {
+    "title": "Can You Move The Trolley Stake?",
+    "question": "Your ball is next to a blue and white stake that shows where trolleys can’t go. The stake isn’t in the way of your feet, swing or where the ball sits, but you think you might hit it with your shot. You can pick the stake up easily. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You must leave the stake there because it’s not in the way of your feet or swing."
+      },
+      {
+        "id": "b",
+        "text": "You can pick up the stake before you hit because it’s something you’re allowed to move."
+      },
+      {
+        "id": "c",
+        "text": "You get to drop your ball away from the stake for free."
+      },
+      {
+        "id": "d",
+        "text": "You can only move the stake if your playing partner says it’s okay."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "The blue and white stake is called a ‘movable obstruction’. You can move it if you think your ball might hit it, even if it’s not in the way of your feet or swing. You don’t have to leave it or ask anyone.",
+    "vocabulary": [
+      {
+        "term": "Movable obstruction",
+        "simpleMeaning": "Something on the course, like a stake or stick, that you are allowed to move out of the way."
+      },
+      {
+        "term": "Stake",
+        "simpleMeaning": "A pole or stick in the ground that can show where trolleys or people should not go."
+      }
+    ],
+    "teachingTip": "Let children practise spotting things on the course they are allowed to move, like sticks or stakes, and things they cannot move, like big signs or fences.",
+    "likelyMisconceptions": [
+      "Thinking you can only move a stake if it is in the way of your feet or swing.",
+      "Thinking you need another player’s permission to move a stake.",
+      "Thinking you always get to move your ball away from the stake."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T19:07:08.303Z",
+  "model": "gpt-4.1"
+}

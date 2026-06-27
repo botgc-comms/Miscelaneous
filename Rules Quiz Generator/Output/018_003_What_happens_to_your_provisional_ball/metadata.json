@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-30.png",
+  "ruleNumber": "R18",
+  "ruleName": "Out of bounds and provisional ball",
+  "group": "Out of bounds and provisional ball",
+  "title": "What happens to your provisional ball?",
+  "question": "After you've played a provisional ball because your first shot might be out of bounds, what do you do if it's clear your first ball is definitely out?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Your provisional ball becomes your ball in play and you get a one-stroke penalty."
+    },
+    {
+      "id": "b",
+      "text": "You must pick up your provisional ball and drop another ball at the out of bounds spot."
+    },
+    {
+      "id": "c",
+      "text": "You can keep playing your original ball with no penalty."
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "If your original ball is confirmed out of bounds, your provisional ball becomes your ball in play, and you must add a one-stroke penalty.",
+  "imagePrompt": "A teenage girl stands on the teeing area, hitting a provisional ball after her first shot heads toward an out of bounds area marked by white posts.",
+  "imageAlt": "Teen girl golfer hitting a provisional ball from the tee with white out of bounds posts in the background.",
+  "sceneSpec": {
+    "setting": "teeing_area",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "replaying_shot",
+    "clubInHand": "driver",
+    "ballCount": 1,
+    "stakeColour": "white",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": true,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "asian",
+    "skinTone": "dark",
+    "clothingTopColour": "green",
+    "clothingBottomColour": "navy",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Skin tone is medium-dark but could be marginally richer to more obviously represent a dark Asian complexion, though variation exists and depiction is plausible.",
+      "No significant faults in club, ball, or course features."
+    ],
+    "repairPrompt": "Slightly deepen the golfer's skin tone to more clearly indicate a dark Asian complexion while retaining all other details and proportions."
+  }
+}

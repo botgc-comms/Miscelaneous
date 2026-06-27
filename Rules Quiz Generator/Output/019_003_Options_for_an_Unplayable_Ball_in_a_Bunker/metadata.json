@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-22.png",
+  "ruleNumber": "R19",
+  "ruleName": "Unplayable ball",
+  "group": "Unplayable ball",
+  "title": "Options for an Unplayable Ball in a Bunker",
+  "question": "If your ball is unplayable in a bunker, which of these are legal options you can choose? Select all that apply.",
+  "type": "multi_select",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Drop within 2 club-lengths in the bunker (1 penalty stroke)"
+    },
+    {
+      "id": "b",
+      "text": "Go back on the line in the bunker and drop (1 penalty stroke)"
+    },
+    {
+      "id": "c",
+      "text": "Replay from your last spot, even from the tee (1 penalty stroke)"
+    },
+    {
+      "id": "d",
+      "text": "Drop outside the bunker going back on the line (2 penalty strokes)"
+    },
+    {
+      "id": "e",
+      "text": "Take a free drop outside the bunker"
+    }
+  ],
+  "correctAnswer": [
+    "a",
+    "b",
+    "c",
+    "d"
+  ],
+  "correctAnswers": [
+    "a",
+    "b",
+    "c",
+    "d"
+  ],
+  "explanation": "You may drop within the bunker using either the two club-length or back-on-the-line options, replay the shot, or drop outside the bunker with a two-stroke penalty. A free drop outside the bunker is not allowed.",
+  "imagePrompt": "A teen girl standing in a bunker thinking over her options for an unplayable ball, considering various legal drop spots within and outside the bunker.",
+  "imageAlt": "Girl in bunker looking at possible places to drop her ball.",
+  "sceneSpec": {
+    "setting": "bunker",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "wedge",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": true,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "dark",
+    "clothingTopColour": "purple",
+    "clothingBottomColour": "blue",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [],
+    "repairPrompt": "No repair needed: the illustration accurately depicts a teen girl with dark skin and mixed ethnicity, wearing a purple top, blue shorts, and a cap. She stands naturally in a golf bunker near one realistic golf ball, holding a full-length wedge with a single believable club head. The posture and course features are authentic and the bunker and sand look realistic. No duplicated or malformed equipment. Everything is visually accurate and suitable for teaching golf rules to children."
+  }
+}

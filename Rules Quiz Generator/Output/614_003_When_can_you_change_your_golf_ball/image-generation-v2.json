@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\614_003_When_can_you_change_your_golf_ball\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:17:02.271Z",
+  "title": "When can you change your golf ball?",
+  "ruleNumber": "R6/14",
+  "ruleName": "Substituting the ball",
+  "durationSeconds": 179.7
+}

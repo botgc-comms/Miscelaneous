@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\010_003_What_happens_if_you_accidentally_hit_the_ball_twice_in_one_swing\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:12:08.622Z",
+  "title": "What happens if you accidentally hit the ball twice in one swing?",
+  "ruleNumber": "R10",
+  "ruleName": "Double hit",
+  "durationSeconds": 191.609
+}

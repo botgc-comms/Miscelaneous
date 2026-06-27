@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "16.1",
+  "ruleName": "Relief from Abnormal Course Conditions",
+  "group": "General Play",
+  "title": "Ball in Tyre Tracks on Fairway",
+  "question": "Your tee shot finishes in deep tyre tracks left by a maintenance vehicle in the fairway. Can you take free relief?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes. Tyre tracks are always ground under repair."
+    },
+    {
+      "id": "b",
+      "text": "Yes. Any damage caused by greenkeeping equipment qualifies for free relief."
+    },
+    {
+      "id": "c",
+      "text": "No. Unless the tyre tracks have been marked as Ground Under Repair or the Committee has declared them to be an abnormal course condition, you must play the ball as it lies."
+    },
+    {
+      "id": "d",
+      "text": "Yes, but only if the tyre tracks are deep."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "Tyre tracks do not automatically entitle a player to free relief. Relief is only available if the Committee has marked the area as Ground Under Repair (GUR) or has otherwise declared it to be an abnormal course condition under Rule 16.1. If not, the ball must be played as it lies, or relief may be taken under another rule (such as unplayable ball, with penalty). Many golfers mistakenly believe any course machinery damage qualifies for free relief, but this is not the case.",
+  "imagePrompt": "A polished, modern semi-realistic illustration (about 75% realistic, 25% stylised) in the established junior golf quiz style. Show a well-maintained fairway on a sunny day. A golf ball is clearly lying within two deep, distinct tyre track marks on the short grass. A golfer stands beside the ball, looking at it with a slightly puzzled or considering expression, holding a golf club. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer stands on the fairway looking at their ball, which lies in deep tyre tracks left by a maintenance vehicle.",
+  "sceneSpec": {
+    "setting": "Sunny day on a golf course, fairway area with mown grass.",
+    "players": "One golfer standing beside the fairway, looking at the ball and considering the next action.",
+    "ballPosition": "The golf ball lies in a pair of deep, clear tyre tracks on the fairway turf.",
+    "ruleMoment": "The moment just after the player has found their ball in tyre tracks, before deciding how to proceed.",
+    "educationalFocus": "Illustrate that the player is not automatically entitled to free relief for this course damage.",
+    "mustShow": [
+      "Golf ball lying clearly within deep tyre track indentations on a well-maintained fairway",
+      "A golfer observing the situation, holding a club, clearly thinking about the lie"
+    ],
+    "mustNotShow": [
+      "Any Ground Under Repair markings",
+      "Committee members, referees or officials",
+      "Text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles"
+    ]
+  }
+}

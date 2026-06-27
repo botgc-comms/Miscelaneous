@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_012_Ball_Moves_When_Removing_a_Movable_Obstruction_in_a_Bunker\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "15.2a(1), 14.2e",
+  "ruleName": "Movable Obstructions; Replacing Ball on Spot",
+  "title": "Ball Moves When Removing a Movable Obstruction in a Bunker",
+  "question": "Your ball comes to rest against a rake lying in a bunker. Before playing, you carefully lift the rake away. As you do, the ball rolls a few inches down the slope. What is the correct ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball from its new position because it moved naturally."
+    },
+    {
+      "id": "b",
+      "text": "Replace the ball on its original spot with no penalty."
+    },
+    {
+      "id": "c",
+      "text": "Replace the ball and add a one-stroke penalty."
+    },
+    {
+      "id": "d",
+      "text": "The ball is unplayable and must be dropped under penalty."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "A bunker rake is a movable obstruction, which you are allowed to remove at any time. If the ball moves as a result of removing the rake, there is no penalty. You must simply replace the ball on its original spot before playing. If the ball will not stay at rest on its original spot, it must be placed on the nearest spot where it will remain at rest, no nearer the hole and still in the bunker. (Rule 15.2a(1), Rule 14.2e)",
+  "juniorVersion": {
+    "title": "What do you do if your ball moves when you pick up a rake in the bunker?",
+    "question": "Your ball stops right next to a rake in the sand bunker. You pick up the rake to move it, but your ball rolls a little bit down the sand. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Play the ball from where it rolled to."
+      },
+      {
+        "id": "b",
+        "text": "Put the ball back to where it was before it rolled."
+      },
+      {
+        "id": "c",
+        "text": "Put the ball back and add a one-shot penalty."
+      },
+      {
+        "id": "d",
+        "text": "Say the ball can’t be played and drop a new ball with a penalty."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "A rake in the bunker is called a movable obstruction. You can move it if you want. If your ball moves because you picked up the rake, you do not get a penalty. Just put your ball back where it was before playing your shot.",
+    "vocabulary": [
+      {
+        "term": "Movable obstruction",
+        "simpleMeaning": "Something you can pick up or move, like a rake or a bottle."
+      },
+      {
+        "term": "Bunker",
+        "simpleMeaning": "A sandy area on the golf course."
+      },
+      {
+        "term": "Replace",
+        "simpleMeaning": "Put the ball back to where it was."
+      }
+    ],
+    "teachingTip": "Show children how to put the ball back if it moves when they lift something like a rake.",
+    "likelyMisconceptions": [
+      "Children may think they have to play the ball from the new spot.",
+      "They might think they get a penalty when their ball moves after moving a rake."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:00:10.456Z",
+  "model": "gpt-4.1"
+}

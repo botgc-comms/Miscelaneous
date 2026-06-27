@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\1418_002_Time_to_look_for_a_lost_ball\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:14:02.565Z",
+  "title": "Time to look for a lost ball",
+  "ruleNumber": "Def./R14/18",
+  "ruleName": "Looking for a ball",
+  "durationSeconds": 214.303
+}

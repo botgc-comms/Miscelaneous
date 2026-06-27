@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-06.png",
+  "ruleNumber": "10",
+  "ruleName": "Advice and line of play",
+  "group": "Advice and line of play",
+  "title": "Advice about line of play on the green",
+  "question": "Which of these actions are NOT allowed when you're putting on the green? (Select all that apply)",
+  "type": "multi_select",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Your friend who is also playing tells you how the putt will break"
+    },
+    {
+      "id": "b",
+      "text": "You lay a putter or club on the green to show your intended line"
+    },
+    {
+      "id": "c",
+      "text": "Your caddie stands directly behind you on your line to help you aim"
+    },
+    {
+      "id": "d",
+      "text": "You read your own putt without help"
+    }
+  ],
+  "correctAnswer": [
+    "a",
+    "b",
+    "c"
+  ],
+  "correctAnswers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "explanation": "You can't get advice about your line from fellow players, can't put a club or object down to show the line, and your caddie can't stand behind you to help you line up.",
+  "imagePrompt": "A teenage boy about to putt; another player is pointing at the green and a club is laid on the grass in front, with a caddie lining up directly behind the boy.",
+  "imageAlt": "Teen boy on green with friend giving advice, club showing line, caddie behind.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "orange",
+    "clothingBottomColour": "yellow",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 95,
+    "issues": [
+      "The club laid on the grass has a wedge/iron-style head rather than a putter head, which is technically allowed but not fully ideal for the scenario showing putting advice. However, the primary elements (boy, caddie, one ball, putter, golfer posture, clothing, ethnicity, and scene context) are correct."
+    ],
+    "repairPrompt": "Change the club laying on the green so it has a putter head, making it clear that a putter was placed to show the line of play. Keep all equipment proportions and main actions the same."
+  }
+}

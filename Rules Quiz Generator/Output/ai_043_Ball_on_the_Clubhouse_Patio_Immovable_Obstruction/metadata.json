@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "16.1",
+  "ruleName": "Abnormal Course Conditions – Immovable Obstructions",
+  "group": "General Play",
+  "title": "Ball on the Clubhouse Patio (Immovable Obstruction)",
+  "question": "Your approach shot finishes on the clubhouse patio behind the green. The patio is in bounds and is treated as an immovable obstruction. What is the correct ruling?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball as it lies."
+    },
+    {
+      "id": "b",
+      "text": "Take free relief."
+    },
+    {
+      "id": "c",
+      "text": "One-stroke penalty drop."
+    },
+    {
+      "id": "d",
+      "text": "The ball is out of bounds."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "As the patio is an immovable obstruction and is in bounds, the player is entitled to free relief under Rule 16.1. The ball is not out of bounds, nor is a penalty required.",
+  "imagePrompt": "A polished, modern semi-realistic illustration (about 75% realistic, 25% stylised) of a golf course green with a clubhouse patio just behind it. A golf ball sits clearly on the patio, which is obviously in bounds. A golfer and caddie are standing close by, looking towards the ball. The setting should convey the patio as part of the course, with the clubhouse and patio surface well-defined. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer and caddie look at a ball resting on the clubhouse patio just behind the green, where the patio is in bounds and part of the course.",
+  "sceneSpec": {
+    "setting": "Adjacent to a green, with a clubhouse and patio visible behind the green",
+    "players": "One golfer and their caddie, both looking towards the patio area",
+    "ballPosition": "A golf ball clearly resting on the patio surface behind the green, in bounds",
+    "ruleMoment": "Player arriving at and noticing their ball is on the patio, considering their options",
+    "educationalFocus": "Highlighting relief from an immovable obstruction that is part of the course and in bounds",
+    "mustShow": [
+      "Golf ball at rest on the patio behind the green",
+      "Clubhouse and full patio area marked as in bounds (implied by context)",
+      "Golfer and caddie near the patio, with clubs"
+    ],
+    "mustNotShow": [
+      "Lines or markers indicating out of bounds",
+      "Text, labels, numbers, arrows or captions",
+      "Diagrams, badges, logos, watermarks, club crests, scorecards, or speech bubbles"
+    ]
+  }
+}

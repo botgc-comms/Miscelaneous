@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\009_001_Ball_moved_while_looking_for_it\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:03:58.673Z",
+  "title": "Ball moved while looking for it",
+  "ruleNumber": "R9",
+  "ruleName": "Ball at rest is moved",
+  "durationSeconds": 234.357
+}

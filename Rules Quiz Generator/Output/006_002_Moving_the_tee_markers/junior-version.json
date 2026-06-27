@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\006_002_Moving_the_tee_markers\\metadata.json",
+  "sourceImageName": "page-07.png",
+  "ruleNumber": "R6",
+  "ruleName": "Tee-markers",
+  "title": "Moving the tee-markers",
+  "question": "Is it allowed to move the tee-markers to improve your position before teeing off?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, there is no penalty for moving them."
+    },
+    {
+      "id": "b",
+      "text": "No, moving them to gain an advantage results in a two stroke penalty."
+    },
+    {
+      "id": "c",
+      "text": "Only if all players agree."
+    },
+    {
+      "id": "d",
+      "text": "Yes, but only if it is raining."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You must not move the tee-markers to improve your position. If you do, you receive a two-stroke penalty in stroke play.",
+  "juniorVersion": {
+    "title": "Can you move the tee-markers?",
+    "question": "Are you allowed to move the tee-markers to get a better spot before you hit your first shot?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Yes, you can move them and it’s not a problem."
+      },
+      {
+        "id": "b",
+        "text": "No, if you move them to help yourself, you get a two-shot penalty."
+      },
+      {
+        "id": "c",
+        "text": "Only if everyone playing says it’s okay."
+      },
+      {
+        "id": "d",
+        "text": "Yes, but only if it’s raining."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "You are not allowed to move the tee-markers to help yourself get a better place to hit from. If you do, you get a two-stroke penalty.",
+    "vocabulary": [
+      {
+        "term": "tee-marker",
+        "simpleMeaning": "The two markers on the ground that show where you need to start playing each hole."
+      },
+      {
+        "term": "penalty",
+        "simpleMeaning": "Extra shots added to your score if you break the rules."
+      }
+    ],
+    "teachingTip": "Let juniors walk up and point at the tee-markers on the ground, then explain that they show where you have to start. Remind them these cannot be moved to make the first shot easier.",
+    "likelyMisconceptions": [
+      "Some children might think it’s okay to move tee-markers if the ground is muddy or if everyone agrees.",
+      "They may believe tee-markers are just decorations and can be moved out of the way."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:29.369Z",
+  "model": "gpt-4.1"
+}

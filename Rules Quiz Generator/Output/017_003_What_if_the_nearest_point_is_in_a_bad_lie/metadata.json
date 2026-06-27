@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-14.png",
+  "ruleNumber": "17",
+  "ruleName": "Taking Relief from Abnormal Course Conditions",
+  "group": "Taking Relief from Abnormal Course Conditions",
+  "title": "What if the nearest point is in a bad lie?",
+  "question": "If the nearest point of complete relief is in thick rough, a bush, or on a steep slope, what are your options?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You can take relief and play from there, even if it's a difficult shot."
+    },
+    {
+      "id": "b",
+      "text": "You may ignore the rules and choose any spot you like."
+    },
+    {
+      "id": "c",
+      "text": "You can decide to play the ball as it lies without taking relief."
+    },
+    {
+      "id": "d",
+      "text": "You can move your ball to the green for an easier shot."
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "You can either take relief at the correct relief point, even if the lie is poor, or you may play the ball as it lies and not take relief.",
+  "imagePrompt": "A teen boy golfer, left-handed, looking at possible relief options from a difficult lie in thick rough next to the fairway.",
+  "imageAlt": "Teen boy considering whether to take relief in thick rough or play his ball as it lies.",
+  "sceneSpec": {
+    "setting": "rough",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "hybrid",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "white",
+    "clothingBottomColour": "black",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 92,
+    "issues": [
+      "Club and ball proportions are accurate, and the hybrid club head is clearly identifiable.",
+      "The golfer is standing naturally in noticeably thick rough, and the ball is in a plausible position.",
+      "The golfer's posture is left-handed, and their hand orientation is correct.",
+      "Scene matches educational, realistic golf requirements for teens.",
+      "One single golf ball is visible, positioning and scale are accurate.",
+      "No stakes, bunkers, water, or other course features incorrectly present."
+    ],
+    "repairPrompt": "None required; image passes. For further improvement, ensure the grass is depicted as even thicker to amplify the difficulty, and add a subtle visual cue for the golfer considering their options."
+  }
+}

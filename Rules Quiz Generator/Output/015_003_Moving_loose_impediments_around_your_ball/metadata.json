@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-12.png",
+  "ruleNumber": "Def./R15",
+  "ruleName": "Loose impediments",
+  "group": "Loose impediments",
+  "title": "Moving loose impediments around your ball",
+  "question": "If there are loose impediments (like twigs or stones) next to your ball, what does the rule allow you to do?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You can remove them, but if the ball moves, you must replace it and take a one-stroke penalty."
+    },
+    {
+      "id": "b",
+      "text": "You can remove them, and if your ball moves, play from wherever it ends up."
+    },
+    {
+      "id": "c",
+      "text": "You are not allowed to remove loose impediments near your ball."
+    },
+    {
+      "id": "d",
+      "text": "You must ask for a referee's permission before moving loose impediments."
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "You can remove loose impediments, but if your ball moves in the process, it must be replaced and you receive a one-stroke penalty.",
+  "imagePrompt": "A teenage boy gently picks up a twig and a small stone from near his ball in the rough.",
+  "imageAlt": "Boy golfer removing a twig by his golf ball in the rough.",
+  "sceneSpec": {
+    "setting": "rough",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "dark",
+    "clothingTopColour": "white",
+    "clothingBottomColour": "blue",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 95,
+    "issues": [
+      "Handedness is unclear: the illustration does not clearly depict the golfer as left-handed, although the club is correctly present and realistic.",
+      "The golfer does appear feminine and matches ethnicity and dress requirements closely. All other core golf details are strong."
+    ],
+    "repairPrompt": "Ensure the teenage girl is depicted using a left-handed golf stance or grip (even if just resting the club), with clear body language and club orientation that shows left-handedness. Keep all other elements unchanged."
+  }
+}

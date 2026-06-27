@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-03.png",
+  "ruleNumber": "14",
+  "ruleName": "Dropping and re-dropping",
+  "group": "Dropping and re-dropping",
+  "title": "What is a club-length?",
+  "question": "When you are allowed to drop within a 'club-length', what does that distance mean?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "The length of your longest club, except the putter"
+    },
+    {
+      "id": "b",
+      "text": "Any club you choose from your bag"
+    },
+    {
+      "id": "c",
+      "text": "The length of your driver only"
+    },
+    {
+      "id": "d",
+      "text": "The length of your putter"
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "A club-length is measured using your longest club, except for the putter.",
+  "imagePrompt": "A golf bag with clubs, a driver laid flat on the grass next to a golf ball to demonstrate club-length measurement.",
+  "imageAlt": "Golf bag and a driver on the fairway showing club-length beside a ball.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "driver",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "dark",
+    "clothingTopColour": "yellow",
+    "clothingBottomColour": "grey",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Golfer is not visually holding the driver left-handed, but the scene otherwise matches prompt intent.",
+      "Golfer's posture is neutral (not in an action stance), but still plausible and clear for measurement demonstration."
+    ],
+    "repairPrompt": "Ensure the teenager is standing in a left-handed position when holding the driver, with the left hand as the low hand if touching the grip. Keep the driver laid flat next to the ball and all other scene elements unchanged."
+  }
+}

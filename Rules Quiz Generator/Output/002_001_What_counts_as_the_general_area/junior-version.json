@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\002_001_What_counts_as_the_general_area\\metadata.json",
+  "sourceImageName": "page-09.png",
+  "ruleNumber": "R2",
+  "ruleName": "General area",
+  "title": "What counts as the general area?",
+  "question": "Which of the following areas is included in the 'general area' according to the Rules of Golf? Select all that apply.",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Fairway"
+    },
+    {
+      "id": "b",
+      "text": "Bunker"
+    },
+    {
+      "id": "c",
+      "text": "Semi-rough"
+    },
+    {
+      "id": "d",
+      "text": "Putting green for a different hole"
+    },
+    {
+      "id": "e",
+      "text": "Penalty area"
+    }
+  ],
+  "correctAnswers": [
+    "a",
+    "c",
+    "d"
+  ],
+  "explanation": "The general area is most of the course, including the fairway, semi-rough and rough, and any green or teeing area for a different hole. Bunkers and penalty areas are not part of the general area.",
+  "juniorVersion": {
+    "title": "Which places are called the 'general area'?",
+    "question": "Pick all the places that are part of the 'general area' on a golf course.",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Fairway"
+      },
+      {
+        "id": "b",
+        "text": "Bunker"
+      },
+      {
+        "id": "c",
+        "text": "Semi-rough"
+      },
+      {
+        "id": "d",
+        "text": "The green for a different hole"
+      },
+      {
+        "id": "e",
+        "text": "Penalty area"
+      }
+    ],
+    "correctAnswers": [
+      "a",
+      "c",
+      "d"
+    ],
+    "explanation": "The 'general area' is most of the golf course. It includes the fairway, the semi-rough, and greens and tee boxes for other holes. Bunkers and penalty areas are not in the general area.",
+    "vocabulary": [
+      {
+        "term": "general area",
+        "simpleMeaning": "Most of the golf course, except for bunkers, penalty areas, greens and teeing areas for the hole you are playing."
+      },
+      {
+        "term": "bunker",
+        "simpleMeaning": "A sand pit on the golf course. It is not part of the general area."
+      },
+      {
+        "term": "penalty area",
+        "simpleMeaning": "Places like ponds or lakes. They are marked and not part of the general area."
+      },
+      {
+        "term": "fairway",
+        "simpleMeaning": "The short grass you aim for when you hit your ball."
+      },
+      {
+        "term": "semi-rough",
+        "simpleMeaning": "The longer grass next to the fairway."
+      }
+    ],
+    "teachingTip": "Show kids different parts of the course and help them name which are part of the general area.",
+    "likelyMisconceptions": [
+      "Some kids may think bunkers or penalty areas are in the general area.",
+      "Some may not realise the green for a different hole is the general area."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:20.881Z",
+  "model": "gpt-4.1"
+}

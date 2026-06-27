@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_037_Accidental_Contact_with_Sand_in_Bunker_during_Backswing\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "12.2b",
+  "ruleName": "Restrictions on Touching Sand in Bunker",
+  "title": "Accidental Contact with Sand in Bunker during Backswing",
+  "question": "Your ball is in a bunker. As you start your backswing, your club accidentally brushes the sand before reaching the ball. You did not deliberately test the sand or ground your club before making the stroke. What is the correct ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You receive a one-stroke penalty because your club touched the sand."
+    },
+    {
+      "id": "b",
+      "text": "You receive the general penalty because you touched the sand in a bunker."
+    },
+    {
+      "id": "c",
+      "text": "There is no penalty because the club only touched the sand during the backswing for the stroke."
+    },
+    {
+      "id": "d",
+      "text": "You must replay the stroke."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "There is no penalty if a player's club brushes the sand in a bunker during the backswing for a stroke, provided the player does not deliberately test the condition of the sand or improve the conditions affecting the stroke. Rule 12.2b allows incidental contact with sand during the backswing, and no penalty is applied in this scenario.",
+  "juniorVersion": {
+    "title": "Your Club Touches Sand During Backswing in a Bunker",
+    "question": "Your ball is in a bunker (a sandy area). When you swing your club back to hit the ball, your club accidentally brushes the sand before you hit the ball. You didn’t do this on purpose. What happens?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You get one extra shot because your club touched the sand."
+      },
+      {
+        "id": "b",
+        "text": "You get a penalty for touching the sand in the bunker."
+      },
+      {
+        "id": "c",
+        "text": "There is no penalty because your club only touched the sand in your backswing."
+      },
+      {
+        "id": "d",
+        "text": "You have to hit the shot again."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "You do not get a penalty if your club touches the sand in the bunker during your backswing, as long as you didn’t do it on purpose to test the sand or make things easier.",
+    "vocabulary": [
+      {
+        "term": "bunker",
+        "simpleMeaning": "A hollow area filled with sand, usually near the green or fairway."
+      },
+      {
+        "term": "backswing",
+        "simpleMeaning": "When you swing the club away from the ball to get ready to hit it."
+      }
+    ],
+    "teachingTip": "Show children how to make a backswing in a bunker. Explain the difference between an accident and touching the sand on purpose.",
+    "likelyMisconceptions": [
+      "You get a penalty any time your club touches sand in a bunker.",
+      "You must always replay your shot if you touch the sand by accident."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:17:24.625Z",
+  "model": "gpt-4.1"
+}

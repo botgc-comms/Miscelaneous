@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_044_Ball_Resting_on_Clubhouse_Patio\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "16.1",
+  "ruleName": "Relief from Immovable Obstructions",
+  "title": "Ball Resting on Clubhouse Patio",
+  "question": "Your approach shot goes long and comes to rest on the clubhouse patio behind the green. The patio is part of the course and is not out of bounds or marked as a No Play Zone.\n\nWhat is the correct ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You must play the ball as it lies."
+    },
+    {
+      "id": "b",
+      "text": "You are entitled to free relief because the patio is an immovable obstruction."
+    },
+    {
+      "id": "c",
+      "text": "You must take an unplayable ball with a one-stroke penalty."
+    },
+    {
+      "id": "d",
+      "text": "You may drop anywhere off the patio without penalty."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "A paved clubhouse patio is an immovable obstruction. If your ball lies on the patio, or the patio interferes with your stance or intended swing, you are entitled to free relief under Rule 16.1. You must find the nearest point of complete relief, no closer to the hole, and drop the ball within one club-length of that point in the relief area. Always check Local Rules, as some areas may be defined differently.",
+  "juniorVersion": {
+    "title": "Ball on the Clubhouse Patio",
+    "question": "Your ball lands on the clubhouse patio behind the green. The patio is part of the golf course and is not out of bounds. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You have to hit the ball from the patio where it stops."
+      },
+      {
+        "id": "b",
+        "text": "You get to move your ball for free because the patio can't be moved."
+      },
+      {
+        "id": "c",
+        "text": "You must take a one-shot penalty and say your ball can't be played."
+      },
+      {
+        "id": "d",
+        "text": "You can drop your ball anywhere off the patio without a penalty."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "The clubhouse patio is called an immovable obstruction because you can't pick it up or move it. You can move your ball for free when it is on something like this. Find the closest spot off the patio, not nearer the hole, and drop your ball within one club-length of that place.",
+    "vocabulary": [
+      {
+        "term": "Immovable obstruction",
+        "simpleMeaning": "Something on the course you can't move, like a patio or a big sign."
+      },
+      {
+        "term": "Free relief",
+        "simpleMeaning": "You can move your ball without a penalty if it's on or near something like a patio."
+      }
+    ],
+    "teachingTip": "Show children what an immovable obstruction looks like and practise finding the nearest spot where the ball can be dropped.",
+    "likelyMisconceptions": [
+      "Thinking you must play the ball from the patio.",
+      "Believing you can drop the ball anywhere you want off the patio.",
+      "Thinking you always get a penalty here."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:21:20.362Z",
+  "model": "gpt-4.1"
+}

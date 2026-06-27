@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\006_004_Penalty_for_taking_advantage_with_wrong_order_of_play\\metadata.json",
+  "sourceImageName": "page-10.png",
+  "ruleNumber": "R6",
+  "ruleName": "Playing in the wrong order",
+  "title": "Penalty for taking advantage with wrong order of play",
+  "question": "If two players agree to play out of order so that one of them can get a clear advantage, what is the penalty?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No penalty if they both agree."
+    },
+    {
+      "id": "b",
+      "text": "Only the player who played early gets a penalty."
+    },
+    {
+      "id": "c",
+      "text": "Both players get two penalty strokes."
+    },
+    {
+      "id": "d",
+      "text": "They must replay their shots."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "If players play out of order to give an advantage, both get two penalty strokes. It doesn't matter if they agree.",
+  "juniorVersion": {
+    "title": "What happens if you both agree to play out of turn to help one player?",
+    "question": "If you and your friend agree to hit your shots in the wrong order so it helps one of you, what is the penalty?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "No penalty if you both say it’s okay."
+      },
+      {
+        "id": "b",
+        "text": "Only the player who hits first gets a penalty."
+      },
+      {
+        "id": "c",
+        "text": "Both of you get two extra shots added to your scores."
+      },
+      {
+        "id": "d",
+        "text": "You have to hit your balls again."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "If you both agree to play in the wrong order to help one of you, both of you get two shots added to your score. It doesn’t matter if you agreed.",
+    "vocabulary": [
+      {
+        "term": "Order of play",
+        "simpleMeaning": "The order in which each player takes their turn to hit."
+      },
+      {
+        "term": "Penalty",
+        "simpleMeaning": "Extra shots added to your score for breaking a rule."
+      }
+    ],
+    "teachingTip": "Let kids act out a simple turn-by-turn scenario to see what happens when they switch order and why it matters.",
+    "likelyMisconceptions": [
+      "Kids might think there is no penalty if they both agree.",
+      "They may think only the player who played out of turn gets a penalty."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:41.061Z",
+  "model": "gpt-4.1"
+}

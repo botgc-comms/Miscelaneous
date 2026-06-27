@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\018_001_What_happens_if_you_find_your_original_ball_on_the_course\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:57:01.609Z",
+  "title": "What happens if you find your original ball on the course?",
+  "ruleNumber": "R18",
+  "ruleName": "Provisional Ball",
+  "durationSeconds": 193.398
+}

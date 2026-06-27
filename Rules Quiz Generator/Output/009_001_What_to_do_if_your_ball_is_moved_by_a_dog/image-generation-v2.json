@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\009_001_What_to_do_if_your_ball_is_moved_by_a_dog\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:03:54.388Z",
+  "title": "What to do if your ball is moved by a dog",
+  "ruleNumber": "R9",
+  "ruleName": "Ball at rest moved by an outside influence",
+  "durationSeconds": 183.483
+}

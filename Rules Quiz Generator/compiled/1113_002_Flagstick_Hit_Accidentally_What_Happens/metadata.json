@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "pageb-09.png",
+  "ruleNumber": "R11/13",
+  "ruleName": "Ball hits the flagstick or the person tending it",
+  "group": "Ball hits the flagstick or the person tending it",
+  "type": "multiple_choice",
+  "imagePrompt": "A teenage girl golfer watches her ball as it rolls into a flagstick lying beside the hole on a sunny putting green.",
+  "imageAlt": "A golf ball rolling into a flagstick lying next to the hole on the green, with a teenage golfer watching.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "red",
+    "clothingBottomColour": "grey",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Golfer's cap is blue instead of a specified alternate colour (should not default to blue based on prompt instructions)."
+    ],
+    "repairPrompt": "Change the golfer's cap to a colour other than blue (e.g., white, grey, or red) to avoid defaulting to the same appearance across images. Keep all other details as shown, ensuring realistic posture, a white teenage boy with medium skin tone, red top, grey trousers or shorts, realistic putter, one golf ball, golf course accuracy, and a flagstick lying beside the hole."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What if your ball bumps into the flagstick on the ground?",
+      "question": "You are putting and your ball rolls and hits the flagstick that is lying next to the green. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You get a penalty and have to take the putt again"
+        },
+        {
+          "id": "b",
+          "text": "You do not get a penalty. Play your ball from where it stopped"
+        },
+        {
+          "id": "c",
+          "text": "Pick up the flagstick and putt again"
+        },
+        {
+          "id": "d",
+          "text": "Add two shots to your score, then play on"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If your ball hits the flagstick lying on the ground by accident, you do not get a penalty. Just play your ball from wherever it stops.",
+      "vocabulary": [
+        {
+          "term": "flagstick",
+          "simpleMeaning": "The tall pole in the hole that shows you where the hole is on the green."
+        },
+        {
+          "term": "as it lies",
+          "simpleMeaning": "Play the ball from where it is now."
+        }
+      ],
+      "teachingTip": "Let children practice putting when the flagstick is lying nearby, so they know what to do if their ball bumps it accidentally.",
+      "likelyMisconceptions": [
+        "Some children may think they must take their shot again if their ball hits the flagstick.",
+        "Some might think they get a penalty or have to move the ball."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Flagstick Hit Accidentally – What Happens?",
+      "question": "You're putting and your ball rolls into a flagstick lying beside the green after it was removed. What is the ruling?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You get a penalty and must replay the stroke"
+        },
+        {
+          "id": "b",
+          "text": "There is no penalty, play the ball as it lies"
+        },
+        {
+          "id": "c",
+          "text": "Move the flagstick and replay the shot"
+        },
+        {
+          "id": "d",
+          "text": "Add two penalty strokes and continue"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If your ball accidentally hits the flagstick after it has been properly removed and placed on the ground, there is no penalty. You play the ball as it lies."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "1113_002_Flagstick_Hit_Accidentally_What_Happens",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:53.702Z"
+  }
+}

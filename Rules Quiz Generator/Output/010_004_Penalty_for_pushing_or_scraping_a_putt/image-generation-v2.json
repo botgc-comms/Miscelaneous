@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\010_004_Penalty_for_pushing_or_scraping_a_putt\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:13:20.080Z",
+  "title": "Penalty for pushing or scraping a putt",
+  "ruleNumber": "R10",
+  "ruleName": "Careless putting",
+  "durationSeconds": 187.605
+}

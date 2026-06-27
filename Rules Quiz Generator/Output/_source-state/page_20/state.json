@@ -1,0 +1,521 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-20.png",
+  "sourceImagePath": "Input\\page-20.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-20.png",
+      "ruleNumber": "R14/15",
+      "ruleName": "Balls close to each other",
+      "group": "Balls close to each other",
+      "title": "What to do when two balls are too close together",
+      "question": "Two balls are so close together in a bunker that they block each other's shot. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Mark and pick up one ball, recreate the lie before playing."
+        },
+        {
+          "id": "b",
+          "text": "Play both balls as they lie."
+        },
+        {
+          "id": "c",
+          "text": "Clean the ball before putting it back."
+        },
+        {
+          "id": "d",
+          "text": "Move both balls to a nearby spot."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You may mark and pick up one ball, then put it back as close as possible to the original lie, but you must not clean the ball.",
+      "imagePrompt": "A girl golfer in a bunker marking a golf ball close to another ball, with a rake nearby and sand visible.",
+      "imageAlt": "A girl golfer in a bunker marking one of two golf balls that are very close together.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "lifting_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "medium",
+        "clothingTopColour": "blue",
+        "clothingBottomColour": "purple",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-20.png",
+      "ruleNumber": "R10",
+      "ruleName": "Advice and line of play",
+      "group": "Advice and line of play",
+      "title": "Allowed questions in golf",
+      "question": "You can’t see the flag from a bunker. Which question are you ALLOWED to ask a friend?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Is this the right club for the shot?"
+        },
+        {
+          "id": "b",
+          "text": "Where is the flag?"
+        },
+        {
+          "id": "c",
+          "text": "How should I play this shot?"
+        },
+        {
+          "id": "d",
+          "text": "Should I aim left or right?"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You can ask about distances or positions, but not about club choice or how to play a shot.",
+      "imagePrompt": "A boy golfer in a bunker looking toward a friend who is pointing toward the flag on the green.",
+      "imageAlt": "A boy golfer in a bunker asking a friend where the flag is.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "black",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-20.png",
+      "ruleNumber": "R15",
+      "ruleName": "Loose impediments",
+      "group": "Loose impediments",
+      "title": "Handling loose impediments",
+      "question": "You find leaves and small twigs next to your ball on the fairway. What can you do?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Remove the leaves and twigs without penalty."
+        },
+        {
+          "id": "b",
+          "text": "If your ball moves, put it back and take a 1-stroke penalty."
+        },
+        {
+          "id": "c",
+          "text": "Ignore them and play as it lies."
+        },
+        {
+          "id": "d",
+          "text": "Clean your ball before playing even if it wasn't marked."
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "c"
+      ],
+      "explanation": "You can remove loose impediments, but if the ball moves you must replace it and add a 1-stroke penalty.",
+      "imagePrompt": "A teen girl golfer on the fairway picking up leaves and twigs around her golf ball.",
+      "imageAlt": "A teen girl golfer removing leaves and twigs next to her ball on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "black",
+        "clothingBottomColour": "grey",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-20.png",
+      "ruleNumber": "R15",
+      "ruleName": "Movable obstructions",
+      "group": "Movable obstructions",
+      "title": "Moving artificial objects",
+      "question": "A rake is lying next to your ball in the rough. What should you do if moving it makes your ball move?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Just put the ball back with no penalty."
+        },
+        {
+          "id": "b",
+          "text": "Take a 1-stroke penalty and put the ball back."
+        },
+        {
+          "id": "c",
+          "text": "Play the ball from its new spot with no penalty."
+        },
+        {
+          "id": "d",
+          "text": "Leave the rake and play as it lies."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You can remove artificial objects like rakes and if the ball moves, just put it back without penalty.",
+      "imagePrompt": "A teen boy golfer in the rough moving a rake away from his golf ball.",
+      "imageAlt": "A teen boy golfer removing a rake next to his ball in the rough.",
+      "sceneSpec": {
+        "setting": "rough",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "lifting_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "yellow",
+        "hat": true
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-20.png",
+      "ruleNumber": "R14/15",
+      "ruleName": "Balls close to each other",
+      "group": "Balls close to each other",
+      "title": "What to do when two balls are too close together",
+      "question": "You and another player both have balls so close together in a bunker that you can't hit your shot properly. What are you allowed to do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Mark and pick up one ball, then recreate the original lie before playing."
+        },
+        {
+          "id": "b",
+          "text": "Play both balls as they lie, even if you have to hit the other ball."
+        },
+        {
+          "id": "c",
+          "text": "Clean the ball before putting it back after picking it up."
+        },
+        {
+          "id": "d",
+          "text": "Move both balls away to a clear spot in the bunker."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "If two balls are so close they interfere with play, you may mark and lift one ball, then recreate and return it to its original spot after the other is played, but you must not clean it.",
+      "imagePrompt": "A teen girl golfer in a bunker carefully marking and lifting one of two balls that are next to each other, with a visible rake and sandy surface.",
+      "imageAlt": "A teen girl golfer in a bunker marking one of two golf balls that are very close together.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "lifting_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [
+          "golf_cart",
+          "spectators",
+          "animals",
+          "extra balls",
+          "electronic devices",
+          "caddies",
+          "drink bottles",
+          "mobile phones",
+          "scorecards",
+          "rule books",
+          "benches",
+          "umbrellas"
+        ],
+        "ethnicity": "black",
+        "skinTone": "medium",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "red",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-20.png",
+      "ruleNumber": "R10",
+      "ruleName": "Advice and line of play",
+      "group": "Advice and line of play",
+      "title": "Allowed questions in golf",
+      "question": "If you can't see the flag from a bunker, which of these questions can you ask a friend without breaking the rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Is this the right club for the shot?"
+        },
+        {
+          "id": "b",
+          "text": "Where is the flag?"
+        },
+        {
+          "id": "c",
+          "text": "How should I play this shot?"
+        },
+        {
+          "id": "d",
+          "text": "Should I aim left or right?"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You are allowed to ask about distance or the location of the flag, but you cannot ask for advice about clubs, tactics, or where to aim.",
+      "imagePrompt": "A teen girl golfer in a bunker asking a friend to point out where the flag is located, with the green and a flag just visible in the background.",
+      "imageAlt": "A teen girl golfer in a bunker asking a friend where the flag is.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [
+          "golf_cart",
+          "spectators",
+          "animals",
+          "extra balls",
+          "electronic devices",
+          "caddies",
+          "drink bottles",
+          "mobile phones",
+          "scorecards",
+          "rule books",
+          "benches",
+          "umbrellas"
+        ],
+        "ethnicity": "mixed",
+        "skinTone": "light",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "grey",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-20.png",
+      "ruleNumber": "R15",
+      "ruleName": "Loose impediments",
+      "group": "Loose impediments",
+      "title": "Handling loose impediments",
+      "question": "There are leaves and twigs right next to your ball on the fairway. What are your options?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Remove the leaves and twigs without penalty, as long as you don't move the ball."
+        },
+        {
+          "id": "b",
+          "text": "If your ball moves while removing them, put it back and take a 1-stroke penalty."
+        },
+        {
+          "id": "c",
+          "text": "Ignore the leaves and twigs and play your shot as it is."
+        },
+        {
+          "id": "d",
+          "text": "Clean your ball before playing, even if you haven't marked it."
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "c"
+      ],
+      "explanation": "You can remove loose impediments like leaves and twigs, but if your ball moves while doing so you must replace it and take a 1-stroke penalty. You can also just choose to play as it lies.",
+      "imagePrompt": "A teen girl golfer on the fairway reaching down to remove leaves and twigs from around her golf ball, with trees in the background.",
+      "imageAlt": "A teen girl golfer removing leaves and twigs next to her ball on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "overcast",
+        "prohibitedElements": [
+          "golf_cart",
+          "spectators",
+          "animals",
+          "extra balls",
+          "electronic devices",
+          "caddies",
+          "drink bottles",
+          "mobile phones",
+          "scorecards",
+          "rule books",
+          "benches",
+          "umbrellas"
+        ],
+        "ethnicity": "black",
+        "skinTone": "light",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "black",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-20.png",
+      "ruleNumber": "R15",
+      "ruleName": "Movable obstructions",
+      "group": "Movable obstructions",
+      "title": "Moving artificial objects",
+      "question": "You spot a rake next to your ball in the rough. If you move the rake and your ball rolls slightly, what must you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Replace the ball with no penalty."
+        },
+        {
+          "id": "b",
+          "text": "Add a 1-stroke penalty and replace the ball."
+        },
+        {
+          "id": "c",
+          "text": "Play the ball from where it comes to rest, with no penalty."
+        },
+        {
+          "id": "d",
+          "text": "Leave the rake where it is and play as it lies."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "If you accidentally move your ball while moving a movable obstruction like a rake, you simply put the ball back with no penalty.",
+      "imagePrompt": "A teen girl golfer in the rough reaching to move a rake that is lying next to her golf ball, with some tall grass visible.",
+      "imageAlt": "A teen girl golfer removing a rake next to her ball in the rough.",
+      "sceneSpec": {
+        "setting": "rough",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "lifting_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "overcast",
+        "prohibitedElements": [
+          "golf_cart",
+          "spectators",
+          "animals",
+          "extra balls",
+          "electronic devices",
+          "caddies",
+          "drink bottles",
+          "mobile phones",
+          "scorecards",
+          "rule books",
+          "benches",
+          "umbrellas"
+        ],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "yellow",
+        "hat": false
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "1415_001_What_to_do_when_two_balls_are_too_close_together",
+    "010_002_Allowed_questions_in_golf",
+    "015_003_Handling_loose_impediments",
+    "015_004_Moving_artificial_objects"
+  ],
+  "updatedAtUtc": "2026-04-24T21:35:02.948Z"
+}

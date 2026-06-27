@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\006_004_Correcting_a_teeing_area_mistake\\metadata.json",
+  "sourceImageName": "page-06.png",
+  "ruleNumber": "6",
+  "ruleName": "Playing from outside the teeing area",
+  "title": "Correcting a teeing area mistake",
+  "question": "After realising you hit your tee shot from outside the teeing area in stroke play, what should you do to avoid being disqualified?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Go to your ball and continue playing, no penalty."
+    },
+    {
+      "id": "b",
+      "text": "Replay your shot from within the teeing area and add two penalty strokes."
+    },
+    {
+      "id": "c",
+      "text": "Replay from anywhere you like with just a warning."
+    },
+    {
+      "id": "d",
+      "text": "Ask your opponent for permission to keep playing from where you are."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You must replay your shot from within the teeing area and take two penalty strokes to avoid disqualification.",
+  "juniorVersion": {
+    "title": "If you hit your first shot from the wrong place",
+    "question": "You hit your ball for the first shot, but your feet were not in the right tee area. What should you do so you can keep playing the hole?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Go find your ball and keep playing as normal. No penalty."
+      },
+      {
+        "id": "b",
+        "text": "Hit your first shot again from inside the tee area and add two extra shots to your score."
+      },
+      {
+        "id": "c",
+        "text": "Hit your shot again from anywhere you want, and just get a warning."
+      },
+      {
+        "id": "d",
+        "text": "Ask the person you are playing with if you can keep going from where your ball is."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "You must play your first shot again from the right spot—the tee area. You need to add two extra shots to your score for that hole.",
+    "vocabulary": [
+      {
+        "term": "tee area",
+        "simpleMeaning": "The place where you start the hole. It is between two markers and behind the line made by them."
+      },
+      {
+        "term": "penalty stroke",
+        "simpleMeaning": "An extra shot added to your score because of a mistake."
+      }
+    ],
+    "teachingTip": "Draw the tee area on the ground with cones or ropes and let children practise placing their ball and feet correctly before swinging.",
+    "likelyMisconceptions": [
+      "Some kids might think they can keep playing if no one saw the mistake.",
+      "Some might believe they only need to move their ball if it is outside the tee area, not their feet."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:40.812Z",
+  "model": "gpt-4.1"
+}

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\011_001_Ball_hits_players_own_equipment\\metadata.json",
+  "sourceImageName": "pageb-13.png",
+  "ruleNumber": "R11",
+  "ruleName": "Ball in motion accidentally hits ...",
+  "title": "Ball hits player's own equipment",
+  "question": "If you hit a shot and your ball accidentally hits your own golf bag, what should you do under the Rules?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Add one penalty stroke and replay the shot."
+    },
+    {
+      "id": "b",
+      "text": "Play the ball from where it comes to rest, with no penalty."
+    },
+    {
+      "id": "c",
+      "text": "Pick up the ball and drop it as close as possible to the bag."
+    },
+    {
+      "id": "d",
+      "text": "Move your bag and replay the shot."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "According to the Rules, if your ball in motion accidentally hits your own equipment, you must play the ball as it lies without penalty.",
+  "juniorVersion": {
+    "title": "Ball hits your golf bag by accident",
+    "question": "You hit your ball and it bumps into your own golf bag. What do you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Add a penalty and hit again from the same place."
+      },
+      {
+        "id": "b",
+        "text": "Play the ball from where it stopped, no penalty."
+      },
+      {
+        "id": "c",
+        "text": "Pick up the ball and drop it close to the bag."
+      },
+      {
+        "id": "d",
+        "text": "Move your bag and hit the shot again."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If your ball hits your bag or anything you are carrying and it was an accident, you just play the ball from where it stops. You do not get a penalty.",
+    "vocabulary": [
+      {
+        "term": "Penalty",
+        "simpleMeaning": "Extra points added to your score for breaking a rule."
+      },
+      {
+        "term": "Play the ball from where it stops",
+        "simpleMeaning": "Hit the ball from the place it finishes after you hit it."
+      }
+    ],
+    "teachingTip": "Show what happens if the ball hits a bag or towel—let children see they just play from there. Ask them what to do and let them practise.",
+    "likelyMisconceptions": [
+      "Children may think they must always take a penalty if their ball hits their bag.",
+      "Some may try to drop the ball or hit again instead of just playing from where it stopped."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:09.210Z",
+  "model": "gpt-4.1"
+}

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "packId": "whats-in-the-bag",
+  "pageId": "01-clubs-overview",
+  "pageTitle": "Clubs in a golf bag",
+  "pageFile": "pages/01-clubs-overview.md",
+  "assetFile": "clubs-overview.png",
+  "audience": "brand new junior golfers and non-golfing parents",
+  "learningGoal": "Introduce the different types of golf clubs found in a golf bag.",
+  "markdown": "# Clubs in a golf bag\n\nWelcome to your junior golf learning pack! Understanding what’s in a golf bag is one of the first steps to enjoying the game. Here’s a quick guide to the clubs and equipment you’ll find.\n\nA golf bag typically contains several types of clubs, each designed for specific shots. Here are the main types:\n\n1. **Driver**: This is usually the longest club and is used for hitting the ball far off the tee at the start of a hole.\n\n2. **Irons**: These clubs come in different numbers (like 3, 4, 5, etc.) and are used for a variety of shots, especially when you are closer to the green. Lower numbers hit the ball further.\n\n3. **Wedges**: These are a type of iron designed for short, precise shots, especially around the green. They help you get the ball up in the air quickly.\n\n4. **Putter**: This club is used for making shorter, more accurate shots on the green where you aim to roll the ball into the hole.\n\nFor junior golfers, having the right size clubs is crucial. Many brands offer junior sets designed specifically for smaller hands and shorter heights, making it easier and more enjoyable to learn.\n\nDon’t worry if you’re not sure about everything just yet. Enjoying the game and learning at your own pace is what matters most! Happy golfing!",
+  "imageAlt": "A young golfer receiving guidance on their golf clubs from an adult coach in a practice area.",
+  "imagePrompt": "A photorealistic image showing a young girl in a baseball cap and golf attire, holding a golf club while receiving friendly instruction from an adult male coach in a practice area. Grass and practice targets are in view, creating an inviting learning atmosphere."
+}

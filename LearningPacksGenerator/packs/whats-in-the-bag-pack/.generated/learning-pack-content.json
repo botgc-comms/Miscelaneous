@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 1,
+  "packId": "whats-in-the-bag",
+  "title": "What’s in the bag",
+  "audience": "Brand new junior golfers and non-golfing parents",
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "A simple guide",
+      "file": "pages/00-title.md",
+      "type": "content",
+      "assetFile": "title.png",
+      "imageAlt": "A happy family with a young child on a sunny golf course, holding a small golf bag",
+      "imagePrompt": "A photorealistic image of a family with a young child standing together on a sunny golf course, the child holding a small golf bag, everyone smiling and looking relaxed.",
+      "markdown": "# A simple guide\n\nWelcome! This guide is for junior golfers and their parents who are new to the game. We know golf can look a bit complicated at first, but it really doesn’t need to be. You don’t need a bag full of expensive clubs or special gear to get started. The aim is to have fun, make friends, and learn a game you can play for life.\n\nWe’ll explain what you really need in your bag, what each club does, and how to keep things simple. We’ll also cover how to find the right size clubs for junior players. It’s all written in straightforward language for adults and children alike.\n\nLet’s get started on the basics, so everyone can feel confident stepping onto the course.",
+      "quiz": null
+    },
+    {
+      "id": "01-clubs-overview",
+      "title": "Clubs in a golf bag",
+      "file": "pages/01-clubs-overview.md",
+      "type": "content",
+      "assetFile": "clubs-overview.png",
+      "imageAlt": "A neat arrangement of different golf clubs in a junior-sized golf bag on the grass",
+      "imagePrompt": "A photorealistic image showing a junior-sized golf bag standing upright on the grass, with several types of golf clubs (woods, irons, wedges, putter) clearly visible in the bag, set against a golf course background.",
+      "markdown": "# Clubs in a golf bag\n\nA typical golf bag can carry up to fourteen clubs. For juniors just starting, it’s best to keep things simple. Most young golfers only need a few clubs at first—this keeps the bag light and easy to carry.\n\nA basic set for juniors often includes:\n- A wood, for long shots\n- A couple of irons, for shorter shots\n- A wedge, for getting the ball up close to the hole\n- A putter, for rolling the ball on the green\n\nGolf clubs come in different lengths and weights. Junior clubs are lighter and shorter to suit young players. You don’t need a full set. Three to six clubs is perfectly good for learning.\n\nDon’t worry if the clubs don’t all match. As long as they feel comfortable and safe for your child to swing, they’ll do the job. As juniors grow and improve, you can add more clubs if needed.",
+      "quiz": null
+    },
+    {
+      "id": "02-woods-irons",
+      "title": "Woods, irons and hybrids",
+      "file": "pages/02-woods-irons.md",
+      "type": "content",
+      "assetFile": "woods-irons.png",
+      "imageAlt": "Junior golfer selecting a wood, an iron, and a hybrid club from a golf bag beside a fairway",
+      "imagePrompt": "A photorealistic image of a junior golfer next to a golf bag on the fairway, holding a wood club. The bag also shows an iron and a hybrid, each visible and distinct, with clear differences in clubhead design.",
+      "markdown": "# Woods, irons and hybrids\n\nLet’s look at three main types of golf clubs you might see in a junior’s bag: woods, irons, and hybrids.\n\n**Woods** (sometimes called drivers or fairway woods) have big, rounded heads. They are made for hitting the ball a long way, mostly from the tee or the fairway. Juniors usually start with one wood.\n\n**Irons** have flat, angled clubfaces. They are used for shorter shots, usually from the fairway or rough (the grass beside the fairway). Irons are numbered—lower numbers (like a 5 or 7 iron) hit the ball further, while higher numbers (like a 9 iron) are for shorter, higher shots.\n\n**Hybrids** combine features of both woods and irons. They’re easier to hit than long irons and are very popular with beginners.\n\nJuniors don’t need one of everything. One wood, one or two irons, and maybe a hybrid is a brilliant setup to begin learning the game.",
+      "quiz": null
+    },
+    {
+      "id": "03-wedges-putter",
+      "title": "Wedges and putter",
+      "file": "pages/03-wedges-putter.md",
+      "type": "content",
+      "assetFile": "wedges-putter.png",
+      "imageAlt": "Close-up view of a wedge and a putter on the short grass near a golf green",
+      "imagePrompt": "A photorealistic close-up image of a child's hand holding a wedge golf club and a putter resting nearby on the short grass close to a green and hole flag.",
+      "markdown": "# Wedges and putter\n\nWedges and putters are important for playing shots near and on the green, where accuracy counts most.\n\n**Wedges** are clubs with a very angled face, sometimes called “loft”. They help lift the ball into the air quickly, which is great for getting over small bumps or out of sand. Most junior players only need one wedge when starting—sometimes just called a ‘sand wedge’ or ‘pitching wedge’.\n\n**The putter** is for rolling the ball along the grass and into the hole. Putters look different from other clubs: they have a flat face and are used on the green (the smooth area around the hole).\n\nMany juniors quickly enjoy using their putter because it’s usually easier to make contact with the ball. Both wedges and putters should feel comfortable to hold and swing—don’t worry about fancy shapes or styles!\n\nSimple, safe-to-use wedges and putters make learning fun and help junior golfers build confidence close to the hole.",
+      "quiz": null
+    },
+    {
+      "id": "04-fitting",
+      "title": "Getting fitted",
+      "file": "pages/04-fitting.md",
+      "type": "content",
+      "assetFile": "fitting.png",
+      "imageAlt": "Golf coach and junior golfer standing together, checking the length of a club against the child’s height on a golf range",
+      "imagePrompt": "A photorealistic image of a golf coach kneeling next to a junior golfer on a golf range, gently holding a golf club next to the child's side to measure if the club length fits the child's height, with a few balls and a practice net in the background.",
+      "markdown": "# Getting fitted\n\nUsing the right size clubs helps juniors play safely and enjoy golf more. Clubs that are too long or heavy can be tricky to swing and may cause frustration or even injury.\n\nA good fit means the club’s length matches the junior’s height and arm length. Most golf shops and coaches can help check this, but you can also do a simple test at home:\n\n- The junior holds the club by their side, standing straight.\n- The grip (handle) should reach about waist level.\n- The club should feel light enough to swing easily.\n\nThere’s no need for costly custom clubs when starting out. There are many affordable junior sets or second-hand options. Comfort and safety are much more important than having the latest gear.\n\nIf you’re unsure, ask a coach or club pro for advice—they’re always happy to help families feel welcome and supported.",
+      "quiz": null
+    },
+    {
+      "id": "90-quick-check",
+      "title": "Quick check",
+      "file": "pages/90-quick-check.md",
+      "type": "quiz",
+      "assetFile": "quick-check.png",
+      "imageAlt": "A smiling junior golfer giving a thumbs up beside a small golf bag on a practice green",
+      "imagePrompt": "A photorealistic image of a junior golfer giving a thumbs up with a small golf bag nearby on a putting green, looking happy and confident.",
+      "markdown": "# Quick check\n\nLet’s see what you remember! Try these questions together as a family. Don’t worry if you’re unsure—read back through any section for help.",
+      "quiz": {
+        "questions": [
+          {
+            "question": "How many golf clubs does a brand new junior golfer need to start?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Three to six clubs"
+              },
+              {
+                "id": "b",
+                "text": "Fourteen clubs"
+              },
+              {
+                "id": "c",
+                "text": "One club only"
+              },
+              {
+                "id": "d",
+                "text": "As many as possible"
+              }
+            ],
+            "correctAnswer": "a",
+            "explanation": "Most juniors only need three to six clubs to start—enough for different types of shots, but not too many to carry."
+          },
+          {
+            "question": "Which club is used for rolling the ball on the green?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Wood"
+              },
+              {
+                "id": "b",
+                "text": "Iron"
+              },
+              {
+                "id": "c",
+                "text": "Putter"
+              },
+              {
+                "id": "d",
+                "text": "Wedge"
+              }
+            ],
+            "correctAnswer": "c",
+            "explanation": "The putter is specially designed for gently rolling the ball on the smooth green surface."
+          },
+          {
+            "question": "Why is it important for junior clubs to be the right size?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "So they look good"
+              },
+              {
+                "id": "b",
+                "text": "To help juniors swing safely and comfortably"
+              },
+              {
+                "id": "c",
+                "text": "For hitting the ball harder"
+              },
+              {
+                "id": "d",
+                "text": "To match the adult’s clubs"
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "Correctly sized clubs help juniors swing safely and enjoy learning without strain or frustration."
+          },
+          {
+            "question": "What does a wedge help a golfer do?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Hit the ball a long distance"
+              },
+              {
+                "id": "b",
+                "text": "Roll the ball on the green"
+              },
+              {
+                "id": "c",
+                "text": "Lift the ball into the air for close shots"
+              },
+              {
+                "id": "d",
+                "text": "Carry the bag"
+              }
+            ],
+            "correctAnswer": "c",
+            "explanation": "Wedges are great for getting the ball into the air and making short, high shots near the green."
+          },
+          {
+            "question": "Is it okay to use second-hand junior clubs?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Yes, as long as they are safe and fit comfortably"
+              },
+              {
+                "id": "b",
+                "text": "No, only new clubs should be used"
+              },
+              {
+                "id": "c",
+                "text": "Only if they match perfectly"
+              },
+              {
+                "id": "d",
+                "text": "No, because all clubs must be expensive"
+              }
+            ],
+            "correctAnswer": "a",
+            "explanation": "Second-hand clubs are often a sensible and affordable choice for juniors, as long as they fit well and are safe to use."
+          }
+        ]
+      }
+    }
+  ]
+}

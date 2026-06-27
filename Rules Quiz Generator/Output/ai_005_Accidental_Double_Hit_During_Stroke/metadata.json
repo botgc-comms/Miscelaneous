@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "10.1a",
+  "ruleName": "Fairly Striking the Ball",
+  "group": "General Play",
+  "title": "Accidental Double Hit During Stroke",
+  "question": "You are playing a chip shot from just off the green. As you swing, your club accidentally strikes the ball twice in the same stroke. The ball finishes just a few feet from the hole. What is the correct ruling?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Count the stroke and add a one-stroke penalty."
+    },
+    {
+      "id": "b",
+      "text": "Count the stroke and add a two-stroke penalty."
+    },
+    {
+      "id": "c",
+      "text": "Count it as one stroke with no penalty."
+    },
+    {
+      "id": "d",
+      "text": "Cancel the stroke and play the shot again."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "If a player accidentally hits the ball more than once during a single stroke, there is no penalty. The stroke counts as one stroke only, regardless of how many times the club contacts the ball during that swing. This changed in 2019; previously there was a penalty.",
+  "imagePrompt": "Create a polished, modern, semi-realistic illustration (about 75% realistic, 25% stylised) showing a junior golfer in golf attire having just played a chip shot from just off the putting green. Capture the moment after the club has accidentally struck the ball twice in a single stroke, with a subtle club and ball overlap or motion blur suggesting the double hit. The setting is a well-kept golf course in daylight. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A junior golfer in golf attire has just chipped from the fringe of the green. The club has accidentally made two contacts with the ball in a single stroke, illustrated by a subtle blur. The ball is in motion a short distance from the hole, with the putting green visible.",
+  "sceneSpec": {
+    "setting": "Fringe next to a putting green on a well-kept golf course during daytime.",
+    "players": "One junior golfer in mid-chip, finishing their swing. Focus on the player who is wearing golf attire.",
+    "ballPosition": "A golf ball just a few feet off the green, slightly lifted, showing the moment after it is struck. Evidence of a double hit (a faint motion blur or suggesting two points of contact on the club).",
+    "ruleMoment": "The precise instant after the club has accidentally contacted the ball twice in a single stroke.",
+    "educationalFocus": "Illustrate the moment of an accidental double hit and prompt understanding of its ruling under the current Rules of Golf.",
+    "mustShow": [
+      "A junior golfer in golf attire near a putting green",
+      "Golf ball in motion following a chip shot, suggesting an accidental double hit (subtle club and ball overlap or blur)",
+      "Golf club visible after follow-through"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  }
+}

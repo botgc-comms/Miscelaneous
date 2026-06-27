@@ -1,0 +1,5 @@
+{
+  "text": ["Burton Golf Club", "H. W. Timms", "Trophy"],
+  "allowText": true,
+  "notes": "there is a silver ring around the height of the base"
+}

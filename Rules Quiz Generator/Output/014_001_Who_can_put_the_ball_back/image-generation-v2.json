@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\014_001_Who_can_put_the_ball_back\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:31:26.634Z",
+  "title": "Who can put the ball back?",
+  "ruleNumber": "R14",
+  "ruleName": "Ball marked by another person",
+  "durationSeconds": 196.3
+}

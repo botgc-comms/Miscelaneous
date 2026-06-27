@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_040_Practice_Swing_Knocks_Ball_Off_Tee\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "6.2b(5)",
+  "ruleName": "Ball in Teeing Area Accidentally Falls Off Tee or Is Knocked Off Tee",
+  "title": "Practice Swing Knocks Ball Off Tee",
+  "question": "You are preparing to play your first shot from the teeing area. During a practice swing, your club accidentally knocks the teed ball off the tee. What is the correct ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You have played your first stroke and must play the ball from where it came to rest."
+    },
+    {
+      "id": "b",
+      "text": "You receive a one-stroke penalty."
+    },
+    {
+      "id": "c",
+      "text": "There is no penalty. You may re-tee the ball or play it from the ground within the teeing area."
+    },
+    {
+      "id": "d",
+      "text": "You must replace the ball on the tee and add one penalty stroke."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "A stroke in golf requires the intention to strike the ball. If you accidentally knock your teed ball off the tee during a practice swing, you have not made a stroke. There is no penalty. Since the ball was still in the teeing area, you may re-tee the ball or play it from its new position within the teeing area. This is covered by Rule 6.2b(5) and the definition of 'stroke'.",
+  "juniorVersion": {
+    "title": "What Happens if You Knock Your Ball Off the Tee by Accident?",
+    "question": "You are getting ready to hit your first shot from the tee. When you practise your swing, your club bumps the ball and it falls off the tee. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You have made your first hit and must play the ball from where it landed."
+      },
+      {
+        "id": "b",
+        "text": "You get one extra penalty shot."
+      },
+      {
+        "id": "c",
+        "text": "There is no penalty. You can put the ball back on the tee or play it from the ground, as long as it’s still in the tee area."
+      },
+      {
+        "id": "d",
+        "text": "You must put the ball back on the tee and take a penalty shot."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "If you hit the ball by accident during your practice swing, it doesn’t count as a stroke. You don’t get a penalty. You can put the ball back on the tee or play it from where it is, as long as it’s inside the tee area. This is because you didn’t mean to hit the ball.",
+    "vocabulary": [
+      {
+        "term": "Teeing area",
+        "simpleMeaning": "The place where you start each hole, marked with two signs or markers."
+      },
+      {
+        "term": "Stroke",
+        "simpleMeaning": "A real shot when you try to hit the ball on purpose."
+      }
+    ],
+    "teachingTip": "Show kids how a practice swing is different from a real shot. Let them try knocking a ball off by accident to see what happens.",
+    "likelyMisconceptions": [
+      "Thinking that knocking the ball off the tee during a practice swing counts as a stroke.",
+      "Thinking there is a penalty for this accident."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:19:23.784Z",
+  "model": "gpt-4.1"
+}

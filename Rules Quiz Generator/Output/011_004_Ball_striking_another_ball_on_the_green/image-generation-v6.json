@@ -1,0 +1,10 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "sourcePromptFileName": "final-prompt-v2.txt",
+  "promptFileName": "final-prompt-v6.txt",
+  "imageFileName": "illustration-v6.png",
+  "correctionInstructions": "there are two balls on the green. the ball that the boy has just hit is rolling towards the other",
+  "generatedAtUtc": "2026-06-26T08:43:51.723Z"
+}

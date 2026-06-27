@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\014_003_Penalty_for_Placing_Instead_of_Dropping\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:34:16.072Z",
+  "title": "Penalty for Placing Instead of Dropping",
+  "ruleNumber": "R14",
+  "ruleName": "Incorrect drop",
+  "durationSeconds": 207.746
+}

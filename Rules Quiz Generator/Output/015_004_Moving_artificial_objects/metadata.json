@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-20.png",
+  "ruleNumber": "R15",
+  "ruleName": "Movable obstructions",
+  "group": "Movable obstructions",
+  "title": "Moving artificial objects",
+  "question": "You spot a rake next to your ball in the rough. If you move the rake and your ball rolls slightly, what must you do?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Replace the ball with no penalty."
+    },
+    {
+      "id": "b",
+      "text": "Add a 1-stroke penalty and replace the ball."
+    },
+    {
+      "id": "c",
+      "text": "Play the ball from where it comes to rest, with no penalty."
+    },
+    {
+      "id": "d",
+      "text": "Leave the rake where it is and play as it lies."
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "If you accidentally move your ball while moving a movable obstruction like a rake, you simply put the ball back with no penalty.",
+  "imagePrompt": "A teen girl golfer in the rough reaching to move a rake that is lying next to her golf ball, with some tall grass visible.",
+  "imageAlt": "A teen girl golfer removing a rake next to her ball in the rough.",
+  "sceneSpec": {
+    "setting": "rough",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "lifting_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "overcast",
+    "prohibitedElements": [
+      "golf_cart",
+      "spectators",
+      "animals",
+      "extra balls",
+      "electronic devices",
+      "caddies",
+      "drink bottles",
+      "mobile phones",
+      "scorecards",
+      "rule books",
+      "benches",
+      "umbrellas"
+    ],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "red",
+    "clothingBottomColour": "yellow",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "Scene is highly accurate and clearly shows a teen boy golfer with medium skin tone in the rough, reaching to move a rake next to a single visible golf ball.",
+      "Clothing colors (red top and yellow shorts) match the specification, and no club is held, matching the action.",
+      "Posture is believably natural for the scenario.",
+      "Course setting, grass, and background trees look realistic for a golf course.",
+      "No prohibited elements or duplicated/malformed equipment are present.",
+      "Rake design is plausible and unobtrusive.",
+      "Skin tone is slightly toward light rather than a strong 'medium', but within an acceptable range for the specification."
+    ],
+    "repairPrompt": "Ensure the boy's skin tone is definitively medium as specified. Double-check that the golfer's appearance clearly communicates a white teen boy with medium skin tone. All other elements are accurate."
+  }
+}

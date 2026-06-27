@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "3.3b(4)",
+  "ruleName": "Certification of Hole Scores",
+  "group": "Scoring in Stroke Play",
+  "title": "What happens if you forget to sign your scorecard?",
+  "question": "After finishing your round in a stroke play competition, you hand in your scorecard but forget to sign it. What is the correct ruling?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You receive a two-stroke penalty."
+    },
+    {
+      "id": "b",
+      "text": "Your scorecard is accepted because the marker signed it."
+    },
+    {
+      "id": "c",
+      "text": "You are disqualified from the competition."
+    },
+    {
+      "id": "d",
+      "text": "You may sign it later when you realise your mistake."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "In a stroke play competition, both the player and the marker must sign the scorecard before it is returned. If the player fails to sign the scorecard before it is returned to the Committee, the player is disqualified, unless the Committee decides that an exceptional circumstance applies. Once the scorecard has been returned, you cannot simply add your signature later. Rule Reference: Rule 3.3b(4).",
+  "imagePrompt": "A polished, semi-realistic (about 75% realistic and 25% stylised) illustration in the established junior golf quiz style, showing a golfer standing at a table in the clubhouse or scorer's station, handing over a scorecard to a competition official. The player's side of the scorecard should have a blank (unsigned) signature box clearly visible. The official is accepting the scorecard across the table. The golfer appears satisfied, as if the round is over. The scene focuses on the handover moment. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer in a clubhouse hands an unsigned scorecard to an official across a table, with the signature area clearly blank, illustrating the moment before disqualification for not signing the scorecard.",
+  "sceneSpec": {
+    "setting": "A golf clubhouse or scorer's area after a round.",
+    "players": "One golfer handing a scorecard to a competition official across a table, looking satisfied or relieved after finishing the round.",
+    "ballPosition": "Not applicable – the focus is on the scorecard hand-in process.",
+    "ruleMoment": "The moment the player gives the unsigned scorecard to the official.",
+    "educationalFocus": "Highlighting the importance of the player signing the scorecard before returning it.",
+    "mustShow": [
+      "A player handing a scorecard across a table to an official",
+      "The official accepting the scorecard",
+      "The player's expression should indicate that they think the round is complete",
+      "A clearly visible blank signature area on the part of the scorecard for the player's signature"
+    ],
+    "mustNotShow": [
+      "Text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles",
+      "Any indication that the player is about to sign or has signed the scorecard"
+    ]
+  }
+}

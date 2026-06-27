@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-13.png",
+  "ruleNumber": "16",
+  "ruleName": "Abnormal course conditions",
+  "group": "Abnormal course conditions",
+  "type": "multiple_choice",
+  "imagePrompt": "A teen boy golfer is next to an area surrounded by blue stakes containing grass cuttings, identifying ground under repair.",
+  "imageAlt": "Teen golfer beside marked ground under repair with piles of grass.",
+  "sceneSpec": {
+    "setting": "rough",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "blue",
+    "clothingBottomColour": "red",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 96,
+    "issues": [
+      "Green and flag visible in the background, while the scene spec said 'greenVisible': false, but this is a minor issue that does not detract from the core teaching function.",
+      "All other key requirements, especially equipment, posture, clothing, ball, and ground under repair area, are correct and visually strong."
+    ],
+    "repairPrompt": "Remove the green and flag in the background to fully match the scene specification that requests 'greenVisible': false. Ensure all other scene elements remain unchanged."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Spotting Ground Under Repair",
+      "question": "Which place is usually marked as 'ground under repair' so you can take relief?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "A blue-marked area with piles of grass clippings"
+        },
+        {
+          "id": "b",
+          "text": "A patch of bare dirt with nothing on it"
+        },
+        {
+          "id": "c",
+          "text": "A regular bunker full of sand"
+        },
+        {
+          "id": "d",
+          "text": "Some wet grass after it rains"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "Ground under repair is often shown with blue lines or sticks. It can be a spot with lots of cut grass left by the greenkeeper.",
+      "vocabulary": [
+        {
+          "term": "ground under repair",
+          "simpleMeaning": "A part of the course marked with lines or stakes because it is being fixed. You may be allowed to move your ball from here."
+        },
+        {
+          "term": "relief",
+          "simpleMeaning": "A free chance to move your ball without penalty when there is something wrong with the ground."
+        },
+        {
+          "term": "grass clippings",
+          "simpleMeaning": "Pieces of grass that have been cut and left in a pile."
+        }
+      ],
+      "teachingTip": "Show children what ground under repair markers look like and explain why these spots are fixed or unsafe.",
+      "likelyMisconceptions": [
+        "Children might think any bare patch of earth or any wet spot is 'ground under repair'. Remind them to look for lines or markers.",
+        "Children might confuse grass clippings with normal grass or not notice markers."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Recognising Ground Under Repair",
+      "question": "Which area is most likely to be marked as 'ground under repair' where you may get relief?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "A blue-marked area with piles of grass cuttings"
+        },
+        {
+          "id": "b",
+          "text": "A patch of bare earth not marked by anything"
+        },
+        {
+          "id": "c",
+          "text": "A normal bunker filled with sand"
+        },
+        {
+          "id": "d",
+          "text": "A spot of wet grass after rain"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "Ground under repair is usually marked with lines or stakes (commonly blue or white) and can include areas with piled grass from maintenance."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "016_003_Recognising_Ground_Under_Repair",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:53.373Z"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-23.png",
+  "ruleNumber": "R12",
+  "ruleName": "Ball stays in bunker",
+  "group": "Ball stays in bunker",
+  "title": "Raking Between Bunker Shots",
+  "question": "If your ball stays in the same bunker after your first shot, can you rake away footprints or disturbed sand from your previous shot before you play your next stroke?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, and you can ground your club behind the ball too"
+    },
+    {
+      "id": "b",
+      "text": "No, you aren’t allowed to touch the sand at all"
+    },
+    {
+      "id": "c",
+      "text": "Yes, but you still can't ground your club behind the ball or during a practice swing"
+    },
+    {
+      "id": "d",
+      "text": "No, you must leave the sand as it is and play your next shot"
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "You may rake the sand to care for the course, but you still can't ground your club behind the ball or touch the sand during your stance or a practice swing.",
+  "imagePrompt": "A teen girl rakes her footprints away in a bunker while her ball remains further ahead in the sand.",
+  "imageAlt": "Teen girl golfer raking sand in a bunker, preparing for a second shot with the ball still inside the bunker.",
+  "sceneSpec": {
+    "setting": "bunker",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "wedge",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": true,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "dark",
+    "clothingTopColour": "black",
+    "clothingBottomColour": "white",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Wedge appears to be lying on the bunker sand rather than actively held, but this is acceptable for the context of raking.",
+      "Left-handedness of the golfer is not entirely clear from pose; could be made more obvious, but not a significant realism issue."
+    ],
+    "repairPrompt": "Ensure the golf wedge is held in the teen girl's other hand, clearly showing a left-handed grip, while she uses the rake to smooth the sand. Make the left-handed posture more distinct."
+  }
+}

@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-07.png",
+  "ruleNumber": "R6/8/15",
+  "ruleName": "Relief",
+  "group": "Relief",
+  "type": "multi_select",
+  "imagePrompt": "A teen golfer on the teeing area, picking up a twig and pulling some loose grass, clearly within the correct area with untouched tee-markers.",
+  "imageAlt": "Teen golfer tidying grass and removing a twig on the tee with tee-markers visible.",
+  "sceneSpec": {
+    "setting": "teeing_area",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": true,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "yellow",
+    "clothingBottomColour": "green",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "Tee markers could be a more common or standard color for authenticity—typically white, yellow, blue, or red."
+    ],
+    "repairPrompt": "Depict tee markers in a standard golf color such as white, yellow, blue, or red for added realism."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What are you allowed to do on the teeing area?",
+      "question": "Before you hit your first shot, which things can you do on the teeing area? Choose all the ones you are allowed to do.",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Make the ground flat with your foot so you can stand better."
+        },
+        {
+          "id": "b",
+          "text": "Pull out loose bits of grass that might be in your way."
+        },
+        {
+          "id": "c",
+          "text": "Pick up stones or sticks that are not stuck in the ground."
+        },
+        {
+          "id": "d",
+          "text": "Move the tee-markers to pick a different place to hit from."
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "c"
+      ],
+      "correctAnswer": [
+        "a",
+        "b",
+        "c"
+      ],
+      "explanation": "On the teeing area, you can fix the ground to stand better and take away loose grass, stones or sticks. But you must never move the tee-markers.",
+      "vocabulary": [
+        {
+          "term": "Teeing area",
+          "simpleMeaning": "The place where you start a hole. It is between two markers and goes back a bit."
+        },
+        {
+          "term": "Tee-markers",
+          "simpleMeaning": "Coloured blocks that show where you must hit your first shot from."
+        }
+      ],
+      "teachingTip": "Show kids the teeing area on the course and let them practise clearing loose bits and checking the tee-markers.",
+      "likelyMisconceptions": [
+        "Some may think moving the tee-markers is allowed.",
+        "Some may think you can't touch anything on the ground."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "What can you do on the tee?",
+      "question": "Which of these actions are allowed on the teeing area before your first shot? Select all that apply.",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Evening out uneven ground for a better stance."
+        },
+        {
+          "id": "b",
+          "text": "Pulling up loose grass that might affect your shot."
+        },
+        {
+          "id": "c",
+          "text": "Removing loose stones or twigs."
+        },
+        {
+          "id": "d",
+          "text": "Moving the tee-markers to change your starting spot."
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "c"
+      ],
+      "correctAnswer": [
+        "a",
+        "b",
+        "c"
+      ],
+      "explanation": "You can prepare the surface by smoothing the ground and removing natural loose items like grass or twigs, but must never move the tee-markers."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "6815_003_What_can_you_do_on_the_tee",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:53.808Z"
+  }
+}

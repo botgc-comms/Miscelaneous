@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-03.png",
+  "ruleNumber": "14",
+  "ruleName": "Dropping and re-dropping",
+  "group": "Dropping and re-dropping",
+  "type": "multiple_choice",
+  "imagePrompt": "A teenage girl drops a ball, but the ball bounces off her shoe before touching the ground on the fairway.",
+  "imageAlt": "Golf ball making contact with the golfer's foot before it lands.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "dropping_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "purple",
+    "clothingBottomColour": "white",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": false,
+    "score": 65,
+    "issues": [
+      "The ball is shown midair beneath the boy's hand, but it does not clearly show contact with or bouncing off the shoe as required by the prompt correction.",
+      "The image depicts the correct number of balls, believable fairway, accurate dropping action, and correct left-handed posture with no club in hand.",
+      "The ball and golf course features are realistic, clothing colors are accurate, and the boy's appearance matches the ethnicity and skin tone requirements.",
+      "Does not clearly emphasize the ball hitting and rebounding off the shoe—the key moment for the teaching objective."
+    ],
+    "repairPrompt": "Clearly depict the golf ball making visible contact with and bouncing directly off the boy's shoe before it hits the ground. Emphasize the exact moment of impact or rebound, keeping all existing details, including single ball, correct clothing, correct left-handed dropping posture, and realistic fairway setting."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "When do you need to drop the ball again?",
+      "question": "You try to drop your ball, but it hits your leg or your bag before it hits the ground. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop the ball again"
+        },
+        {
+          "id": "b",
+          "text": "Play the ball where it is"
+        },
+        {
+          "id": "c",
+          "text": "Add a penalty and keep playing"
+        },
+        {
+          "id": "d",
+          "text": "Ask a referee and wait"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "If your ball touches you or your things before it touches the ground, you have to drop it again. There is no penalty.",
+      "vocabulary": [
+        {
+          "term": "Drop",
+          "simpleMeaning": "Letting the ball fall from your hand at your knee so it can land and stop."
+        },
+        {
+          "term": "Equipment",
+          "simpleMeaning": "Things you use to play golf, like your clubs, bag, and trolley."
+        }
+      ],
+      "teachingTip": "Show children how to drop a ball from knee height and remind them to stand clear of their bag and feet.",
+      "likelyMisconceptions": [
+        "They might think they should keep playing if the ball touches them or their things.",
+        "They might think they get a penalty even if they drop again."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "When must a ball be dropped again?",
+      "question": "If you drop the ball but it touches you or your equipment before hitting the ground, what must you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop the ball again"
+        },
+        {
+          "id": "b",
+          "text": "Play the ball as it lies"
+        },
+        {
+          "id": "c",
+          "text": "Add a penalty and play on"
+        },
+        {
+          "id": "d",
+          "text": "Ask a referee and wait"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "If the dropped ball touches you or your equipment before hitting the ground, you must drop it again without penalty."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "014_003_When_must_a_ball_be_dropped_again",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.820Z"
+  }
+}

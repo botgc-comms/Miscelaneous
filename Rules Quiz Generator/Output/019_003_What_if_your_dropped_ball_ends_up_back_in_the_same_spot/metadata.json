@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-16.png",
+  "ruleNumber": "R19",
+  "ruleName": "Unplayable ball",
+  "group": "Unplayable ball",
+  "title": "What if your dropped ball ends up back in the same spot?",
+  "question": "You drop your ball for relief but it rolls back to the same tough place as before. What can you do next?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball as it is, or declare it unplayable again"
+    },
+    {
+      "id": "b",
+      "text": "Drop again for free"
+    },
+    {
+      "id": "c",
+      "text": "Move the ball to an easier spot without penalty"
+    },
+    {
+      "id": "d",
+      "text": "Pick up the ball and stop playing the hole"
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "You must play the ball as it lies, or you may declare it unplayable again and take another penalty stroke.",
+  "imagePrompt": "A teenage boy golfer has dropped his ball and watches as it rolls back under the same tree roots, looking frustrated.",
+  "imageAlt": "Teen golfer drops a ball and it returns to a tough spot under tree roots.",
+  "sceneSpec": {
+    "setting": "rough",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "dropping_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "dark",
+    "clothingTopColour": "blue",
+    "clothingBottomColour": "purple",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [],
+    "repairPrompt": "No repair needed. All scene and detail requirements have been met for educational golf illustration accuracy."
+  }
+}

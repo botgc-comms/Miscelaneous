@@ -1,0 +1,236 @@
+{
+  "schemaVersion": 1,
+  "packId": "junior-golf-starter-pack",
+  "title": "Junior Golf Starter Pack",
+  "audience": "Brand new junior golfers (ages 6–13) and their non-golfing parents",
+  "pages": [
+    {
+      "id": "00-welcome",
+      "title": "Welcome to Junior Golf",
+      "file": "pages/00-welcome.md",
+      "type": "content",
+      "assetFile": "junior-intro-family.png",
+      "imageAlt": "A friendly group of children and parents arriving at a golf club, ready to learn golf together.",
+      "imagePrompt": "A photorealistic image of a diverse group of children and parents walking towards a golf clubhouse on a sunny day, carrying basic golf equipment. Everyone is smiling and looks excited to learn.",
+      "markdown": "# Welcome to Junior Golf\n\nStarting golf can be an exciting step for both children and parents, even if neither of you has played before! This learning pack is made for families just like yours—no experience needed. Each page is written in plain English and will guide you through the essentials, from the basics of golf to supporting your child on their journey.\n\nGolf is a sport for all ages and abilities. You don’t need to have expensive equipment or special knowledge to get involved. The most important things to bring are a sense of fun, patience, and a willingness to try something new together.\n\nOn the following pages, we’ll explain what you need, how golf sessions run at clubs, how learning progresses, and what you can do to create a positive golfing experience for your child. There’s even a friendly quiz at the end to help make things stick!\n\nLet’s get started and enjoy the adventure of golf, step by step.",
+      "quiz": null
+    },
+    {
+      "id": "01-what-is-golf",
+      "title": "What is Golf?",
+      "file": "pages/01-what-is-golf.md",
+      "type": "content",
+      "assetFile": "what-is-golf.png",
+      "imageAlt": "Children watching a demonstration of how to hit a golf ball on a green field.",
+      "imagePrompt": "A photorealistic image of a golf coach showing a group of children how to hit a golf ball on a teaching area of a golf course. The children are standing in a semicircle, watching and listening attentively.",
+      "markdown": "# What is Golf?\n\nGolf is a sport played outdoors where people use clubs to hit a small ball into a series of holes on a course, aiming to use the fewest number of shots. Each hole is different and offers its own challenge, making every round unique and interesting.\n\nYou play golf on a large area of grass called a 'golf course'. Courses have different areas like the 'tee', where you start, the 'fairway', the main playing area, and the 'green', which is where the hole is located. Each player takes turns hitting their ball from the start to the finish of each hole.\n\nThe main aim for beginners is to have fun, learn the basics, and enjoy being outside. There’s no need to worry about scores or complicated rules at first. In junior sessions, coaches make activities simple and enjoyable, and beginners of all ages can get involved straight away.",
+      "quiz": null
+    },
+    {
+      "id": "02-basic-equipment",
+      "title": "Basic Golf Equipment",
+      "file": "pages/02-basic-equipment.md",
+      "type": "content",
+      "assetFile": "basic-equipment.png",
+      "imageAlt": "A close-up of junior-sized golf clubs, colourful balls, and a small golf bag.",
+      "imagePrompt": "A photorealistic image showing a simple set of junior-sized golf clubs, several colourful golf balls, tees, and a lightweight, small golf bag on grass.",
+      "markdown": "# Basic Golf Equipment\n\nGetting started in golf doesn’t mean you need expensive gear. Most golf clubs for beginners offer equipment to borrow or rent. At a minimum, junior golfers will use:\n\n- A few clubs: usually a putter and an iron (simpler than full adult sets).\n- Golf balls: often colourful for juniors, so they’re easy to see.\n- Tees: small pegs to rest the ball on for the first shot of a hole.\n- A small bag: to carry clubs (some clubs provide this for sessions).\n\nChildren can wear comfortable clothes and trainers—special shoes and clothes aren’t needed at the start. As a parent, there’s no need to buy custom-fitted clubs until your child shows real interest and growth. As they learn, coaches will advise on what equipment your child needs.\n\nRemember, enjoying golf matters more than buying lots of kit!",
+      "quiz": null
+    },
+    {
+      "id": "03-junior-session",
+      "title": "What Happens at a Junior Golf Session?",
+      "file": "pages/03-junior-session.md",
+      "type": "content",
+      "assetFile": "junior-session.png",
+      "imageAlt": "Children practising short golf shots while a friendly coach watches.",
+      "imagePrompt": "A photorealistic image of a junior golf lesson in progress, with a group of children hitting balls under the supervision of a smiling golf coach, outside on a practice green.",
+      "markdown": "# What Happens at a Junior Golf Session?\n\nJunior golf sessions are made to be fun, active, and safe for children of all abilities. Sessions usually start with a warm welcome and an introduction from the coach. Everyone takes part in games and activities designed for learning the basics, like holding the club, aiming, and swinging.\n\nChildren learn at their own pace alongside others. Coaches use a mixture of explanations and demonstrations so everyone understands, even if they’ve never played before. Sessions often finish with a group game or a short, friendly competition.\n\nParents are usually welcome to watch. If you’d like to get involved, speak to the coach. Safety comes first: there will be rules to keep children safe during sessions, and trained staff are always nearby to help.\n\nThe main goal is to help each child enjoy their time and gain confidence with every session.",
+      "quiz": null
+    },
+    {
+      "id": "04-supporting-child",
+      "title": "How Parents Can Support Their Child",
+      "file": "pages/04-supporting-child.md",
+      "type": "content",
+      "assetFile": "supporting-child.png",
+      "imageAlt": "A parent encouraging their child who is learning to swing a golf club.",
+      "imagePrompt": "A photorealistic image of a parent kneeling beside their child on a golf practice area, giving a supportive thumbs-up as the child attempts a swing with a junior club.",
+      "markdown": "# How Parents Can Support Their Child\n\nYou don’t need to know anything about golf to encourage your child. The most powerful thing you can do is to stay positive, praise effort and progress, and help your child enjoy their sessions.\n\nAsk your child what they enjoyed most and show interest in their stories about golf. It’s best to avoid focusing on score or performance. Children learn through fun as much as through practice.\n\nIf your child has questions, it’s perfectly fine to say, “Let’s ask the coach together.” Coaches are happy to explain or demonstrate things again. Being patient and celebrating small achievements helps build your child’s confidence and love for the game.\n\nIf they face challenges, remind them it’s normal to need practice and that everyone learns at a different pace. Most importantly, make sure your child knows you’re proud of them for trying something new!",
+      "quiz": null
+    },
+    {
+      "id": "05-learning-quiz",
+      "title": "Junior Golf Quick Quiz",
+      "file": "pages/05-learning-quiz.md",
+      "type": "quiz",
+      "assetFile": "junior-quiz.png",
+      "imageAlt": "Children smiling and looking cheerful after a golf lesson on a sunny day.",
+      "imagePrompt": "A photorealistic image of several children with their golf clubs, smiling after a lesson outside, enjoying their time together in the sunshine.",
+      "markdown": "# Junior Golf Quick Quiz\n\nHere’s a short quiz to help you and your child remember some of the basics about getting started in junior golf. Give each question a try together! Answers are explained after you choose.",
+      "quiz": {
+        "questions": [
+          {
+            "question": "What should you bring to your first junior golf session?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "A positive attitude and comfortable clothes"
+              },
+              {
+                "id": "b",
+                "text": "A full set of expensive clubs"
+              },
+              {
+                "id": "c",
+                "text": "Special golf shoes"
+              },
+              {
+                "id": "d",
+                "text": "Golf rules book"
+              }
+            ],
+            "correctAnswer": "a",
+            "explanation": "You just need a positive attitude and comfy clothes. Clubs and other equipment are usually provided."
+          },
+          {
+            "question": "Where do you try to get the golf ball to on each hole?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Into the sand"
+              },
+              {
+                "id": "b",
+                "text": "Into the trees"
+              },
+              {
+                "id": "c",
+                "text": "Into the hole on the green"
+              },
+              {
+                "id": "d",
+                "text": "As far as possible"
+              }
+            ],
+            "correctAnswer": "c",
+            "explanation": "The aim is to get the ball into the hole on the green in as few shots as possible."
+          },
+          {
+            "question": "How can parents best support their child in golf?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Keep track of every score"
+              },
+              {
+                "id": "b",
+                "text": "Praise effort and enjoyment"
+              },
+              {
+                "id": "c",
+                "text": "Correct their grip at every opportunity"
+              },
+              {
+                "id": "d",
+                "text": "Stay silent throughout the session"
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "Praising effort and enjoyment helps build confidence and keeps golf fun."
+          },
+          {
+            "question": "If you don’t know an answer, what should you do?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Guess and move on"
+              },
+              {
+                "id": "b",
+                "text": "Ask the coach for help"
+              },
+              {
+                "id": "c",
+                "text": "Ignore it"
+              },
+              {
+                "id": "d",
+                "text": "Stop attending"
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "Coaches are there to help and love answering questions, no matter how simple."
+          },
+          {
+            "question": "What matters most when starting golf?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Winning every game"
+              },
+              {
+                "id": "b",
+                "text": "Getting everything perfect right away"
+              },
+              {
+                "id": "c",
+                "text": "Enjoying learning and having fun"
+              },
+              {
+                "id": "d",
+                "text": "Owning the most expensive clubs"
+              }
+            ],
+            "correctAnswer": "c",
+            "explanation": "Golf should be fun and enjoyable, especially when learning. Progress comes with time and practice."
+          }
+        ]
+      }
+    },
+    {
+      "id": "00-changes",
+      "title": "Motivation changes",
+      "file": "pages/00-changes.md",
+      "type": "content",
+      "assetFile": "changes.png",
+      "imageAlt": "Motivation changes illustration",
+      "imagePrompt": "A realistic junior golf learning image showing motivation changes in a welcoming golf club setting.",
+      "markdown": "# Motivation changes\n\nThis page should help brand new junior golfers and non-golfing parents understand motivation changes in a simple, practical way.",
+      "quiz": null
+    },
+    {
+      "id": "01-pressure",
+      "title": "Reducing pressure",
+      "file": "pages/01-pressure.md",
+      "type": "content",
+      "assetFile": "pressure.png",
+      "imageAlt": "Reducing pressure illustration",
+      "imagePrompt": "A realistic junior golf learning image showing reducing pressure in a welcoming golf club setting.",
+      "markdown": "# Reducing pressure\n\nThis page should help brand new junior golfers and non-golfing parents understand reducing pressure in a simple, practical way.",
+      "quiz": null
+    },
+    {
+      "id": "02-choices",
+      "title": "Giving choice",
+      "file": "pages/02-choices.md",
+      "type": "content",
+      "assetFile": "choices.png",
+      "imageAlt": "Giving choice illustration",
+      "imagePrompt": "A realistic junior golf learning image showing giving choice in a welcoming golf club setting.",
+      "markdown": "# Giving choice\n\nThis page should help brand new junior golfers and non-golfing parents understand giving choice in a simple, practical way.",
+      "quiz": null
+    },
+    {
+      "id": "03-support",
+      "title": "Supporting through change",
+      "file": "pages/03-support.md",
+      "type": "content",
+      "assetFile": "support.png",
+      "imageAlt": "Supporting through change illustration",
+      "imagePrompt": "A realistic junior golf learning image showing supporting through change in a welcoming golf club setting.",
+      "markdown": "# Supporting through change\n\nThis page should help brand new junior golfers and non-golfing parents understand supporting through change in a simple, practical way.",
+      "quiz": null
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-10.png",
+  "ruleNumber": "R8/9",
+  "ruleName": "Do not break anything off or bend anything out of the way",
+  "group": "Do not break anything off or bend anything out of the way",
+  "title": "Moving or bending grass before your shot",
+  "question": "Your ball is deep in tall grass on the fairway. Are you allowed to move or bend the grass out of your way before hitting your shot?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, you can move or bend the grass to get a better shot."
+    },
+    {
+      "id": "b",
+      "text": "No, you must play the ball as it lies and not move the grass."
+    },
+    {
+      "id": "c",
+      "text": "Yes, but only if your group agrees."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You have to play the ball as it lies. You're not allowed to move, bend or break anything growing or fixed to make your shot easier. If you do, you get two penalty strokes.",
+  "imagePrompt": "A teenage boy golfer on the fairway, standing next to his ball which is surrounded by tall grass, appearing to consider moving the grass.",
+  "imageAlt": "Teen boy golfer near golf ball surrounded by long grass, thinking about touching the grass.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "dark",
+    "clothingTopColour": "white",
+    "clothingBottomColour": "grey",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The only possible minor issue is that the left-handed orientation could be more explicit, but the golfer's posture and grip suggest left-handedness. All other elements are highly accurate."
+    ],
+    "repairPrompt": "Ensure the golfer's left-handed stance and grip are unambiguously clear."
+  }
+}

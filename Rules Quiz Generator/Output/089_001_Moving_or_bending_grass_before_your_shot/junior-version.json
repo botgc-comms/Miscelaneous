@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\089_001_Moving_or_bending_grass_before_your_shot\\metadata.json",
+  "sourceImageName": "page-10.png",
+  "ruleNumber": "R8/9",
+  "ruleName": "Do not break anything off or bend anything out of the way",
+  "title": "Moving or bending grass before your shot",
+  "question": "Your ball is deep in tall grass on the fairway. Are you allowed to move or bend the grass out of your way before hitting your shot?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, you can move or bend the grass to get a better shot."
+    },
+    {
+      "id": "b",
+      "text": "No, you must play the ball as it lies and not move the grass."
+    },
+    {
+      "id": "c",
+      "text": "Yes, but only if your group agrees."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You have to play the ball as it lies. You're not allowed to move, bend or break anything growing or fixed to make your shot easier. If you do, you get two penalty strokes.",
+  "juniorVersion": {
+    "title": "Can you move grass before your golf shot?",
+    "question": "Your golf ball lands in some long grass on the fairway. Can you push or bend the grass out of the way before you hit your ball?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Yes, you can move or bend the grass to make it easier to hit the ball."
+      },
+      {
+        "id": "b",
+        "text": "No, you have to hit the ball as it is and not move the grass."
+      },
+      {
+        "id": "c",
+        "text": "Yes, but only if your friends say it's ok."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "You must play the ball where it landed and cannot move or bend grass to make your shot easier. You need to hit the ball as it lies.",
+    "vocabulary": [
+      {
+        "term": "Fairway",
+        "simpleMeaning": "The short grass part of the golf course between the tee and the green."
+      },
+      {
+        "term": "As it lies",
+        "simpleMeaning": "Play the ball from where it is without moving anything around it."
+      }
+    ],
+    "teachingTip": "Show children how different it feels to hit a ball from long grass versus short grass, and why golf says you must play where it is found.",
+    "likelyMisconceptions": [
+      "Some children think it is okay to move grass or sticks because it seems easier.",
+      "Some may believe friends can give special permission, but only the rules matter."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:54.808Z",
+  "model": "gpt-4.1"
+}

@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\005_004_What_to_Do_When_Play_Is_Suspended_Due_to_a_Thunderstorm\\metadata.json",
+  "sourceImageName": "page-04.png",
+  "ruleNumber": "R5",
+  "ruleName": "Suspension of play/thunderstorm",
+  "title": "What to Do When Play Is Suspended Due to a Thunderstorm",
+  "question": "What must you do with your ball if play is stopped because of a thunderstorm warning signal?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Leave it where it is and return to the clubhouse"
+    },
+    {
+      "id": "b",
+      "text": "Pick it up and take it with you without marking"
+    },
+    {
+      "id": "c",
+      "text": "Mark its position, lift it, and replace it later"
+    },
+    {
+      "id": "d",
+      "text": "Play your shot quickly before leaving"
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "You must mark where your ball lies, lift it, and later return it to exactly the same spot when play resumes.",
+  "juniorVersion": {
+    "title": "What Should You Do With Your Ball When There's a Thunderstorm?",
+    "question": "If you hear the horn or siren to stop play because of a thunderstorm, what should you do with your ball?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Leave your ball where it is and go back to the clubhouse"
+      },
+      {
+        "id": "b",
+        "text": "Pick up your ball and leave, but don’t mark the spot"
+      },
+      {
+        "id": "c",
+        "text": "Put a marker by your ball, pick it up, and put it back later when you come back"
+      },
+      {
+        "id": "d",
+        "text": "Hurry up and hit your shot before leaving"
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "You need to put a marker by your ball, pick it up, and later place it back on the same spot when you come back to play.",
+    "vocabulary": [
+      {
+        "term": "Marker",
+        "simpleMeaning": "Something small, like a coin or a special marker, that you put next to your ball to show where it was."
+      },
+      {
+        "term": "Suspended play",
+        "simpleMeaning": "When everyone has to stop playing golf, often because of bad weather like a thunderstorm."
+      }
+    ],
+    "teachingTip": "Show children how to use a marker and practise picking up and putting back a ball in the same spot.",
+    "likelyMisconceptions": [
+      "Some children may think they can just pick up the ball without marking where it was.",
+      "Some may want to quickly hit the ball before leaving.",
+      "Some might think they can just leave the ball on the ground."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:19.952Z",
+  "model": "gpt-4.1"
+}

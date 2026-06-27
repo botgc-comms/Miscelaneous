@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-08.png",
+  "ruleNumber": "R10",
+  "ruleName": "Advice and line of play",
+  "group": "Advice and line of play",
+  "type": "multiple_choice",
+  "imagePrompt": "A teenage girl at her golf ball on the fairway turns to another player for advice, both discussing possible club choices, with golf bags in the background.",
+  "imageAlt": "Two teenage golfers, one asking the other for advice on club selection on the fairway.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "overcast",
+    "prohibitedElements": [
+      "caddies"
+    ],
+    "ethnicity": "mixed",
+    "skinTone": "light",
+    "clothingTopColour": "green",
+    "clothingBottomColour": "white",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The girl is fully correct (addressing ball, correct iron club, natural posture, one clear ball, realistic proportions, green top, white pants, cap, fairway and green visible).",
+      "The boy is plausible as a teenage peer, engaging in discussion. He is wearing a different top, which is allowed, and he is not in an action pose, which matches the spec for a discussion.",
+      "Golf bags are realistic and in the background.",
+      "All equipment proportions are correct, with one realistic iron club and no duplication or malformed gear.",
+      "No caddies, bunkers, water, or prohibited elements."
+    ],
+    "repairPrompt": "Ensure the girl has a visibly mixed ethnicity appearance and confirm a light skin tone. Optionally, further emphasise the golf ball size, iron club head realism, and natural discussion posture. Double-check that both teenagers appear plausibly mixed ethnicity as required."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Talking about which club to use",
+      "question": "If one golfer asks another, 'Which club should I use?' and the other answers, what happens?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Nothing happens, you can always do this."
+        },
+        {
+          "id": "b",
+          "text": "Both the golfer who asks and the one who answers get 2 extra shots added."
+        },
+        {
+          "id": "c",
+          "text": "The golfer who asks or gets help, and the one who gives help, both get 2 extra shots added."
+        },
+        {
+          "id": "d",
+          "text": "Only the person who gives help gets a penalty."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "If someone asks what club to use and the other answers, both golfers get 2 extra shots added to their score. You are not allowed to help pick clubs during a round.",
+      "vocabulary": [
+        {
+          "term": "club",
+          "simpleMeaning": "The stick you use to hit the golf ball."
+        },
+        {
+          "term": "penalty",
+          "simpleMeaning": "An extra shot added to your score for breaking a rule."
+        }
+      ],
+      "teachingTip": "Remind young golfers that you have to make your own choices on the course. No giving or getting help with choosing clubs during the round!",
+      "likelyMisconceptions": [
+        "They might think it's always okay to talk about which club to use.",
+        "They might think only the person giving advice gets a penalty."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Giving advice before a shot",
+      "question": "If one golfer asks another, 'Which club should I use?' and gets an answer, what is the penalty?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Nothing, this is always allowed."
+        },
+        {
+          "id": "b",
+          "text": "Both the player asking and the one answering get 2 penalty strokes."
+        },
+        {
+          "id": "c",
+          "text": "The player who asks for or receives advice, and the one who gives it, each get 2 penalty strokes."
+        },
+        {
+          "id": "d",
+          "text": "Only the person giving advice gets a penalty."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "If a player asks for or gives advice about how to play a shot (such as club selection), both the player who asks/receives and the one giving advice get a two-stroke penalty in stroke play."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "010_002_Giving_advice_before_a_shot",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.522Z"
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-18.png",
+  "ruleNumber": "R10",
+  "ruleName": "Double hit",
+  "group": "Double hit",
+  "title": "What happens if you accidentally hit the ball twice in one swing?",
+  "question": "During a tricky chip, your club accidentally hits the ball twice in the same swing. How many strokes do you count and is there a penalty?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Count two strokes and add a penalty stroke"
+    },
+    {
+      "id": "b",
+      "text": "Count one stroke with no penalty"
+    },
+    {
+      "id": "c",
+      "text": "Count one stroke and add a penalty stroke"
+    },
+    {
+      "id": "d",
+      "text": "Ignore the shot and play again without penalty"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If you double-hit the ball in a single swing, it counts as just one stroke and there is no penalty.",
+  "imagePrompt": "A teenage left-handed girl with a wedge accidentally double-hits the golf ball during a chip shot on the sunny fairway, wearing a red top, white bottoms, and a hat.",
+  "imageAlt": "A girl golfer chips the ball and accidentally hits it twice in one swing.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "addressing_ball",
+    "clubInHand": "wedge",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "navy",
+    "clothingBottomColour": "red",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The only minor issue is that the left-handed posture could be shown more clearly by reversing hand position or stance more distinctly; currently, it's not fully obvious for teaching left-handed grip, but not incorrect."
+    ],
+    "repairPrompt": "Adjust the girl's golf grip and stance to make it even more clearly left-handed, showing her right hand lower on the shaft and stance matching a left-hander, while keeping all other details the same and accurate."
+  }
+}

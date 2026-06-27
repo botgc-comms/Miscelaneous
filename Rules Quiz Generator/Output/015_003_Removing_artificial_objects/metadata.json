@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-28.png",
+  "ruleNumber": "R15",
+  "ruleName": "Movable obstructions",
+  "group": "Movable obstructions",
+  "title": "Removing artificial objects",
+  "question": "There is a drinks can and a yellow course stake lying near your ball on the fairway. What does the rule allow?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You may remove both the can and the stake without penalty"
+    },
+    {
+      "id": "b",
+      "text": "You may only remove the can, not the stake"
+    },
+    {
+      "id": "c",
+      "text": "You can remove both, but get a penalty"
+    },
+    {
+      "id": "d",
+      "text": "You must leave both where they are"
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "Both the drinks can and the course stake are movable obstructions and may be removed without penalty.",
+  "imagePrompt": "A teen boy golfer on the fairway picks up a drinks can and a yellow stake that are next to his golf ball, preparing for his next shot.",
+  "imageAlt": "Teen boy picking up a drinks can and a yellow stake near his golf ball on the fairway.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "yellow",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "asian",
+    "skinTone": "medium",
+    "clothingTopColour": "green",
+    "clothingBottomColour": "red",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Scene shows a realistic fairway with believable features.",
+      "Exactly one golf ball is clearly and realistically depicted.",
+      "Club is a single believable iron with correct head and proportions.",
+      "No malformed or duplicated equipment present.",
+      "Stake is correctly colored (yellow) and realistic.",
+      "Golfer posture is natural and plausible.",
+      "Golfer's appearance matches specified ethnicity, skin tone, and clothing requirements.",
+      "No prohibited elements or unrealistic equipment."
+    ],
+    "repairPrompt": "Ensure the yellow stake appears slightly more embedded in the turf for extra realism, and keep the drinks can closer to the stake and ball for stronger context."
+  }
+}

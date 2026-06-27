@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-13.png",
+  "ruleNumber": "16",
+  "ruleName": "Abnormal course conditions",
+  "group": "Abnormal course conditions",
+  "type": "multi_select",
+  "imagePrompt": "A teen boy golfer on the fairway, with his feet on a mole hill and near a puddle, and an artificial path close to his swing.",
+  "imageAlt": "Teen golfer with stance on mole hill, puddle, and artificial path interfering.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": true,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "dark",
+    "clothingTopColour": "blue",
+    "clothingBottomColour": "orange",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Mole hill could be made slightly more prominent under both feet for emphasis."
+    ],
+    "repairPrompt": "Increase the prominence of the mole hill so that it is clearly under both of the golfer's feet."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "When Can You Move Your Ball for Free Because Something Is in the Way?",
+      "question": "Which of these times can you pick up and drop your ball somewhere better because something on the course is stopping your shot?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Your ball is sitting in a big puddle."
+        },
+        {
+          "id": "b",
+          "text": "You have to stand on a mole hill to hit your ball."
+        },
+        {
+          "id": "c",
+          "text": "You see a path far away and it makes you lose focus."
+        },
+        {
+          "id": "d",
+          "text": "A bench that can’t be moved is blocking your swing."
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "d"
+      ],
+      "correctAnswer": [
+        "a",
+        "b",
+        "d"
+      ],
+      "explanation": "You can move your ball for free if it is sitting in a puddle, you have to stand on a mole hill, or if something big that you can't move (like a bench or sprinkler) is in your way when you try to play your shot. Just seeing something that distracts you, like a path far away, does not count.",
+      "vocabulary": [
+        {
+          "term": "Immovable Obstruction",
+          "simpleMeaning": "Something on the course, like a bench or a big sign, that you can’t move."
+        },
+        {
+          "term": "Temporary Water",
+          "simpleMeaning": "A puddle made by lots of rain that is not always there."
+        },
+        {
+          "term": "Mole Hill",
+          "simpleMeaning": "A small hill of dirt made by a mole."
+        },
+        {
+          "term": "Free Relief",
+          "simpleMeaning": "You are allowed to move your ball somewhere better without a penalty."
+        }
+      ],
+      "teachingTip": "Show kids real examples on the course, like puddles, animal holes, and things that can't be moved. Let them practise finding the nearest place to drop a ball for free relief.",
+      "likelyMisconceptions": [
+        "Children might think they get free relief just because something looks odd or they are distracted.",
+        "Kids may not know the difference between things they can move, like a rake, and things they cannot, like a sprinkler."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "When Is Free Relief Allowed for Abnormal Course Conditions?",
+      "question": "In which of these situations are you allowed to take free relief for an abnormal course condition?",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Your ball is lying in temporary water"
+        },
+        {
+          "id": "b",
+          "text": "Your stance would be on a mole hill"
+        },
+        {
+          "id": "c",
+          "text": "You are distracted by the sight of a path a long way off"
+        },
+        {
+          "id": "d",
+          "text": "Your swing is physically interfered with by an immovable obstruction"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "d"
+      ],
+      "correctAnswer": [
+        "a",
+        "b",
+        "d"
+      ],
+      "explanation": "Free relief is allowed if your play is physically interfered with by temporary water, an animal hole, or an immovable obstruction. Mere distraction, such as seeing a path in the distance, does not qualify."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "016_005_When_Is_Free_Relief_Allowed_for_Abnormal_Course_Conditions",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:53.420Z"
+  }
+}

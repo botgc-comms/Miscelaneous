@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_027_Ball_Stuck_in_a_Tree_What_Are_Your_Options\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "19.1",
+  "ruleName": "Relief for an Unplayable Ball",
+  "title": "Ball Stuck in a Tree - What Are Your Options?",
+  "question": "Your tee shot becomes lodged high up in a tree and you cannot play it where it lies. What are your options?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Take free relief because the ball is impossible to play."
+    },
+    {
+      "id": "b",
+      "text": "Shake the tree until the ball falls out."
+    },
+    {
+      "id": "c",
+      "text": "Declare the ball lost and play another ball."
+    },
+    {
+      "id": "d",
+      "text": "Either try to play the ball as it lies (for example by shaking the tree or climbing it if safe), or take unplayable ball relief with a one-stroke penalty."
+    }
+  ],
+  "correctAnswers": [
+    "d"
+  ],
+  "explanation": "A ball stuck in a tree is not lost if its location is known or virtually certain. The player may play the ball as it lies, which could include shaking the tree in an attempt to dislodge the ball, provided no rule is infringed (such as deliberately breaking branches to improve conditions). Alternatively, unplayable ball relief may be taken anywhere on the course except in a penalty area, with a one-stroke penalty. There is no free relief simply for a ball stuck in a tree.",
+  "juniorVersion": {
+    "title": "Ball Stuck Up High in a Tree - What Can You Do?",
+    "question": "You hit your ball and it gets stuck up high in a tree where you can see it, but you can't hit it. What can you do next?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You can pick up your ball for free because you can't play it."
+      },
+      {
+        "id": "b",
+        "text": "You can shake the tree until your ball falls down."
+      },
+      {
+        "id": "c",
+        "text": "You say your ball is lost and play a new one."
+      },
+      {
+        "id": "d",
+        "text": "You can try to play the ball as it is (like by shaking the tree or trying to reach it safely), or you can take a one-shot penalty and drop your ball somewhere you are allowed."
+      }
+    ],
+    "correctAnswers": [
+      "d"
+    ],
+    "explanation": "If your ball is stuck in a tree and you know it is your ball, you can try to hit it how it is, maybe by shaking the tree carefully or climbing if it's safe. Or, you can take a one-shot penalty and drop your ball so you can keep playing. There is no free drop just because your ball is in a tree.",
+    "vocabulary": [
+      {
+        "term": "Unplayable Ball",
+        "simpleMeaning": "A ball you can't play, like if it's stuck in a tree or a bush."
+      },
+      {
+        "term": "Penalty",
+        "simpleMeaning": "An extra shot added to your score because you took special relief."
+      },
+      {
+        "term": "Drop",
+        "simpleMeaning": "When you let go of the ball from knee height to put it back in play."
+      }
+    ],
+    "teachingTip": "Ask children what they would do if their ball stops somewhere tricky, like in a bush or a tree. Discuss safety and who an adult should help if climbing is considered.",
+    "likelyMisconceptions": [
+      "You always get to pick up your ball for free if you can't play it.",
+      "You must say your ball is lost if you can't reach it.",
+      "You can't try to get your ball from a tree."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:11:59.158Z",
+  "model": "gpt-4.1"
+}

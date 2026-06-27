@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-25.png",
+  "ruleNumber": "17",
+  "ruleName": "Penalty area rule",
+  "group": "Penalty area rule",
+  "title": "Options when your ball is in a yellow penalty area",
+  "question": "Your ball is inside a yellow penalty area. What are your options according to the rules?",
+  "type": "multi_select",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball as it lies in the penalty area."
+    },
+    {
+      "id": "b",
+      "text": "Drop a ball back on the line outside the penalty area with a one-stroke penalty."
+    },
+    {
+      "id": "c",
+      "text": "Pick up your ball and place it anywhere you like on the course without penalty."
+    },
+    {
+      "id": "d",
+      "text": "Go back and play a shot again from your previous position with a one-stroke penalty."
+    }
+  ],
+  "correctAnswer": [
+    "a",
+    "b",
+    "d"
+  ],
+  "correctAnswers": [
+    "a",
+    "b",
+    "d"
+  ],
+  "explanation": "You can play the ball as it lies, or take relief options for a one-stroke penalty: either drop back on the line behind the hazard or return to your previous shot position and replay.",
+  "imagePrompt": "A teen boy golfer stands on the edge of a yellow-staked water hazard, looking at his ball near the water and considering his next move.",
+  "imageAlt": "Teen boy golfer looking at his ball inside a yellow penalty area.",
+  "sceneSpec": {
+    "setting": "penalty_area_edge",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "yellow",
+    "waterVisible": true,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "light",
+    "clothingTopColour": "white",
+    "clothingBottomColour": "black",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 96,
+    "issues": [
+      "Golfer appears slightly older than a typical 'teen', but still plausible",
+      "Handedness is ambiguous; could be clearer that the golfer is left-handed"
+    ],
+    "repairPrompt": "Ensure the teen golfer appears obviously left-handed by showing their right hand lower on the grip and clubface open to the left. Make the age appearance closer to mid-teen, and maintain current style and details."
+  }
+}

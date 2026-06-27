@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-03.png",
+  "ruleNumber": "R18/19",
+  "ruleName": "Provisional Ball / Unplayable Ball",
+  "group": "Provisional Ball",
+  "title": "Original ball found but is unplayable",
+  "question": "You find your original ball within 3 minutes, but it's stuck up against a tree and you can't play it. Are you allowed to keep playing your provisional ball instead?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, you can play the provisional ball instead of the original"
+    },
+    {
+      "id": "b",
+      "text": "No, you must continue with the original ball and use the unplayable ball rule"
+    },
+    {
+      "id": "c",
+      "text": "Yes, but only with a penalty stroke"
+    },
+    {
+      "id": "d",
+      "text": "You can declare both balls lost and replay your shot"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You must continue with your original ball, even if it’s unplayable. If you can't play it, you have to use the options under the unplayable ball rule.",
+  "imagePrompt": "Teenage boy golfer in the rough, near trees, looking at his golf ball which is up against tree roots and appears unplayable.",
+  "imageAlt": "Teen boy golfer with golf ball stuck by a tree root, thinking about his next move.",
+  "sceneSpec": {
+    "setting": "rough",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "light",
+    "clothingTopColour": "orange",
+    "clothingBottomColour": "grey",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Golfer is holding the club in the right hand, and it's not 100% clear if the posture signals left-handedness as specified (minor)."
+    ],
+    "repairPrompt": "Ensure the golfer is clearly standing and holding the iron in a left-handed posture. Show the left hand lower on the grip, and the face/outfit orientation should clearly suggest a left-handed player."
+  }
+}

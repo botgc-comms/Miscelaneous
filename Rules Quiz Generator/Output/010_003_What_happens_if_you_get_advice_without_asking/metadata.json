@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-11.png",
+  "ruleNumber": "R10",
+  "ruleName": "Advice and line of play",
+  "group": "Advice and line of play",
+  "title": "What happens if you get advice without asking?",
+  "question": "If another player gives you advice before your shot—but you didn't ask for it—what do the rules say happens?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No penalty for you."
+    },
+    {
+      "id": "b",
+      "text": "You get 1 penalty stroke."
+    },
+    {
+      "id": "c",
+      "text": "You get 2 penalty strokes."
+    },
+    {
+      "id": "d",
+      "text": "Both players get 2 penalty strokes."
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "You do not get a penalty if another player gives you unsolicited advice.",
+  "imagePrompt": "A teenage golfer looking surprised as another player offers advice while she stands near her ball on the fairway.",
+  "imageAlt": "Teen golfer surprised as another player gives unasked advice on fairway.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "yellow",
+    "clothingBottomColour": "grey",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The left-handed posture is slightly ambiguous but plausible; the club appears in the left hand and the stance is generally correct.",
+      "The golfer's skin tone and clothing match the requirements, but could possibly be made a little more medium-toned as per the brief for greater clarity."
+    ],
+    "repairPrompt": "Clarify the left-handed stance by ensuring the lead hand on the club is clearly the left hand, with a corresponding left-handed golf stance. Adjust the skin tone to be a more distinctly medium tone as described."
+  }
+}

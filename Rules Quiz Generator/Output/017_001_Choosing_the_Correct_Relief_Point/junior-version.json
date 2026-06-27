@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\017_001_Choosing_the_Correct_Relief_Point\\metadata.json",
+  "sourceImageName": "page-14.png",
+  "ruleNumber": "17",
+  "ruleName": "Taking Relief from Abnormal Course Conditions",
+  "title": "Choosing the Correct Relief Point",
+  "question": "When taking free relief from an abnormal course condition, which point should you use to find where to drop your ball?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "The nearest point with no interference from the condition for your stance or swing."
+    },
+    {
+      "id": "b",
+      "text": "Any point you want, as long as it is closer to the hole."
+    },
+    {
+      "id": "c",
+      "text": "The furthest place from where your ball lies."
+    },
+    {
+      "id": "d",
+      "text": "A comfortable place, even if you are still standing in the condition."
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "The rules say you must use the nearest point where there is no interference with your stance or swing from the abnormal condition, not just anywhere you prefer.",
+  "juniorVersion": {
+    "title": "Where To Drop When Something Is In The Way",
+    "question": "If something like a puddle or mud is stopping you from taking your normal shot, where do you drop your ball for free?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "The closest spot where nothing blocks your feet or swing."
+      },
+      {
+        "id": "b",
+        "text": "Anywhere you like, as long as it is nearer to the hole."
+      },
+      {
+        "id": "c",
+        "text": "The farthest spot away from where your ball is now."
+      },
+      {
+        "id": "d",
+        "text": "A comfy spot, even if your feet are still in the wet or muddy area."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "You must drop your ball at the closest place where the puddle or mud does not get in the way of your feet or swing. You cannot just pick any place you like.",
+    "vocabulary": [
+      {
+        "term": "Abnormal course condition",
+        "simpleMeaning": "Something on the golf course that is not usually there and gets in your way, like puddles, mud, or animal holes."
+      },
+      {
+        "term": "Relief",
+        "simpleMeaning": "A free drop you get when something on the course is in your way."
+      }
+    ],
+    "teachingTip": "Show children how to find the nearest spot away from puddles or mud where they can swing without touching the wet or dirty area.",
+    "likelyMisconceptions": [
+      "Children may think they can pick any spot they like if something is in the way.",
+      "They may try to move closer to the hole or farther away."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:13.927Z",
+  "model": "gpt-4.1"
+}

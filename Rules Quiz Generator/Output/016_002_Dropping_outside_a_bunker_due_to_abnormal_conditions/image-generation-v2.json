@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\016_002_Dropping_outside_a_bunker_due_to_abnormal_conditions\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:43:18.130Z",
+  "title": "Dropping outside a bunker due to abnormal conditions",
+  "ruleNumber": "R16",
+  "ruleName": "Abnormal course conditions",
+  "durationSeconds": 188.336
+}

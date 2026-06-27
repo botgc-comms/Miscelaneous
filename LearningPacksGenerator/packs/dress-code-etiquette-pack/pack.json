@@ -1,0 +1,45 @@
+{
+  "id": "dress-code-etiquette",
+  "title": "Dress code and etiquette",
+  "summary": "What to wear and how to behave on the course.",
+  "priority": 100,
+  "estimatedMinutes": 6,
+  "mandatoryFor": [
+    "Junior Cadet", 
+    "Junior Course Cadet"
+  ],
+  "version": 1,
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "Why dress and etiquette matter",
+      "file": "pages/00-title.md"
+    },
+    {
+      "id": "01-dress-code",
+      "title": "Dress code basics",
+      "file": "pages/01-dress-code.md"
+    },
+    {
+      "id": "02-pace-of-play",
+      "title": "Pace of play",
+      "file": "pages/02-pace-of-play.md"
+    },
+    {
+      "id": "03-on-the-green",
+      "title": "On the green",
+      "file": "pages/03-on-the-green.md"
+    },
+    {
+      "id": "04-respect",
+      "title": "Respecting others",
+      "file": "pages/04-respect.md"
+    },
+    {
+      "id": "90-quick-check",
+      "title": "Quick check",
+      "file": "pages/90-quick-check.md",
+      "type": "quiz"
+    }
+  ]
+}

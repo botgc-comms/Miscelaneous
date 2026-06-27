@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\010_005_What_Happens_If_You_Accidentally_Double_Hit_the_Ball\\metadata.json",
+  "sourceImageName": "page-23.png",
+  "ruleNumber": "R10",
+  "ruleName": "Double hit",
+  "title": "What Happens If You Accidentally Double-Hit the Ball?",
+  "question": "If you accidentally hit the ball twice in one swing, how is this counted?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "It counts as two strokes and you receive a penalty"
+    },
+    {
+      "id": "b",
+      "text": "It counts as one stroke and there is no penalty"
+    },
+    {
+      "id": "c",
+      "text": "You must replay the shot from where you started"
+    },
+    {
+      "id": "d",
+      "text": "It is one stroke plus a one-shot penalty"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If you accidentally double hit the ball in a single motion, it only counts as one stroke with no penalty.",
+  "juniorVersion": {
+    "title": "If You Accidentally Hit the Ball Twice in One Swing",
+    "question": "You swing your club and, by accident, hit the ball two times in one swing. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "It counts as two shots and you get a penalty"
+      },
+      {
+        "id": "b",
+        "text": "It counts as one shot and there is no penalty"
+      },
+      {
+        "id": "c",
+        "text": "You have to take your shot again from the same spot"
+      },
+      {
+        "id": "d",
+        "text": "It is one shot plus a penalty"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If you hit the ball twice by mistake, but only swung once, it only counts as one shot. You do not get a penalty.",
+    "vocabulary": [
+      {
+        "term": "Double hit",
+        "simpleMeaning": "Sometimes, the club touches the ball two times in one swing. This is called a double hit."
+      },
+      {
+        "term": "Stroke",
+        "simpleMeaning": "A stroke is when you try to hit the golf ball with your club."
+      }
+    ],
+    "teachingTip": "Let children practise swinging slowly so they understand how a double hit might happen, and that it's just counted as one shot if it was a single swing.",
+    "likelyMisconceptions": [
+      "Kids might think a double hit always means extra shots added.",
+      "Some may think they must go back and replay the shot."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:07.542Z",
+  "model": "gpt-4.1"
+}

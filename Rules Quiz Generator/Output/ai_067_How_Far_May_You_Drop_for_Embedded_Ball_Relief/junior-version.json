@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_067_How_Far_May_You_Drop_for_Embedded_Ball_Relief\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "16.3b",
+  "ruleName": "Embedded Ball Relief",
+  "title": "How Far May You Drop for Embedded Ball Relief?",
+  "question": "Your ball is embedded in the fairway and you take free relief. How far from the reference point may you drop?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "One club-length."
+    },
+    {
+      "id": "b",
+      "text": "Two club-lengths."
+    },
+    {
+      "id": "c",
+      "text": "As far as needed."
+    },
+    {
+      "id": "d",
+      "text": "Exactly where it plugged."
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "When taking free relief for a ball embedded in the general area, including the fairway, the player must drop a ball within one club-length of the reference point (the spot right behind where the ball was embedded), not nearer the hole.",
+  "juniorVersion": {
+    "title": "How Far Can You Drop Your Ball When It’s Stuck in the Ground?",
+    "question": "Your ball got stuck (embedded) in the fairway grass. You want to move and drop it for free. How far from where it was stuck are you allowed to drop your ball?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "One club-length away."
+      },
+      {
+        "id": "b",
+        "text": "Two club-lengths away."
+      },
+      {
+        "id": "c",
+        "text": "As far as you want."
+      },
+      {
+        "id": "d",
+        "text": "Right where it was stuck."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "When your ball is stuck in the ground on the fairway, you can pick it up and drop it, but only within one club-length from right behind where it was stuck, and not closer to the hole.",
+    "vocabulary": [
+      {
+        "term": "Embedded Ball",
+        "simpleMeaning": "A ball that is stuck in the ground and is not quickly moving, with part of it below the ground’s surface."
+      },
+      {
+        "term": "Club-length",
+        "simpleMeaning": "The length of your biggest club (not your putter). You can use it to measure how far you can drop your ball."
+      },
+      {
+        "term": "Fairway",
+        "simpleMeaning": "The short grass between the tee and the green."
+      },
+      {
+        "term": "Relief",
+        "simpleMeaning": "A way to move your ball to a better spot when the rules say you are allowed to."
+      }
+    ],
+    "teachingTip": "Let children use a club to measure a club-length on the fairway before showing where to drop the ball.",
+    "likelyMisconceptions": [
+      "Children may think they can drop anywhere or as far as they want.",
+      "Children may not know how to measure a club-length properly.",
+      "Children may think they have to drop exactly where the ball was stuck."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T19:41:44.943Z",
+  "model": "gpt-4.1"
+}

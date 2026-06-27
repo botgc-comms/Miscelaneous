@@ -1,0 +1,58 @@
+{
+  "generatedAtUtc": "2026-06-26T10:30:14.032Z",
+  "model": "gpt-4.1",
+  "reviewerInstructions": "It should be reworded to a seagull moves your ball",
+  "sourceMetadataPath": "output\\009_003_Ball_moved_by_an_animal\\metadata.json",
+  "original": {
+    "title": "Ball moved by an animal",
+    "question": "A dog runs onto the fairway and knocks your ball out of its spot. According to the rules, what should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Play the ball from its new spot"
+      },
+      {
+        "id": "b",
+        "text": "Replace the ball without penalty"
+      },
+      {
+        "id": "c",
+        "text": "Add a penalty and replace the ball"
+      },
+      {
+        "id": "d",
+        "text": "Replay your previous shot"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If an outside influence, such as an animal, moves your ball at rest, you must replace it without penalty."
+  },
+  "suggestion": {
+    "title": "Ball moved by a seagull",
+    "question": "A seagull lands on the fairway and moves your ball from where it was. What should you do under the rules?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Play the ball from its new position"
+      },
+      {
+        "id": "b",
+        "text": "Put the ball back where it was with no penalty"
+      },
+      {
+        "id": "c",
+        "text": "Add a penalty and put the ball back"
+      },
+      {
+        "id": "d",
+        "text": "Take your last shot again"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If an outside influence, like a seagull, moves your ball while it is at rest, you must put the ball back in its original place without penalty."
+  }
+}

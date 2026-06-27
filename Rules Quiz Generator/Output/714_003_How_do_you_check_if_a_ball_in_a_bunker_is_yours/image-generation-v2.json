@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\714_003_How_do_you_check_if_a_ball_in_a_bunker_is_yours\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:19:00.600Z",
+  "title": "How do you check if a ball in a bunker is yours?",
+  "ruleNumber": "R7/14",
+  "ruleName": "Identifying the ball",
+  "durationSeconds": 189.302
+}

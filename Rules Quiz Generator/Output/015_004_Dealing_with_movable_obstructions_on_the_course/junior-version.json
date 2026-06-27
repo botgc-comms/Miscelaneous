@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\015_004_Dealing_with_movable_obstructions_on_the_course\\metadata.json",
+  "sourceImageName": "page-12.png",
+  "ruleNumber": "R15",
+  "ruleName": "Movable obstructions",
+  "title": "Dealing with movable obstructions on the course",
+  "question": "Your golf ball stops against a can on the course. What should you do according to the rules?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball as it lies with the can in place."
+    },
+    {
+      "id": "b",
+      "text": "Remove the can and, if your ball moves because of this, replace it with no penalty."
+    },
+    {
+      "id": "c",
+      "text": "Remove the can and take a one-stroke penalty if the ball moves."
+    },
+    {
+      "id": "d",
+      "text": "You must not move the can as it is now part of the course."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "When a movable obstruction like a can is interfering, you may remove it. If your ball moves as a direct result, just replace your ball with no penalty.",
+  "juniorVersion": {
+    "title": "What to do if your ball is next to something like a can",
+    "question": "Your golf ball stops next to a can on the course. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Hit the ball like usual and leave the can there."
+      },
+      {
+        "id": "b",
+        "text": "Pick up the can. If your ball moves when you do this, put the ball back where it was. You don’t get a penalty."
+      },
+      {
+        "id": "c",
+        "text": "Pick up the can. If your ball moves, put it back and add one penalty shot."
+      },
+      {
+        "id": "d",
+        "text": "You cannot move the can because now it is part of the golf course."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If something like a can is in your way, you can move it. If your ball moves when you move the can, just put your ball back in the same spot. You do not get a penalty.",
+    "vocabulary": [
+      {
+        "term": "Movable obstruction",
+        "simpleMeaning": "This means something you can pick up or move, like a can or a bottle, that is not meant to be part of the golf course."
+      }
+    ],
+    "teachingTip": "Show children objects like cans and bottles on the green and practise removing them and replacing the ball if it moves.",
+    "likelyMisconceptions": [
+      "Some children might think they get a penalty if the ball moves when moving a can.",
+      "Some might think you can never touch things lying on the course."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:52.385Z",
+  "model": "gpt-4.1"
+}

@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\011_002_Exception_for_balls_intentionally_deflected_on_the_green\\metadata.json",
+  "sourceImageName": "pageb-14.png",
+  "ruleNumber": "11",
+  "ruleName": "Ball in motion intentionally deflected",
+  "title": "Exception for balls intentionally deflected on the green",
+  "question": "If your ball is on the putting green and is intentionally stopped or deflected after a stroke, what is the correct procedure?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Drop a ball within 1 club-length from the estimated spot"
+    },
+    {
+      "id": "b",
+      "text": "Place the ball where it was deflected"
+    },
+    {
+      "id": "c",
+      "text": "Replay the stroke"
+    },
+    {
+      "id": "d",
+      "text": "Play the ball as it lies"
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "If your ball played from the green is intentionally deflected or stopped, the stroke is cancelled and you must replay the shot.",
+  "juniorVersion": {
+    "title": "What to do if someone stops your ball on the green",
+    "question": "You hit your ball on the putting green, and someone or something stops it on purpose. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Drop a ball within one club length from where it was stopped."
+      },
+      {
+        "id": "b",
+        "text": "Put the ball back where it was stopped."
+      },
+      {
+        "id": "c",
+        "text": "Hit your shot again from the same place."
+      },
+      {
+        "id": "d",
+        "text": "Hit the ball from where it ended up."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "If someone or something stops your ball on purpose when you are putting, your shot does not count. You need to take your shot again from the same spot on the green.",
+    "vocabulary": [
+      {
+        "term": "putting green",
+        "simpleMeaning": "The short grass area around the hole where you putt."
+      },
+      {
+        "term": "stroke",
+        "simpleMeaning": "A swing to hit the ball."
+      },
+      {
+        "term": "club-length",
+        "simpleMeaning": "The length of your golf club, used to measure distance in some rules."
+      }
+    ],
+    "teachingTip": "Show kids how to replay their putt if the ball is stopped on purpose, and explain that it is fair to get another go.",
+    "likelyMisconceptions": [
+      "Children might think they should just play the ball where it stopped or was moved.",
+      "They may not realise the stroke doesn’t count if the ball was stopped on purpose."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:11.226Z",
+  "model": "gpt-4.1"
+}

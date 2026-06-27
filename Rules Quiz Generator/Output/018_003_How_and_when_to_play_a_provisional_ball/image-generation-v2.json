@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\018_003_How_and_when_to_play_a_provisional_ball\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:59:58.007Z",
+  "title": "How and when to play a provisional ball",
+  "ruleNumber": "R18",
+  "ruleName": "Provisional/lost ball",
+  "durationSeconds": 180.091
+}

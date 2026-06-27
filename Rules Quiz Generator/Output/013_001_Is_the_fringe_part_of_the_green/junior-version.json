@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\013_001_Is_the_fringe_part_of_the_green\\metadata.json",
+  "sourceImageName": "pageb-04.png",
+  "ruleNumber": "R13",
+  "ruleName": "Green and fringe",
+  "title": "Is the fringe part of the green?",
+  "question": "If your ball comes to rest on the fringe just beside the green, is it treated as being on the putting green according to the rules?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, the fringe is part of the green"
+    },
+    {
+      "id": "b",
+      "text": "No, only the green itself counts"
+    },
+    {
+      "id": "c",
+      "text": "Only if any part of your ball touches the green and the fringe at the same time"
+    },
+    {
+      "id": "d",
+      "text": "It depends where your feet are standing"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "According to the rules, the fringe is not part of the putting green, even if it is right next to it. Only the area marked as the putting green counts.",
+  "juniorVersion": {
+    "title": "Is the grass around the green part of the green?",
+    "question": "If your ball stops on the short grass right next to the green, is that counted as being on the putting green in golf?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Yes, the grass next to the green counts as the green"
+      },
+      {
+        "id": "b",
+        "text": "No, only the putting green itself counts"
+      },
+      {
+        "id": "c",
+        "text": "Only if part of your ball sits on both the green and the grass"
+      },
+      {
+        "id": "d",
+        "text": "It matters where you stand with your feet"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "The short grass next to the green is called the 'fringe.' The rules say only the putting green counts as the green, not the fringe, even if it’s very close.",
+    "vocabulary": [
+      {
+        "term": "Fringe",
+        "simpleMeaning": "The short grass right next to the putting green, but not part of the green."
+      },
+      {
+        "term": "Putting green",
+        "simpleMeaning": "The smooth, flat area where you try to putt the ball in the hole."
+      }
+    ],
+    "teachingTip": "Draw a picture showing the putting green and the fringe to help kids see the difference.",
+    "likelyMisconceptions": [
+      "Some kids might think the fringe is the same as the green because it is so close.",
+      "Kids may think where their feet are changes the rule."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:24.464Z",
+  "model": "gpt-4.1"
+}

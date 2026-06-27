@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-21.png",
+  "ruleNumber": "R16",
+  "ruleName": "Abnormal course conditions",
+  "group": "Abnormal course conditions",
+  "title": "If the bunker is completely flooded",
+  "question": "Your ball comes to rest in a bunker that is completely filled with water and there is no dry ground to drop your ball inside the bunker. What should you do?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball from the water without penalty"
+    },
+    {
+      "id": "b",
+      "text": "Take free relief outside the bunker"
+    },
+    {
+      "id": "c",
+      "text": "Drop outside the bunker with a one-stroke penalty"
+    },
+    {
+      "id": "d",
+      "text": "Choose any spot on the course for free"
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "If you cannot find a dry spot within the bunker, you are allowed to take relief outside the bunker, but you must take a one-stroke penalty.",
+  "imagePrompt": "A teenage girl golfer looking at a bunker that is completely flooded, preparing to drop her ball outside the bunker.",
+  "imageAlt": "Teenage girl golfer dropping a ball just outside a flooded bunker.",
+  "sceneSpec": {
+    "setting": "bunker",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "dropping_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": true,
+    "bunkerVisible": true,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "asian",
+    "skinTone": "dark",
+    "clothingTopColour": "purple",
+    "clothingBottomColour": "black",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Skin tone could potentially be a bit darker to unambiguously meet the 'dark' requirement"
+    ],
+    "repairPrompt": "Adjust the golfer's skin tone to ensure it matches a dark tone as specified, while maintaining the current realism. Keep all other elements unchanged."
+  }
+}

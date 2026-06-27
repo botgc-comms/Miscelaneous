@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\004_003_Borrowing_a_Club_During_a_Round\\metadata.json",
+  "sourceImageName": "page-05.png",
+  "ruleNumber": "R4",
+  "ruleName": "Maximum of 14 clubs",
+  "title": "Borrowing a Club During a Round",
+  "question": "Are you allowed to borrow a club from another player and use it to make a stroke during a round?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No, you are not allowed to borrow clubs from other players during a round"
+    },
+    {
+      "id": "b",
+      "text": "Yes, as long as you ask politely"
+    },
+    {
+      "id": "c",
+      "text": "Yes, but only for putting"
+    },
+    {
+      "id": "d",
+      "text": "Yes, but only once per round"
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "You may not borrow a club from another player to make a stroke during your round. Every player must play only with their own clubs.",
+  "juniorVersion": {
+    "title": "Can You Use Someone Else's Club?",
+    "question": "If you forget your own club, can you use another player's club to hit your ball during a round?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "No, you can't use someone else's club during a round."
+      },
+      {
+        "id": "b",
+        "text": "Yes, if you say please."
+      },
+      {
+        "id": "c",
+        "text": "Yes, but only if you are putting."
+      },
+      {
+        "id": "d",
+        "text": "Yes, but only one time in a round."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "You have to use only your own clubs when you play. You can't take someone else's club to play your shots.",
+    "vocabulary": [
+      {
+        "term": "Club",
+        "simpleMeaning": "A stick you use to hit the golf ball."
+      },
+      {
+        "term": "Round",
+        "simpleMeaning": "Playing all the holes on the golf course during one game."
+      }
+    ],
+    "teachingTip": "Let children choose 14 clubs for their own golf bag before starting play. Discuss why each player needs to use only their own clubs.",
+    "likelyMisconceptions": [
+      "Thinking it's okay to use a friend's club just once or if you ask nicely.",
+      "Believing you can use another player's club just for putting."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:17.072Z",
+  "model": "gpt-4.1"
+}

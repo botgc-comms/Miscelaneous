@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\006_003_Playing_out_of_turn_to_save_time\\metadata.json",
+  "sourceImageName": "page-10.png",
+  "ruleNumber": "R6",
+  "ruleName": "Playing in the wrong order",
+  "title": "Playing out of turn to save time",
+  "question": "You and your friends decide to play out of turn just to speed up play. If no one is trying to get an advantage, is there a penalty?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, everyone gets a penalty."
+    },
+    {
+      "id": "b",
+      "text": "No penalty as long as it is only to speed up play."
+    },
+    {
+      "id": "c",
+      "text": "Only the first person gets a penalty."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "When playing out of turn to save time, with no special advantage gained, there is no penalty.",
+  "juniorVersion": {
+    "title": "Playing shots in a different order to play faster",
+    "question": "You and your friends play your shots in a different order to help everyone go faster. No one is trying to win by going first. Does anyone get a penalty?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Yes, everyone gets a penalty."
+      },
+      {
+        "id": "b",
+        "text": "No, there is no penalty if you are just playing faster."
+      },
+      {
+        "id": "c",
+        "text": "Only the first person gets a penalty."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If you and your friends play out of order only to help play faster, that is okay. No one gets a penalty.",
+    "vocabulary": [
+      {
+        "term": "Penalty",
+        "simpleMeaning": "Something you get if you break a rule, like adding a stroke to your score."
+      },
+      {
+        "term": "Order",
+        "simpleMeaning": "The way players decide who hits their ball first, second, and so on."
+      }
+    ],
+    "teachingTip": "Let children know that in friendly games, playing out of order to keep the game moving is okay if everyone agrees and no unfair advantage is taken.",
+    "likelyMisconceptions": [
+      "Children may think you always get a penalty for playing out of order, but you don't if you are just trying to play faster and everyone agrees."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:35.743Z",
+  "model": "gpt-4.1"
+}

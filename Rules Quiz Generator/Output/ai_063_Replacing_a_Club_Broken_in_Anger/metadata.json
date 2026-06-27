@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "4.1a(2)",
+  "ruleName": "Clubs Broken or Damaged During Round – Deliberately",
+  "group": "Equipment",
+  "title": "Replacing a Club Broken in Anger",
+  "question": "After hitting a poor shot, you smash your putter into the ground and the shaft breaks. Can you replace the club?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes."
+    },
+    {
+      "id": "b",
+      "text": "Yes, but only if you take a one-stroke penalty."
+    },
+    {
+      "id": "c",
+      "text": "No. Because you deliberately damaged the club, you must continue without replacing it."
+    },
+    {
+      "id": "d",
+      "text": "You are disqualified."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "If you deliberately damage a club in anger or frustration, you must not replace it during the round. You may continue to use the damaged club, but you cannot repair or substitute it. This is different from damage that occurs accidentally or during normal play.",
+  "imagePrompt": "A modern, semi-realistic illustration in a polished style (about 75% realistic, 25% stylised), showing one golfer on a putting green near the hole and flagstick, holding a broken putter with a visibly bent or snapped shaft. The player's expression and body language should make it clear they are frustrated or angry. The golf ball should be close to the hole. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles. Show only the broken putter, no replacement clubs or caddies.",
+  "imageAlt": "A golfer, looking frustrated, stands on the green near the hole and flagstick, holding a broken putter with a bent or snapped shaft. The golf ball is nearby on the green.",
+  "sceneSpec": {
+    "setting": "Putting green, with a clearly visible hole and flagstick in the background.",
+    "players": "One player in golf clothing, displaying frustration, holding a putter that is clearly broken (bent or snapped shaft).",
+    "ballPosition": "Golf ball lying near the hole, clearly within putting distance.",
+    "ruleMoment": "The moment after the player has broken the putter in anger, holding the visibly damaged club.",
+    "educationalFocus": "Breaking a club deliberately during a round and whether it may be replaced.",
+    "mustShow": [
+      "Player holding a broken putter showing visible frustration",
+      "Golf ball on the green",
+      "Hole and flagstick"
+    ],
+    "mustNotShow": [
+      "Replacement clubs",
+      "Caddies handing a new putter",
+      "Text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles"
+    ]
+  }
+}

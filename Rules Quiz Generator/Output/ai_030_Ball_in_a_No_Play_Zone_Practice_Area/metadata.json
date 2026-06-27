@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "16.1f",
+  "ruleName": "Relief Must Be Taken from Interference by No Play Zone",
+  "group": "Abnormal Course Conditions",
+  "title": "Ball in a No Play Zone (Practice Area)",
+  "question": "Your tee shot comes to rest in a fenced-off practice area that the Committee has marked as a No Play Zone. What must you do?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball as it lies."
+    },
+    {
+      "id": "b",
+      "text": "You may choose to play it or take free relief."
+    },
+    {
+      "id": "c",
+      "text": "You must take free relief. Playing the ball from the No Play Zone is not allowed."
+    },
+    {
+      "id": "d",
+      "text": "You must take a one-stroke penalty drop."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "A No Play Zone is an area on the course where play is prohibited, often marked by the Committee and sometimes fenced off. If your ball is in a No Play Zone, you must take free relief without penalty under Rule 16.1f; playing the ball from the No Play Zone is not allowed.",
+  "imagePrompt": "Create a polished, modern, semi-realistic (about 75% realistic and 25% stylised) illustration in the established junior golf quiz style. Show a golf course scene with a fenced-off practice area adjacent to a fairway. A golfer stands just outside the fence, observing their ball which has come to rest inside the fenced area. The area should visually stand out as a No Play Zone due to physical barriers and course features, but do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer stands outside a fenced-off practice area on a golf course, looking at a ball that has come to rest inside the fenced area, which is marked as a No Play Zone.",
+  "sceneSpec": {
+    "setting": "Modern golf course, with a practice area adjacent to a hole and clearly fenced off.",
+    "players": "One golfer standing just outside the practice area, observing their ball.",
+    "ballPosition": "The golf ball is visible resting on the grass inside the fenced-off practice area, which is marked as a No Play Zone.",
+    "ruleMoment": "The moment after the player discovers their ball in the No Play Zone, before taking any action.",
+    "educationalFocus": "Shows the typical scenario when a ball ends up in a designated No Play Zone, highlighting that relief is required.",
+    "mustShow": [
+      "Fenced-off practice area",
+      "No Play Zone indicators (physical features only, no signs with wording)",
+      "Golf ball inside the zone",
+      "Player looking at their ball from outside the fence"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  }
+}

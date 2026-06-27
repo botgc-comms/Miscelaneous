@@ -1,0 +1,46 @@
+{
+  "id": "golf-words",
+  "title": "Golf words",
+  "summary": "Common golf words and phrases explained simply.",
+  "description": "This pack introduces the most common words and phrases you’ll hear in golf. It’s designed for juniors and parents who are new to the game, and explains things in plain English with practical examples you’ll recognise on the course.",
+  "estimatedMinutes": 5,
+  "priority": 400,
+  "mandatoryFor": [
+    "Junior Cadet",
+    "Junior Course Cadet"
+  ],
+  "version": 2,
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "Golf language",
+      "summary": "A quick guide to the kind of words you’ll hear on the course.",
+      "file": "pages/00-title.md"
+    },
+    {
+      "id": "01-scoring-words",
+      "title": "Scoring words",
+      "summary": "Par, birdie, bogey, stableford and what they actually mean.",
+      "file": "pages/01-scoring-terms.md"
+    },
+    {
+      "id": "02-course-words",
+      "title": "Course words",
+      "summary": "Tee box, fairway, rough, green, bunker and more.",
+      "file": "pages/02-course-terms.md"
+    },
+    {
+      "id": "03-common-words",
+      "title": "Other common words",
+      "summary": "Handicap, tee time, gimmes, mulligans and other phrases you’ll hear.",
+      "file": "pages/03-general-terms.md"
+    },
+    {
+      "id": "90-quick-check",
+      "title": "Quick check",
+      "summary": "A short quiz to see what you’ve picked up.",
+      "file": "pages/90-quick-check.md",
+      "type": "quiz"
+    }
+  ]
+}

@@ -1,0 +1,352 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-15.png",
+  "sourceImagePath": "Input\\page-15.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-15.png",
+      "ruleNumber": "R16",
+      "ruleName": "Ball lost in abnormal course conditions",
+      "group": "Ball lost in abnormal course conditions",
+      "title": "Free relief for lost ball in abnormal course conditions",
+      "question": "If you lose your ball in an area you’re sure is abnormal course conditions, what are you allowed to do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play a new ball from the tee with a penalty"
+        },
+        {
+          "id": "b",
+          "text": "Take free relief from where your ball last crossed the edge of the abnormal area"
+        },
+        {
+          "id": "c",
+          "text": "Drop another ball anywhere you like, no penalty"
+        },
+        {
+          "id": "d",
+          "text": "You have to search for your ball for 10 minutes"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You take free relief from the spot where your ball last crossed the edge of the abnormal course conditions.",
+      "imagePrompt": "A teenage girl golfer standing next to a marked area of abnormal course condition, about to drop a ball where she believes her ball last entered the area, with no penalty.",
+      "imageAlt": "Junior girl golfer about to drop a ball at the edge of an abnormal course condition area.",
+      "sceneSpec": {
+        "setting": "rough",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "dropping_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "medium",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "purple",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-15.png",
+      "ruleNumber": "R13",
+      "ruleName": "Wrong green",
+      "group": "Wrong green",
+      "title": "Ball lands on the wrong green",
+      "question": "Your ball lands on a practice green or another putting green for a different hole. What must you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball as it lies to save time"
+        },
+        {
+          "id": "b",
+          "text": "Pick up the ball and throw it off the green"
+        },
+        {
+          "id": "c",
+          "text": "Take free relief by dropping the ball off the green, no closer to the hole"
+        },
+        {
+          "id": "d",
+          "text": "Ask for a penalty and replay the shot"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "You must take free relief and drop the ball off the wrong green, no closer to the hole.",
+      "imagePrompt": "A teenage boy standing beside a wrong green, preparing to drop his ball off the edge of the green, holding a wedge.",
+      "imageAlt": "Junior boy golfer about to drop a ball near the edge of a different putting green.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "dropping_ball",
+        "clubInHand": "wedge",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "orange",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-15.png",
+      "ruleNumber": "R8",
+      "ruleName": "Divots, tractor ruts, bald patches, etc.",
+      "group": "Divots, tractor ruts, bald patches, etc.",
+      "title": "Playing from a divot, rut or bald patch",
+      "question": "If your ball lands in a deep divot or a tractor rut, what are your options?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball as it lies or declare it unplayable (with a penalty)"
+        },
+        {
+          "id": "b",
+          "text": "Always get free relief"
+        },
+        {
+          "id": "c",
+          "text": "Move the ball to the nearest perfect grass"
+        },
+        {
+          "id": "d",
+          "text": "Ask for a re-do with no penalty"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You must play the ball as it lies or declare it unplayable and take a penalty.",
+      "imagePrompt": "A teenage boy golfer looking down at his golf ball resting in a deep divot on the fairway, preparing to play the difficult shot.",
+      "imageAlt": "Junior golfer faced with a golf ball lying in a divot on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "red",
+        "hat": true
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-15.png",
+      "ruleNumber": "R16",
+      "ruleName": "Ball lost in abnormal course conditions",
+      "group": "Ball lost in abnormal course conditions",
+      "title": "Free relief for lost ball in abnormal course conditions",
+      "question": "You are certain your ball is lost in an area marked as abnormal course conditions (like ground under repair), but you can’t find it. What are you allowed to do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play a new ball from the tee with a penalty"
+        },
+        {
+          "id": "b",
+          "text": "Take free relief by dropping a ball at the spot where your original ball last crossed the edge of the abnormal course condition"
+        },
+        {
+          "id": "c",
+          "text": "Drop another ball anywhere on the course without penalty"
+        },
+        {
+          "id": "d",
+          "text": "Search for your ball for 10 minutes"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If you are certain your ball is lost in abnormal course conditions, you may take free relief by dropping a ball at the point where the ball last crossed the edge of that area, with no penalty.",
+      "imagePrompt": "A teenage boy in the rough next to a clearly marked ground under repair area, preparing to drop a golf ball just outside the painted line, with his iron club ready.",
+      "imageAlt": "Teenage boy golfer about to drop a ball next to a ground under repair area in the rough.",
+      "sceneSpec": {
+        "setting": "rough",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "dropping_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "dark",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "green",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-15.png",
+      "ruleNumber": "R13",
+      "ruleName": "Wrong green",
+      "group": "Wrong green",
+      "title": "Ball lands on the wrong green",
+      "question": "If your ball comes to rest on a putting green that’s not the one for the hole you’re playing, what should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball as it lies to save time"
+        },
+        {
+          "id": "b",
+          "text": "Pick up the ball and throw it off the green"
+        },
+        {
+          "id": "c",
+          "text": "Take free relief by dropping the ball off the green, no closer to the hole"
+        },
+        {
+          "id": "d",
+          "text": "Ask for a penalty and replay the shot"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "You must take free relief by dropping your ball off the wrong green, no closer to the hole, and may not play from another putting green.",
+      "imagePrompt": "A teenage girl on a putting green that is not the correct green for her hole, preparing to drop a golf ball just off the green with a wedge.",
+      "imageAlt": "Teen girl golfer about to drop a ball from the edge of a putting green, preparing for free relief.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "dropping_ball",
+        "clubInHand": "wedge",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "blue",
+        "clothingBottomColour": "purple",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-15.png",
+      "ruleNumber": "R8",
+      "ruleName": "Divots, tractor ruts, bald patches, etc.",
+      "group": "Divots, tractor ruts, bald patches, etc.",
+      "title": "Playing from a divot, rut or bald patch",
+      "question": "Your ball lands in a deep divot or a tractor rut on the fairway. Which of these is correct?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You must play the ball as it lies or take an unplayable lie and add a penalty"
+        },
+        {
+          "id": "b",
+          "text": "You always get free relief"
+        },
+        {
+          "id": "c",
+          "text": "You can move the ball to some good grass without penalty"
+        },
+        {
+          "id": "d",
+          "text": "You are allowed to rehit your shot with no penalty"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You have to play the ball as it lies, or declare it unplayable and take a penalty stroke—there is no free relief just for a divot or rut.",
+      "imagePrompt": "A teenage girl in a navy top and red bottoms, addressing a golf ball lying in a deep divot on a fairway under an overcast sky, holding an iron club and ready to play.",
+      "imageAlt": "Teen girl golfer in navy and red about to play a ball from a fairway divot.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "white",
+        "hat": false
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "016_001_Free_relief_for_lost_ball_in_abnormal_course_conditions",
+    "013_002_Ball_lands_on_the_wrong_green",
+    "008_003_Playing_from_a_divot_rut_or_bald_patch"
+  ],
+  "updatedAtUtc": "2026-04-24T20:52:30.480Z"
+}

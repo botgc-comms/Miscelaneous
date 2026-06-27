@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "6.4a",
+  "ruleName": "Order of Play in Match Play",
+  "group": "Playing the Round",
+  "title": "Opponent Plays Out of Turn",
+  "question": "You are playing a match. It is your turn to play first, but your opponent plays before you and hits a perfect drive straight down the middle of the fairway. What are you allowed to do?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Nothing. Once the shot has been played, it must stand."
+    },
+    {
+      "id": "b",
+      "text": "Add one penalty stroke to your opponent's score."
+    },
+    {
+      "id": "c",
+      "text": "Cancel your opponent's stroke and require them to play again in the correct order."
+    },
+    {
+      "id": "d",
+      "text": "Make your opponent replay the shot only if it went out of bounds."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "In match play, if your opponent plays out of turn, you may immediately require them to cancel the stroke and replay it in the correct order. There is no penalty, but the original stroke does not count if you choose to recall it. If you do not require the stroke to be replayed straight away, the stroke stands and play continues. This Rule applies only in match play. In stroke play, there is generally no penalty for playing out of turn, although players should play in the correct order for safety and pace of play. (Rule 6.4a)",
+  "imagePrompt": "Illustrate a match play tee shot scene in the junior golf quiz style: two junior golfers at the teeing area of a golf hole on a bright, clear day. One golfer, who was not supposed to play first, has just completed their drive and is standing with their club after their swing, looking down the fairway. Their golf ball should be shown sitting in the middle of the fairway. The other golfer, whose turn it was, is still standing at the tee with their club in hand and their ball teed up, appearing surprised or unsure. Show both players clearly, focusing on the moment after the out-of-turn shot, with the fairway and tee box visible. Create a polished, modern semi-realistic illustration, about 75% realistic and 25% stylised, with gentle lighting. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "Two junior golfers on a tee; one has just played out of turn and finished their drive, while the other, whose turn it was, waits with ball still teed up and looks surprised. The fairway and both ball positions are visible on a clear day.",
+  "sceneSpec": {
+    "setting": "Teeing area of a golf hole, lush green fairway ahead, on a clear day.",
+    "players": "Two golfers, both junior age, one finishing their swing while the other waits, surprised or unsure.",
+    "ballPosition": "One ball visible in the middle of the fairway, another golfer still has ball at their feet on the tee.",
+    "ruleMoment": "Opponent has just played out of turn first from the teeing area with a successful drive, while player whose turn it was has not yet played.",
+    "educationalFocus": "Highlight the situation of playing out of turn in match play and possible actions.",
+    "mustShow": [
+      "Both players clearly visible at the teeing area",
+      "Opponent has completed their drive, ball position visible in fairway",
+      "Player whose turn it was is still holding their club with their ball teed up"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  }
+}

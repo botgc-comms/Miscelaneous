@@ -1,0 +1,5 @@
+{
+  "text": ["Presented to", "Burton on Trent Golf Club", "To mark their", "Centenary year", "By Whittington Heath", "Golf Club"],
+  "allowText": true,
+  "notes": "Include the WH GC logo at the top. The inscription reads Presented to burton on trent golf club to mark their centenary year by Whittington heath golf club"
+}

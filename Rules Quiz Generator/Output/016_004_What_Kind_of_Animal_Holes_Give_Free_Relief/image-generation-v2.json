@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\016_004_What_Kind_of_Animal_Holes_Give_Free_Relief\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:47:05.992Z",
+  "title": "What Kind of Animal Holes Give Free Relief?",
+  "ruleNumber": "16",
+  "ruleName": "Abnormal course conditions",
+  "durationSeconds": 187.095
+}

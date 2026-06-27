@@ -1,0 +1,247 @@
+{
+  "schemaVersion": 1,
+  "packId": "junior-golf-basics",
+  "title": "Junior Golf Learning Pack",
+  "audience": "Brand new junior golfers and non-golfing parents",
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "Welcome to Golf!",
+      "file": "pages/00-title.md",
+      "type": "content",
+      "assetFile": "title.png",
+      "imageAlt": "A happy family and junior golfer standing together on a sunny golf course with clubs.",
+      "imagePrompt": "A smiling family with a young junior golfer, standing on a green golf course in bright weather, holding golf clubs. The background shows a gentle slope, trimmed grass, and a few trees. The scene should feel friendly, welcoming, and relaxed, suitable for beginners.",
+      "markdown": "# Welcome to Golf!\n\nStarting golf as a junior is an exciting adventure! This pack will guide you, whether you are a young future golfer or a parent learning alongside your child. Golf is a friendly and social game that welcomes everyone, and there’s no need to worry about having fancy equipment to begin. All you need is some comfortable clothes, a pair of trainers, and a can-do attitude.\n\nHere you’ll find everything you need to know about getting started, from understanding basic equipment and golf words, to how you spend time on the course. We’ll explain things simply and clearly, without any confusing jargon.\n\nTake your time with each section, and remember: the most important thing is to have fun, and to enjoy being outdoors together. Welcome—let’s start your golf journey!",
+      "quiz": null
+    },
+    {
+      "id": "01-basics",
+      "title": "What is Golf?",
+      "file": "pages/01-basics.md",
+      "type": "content",
+      "assetFile": "golf-basics.png",
+      "imageAlt": "A junior golfer and adult showing a basic golf swing on a flat grassy area.",
+      "imagePrompt": "A young junior golfer and an adult standing on a grassy area, gently swinging a golf club together. The scene shows them smiling and practising with golf balls on short grass. Trees and blue sky in the background add a calm, friendly feel. Emphasise relaxed posture and learning.",
+      "markdown": "# What is Golf?\n\nGolf is played using a small ball and a set of clubs. The aim is to hit the ball into a hole on the green in as few hits as possible.\n\nMost courses have 9 or 18 holes, but beginners often start by playing just a few. Each hole has a starting area (the ‘tee’), a short grass area (the ‘fairway’), and a final area with very short grass (the ‘green’), where you putt the ball into the hole.\n\nGolf is not a race. Everyone gets to take their turn calmly. You walk between shots, enjoy the surroundings, and celebrate good shots together. The goal is to have fun, learn together, and show respect to other golfers and the course.\n\nDon’t worry if you’re unsure about rules or technique—everyone started somewhere! Just remember: golf is a sport for all ages and abilities. Progress comes with practice, and every swing gets you closer.",
+      "quiz": null
+    },
+    {
+      "id": "02-equipment",
+      "title": "Basic Equipment",
+      "file": "pages/02-equipment.md",
+      "type": "content",
+      "assetFile": "equipment-basics.png",
+      "imageAlt": "A small set of junior golf clubs, some balls, and tees laid out on the grass.",
+      "imagePrompt": "A simple set of junior golf clubs (such as a putter, an iron, and a wood), a handful of white golf balls and colourful plastic tees arranged neatly on a patch of green grass. The scene should look accessible and welcoming, with no branded equipment shown. Soft natural light.",
+      "markdown": "# Basic Equipment\n\nStarting golf doesn’t mean you need a lot of new gear. Junior golfers only need a few things to begin:\n\n**Golf Clubs:** Most juniors start with two or three clubs, like a putter, an iron, and maybe a driver or fairway wood. You don’t need a full set just yet.\n\n**Golf Balls and Tees:** Any golf balls will do for beginners. Tees are little pegs to pop the ball on for your first shot on each hole—they come in plastic or wood and are easy to find.\n\n**Shoes and Clothing:** Trainers with good grip and comfortable clothes are fine for starting out. There’s no need to buy special golf clothes straight away. Just check your club’s rules for any dress code.\n\n**Bag:** If you have a small bag to carry your clubs, great! If not, carrying them by hand is fine when you’re learning.\n\nClubs and other bits can often be borrowed from the golf club when you try a session. Don’t worry about having everything perfect—all you need is enough to get started.",
+      "quiz": null
+    },
+    {
+      "id": "03-how-to-play",
+      "title": "How to Play a Hole",
+      "file": "pages/03-how-to-play.md",
+      "type": "content",
+      "assetFile": "playing-hole.png",
+      "imageAlt": "A sequence showing a junior golfer teeing off, walking the fairway, and putting on the green.",
+      "imagePrompt": "A photorealistic, friendly sequence of a junior golfer: first teeing off from a tee box, then walking along a sunny fairway with a club, and finally putting on a smooth green. Each step should look fun and easy, with green surroundings and safe distances.",
+      "markdown": "# How to Play a Hole\n\nPlaying a hole in golf is simple once you know the steps. Here’s how a typical hole works:\n\n1. **Tee Off:** Start at the tee area by placing your ball on a tee. Take your shot towards the fairway.\n\n2. **Fairway Shots:** After the first shot, walk to where your ball landed. Each player takes turns hitting their ball towards the green.\n\n3. **Approaching the Green:** Once your ball is near the green, use a smaller club (like a putter) to try to get it onto the green and close to the hole.\n\n4. **Putting:** On the green, gently putt the ball towards the hole. It might take a few tries to get it in—don’t worry, just keep practising.\n\n5. **Finish the Hole:** When the ball goes in the hole, you’ve finished. Count how many shots it took, then move on to the next hole together.\n\nTake your time and celebrate everyone’s good shots. Golf is about enjoyment, learning, and improvement. Everyone plays at their own pace!",
+      "quiz": null
+    },
+    {
+      "id": "04-course-behaviour",
+      "title": "Good Behaviour on the Course",
+      "file": "pages/04-course-behaviour.md",
+      "type": "content",
+      "assetFile": "course-behaviour.png",
+      "imageAlt": "Junior golfers showing respect by waiting their turn and being quiet while a friend takes a shot.",
+      "imagePrompt": "Photorealistic image of junior golfers waiting patiently and quietly on a golf course as one child takes their shot. The children are smiling and displaying respect. Soft sunlight and green grass suggest a calm and friendly setting.",
+      "markdown": "# Good Behaviour on the Course\n\nBeing polite and thoughtful helps keep golf enjoyable for everyone. Here are some important behaviours to remember:\n\n- **Wait Your Turn:** Always let the person furthest from the hole play first, and watch from a safe distance.\n- **Be Quiet:** Stay still and quiet when someone is hitting their shot. This helps them concentrate.\n- **Look After the Course:** Repair any marks you make on the green, and always leave bunkers tidy by using the rake provided.\n- **Stay Safe:** Only swing your club when you’re certain no one is too near. Always check around you.\n- **Keep Up the Pace:** Be ready when it’s your turn, and walk briskly between shots. This helps everyone enjoy their round.\n\nA friendly attitude and respect go a long way—ask questions if you’re unsure. Coaches and other players are happy to help you learn. The more you practise these good habits, the more you’ll enjoy your golf and make new friends.",
+      "quiz": null
+    },
+    {
+      "id": "05-basic-words",
+      "title": "Basic Golf Words",
+      "file": "pages/05-basic-words.md",
+      "type": "content",
+      "assetFile": "basic-words.png",
+      "imageAlt": "Various golf objects such as a tee box, fairway, green, hole, and flag, each clearly visible.",
+      "imagePrompt": "A photorealistic educational image showing labelled features of a golf hole: the tee box, fairway, rough, green, hole, and flag. Each feature is clearly distinguishable, but there are no text labels on the image. The image should look family-friendly and educational.",
+      "markdown": "# Basic Golf Words\n\nHere are some common golf words and their meanings:\n\n- **Tee:** The starting area for each hole. The ‘tee’ is also the small peg you rest your ball on for your first shot.\n- **Fairway:** The shorter grass area between the tee and the green. It’s the best place to aim your shots.\n- **Rough:** The longer grass around the fairway. It is harder to hit from here.\n- **Green:** The smooth, short grass area where you putt the ball into the hole.\n- **Bunker:** A sandy area, usually near the green or fairway. Try not to hit your ball in here!\n- **Hole:** Where you are aiming for—a small cup on the green with a flag in it.\n\nDon’t worry about remembering all these straight away. You’ll get to know them as you play! If you hear a word you don’t know on the course, just ask—everyone is there to help.",
+      "quiz": null
+    },
+    {
+      "id": "90-quiz",
+      "title": "Quick Golf Quiz",
+      "file": "pages/90-quiz.md",
+      "type": "quiz",
+      "assetFile": "quiz.png",
+      "imageAlt": "A friendly family group and junior golfers smiling after finishing a fun game of golf together.",
+      "imagePrompt": "Photorealistic image showing a group of children and parents smiling and giving a thumbs up at the end of a round of golf on a sunny green course, surrounded by well-kept grass and trees. The atmosphere should be happy and encouraging.",
+      "markdown": "# Quick Golf Quiz\n\nLet’s see what you remember! Answer these questions to check your understanding. Don’t worry if you’re not sure—every answer explains itself.",
+      "quiz": {
+        "questions": [
+          {
+            "question": "Where do you start each hole in golf?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "On the green"
+              },
+              {
+                "id": "b",
+                "text": "In the bunker"
+              },
+              {
+                "id": "c",
+                "text": "At the tee"
+              },
+              {
+                "id": "d",
+                "text": "Next to the hole"
+              }
+            ],
+            "correctAnswer": "c",
+            "explanation": "You always start at the tee, the special area for beginning each hole."
+          },
+          {
+            "question": "What is a ‘putter’ used for?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Hitting off the tee"
+              },
+              {
+                "id": "b",
+                "text": "Getting out of bunkers"
+              },
+              {
+                "id": "c",
+                "text": "Making long shots"
+              },
+              {
+                "id": "d",
+                "text": "Rolling the ball on the green"
+              }
+            ],
+            "correctAnswer": "d",
+            "explanation": "A putter is designed for gently rolling the ball into the hole when you are on the green."
+          },
+          {
+            "question": "What should you do when a friend is hitting their shot?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Talk and move around"
+              },
+              {
+                "id": "b",
+                "text": "Wait quietly and still"
+              },
+              {
+                "id": "c",
+                "text": "Stand very close"
+              },
+              {
+                "id": "d",
+                "text": "Wave your club"
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "It’s best to stand quietly and safely while others play. This shows respect."
+          },
+          {
+            "question": "What does ‘fairway’ mean?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "The sand area"
+              },
+              {
+                "id": "b",
+                "text": "The smooth short grass between tee and green"
+              },
+              {
+                "id": "c",
+                "text": "The rougher long grass"
+              },
+              {
+                "id": "d",
+                "text": "The hole itself"
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "The fairway is the shorter grass you try to aim for after teeing off."
+          },
+          {
+            "question": "Do you need expensive clubs to start playing golf?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Yes, always"
+              },
+              {
+                "id": "b",
+                "text": "Only for competitions"
+              },
+              {
+                "id": "c",
+                "text": "No, you can start with simple or borrowed clubs"
+              },
+              {
+                "id": "d",
+                "text": "Only for adults"
+              }
+            ],
+            "correctAnswer": "c",
+            "explanation": "You can begin with borrowed or simple clubs. Expensive equipment is not needed to start."
+          }
+        ]
+      }
+    },
+    {
+      "id": "01-scoring-words",
+      "title": "Scoring words",
+      "file": "pages/01-scoring-terms.md",
+      "type": "content",
+      "assetFile": "scoring-terms.png",
+      "imageAlt": "Scoring words illustration",
+      "imagePrompt": "A realistic junior golf learning image showing scoring words in a welcoming golf club setting.",
+      "markdown": "# Scoring words\n\nThis page should help brand new junior golfers and non-golfing parents understand scoring words in a simple, practical way.",
+      "quiz": null
+    },
+    {
+      "id": "02-course-words",
+      "title": "Course words",
+      "file": "pages/02-course-terms.md",
+      "type": "content",
+      "assetFile": "course-terms.png",
+      "imageAlt": "Course words illustration",
+      "imagePrompt": "A realistic junior golf learning image showing course words in a welcoming golf club setting.",
+      "markdown": "# Course words\n\nThis page should help brand new junior golfers and non-golfing parents understand course words in a simple, practical way.",
+      "quiz": null
+    },
+    {
+      "id": "03-common-words",
+      "title": "Other common words",
+      "file": "pages/03-general-terms.md",
+      "type": "content",
+      "assetFile": "general-terms.png",
+      "imageAlt": "Other common words illustration",
+      "imagePrompt": "A realistic junior golf learning image showing other common words in a welcoming golf club setting.",
+      "markdown": "# Other common words\n\nThis page should help brand new junior golfers and non-golfing parents understand other common words in a simple, practical way.",
+      "quiz": null
+    },
+    {
+      "id": "90-quick-check",
+      "title": "Quick check",
+      "file": "pages/90-quick-check.md",
+      "type": "quiz",
+      "assetFile": "quick-check.png",
+      "imageAlt": "Quick check illustration",
+      "imagePrompt": "A realistic junior golf learning image showing quick check in a welcoming golf club setting.",
+      "markdown": "# Quick check\n\nThis page should help brand new junior golfers and non-golfing parents understand quick check in a simple, practical way.",
+      "quiz": null
+    }
+  ]
+}

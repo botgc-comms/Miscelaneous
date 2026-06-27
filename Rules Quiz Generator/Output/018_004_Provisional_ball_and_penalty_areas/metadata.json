@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-01.png",
+  "ruleNumber": "18",
+  "ruleName": "Playing a provisional ball",
+  "group": "Playing a provisional ball",
+  "title": "Provisional ball and penalty areas",
+  "question": "If your ball goes into a penalty area, such as a pond marked with red stakes, can you decide to play a provisional ball?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, you can always play a provisional ball in any situation."
+    },
+    {
+      "id": "b",
+      "text": "No, you cannot play a provisional ball if your ball might be in a penalty area."
+    },
+    {
+      "id": "c",
+      "text": "Yes, but only if your ball is not found."
+    },
+    {
+      "id": "d",
+      "text": "Only if you are playing in a team competition."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You are not allowed to play a provisional ball when your ball is likely in a penalty area. Instead, you must use the penalty relief options.",
+  "imagePrompt": "A teenage girl golfer stands at the edge of a pond marked with red stakes, looking at the penalty area after her ball has landed in the water.",
+  "imageAlt": "Girl golfer at the edge of a pond marked with red stakes, thinking about what to do after her ball goes into the water.",
+  "sceneSpec": {
+    "setting": "penalty_area_edge",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "red",
+    "waterVisible": true,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "black",
+    "clothingBottomColour": "orange",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [],
+    "repairPrompt": "Ensure the golfer's left-handedness is visually clear, showing the grip and stance more overtly left-handed if needed."
+  }
+}

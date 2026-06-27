@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_017_Lost_Ball_in_a_Pile_of_Leaves\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "18.2a(1)",
+  "ruleName": "Lost Ball",
+  "title": "Lost Ball in a Pile of Leaves",
+  "question": "Your tee shot heads towards a large pile of fallen leaves. You and your playing partners are virtually certain the ball is buried underneath, but you cannot find it within three minutes. Can you take a free drop?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes. If everyone agrees the ball is under the leaves, you may take free relief."
+    },
+    {
+      "id": "b",
+      "text": "Yes. Fallen leaves are loose impediments, so you always get free relief."
+    },
+    {
+      "id": "c",
+      "text": "No. Unless a Local Rule provides relief, the ball is lost and you must proceed under stroke and distance."
+    },
+    {
+      "id": "d",
+      "text": "Yes, but only if the leaves are on the fairway."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "Fallen leaves are loose impediments, but that does not entitle you to free relief if your ball cannot be found. If the ball is not found and identified within three minutes, it is lost, even if everyone is certain it is underneath the leaves. The player must proceed under stroke and distance, unless the Committee has introduced a Local Rule allowing relief for balls lost in piles of leaves.",
+  "juniorVersion": {
+    "title": "Ball Lost Under Some Leaves",
+    "question": "You hit your ball and it goes into a big pile of leaves. You and your friends are sure the ball is under the leaves, but after looking for three minutes, you still can't find it. Can you drop a ball for free?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Yes. If everyone agrees the ball is under the leaves, you can have a free drop."
+      },
+      {
+        "id": "b",
+        "text": "Yes. Because leaves are loose things, you always get a free drop."
+      },
+      {
+        "id": "c",
+        "text": "No. Unless a special rule says so, the ball is lost and you have to play from where you hit last with a penalty."
+      },
+      {
+        "id": "d",
+        "text": "Yes, but only if the leaves are on the short grass (fairway)."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "Leaves are called 'loose impediments' (things you can move away), but if you can't find your ball after three minutes, it is lost. Even if you think it's in the leaves, you must go back and hit again with a penalty, unless a special rule lets you drop a new ball.",
+    "vocabulary": [
+      {
+        "term": "Loose impediment",
+        "simpleMeaning": "Things like leaves, sticks, or stones that are not growing or stuck to the ground. You can move them, but not if your ball is lost under them."
+      },
+      {
+        "term": "Penalty",
+        "simpleMeaning": "Adding a shot to your score because of a rule."
+      },
+      {
+        "term": "Stroke and distance",
+        "simpleMeaning": "Going back to where you hit your last shot and hitting again, adding a penalty shot."
+      }
+    ],
+    "teachingTip": "If a ball is lost and you can't find it in three minutes, you must play another ball from where you started, plus a penalty. Make sure to watch where your ball goes and search right away.",
+    "likelyMisconceptions": [
+      "Some may think you always get a free drop if you can't find the ball under leaves.",
+      "Some may think you can drop a ball for free if everyone thinks the ball is under the leaves."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T18:04:56.648Z",
+  "model": "gpt-4.1"
+}

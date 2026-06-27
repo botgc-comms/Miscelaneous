@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-05.png",
+  "ruleNumber": "R13",
+  "ruleName": "Ball moves after being put back",
+  "group": "Ball moves after being put back",
+  "title": "What happens if the ball rolls away after being replaced?",
+  "question": "After you have marked, lifted, and replaced your ball on the green, it suddenly rolls away on its own before you take your putt. What should you do?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball from its new position"
+    },
+    {
+      "id": "b",
+      "text": "Replace the ball on its original spot with no penalty"
+    },
+    {
+      "id": "c",
+      "text": "Take a penalty stroke and put it back"
+    },
+    {
+      "id": "d",
+      "text": "Start the hole over from the tee"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If the ball moves on its own after being replaced, you must put it back on its original spot with no penalty.",
+  "imagePrompt": "A teenage girl kneeling on the green, watching in surprise as her ball gently rolls away after she has already replaced it and isn't near it.",
+  "imageAlt": "Teen girl golfer on green, watching her replaced ball roll away before putting.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "dark",
+    "clothingTopColour": "orange",
+    "clothingBottomColour": "blue",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The golfer is shown kneeling rather than standing, but this aligns with the prompt intent for kneeling observation.",
+      "The clothing (orange top, blue shorts), skin tone, and hat are accurate; putting green and putter are realistic.",
+      "Only one golf ball is visible with correct size and perspective.",
+      "Putter is full-length, realistic with a proper club head."
+    ],
+    "repairPrompt": "Ensure the teenage girl is kneeling farther back from the ball to accentuate 'not near the ball' and very clearly observing it roll away. Maintain all other details."
+  }
+}

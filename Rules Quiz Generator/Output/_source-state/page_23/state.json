@@ -1,0 +1,578 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-23.png",
+  "sourceImagePath": "Input\\page-23.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-23.png",
+      "ruleNumber": "R6",
+      "ruleName": "Wrong ball",
+      "group": "Wrong ball",
+      "title": "Penalty for Playing the Wrong Ball",
+      "question": "You hit someone else’s ball by mistake and play your shot. What do you need to do now?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Continue playing with the wrong ball and take no penalty"
+        },
+        {
+          "id": "b",
+          "text": "Go back, play your own ball, and add 2 penalty strokes"
+        },
+        {
+          "id": "c",
+          "text": "Drop a new ball and take 1 penalty stroke"
+        },
+        {
+          "id": "d",
+          "text": "Replace the wrong ball with your ball but ignore the shot"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If you play the wrong ball, you must go back and play your own ball from its original spot with 2 penalty strokes.",
+      "imagePrompt": "A teen girl realises she has hit the wrong ball on the fairway and is preparing to return to her original ball, looking embarrassed.",
+      "imageAlt": "Teen girl golfer on the fairway holding a club, noticing she played the wrong ball.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "light",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "grey",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-23.png",
+      "ruleNumber": "R8/12",
+      "ruleName": "Ball rolls into your own footprints",
+      "group": "Ball rolls into your own footprints",
+      "title": "Ball Rolls Back Into Your Footprints in Bunker",
+      "question": "You play from a bunker, and your ball rolls back into your own footprints in the sand. What do you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Smooth out the footprints before playing"
+        },
+        {
+          "id": "b",
+          "text": "Take a free drop"
+        },
+        {
+          "id": "c",
+          "text": "Play the ball as it lies or declare it unplayable"
+        },
+        {
+          "id": "d",
+          "text": "Move the ball to a clean patch of sand"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "You must play the ball as it lies in your own footprints unless you declare it unplayable.",
+      "imagePrompt": "A teen boy in a bunker looking at his ball that has rolled into his own footprints, contemplating his next shot.",
+      "imageAlt": "Teen boy golfer in a bunker with a ball sitting in his footprints.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "wedge",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "blue",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-23.png",
+      "ruleNumber": "R12",
+      "ruleName": "Ball stays in bunker",
+      "group": "Ball stays in bunker",
+      "title": "Cleaning Up Sand Before Next Bunker Shot",
+      "question": "After your first shot in a bunker, the ball stays in the same bunker but further ahead. Are you allowed to rake the sand from your previous shot before playing again?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, and you can also ground your club before playing"
+        },
+        {
+          "id": "b",
+          "text": "No, you cannot touch the sand at all"
+        },
+        {
+          "id": "c",
+          "text": "Yes, but you still can’t ground your club or touch the sand during a practice swing"
+        },
+        {
+          "id": "d",
+          "text": "No, the bunker must be left as it is"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "You may rake the marks from your first shot, but you still can’t ground your club behind the ball or during a practice swing.",
+      "imagePrompt": "A teen girl is raking away her footprints in a bunker after her shot, with the ball still in the bunker ahead of her.",
+      "imageAlt": "Teen girl golfer raking sand in a bunker while preparing for her next shot.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "wedge",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "light",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "green",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-23.png",
+      "ruleNumber": "R12/14/18",
+      "ruleName": "Ball hit out of bounds/lost ball",
+      "group": "Ball hit out of bounds/lost ball",
+      "title": "What to Do if Ball is Lost or Out of Bounds From Bunker",
+      "question": "You hit a shot from a bunker and your ball goes out of bounds. What should you do next?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop a ball anywhere you like in the bunker with no penalty"
+        },
+        {
+          "id": "b",
+          "text": "Replay the shot from where you last played, take a drop in the bunker, and add 1 penalty stroke"
+        },
+        {
+          "id": "c",
+          "text": "Just play on from out of bounds without penalty"
+        },
+        {
+          "id": "d",
+          "text": "Take a free drop outside the bunker"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You return to where you last played (the bunker), drop within 1 club-length, and add 1 penalty stroke.",
+      "imagePrompt": "A teen boy in a bunker retrieving a ball for his next shot after his previous shot went out of bounds.",
+      "imageAlt": "Teen boy golfer in a bunker preparing to drop a ball after hitting out of bounds.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "dropping_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "medium",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "white",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-23.png",
+      "ruleNumber": "R10",
+      "ruleName": "Double hit",
+      "group": "Double hit",
+      "title": "What Happens If You Accidentally Double-Hit the Ball?",
+      "question": "If you accidentally hit the ball twice in one swing, what is the ruling?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "It counts as two strokes and you get a penalty"
+        },
+        {
+          "id": "b",
+          "text": "It counts as one stroke and no penalty"
+        },
+        {
+          "id": "c",
+          "text": "You must replay the shot from the start"
+        },
+        {
+          "id": "d",
+          "text": "You get one penalty stroke but it’s only one shot"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "A double hit counts as a single stroke and no penalty is given.",
+      "imagePrompt": "A teen girl golfer surprised after accidentally double-hitting the ball during her shot.",
+      "imageAlt": "Teen girl golfer looking surprised after a double hit on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "replaying_shot",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "purple",
+        "hat": false
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-23.png",
+      "ruleNumber": "R6",
+      "ruleName": "Wrong ball",
+      "group": "Wrong ball",
+      "title": "Penalty for Playing the Wrong Ball",
+      "question": "You accidentally play a shot with another player's ball. What do you need to do next according to the rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Keep playing with the wrong ball and take no penalty"
+        },
+        {
+          "id": "b",
+          "text": "Go back, play your own ball from its original place, and add 2 penalty strokes"
+        },
+        {
+          "id": "c",
+          "text": "Drop a new ball and take 1 penalty stroke"
+        },
+        {
+          "id": "d",
+          "text": "Replace the wrong ball with your own but ignore the shot"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If you play a wrong ball, you must correct the mistake: go back to your own ball, play from its original spot, and add two penalty strokes.",
+      "imagePrompt": "A teen boy on the fairway, realising he has played a wrong ball, looks concerned while retrieving his own ball to play from the correct spot.",
+      "imageAlt": "Teen boy golfer on the fairway with an iron, looking at a golf ball that isn't his own.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "medium",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "grey",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-23.png",
+      "ruleNumber": "R8/12",
+      "ruleName": "Ball rolls into your own footprints",
+      "group": "Ball rolls into your own footprints",
+      "title": "Ball Rolls Back Into Your Footprints in Bunker",
+      "question": "After playing a shot from a bunker, your ball rolls back and comes to rest in the footprints you made. What are your options?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Smooth out the footprints before your next shot"
+        },
+        {
+          "id": "b",
+          "text": "Take a free drop"
+        },
+        {
+          "id": "c",
+          "text": "Play the ball as it lies or declare it unplayable"
+        },
+        {
+          "id": "d",
+          "text": "Move the ball to a nicer patch of sand"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "You must play the ball as it lies, even if it is in your own footprints, unless you declare the ball unplayable under the rules.",
+      "imagePrompt": "A teen boy stands in a bunker, considering a shot to a ball that has settled in his own deep footprints.",
+      "imageAlt": "Teen boy golfer in a bunker, looking down at a ball resting in his footprints.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "wedge",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "medium",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "green",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-23.png",
+      "ruleNumber": "R12",
+      "ruleName": "Ball stays in bunker",
+      "group": "Ball stays in bunker",
+      "title": "Raking Between Bunker Shots",
+      "question": "If your ball stays in the same bunker after your first shot, can you rake away footprints or disturbed sand from your previous shot before you play your next stroke?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, and you can ground your club behind the ball too"
+        },
+        {
+          "id": "b",
+          "text": "No, you aren’t allowed to touch the sand at all"
+        },
+        {
+          "id": "c",
+          "text": "Yes, but you still can't ground your club behind the ball or during a practice swing"
+        },
+        {
+          "id": "d",
+          "text": "No, you must leave the sand as it is and play your next shot"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "You may rake the sand to care for the course, but you still can't ground your club behind the ball or touch the sand during your stance or a practice swing.",
+      "imagePrompt": "A teen girl rakes her footprints away in a bunker while her ball remains further ahead in the sand.",
+      "imageAlt": "Teen girl golfer raking sand in a bunker, preparing for a second shot with the ball still inside the bunker.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "wedge",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "dark",
+        "clothingTopColour": "black",
+        "clothingBottomColour": "white",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-23.png",
+      "ruleNumber": "R12/14/18",
+      "ruleName": "Ball hit out of bounds/lost ball",
+      "group": "Ball hit out of bounds/lost ball",
+      "title": "What to Do if Ball is Lost or Out of Bounds From Bunker",
+      "question": "You hit a shot from a bunker and your ball goes out of bounds. What do the rules require you to do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop a ball anywhere in the bunker with no penalty"
+        },
+        {
+          "id": "b",
+          "text": "Replay your shot from the bunker, dropping a ball within one club-length, and add one penalty stroke"
+        },
+        {
+          "id": "c",
+          "text": "Play on from out of bounds without penalty"
+        },
+        {
+          "id": "d",
+          "text": "Take a free drop outside the bunker"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If your ball is lost or out of bounds, you must return to where you last played (the bunker), drop a ball within one club-length, and add one penalty stroke.",
+      "imagePrompt": "A teen girl prepares to drop a new ball in a bunker after her previous shot went out of bounds.",
+      "imageAlt": "Teen girl in bunker getting ready to drop a ball for her next shot after hitting out of bounds.",
+      "sceneSpec": {
+        "setting": "bunker",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "dropping_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": true,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "dark",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "yellow",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-23.png",
+      "ruleNumber": "R10",
+      "ruleName": "Double hit",
+      "group": "Double hit",
+      "title": "What Happens If You Accidentally Double-Hit the Ball?",
+      "question": "If you accidentally hit the ball twice in one swing, how is this counted?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "It counts as two strokes and you receive a penalty"
+        },
+        {
+          "id": "b",
+          "text": "It counts as one stroke and there is no penalty"
+        },
+        {
+          "id": "c",
+          "text": "You must replay the shot from where you started"
+        },
+        {
+          "id": "d",
+          "text": "It is one stroke plus a one-shot penalty"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If you accidentally double hit the ball in a single motion, it only counts as one stroke with no penalty.",
+      "imagePrompt": "A teen girl reacts in surprise after realising she has accidentally double-hit the ball during her shot on the fairway.",
+      "imageAlt": "Teen girl golfer surprised after double-hitting the ball on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "replaying_shot",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "red",
+        "hat": false
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "006_001_Penalty_for_Playing_the_Wrong_Ball",
+    "812_002_Ball_Rolls_Back_Into_Your_Footprints_in_Bunker",
+    "012_003_Raking_Between_Bunker_Shots",
+    "121418_004_What_to_Do_if_Ball_is_Lost_or_Out_of_Bounds_From_Bunker",
+    "010_005_What_Happens_If_You_Accidentally_Double_Hit_the_Ball"
+  ],
+  "updatedAtUtc": "2026-04-24T21:56:00.594Z"
+}

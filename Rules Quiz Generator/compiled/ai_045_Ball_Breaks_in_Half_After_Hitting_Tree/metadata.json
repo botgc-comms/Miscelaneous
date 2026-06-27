@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "4.2b",
+  "ruleName": "Ball Breaks into Pieces While Playing Hole",
+  "group": "The Ball",
+  "type": "multiple_choice",
+  "imagePrompt": "A modern, semi-realistic (about 75% realistic and 25% stylised) illustration of a golf scene. The setting is a vibrant course where a single golfer stands near the fairway, holding a club, looking towards two clearly separated halves of a broken golf ball—one half lying on the trimmed fairway, the other in nearby rough, with a large tree evident in the background as the source of the deflection. A golf bag or trolley is in the background. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "Golfer on fairway near a tree, observing two halves of a split golf ball—one half on fairway, one in the rough—after a drive.",
+  "sceneSpec": {
+    "setting": "Golf course fairway with a large tree and adjacent rough.",
+    "players": "One golfer visible, holding a club, looking towards the area where the ball broke apart.",
+    "ballPosition": "Two clear halves of a golf ball: one in the fairway, one in the rough. Both halves visibly separated on the ground.",
+    "ruleMoment": "Immediately after the drive, with the ball already split into two pieces lying in different areas.",
+    "educationalFocus": "Shows situation when a ball breaks into pieces during a stroke, and the correct ruling action to replace and replay.",
+    "mustShow": [
+      "Golfer who has just played a stroke",
+      "A large tree that deflected the shot",
+      "Two separate pieces of a broken golf ball (one in fairway, one in rough)",
+      "Golf bag or trolley in the background"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Golf Ball Cracks When It Hits a Tree",
+      "question": "You hit your ball and it crashes into a tree. The ball breaks into two pieces! One piece lands on the short grass, and the other lands in the long grass. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the piece of the ball that is in the best spot."
+        },
+        {
+          "id": "b",
+          "text": "Put a new ball on the spot where you hit from and try your shot again. No penalty."
+        },
+        {
+          "id": "c",
+          "text": "Keep playing with the bigger half of your broken ball."
+        },
+        {
+          "id": "d",
+          "text": "Take a penalty, then drop a new ball."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If your ball breaks into pieces after a shot, you must use a new ball. Go back to where you hit from and play your shot again. You don't get a penalty, and the first shot doesn't count.",
+      "vocabulary": [
+        {
+          "term": "stroke",
+          "simpleMeaning": "A stroke means hitting the ball with your club."
+        },
+        {
+          "term": "fairway",
+          "simpleMeaning": "The fairway is the short, neat grass between the tee and the green."
+        },
+        {
+          "term": "rough",
+          "simpleMeaning": "The rough is the long grass next to the fairway."
+        }
+      ],
+      "teachingTip": "Encourage juniors to check their ball after hitting trees or rocks. Balls should not be used if they are broken.",
+      "likelyMisconceptions": [
+        "Some children may think you can choose one piece of the broken ball to keep playing.",
+        "They may think you must take a penalty when your ball breaks.",
+        "They might not know the first shot doesn't count if the ball breaks."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Ball Breaks in Half After Hitting Tree",
+      "question": "Your drive strikes a tree and your golf ball splits into two pieces. One half lands in the fairway and the other half finishes in the rough. What is the correct ruling?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play whichever half of the ball finished in the best position."
+        },
+        {
+          "id": "b",
+          "text": "Replace the damaged ball with another ball on the original spot and replay the stroke without penalty."
+        },
+        {
+          "id": "c",
+          "text": "Continue playing the larger half of the ball."
+        },
+        {
+          "id": "d",
+          "text": "Take a one-stroke penalty and drop another ball."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If a ball breaks into pieces as a result of a stroke, the stroke does not count. The damaged ball must be replaced with another ball, and the player must replay the stroke from the spot where the original stroke was made. Rule Reference: Rule 4.2b."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "ai_045_Ball_Breaks_in_Half_After_Hitting_Tree",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-06-26T20:03:54.199Z"
+  }
+}

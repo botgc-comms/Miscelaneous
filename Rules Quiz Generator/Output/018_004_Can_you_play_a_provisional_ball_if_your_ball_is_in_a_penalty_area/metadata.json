@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-08.png",
+  "ruleNumber": "R18",
+  "ruleName": "Provisional/lost ball",
+  "group": "Provisional/lost ball",
+  "title": "Can you play a provisional ball if your ball is in a penalty area?",
+  "question": "If you think your ball might be in a penalty area (like a water hazard), can you play a provisional ball?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, you must always play a provisional ball."
+    },
+    {
+      "id": "b",
+      "text": "No, you are not allowed to play a provisional ball in this case."
+    },
+    {
+      "id": "c",
+      "text": "Only if your ball is in long grass."
+    },
+    {
+      "id": "d",
+      "text": "Yes, but only after searching for 5 minutes."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "A provisional ball cannot be played if it is known or virtually certain your ball is in a penalty area. Instead, you must follow the penalty area rules.",
+  "imagePrompt": "A teenage boy stands at the edge of a water hazard marked by red stakes, looking uncertainly towards the water.",
+  "imageAlt": "Teen golfer stands at the edge of a penalty area, wondering about playing a provisional ball.",
+  "sceneSpec": {
+    "setting": "penalty_area_edge",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "hybrid",
+    "ballCount": 1,
+    "stakeColour": "red",
+    "waterVisible": true,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [
+      "spectators"
+    ],
+    "ethnicity": "asian",
+    "skinTone": "medium",
+    "clothingTopColour": "white",
+    "clothingBottomColour": "orange",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [],
+    "repairPrompt": "None needed; all relevant scene, equipment, and specification details are accurate."
+  }
+}

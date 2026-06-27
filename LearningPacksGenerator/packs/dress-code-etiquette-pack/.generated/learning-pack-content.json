@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 1,
+  "packId": "dress-code-etiquette",
+  "title": "Dress code and etiquette",
+  "audience": "Brand new junior golfers and their parents or guardians, especially those with little or no golf experience.",
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "Why dress and etiquette matter",
+      "file": "pages/00-title.md",
+      "type": "content",
+      "assetFile": "title.png",
+      "imageAlt": "A welcoming golf club entrance with smiling children and adults, ready for a day of golf.",
+      "imagePrompt": "A photorealistic scene showing a group of children and parents smiling together at the entrance of a golf club, holding golf bags, wearing simple golf clothing, and looking excited. The setting is bright, friendly, and family-oriented with well-kept grass and trees.",
+      "markdown": "# Why dress and etiquette matter\n\nGolf is about much more than just hitting a ball. It’s built around values like respect, honesty, and having fun together. At most clubs, everyone is asked to follow some simple dress rules and behaviours, known as “etiquette.” These aren’t meant to be strict or scary—they’re here to make sure that everyone, young and old, can enjoy the game fairly and safely.\n\nWhen we dress the right way, and treat other people kindly, it helps everyone feel welcome. It also keeps the course in good condition for everyone who wants to play. In this section, you’ll find out what’s best to wear, how to act on the course, and how to help make golf a great experience for all. If you’re a parent or guardian, you’ll see that these are easy to support, and you don’t need special experience or expensive gear. \n\nLet’s get started on making your time at the golf club friendly, comfortable, and enjoyable!",
+      "quiz": null
+    },
+    {
+      "id": "01-dress-code",
+      "title": "Dress code basics",
+      "file": "pages/01-dress-code.md",
+      "type": "content",
+      "assetFile": "dress-code.png",
+      "imageAlt": "Children wearing smart but simple golf clothes, such as polo shirts and trousers, with trainers, standing together with golf clubs.",
+      "imagePrompt": "A photorealistic photo of children standing together at a golf course practice area, wearing plain polo shirts, simple jumpers, knee-length shorts or tracksuit bottoms, and trainers. They are holding golf clubs and smiling. The clothes are neat but comfortable, the scene is outdoors on grass, and the mood is relaxed.",
+      "markdown": "# Dress code basics\n\nGolf clubs ask players to wear clothes that are tidy, practical and suitable for the game. For juniors, this does not mean anything expensive or strict. A plain polo shirt or a basic jumper, with smart shorts, tracksuit bottoms, or comfortable trousers, is perfect. The main thing is to avoid football shirts, vests or anything too baggy or revealing. If it’s chilly, add a jumper or a simple waterproof jacket.\n\nYou do not need special golf shoes. Trainers are absolutely fine for most junior sessions and practice. Hats or caps can be worn for sunny days—just make sure they’re worn the right way around, with the peak at the front.\n\nGolf is played outdoors, so check the weather and bring an extra layer if needed. If you’re not sure about your child’s outfit, just think: ‘Would this be OK at a family event or in school on a non-uniform day?’ If so, you’re probably on the right track!\n\nIf you have any questions about clothing, most clubs and coaches are happy to help. The main thing is to feel comfortable and able to move freely.",
+      "quiz": null
+    },
+    {
+      "id": "02-pace-of-play",
+      "title": "Pace of play",
+      "file": "pages/02-pace-of-play.md",
+      "type": "content",
+      "assetFile": "pace-of-play.png",
+      "imageAlt": "Children and adults walking briskly together on a golf course fairway, each pushing a trolley or carrying a small bag.",
+      "imagePrompt": "A photorealistic image of children and adults walking at a steady pace down a golf fairway, some pushing simple golf trolleys or carrying lightweight bags. The group keeps together, looking ahead and chatting happily, with golf holes visible in the background. The scene is bright and inviting.",
+      "markdown": "# Pace of play\n\nMoving around the course at the right speed is important in golf. It’s called ‘pace of play’. This just means keeping play moving so that everyone gets a fair chance to enjoy their round.\n\nYou don’t need to rush—just be ready to play when it’s your turn. While the group in front is clearing the area, you can be thinking about your next shot and choosing your club. Once it’s safe and your group is ready, take your shot calmly.\n\nWalk briskly between shots, chatting as you go. Helping others find balls and carrying or pushing your own bag makes things smoother. If a group behind is playing much faster and waiting often, it’s polite to let them go ahead.\n\nPace of play is about being considerate to others, not racing through the game. If you’re unsure about when to play or when to let others pass, just ask your coach or another adult. Everyone remembers being new once, and kindness is always welcome!",
+      "quiz": null
+    },
+    {
+      "id": "03-on-the-green",
+      "title": "On the green",
+      "file": "pages/03-on-the-green.md",
+      "type": "content",
+      "assetFile": "on-the-green.png",
+      "imageAlt": "Children gathered quietly on a golf green, watching a player putt, with bags left at the edge and no one standing too close to the hole.",
+      "imagePrompt": "A photorealistic photo of children standing on the putting green, facing a friend who is putting towards the hole. Their golf bags are set down away from the green. The children watch quietly and none are standing in front of the hole or in the line of the putt. The green is well-kept and the weather is calm.",
+      "markdown": "# On the green\n\nThe green is the special area around the hole, where every stroke counts. It’s important to be careful here because the grass is soft and can be damaged easily.\n\nAlways place your bag or trolley at the edge of the green, not on it. Walk gently, and try not to make marks with your shoes. When someone is putting, stand still and keep quiet so they can concentrate.\n\nAvoid standing in another player’s ‘line to the hole’—that is, the invisible path the ball will roll. It’s polite to stand to the side, never between the ball and the flag. If you make a small mark on the green, like a dent with your shoe or a ball mark, you can gently repair it with your fingers or a tool if you have one.\n\nRemember to put the flag back in the hole gently after you finish. Don’t worry if you forget something—everyone makes mistakes while learning. The main thing is to try your best and respect the green for all players.",
+      "quiz": null
+    },
+    {
+      "id": "04-respect",
+      "title": "Respecting others",
+      "file": "pages/04-respect.md",
+      "type": "content",
+      "assetFile": "respect.png",
+      "imageAlt": "A group of children congratulating each other and shaking hands after finishing a round together on the golf course.",
+      "imagePrompt": "A realistic photo of junior golfers meeting at the end of the round, warmly shaking hands and smiling to each other, with their parents looking pleased in the background. The background shows a green area near the final hole, and everyone looks happy and friendly.",
+      "markdown": "# Respecting others\n\nGolf is famous for being a respectful and fair game. This means looking after each other and behaving with good manners, whether you win or lose.\n\nAfter a round, it’s common to shake hands or give a friendly high-five. Saying ‘well played’ or ‘thank you’ makes everyone feel valued. If something goes wrong, like a bad shot or losing a ball, it’s helpful to stay calm and encourage one another rather than get upset.\n\nIt’s important to be quiet when others are playing, and to wait your turn. Showing patience, looking out for safety, and sharing tips or finding lost balls all help to create a positive atmosphere.\n\nParents and guardians play a big part in showing respect as well. Supporting your child, cheering in a friendly way, and helping other families will make everyone feel welcome. Remember, learning golf takes time, and kindness is always more important than scores.",
+      "quiz": null
+    },
+    {
+      "id": "90-quick-check",
+      "title": "Quick check",
+      "file": "pages/90-quick-check.md",
+      "type": "quiz",
+      "assetFile": "quick-check.png",
+      "imageAlt": "A smiling junior golfer on a course giving a thumbs up, with a parent watching proudly nearby.",
+      "imagePrompt": "A photorealistic picture of a smiling child in golf clothes giving a thumbs up on the course, with a supportive adult or parent in the background looking proud. The sky is clear, and the environment is friendly and bright.",
+      "markdown": "# Quick check\n\nLet’s see what you remember about dress code and golf course etiquette. Don’t worry if you’re not sure—these questions are just a helpful recap for juniors and parents alike!",
+      "quiz": {
+        "questions": [
+          {
+            "question": "What type of shoes are usually fine for junior golfers at most clubs?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Trainers or basic sports shoes"
+              },
+              {
+                "id": "b",
+                "text": "Only expensive golf shoes"
+              },
+              {
+                "id": "c",
+                "text": "School shoes"
+              },
+              {
+                "id": "d",
+                "text": "Sandals"
+              }
+            ],
+            "correctAnswer": "a",
+            "explanation": "Trainers or basic sports shoes are usually acceptable for most junior activities."
+          },
+          {
+            "question": "On the green, where should you put your golf bag?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "In the middle of the green"
+              },
+              {
+                "id": "b",
+                "text": "At the edge of the green"
+              },
+              {
+                "id": "c",
+                "text": "Near the hole"
+              },
+              {
+                "id": "d",
+                "text": "Anywhere you like"
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "Always leave your bag at the edge of the green to protect the grass."
+          },
+          {
+            "question": "What is the best thing to do if another group is playing faster behind you?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Let them play ahead if possible"
+              },
+              {
+                "id": "b",
+                "text": "Ignore them"
+              },
+              {
+                "id": "c",
+                "text": "Walk slower"
+              },
+              {
+                "id": "d",
+                "text": "Try to hit balls more quickly, ignoring safety"
+              }
+            ],
+            "correctAnswer": "a",
+            "explanation": "It’s polite to let a faster group behind you play ahead if they keep waiting."
+          },
+          {
+            "question": "What should you do if someone hits a bad shot or makes a mistake?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Laugh at them"
+              },
+              {
+                "id": "b",
+                "text": "Stay calm and encourage them"
+              },
+              {
+                "id": "c",
+                "text": "Ignore them"
+              },
+              {
+                "id": "d",
+                "text": "Tell them off"
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "Encouraging one another is always the right choice in golf."
+          },
+          {
+            "question": "What is a good thing to say at the end of a round?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "'Well played!'"
+              },
+              {
+                "id": "b",
+                "text": "'That was boring!'"
+              },
+              {
+                "id": "c",
+                "text": "'Goodbye and good luck!'"
+              },
+              {
+                "id": "d",
+                "text": "'Never again!'"
+              }
+            ],
+            "correctAnswer": "a",
+            "explanation": "'Well played!' is friendly and shows good sportsmanship."
+          }
+        ]
+      }
+    }
+  ]
+}

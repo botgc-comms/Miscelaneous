@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\016_004_If_the_bunker_is_completely_flooded\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:46:52.445Z",
+  "title": "If the bunker is completely flooded",
+  "ruleNumber": "R16",
+  "ruleName": "Abnormal course conditions",
+  "durationSeconds": 187.045
+}

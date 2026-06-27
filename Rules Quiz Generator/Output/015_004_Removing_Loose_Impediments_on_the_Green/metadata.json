@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-07.png",
+  "ruleNumber": "R15",
+  "ruleName": "Loose Impediments",
+  "group": "Loose Impediments",
+  "title": "Removing Loose Impediments on the Green",
+  "question": "On the putting green, which of these items can you remove without penalty when they are next to your ball?",
+  "type": "multi_select",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Leaves"
+    },
+    {
+      "id": "b",
+      "text": "Twig"
+    },
+    {
+      "id": "c",
+      "text": "Sand"
+    }
+  ],
+  "correctAnswer": [
+    "a",
+    "b",
+    "c"
+  ],
+  "correctAnswers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "explanation": "On the green, you may remove leaves, twigs, and even sand or loose soil without penalty.",
+  "imagePrompt": "A teenage girl carefully picking up a twig and leaves next to her ball on the putting green, with a small amount of sand also present.",
+  "imageAlt": "Teen girl removing debris and sand from around her golf ball on the green.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "purple",
+    "clothingBottomColour": "orange",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The posture and grip do not clearly indicate left-handedness; the boy is using his right hand to pick up the leaves, and the putter is leaning on his right side, which could be ambiguous."
+    ],
+    "repairPrompt": "Ensure the boy's posture and grip clearly indicate left-handedness: position the putter on his left side, held or resting naturally in his left hand, to authentically show a left-handed golfer. Maintain all current scene and golfer details."
+  }
+}

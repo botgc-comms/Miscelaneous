@@ -1,0 +1,5 @@
+{
+  "text": ["Harold Coaley Cup"],
+  "allowText": true,
+  "notes": ""
+}

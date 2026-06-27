@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\012_004_What_is_not_allowed_before_your_bunker_shot\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:22:24.243Z",
+  "title": "What is not allowed before your bunker shot?",
+  "ruleNumber": "R12",
+  "ruleName": "Do not touch or test the sand",
+  "durationSeconds": 176.577
+}

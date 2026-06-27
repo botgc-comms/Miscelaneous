@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\006_003_Penalty_for_playing_from_outside_the_teeing_area\\metadata.json",
+  "sourceImageName": "page-06.png",
+  "ruleNumber": "6",
+  "ruleName": "Playing from outside the teeing area",
+  "title": "Penalty for playing from outside the teeing area",
+  "question": "If you play your tee shot from outside the teeing area and do not fix the mistake before finishing the hole, what is the penalty in stroke play?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "There is no penalty, your shot counts."
+    },
+    {
+      "id": "b",
+      "text": "You must replay your shot with 2 penalty strokes."
+    },
+    {
+      "id": "c",
+      "text": "You are disqualified from the competition."
+    },
+    {
+      "id": "d",
+      "text": "You get a two-stroke penalty but the shot still counts."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "If you fail to correct a tee shot played from outside the teeing area in stroke play, you are disqualified.",
+  "juniorVersion": {
+    "title": "What happens if you hit your first shot from the wrong place?",
+    "question": "If you hit your first shot on a hole, but your ball was not in the teeing area and you forget to fix it before you finish the hole, what happens in a competition?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Nothing happens, your shot is fine."
+      },
+      {
+        "id": "b",
+        "text": "You have to play again and add 2 shots to your score."
+      },
+      {
+        "id": "c",
+        "text": "You cannot play in the competition anymore."
+      },
+      {
+        "id": "d",
+        "text": "You add 2 shots to your score but your shot still counts."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "If you do not fix hitting your first shot from the wrong place, you are not allowed to keep playing in the competition.",
+    "vocabulary": [
+      {
+        "term": "teeing area",
+        "simpleMeaning": "The special place where you start each hole. Usually between two tee markers."
+      },
+      {
+        "term": "competition",
+        "simpleMeaning": "A game where you try to get the best score."
+      }
+    ],
+    "teachingTip": "Show children where the teeing area is and how to spot the tee markers before hitting.",
+    "likelyMisconceptions": [
+      "Some kids may think it's okay if you just keep playing.",
+      "Some may believe you only get a few extra shots as a penalty."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:35.283Z",
+  "model": "gpt-4.1"
+}

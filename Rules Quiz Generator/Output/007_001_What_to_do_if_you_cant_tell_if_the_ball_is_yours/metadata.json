@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-27.png",
+  "ruleNumber": "R7",
+  "ruleName": "Identifying the ball",
+  "group": "Identifying the ball",
+  "title": "What to do if you can't tell if the ball is yours",
+  "question": "You find a golf ball that might be yours, but you're not sure. What is the correct way to identify it without getting a penalty?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Pick it up and clean it however you like, then replace it anywhere nearby."
+    },
+    {
+      "id": "b",
+      "text": "Mark where the ball is, carefully lift it to check, clean only as much as needed to identify it, and put it back on the exact spot."
+    },
+    {
+      "id": "c",
+      "text": "Ignore the ball and continue play with a different ball."
+    },
+    {
+      "id": "d",
+      "text": "Pick it up, fully clean it, and place it closer to the hole."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You must mark the position of the ball first, then lift and clean it just enough to see if it's yours. Afterwards, you have to put it back where it was. If you skip marking or clean it more than necessary, you could get a penalty.",
+  "imagePrompt": "A teenage left-handed boy golfer marks his golf ball with a tee, gently lifts the ball to check for identification, standing on a sunny fairway near some trees. No club in hand.",
+  "imageAlt": "Teenage boy golfer marking and identifying his ball.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "lifting_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "black",
+    "skinTone": "medium",
+    "clothingTopColour": "green",
+    "clothingBottomColour": "red",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Golfer posture is natural and plausible for marking and lifting a ball.",
+      "Only one golf ball and one tee are visible, both realistically sized.",
+      "No club is in the golfer's hands, as required.",
+      "Setting is clearly a fairway with trees and sunny weather.",
+      "Appearance (black teen with medium skin tone, green top, red shorts, no hat) matches specification.",
+      "Golf course features are natural and believable.",
+      "No penalty stakes, bunkers, greens, water, or extra elements visible, as specified."
+    ],
+    "repairPrompt": "Increase the clarity of the ball being gently lifted for identification, ensuring the action distinctly shows a check for markings. Emphasize the left-handedness of the golfer with subtle body language if possible."
+  }
+}

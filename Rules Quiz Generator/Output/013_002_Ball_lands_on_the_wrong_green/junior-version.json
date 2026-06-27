@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\013_002_Ball_lands_on_the_wrong_green\\metadata.json",
+  "sourceImageName": "page-15.png",
+  "ruleNumber": "R13",
+  "ruleName": "Wrong green",
+  "title": "Ball lands on the wrong green",
+  "question": "If your ball comes to rest on a putting green that’s not the one for the hole you’re playing, what should you do?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball as it lies to save time"
+    },
+    {
+      "id": "b",
+      "text": "Pick up the ball and throw it off the green"
+    },
+    {
+      "id": "c",
+      "text": "Take free relief by dropping the ball off the green, no closer to the hole"
+    },
+    {
+      "id": "d",
+      "text": "Ask for a penalty and replay the shot"
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "You must take free relief by dropping your ball off the wrong green, no closer to the hole, and may not play from another putting green.",
+  "juniorVersion": {
+    "title": "Your ball stops on the wrong green",
+    "question": "You hit your ball, and it stops on a putting green for a different hole. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Hit the ball from where it is to be quick"
+      },
+      {
+        "id": "b",
+        "text": "Pick up your ball and throw it off the green"
+      },
+      {
+        "id": "c",
+        "text": "Pick up your ball and drop it off the green, not nearer to the flag"
+      },
+      {
+        "id": "d",
+        "text": "Ask to get a penalty and try your shot again"
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "If your ball stops on the wrong green, you must pick it up and drop it off the green, closer to where you came from but not nearer to the flag you are playing to.",
+    "vocabulary": [
+      {
+        "term": "putting green",
+        "simpleMeaning": "The short, smooth grass area around the hole where you try to putt the ball in."
+      },
+      {
+        "term": "drop",
+        "simpleMeaning": "Letting the ball go from knee height so it falls to the ground."
+      }
+    ],
+    "teachingTip": "Remind children that they must never play a shot from a green that isn’t the one for their hole. Show them where to drop their ball if this happens.",
+    "likelyMisconceptions": [
+      "Children may think it is okay to play from the wrong green to save time.",
+      "Some might think they should throw the ball instead of dropping it properly.",
+      "They might not know what 'no closer to the hole' means."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:28.985Z",
+  "model": "gpt-4.1"
+}

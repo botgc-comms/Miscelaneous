@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "12.2b",
+  "ruleName": "Restrictions on Touching Sand in Bunker",
+  "group": "Bunkers",
+  "title": "Accidentally Touching the Sand in a Bunker",
+  "question": "Your ball is in a bunker. As you walk towards it, you accidentally lose your balance and your hand touches the sand beside your ball. What is the correct ruling?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You receive the general penalty because you touched the sand in the bunker."
+    },
+    {
+      "id": "b",
+      "text": "You receive a one-stroke penalty because you touched the sand before making a stroke."
+    },
+    {
+      "id": "c",
+      "text": "There is no penalty because the contact with the sand was accidental and did not improve the conditions affecting your stroke."
+    },
+    {
+      "id": "d",
+      "text": "You must rake the area before playing your shot."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "The Rules no longer prohibit every contact with the sand in a bunker. There is no penalty if you accidentally touch the sand, such as keeping your balance, entering or leaving the bunker, or placing your clubs in the bunker, provided you do not improve the conditions affecting your stroke. Penalty only applies if you deliberately touch the sand to test its condition, or improve conditions affecting your stroke. Rule Reference: Rule 12.2b.",
+  "imagePrompt": "A modern semi-realistic (75% realistic, 25% stylised) illustration in a clear, polished junior golf quiz style. Show a bunker on a golf course with a green in the background. A golfer is in the bunker, having just lost their balance, and their hand is on the sand near their ball. The ball is lying clearly on the bunker sand several feet from the player's hand. It must be obvious that the contact is accidental (such as through body posture suggesting recovering balance). The player’s club is not touching the sand. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer in a bunker has accidentally touched the sand with their hand near their ball while regaining balance. The golf ball is lying on the sand in the bunker, and the player appears to have made accidental contact rather than testing the sand.",
+  "sceneSpec": {
+    "setting": "Bunker on a golf course, with a green visible in the background.",
+    "players": "One golfer in the bunker, appearing to have just lost balance, with their hand touching the sand beside the ball.",
+    "ballPosition": "The ball is lying on the sand inside the bunker, several feet in front of the player’s hand.",
+    "ruleMoment": "Player has just accidentally touched the sand with their hand while walking to address their ball.",
+    "educationalFocus": "Demonstrates the Rules related to accidental touching of sand in a bunker when not improving conditions affecting the stroke.",
+    "mustShow": [
+      "Golf ball lying in the bunker sand",
+      "Golfer with one hand touching the sand near the ball in a way that clearly indicates loss of balance or an accidental touch",
+      "Player not holding a club against the sand"
+    ],
+    "mustNotShow": [
+      "Player intentionally testing the sand",
+      "Grounding a club in front of or behind the ball",
+      "Any signs of deliberate improving of the sand",
+      "Text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles"
+    ]
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\017_003_Ball_from_penalty_area_goes_out_of_bounds\\metadata.json",
+  "sourceImageName": "page-29.png",
+  "ruleNumber": "R17",
+  "ruleName": "Penalty area – Ball out of bounds or lost",
+  "title": "Ball from penalty area goes out of bounds",
+  "question": "You play a shot from a penalty area and your ball ends up out of bounds. Which options do you have for your next shot, following the rules?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Drop a ball with one penalty stroke near where you played your last shot in the penalty area"
+    },
+    {
+      "id": "b",
+      "text": "Take another one-stroke penalty and use the penalty area relief options"
+    },
+    {
+      "id": "c",
+      "text": "Take a free drop from where the ball went out of bounds"
+    },
+    {
+      "id": "d",
+      "text": "Replay the shot with no penalty"
+    }
+  ],
+  "correctAnswers": [
+    "a",
+    "b"
+  ],
+  "explanation": "If your ball from a penalty area goes out of bounds, you can either drop with a one-stroke penalty near your previous spot in the penalty area, or with another one-stroke penalty, use the normal relief options for a penalty area.",
+  "juniorVersion": {
+    "title": "Ball from the water or sand goes out of bounds",
+    "question": "You hit your ball from a penalty area, like from a puddle, pond or bunker. The ball flies outside the golf course (out of bounds). What can you do next, following the rules?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Drop a new ball near the spot in the penalty area where you last hit, and add one penalty shot."
+      },
+      {
+        "id": "b",
+        "text": "Add another penalty shot and pick one of the normal penalty area drop choices."
+      },
+      {
+        "id": "c",
+        "text": "Drop a ball for free where the ball went out of bounds."
+      },
+      {
+        "id": "d",
+        "text": "Hit again with no penalty."
+      }
+    ],
+    "correctAnswers": [
+      "a",
+      "b"
+    ],
+    "explanation": "If you play from a penalty area and your ball goes out of bounds, you need to take a penalty. You can either drop a ball near where you last hit in the penalty area for one penalty shot, or take another penalty and use one of the usual ways to drop from a penalty area.",
+    "vocabulary": [
+      {
+        "term": "Penalty area",
+        "simpleMeaning": "A place on the golf course like a pond, puddle, or bunker marked with red or yellow lines where special rules apply."
+      },
+      {
+        "term": "Out of bounds",
+        "simpleMeaning": "When your ball goes outside the white lines or fence that shows the edge of the golf course."
+      },
+      {
+        "term": "Penalty shot",
+        "simpleMeaning": "An extra shot you have to count in your score because of a rule."
+      },
+      {
+        "term": "Drop",
+        "simpleMeaning": "Letting go of your ball from knee height so you can play again."
+      }
+    ],
+    "teachingTip": "Show children where a penalty area is and the out of bounds markers. Practise what to do if your ball goes into a penalty area or out of bounds to learn the options.",
+    "likelyMisconceptions": [
+      "Thinking you can drop for free where the ball went out of bounds.",
+      "Thinking you get another try without a penalty."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:21.890Z",
+  "model": "gpt-4.1"
+}

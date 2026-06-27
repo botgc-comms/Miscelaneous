@@ -1,0 +1,5 @@
+{
+  "text": ["The", "K.S. Wright Trophy", "Presented by", "The Social Committee"],
+  "allowText": true,
+  "notes": "presented by the social committee should be small italic"
+}

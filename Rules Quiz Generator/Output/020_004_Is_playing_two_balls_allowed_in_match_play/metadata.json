@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-02.png",
+  "ruleNumber": "20",
+  "ruleName": "When in doubt about the rules",
+  "group": "When in doubt about the rules",
+  "title": "Is playing two balls allowed in match play?",
+  "question": "If you’re playing match play and are not sure what the correct rule is for your situation, are you allowed to play two balls and count both scores?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, you can always play two balls in match play"
+    },
+    {
+      "id": "b",
+      "text": "No, you must work out the situation with your opponent or ask for a ruling"
+    },
+    {
+      "id": "c",
+      "text": "Only if your marker gives permission"
+    },
+    {
+      "id": "d",
+      "text": "Only if you are playing alone"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "In match play, you are not allowed to play two balls. You and your opponent must agree what to do, or ask for a ruling from a referee if you can’t agree.",
+  "imagePrompt": "A teen boy golfer, left-handed, on the fairway, talking to another player about a rules situation, with only one golf ball present—no second ball being played.",
+  "imageAlt": "A boy golfer discussing a rules issue on the fairway with another player; only one ball is visible.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "light",
+    "clothingTopColour": "white",
+    "clothingBottomColour": "yellow",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The golfer's left-handedness is not absolutely clear; the club is held in the left hand but the posture could be more unambiguously left-handed."
+    ],
+    "repairPrompt": "Adjust the girl's pose so her left-handedness is completely clear, such as by ensuring her left hand is decisively in the lead position on the golf club in a natural left-handed golf stance."
+  }
+}

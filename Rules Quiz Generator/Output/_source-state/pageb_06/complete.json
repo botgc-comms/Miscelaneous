@@ -1,0 +1,469 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-06.png",
+  "sourceImagePath": "Input\\pageb-06.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-06.png",
+      "ruleNumber": "13",
+      "ruleName": "Ball accidentally moved",
+      "group": "Ball accidentally moved",
+      "title": "What happens if you accidentally move your ball on the green?",
+      "question": "On the green, if you accidentally move your ball while taking a practice swing too close to it, what should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball from its new position, no penalty"
+        },
+        {
+          "id": "b",
+          "text": "Put the ball back with no penalty"
+        },
+        {
+          "id": "c",
+          "text": "Put the ball back and add a penalty stroke"
+        },
+        {
+          "id": "d",
+          "text": "Leave the ball and skip your turn"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If you accidentally move your ball on the green, there is no penalty but you must put it back to its original spot.",
+      "imagePrompt": "A teenage girl golfer accidentally nudging her ball on the green with her putter and then carefully replacing it.",
+      "imageAlt": "Girl golfer replaces moved golf ball on the green.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "lifting_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "dark",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "yellow",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-06.png",
+      "ruleNumber": "6",
+      "ruleName": "Wrong ball",
+      "group": "Wrong ball",
+      "title": "Penalty for playing the wrong ball",
+      "question": "You realise that you have played a shot with a ball that isn’t yours while out on the course. What do you need to do next?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Keep playing with the wrong ball"
+        },
+        {
+          "id": "b",
+          "text": "Go back and play your correct ball, ignoring strokes with the wrong ball, but take 2 penalty strokes"
+        },
+        {
+          "id": "c",
+          "text": "Go back to the last tee and start again"
+        },
+        {
+          "id": "d",
+          "text": "Replace the wrong ball where you found it"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You must play your correct ball and are given two penalty strokes, but the strokes with the wrong ball do not count.",
+      "imagePrompt": "A teenage boy golfer realising he played a ball with a different marking, looking surprised on the fairway.",
+      "imageAlt": "Teen boy notices he played the wrong golf ball.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "black",
+        "clothingBottomColour": "blue",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-06.png",
+      "ruleNumber": "6",
+      "ruleName": "Wrong ball",
+      "group": "Wrong ball",
+      "title": "Consequences if you hole out with a wrong ball",
+      "question": "If you putt a wrong ball into the hole on a putting green and don’t fix the mistake, what could happen?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Nothing, keep playing"
+        },
+        {
+          "id": "b",
+          "text": "You are given two penalty strokes but keep playing"
+        },
+        {
+          "id": "c",
+          "text": "You could be disqualified"
+        },
+        {
+          "id": "d",
+          "text": "Subtract two strokes from your score"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "If you hole a wrong ball and don't rectify the mistake, you could be disqualified.",
+      "imagePrompt": "A distressed teenage girl golfer looking at the hole after realising she finished with the wrong ball on the green.",
+      "imageAlt": "Teen girl looking worried at the golf hole after using wrong ball.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "blue",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-06.png",
+      "ruleNumber": "10",
+      "ruleName": "Advice and line of play",
+      "group": "Advice and line of play",
+      "title": "Advice about line of play on the green",
+      "question": "Which of these are NOT allowed when you are putting on the green? (Select all that apply)",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Your friend tells you how the green breaks"
+        },
+        {
+          "id": "b",
+          "text": "You lay your putter on the green to show your line of play"
+        },
+        {
+          "id": "c",
+          "text": "Your caddie gives you advice about your putt"
+        },
+        {
+          "id": "d",
+          "text": "Your caddie stands directly behind you on your line to help you line up"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "d"
+      ],
+      "explanation": "You can't get advice about the line of play from fellow players, can't use your putter or other objects to indicate the line, and your caddie can't stand directly behind you on your line to help you line up.",
+      "imagePrompt": "A teenage boy golfer preparing to putt, while another person tries to give advice, and objects are laid on the green to indicate line. Caddie stands, but not on the direct line.",
+      "imageAlt": "Teen boy putting on green, someone giving advice, putter showing line, caddie nearby.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "blue",
+        "hat": false
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-06.png",
+      "ruleNumber": "13",
+      "ruleName": "Ball accidentally moved",
+      "group": "Ball accidentally moved",
+      "title": "What happens if you accidentally move your ball on the green?",
+      "question": "If you accidentally move your ball on the green, like while taking a practice swing too close to it, what must you do next?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball from its new position, no penalty"
+        },
+        {
+          "id": "b",
+          "text": "Replace the ball to its original spot, no penalty"
+        },
+        {
+          "id": "c",
+          "text": "Replace the ball and add a penalty stroke"
+        },
+        {
+          "id": "d",
+          "text": "Leave the ball and skip your turn"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If you accidentally move your ball on the green, there is no penalty but you must put it back to its original spot before continuing.",
+      "imagePrompt": "A teenage girl golfer accidentally nudges her ball on the green with her putter, then carefully puts it back in its original place.",
+      "imageAlt": "Girl golfer replaces her golf ball on the green after moving it accidentally.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "lifting_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "blue",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-06.png",
+      "ruleNumber": "6",
+      "ruleName": "Wrong ball",
+      "group": "Wrong ball",
+      "title": "Penalty for playing the wrong ball",
+      "question": "While playing a hole, you hit a shot and then realise you played a ball that isn't yours. What should you do next according to the rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Keep playing with the wrong ball for the rest of the hole"
+        },
+        {
+          "id": "b",
+          "text": "Stop, find your own ball, play it from where it was, add two penalty strokes, and ignore any strokes made with the wrong ball"
+        },
+        {
+          "id": "c",
+          "text": "Go back to the last tee and replay your shot"
+        },
+        {
+          "id": "d",
+          "text": "Put the wrong ball back where you found it and continue with that ball"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "You must stop and play your own ball from where it lay, adding two penalty strokes. Any strokes made with the wrong ball do not count.",
+      "imagePrompt": "A teenage girl golfer on the fairway, looking thoughtfully at a golf ball with a different marking, realising it's not hers.",
+      "imageAlt": "Teen girl realises she played the wrong golf ball on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "blue",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-06.png",
+      "ruleNumber": "6",
+      "ruleName": "Wrong ball",
+      "group": "Wrong ball",
+      "title": "Consequences if you hole out with a wrong ball",
+      "question": "If you putt a wrong ball into the hole on the green and do not fix your mistake before starting the next hole or leaving the green (in stroke play), what can happen?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Nothing, you continue the round as normal"
+        },
+        {
+          "id": "b",
+          "text": "You get a two-stroke penalty, but keep playing"
+        },
+        {
+          "id": "c",
+          "text": "You may be disqualified for not correcting the mistake"
+        },
+        {
+          "id": "d",
+          "text": "You subtract two strokes from your score"
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "explanation": "If you do not correct the mistake of holing out with a wrong ball in stroke play, you can be disqualified.",
+      "imagePrompt": "A teenage boy on the putting green, looking upset while realising he finished the hole with the wrong ball.",
+      "imageAlt": "Teen boy looking worried at the golf hole after making a mistake with the wrong ball.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "dark",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "white",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-06.png",
+      "ruleNumber": "10",
+      "ruleName": "Advice and line of play",
+      "group": "Advice and line of play",
+      "title": "Advice about line of play on the green",
+      "question": "Which of these actions are NOT allowed when you're putting on the green? (Select all that apply)",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Your friend who is also playing tells you how the putt will break"
+        },
+        {
+          "id": "b",
+          "text": "You lay a putter or club on the green to show your intended line"
+        },
+        {
+          "id": "c",
+          "text": "Your caddie stands directly behind you on your line to help you aim"
+        },
+        {
+          "id": "d",
+          "text": "You read your own putt without help"
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "c"
+      ],
+      "explanation": "You can't get advice about your line from fellow players, can't put a club or object down to show the line, and your caddie can't stand behind you to help you line up.",
+      "imagePrompt": "A teenage boy about to putt; another player is pointing at the green and a club is laid on the grass in front, with a caddie lining up directly behind the boy.",
+      "imageAlt": "Teen boy on green with friend giving advice, club showing line, caddie behind.",
+      "sceneSpec": {
+        "setting": "putting_green",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "putter",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": true,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "orange",
+        "clothingBottomColour": "yellow",
+        "hat": false
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "013_001_What_happens_if_you_accidentally_move_your_ball_on_the_green",
+    "006_002_Penalty_for_playing_the_wrong_ball",
+    "006_003_Consequences_if_you_hole_out_with_a_wrong_ball",
+    "010_004_Advice_about_line_of_play_on_the_green"
+  ],
+  "updatedAtUtc": "2026-04-24T23:24:00.672Z"
+}

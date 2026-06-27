@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\016_001_Taking_relief_from_abnormal_course_conditions_in_a_bunker\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:41:46.981Z",
+  "title": "Taking relief from abnormal course conditions in a bunker",
+  "ruleNumber": "R16",
+  "ruleName": "Abnormal course conditions",
+  "durationSeconds": 191.318
+}

@@ -1,0 +1,578 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-03.png",
+  "sourceImagePath": "Input\\page-03.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-03.png",
+      "ruleNumber": "14",
+      "ruleName": "Dropping and re-dropping",
+      "group": "Dropping and re-dropping",
+      "title": "What is a club-length?",
+      "question": "When measuring a relief area, what does 'club-length' mean?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "The player's longest club, except the putter"
+        },
+        {
+          "id": "b",
+          "text": "Any club from the bag"
+        },
+        {
+          "id": "c",
+          "text": "Only the driver"
+        },
+        {
+          "id": "d",
+          "text": "Only the putter"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "A club-length is defined as the player's longest club except the putter.",
+      "imagePrompt": "A golf bag with clubs and one club laid out on the grass to show its full length.",
+      "imageAlt": "Golf bag with a club on the ground to show club-length.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "red",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-03.png",
+      "ruleNumber": "14",
+      "ruleName": "Dropping and re-dropping",
+      "group": "Dropping and re-dropping",
+      "title": "Correct way to drop a ball",
+      "question": "How must you drop a ball when taking relief, according to the Rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "From knee height"
+        },
+        {
+          "id": "b",
+          "text": "From shoulder height"
+        },
+        {
+          "id": "c",
+          "text": "By placing it on the ground"
+        },
+        {
+          "id": "d",
+          "text": "By tossing it gently"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "The ball must be dropped from knee height in the relief area.",
+      "imagePrompt": "A teenage boy golfer dropping a golf ball from knee height onto the fairway.",
+      "imageAlt": "Golfer dropping a ball from knee height.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "dropping_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "light",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "red",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-03.png",
+      "ruleNumber": "14",
+      "ruleName": "Dropping and re-dropping",
+      "group": "Dropping and re-dropping",
+      "title": "When must a ball be dropped again?",
+      "question": "If a dropped ball hits the player before it hits the ground, what should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop the ball again"
+        },
+        {
+          "id": "b",
+          "text": "Play the ball as it lies"
+        },
+        {
+          "id": "c",
+          "text": "Add a penalty and play on"
+        },
+        {
+          "id": "d",
+          "text": "Ask a referee"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "If the ball touches the player before hitting the ground, it must be dropped again.",
+      "imagePrompt": "A teenage girl drops a ball, but it bounces off her shoe before hitting the ground.",
+      "imageAlt": "Golf ball hitting the player's foot before touching the ground.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "dropping_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "light",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "green",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-03.png",
+      "ruleNumber": "14",
+      "ruleName": "Dropping and re-dropping",
+      "group": "Dropping and re-dropping",
+      "title": "What happens if the dropped ball rolls out of the relief area?",
+      "question": "After you drop the ball in the relief area, it rolls out. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop the ball again"
+        },
+        {
+          "id": "b",
+          "text": "Place the ball where it stopped"
+        },
+        {
+          "id": "c",
+          "text": "Play it from where it rolled to"
+        },
+        {
+          "id": "d",
+          "text": "Move it back and play from original spot"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "If the ball rolls out of the relief area after a drop, you must drop it again.",
+      "imagePrompt": "A teen boy drops a ball and it rolls away, out of a marked relief area.",
+      "imageAlt": "Golf ball rolling out of the marked area after being dropped.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "dropping_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "blue",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-03.png",
+      "ruleNumber": "14",
+      "ruleName": "Dropping and re-dropping",
+      "group": "Dropping and re-dropping",
+      "title": "What do you do if the ball won't stay in the relief area?",
+      "question": "If you drop the ball twice and it still won’t stay in the relief area, what do you do next?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Place the ball at the spot where it first touched the ground after the second drop"
+        },
+        {
+          "id": "b",
+          "text": "Drop it again"
+        },
+        {
+          "id": "c",
+          "text": "Place it on the nearest fairway"
+        },
+        {
+          "id": "d",
+          "text": "Take a penalty and continue"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "If the ball does not stay in the relief area after two drops, you place it where it first touched the ground after the second drop.",
+      "imagePrompt": "A teen girl places a golf ball carefully on the grass in the relief area after dropping twice.",
+      "imageAlt": "Golfer placing ball on the spot after failed drops.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "lifting_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "orange",
+        "clothingBottomColour": "green",
+        "hat": true
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-03.png",
+      "ruleNumber": "14",
+      "ruleName": "Dropping and re-dropping",
+      "group": "Dropping and re-dropping",
+      "title": "What is a club-length?",
+      "question": "When you are allowed to drop within a 'club-length', what does that distance mean?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "The length of your longest club, except the putter"
+        },
+        {
+          "id": "b",
+          "text": "Any club you choose from your bag"
+        },
+        {
+          "id": "c",
+          "text": "The length of your driver only"
+        },
+        {
+          "id": "d",
+          "text": "The length of your putter"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "A club-length is measured using your longest club, except for the putter.",
+      "imagePrompt": "A golf bag with clubs, a driver laid flat on the grass next to a golf ball to demonstrate club-length measurement.",
+      "imageAlt": "Golf bag and a driver on the fairway showing club-length beside a ball.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "driver",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "dark",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "grey",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-03.png",
+      "ruleNumber": "14",
+      "ruleName": "Dropping and re-dropping",
+      "group": "Dropping and re-dropping",
+      "title": "Correct way to drop a ball",
+      "question": "According to the Rules of Golf, how should you drop a ball when taking relief?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Let it fall from knee height"
+        },
+        {
+          "id": "b",
+          "text": "Let it fall from shoulder height"
+        },
+        {
+          "id": "c",
+          "text": "Place it gently on the ground by hand"
+        },
+        {
+          "id": "d",
+          "text": "Toss it upwards from knee height"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "You need to drop the ball straight down from knee height so it falls through the air without touching you or your equipment.",
+      "imagePrompt": "A teenage golfer standing on the fairway drops a golf ball from knee height.",
+      "imageAlt": "Golfer dropping a golf ball from knee height.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "dropping_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "blue",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-03.png",
+      "ruleNumber": "14",
+      "ruleName": "Dropping and re-dropping",
+      "group": "Dropping and re-dropping",
+      "title": "When must a ball be dropped again?",
+      "question": "If you drop the ball but it touches you or your equipment before hitting the ground, what must you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop the ball again"
+        },
+        {
+          "id": "b",
+          "text": "Play the ball as it lies"
+        },
+        {
+          "id": "c",
+          "text": "Add a penalty and play on"
+        },
+        {
+          "id": "d",
+          "text": "Ask a referee and wait"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "If the dropped ball touches you or your equipment before hitting the ground, you must drop it again without penalty.",
+      "imagePrompt": "A teenage girl drops a ball, but the ball bounces off her shoe before touching the ground on the fairway.",
+      "imageAlt": "Golf ball making contact with the golfer's foot before it lands.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "dropping_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "purple",
+        "clothingBottomColour": "white",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-03.png",
+      "ruleNumber": "14",
+      "ruleName": "Dropping and re-dropping",
+      "group": "Dropping and re-dropping",
+      "title": "What happens if the dropped ball rolls out of the relief area?",
+      "question": "After you drop your ball in the correct place, it rolls out of the relief area. What do you do next?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Drop the ball again in the relief area"
+        },
+        {
+          "id": "b",
+          "text": "Place the ball where it stopped"
+        },
+        {
+          "id": "c",
+          "text": "Hit it from where it finished"
+        },
+        {
+          "id": "d",
+          "text": "Move it back to the original spot"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "If your dropped ball comes to rest outside the relief area, you must drop it again within the relief area.",
+      "imagePrompt": "A teenage golfer watches as a dropped ball rolls out of a clearly marked relief area on the fairway.",
+      "imageAlt": "Golf ball rolling out of a marked relief area after a drop.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "dropping_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "navy",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "page-03.png",
+      "ruleNumber": "14",
+      "ruleName": "Dropping and re-dropping",
+      "group": "Dropping and re-dropping",
+      "title": "What do you do if the ball won't stay in the relief area?",
+      "question": "If you drop the ball twice and it still won’t stay in the relief area, what does the Rule require you to do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Place the ball on the spot where it first touched the ground after the second drop"
+        },
+        {
+          "id": "b",
+          "text": "Drop it a third time"
+        },
+        {
+          "id": "c",
+          "text": "Place it anywhere in the relief area"
+        },
+        {
+          "id": "d",
+          "text": "Take a penalty and continue"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "If a dropped ball twice fails to stay within the defined relief area, you must place it on the spot where it touched the ground after the second drop.",
+      "imagePrompt": "A teenage golfer places a golf ball carefully on the fairway at the spot it last landed after two drops.",
+      "imageAlt": "Golfer placing a ball at the spot after failed drops in the relief area.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "right",
+        "action": "lifting_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "green",
+        "clothingBottomColour": "red",
+        "hat": true
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "014_001_What_is_a_club_length",
+    "014_002_Correct_way_to_drop_a_ball",
+    "014_003_When_must_a_ball_be_dropped_again",
+    "014_004_What_happens_if_the_dropped_ball_rolls_out_of_the_relief_area",
+    "014_005_What_do_you_do_if_the_ball_wont_stay_in_the_relief_area"
+  ],
+  "updatedAtUtc": "2026-04-24T19:10:28.005Z"
+}

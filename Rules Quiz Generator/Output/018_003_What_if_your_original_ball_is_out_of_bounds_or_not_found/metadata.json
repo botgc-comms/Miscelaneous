@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-03.png",
+  "ruleNumber": "R18",
+  "ruleName": "Provisional Ball",
+  "group": "Provisional Ball",
+  "title": "What if your original ball is out of bounds or not found?",
+  "question": "You play a provisional ball. Your original ball is later found to be out of bounds, or you don't find it within 3 minutes. What should you do next?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "The provisional ball becomes your ball in play, with a 1-stroke penalty"
+    },
+    {
+      "id": "b",
+      "text": "You must replay your shot from the previous spot with no penalty"
+    },
+    {
+      "id": "c",
+      "text": "You can choose to play either ball with no penalty"
+    },
+    {
+      "id": "d",
+      "text": "You must drop a new ball where the original went out of bounds, with a 2-stroke penalty"
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "If your original ball is out of bounds or lost (not found within 3 minutes), the provisional ball becomes the ball in play and you count a one-stroke penalty.",
+  "imagePrompt": "Teenage girl golfer on a sunny fairway, near white out-of-bounds stakes, holding a driver club and standing by her provisional ball.",
+  "imageAlt": "Teenage girl golfer at the edge of the fairway by white out-of-bounds markers, preparing to play the provisional ball.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "standing_near_ball",
+    "clubInHand": "driver",
+    "ballCount": 1,
+    "stakeColour": "white",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "purple",
+    "clothingBottomColour": "yellow",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "Golfer's grip could be slightly more clearly left-handed, though it is visually plausible as left-handed.",
+      "Posture is nearly perfect but could show a bit more knee flex or spine tilt common with a driver."
+    ],
+    "repairPrompt": "Ensure the golfer's grip and stance are more clearly left-handed. Add a slight knee flex and natural spine tilt appropriate for a modern driver setup."
+  }
+}

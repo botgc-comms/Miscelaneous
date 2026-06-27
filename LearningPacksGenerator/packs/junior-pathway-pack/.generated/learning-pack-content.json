@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 1,
+  "packId": "junior-pathway",
+  "title": "Junior pathway",
+  "audience": "Brand new junior golfers and non-golfing parents",
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "The junior pathway",
+      "file": "pages/00-title.md",
+      "type": "content",
+      "assetFile": "title.png",
+      "imageAlt": "A group of junior golfers with their parents and a golf coach, all smiling near the practice green.",
+      "imagePrompt": "A photorealistic image of junior children with their parents and a friendly golf coach standing on a golf course practice green, all smiling. Golf bags and clubs in the background. The setting is welcoming, suitable for families.",
+      "markdown": "# The junior pathway\n\nWelcome to the junior pathway! This is your guide to how young golfers start, learn, and grow at our club. Whether you are a junior looking to try golf for the first time, or a parent with no golf experience, you'll find helpful information here. \n\nThe pathway is designed to be simple, supportive, and fun. Juniors begin as Cadets, learning the basic skills, safety, and good habits. As they grow in confidence, they move on to become Course Cadets, playing more golf on the course, trying new challenges, and enjoying more independence.\n\nParents and families are very important in this journey, and we work together to make sure everyone feels happy and welcome. You do not need any special equipment or golf knowledge to get started, just enthusiasm and a willingness to learn. Let’s get started step by step!",
+      "quiz": null
+    },
+    {
+      "id": "01-cadet",
+      "title": "Cadet stage",
+      "file": "pages/01-cadet.md",
+      "type": "content",
+      "assetFile": "cadet.png",
+      "imageAlt": "A junior golfer learning to hold a club properly on a beginners’ practice area, supervised by a smiling adult coach.",
+      "imagePrompt": "A photorealistic image of a young child learning to grip a golf club with gentle help from an adult coach, on a practice area with soft grass. There are a few colourful balls and basic training aids around them. The atmosphere is gentle and encouraging.",
+      "markdown": "# Cadet stage\n\nThe Cadet stage is where most juniors begin their golfing adventure. At this level, the focus is on having fun, making friends, and learning the basics of golf in a relaxed way. Lessons are playful and short, so everyone can enjoy themselves without feeling any pressure.\n\nWe teach simple skills like how to hold the club, how to stand, and how to swing safely. Cadets also learn how to behave on and around the golf course, such as waiting their turn, looking after the course, and being respectful to others. These habits help everyone have a good time.\n\nThere’s no need to buy fancy equipment. We have everything you need to get started and will help you choose suitable clubs and balls when you’re ready. Parents and families are encouraged to watch, support, and join in activities if they wish. The main aim is to build confidence and spark an interest in golf.",
+      "quiz": null
+    },
+    {
+      "id": "02-course-cadet",
+      "title": "Course Cadet stage",
+      "file": "pages/02-course-cadet.md",
+      "type": "content",
+      "assetFile": "course-cadet.png",
+      "imageAlt": "A junior golfer on a short hole of the golf course, ready to play a shot, with family and coach nearby watching encouragingly.",
+      "imagePrompt": "A photorealistic image of a junior golfer preparing to hit a golf ball on a short hole on the course. A parent and coach watch from a safe distance, smiling and encouraging. The hole is clearly shorter and easier, designed for juniors.",
+      "markdown": "# Course Cadet stage\n\nAfter becoming comfortable with the basics, juniors move up to the Course Cadet stage. Here, they start to play on real parts of the golf course, but still in a relaxed setting and with age-appropriate holes or distances.\n\nCourse Cadets practice playing a few holes at a time, learning how to move safely around the course and play as a team. They try different types of shots, work with others, and get a taste of what actual golf is like without any heavy competition.\n\nParents may walk along, offer gentle encouragement, or simply enjoy watching. Coaches are always nearby to offer support and tips. There’s still no need for expensive equipment – we’ll advise on any useful items as children grow. The aim is to build enjoyment, skills, and understanding of golf’s unique atmosphere.",
+      "quiz": null
+    },
+    {
+      "id": "03-expectations",
+      "title": "Expectations and support",
+      "file": "pages/03-expectations.md",
+      "type": "content",
+      "assetFile": "expectations.png",
+      "imageAlt": "A friendly junior golf coach chatting with a family, with a junior in golf clothes nearby, all looking comfortable and relaxed.",
+      "imagePrompt": "A photorealistic image of a junior golf coach talking supportively to parents and a junior golfer near a clubhouse or golf course entrance. Everyone looks relaxed and happy, showing trust and open communication. The setting is informal.",
+      "markdown": "# Expectations and support\n\nJoining the junior golf pathway is not about being perfect – it’s about trying your best, being kind, and having a good time. Juniors are encouraged to listen, try new things, and respect other players. Little steps and small improvements matter much more than winning or looking ‘good’.\n\nParents don’t need to be experts. Your support and encouragement are what truly count. You might help juniors arrive on time, provide a bottle of water, or simply cheer them on from the side. If you have questions at any time, coaches or organisers are always happy to help. We welcome feedback and believe in working together with families.\n\nRemember, safety and enjoyment come first. If a junior feels worried or unsure, let a coach know early. We aim for every child to feel welcome and secure, no matter how much experience they have.",
+      "quiz": null
+    },
+    {
+      "id": "04-meet-the-team",
+      "title": "Meet the team",
+      "file": "pages/04-meet-the-team.md",
+      "type": "content",
+      "assetFile": "meet-the-team.png",
+      "imageAlt": "The junior golf support team including coaches, volunteers, and smiling junior golfers all together on the clubhouse patio.",
+      "imagePrompt": "A photorealistic image showing a diverse team of golf coaches, volunteers, and junior golfers of various ages standing together outside a golf clubhouse. Everyone is smiling, wearing casual or golf clothes, and the atmosphere is inviting and team-spirited.",
+      "markdown": "# Meet the team\n\nBehind every successful junior section is a team of caring people. Here at the club, your child will be supported by skilled coaches, friendly volunteers, and dedicated organisers. Our coaches are trained to teach children and know how to make golf enjoyable and safe.\n\nVolunteers often help with activities, keep things running smoothly, and are there to answer practical questions. You may also meet older juniors who act as role models or ‘buddies’ to help new members settle in.\n\nEveryone in our team aims to make the golfing experience welcoming for all families, no matter how much you know about golf. We encourage parents to introduce themselves and ask anything – we’re always here to help. Let’s enjoy golf together!",
+      "quiz": null
+    },
+    {
+      "id": "90-quick-check",
+      "title": "Quick check",
+      "file": "pages/90-quick-check.md",
+      "type": "quiz",
+      "assetFile": "quick-check.png",
+      "imageAlt": "Junior golfers happily answering questions together with a coach, near a practice green.",
+      "imagePrompt": "A photorealistic image of several junior golfers sitting with a friendly coach on a practice green, thoughtfully discussing or answering quiz questions. Everyone looks interested and positive.",
+      "markdown": "# Quick check\n\nLet's review what we've learned about the junior golf pathway. Answer these questions to see how ready you are to support or start as a junior golfer.",
+      "quiz": {
+        "questions": [
+          {
+            "question": "What is the main focus of the Cadet stage?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Playing in big competitions"
+              },
+              {
+                "id": "b",
+                "text": "Having fun, making friends, and learning basics"
+              },
+              {
+                "id": "c",
+                "text": "Buying the most expensive clubs"
+              },
+              {
+                "id": "d",
+                "text": "Scoring as low as possible"
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "The Cadet stage is about fun, friends, and learning basic golf skills."
+          },
+          {
+            "question": "Do parents need to know about golf before their child joins?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Yes, they must be golf experts"
+              },
+              {
+                "id": "b",
+                "text": "No, encouragement and support are enough"
+              },
+              {
+                "id": "c",
+                "text": "Only if they want to play themselves"
+              },
+              {
+                "id": "d",
+                "text": "Yes, they need to buy lots of equipment"
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "Parents just need to support and encourage; they don’t need to be golf experts."
+          },
+          {
+            "question": "Who can you ask if you're unsure about something at the club?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "The coach or team members"
+              },
+              {
+                "id": "b",
+                "text": "Only other children"
+              },
+              {
+                "id": "c",
+                "text": "You must figure it out on your own"
+              },
+              {
+                "id": "d",
+                "text": "Nobody; just guess"
+              }
+            ],
+            "correctAnswer": "a",
+            "explanation": "You can always ask coaches, volunteers, or team members for help."
+          },
+          {
+            "question": "What happens at the Course Cadet stage?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Juniors play in professional tournaments"
+              },
+              {
+                "id": "b",
+                "text": "Juniors start to play on the actual golf course in a relaxed way"
+              },
+              {
+                "id": "c",
+                "text": "Juniors only watch others play"
+              },
+              {
+                "id": "d",
+                "text": "Juniors must play every day"
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "Course Cadets play on parts of the real course, learning at their own pace."
+          },
+          {
+            "question": "What should you do if a junior feels worried?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Ignore it"
+              },
+              {
+                "id": "b",
+                "text": "Speak to a coach or team member"
+              },
+              {
+                "id": "c",
+                "text": "Leave the club"
+              },
+              {
+                "id": "d",
+                "text": "Stay quiet"
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "It’s important to talk to a coach or someone on the team if there are any worries."
+          }
+        ]
+      }
+    }
+  ]
+}

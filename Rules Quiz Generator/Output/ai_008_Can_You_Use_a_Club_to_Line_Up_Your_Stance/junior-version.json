@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_008_Can_You_Use_a_Club_to_Line_Up_Your_Stance\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "10.2b(3)",
+  "ruleName": "No Setting Down Object to Help with Taking Stance",
+  "title": "Can You Use a Club to Line Up Your Stance?",
+  "question": "Before playing your tee shot, you place one of your clubs on the ground pointing towards your target to help line up your feet. After checking your stance, you pick the club up before making your stroke. What is the correct ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "There is no penalty because the club was removed before the stroke."
+    },
+    {
+      "id": "b",
+      "text": "There is no penalty because you only used your own equipment."
+    },
+    {
+      "id": "c",
+      "text": "You receive the general penalty because you used an object to help take your stance."
+    },
+    {
+      "id": "d",
+      "text": "You receive a one-stroke penalty."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "A player must not set an object down to help with taking their stance or aligning their feet. It does not matter that the object is removed before the stroke is made. The breach occurs as soon as the object is placed for that purpose. The penalty is the general penalty (two strokes in stroke play or loss of hole in match play).",
+  "juniorVersion": {
+    "title": "Can You Put a Club on the Ground to Help Aim Your Feet?",
+    "question": "You want to hit your tee shot straight, so you put a club on the ground pointing to the flag. You check if your feet are lined up, then pick up the club before you hit the ball. What is the right rule?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "There is no penalty because you picked up the club before you hit the ball."
+      },
+      {
+        "id": "b",
+        "text": "There is no penalty because you just used your own club."
+      },
+      {
+        "id": "c",
+        "text": "You get a penalty because you used something to help line up your feet before your swing."
+      },
+      {
+        "id": "d",
+        "text": "You get a one-shot penalty."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "You are not allowed to put anything down, like a club, to help you line up your feet when getting ready to hit the ball. It is still a penalty, even if you pick up the club before you swing.",
+    "vocabulary": [
+      {
+        "term": "tee shot",
+        "simpleMeaning": "The first shot you hit from a special area called the tee box at each hole."
+      },
+      {
+        "term": "stance",
+        "simpleMeaning": "How you stand with your feet before you hit the ball."
+      }
+    ],
+    "teachingTip": "Show juniors how to line up their feet using the club in their hands and not by putting clubs or other things on the ground.",
+    "likelyMisconceptions": [
+      "It's okay if you move the club before hitting the ball.",
+      "You can use your own club as long as you pick it up."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T17:58:30.518Z",
+  "model": "gpt-4.1"
+}

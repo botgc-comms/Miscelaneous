@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-26.png",
+  "ruleNumber": "17",
+  "ruleName": "Penalty Areas",
+  "group": "Penalty Areas",
+  "type": "multi_select",
+  "imagePrompt": "A left-handed teen girl golfer standing at the edge of a red-staked penalty area, examining possible places to drop after her ball went into the water.",
+  "imageAlt": "Teen girl golfer at a red penalty area considering her drop options after losing a ball.",
+  "sceneSpec": {
+    "setting": "penalty_area_edge",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "red",
+    "waterVisible": true,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "dark",
+    "clothingTopColour": "black",
+    "clothingBottomColour": "purple",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 96,
+    "issues": [
+      "The style sits slightly closer to photoreal than the requested 75% illustration, but remains within the acceptable range.",
+      "The golfer's hands are positioned correctly for a right-handed grip, though her stance is very neutral and could be made a bit more clearly right-handed for absolute clarity for beginners."
+    ],
+    "repairPrompt": "Clarify the golfer's right-handed stance by angling her feet and body more obviously for a right-handed player and ensure the illustration remains clearly stylized at about 75% between cartoon and photo, not photoreal."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What Can You Do If You Lose Your Ball in a Red Penalty Area?",
+      "question": "Your ball goes into a red penalty area, like a pond marked with red stakes, and you can't get it back. What are you allowed to do for one penalty shot? Pick all the answers that are correct.",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Hit another ball from the same place you last played."
+        },
+        {
+          "id": "b",
+          "text": "Drop a ball within two club-lengths from where your ball went into the red area."
+        },
+        {
+          "id": "c",
+          "text": "Drop a ball anywhere on the course with no penalty."
+        },
+        {
+          "id": "d",
+          "text": "Drop a ball farther away from the hole, in line with where your ball entered the red area."
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "d"
+      ],
+      "correctAnswer": [
+        "a",
+        "b",
+        "d"
+      ],
+      "explanation": "If your ball is lost in a red penalty area, you can: hit again from your last spot, drop nearby (within two club-lengths), or drop behind the red area, keeping where your ball went in between you and the hole. Each way costs one penalty shot.",
+      "vocabulary": [
+        {
+          "term": "Penalty area",
+          "simpleMeaning": "A part of the golf course, like a pond or stream, marked by red or yellow lines or stakes."
+        },
+        {
+          "term": "Club-length",
+          "simpleMeaning": "The length of your golf club. It's used to measure where you can drop your ball."
+        }
+      ],
+      "teachingTip": "Walk the children to a real penalty area, show red stakes, and act out the drop choices with them. Use clubs to measure two club-lengths together.",
+      "likelyMisconceptions": [
+        "Thinking you can drop the ball anywhere you want without a penalty.",
+        "Not knowing what a penalty area looks like or where a ball entered it.",
+        "Forgetting you get only two club-lengths to drop beside the entry spot."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "What Should You Do After Losing a Ball in a Red Penalty Area?",
+      "question": "If your ball goes into a red penalty area and you can't retrieve it, which relief options are allowed under the Rules (each for one penalty stroke)? Select all that apply.",
+      "type": "multi_select",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Replay your shot from the previous spot."
+        },
+        {
+          "id": "b",
+          "text": "Drop a ball within two club-lengths of the point where it crossed into the penalty area."
+        },
+        {
+          "id": "c",
+          "text": "Drop a ball anywhere you like on the course, with no penalty."
+        },
+        {
+          "id": "d",
+          "text": "Drop a ball behind the penalty area, keeping the entry point between you and the hole."
+        }
+      ],
+      "correctAnswers": [
+        "a",
+        "b",
+        "d"
+      ],
+      "correctAnswer": [
+        "a",
+        "b",
+        "d"
+      ],
+      "explanation": "If your ball is lost in a red penalty area, you may: replay the shot, drop within two club-lengths of the entry point, or drop behind the penalty area on a straight line from the hole—each for one penalty stroke."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "017_002_What_Should_You_Do_After_Losing_a_Ball_in_a_Red_Penalty_Area",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:53.477Z"
+  }
+}

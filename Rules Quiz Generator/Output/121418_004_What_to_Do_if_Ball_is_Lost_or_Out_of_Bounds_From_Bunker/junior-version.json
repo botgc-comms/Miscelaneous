@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\121418_004_What_to_Do_if_Ball_is_Lost_or_Out_of_Bounds_From_Bunker\\metadata.json",
+  "sourceImageName": "page-23.png",
+  "ruleNumber": "R12/14/18",
+  "ruleName": "Ball hit out of bounds/lost ball",
+  "title": "What to Do if Ball is Lost or Out of Bounds From Bunker",
+  "question": "You hit a shot from a bunker and your ball goes out of bounds. What do the rules require you to do?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Drop a ball anywhere in the bunker with no penalty"
+    },
+    {
+      "id": "b",
+      "text": "Replay your shot from the bunker, dropping a ball within one club-length, and add one penalty stroke"
+    },
+    {
+      "id": "c",
+      "text": "Play on from out of bounds without penalty"
+    },
+    {
+      "id": "d",
+      "text": "Take a free drop outside the bunker"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If your ball is lost or out of bounds, you must return to where you last played (the bunker), drop a ball within one club-length, and add one penalty stroke.",
+  "juniorVersion": {
+    "title": "What do you do if your ball from the bunker goes out of bounds?",
+    "question": "You hit your ball out of a bunker and it goes out of bounds. What should you do next?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Drop your ball anywhere inside the bunker without losing a shot"
+      },
+      {
+        "id": "b",
+        "text": "Play your shot again from the bunker. Drop your ball in the bunker within one club's length of where you last hit and add one extra shot"
+      },
+      {
+        "id": "c",
+        "text": "Keep playing from out of bounds with no extra shots"
+      },
+      {
+        "id": "d",
+        "text": "Drop your ball for free outside the bunker"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If your ball goes out of bounds or you lose your ball after hitting from the bunker, you have to go back to the bunker. Drop your ball in the bunker within one club's length of where you hit last, and add one more shot to your score.",
+    "vocabulary": [
+      {
+        "term": "Bunker",
+        "simpleMeaning": "A sandy area on the golf course. You try not to hit your ball in here."
+      },
+      {
+        "term": "Out of bounds",
+        "simpleMeaning": "A place outside the golf course where you cannot play your ball."
+      },
+      {
+        "term": "Drop",
+        "simpleMeaning": "Letting the ball go from your hand at knee height so you can play again."
+      },
+      {
+        "term": "Club-length",
+        "simpleMeaning": "The length of one of your golf clubs. You measure how far you can drop the ball using your club."
+      }
+    ],
+    "teachingTip": "Show children where out of bounds is on the course and practise the right way to drop a ball in the bunker using a club-length.",
+    "likelyMisconceptions": [
+      "Some children may think they can play from where the ball went out or from outside the bunker.",
+      "They might think they don't need to add a penalty shot."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:59.464Z",
+  "model": "gpt-4.1"
+}

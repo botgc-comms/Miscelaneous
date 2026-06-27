@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\013_004_What_happens_if_the_ball_rolls_away_after_being_replaced\\metadata.json",
+  "sourceImageName": "pageb-05.png",
+  "ruleNumber": "R13",
+  "ruleName": "Ball moves after being put back",
+  "title": "What happens if the ball rolls away after being replaced?",
+  "question": "After you have marked, lifted, and replaced your ball on the green, it suddenly rolls away on its own before you take your putt. What should you do?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball from its new position"
+    },
+    {
+      "id": "b",
+      "text": "Replace the ball on its original spot with no penalty"
+    },
+    {
+      "id": "c",
+      "text": "Take a penalty stroke and put it back"
+    },
+    {
+      "id": "d",
+      "text": "Start the hole over from the tee"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If the ball moves on its own after being replaced, you must put it back on its original spot with no penalty.",
+  "juniorVersion": {
+    "title": "If Your Ball Rolls Away After You Put It Back",
+    "question": "You mark your ball on the green, pick it up, and put it back. Before you hit your putt, the ball rolls away by itself. What should you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Play the ball from where it stopped"
+      },
+      {
+        "id": "b",
+        "text": "Put the ball back where it was with no penalty"
+      },
+      {
+        "id": "c",
+        "text": "Add a penalty and put it back"
+      },
+      {
+        "id": "d",
+        "text": "Go back and start the hole again"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If your ball moves by itself after you put it back on the green, you need to put it back where it was before. You do not get a penalty.",
+    "vocabulary": [
+      {
+        "term": "Green",
+        "simpleMeaning": "The short, smooth grass around the hole where you putt."
+      },
+      {
+        "term": "Penalty",
+        "simpleMeaning": "Extra shots added to your score if you break a rule."
+      },
+      {
+        "term": "Mark your ball",
+        "simpleMeaning": "Put a small coin or marker behind your ball so you can pick it up and then put it back."
+      }
+    ],
+    "teachingTip": "Show kids how the wind or slope can sometimes make a ball move by itself on the green, and why it's important to know what to do if this happens.",
+    "likelyMisconceptions": [
+      "Kids might think they always have to play the ball from where it stops.",
+      "Some may think you always get a penalty when your ball moves."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:38.953Z",
+  "model": "gpt-4.1"
+}

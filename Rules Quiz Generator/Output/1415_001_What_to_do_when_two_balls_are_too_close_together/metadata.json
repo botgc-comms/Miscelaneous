@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-20.png",
+  "ruleNumber": "R14/15",
+  "ruleName": "Balls close to each other",
+  "group": "Balls close to each other",
+  "title": "What to do when two balls are too close together",
+  "question": "You and another player both have balls so close together in a bunker that you can't hit your shot properly. What are you allowed to do?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Mark and pick up one ball, then recreate the original lie before playing."
+    },
+    {
+      "id": "b",
+      "text": "Play both balls as they lie, even if you have to hit the other ball."
+    },
+    {
+      "id": "c",
+      "text": "Clean the ball before putting it back after picking it up."
+    },
+    {
+      "id": "d",
+      "text": "Move both balls away to a clear spot in the bunker."
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "If two balls are so close they interfere with play, you may mark and lift one ball, then recreate and return it to its original spot after the other is played, but you must not clean it.",
+  "imagePrompt": "A teen girl golfer in a bunker carefully marking and lifting one of two balls that are next to each other, with a visible rake and sandy surface.",
+  "imageAlt": "A teen girl golfer in a bunker marking one of two golf balls that are very close together.",
+  "sceneSpec": {
+    "setting": "bunker",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "lifting_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": true,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [
+      "golf_cart",
+      "spectators",
+      "animals",
+      "extra balls",
+      "electronic devices",
+      "caddies",
+      "drink bottles",
+      "mobile phones",
+      "scorecards",
+      "rule books",
+      "benches",
+      "umbrellas"
+    ],
+    "ethnicity": "black",
+    "skinTone": "medium",
+    "clothingTopColour": "grey",
+    "clothingBottomColour": "red",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 95,
+    "issues": [
+      "Rake is not visible as clearly specified in the prompt and scene requirements.",
+      "The girl appears to be right-handed (lifting with right hand, kneeling with left knee), not left-handed as requested."
+    ],
+    "repairPrompt": "Ensure a golf rake is clearly visible on the sand in the bunker. Adjust the golfer's posture and action to indicate that she is left-handed (e.g., kneeling with right knee down, using left hand to lift the ball), while still kneeling and marking/lifting one of the two balls."
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-27.png",
+  "ruleNumber": "R8/9/17",
+  "ruleName": "Playing the ball as it lies",
+  "group": "Playing the ball as it lies",
+  "title": "Playing a ball in a penalty area",
+  "question": "You decide to play your ball from inside a penalty area. Which actions are allowed without penalty?",
+  "type": "multi_select",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Move plants out of your way to improve your swing"
+    },
+    {
+      "id": "b",
+      "text": "Bend tall grass away with your hand to make space"
+    },
+    {
+      "id": "c",
+      "text": "Ground your club in the water beside the ball"
+    },
+    {
+      "id": "d",
+      "text": "Play the ball exactly as it lies without changing the area"
+    },
+    {
+      "id": "e",
+      "text": "Break branches to clear a better shot"
+    }
+  ],
+  "correctAnswer": [
+    "c",
+    "d"
+  ],
+  "correctAnswers": [
+    "c",
+    "d"
+  ],
+  "explanation": "You are allowed to ground your club in a penalty area and play the ball as it lies, even if the club touches water or the ground. But you must not move, bend or break anything growing or attached to improve your lie or swing.",
+  "imagePrompt": "A teenage right-handed girl golfer, in a hat, prepares to play her ball as it lies at the edge of a red-staked penalty area with water and trees nearby, lightly grounding her iron club next to the ball.",
+  "imageAlt": "Teenage girl golfer playing a ball as it lies in a penalty area with her club grounded.",
+  "sceneSpec": {
+    "setting": "penalty_area_edge",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "red",
+    "waterVisible": true,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "dark",
+    "clothingTopColour": "red",
+    "clothingBottomColour": "grey",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [],
+    "repairPrompt": "No repair needed. The illustration is accurate: one realistic iron club, one golf ball, correct golfer posture, red penalty area stake, visible water and trees, and correct clothing/ethnicity. Maintain this quality."
+  }
+}

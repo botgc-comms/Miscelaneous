@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-04.png",
+  "ruleNumber": "R13",
+  "ruleName": "Wrong green",
+  "group": "Wrong green",
+  "title": "What should you do if your ball lands on the wrong green?",
+  "question": "If your ball comes to rest on a putting green for a different hole than the one you’re playing, what are you required to do?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play your shot from the wrong green"
+    },
+    {
+      "id": "b",
+      "text": "Take a free drop off the wrong green"
+    },
+    {
+      "id": "c",
+      "text": "Move your ball with a one shot penalty"
+    },
+    {
+      "id": "d",
+      "text": "Ask another player for advice"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If your ball is on a wrong green, you must take free relief and drop off the green; you are not allowed to play the ball from the wrong green.",
+  "imagePrompt": "A teen boy golfer stands next to a ball on the wrong green, with a different putting green and flagstick visible in the distance. He is preparing to take a drop.",
+  "imageAlt": "Boy golfer with ball on wrong green preparing to take free drop.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "dropping_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "blue",
+    "clothingBottomColour": "orange",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [
+      "Golfer gender in the image is a girl, conflicting with the 'teen boy' in the illustration intent, but matches the sceneSpec which specifies a girl. No rule-breaking issues; appearance, equipment, posture, and course are all highly believable and realistic."
+    ],
+    "repairPrompt": "Ensure the golfer clearly appears as a teenage boy, with natural boyish facial features and proportions, while retaining the correct club, posture, clothing, and golf ball details."
+  }
+}

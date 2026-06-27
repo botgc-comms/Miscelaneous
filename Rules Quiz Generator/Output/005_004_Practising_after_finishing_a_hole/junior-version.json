@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\005_004_Practising_after_finishing_a_hole\\metadata.json",
+  "sourceImageName": "pageb-11.png",
+  "ruleNumber": "R5",
+  "ruleName": "Practice putting and chipping",
+  "title": "Practising after finishing a hole",
+  "question": "After finishing a hole, which types of practice are allowed on the green, and where are you not allowed to practise from?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Practising extra putts on the green."
+    },
+    {
+      "id": "b",
+      "text": "Practising extra chips on or just beside the green."
+    },
+    {
+      "id": "c",
+      "text": "Playing practice shots from a bunker beside the green."
+    },
+    {
+      "id": "d",
+      "text": "Practising putts or chips unless banned by Local Rules."
+    }
+  ],
+  "correctAnswers": [
+    "a",
+    "b",
+    "d"
+  ],
+  "explanation": "You may practise extra putts or chips on or near the putting green after completing a hole, unless local rules ban it. You can't practise from a bunker.",
+  "juniorVersion": {
+    "title": "Can you practise shots after finishing a hole?",
+    "question": "When you finish playing a hole, what kinds of practice shots are okay to do on or near the green, and where can't you practise from?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You can practise extra putts on the green after you finish."
+      },
+      {
+        "id": "b",
+        "text": "You can practise extra chips on or right next to the green."
+      },
+      {
+        "id": "c",
+        "text": "You can play practice shots out of a bunker next to the green."
+      },
+      {
+        "id": "d",
+        "text": "You can practise putting or chipping unless a sign or rule says not to."
+      }
+    ],
+    "correctAnswers": [
+      "a",
+      "b",
+      "d"
+    ],
+    "explanation": "You can practise putting or chipping on or near the green after you finish the hole, as long as a sign or rule does not say you can't. But you cannot practise shots from the bunker.",
+    "vocabulary": [
+      {
+        "term": "Green",
+        "simpleMeaning": "The smooth, short grass area where the hole is."
+      },
+      {
+        "term": "Chip",
+        "simpleMeaning": "A short shot that goes from just off the green onto the green."
+      },
+      {
+        "term": "Bunker",
+        "simpleMeaning": "A sand trap near the green."
+      },
+      {
+        "term": "Local Rule",
+        "simpleMeaning": "A special rule given by the golf course that players must follow."
+      }
+    ],
+    "teachingTip": "Show different places around the green and talk about which spots you can use for practise putts and chips after a hole is finished.",
+    "likelyMisconceptions": [
+      "Thinking it's okay to practise from the bunker after the hole.",
+      "Forgetting to check if a local rule says no practising."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:20.663Z",
+  "model": "gpt-4.1"
+}

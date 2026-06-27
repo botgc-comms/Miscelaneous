@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 1,
+  "packId": "care-for-course",
+  "title": "Looking after the course",
+  "audience": "Brand new junior golfers and their non-golfing parents.",
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "Why it matters",
+      "file": "pages/00-title.md",
+      "type": "content",
+      "assetFile": "title.png",
+      "imageAlt": "A happy family of junior golfers and parents admiring a clean, green golf course.",
+      "imagePrompt": "A cheerful family, including children and adults, standing on a golf course and looking over a well-kept fairway and green, with blue sky, no visible logos, and no watermarks. The scene should celebrate the natural beauty and order of the golf course.",
+      "markdown": "# Why it matters\n\nGolf courses are special places where many people enjoy playing, making friends, and learning new skills. Every golfer, especially juniors, can help keep the course lovely for everyone. Looking after the course means people will have a better game, enjoy safer playing areas, and help nature to thrive too.\n\nEven though you might be just starting, you can make a big difference by following some simple habits. You’ll help other players and show respect for the course workers’ hard efforts. Your care means that golfers after you, and especially wildlife, have a wonderful place for years to come.\n\nEvery club welcomes junior players who help tidy up after themselves and respect the course. In this guide, we’ll show you easy ways to do your part. There’s no need for expensive kit—just a good attitude and a little practice. Let’s find out how you can be a real star for your club!",
+      "quiz": null
+    },
+    {
+      "id": "01-divots",
+      "title": "Divots on fairways",
+      "file": "pages/01-divots.md",
+      "type": "content",
+      "assetFile": "divots.png",
+      "imageAlt": "A junior golfer replacing a piece of grass (divot) back on the fairway after a golf shot.",
+      "imagePrompt": "A photorealistic image of a junior golfer kneeling on a fairway, carefully placing a piece of turf (divot) back into place where it was taken out by a golf swing. The scene shows simple golf clubs and clear green grass.",
+      "markdown": "# Divots on fairways\n\nWhen you hit a golf shot from the fairway, you might remove a small piece of grass and soil. This bit is called a 'divot'. If divots are left open, the grass takes longer to grow back, and it makes playing harder for everyone.\n\nIt’s easy to help. After your shot, look for the divot you made. Pick it up and place it gently back where it came from. Try to pat it down with your foot so it sits flat with the rest of the grass. Sometimes, on drier courses, you might see small boxes of sand and seed nearby—if so, you can use a scoop to fill the hole if your club asks you to. Just ask if you’re not sure.\n\nTaking care of divots keeps the fairway smooth and tidy. It also helps the grass grow back quickly, which the greenkeepers really appreciate. It is a simple way you can help the course, even as a beginner.",
+      "quiz": null
+    },
+    {
+      "id": "02-pitch-marks",
+      "title": "Pitch marks on greens",
+      "file": "pages/02-pitch-marks.md",
+      "type": "content",
+      "assetFile": "pitch-marks.png",
+      "imageAlt": "A close-up view of a golf green with a junior golfer gently repairing a pitch mark with a small tool.",
+      "imagePrompt": "A photorealistic close-up of a green with a young golfer using a pitch repair tool to fix a small dent left by a golf ball landing. The grass is bright and the setting is friendly.",
+      "markdown": "# Pitch marks on greens\n\nWhen your ball lands on the green from a distance, it sometimes makes a small dent called a 'pitch mark'. If left unfixed, these marks can cause the grass to die and make putting tricky for others.\n\nTo repair a pitch mark, you’ll need a simple pitch repair tool. Insert the tool gently at the edge of the mark, then carefully push the grass towards the middle. Don’t lift the soil upwards—just nudge inwards and smooth the surface with your putter or hand. This keeps the green smooth and healthy.\n\nAnyone can learn to fix a pitch mark—it only takes a few seconds. If you see a mark, even if it’s not yours, be a star and fix it. Greenkeepers and other players will notice your good work! If you don’t have a repair tool yet, ask the club—they often have spares for young golfers.",
+      "quiz": null
+    },
+    {
+      "id": "03-bunkers",
+      "title": "Raking bunkers",
+      "file": "pages/03-bunkers.md",
+      "type": "content",
+      "assetFile": "bunkers.png",
+      "imageAlt": "A junior golfer using a rake to smooth the sand in a bunker after hitting a shot.",
+      "imagePrompt": "A photorealistic image of a junior golfer in a sand bunker using a rake to smooth out footprints and marks after playing a shot. The scene is clear, cheerful, and focuses on tidy sand.",
+      "markdown": "# Raking bunkers\n\nBunkers are sandy areas found on golf courses, and lots of people call them ‘sand traps’. After playing out of a bunker, you’ll leave footprints and marks from your club. Smoothing the sand with a rake is important, so the next golfer has a fair chance.\n\nFind a rake nearby—these are specially made for smoothing bunkers and are always provided by the club. Start where your ball and feet made marks, then gently pull the rake towards you, smoothing out your footprints. Don’t forget to tidy up the sand where you entered or exited the bunker as well.\n\nOnce you’re finished, leave the rake in a tidy spot, as you found it. That way, it’s ready for the next person. Even young golfers can help keep bunkers neat, and your good habits always get noticed by the people who look after the course!",
+      "quiz": null
+    },
+    {
+      "id": "04-tools-and-habits",
+      "title": "Tools and habits",
+      "file": "pages/04-tools-and-habits.md",
+      "type": "content",
+      "assetFile": "tools-and-habits.png",
+      "imageAlt": "Close-up of basic pitch repair tools, sand boxes, and a rake, with children's hands ready to use them.",
+      "imagePrompt": "A photorealistic arrangement of hands belonging to junior golfers holding simple pitch repair tools, a rake leaned against a bunker, and a small sand and seed box on the grass nearby. The setting should be bright and educational, with no text, logos, or brands.",
+      "markdown": "# Tools and habits\n\nYou don’t need fancy equipment to help look after the golf course. Most clubs provide simple tools for everyone to use, like rakes for bunkers and sand or seed boxes for divots. You might choose to carry your own pitch repair tool, which is small enough to fit in your pocket.\n\nThe best tool, though, is good habits! Remember to check for your own divots and pitch marks, and fix them every time. Always rake bunkers after you’ve played from one. It’s fine to ask for help if you’re new—everyone at your club had to learn these things once.\n\nIf you ever forget, don’t worry. Just try to do a little better next time. With practice, these habits become natural, and you’ll help make the course better for everyone. Golf is about respect—both for people and for the lovely place you’re playing in.",
+      "quiz": null
+    },
+    {
+      "id": "90-quick-check",
+      "title": "Quick check",
+      "file": "pages/90-quick-check.md",
+      "type": "quiz",
+      "assetFile": "quick-check.png",
+      "imageAlt": "A family group of junior golfers smiling and giving a thumbs up beside a tidy, well-kept golf green.",
+      "imagePrompt": "A photorealistic image of a group of junior golfers and parents standing next to a green, all smiling and giving a thumbs up, with the course in excellent condition. Bright, friendly, and inviting.",
+      "markdown": "# Quick check\n\nLet’s make sure you’re confident about caring for the golf course! Choose the answer you think is best. Remember—it’s all about having the right attitude and giving it a try.",
+      "quiz": {
+        "questions": [
+          {
+            "question": "Why do we replace divots after hitting a shot on the fairway?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "To keep the fairway smooth and help the grass grow back."
+              },
+              {
+                "id": "b",
+                "text": "Because someone might trip over them."
+              },
+              {
+                "id": "c",
+                "text": "So the fairway looks a bit messy."
+              },
+              {
+                "id": "d",
+                "text": "Because it’s fun to play with the grass."
+              }
+            ],
+            "correctAnswer": "a",
+            "explanation": "Replacing divots keeps the fairway in good condition and helps the grass grow back quickly."
+          },
+          {
+            "question": "What’s the best way to fix a pitch mark on the green?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Poke the middle of the mark."
+              },
+              {
+                "id": "b",
+                "text": "Use a pitch repair tool to push the edges inwards, then smooth with your putter."
+              },
+              {
+                "id": "c",
+                "text": "Ignore it and move on."
+              },
+              {
+                "id": "d",
+                "text": "Fill it with sand from a bunker."
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "Use a pitch repair tool to gently push the edges in; don’t poke the middle or use sand."
+          },
+          {
+            "question": "Why do we rake bunkers after playing from them?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "To leave it tidy and fair for the next player."
+              },
+              {
+                "id": "b",
+                "text": "To make digging easier."
+              },
+              {
+                "id": "c",
+                "text": "Because we want to bury the golf ball."
+              },
+              {
+                "id": "d",
+                "text": "So the sand looks pretty."
+              }
+            ],
+            "correctAnswer": "a",
+            "explanation": "Raking bunkers smooths out footprints and makes it fair for everyone."
+          },
+          {
+            "question": "Which of these is the best habit for a caring golfer?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Only fix pitch marks if someone is watching."
+              },
+              {
+                "id": "b",
+                "text": "Always check for and fix your own divots, marks, and bunkers."
+              },
+              {
+                "id": "c",
+                "text": "Leave tools lying around after using them."
+              },
+              {
+                "id": "d",
+                "text": "Only worry about the golf ball, nothing else."
+              }
+            ],
+            "correctAnswer": "b",
+            "explanation": "A caring golfer always looks after the course, regardless of who is watching."
+          },
+          {
+            "question": "If you’re unsure how to use a tool or help the course, what should you do?",
+            "choices": [
+              {
+                "id": "a",
+                "text": "Ask someone at the club for help."
+              },
+              {
+                "id": "b",
+                "text": "Guess and hope for the best."
+              },
+              {
+                "id": "c",
+                "text": "Leave it for someone else."
+              },
+              {
+                "id": "d",
+                "text": "Decide not to try."
+              }
+            ],
+            "correctAnswer": "a",
+            "explanation": "Always ask for help if you’re not sure—everyone is happy to help new golfers learn."
+          }
+        ]
+      }
+    }
+  ]
+}

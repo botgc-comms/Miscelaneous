@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-04.png",
+  "ruleNumber": "R14",
+  "ruleName": "Incorrect drop",
+  "group": "Incorrect drop",
+  "title": "Penalty for Playing from the Wrong Spot After a Drop",
+  "question": "If you drop your ball outside the relief area and then play it from there, what penalty do you receive?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No penalty"
+    },
+    {
+      "id": "b",
+      "text": "1 penalty stroke"
+    },
+    {
+      "id": "c",
+      "text": "2 penalty strokes"
+    },
+    {
+      "id": "d",
+      "text": "Disqualification"
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "There is a two-stroke penalty for playing a ball from the wrong place after a drop, according to the Rules of Golf.",
+  "imagePrompt": "A teenage golfer, right-handed, addresses a ball lying clearly outside a yellow marked relief area on the fairway.",
+  "imageAlt": "Teen golfer about to play a ball outside a marked relief area on the fairway.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "orange",
+    "clothingBottomColour": "green",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Yellow marking is a curved arc instead of a clearly defined shape for a relief area."
+    ],
+    "repairPrompt": "Clarify the yellow marking as a realistic, closed, defined relief area boundary instead of a simple arc or curve."
+  }
+}

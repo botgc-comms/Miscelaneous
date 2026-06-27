@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\017_002_Relief_Location_Choices\\metadata.json",
+  "sourceImageName": "page-14.png",
+  "ruleNumber": "17",
+  "ruleName": "Taking Relief from Abnormal Course Conditions",
+  "title": "Relief Location Choices",
+  "question": "Your ball has stopped on a road. The nearest point of relief is in the rough, but you could stand partly on the road and drop onto the fairway. Where must you actually drop the ball?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "On the fairway, even if you are still partly standing on the road."
+    },
+    {
+      "id": "b",
+      "text": "In the rough, at the nearest place where there is no interference at all."
+    },
+    {
+      "id": "c",
+      "text": "Wherever your shot will be easier, as long as you are not closer to the hole."
+    },
+    {
+      "id": "d",
+      "text": "On the road, if that's the best spot for your next shot."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You must drop the ball at the nearest point of full relief, even if that means playing from the rough, not just where it is easier.",
+  "juniorVersion": {
+    "title": "Where Do You Drop the Ball?",
+    "question": "Your ball is on a path. The closest spot where the path doesn't get in your way is in the long grass (rough). But you could stand with one foot on the path and drop the ball on the short grass (fairway) if you want. Where do you have to drop your ball?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "On the short grass (fairway), even if one foot is still on the path."
+      },
+      {
+        "id": "b",
+        "text": "In the long grass (rough), at the nearest spot where the path isn't in the way at all."
+      },
+      {
+        "id": "c",
+        "text": "Where it makes your next shot easier, as long as you don’t go closer to the hole."
+      },
+      {
+        "id": "d",
+        "text": "On the path, if that helps your next shot the most."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "You have to drop your ball at the closest place where the path does not bother you at all, even if that is in the rough. You cannot choose a spot just because it is easier.",
+    "vocabulary": [
+      {
+        "term": "relief",
+        "simpleMeaning": "A special free drop if something like a path or puddle gets in your way."
+      },
+      {
+        "term": "fairway",
+        "simpleMeaning": "The short grass part of the hole."
+      },
+      {
+        "term": "rough",
+        "simpleMeaning": "The long grass next to the fairway."
+      }
+    ],
+    "teachingTip": "Show children how to find the very nearest place where the thing like the path isn’t in the way for the swing or stance.",
+    "likelyMisconceptions": [
+      "Children may think they can choose any spot that helps their shot, even if it’s not the nearest full relief.",
+      "They might think standing with one foot still on the path is enough."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:17.645Z",
+  "model": "gpt-4.1"
+}

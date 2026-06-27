@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\017_001_Options_After_Hitting_Into_a_Red_Penalty_Area\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:50:21.682Z",
+  "title": "Options After Hitting Into a Red Penalty Area",
+  "ruleNumber": "17",
+  "ruleName": "Penalty Areas",
+  "durationSeconds": 202.777
+}

@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-24.png",
+  "ruleNumber": "R17",
+  "ruleName": "In a penalty area",
+  "group": "In a penalty area",
+  "title": "Options for playing from a penalty area",
+  "question": "After your ball is found in a penalty area, what choices do you have about playing your next shot?",
+  "type": "multi_select",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball as it lies inside the penalty area, with no extra penalty."
+    },
+    {
+      "id": "b",
+      "text": "Take a drop outside the penalty area, with a one-stroke penalty."
+    },
+    {
+      "id": "c",
+      "text": "Drop a second ball anywhere in the penalty area, without penalty."
+    },
+    {
+      "id": "d",
+      "text": "You must return to the teeing area and replay the shot."
+    }
+  ],
+  "correctAnswer": [
+    "a",
+    "b"
+  ],
+  "correctAnswers": [
+    "a",
+    "b"
+  ],
+  "explanation": "You may play the ball as it lies in the penalty area (with no extra penalty) or take penalty area relief by dropping outside the penalty area for one penalty stroke.",
+  "imagePrompt": "A teenage boy stands just inside the edge of a penalty area marked by yellow stakes. His golf ball is on the grass near water. He is deciding whether to play the ball as it lies or take a penalty drop outside the area. Trees are visible in the background and it's a sunny day.",
+  "imageAlt": "Teen boy considering playing or dropping in yellow-staked penalty area, ball near water.",
+  "sceneSpec": {
+    "setting": "penalty_area_edge",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "addressing_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "yellow",
+    "waterVisible": true,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "blue",
+    "clothingBottomColour": "black",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [],
+    "repairPrompt": "Ensure the golfer is clearly left-handed in posture and grip on the club, with hands and club orientation showing a left-handed address position."
+  }
+}

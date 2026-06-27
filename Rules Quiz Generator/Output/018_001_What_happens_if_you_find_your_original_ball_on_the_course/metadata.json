@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-03.png",
+  "ruleNumber": "R18",
+  "ruleName": "Provisional Ball",
+  "group": "Provisional Ball",
+  "title": "What happens if you find your original ball on the course?",
+  "question": "You hit a provisional ball, but then find your original ball on the course (not out of bounds) within 3 minutes. What should you do next?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Continue playing the provisional ball"
+    },
+    {
+      "id": "b",
+      "text": "Pick up the provisional ball and play the original ball"
+    },
+    {
+      "id": "c",
+      "text": "Play whichever ball is in a better position"
+    },
+    {
+      "id": "d",
+      "text": "Play both balls and choose the best result"
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You must stop playing the provisional ball and continue with your original ball. Any strokes played with the provisional ball do not count.",
+  "imagePrompt": "Teenage girl golfer on the sunny fairway, using an iron to pick up her provisional ball after finding her original ball. Only one ball left visible on the fairway.",
+  "imageAlt": "Teenage girl golfer on the fairway picking up a second ball, original ball in play.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "lifting_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "asian",
+    "skinTone": "light",
+    "clothingTopColour": "orange",
+    "clothingBottomColour": "navy",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 98,
+    "issues": [],
+    "repairPrompt": "No repairs needed. The illustration is visually accurate: one golf ball visible, a teenage Asian boy in an orange top and navy trousers, right-handed plausible golf posture while lifting the ball, a realistic iron club with a single believable metal club head, natural daylight, and a fairway background. The image is well-suited for teaching golf rules to teenagers."
+  }
+}

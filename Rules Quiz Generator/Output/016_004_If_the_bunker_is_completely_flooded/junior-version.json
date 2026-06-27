@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\016_004_If_the_bunker_is_completely_flooded\\metadata.json",
+  "sourceImageName": "page-21.png",
+  "ruleNumber": "R16",
+  "ruleName": "Abnormal course conditions",
+  "title": "If the bunker is completely flooded",
+  "question": "Your ball comes to rest in a bunker that is completely filled with water and there is no dry ground to drop your ball inside the bunker. What should you do?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball from the water without penalty"
+    },
+    {
+      "id": "b",
+      "text": "Take free relief outside the bunker"
+    },
+    {
+      "id": "c",
+      "text": "Drop outside the bunker with a one-stroke penalty"
+    },
+    {
+      "id": "d",
+      "text": "Choose any spot on the course for free"
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "If you cannot find a dry spot within the bunker, you are allowed to take relief outside the bunker, but you must take a one-stroke penalty.",
+  "juniorVersion": {
+    "title": "What if the whole bunker is under water?",
+    "question": "Your ball lands in a bunker, but the whole bunker is filled with water and there is nowhere dry to drop your ball inside. What can you do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Hit the ball out of the water with no penalty"
+      },
+      {
+        "id": "b",
+        "text": "Move your ball outside the bunker for free"
+      },
+      {
+        "id": "c",
+        "text": "Drop your ball outside the bunker, but add one shot to your score"
+      },
+      {
+        "id": "d",
+        "text": "Put your ball anywhere you want for free"
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "If there is no dry spot in the bunker, you can drop your ball just outside the bunker, but you must add one shot to your score.",
+    "vocabulary": [
+      {
+        "term": "bunker",
+        "simpleMeaning": "A sandy area on the golf course, often next to the green or fairway."
+      },
+      {
+        "term": "drop",
+        "simpleMeaning": "Letting the ball go from your hand and letting it fall to the ground to play again."
+      }
+    ],
+    "teachingTip": "Show a picture of a flooded bunker and ask where you could drop the ball. Explain the reason for the extra shot.",
+    "likelyMisconceptions": [
+      "Kids might think they can move the ball outside the bunker for free.",
+      "Some might believe they have to hit the ball from the water."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:10.225Z",
+  "model": "gpt-4.1"
+}

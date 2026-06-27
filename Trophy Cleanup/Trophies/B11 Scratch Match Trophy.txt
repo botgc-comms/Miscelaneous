@@ -1,0 +1,5 @@
+{
+  "text": ["Scratch Match", "Cup"],
+  "allowText": true,
+  "notes": "The inscription reads - Scratch Match Cup"
+}

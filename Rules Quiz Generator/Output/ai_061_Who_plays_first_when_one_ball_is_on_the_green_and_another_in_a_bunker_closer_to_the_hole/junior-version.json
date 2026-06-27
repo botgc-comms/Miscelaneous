@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_061_Who_plays_first_when_one_ball_is_on_the_green_and_another_in_a_bunker_closer_to_the_hole\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "6.4b",
+  "ruleName": "Order of Play in Stroke Play",
+  "title": "Who plays first when one ball is on the green and another in a bunker closer to the hole?",
+  "question": "In a stroke play competition, your ball is on the putting green. Your playing partner's ball is in a bunker, but it is closer to the hole than yours. Who should play first?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You should play first because your ball is already on the putting green."
+    },
+    {
+      "id": "b",
+      "text": "Your partner should play first because their ball is farther from the hole."
+    },
+    {
+      "id": "c",
+      "text": "Your partner should play first because their ball is farther from the hole."
+    },
+    {
+      "id": "d",
+      "text": "You can choose who plays first."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "The order of play in stroke play is determined by which ball is farther from the hole, not by which area of the course the ball is in. Even if one ball is on the green and another elsewhere, the player whose ball is farther away plays first. Ready Golf is encouraged in stroke play to improve pace of play, but there is no penalty for playing out of turn. In this scenario, since your ball is on the green and your partner's ball is in a bunker closer to the hole, you (with the ball farther from the hole) should play first.",
+  "juniorVersion": {
+    "title": "Who goes first if one ball is on the green and the other is in a bunker closer to the hole?",
+    "question": "You are playing golf with a friend. Your ball is on the green, but not very close to the hole. Your friend's ball is in the sand bunker, but the bunker is a bit closer to the hole than your ball. Who should take their shot first?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You should go first because your ball is on the green."
+      },
+      {
+        "id": "b",
+        "text": "Your friend should go first because their ball is farther from the hole."
+      },
+      {
+        "id": "c",
+        "text": "Your friend should go first because their ball is farther from the hole."
+      },
+      {
+        "id": "d",
+        "text": "You can choose who goes first."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "In stroke play, the player whose ball is farthest from the hole always plays first, no matter if it is on the green, in the sand, or on the grass. In this case, your ball is farther away, so you go first.",
+    "vocabulary": [
+      {
+        "term": "Green",
+        "simpleMeaning": "The smooth grass near the hole where you putt the ball."
+      },
+      {
+        "term": "Bunker",
+        "simpleMeaning": "A sandy area on the golf course, also called a sand trap."
+      },
+      {
+        "term": "Stroke play",
+        "simpleMeaning": "A type of golf game where you count every shot you take during a round."
+      }
+    ],
+    "teachingTip": "Ask the children to look at where each ball is and which one is farthest from the hole. Remind them it doesn't matter if the ball is on the green, in a bunker, or on the grass.",
+    "likelyMisconceptions": [
+      "Thinking the player on the green should always play first.",
+      "Believing the player in the bunker must always go last."
+    ]
+  },
+  "generatedAtUtc": "2026-06-26T19:37:18.121Z",
+  "model": "gpt-4.1"
+}

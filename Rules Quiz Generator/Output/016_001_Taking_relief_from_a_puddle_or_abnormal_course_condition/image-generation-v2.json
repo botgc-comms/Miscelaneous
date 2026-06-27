@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\016_001_Taking_relief_from_a_puddle_or_abnormal_course_condition\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:40:56.654Z",
+  "title": "Taking relief from a puddle or abnormal course condition",
+  "ruleNumber": "R16",
+  "ruleName": "Puddles and other abnormal course conditions",
+  "durationSeconds": 172.284
+}

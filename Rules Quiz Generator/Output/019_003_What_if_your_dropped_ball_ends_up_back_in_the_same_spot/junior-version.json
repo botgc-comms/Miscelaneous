@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\019_003_What_if_your_dropped_ball_ends_up_back_in_the_same_spot\\metadata.json",
+  "sourceImageName": "page-16.png",
+  "ruleNumber": "R19",
+  "ruleName": "Unplayable ball",
+  "title": "What if your dropped ball ends up back in the same spot?",
+  "question": "You drop your ball for relief but it rolls back to the same tough place as before. What can you do next?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball as it is, or declare it unplayable again"
+    },
+    {
+      "id": "b",
+      "text": "Drop again for free"
+    },
+    {
+      "id": "c",
+      "text": "Move the ball to an easier spot without penalty"
+    },
+    {
+      "id": "d",
+      "text": "Pick up the ball and stop playing the hole"
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "You must play the ball as it lies, or you may declare it unplayable again and take another penalty stroke.",
+  "juniorVersion": {
+    "title": "What do you do if your ball rolls back to the same tricky spot after you drop it?",
+    "question": "You drop your ball to get away from a hard place, but it rolls right back there. What should you do next?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Play the ball where it is, or say it's unplayable again"
+      },
+      {
+        "id": "b",
+        "text": "Drop the ball again for free"
+      },
+      {
+        "id": "c",
+        "text": "Move the ball to an easier place with no penalty"
+      },
+      {
+        "id": "d",
+        "text": "Pick up your ball and stop playing the hole"
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "You must play the ball where it is now, or you can choose to say it's unplayable again but you will get another penalty stroke.",
+    "vocabulary": [
+      {
+        "term": "drop",
+        "simpleMeaning": "Letting your ball fall from your hand onto the ground following the golf rules."
+      },
+      {
+        "term": "unplayable",
+        "simpleMeaning": "When your ball is in a spot that's too hard to hit from, so you take a penalty and move the ball."
+      },
+      {
+        "term": "penalty stroke",
+        "simpleMeaning": "An extra shot added to your score for breaking a rule or taking relief."
+      }
+    ],
+    "teachingTip": "Show kids how to drop a ball the right way, and explain what to do if it rolls to the wrong spot again.",
+    "likelyMisconceptions": [
+      "Kids might think they can keep dropping until the ball lands in a good spot without a penalty.",
+      "They may believe they can move the ball wherever they want if they're not happy after a drop."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:27:48.072Z",
+  "model": "gpt-4.1"
+}

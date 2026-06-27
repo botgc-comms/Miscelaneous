@@ -1,0 +1,34 @@
+{
+  "id": "equipment-growth",
+  "title": "Equipment as you grow",
+  "summary": "How clubs and kit change as juniors grow.",
+  "estimatedMinutes": 6,
+  "proiority": 600,
+  "mandatoryFor": [
+    "Junior Cadet", 
+    "Junior Course Cadet"
+  ],
+  "version": 1,
+  "pages": [
+    {
+      "id": "00-growth",
+      "title": "Growth matters",
+      "file": "pages/00-growth.md"
+    },
+    {
+      "id": "01-signs",
+      "title": "Signs equipment needs changing",
+      "file": "pages/01-signs.md"
+    },
+    {
+      "id": "02-advice",
+      "title": "Getting advice",
+      "file": "pages/02-advice.md"
+    },
+    {
+      "id": "03-cost",
+      "title": "Managing cost",
+      "file": "pages/03-cost.md"
+    }
+  ]
+}

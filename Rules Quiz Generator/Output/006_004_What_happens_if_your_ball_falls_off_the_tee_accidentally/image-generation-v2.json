@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\006_004_What_happens_if_your_ball_falls_off_the_tee_accidentally\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:00:04.312Z",
+  "title": "What happens if your ball falls off the tee accidentally?",
+  "ruleNumber": "R6",
+  "ruleName": "Ball falls off the tee",
+  "durationSeconds": 198.559
+}

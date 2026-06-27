@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-08.png",
+  "ruleNumber": "R18",
+  "ruleName": "Provisional/lost ball",
+  "group": "Provisional/lost ball",
+  "type": "multiple_choice",
+  "imagePrompt": "A left-handed teenage boy stands on the teeing area, preparing to play a second ball and calling out 'provisional' with his first shot having gone into trees.",
+  "imageAlt": "Teen golfer on the tee playing a provisional ball after the first shot went towards thick trees.",
+  "sceneSpec": {
+    "setting": "teeing_area",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "replaying_shot",
+    "clubInHand": "driver",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": true,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [
+      "crowds"
+    ],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "blue",
+    "clothingBottomColour": "purple",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The only very minor issue is that while the golfer looks to be about to take a shot, the left-handed grip/posture could be just a touch more visually explicit (e.g., right hand higher on the grip, left shoulder leading), but it is still plausible as is."
+    ],
+    "repairPrompt": "Show the golfer's grip and stance more clearly left-handed, with the right hand higher on the club and the left shoulder nearer the target."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What should you do if you might lose your ball?",
+      "question": "If you hit your ball and think it might be hard to find or could have gone out of the golf course, what should you do before going to look for it?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Go and look for your ball first, then play another ball after 3 minutes if you cannot find it."
+        },
+        {
+          "id": "b",
+          "text": "Say out loud that you are playing another ball (a provisional ball), then hit it before looking for your first ball."
+        },
+        {
+          "id": "c",
+          "text": "Only play another ball if your first ball is in water or a penalty area."
+        },
+        {
+          "id": "d",
+          "text": "Play another ball only if somebody else tells you to."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If you think your ball may be hard to find or went out of the course (not in water or a penalty area), you must say you are playing a provisional ball and hit it before you go look. This saves time if your first ball cannot be found.",
+      "vocabulary": [
+        {
+          "term": "Provisional ball",
+          "simpleMeaning": "A second ball you hit just in case your first ball is lost or out of bounds."
+        },
+        {
+          "term": "Penalty area",
+          "simpleMeaning": "A place like a pond or stream marked by red or yellow stakes or lines."
+        },
+        {
+          "term": "Out of bounds",
+          "simpleMeaning": "When your ball goes outside the edge of the golf course."
+        }
+      ],
+      "teachingTip": "Show children how to clearly say ‘provisional ball’ before they hit it. Role-play different situations using simple props.",
+      "likelyMisconceptions": [
+        "Some children may think you can wait until after searching to play a provisional ball.",
+        "Some may think you can only play a provisional ball if someone tells you.",
+        "Children may confuse penalty areas (like a pond) with other places they might lose a ball."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "How and when to play a provisional ball",
+      "question": "If you think your ball might be lost outside a penalty area or out of bounds, what should you do before going forward to search?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Search first, then play a provisional ball after 3 minutes."
+        },
+        {
+          "id": "b",
+          "text": "Announce that you will play a provisional ball, then play it immediately before searching."
+        },
+        {
+          "id": "c",
+          "text": "Only play a provisional ball if the ball is in a penalty area."
+        },
+        {
+          "id": "d",
+          "text": "Play a provisional ball only if told to by another player."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "You must announce and play your provisional ball before going forward to search for your original ball if you think it might be lost or out of bounds (not in a penalty area)."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "018_003_How_and_when_to_play_a_provisional_ball",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:53.576Z"
+  }
+}

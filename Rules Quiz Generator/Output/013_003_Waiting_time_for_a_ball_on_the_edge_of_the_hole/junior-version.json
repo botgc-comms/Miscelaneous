@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\013_003_Waiting_time_for_a_ball_on_the_edge_of_the_hole\\metadata.json",
+  "sourceImageName": "pageb-10.png",
+  "ruleNumber": "R13",
+  "ruleName": "Ball on the edge of the hole",
+  "title": "Waiting time for a ball on the edge of the hole",
+  "question": "Your ball comes to rest right on the edge of the hole after a putt. How long are you allowed to wait to see if it will fall in?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Until it is your turn again"
+    },
+    {
+      "id": "b",
+      "text": "10 seconds"
+    },
+    {
+      "id": "c",
+      "text": "30 seconds"
+    },
+    {
+      "id": "d",
+      "text": "You cannot wait at all"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You may wait up to 10 seconds to see if a ball hanging on the edge of the hole will drop in. If it falls in after that, extra rules may apply.",
+  "juniorVersion": {
+    "title": "How long can you wait if your ball is right by the hole?",
+    "question": "If your ball stops just on the edge of the hole after you putt, how long can you watch to see if it falls in?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Until it is your turn again"
+      },
+      {
+        "id": "b",
+        "text": "10 seconds"
+      },
+      {
+        "id": "c",
+        "text": "30 seconds"
+      },
+      {
+        "id": "d",
+        "text": "You cannot wait at all"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "You can wait up to 10 seconds to see if your ball will fall into the hole when it is sitting on the edge. If it falls in after 10 seconds, there might be extra rules.",
+    "vocabulary": [
+      {
+        "term": "Edge of the hole",
+        "simpleMeaning": "When your ball is almost in the hole but is sitting right next to it."
+      },
+      {
+        "term": "Putt",
+        "simpleMeaning": "A soft hit (shot) you make to try and get the ball into the hole, usually on the green."
+      }
+    ],
+    "teachingTip": "Let children watch a ball on the edge and count to 10 together to practise the rule.",
+    "likelyMisconceptions": [
+      "Children may think they can wait as long as they want for the ball to drop in.",
+      "Some may believe the ball must be played right away without waiting."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:34.193Z",
+  "model": "gpt-4.1"
+}

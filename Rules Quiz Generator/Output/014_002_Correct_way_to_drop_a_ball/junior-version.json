@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\014_002_Correct_way_to_drop_a_ball\\metadata.json",
+  "sourceImageName": "page-03.png",
+  "ruleNumber": "14",
+  "ruleName": "Dropping and re-dropping",
+  "title": "Correct way to drop a ball",
+  "question": "According to the Rules of Golf, how should you drop a ball when taking relief?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Let it fall from knee height"
+    },
+    {
+      "id": "b",
+      "text": "Let it fall from shoulder height"
+    },
+    {
+      "id": "c",
+      "text": "Place it gently on the ground by hand"
+    },
+    {
+      "id": "d",
+      "text": "Toss it upwards from knee height"
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "You need to drop the ball straight down from knee height so it falls through the air without touching you or your equipment.",
+  "juniorVersion": {
+    "title": "How to Drop the Ball the Right Way",
+    "question": "If your golf ball goes somewhere tricky and you need to drop a new one, how are you supposed to let it go?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Let the ball fall from your knee"
+      },
+      {
+        "id": "b",
+        "text": "Let the ball fall from your shoulder"
+      },
+      {
+        "id": "c",
+        "text": "Put the ball on the ground with your hand"
+      },
+      {
+        "id": "d",
+        "text": "Toss the ball up from your knee"
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "You should hold the ball at your knee and let it fall straight down. That is the proper way to drop a golf ball.",
+    "vocabulary": [
+      {
+        "term": "Drop (the ball)",
+        "simpleMeaning": "Let go of the ball and let it fall to the ground, not throw or roll it."
+      },
+      {
+        "term": "Knee height",
+        "simpleMeaning": "How high your knee is from the ground when you are standing."
+      }
+    ],
+    "teachingTip": "Show kids how high their knee is and practise letting the ball fall straight down without bouncing it or throwing it.",
+    "likelyMisconceptions": [
+      "Some kids might think they have to throw the ball down hard.",
+      "Some might want to drop it from high up, like their shoulder.",
+      "Some might want to just place the ball on the ground."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:41.555Z",
+  "model": "gpt-4.1"
+}

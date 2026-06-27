@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\004_002_Too_Many_Clubs_Discovered_After_Starting_Round\\metadata.json",
+  "generatedAtUtc": "2026-06-24T14:10:39.816Z",
+  "title": "Too Many Clubs Discovered After Starting Round",
+  "ruleNumber": "R4",
+  "ruleName": "Maximum of 14 clubs",
+  "durationSeconds": 184.854
+}

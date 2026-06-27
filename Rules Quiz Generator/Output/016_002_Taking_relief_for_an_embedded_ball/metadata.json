@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-12.png",
+  "ruleNumber": "16",
+  "ruleName": "Embedded ball",
+  "group": "Embedded ball",
+  "title": "Taking relief for an embedded ball",
+  "question": "If your ball is embedded in the ground after landing in the fairway, what are you allowed to do according to the rules?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball as it lies, even though it is embedded."
+    },
+    {
+      "id": "b",
+      "text": "Pick it up, clean it, and drop it within one club-length of its original spot, not nearer the hole, with no penalty."
+    },
+    {
+      "id": "c",
+      "text": "Take a two-stroke penalty and drop it anywhere on the green."
+    },
+    {
+      "id": "d",
+      "text": "Replace it exactly where it is embedded, without cleaning it."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "If your ball is embedded in the fairway, you may lift, clean, and drop it within one club-length no nearer the hole without penalty.",
+  "imagePrompt": "A teenage boy golfer prepares to drop his golf ball near the spot where it was embedded in the fairway.",
+  "imageAlt": "Boy golfer ready to drop his ball next to where it was embedded on the fairway.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "dropping_ball",
+    "clubInHand": "none",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "asian",
+    "skinTone": "light",
+    "clothingTopColour": "red",
+    "clothingBottomColour": "green",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 99,
+    "issues": [],
+    "repairPrompt": "Ensure the golfer is clearly left-handed by using the left hand (from the viewer's perspective, right side of image) to drop the ball if not already unambiguous."
+  }
+}

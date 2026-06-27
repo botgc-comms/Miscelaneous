@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "pageb-07.png",
+  "ruleNumber": "R13",
+  "ruleName": "Putting Green",
+  "group": "Putting Green",
+  "type": "multiple_choice",
+  "imagePrompt": "A teenage girl marking the position of her embedded ball on the green while preparing to lift it.",
+  "imageAlt": "Teen girl marking spot of embedded ball on the putting green.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "left",
+    "action": "lifting_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "dark",
+    "clothingTopColour": "grey",
+    "clothingBottomColour": "black",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The left-handed grip and stance could be emphasized slightly more to make it even clearer, as the putter is angled in a way that could be interpreted as either hand dominant (but it does read as left-handed overall).",
+      "The putting green is a little generic but authentic enough for context; some more detailed putting green features could enhance realism."
+    ],
+    "repairPrompt": "Clarify the left-handed grip and stance with the putter held more distinctly in the left hand and make the putting green surface slightly more detailed to enhance realism."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What Should You Do If Your Ball Stuck Into The Green?",
+      "question": "If your ball lands on the putting green and gets stuck in its own hole, what should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Leave it where it is and hit it from there."
+        },
+        {
+          "id": "b",
+          "text": "Put a marker where your ball is, pick it up, fix the little hole, and put your ball back."
+        },
+        {
+          "id": "c",
+          "text": "Pick up the ball and drop it two club lengths away."
+        },
+        {
+          "id": "d",
+          "text": "Ask someone else to move it for you."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "You should put a marker next to your ball, pick it up, fix the hole it made, and then put your ball back in the same spot.",
+      "vocabulary": [
+        {
+          "term": "Putting green",
+          "simpleMeaning": "The short, smooth grass around the hole where you finish the hole."
+        },
+        {
+          "term": "Embedded",
+          "simpleMeaning": "When your ball is stuck down in the ground after it lands."
+        },
+        {
+          "term": "Pitch-mark",
+          "simpleMeaning": "A small hole made when the ball lands hard on the green."
+        },
+        {
+          "term": "Marker",
+          "simpleMeaning": "A small flat object you use to show where your ball was."
+        }
+      ],
+      "teachingTip": "Let children practise marking their golf ball, fixing a pitch-mark, and replacing the ball on the green in a safe space.",
+      "likelyMisconceptions": [
+        "Some children may think they have to play the ball while it is still stuck in the ground.",
+        "Some may think they need to drop the ball somewhere else.",
+        "Some may think someone else should pick up their ball."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "What To Do With An Embedded Ball",
+      "question": "If your ball is embedded on the putting green after a shot, what is the correct thing to do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Leave it and play it as it lies"
+        },
+        {
+          "id": "b",
+          "text": "Mark its position, lift the ball, repair the pitch-mark, and replace the ball"
+        },
+        {
+          "id": "c",
+          "text": "Pick it up and drop it two club lengths away"
+        },
+        {
+          "id": "d",
+          "text": "Ask another player to move it for you"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "You should mark where the ball is, lift it, repair the pitch-mark, and then replace the ball without any penalty."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "013_003_What_To_Do_With_An_Embedded_Ball",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.752Z"
+  }
+}

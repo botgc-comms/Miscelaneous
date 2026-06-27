@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\1113_002_Flagstick_Hit_Accidentally_What_Happens\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:09:44.986Z",
+  "title": "Flagstick Hit Accidentally – What Happens?",
+  "ruleNumber": "R11/13",
+  "ruleName": "Ball hits the flagstick or the person tending it",
+  "durationSeconds": 171.71
+}

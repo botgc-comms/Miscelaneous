@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\006_004_Penalty_for_taking_advantage_with_wrong_order_of_play\\metadata.json",
+  "generatedAtUtc": "2026-06-24T14:59:44.726Z",
+  "title": "Penalty for taking advantage with wrong order of play",
+  "ruleNumber": "R6",
+  "ruleName": "Playing in the wrong order",
+  "durationSeconds": 179.222
+}

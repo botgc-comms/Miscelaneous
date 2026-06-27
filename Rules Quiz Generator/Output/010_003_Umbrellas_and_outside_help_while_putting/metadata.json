@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-11.png",
+  "ruleNumber": "R10",
+  "ruleName": "Protection from the elements",
+  "group": "Protection from the elements",
+  "title": "Umbrellas and outside help while putting",
+  "question": "While you putt, can someone else hold an umbrella over you to protect you from rain?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, anyone can hold an umbrella for you while you play."
+    },
+    {
+      "id": "b",
+      "text": "No, only you can hold your umbrella while playing a stroke."
+    },
+    {
+      "id": "c",
+      "text": "Only your caddie can hold it for you."
+    },
+    {
+      "id": "d",
+      "text": "Umbrellas aren't allowed on the course at all."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "Only the player is allowed to hold their umbrella during a stroke. Nobody else can shield you from the elements.",
+  "imagePrompt": "Teenage boy golfer on the green, holding his own umbrella while preparing to putt in light rain.",
+  "imageAlt": "Boy holding his own umbrella while putting.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "light",
+    "clothingTopColour": "navy",
+    "clothingBottomColour": "purple",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Umbrella position and golfer posture look slightly awkward, but still physically plausible for a self-held umbrella while addressing the ball."
+    ],
+    "repairPrompt": "Adjust the umbrella so it looks more naturally held and balanced above the golfer's head, increasing the physical plausibility. Slightly refine the golf posture to further enhance realism for addressing a putt while holding an umbrella."
+  }
+}

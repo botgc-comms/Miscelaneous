@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "packId": "whats-in-the-bag",
+  "title": "What’s in the bag",
+  "sequenceSummary": "The clubs and equipment juniors actually need.",
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "A simple guide",
+      "file": "pages/00-title.md",
+      "type": "content",
+      "assetFile": "title.png",
+      "imageAlt": "A collection of golf clubs and equipment.",
+      "markdown": "Welcome to this straightforward guide designed particularly for budding junior golfers and their supportive parents. Golf can often seem complex, but we're here to simplify it. This learning pack focuses on the essential equipment juniors will need to begin their golfing journey. Each page will build upon the last, ensuring a smooth and gratifying learning experience. By the end, you'll feel prepared and excited about what’s in your golf bag and how each piece contributes to enjoying the game.\n\nAs you move through this guide, remember that every golfer began as a beginner. Embrace the learning process and enjoy discovering the world of golf together!",
+      "quiz": null
+    },
+    {
+      "id": "01-clubs-overview",
+      "title": "Clubs in a golf bag",
+      "file": "pages/01-clubs-overview.md",
+      "type": "content",
+      "assetFile": "clubs-overview.png",
+      "imageAlt": "An overview of golf clubs in a bag.",
+      "markdown": "A typical golf bag contains a variety of clubs, each designed for specific shots. Understanding the role of these clubs can significantly enhance your golfing experience. Generally, there are three main categories of clubs in a golf bag: woods, irons, and putters. \n\nWoods are mainly used for long-distance shots, particularly from the tee. They have large heads and a longer shaft that allows for more distance, especially on the fairway. Next are the irons, which are used for a variety of shots. They have smaller heads and are crucial for accuracy as you approach the green. Finally, the putter is typically used on the green for making precise strokes into the hole.\n\nKnowing what to expect in your bag not only prepares you for the course but also helps you understand how each club can support your game.",
+      "quiz": null
+    },
+    {
+      "id": "02-woods-irons",
+      "title": "Woods, irons and hybrids",
+      "file": "pages/02-woods-irons.md",
+      "type": "content",
+      "assetFile": "woods-irons.png",
+      "imageAlt": "Illustration of woods and irons in golf.",
+      "markdown": "Woods and irons are fundamental categories of clubs that every junior golfer should get familiar with. Woods are larger and designed to hit the ball long distances. The most common woods are the driver and the fairway woods. These clubs are typically made of lightweight materials to help achieve greater speed and distance.\n\nIrons, on the other hand, come in numbers ranging from 3 to 9, with lower numbers being for longer distances and higher numbers for shorter ones. For many, hybrid clubs are becoming a popular choice, combining the features of woods and irons to provide versatility and ease of use, especially for those transitioning in their skills.\n\nChoosing the right club for the right shot is a key skill in golf that you’ll develop over time. Spend time experimenting with these clubs to see which ones you feel most comfortable with.",
+      "quiz": null
+    },
+    {
+      "id": "03-wedges-putter",
+      "title": "Wedges and putter",
+      "file": "pages/03-wedges-putter.md",
+      "type": "content",
+      "assetFile": "wedges-putter.png",
+      "imageAlt": "Image of a wedge and putter in golf.",
+      "markdown": "Once you're close to the green, different clubs come into play, particularly wedges and putters. Wedges are a type of iron but have a higher loft, which means they can lift the ball high into the air. This is particularly useful for short, precise shots, like those required when you're just off the putting green or in a sand bunker. Types of wedges include pitching wedges, sand wedges, and lob wedges, each serving different purposes.\n\nThe putter is your go-to club for that final push into the hole. It has a flat face and is specifically designed for accuracy on the green. Understanding how to use these clubs effectively can greatly lower your scores and make the game more enjoyable. As with all clubs, practice makes perfect, so dedicate time to mastering your wedges and putter.",
+      "quiz": null
+    },
+    {
+      "id": "04-fitting",
+      "title": "Getting fitted",
+      "file": "pages/04-fitting.md",
+      "type": "content",
+      "assetFile": "fitting.png",
+      "imageAlt": "Illustration of golf club fitting process.",
+      "markdown": "Getting the right fit for your golf clubs is essential to ensure you play your best game. When choosing clubs, several factors come into play, such as height, arm length, and swing strength. A professional fitting session can help identify the ideal club lengths, weights, and flexibilities suited to you.\n\nDuring a fitting, you may try out different clubs to see which ones feel most comfortable and effective. This is not just about how clubs look but their performance impact. Fitted clubs can lead to improved precision and comfort, making them much easier to use as a junior golfer develops their skills.\n\nAlthough you might start with standard clubs, keep an open mind about getting fitted in the future. Understanding your body’s needs makes a big difference in the long run.",
+      "quiz": null
+    },
+    {
+      "id": "90-quick-check",
+      "title": "Quick check",
+      "file": "pages/90-quick-check.md",
+      "type": "quiz",
+      "assetFile": "quick-check.png",
+      "imageAlt": "A summary quiz on golf clubs.",
+      "markdown": "Let’s recap what we've covered about the essential golf clubs. Understanding these concepts is crucial for a successful start to your golfing journey. \n\n1. Which club is primarily used for long-distance shots from the tee?  \n   a) Putter  \n   b) Wood  \n   c) Wedge  \n   d) Iron\n\n2. What is the purpose of a putter?  \n   a) To drive the golf ball far  \n   b) To hit the ball into the hole from the green  \n   c) To chip the ball close to the green  \n   d) To hit out of bunkers\n\n3. Which type of club has a higher loft?  \n   a) Iron  \n   b) Wood  \n   c) Wedge  \n   d) Putter\n\n4. Why is it important to get fitted for clubs?  \n   a) It makes the clubs look good  \n   b) It improves performance and comfort  \n   c) It is required by all golfers  \n   d) It decreases the club lifespan\n\nTake your time to think through these questions and reflect on what you have learned!",
+      "quiz": null
+    }
+  ]
+}

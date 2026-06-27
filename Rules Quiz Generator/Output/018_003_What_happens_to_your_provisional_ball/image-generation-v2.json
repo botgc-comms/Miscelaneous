@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\018_003_What_happens_to_your_provisional_ball\\metadata.json",
+  "generatedAtUtc": "2026-06-24T16:00:41.984Z",
+  "title": "What happens to your provisional ball?",
+  "ruleNumber": "R18",
+  "ruleName": "Out of bounds and provisional ball",
+  "durationSeconds": 178.077
+}

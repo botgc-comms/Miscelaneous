@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\010_002_Allowed_questions_in_golf\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:09:39.434Z",
+  "title": "Allowed questions in golf",
+  "ruleNumber": "R10",
+  "ruleName": "Advice and line of play",
+  "durationSeconds": 197.451
+}

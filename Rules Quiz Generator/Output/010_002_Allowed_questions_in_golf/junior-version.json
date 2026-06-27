@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\010_002_Allowed_questions_in_golf\\metadata.json",
+  "sourceImageName": "page-20.png",
+  "ruleNumber": "R10",
+  "ruleName": "Advice and line of play",
+  "title": "Allowed questions in golf",
+  "question": "If you can't see the flag from a bunker, which of these questions can you ask a friend without breaking the rules?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Is this the right club for the shot?"
+    },
+    {
+      "id": "b",
+      "text": "Where is the flag?"
+    },
+    {
+      "id": "c",
+      "text": "How should I play this shot?"
+    },
+    {
+      "id": "d",
+      "text": "Should I aim left or right?"
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You are allowed to ask about distance or the location of the flag, but you cannot ask for advice about clubs, tactics, or where to aim.",
+  "juniorVersion": {
+    "title": "What can you ask your friend when you can't see the flag?",
+    "question": "You are in a bunker and can't see the flag. Which of these questions are you allowed to ask your friend without breaking the rules?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Is this the best club to use?"
+      },
+      {
+        "id": "b",
+        "text": "Where is the flag?"
+      },
+      {
+        "id": "c",
+        "text": "How should I hit this shot?"
+      },
+      {
+        "id": "d",
+        "text": "Should I aim to the left or the right?"
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "You can ask where the flag is, but you aren't allowed to ask for tips about which club to use, how to hit, or where to aim.",
+    "vocabulary": [
+      {
+        "term": "Bunker",
+        "simpleMeaning": "A bunker is a sandy area, sometimes called a sand trap, on the golf course."
+      },
+      {
+        "term": "Flag",
+        "simpleMeaning": "The flag shows where the hole is on the green."
+      }
+    ],
+    "teachingTip": "Tell children it's helpful to know where things are, but they should solve the rest themselves during a round.",
+    "likelyMisconceptions": [
+      "Children might think it's OK to ask for coaching or tips during play.",
+      "Some might think all questions are allowed as long as they don't touch the ball."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:58.681Z",
+  "model": "gpt-4.1"
+}

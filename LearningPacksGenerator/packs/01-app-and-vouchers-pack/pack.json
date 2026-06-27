@@ -1,0 +1,66 @@
+{
+  "id": "app-and-vouchers",
+  "title": "Using the app and the voucher scheme",
+  "summary": "How to use the junior app and voucher rewards.",
+  "description": "How to use the junior app, track progress, access learning, receive messages and use voucher rewards.",
+  "estimatedMinutes": 6,
+  "priority": 1,
+  "mandatoryFor": [
+    "Junior Cadet",
+    "Junior Course Cadet",
+    "Junior"
+  ],
+  "mandatoryForParents": true,
+  "parent-handicap-exempt": false,
+  "version": 1,
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "Why the app matters",
+      "summary": "Understand how the app supports juniors and parents throughout the junior golf programme.",
+      "file": "pages/00-title.md"
+    },
+    {
+      "id": "01-getting-started",
+      "title": "Getting started",
+      "summary": "How juniors can use the app on their own device and where to get help.",
+      "file": "pages/01-getting-started.md"
+    },
+    {
+      "id": "02-my-progress",
+      "title": "My progress",
+      "summary": "How to check current progress, next steps and pathway requirements.",
+      "file": "pages/02-my-progress.md"
+    },
+    {
+      "id": "03-my-achievements",
+      "title": "My achievements",
+      "summary": "How juniors can view awards, rosettes, trophies and achievement rewards.",
+      "file": "pages/03-my-achievements.md"
+    },
+    {
+      "id": "04-child-learning",
+      "title": "Child learning",
+      "summary": "How juniors can complete rules quizzes and build confidence with the Rules of Golf.",
+      "file": "pages/04-child-learning.md"
+    },
+    {
+      "id": "05-parent-learning",
+      "title": "Parent learning",
+      "summary": "How parents can complete short learning packs to support their child.",
+      "file": "pages/05-parent-learning.md"
+    },
+    {
+      "id": "06-messages",
+      "title": "Messages",
+      "summary": "How messages keep juniors and parents informed and support mentoring.",
+      "file": "pages/06-messages.md"
+    },
+    {
+      "id": "07-vouchers",
+      "title": "Vouchers",
+      "summary": "How juniors can view and redeem voucher rewards through the app.",
+      "file": "pages/07-vouchers.md"
+    }
+  ]
+}

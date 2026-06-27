@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-05.png",
+  "ruleNumber": "R13",
+  "ruleName": "Ball moved when marking it",
+  "group": "Ball moved when marking it",
+  "title": "If you accidentally move your ball or marker when marking",
+  "question": "You are marking your ball on the green and accidentally move the ball or the marker. What is the correct action?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball from its new position"
+    },
+    {
+      "id": "b",
+      "text": "Leave everything as it is and continue play"
+    },
+    {
+      "id": "c",
+      "text": "Replace the ball or marker to their correct spot without penalty"
+    },
+    {
+      "id": "d",
+      "text": "Add one penalty stroke and continue"
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "If you accidentally move your ball or marker when marking, picking up, or replacing it on the green, you must put it back on the correct spot without penalty.",
+  "imagePrompt": "A teenage boy on the green, looking surprised as his hand nudges the ball while marking with a small coin.",
+  "imageAlt": "Teen boy accidentally moving his ball while marking it on the putting green.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "medium",
+    "clothingTopColour": "yellow",
+    "clothingBottomColour": "black",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Facial expression of surprise is subtle but could be exaggerated slightly more for clarity."
+    ],
+    "repairPrompt": "Slightly increase the expressiveness of the golfer's surprised face to make her reaction more obvious as she nudges the golf ball while marking."
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\013_002_What_should_you_do_if_your_ball_lands_on_the_wrong_green\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:28:01.270Z",
+  "title": "What should you do if your ball lands on the wrong green?",
+  "ruleNumber": "R13",
+  "ruleName": "Wrong green",
+  "durationSeconds": 192.218
+}

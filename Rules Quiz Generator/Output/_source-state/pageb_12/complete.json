@@ -1,0 +1,578 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-12.png",
+  "sourceImagePath": "Input\\pageb-12.png",
+  "status": "complete",
+  "extractedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-12.png",
+      "ruleNumber": "R9",
+      "ruleName": "Ball at rest is moved",
+      "group": "Ball at rest is moved",
+      "title": "Ball moved while looking for it",
+      "question": "If you accidentally move your ball while searching for it in the rough, what should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball from where it ended up"
+        },
+        {
+          "id": "b",
+          "text": "Put the ball back without penalty"
+        },
+        {
+          "id": "c",
+          "text": "Take a 1-stroke penalty and put the ball back"
+        },
+        {
+          "id": "d",
+          "text": "Drop a new ball"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If you move the ball while searching, put it back without penalty.",
+      "imagePrompt": "A teenage girl in the rough bending to search for her golf ball, looking around the grass.",
+      "imageAlt": "Teenage girl searching in the rough for her golf ball.",
+      "sceneSpec": {
+        "setting": "rough",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "green",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-12.png",
+      "ruleNumber": "R9",
+      "ruleName": "Ball at rest is moved",
+      "group": "Ball at rest is moved",
+      "title": "Ball moved while preparing a stroke",
+      "question": "If you accidentally move your ball while taking a practice swing (not on the tee or green), what happens?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Replace the ball and add a one-stroke penalty"
+        },
+        {
+          "id": "b",
+          "text": "Replace the ball with no penalty"
+        },
+        {
+          "id": "c",
+          "text": "Play the ball from where it came to rest"
+        },
+        {
+          "id": "d",
+          "text": "Drop a new ball and add a penalty"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "When preparing for a stroke, you must put the ball back and add a one-stroke penalty, except on the tee or the green.",
+      "imagePrompt": "A teenage boy taking a practice swing and accidentally touching his golf ball on the fairway.",
+      "imageAlt": "Teenage boy preparing for a shot, making a practice swing near his ball on the fairway.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "light",
+        "clothingTopColour": "red",
+        "clothingBottomColour": "orange",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-12.png",
+      "ruleNumber": "R9",
+      "ruleName": "Ball at rest is moved",
+      "group": "Ball at rest is moved",
+      "title": "Ball moved by an animal",
+      "question": "You see a dog run across the course and move your resting ball. What do the rules say you must do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball from where the dog moved it"
+        },
+        {
+          "id": "b",
+          "text": "Put the ball back without penalty"
+        },
+        {
+          "id": "c",
+          "text": "Take a one-stroke penalty and put the ball back"
+        },
+        {
+          "id": "d",
+          "text": "Replay your previous shot"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If the ball is moved by an outside influence like an animal, put the ball back without penalty.",
+      "imagePrompt": "A teenage golfer watching a dog run across the fairway, moving a golf ball.",
+      "imageAlt": "Teen golfer on the fairway as a dog moves a resting golf ball.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "asian",
+        "skinTone": "light",
+        "clothingTopColour": "yellow",
+        "clothingBottomColour": "purple",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-12.png",
+      "ruleNumber": "R9",
+      "ruleName": "Ball at rest is moved",
+      "group": "Ball at rest is moved",
+      "title": "Ball moved by the wind after a stroke",
+      "question": "After you hit a shot, your ball comes to rest, but then a gust of wind blows it somewhere else. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Replace the ball to where it first stopped"
+        },
+        {
+          "id": "b",
+          "text": "Play the ball from its new position"
+        },
+        {
+          "id": "c",
+          "text": "Take a penalty and replace the ball"
+        },
+        {
+          "id": "d",
+          "text": "Replay your previous shot"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "After a stroke, if the ball is moved by wind or gravity, play it from its new position.",
+      "imagePrompt": "A teenage boy on the fairway watches a strong wind blow his ball from where it rested after his shot.",
+      "imageAlt": "Teen boy on fairway watching his golf ball being blown by the wind after a shot.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "white",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-12.png",
+      "ruleNumber": "R9",
+      "ruleName": "Ball at rest is moved",
+      "group": "Ball at rest is moved",
+      "title": "Opponent moves your ball in match play",
+      "question": "In match play, if your opponent accidentally moves your ball while searching in the rough, how is this handled?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Opponent gets a penalty and puts the ball back"
+        },
+        {
+          "id": "b",
+          "text": "No penalty and the ball must be put back"
+        },
+        {
+          "id": "c",
+          "text": "The ball is played from its new position"
+        },
+        {
+          "id": "d",
+          "text": "You get a penalty"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If the opponent moves your ball while searching, there is no penalty and the ball is put back.",
+      "imagePrompt": "Two teenage golfers in the rough, one bending to search and the other watching as the ball is accidentally moved.",
+      "imageAlt": "Teen golfers in the rough, one moving another's ball by accident while searching.",
+      "sceneSpec": {
+        "setting": "rough",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "dark",
+        "clothingTopColour": "grey",
+        "clothingBottomColour": "orange",
+        "hat": false
+      }
+    }
+  ],
+  "reviewedItems": [
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-12.png",
+      "ruleNumber": "R9",
+      "ruleName": "Ball at rest is moved",
+      "group": "Ball at rest is moved",
+      "title": "Ball moved while looking for it",
+      "question": "If you accidentally move your ball while searching for it in the rough, what should you do according to the rules?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball from where it ends up"
+        },
+        {
+          "id": "b",
+          "text": "Replace the ball without penalty"
+        },
+        {
+          "id": "c",
+          "text": "Replace the ball and take a one-stroke penalty"
+        },
+        {
+          "id": "d",
+          "text": "Drop a new ball and play on"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If your ball is accidentally moved while searching for it, you must put it back without penalty.",
+      "imagePrompt": "A teenage left-handed boy in the rough searching for his ball among long grass, close-up on him noticing the ball has moved.",
+      "imageAlt": "Teenage left-handed boy in the rough searching for his golf ball, noticing it has been accidentally moved.",
+      "sceneSpec": {
+        "setting": "rough",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "mixed",
+        "skinTone": "light",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "yellow",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-12.png",
+      "ruleNumber": "R9",
+      "ruleName": "Ball at rest is moved",
+      "group": "Ball at rest is moved",
+      "title": "Ball moved while preparing a stroke",
+      "question": "If you accidentally move your ball when taking a practice swing on the fairway (not on the tee or green), what is the correct action?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Replace the ball and add a one-stroke penalty"
+        },
+        {
+          "id": "b",
+          "text": "Replace the ball with no penalty"
+        },
+        {
+          "id": "c",
+          "text": "Play the ball from its new place"
+        },
+        {
+          "id": "d",
+          "text": "Drop a new ball and add a penalty stroke"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "explanation": "If you move your ball by accident during a practice swing away from the teeing area or green, you must replace it and add a one-stroke penalty.",
+      "imagePrompt": "A teenage right-handed girl on the fairway is practising her swing with an iron, her ball accidentally moved slightly from its spot.",
+      "imageAlt": "Teen girl with an iron on the fairway, ball displaced by a practice swing.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "left",
+        "action": "addressing_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "light",
+        "clothingTopColour": "orange",
+        "clothingBottomColour": "red",
+        "hat": false
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-12.png",
+      "ruleNumber": "R9",
+      "ruleName": "Ball at rest is moved",
+      "group": "Ball at rest is moved",
+      "title": "Ball moved by an animal",
+      "question": "A dog runs onto the fairway and knocks your ball out of its spot. According to the rules, what should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Play the ball from its new spot"
+        },
+        {
+          "id": "b",
+          "text": "Replace the ball without penalty"
+        },
+        {
+          "id": "c",
+          "text": "Add a penalty and replace the ball"
+        },
+        {
+          "id": "d",
+          "text": "Replay your previous shot"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If an outside influence, such as an animal, moves your ball at rest, you must replace it without penalty.",
+      "imagePrompt": "A teenage left-handed girl looks surprised as a dog knocks her resting golf ball on a sunny fairway.",
+      "imageAlt": "Teen left-handed girl on the fairway, watching a dog move her resting golf ball.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "standing_near_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "medium",
+        "clothingTopColour": "white",
+        "clothingBottomColour": "navy",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-12.png",
+      "ruleNumber": "R9",
+      "ruleName": "Ball at rest is moved",
+      "group": "Ball at rest is moved",
+      "title": "Ball moved by the wind after a stroke",
+      "question": "Your ball comes to rest after a stroke, but then the wind blows it somewhere else. According to the rules, how do you play on?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Replace the ball to its original resting spot"
+        },
+        {
+          "id": "b",
+          "text": "Play the ball from its new position"
+        },
+        {
+          "id": "c",
+          "text": "Add a penalty and replace the ball"
+        },
+        {
+          "id": "d",
+          "text": "Replay your previous shot from the old spot"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "If the wind or gravity moves your ball after it has come to rest from a stroke, you must play it from its new position, with no penalty.",
+      "imagePrompt": "A teenage left-handed girl with an iron watching her ball being blown by the wind on an overcast fairway.",
+      "imageAlt": "Teen girl with iron on overcast fairway, watches wind move her resting golf ball.",
+      "sceneSpec": {
+        "setting": "fairway",
+        "golferAge": "teen",
+        "golferGender": "boy",
+        "handedness": "left",
+        "action": "standing_near_ball",
+        "clubInHand": "iron",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": false,
+        "weather": "overcast",
+        "prohibitedElements": [],
+        "ethnicity": "black",
+        "skinTone": "medium",
+        "clothingTopColour": "orange",
+        "clothingBottomColour": "yellow",
+        "hat": true
+      }
+    },
+    {
+      "schemaVersion": 1,
+      "sourceImageName": "pageb-12.png",
+      "ruleNumber": "R9",
+      "ruleName": "Ball at rest is moved",
+      "group": "Ball at rest is moved",
+      "title": "Opponent moves your ball in match play",
+      "question": "In match play, your opponent accidentally moves your ball while searching for it in the rough. What is the correct procedure?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Your opponent gets a penalty and the ball is replaced"
+        },
+        {
+          "id": "b",
+          "text": "No penalty for anyone, and the ball must be replaced"
+        },
+        {
+          "id": "c",
+          "text": "The ball is played from its new position"
+        },
+        {
+          "id": "d",
+          "text": "You get a penalty and must replace the ball"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "explanation": "In match play, if your opponent moves your ball accidentally during a search, no one is penalised but the ball must be put back where it was.",
+      "imagePrompt": "Two teenage boys searching in the rough; one boy accidentally moves a ball while the other watches.",
+      "imageAlt": "Two teen boys in the rough, one accidentally moving a ball during search.",
+      "sceneSpec": {
+        "setting": "rough",
+        "golferAge": "teen",
+        "golferGender": "girl",
+        "handedness": "right",
+        "action": "addressing_ball",
+        "clubInHand": "none",
+        "ballCount": 1,
+        "stakeColour": "none",
+        "waterVisible": false,
+        "bunkerVisible": false,
+        "teeMarkerVisible": false,
+        "greenVisible": false,
+        "treesVisible": true,
+        "weather": "sunny",
+        "prohibitedElements": [],
+        "ethnicity": "white",
+        "skinTone": "medium",
+        "clothingTopColour": "navy",
+        "clothingBottomColour": "blue",
+        "hat": true
+      }
+    }
+  ],
+  "completedQuestionFolders": [
+    "009_001_Ball_moved_while_looking_for_it",
+    "009_002_Ball_moved_while_preparing_a_stroke",
+    "009_003_Ball_moved_by_an_animal",
+    "009_004_Ball_moved_by_the_wind_after_a_stroke",
+    "009_005_Opponent_moves_your_ball_in_match_play"
+  ],
+  "updatedAtUtc": "2026-04-25T00:19:17.791Z"
+}

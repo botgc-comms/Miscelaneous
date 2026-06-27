@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\006_004_Order_of_Play_on_the_First_Tee\\metadata.json",
+  "sourceImageName": "page-05.png",
+  "ruleNumber": "R6",
+  "ruleName": "The honour/order of play",
+  "title": "Order of Play on the First Tee",
+  "question": "How is the order of play for players decided on the first tee?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "The order is taken from the list of tee times (the draw)"
+    },
+    {
+      "id": "b",
+      "text": "Players decide among themselves"
+    },
+    {
+      "id": "c",
+      "text": "The order is based on who arrived first"
+    },
+    {
+      "id": "d",
+      "text": "Based on handicap"
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "On the first tee, player order is based on the official draw or tee time list provided by the organisers.",
+  "juniorVersion": {
+    "title": "Who Goes First on the First Tee?",
+    "question": "How do we find out who hits first when starting on the first tee?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "We follow the list of tee times that shows who goes first"
+      },
+      {
+        "id": "b",
+        "text": "The players pick together who goes first"
+      },
+      {
+        "id": "c",
+        "text": "The player who gets to the tee first goes first"
+      },
+      {
+        "id": "d",
+        "text": "Whoever has the lowest handicap goes first"
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "On the first tee, we use the list that says the order for everyone to tee off. This list is made by the people running the event.",
+    "vocabulary": [
+      {
+        "term": "tee time",
+        "simpleMeaning": "The time you are told to start playing"
+      },
+      {
+        "term": "handicap",
+        "simpleMeaning": "A number that shows how good a golfer is"
+      },
+      {
+        "term": "first tee",
+        "simpleMeaning": "The place where you start your round of golf"
+      }
+    ],
+    "teachingTip": "Show the players the tee time list at the start of a round so they can see who goes first.",
+    "likelyMisconceptions": [
+      "Kids may think they can always pick who goes first with their friends.",
+      "Some might believe that being first to arrive means going first."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:25:38.684Z",
+  "model": "gpt-4.1"
+}

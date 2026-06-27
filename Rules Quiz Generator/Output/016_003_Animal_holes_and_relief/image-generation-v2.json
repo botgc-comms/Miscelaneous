@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\016_003_Animal_holes_and_relief\\metadata.json",
+  "generatedAtUtc": "2026-06-24T15:43:58.893Z",
+  "title": "Animal holes and relief",
+  "ruleNumber": "R16",
+  "ruleName": "Abnormal course conditions",
+  "durationSeconds": 182.235
+}

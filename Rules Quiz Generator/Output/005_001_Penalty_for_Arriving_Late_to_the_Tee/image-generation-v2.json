@@ -1,0 +1,13 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "imageFileName": "illustration-v2.png",
+  "promptFileName": "final-prompt-v2.txt",
+  "sourceMetadataPath": "output\\005_001_Penalty_for_Arriving_Late_to_the_Tee\\metadata.json",
+  "generatedAtUtc": "2026-06-24T14:18:43.126Z",
+  "title": "Penalty for Arriving Late to the Tee",
+  "ruleNumber": "R5",
+  "ruleName": "Late arrival",
+  "durationSeconds": 204.45
+}

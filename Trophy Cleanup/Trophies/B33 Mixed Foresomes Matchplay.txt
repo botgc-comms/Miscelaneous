@@ -1,0 +1,5 @@
+﻿{
+  "text": [],
+  "allowText": true,
+  "notes": "there is a figure of a golfer taking a putt at the top of the trophy. The inscription reads Burton on Trent Golf Club - Mixed Fouresomes Open"
+}

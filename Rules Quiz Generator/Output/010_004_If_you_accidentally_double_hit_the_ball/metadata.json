@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "page-29.png",
+  "ruleNumber": "R10",
+  "ruleName": "Double hit",
+  "group": "Double hit",
+  "title": "If you accidentally double-hit the ball",
+  "question": "If you accidentally hit the golf ball twice in one swing, what is the rule?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No penalty – it only counts as one stroke"
+    },
+    {
+      "id": "b",
+      "text": "Add one penalty stroke"
+    },
+    {
+      "id": "c",
+      "text": "Add two penalty strokes"
+    },
+    {
+      "id": "d",
+      "text": "Replay the shot"
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "If you hit the ball twice in one swing by accident, it only counts as one stroke and there is no penalty.",
+  "imagePrompt": "A teenage boy golfer near the edge of a penalty area accidentally double-hits the ball during his swing.",
+  "imageAlt": "Boy golfer accidentally double-hits the ball near penalty area",
+  "sceneSpec": {
+    "setting": "penalty_area_edge",
+    "golferAge": "teen",
+    "golferGender": "boy",
+    "handedness": "right",
+    "action": "addressing_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "red",
+    "waterVisible": true,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "medium",
+    "clothingTopColour": "green",
+    "clothingBottomColour": "grey",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Double-hit action is implied by context and posture, not shown as a dynamic sequence (acceptable given the single-action instruction)."
+    ],
+    "repairPrompt": "Show the start of club-ball contact with a subtle suggestion of motion blur to more clearly imply a double-hit action, but do not include exaggerated impact effects or multiple exposures."
+  }
+}

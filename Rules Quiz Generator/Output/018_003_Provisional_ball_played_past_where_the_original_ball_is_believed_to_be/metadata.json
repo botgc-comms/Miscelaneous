@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "pageb-02.png",
+  "ruleNumber": "R18",
+  "ruleName": "Provisional Balls",
+  "group": "Provisional Balls",
+  "title": "Provisional ball played past where the original ball is believed to be",
+  "question": "If you hit your provisional ball from a spot closer to the hole than where you think your original ball is, what is the result?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "You can keep playing your provisional ball with no penalty."
+    },
+    {
+      "id": "b",
+      "text": "You must not play a provisional ball from closer to the hole than where your original ball is thought to be."
+    },
+    {
+      "id": "c",
+      "text": "You get a two-stroke penalty but can keep playing."
+    },
+    {
+      "id": "d",
+      "text": "You can play it once but need to switch if your original isn't found."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "You are not allowed to play a provisional ball from a spot nearer the hole than where you think your original ball lies. If you do, the provisional becomes your ball in play under penalty.",
+  "imagePrompt": "A teen boy golfer plays a shot from the fairway, sending the provisional ball further than where the original ball is believed to be.",
+  "imageAlt": "Boy golfer hits a provisional ball past the likely spot of his original ball.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "replaying_shot",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": true,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "asian",
+    "skinTone": "light",
+    "clothingTopColour": "blue",
+    "clothingBottomColour": "purple",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "The intended prompt narration specifies a boy golfer in its interpretive guideline, while the sceneSpec and resulting image display a teen girl, which is fully consistent with the technical requirements but not with the prose narrative. This is a very minor narrative issue and does not impact the visual correctness per sceneSpec.",
+      "The ball, club, golfer posture, and fairway are all visually accurate, proportional, and suitable for golf teaching to teens."
+    ],
+    "repairPrompt": "Ensure that the teen golfer depicted is a boy, matching the quiz prompt intent. All other golf visual details are accurate and should remain unchanged."
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\010_003_What_happens_if_you_get_advice_without_asking\\metadata.json",
+  "sourceImageName": "page-11.png",
+  "ruleNumber": "R10",
+  "ruleName": "Advice and line of play",
+  "title": "What happens if you get advice without asking?",
+  "question": "If another player gives you advice before your shot—but you didn't ask for it—what do the rules say happens?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No penalty for you."
+    },
+    {
+      "id": "b",
+      "text": "You get 1 penalty stroke."
+    },
+    {
+      "id": "c",
+      "text": "You get 2 penalty strokes."
+    },
+    {
+      "id": "d",
+      "text": "Both players get 2 penalty strokes."
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "You do not get a penalty if another player gives you unsolicited advice.",
+  "juniorVersion": {
+    "title": "What if someone gives you golf tips without you asking?",
+    "question": "If another player tells you what club to use or where to aim before you hit your shot, but you did not ask them, what happens?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You don’t get a penalty."
+      },
+      {
+        "id": "b",
+        "text": "You get 1 penalty shot."
+      },
+      {
+        "id": "c",
+        "text": "You get 2 penalty shots."
+      },
+      {
+        "id": "d",
+        "text": "Both of you get 2 penalty shots."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "You don’t get a penalty if someone gives you advice and you didn’t ask for it.",
+    "vocabulary": [
+      {
+        "term": "Advice",
+        "simpleMeaning": "Advice is when someone tells you how to play your shot, like what club to pick or where to hit your ball."
+      }
+    ],
+    "teachingTip": "Act out a situation where someone blurts out tips, and discuss what the rule says to help kids remember they won't get in trouble if they didn't ask for help.",
+    "likelyMisconceptions": [
+      "Children may think they get a penalty any time someone talks to them about their shot."
+    ]
+  },
+  "generatedAtUtc": "2026-06-25T08:26:03.154Z",
+  "model": "gpt-4.1"
+}

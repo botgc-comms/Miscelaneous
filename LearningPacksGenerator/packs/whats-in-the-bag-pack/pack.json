@@ -1,0 +1,45 @@
+{
+  "id": "whats-in-the-bag",
+  "title": "What\u2019s in the bag",
+  "summary": "The clubs and equipment juniors actually need.",
+  "estimatedMinutes": 6,
+  "priority": 200,
+  "mandatoryFor": [
+    "Junior Cadet", 
+    "Junior Course Cadet"
+  ],
+  "version": 1,
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "A simple guide",
+      "file": "pages/00-title.md"
+    },
+    {
+      "id": "01-clubs-overview",
+      "title": "Clubs in a golf bag",
+      "file": "pages/01-clubs-overview.md"
+    },
+    {
+      "id": "02-woods-irons",
+      "title": "Woods, irons and hybrids",
+      "file": "pages/02-woods-irons.md"
+    },
+    {
+      "id": "03-wedges-putter",
+      "title": "Wedges and putter",
+      "file": "pages/03-wedges-putter.md"
+    },
+    {
+      "id": "04-fitting",
+      "title": "Getting fitted",
+      "file": "pages/04-fitting.md"
+    },
+    {
+      "id": "90-quick-check",
+      "title": "Quick check",
+      "file": "pages/90-quick-check.md",
+      "type": "quiz"
+    }
+  ]
+}

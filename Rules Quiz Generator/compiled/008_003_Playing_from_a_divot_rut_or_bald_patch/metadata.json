@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "page-15.png",
+  "ruleNumber": "R8",
+  "ruleName": "Divots, tractor ruts, bald patches, etc.",
+  "group": "Divots, tractor ruts, bald patches, etc.",
+  "type": "multiple_choice",
+  "imagePrompt": "A teenage girl in a navy top and red bottoms, addressing a golf ball lying in a deep divot on a fairway under an overcast sky, holding an iron club and ready to play.",
+  "imageAlt": "Teen girl golfer in navy and red about to play a ball from a fairway divot.",
+  "sceneSpec": {
+    "setting": "fairway",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "left",
+    "action": "addressing_ball",
+    "clubInHand": "iron",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": false,
+    "treesVisible": false,
+    "weather": "overcast",
+    "prohibitedElements": [],
+    "ethnicity": "white",
+    "skinTone": "medium",
+    "clothingTopColour": "red",
+    "clothingBottomColour": "white",
+    "hat": false
+  },
+  "imageVerification": {
+    "pass": false,
+    "score": 70,
+    "issues": [
+      "Golfer is not left-handed as specified in the sceneSpec and repair instructions—stance and club address appear right-handed.",
+      "Golfer's top is navy instead of the required red, and bottoms are red instead of required white.",
+      "Skin tone is slightly darker than specified 'medium' for a white teen.",
+      "Otherwise, the golf club, ball, course, and general posture are suitable and believable for golf."
+    ],
+    "repairPrompt": "Adjust the golfer's stance and grip so she is clearly left-handed, addressing the ball from the left side with a natural left-handed posture. Change the golfer's shirt to a clearly red top and bottoms to white. Ensure the golfer appears as a white teenager with a medium skin tone."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What if your ball is in a hole or bumpy spot?",
+      "question": "Your ball lands in a deep hole made by someone’s shot or a track from a tractor on the fairway. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You must hit the ball as it is, or say it’s unplayable and take a penalty."
+        },
+        {
+          "id": "b",
+          "text": "You always get to move your ball for free."
+        },
+        {
+          "id": "c",
+          "text": "You can pick up your ball and put it on the nice grass for free."
+        },
+        {
+          "id": "d",
+          "text": "You can hit again from the same place without a penalty."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "You need to hit the ball where it is, even if it’s in a hole or tractor mark. If you don’t want to play it, you can say it’s unplayable, but you have to add a penalty.",
+      "vocabulary": [
+        {
+          "term": "Divot",
+          "simpleMeaning": "A hole or chunk taken out of the grass by someone’s golf club."
+        },
+        {
+          "term": "Unplayable Lie",
+          "simpleMeaning": "When your ball is in a spot too hard to play, and you say so, but you get a penalty."
+        },
+        {
+          "term": "Fairway",
+          "simpleMeaning": "The short grass between where you start and the green."
+        }
+      ],
+      "teachingTip": "Show kids what a divot or tractor rut looks like on the course. Ask them to try playing a shot from a divot so they understand how tricky it can be.",
+      "likelyMisconceptions": [
+        "Some children may think they can always move their ball out of a hole or bump for free.",
+        "They might believe deep ruts are like puddles, where you get free relief."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Playing from a divot, rut or bald patch",
+      "question": "Your ball lands in a deep divot or a tractor rut on the fairway. Which of these is correct?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You must play the ball as it lies or take an unplayable lie and add a penalty"
+        },
+        {
+          "id": "b",
+          "text": "You always get free relief"
+        },
+        {
+          "id": "c",
+          "text": "You can move the ball to some good grass without penalty"
+        },
+        {
+          "id": "d",
+          "text": "You are allowed to rehit your shot with no penalty"
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "You have to play the ball as it lies, or declare it unplayable and take a penalty stroke—there is no free relief just for a divot or rut."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "008_003_Playing_from_a_divot_rut_or_bald_patch",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-06-26T20:03:52.440Z"
+  }
+}

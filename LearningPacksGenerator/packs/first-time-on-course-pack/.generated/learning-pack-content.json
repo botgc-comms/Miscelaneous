@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "packId": "first-time-on-course",
+  "title": "First time on the course",
+  "audience": "Brand new junior golfers and parents with no golfing experience",
+  "pages": [
+    {
+      "id": "00-title",
+      "title": "Your first round",
+      "file": "pages/00-title.md",
+      "type": "content",
+      "assetFile": "title.png",
+      "imageAlt": "A family and two children smiling near the first tee of a golf course on a sunny day.",
+      "imagePrompt": "A friendly, photorealistic scene of a family and two children standing together next to the first tee of a golf course, with bright green grass and trees in the background, everyone smiling and looking excited.",
+      "markdown": "# Your first round\n\nWelcome to your first round of golf, an exciting step for both juniors and parents! Golf is a great game for all ages, and everyone starts as a beginner. This guide will help you know what to expect when you visit the golf course for the very first time.\n\nYou don’t need to be an expert or have lots of equipment. Comfortable clothes, a relaxed attitude and a willingness to try something new are all you really need. The golf course is a friendly place where families are welcome and learning is part of the fun.\n\nOver the next few pages, you’ll learn:\n- What to do when you arrive\n- What playing your first holes might look like\n- Who can help if you’re unsure\n- What to do when you’ve finished playing\n\nLet’s get ready for a great first experience on the golf course!",
+      "quiz": null
+    },
+    {
+      "id": "01-arrival",
+      "title": "Arriving at the club",
+      "file": "pages/01-arrival.md",
+      "type": "content",
+      "assetFile": "arrival.png",
+      "imageAlt": "A family with golf bags walking towards a golf club entrance, greeted by a friendly staff member.",
+      "imagePrompt": "Photorealistic image of a family with junior golfers, carrying or wheeling small golf bags, walking towards the entrance of a golf club. A friendly staff member in a polo shirt waves or welcomes them. The building is traditional, with green surroundings and a tidy path.",
+      "markdown": "# Arriving at the club\n\nWhen you and your junior golfer arrive at the golf club, you’ll usually find signs showing where to go. It’s a good idea to arrive a little early to allow time to get ready. Most clubs have a reception or pro shop near the entrance. Staff there are used to welcoming new juniors and parents, so don’t worry about asking questions—they’re happy to help!\n\nYou don’t need expensive clothing; simple trainers and comfortable clothes are fine. If you don’t have any clubs, many clubs can lend you junior-friendly equipment. Let the staff know it’s your first time and they’ll guide you.\n\nBefore going onto the course, find out where the first hole starts. Some clubs have practice areas; if you have time, you might like to try a few swings on the practice green. Remember, everyone was new once and it’s okay not to know everything yet. The most important thing is to feel comfortable and enjoy yourself from the start.",
+      "quiz": null
+    },
+    {
+      "id": "02-playing",
+      "title": "Playing your first holes",
+      "file": "pages/02-playing.md",
+      "type": "content",
+      "assetFile": "playing.png",
+      "imageAlt": "Two children and an adult on a golf hole, one child hitting a golf shot, with others watching and smiling.",
+      "imagePrompt": "Photorealistic image of two junior golfers and an adult on a golf hole. One child is swinging a club and hitting a golf ball, while the other child and adult watch with smiles, standing safely to the side. The scene is sunny, with a green fairway and flag in the background.",
+      "markdown": "# Playing your first holes\n\nPlaying your first holes is exciting! When it’s your turn, gently place a ball on the tee and take your shot. There’s no need to rush—take your time. Remember, everyone misses shots sometimes, especially at the beginning.\n\nStay calm and let each player have their go one after the other. Wait until it’s safe before moving forward. Stand clear of anyone swinging a club—keeping a good distance is safest.\n\nIt’s normal to hit the ball only a short distance at first, and there’s no pressure to finish every hole. If a hole takes too long, you can pick up your ball and move ahead with the group.\n\nEnjoy being outside, notice the birds, and have fun together. The main aim is to get used to the course, learn something new, and share some laughs—not to play perfectly. Let your child explore, ask questions, and don’t worry about mistakes.",
+      "quiz": null
+    },
+    {
+      "id": "03-what-to-do-if-unsure",
+      "title": "If you are unsure",
+      "file": "pages/03-what-to-do-if-unsure.md",
+      "type": "content",
+      "assetFile": "what-to-do-if-unsure.png",
+      "imageAlt": "A junior golfer and parent asking for help from a friendly golf staff member on the course.",
+      "imagePrompt": "Photorealistic image of a junior golfer and a parent standing on the edge of a golf green, smiling and talking to a friendly golf staff member or coach who is pointing and explaining something helpful, with other golfers in the background.",
+      "markdown": "# If you are unsure\n\nIt’s very normal to feel unsure about what to do during your first round. Every golfer has needed help at some stage! If you or your child has a question or feels confused, look for staff members, other families, or junior organisers on the course. They are there to support you.\n\nDon’t hesitate to ask basic questions, such as where to go next or how to behave on the course. Staff and other golfers are usually happy to explain things and make sure you feel comfortable.\n\nIf you’re ever stuck on a rule or need advice, a polite question goes a long way. Many experienced members even enjoy helping new players settle in. Remember: there are no silly questions when you’re learning. The aim is to relax and enjoy—the rest comes with practice.",
+      "quiz": null
+    },
+    {
+      "id": "04-after-the-round",
+      "title": "After the round",
+      "file": "pages/04-after-the-round.md",
+      "type": "content",
+      "assetFile": "after-the-round.png",
+      "imageAlt": "A family and junior golfers sitting together and enjoying a cold drink outside the clubhouse after golf.",
+      "imagePrompt": "Photorealistic image of a family, including junior golfers, sitting at a table outside a clubhouse, smiling and chatting while enjoying cold drinks together after a round of golf. Golf bags are resting nearby, and the course is visible in the background on a sunny day.",
+      "markdown": "# After the round\n\nFinishing your first round is something to celebrate! Most golfers and their families like to sit together in the clubhouse or outside for a drink and a chat after playing. It’s a chance to relax, talk about what went well, and share a few laughs about the day.\n\nYou can tidy up any equipment, thank any club staff who helped you, and make sure to collect all your belongings. Many golf clubs are proud to welcome new junior golfers, so don’t be surprised if you’re invited back or given a few friendly tips for next time.\n\nIf your child enjoyed the day, you might ask about future sessions, junior groups, or junior coaching. There’s plenty of time to improve, but what matters most after your first round is simply having enjoyed the experience together. Well done!",
+      "quiz": null
+    }
+  ]
+}

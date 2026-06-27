@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "4.2c",
+  "ruleName": "Ball Becomes Cut or Cracked While Playing Hole",
+  "group": "Equipment – The Ball",
+  "type": "multiple_choice",
+  "imagePrompt": "Create a polished, modern semi-realistic illustration in a style that is about 75% realistic and 25% stylised. Show a golfer on a short-cut grassy fairway, carefully inspecting a golf ball that is marked by a small tee or ball marker. The ball should clearly display a large crack on its surface. The golfer should be kneeling or crouched and focused on the ball. Do NOT include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles. The scene must contain only the described elements and should avoid cartoon effects or exaggerated expressions.",
+  "imageAlt": "A golfer kneels on a short grass fairway, inspecting a golf ball marked by a tee, with a large visible crack on the ball's surface.",
+  "sceneSpec": {
+    "setting": "Short-cut grass near the green, fairway approach shot setting under clear weather.",
+    "players": "One player, reacting to inspecting their golf ball.",
+    "ballPosition": "Ball at rest on the fairway, player crouched nearby marked its position with a small tee or ball marker.",
+    "ruleMoment": "The moment after a shot, when the player has marked and is inspecting a cracked golf ball before deciding what to do.",
+    "educationalFocus": "Illustrate inspection of a possibly cracked or cut ball and the appropriate action.",
+    "mustShow": [
+      "Clearly visible golf ball with a realistic large crack in the surface.",
+      "Player kneeling or crouched next to the ball, focused on its inspection.",
+      "A small tee or ball marker placed next to the ball indicating the position is marked."
+    ],
+    "mustNotShow": [
+      "No text, numbers, labels, captions, arrows, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+      "No cartoon effects or highly exaggerated facial expressions.",
+      "No replacement ball being dropped or in play yet."
+    ]
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What To Do If Your Ball is Broken",
+      "question": "You hit your ball and then see it has a big crack, but it isn’t in pieces. What should you do next?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You have to keep playing with the cracked ball until you finish the hole."
+        },
+        {
+          "id": "b",
+          "text": "You can swap your cracked ball for a new one, without any penalty, before your next shot."
+        },
+        {
+          "id": "c",
+          "text": "You need to take a one-shot penalty if you want to change your ball."
+        },
+        {
+          "id": "d",
+          "text": "You have to hit your last shot again."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If you find a big crack in your ball after a shot, you can switch it for another ball without a penalty. Before you pick up the ball, remember to put a marker like a tee or coin down to show where it was. Only if the ball is cracked or has a big cut can you change it. If it’s just a bit dirty or scratched, you must keep using it.",
+      "vocabulary": [
+        {
+          "term": "Penalty",
+          "simpleMeaning": "A penalty is an extra shot added to your score if you break a rule."
+        },
+        {
+          "term": "Approach shot",
+          "simpleMeaning": "An approach shot is when you hit the ball towards the green."
+        },
+        {
+          "term": "Marker",
+          "simpleMeaning": "A marker is something small, like a coin, that shows where your ball was."
+        }
+      ],
+      "teachingTip": "Show kids real golf balls that are cracked, scratched, and just dirty, so they can see the difference for this rule.",
+      "likelyMisconceptions": [
+        "A player might think they have to keep playing even if the ball is badly cracked.",
+        "Some might think any small scratch or scuff means you can swap the ball.",
+        "A child may think you have to take a penalty if you change the ball."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Damaged Ball During Play of Hole",
+      "question": "After playing an approach shot, you discover that your golf ball has developed a large crack, but remains in one piece. What is the correct ruling?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "You must continue playing the damaged ball until the end of the hole."
+        },
+        {
+          "id": "b",
+          "text": "You may replace the damaged ball with another ball without penalty before playing your next stroke."
+        },
+        {
+          "id": "c",
+          "text": "You must take a one-stroke penalty to replace the ball."
+        },
+        {
+          "id": "d",
+          "text": "You must replay your previous stroke."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If a ball becomes cut or cracked during the play of a hole, you may replace it with another ball without penalty before your next stroke. Before lifting the ball, you should mark its position, then lift and inspect it. If the ball is found to be cut or cracked, it may be replaced. Only if it is scuffed, scratched, or discoloured, must it not be replaced under this Rule."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "ai_046_Damaged_Ball_During_Play_of_Hole",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-06-26T20:03:54.207Z"
+  }
+}
