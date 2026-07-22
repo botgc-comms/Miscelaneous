@@ -1,0 +1,63 @@
+{
+  "model": "gpt-image-2",
+  "cabinetWidth": 1024,
+  "topSectionHeight": 384,
+  "trophyRowHeight": 384,
+  "bottomSectionHeight": 384,
+  "trophiesPerRow": 2,
+  "lightsPerRow": 2,
+  "generatedAtUtc": "2026-07-10T09:21:33.841Z",
+  "cabinets": [
+    {
+      "rows": 2,
+      "capacity": 4,
+      "width": 1024,
+      "height": 1536,
+      "fileName": "cabinet-2-rows.png",
+      "sourceFiles": []
+    },
+    {
+      "rows": 3,
+      "capacity": 6,
+      "width": 1024,
+      "height": 1920,
+      "fileName": "cabinet-3-rows.png",
+      "sourceFiles": [
+        "cabinet-2-rows.png"
+      ]
+    },
+    {
+      "rows": 4,
+      "capacity": 8,
+      "width": 1024,
+      "height": 2304,
+      "fileName": "cabinet-4-rows.png",
+      "sourceFiles": [
+        "cabinet-2-rows.png",
+        "cabinet-3-rows.png"
+      ]
+    },
+    {
+      "rows": 5,
+      "capacity": 10,
+      "width": 1024,
+      "height": 2688,
+      "fileName": "cabinet-5-rows.png",
+      "sourceFiles": [
+        "cabinet-2-rows.png",
+        "cabinet-4-rows.png"
+      ]
+    },
+    {
+      "rows": 6,
+      "capacity": 12,
+      "width": 1024,
+      "height": 3072,
+      "fileName": "cabinet-6-rows.png",
+      "sourceFiles": [
+        "cabinet-2-rows.png",
+        "cabinet-5-rows.png"
+      ]
+    }
+  ]
+}
