@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "18.2a",
+  "ruleName": "Ball Lost or Out of Bounds: Stroke-and-Distance Relief Must Be Taken",
+  "group": "Out of Bounds",
+  "title": "Are White Stakes Themselves Out of Bounds?",
+  "question": "White stakes define out of bounds. Is the stake itself in bounds?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes."
+    },
+    {
+      "id": "b",
+      "text": "No, the stake itself is out of bounds."
+    },
+    {
+      "id": "c",
+      "text": "Only if a Local Rule says so."
+    },
+    {
+      "id": "d",
+      "text": "Only if the committee marks it as such."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "The boundary edge of the course is defined by the course-side points of the white stakes at ground level. The stakes themselves are out of bounds.",
+  "imagePrompt": "Create a polished, modern semi-realistic illustration (about 75% realistic, 25% stylised) in the established junior golf quiz style. Show the edge of a golf course with rough grass transitioning to longer, wild grass behind a clear white out of bounds stake. Place a golf ball on the in-bounds side, close to but not touching the white stake. Include a golfer on the course side looking at the ball and stake. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer observes a golf ball lying just in bounds next to a white out of bounds stake at the edge of a golf course.",
+  "sceneSpec": {
+    "setting": "Edge of a golf course boundary line, with rough grass on the course side and longer grass or natural area beyond.",
+    "players": "One golfer standing on the course side, observing a white stake positioned along the boundary.",
+    "ballPosition": "A golf ball resting in bounds, close to but not touching the base of a white out of bounds stake.",
+    "ruleMoment": "The golfer visually checking the position of the white stake and the ball relative to the out of bounds line.",
+    "educationalFocus": "Clear identification of the position and status of an out of bounds stake and how it relates to the rules.",
+    "mustShow": [
+      "White out of bounds stake firmly planted along the course boundary",
+      "Golf ball sitting on the grass in bounds, very close to the stake",
+      "Golfer observing the situation"
+    ],
+    "mustNotShow": [
+      "Any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles"
+    ]
+  }
+}

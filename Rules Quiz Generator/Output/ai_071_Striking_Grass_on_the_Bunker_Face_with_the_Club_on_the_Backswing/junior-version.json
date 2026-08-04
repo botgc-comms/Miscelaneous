@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_071_Striking_Grass_on_the_Bunker_Face_with_the_Club_on_the_Backswing\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "12.2b",
+  "ruleName": "What You Can and Cannot Do in Bunkers",
+  "title": "Striking Grass on the Bunker Face with the Club on the Backswing",
+  "question": "Jezz takes a stroke from a bunker and strikes the grass face with his clubhead on the backswing. What is the ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "There is no penalty."
+    },
+    {
+      "id": "b",
+      "text": "Jezz receives a one-stroke penalty."
+    },
+    {
+      "id": "c",
+      "text": "Jezz receives the general penalty."
+    },
+    {
+      "id": "d",
+      "text": "The ball is to be replaced and the stroke replayed."
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "Rule 12.2b only restricts certain acts involving touching sand in the bunker. Accidentally striking grass on the bunker face during the backswing is permitted.",
+  "juniorVersion": {
+    "title": "Hitting Grass on the Side of a Bunker When Swinging Back",
+    "question": "Jezz is in a bunker. When he swings his club back to hit the ball, his club touches the long grass on the side of the bunker. What happens?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "There is no penalty for Jezz."
+      },
+      {
+        "id": "b",
+        "text": "Jezz gets one penalty stroke."
+      },
+      {
+        "id": "c",
+        "text": "Jezz gets a big penalty."
+      },
+      {
+        "id": "d",
+        "text": "The ball must go back and Jezz tries again."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "In golf, you are not allowed to touch the sand in a bunker with your club before hitting the ball, but it is okay if your club touches just the grass on the side when you swing back. There is no penalty for this.",
+    "vocabulary": [
+      {
+        "term": "Bunker",
+        "simpleMeaning": "A bunker is a special sandy area on the golf course. You usually have to hit the ball out of the sand."
+      },
+      {
+        "term": "Backswing",
+        "simpleMeaning": "The backswing is when you swing your club backwards before you hit the ball."
+      }
+    ],
+    "teachingTip": "Use a practice bunker and show children swinging back so their club touches grass, but not sand. Discuss which actions have penalties and which do not.",
+    "likelyMisconceptions": [
+      "Children may think touching any part of the bunker, even grass, is always a penalty.",
+      "They might believe that hitting grass is the same as hitting sand in the bunker."
+    ]
+  },
+  "generatedAtUtc": "2026-07-22T07:38:43.803Z",
+  "model": "gpt-4.1"
+}

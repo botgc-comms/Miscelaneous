@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "18.2",
+  "ruleName": "Ball Lost or Out of Bounds: Stroke-and-Distance Relief; Ball Provisional",
+  "group": "Definitions & Boundaries",
+  "title": "Identifying the Boundary from a White Line",
+  "question": "A boundary is defined by a white line on the ground. Where is the boundary?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "The outside edge of the line."
+    },
+    {
+      "id": "b",
+      "text": "The centre of the line."
+    },
+    {
+      "id": "c",
+      "text": "The line itself is out of bounds."
+    },
+    {
+      "id": "d",
+      "text": "The inside edge of the line."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "When a boundary is defined by a white line on the ground, the line itself (including its thickness) is out of bounds. Anything touching or beyond the line is considered out of bounds.",
+  "imagePrompt": "Create a modern, polished illustration in a semi-realistic, slightly stylised style (about 75% realistic, 25% stylised) showing the edge of a golf fairway and a white painted line on the ground marking the out of bounds boundary. A single golfer, seen side-on, is looking closely at a golf ball lying very near but not touching the white line. The surroundings should make it clear this is the boundary area of a hole. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer closely examining a golf ball near a white painted line marking the boundary at the edge of the fairway.",
+  "sceneSpec": {
+    "setting": "Edge of a golf hole where the fairway meets the boundary",
+    "players": "One golfer shown looking towards the boundary line",
+    "ballPosition": "A golf ball placed just inside the white boundary line, with the line clearly visible",
+    "ruleMoment": "Moment where the golfer is assessing if the ball is in or out of bounds based on the line",
+    "educationalFocus": "Clarifies where the boundary is when defined by a white painted line on the ground",
+    "mustShow": [
+      "White painted line clearly visible on the ground forming the boundary",
+      "Golf ball lying very close to but not touching the white line",
+      "Golfer observing the ball and line from nearby"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  }
+}

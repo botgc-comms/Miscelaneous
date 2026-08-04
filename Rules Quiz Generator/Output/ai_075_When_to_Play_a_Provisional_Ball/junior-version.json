@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_075_When_to_Play_a_Provisional_Ball\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "18.3",
+  "ruleName": "Provisional Ball",
+  "title": "When to Play a Provisional Ball",
+  "question": "You think your ball may be out of bounds but are not certain. What should you do?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Wait until you reach the area and decide."
+    },
+    {
+      "id": "b",
+      "text": "Play a provisional ball."
+    },
+    {
+      "id": "c",
+      "text": "Immediately declare the original ball lost."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "To save time, a player may play a provisional ball under Rule 18.3 if they think their ball may be lost outside a penalty area or out of bounds. This allows the player to avoid a long walk back if the original ball is not found or is out of bounds.",
+  "juniorVersion": {
+    "title": "What to Do If You Think Your Ball Might Be Out",
+    "question": "You think your ball might be out of bounds, but you are not sure. What should you do before you go look for it?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Walk up to where you think your ball is and then decide what to do."
+      },
+      {
+        "id": "b",
+        "text": "Hit another ball now, just in case, and call it a provisional ball."
+      },
+      {
+        "id": "c",
+        "text": "Say straight away that your first ball is lost."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If you think your ball might be out of bounds, you can hit a provisional ball before walking to look for your first one. This saves time, in case your first ball cannot be found or is out of bounds.",
+    "vocabulary": [
+      {
+        "term": "Provisional Ball",
+        "simpleMeaning": "A ball you play just in case your first ball is lost or out of bounds."
+      },
+      {
+        "term": "Out of bounds",
+        "simpleMeaning": "A place outside the golf course where you are not allowed to play from."
+      }
+    ],
+    "teachingTip": "Act out a situation where a ball might be out of bounds to show when to play a provisional ball.",
+    "likelyMisconceptions": [
+      "Kids might think they must always look for their ball first.",
+      "They might think they cannot play a provisional ball unless an adult tells them."
+    ]
+  },
+  "generatedAtUtc": "2026-07-22T07:41:43.536Z",
+  "model": "gpt-4.1"
+}

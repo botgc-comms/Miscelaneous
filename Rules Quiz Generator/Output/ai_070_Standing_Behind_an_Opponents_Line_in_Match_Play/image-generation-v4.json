@@ -1,0 +1,10 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "sourcePromptFileName": "final-prompt-v2.txt",
+  "promptFileName": "final-prompt-v4.txt",
+  "imageFileName": "illustration-v4.png",
+  "correctionInstructions": "the orientation of the players is wrong. The girl shoudl be standing side on to the hole not facing it, and the boy should be behind her looking down the line of the putt",
+  "generatedAtUtc": "2026-07-22T08:00:32.086Z"
+}

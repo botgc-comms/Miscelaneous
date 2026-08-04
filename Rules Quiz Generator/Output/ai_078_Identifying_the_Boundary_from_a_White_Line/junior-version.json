@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_078_Identifying_the_Boundary_from_a_White_Line\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "18.2",
+  "ruleName": "Ball Lost or Out of Bounds: Stroke-and-Distance Relief; Ball Provisional",
+  "title": "Identifying the Boundary from a White Line",
+  "question": "A boundary is defined by a white line on the ground. Where is the boundary?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "The outside edge of the line."
+    },
+    {
+      "id": "b",
+      "text": "The centre of the line."
+    },
+    {
+      "id": "c",
+      "text": "The line itself is out of bounds."
+    },
+    {
+      "id": "d",
+      "text": "The inside edge of the line."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "When a boundary is defined by a white line on the ground, the line itself (including its thickness) is out of bounds. Anything touching or beyond the line is considered out of bounds.",
+  "juniorVersion": {
+    "title": "Where is Out of Bounds When There Is a White Line?",
+    "question": "If there is a white line on the ground to show out of bounds, what counts as out of bounds?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "The edge of the line farthest from the golf course."
+      },
+      {
+        "id": "b",
+        "text": "The middle of the line."
+      },
+      {
+        "id": "c",
+        "text": "The whole white line is out of bounds."
+      },
+      {
+        "id": "d",
+        "text": "The edge of the line closest to the golf course."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "If a white line marks out of bounds, the whole line is out of bounds. If your ball touches the line or is past it, it is out of bounds.",
+    "vocabulary": [
+      {
+        "term": "Out of bounds",
+        "simpleMeaning": "A place where you are not allowed to play and must play a new ball."
+      },
+      {
+        "term": "Boundary",
+        "simpleMeaning": "The line or mark that tells you where out of bounds starts."
+      }
+    ],
+    "teachingTip": "Show some pictures or make a white line on the practice ground to help kids see what counts as out of bounds.",
+    "likelyMisconceptions": [
+      "Some players may think only past the line is out of bounds, not the line itself.",
+      "Kids may think only the edge or centre of the line counts, but the whole line is out of bounds."
+    ]
+  },
+  "generatedAtUtc": "2026-07-22T07:42:30.694Z",
+  "model": "gpt-4.1"
+}

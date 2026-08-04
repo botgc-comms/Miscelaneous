@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_076_Is_the_Ball_In_Bounds_If_It_Overhangs_the_Boundary_Line\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "18.2a",
+  "ruleName": "Ball Lost or Out of Bounds",
+  "title": "Is the Ball In Bounds If It Overhangs the Boundary Line?",
+  "question": "A ball is hanging over the course side of the out of bounds line, but part of the ball is still above the course. Is it in bounds?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No, because most of the ball is out."
+    },
+    {
+      "id": "b",
+      "text": "Yes, because any part of the ball overhangs the course side of the boundary line."
+    },
+    {
+      "id": "c",
+      "text": "No, because the ball is touching air beyond the boundary."
+    },
+    {
+      "id": "d",
+      "text": "No, for all cases where any part of the ball is above the out of bounds area."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "The ball is in bounds if any part of it lies over the course side of the boundary line, even if most of the ball is overhanging out of bounds. It is only out of bounds when the entire ball lies outside the boundary edge.",
+  "juniorVersion": {
+    "title": "Is the Ball In or Out If Part of It Hangs Over the Line?",
+    "question": "Your ball stops with some of it hanging over the white out of bounds line, but part of the ball still sticks out over the grass. Is it still in bounds?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "No, because most of the ball is over the out of bounds."
+      },
+      {
+        "id": "b",
+        "text": "Yes, because some of the ball is still over the grass side of the line."
+      },
+      {
+        "id": "c",
+        "text": "No, because some of the ball is in the air above out of bounds."
+      },
+      {
+        "id": "d",
+        "text": "No, if any bit of the ball is above out of bounds, it is out."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "The ball is in bounds as long as any part of it hangs over the grass side of the line. The ball is only out of bounds when all of it is past the line.",
+    "vocabulary": [
+      {
+        "term": "Out of bounds",
+        "simpleMeaning": "A place outside the golf course where you can't play."
+      },
+      {
+        "term": "Boundary line",
+        "simpleMeaning": "A white line or markers showing where the golf course ends."
+      }
+    ],
+    "teachingTip": "Use a ball, a piece of string or chalk, and a green mat to show hanging over the line. Let kids walk around and see from above!",
+    "likelyMisconceptions": [
+      "Some children may think the ball is out if any bit is above the out of bounds.",
+      "Some may think the whole ball has to be over the grass to be in bounds."
+    ]
+  },
+  "generatedAtUtc": "2026-07-22T07:41:52.172Z",
+  "model": "gpt-4.1"
+}

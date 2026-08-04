@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "18.2a",
+  "ruleName": "Ball Lost or Out of Bounds",
+  "group": "Definitions and General Play",
+  "title": "Is the Ball In Bounds If It Overhangs the Boundary Line?",
+  "question": "A ball is hanging over the course side of the out of bounds line, but part of the ball is still above the course. Is it in bounds?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No, because most of the ball is out."
+    },
+    {
+      "id": "b",
+      "text": "Yes, because any part of the ball overhangs the course side of the boundary line."
+    },
+    {
+      "id": "c",
+      "text": "No, because the ball is touching air beyond the boundary."
+    },
+    {
+      "id": "d",
+      "text": "No, for all cases where any part of the ball is above the out of bounds area."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "The ball is in bounds if any part of it lies over the course side of the boundary line, even if most of the ball is overhanging out of bounds. It is only out of bounds when the entire ball lies outside the boundary edge.",
+  "imagePrompt": "A modern semi-realistic, slightly stylised (about 75% realistic and 25% stylised) illustration in a junior golf rules quiz style. Show the edge of a golf course with a clear white boundary line running across a short-mown area. A golf ball is positioned so part of it is directly above the grass and course side of the line, while the remainder overhangs out of bounds. A junior golfer in appropriate golf attire stands nearby, observing the ball with a questioning look. Focus on the ball's position relative to the boundary line and the player's reaction. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A junior golfer looking at a golf ball that partly overhangs the out of bounds boundary line on a golf course.",
+  "sceneSpec": {
+    "setting": "The edge of a golf course near an out of bounds boundary.",
+    "players": "A junior golfer watching the ball from a short distance away, looking concerned.",
+    "ballPosition": "A golf ball hovering just over the course side of a white boundary line, with the ball overhanging the line such that part of it is visibly above the grass and boundary, while the rest hangs over the out of bounds area.",
+    "ruleMoment": "The moment just after the ball has come to rest in this position and the player is checking if it's in bounds.",
+    "educationalFocus": "Visualising how a ball can still be in bounds when part of it overhangs the course side of the boundary.",
+    "mustShow": [
+      "White boundary line clearly visible on the ground",
+      "Golf ball positioned so part of it is above the grass and course side, and part overhangs the out of bounds",
+      "Junior golfer observing the situation"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  }
+}

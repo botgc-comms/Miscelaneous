@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_070_Standing_Behind_an_Opponents_Line_in_Match_Play\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "1.2",
+  "ruleName": "Standards of Player Conduct",
+  "title": "Standing Behind an Opponent's Line in Match Play",
+  "question": "In match play, Jezz crouches directly behind Alison's line of play as she takes her putt. What is the ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Jezz loses the hole."
+    },
+    {
+      "id": "b",
+      "text": "There is no penalty."
+    },
+    {
+      "id": "c",
+      "text": "Jezz is disqualified."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "The Rules do not prohibit a player or opponent from standing directly behind another player's line of play. It may be considered poor etiquette, but there is no Rules penalty.",
+  "juniorVersion": {
+    "title": "Standing Behind Where Someone Aims in a Match (Match Play)",
+    "question": "In match play, Jezz kneels down right behind the line where Alison is putting. What happens?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Jezz loses the hole."
+      },
+      {
+        "id": "b",
+        "text": "There is no penalty."
+      },
+      {
+        "id": "c",
+        "text": "Jezz is disqualified."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "It’s not polite, but the rules don’t give a penalty if someone stands behind where you aim in match play.",
+    "vocabulary": [
+      {
+        "term": "Match play",
+        "simpleMeaning": "A type of golf game where you try to win more holes than your opponent."
+      },
+      {
+        "term": "Line of play",
+        "simpleMeaning": "The direction you want your ball to go on the green."
+      }
+    ],
+    "teachingTip": "You can talk about being respectful to others even though the rules don’t give a penalty for standing behind someone in match play.",
+    "likelyMisconceptions": [
+      "Children may think there is always a penalty for standing behind someone’s line.",
+      "Children may mix up rules for stroke play and match play."
+    ]
+  },
+  "generatedAtUtc": "2026-07-22T07:38:39.775Z",
+  "model": "gpt-4.1"
+}

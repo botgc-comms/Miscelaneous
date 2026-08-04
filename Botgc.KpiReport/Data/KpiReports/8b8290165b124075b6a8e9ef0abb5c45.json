@@ -1,0 +1,4250 @@
+{
+  "id": "8b829016-5b12-4075-b6a8-e9ef0abb5c45",
+  "version": 29,
+  "title": "KPI Report 2025/26",
+  "financialYearStart": "2025-10-01",
+  "financialYearEnd": "2026-09-30",
+  "reportingPeriodStart": "2025-10-01",
+  "reportingPeriodEnd": "2026-09-30",
+  "figuresCorrectAsAt": "2026-08-01",
+  "yearEndForecastNetProfitBeforeTaxation": 24500,
+  "membershipSnapshot": {
+    "periodStart": "2025-04-01",
+    "dataAsAt": "2026-08-01",
+    "importedAtUtc": "2026-08-03T14:58:35.6639851+00:00",
+    "sourceGeneratedAtUtc": "2026-08-03T00:03:00.0450441+00:00",
+    "playingMembers": 484,
+    "nonPlayingMembers": 457,
+    "totalMembers": 941,
+    "playingCategoryBreakdown": {
+      "6MN - Gent 6 Day (N)": 19,
+      "7MA - Gent 7 Day (A)": 17,
+      "7MN - Gent 7 Day (N)": 267,
+      "5FN - Lady 5 Day (N)": 3,
+      "5MA - Gent 5 Day (A)": 17,
+      "5MN - Gent 5 Day (N)": 50,
+      "7FS - Lady 7 Day (S)": 3,
+      "Intermediate 27": 3,
+      "7MC - Gent 7 Day (C)": 14,
+      "Intermediate 20": 5,
+      "Intermediate 29": 4,
+      "6FN - Lady 6 Day (N)": 4,
+      "7FLT - Lady 7 Day Lifetime": 1,
+      "7MLT - Gent 7 Day Lifetime": 11,
+      "7FN - Lady 7 Day (N)": 18,
+      "7M5 - Gent 7 Day (5)": 3,
+      "Intermediate 25": 2,
+      "Intermediate 18": 8,
+      "Intermediate 26": 6,
+      "6FAC - Lady 6 Day (A)(C)": 4,
+      "6FSC - Lady 6 Day (S)(C)": 1,
+      "Intermediate 22": 7,
+      "Intermediate 21": 1,
+      "Intermediate 19": 5,
+      "5FAS - Lady 5 Day (A)(S)": 2,
+      "6MA - Gent 6 Day (A)": 1,
+      "Intermediate 24": 2,
+      "Intermediate 28": 5,
+      "Intermediate 23": 1
+    },
+    "nonPlayingCategoryBreakdown": {
+      "Admin": 4,
+      "MSH - Gent Social Honorary": 55,
+      "Clubhouse": 72,
+      "Burton Flexi Corporate": 1,
+      "STAFF - Member of Staff": 25,
+      "Burton Flexi 20/40": 50,
+      "SOCL - Social Members": 77,
+      "Junior Course Cadet": 38,
+      "Family Clubhouse": 61,
+      "FSH - Lady Social Honorary": 22,
+      "Junior Cadet": 22,
+      "Junior": 21,
+      "Medical Exemption": 5,
+      "Pathway Membership": 2,
+      "Junior 12-18": 2
+    },
+    "categoryGroupBreakdown": {
+      "Other": 36,
+      "Social Membership": 154,
+      "6 Day Membership": 29,
+      "Clubhouse Only": 133,
+      "7 Day Membership": 334,
+      "Off Peak Membership (Flexi)": 51,
+      "5 Day Membership": 72,
+      "Junior Membership": 83,
+      "Intermediate Membership": 49
+    },
+    "trend": [
+      {
+        "date": "2025-07-01",
+        "playingMembers": 477,
+        "nonPlayingMembers": 332,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-02",
+        "playingMembers": 477,
+        "nonPlayingMembers": 332,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-03",
+        "playingMembers": 477,
+        "nonPlayingMembers": 332,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-04",
+        "playingMembers": 477,
+        "nonPlayingMembers": 332,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-05",
+        "playingMembers": 477,
+        "nonPlayingMembers": 332,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-06",
+        "playingMembers": 477,
+        "nonPlayingMembers": 332,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-07",
+        "playingMembers": 477,
+        "nonPlayingMembers": 332,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-08",
+        "playingMembers": 477,
+        "nonPlayingMembers": 332,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-09",
+        "playingMembers": 477,
+        "nonPlayingMembers": 332,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-10",
+        "playingMembers": 477,
+        "nonPlayingMembers": 332,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-11",
+        "playingMembers": 477,
+        "nonPlayingMembers": 332,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-12",
+        "playingMembers": 481,
+        "nonPlayingMembers": 332,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-13",
+        "playingMembers": 481,
+        "nonPlayingMembers": 332,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-14",
+        "playingMembers": 481,
+        "nonPlayingMembers": 333,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-15",
+        "playingMembers": 482,
+        "nonPlayingMembers": 336,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-16",
+        "playingMembers": 484,
+        "nonPlayingMembers": 341,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-17",
+        "playingMembers": 484,
+        "nonPlayingMembers": 342,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-18",
+        "playingMembers": 484,
+        "nonPlayingMembers": 343,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-19",
+        "playingMembers": 484,
+        "nonPlayingMembers": 344,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-20",
+        "playingMembers": 484,
+        "nonPlayingMembers": 344,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-21",
+        "playingMembers": 484,
+        "nonPlayingMembers": 343,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-22",
+        "playingMembers": 484,
+        "nonPlayingMembers": 345,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-23",
+        "playingMembers": 484,
+        "nonPlayingMembers": 345,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-24",
+        "playingMembers": 484,
+        "nonPlayingMembers": 345,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-25",
+        "playingMembers": 484,
+        "nonPlayingMembers": 345,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-26",
+        "playingMembers": 484,
+        "nonPlayingMembers": 345,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-27",
+        "playingMembers": 484,
+        "nonPlayingMembers": 345,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-28",
+        "playingMembers": 484,
+        "nonPlayingMembers": 345,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-29",
+        "playingMembers": 484,
+        "nonPlayingMembers": 346,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-30",
+        "playingMembers": 484,
+        "nonPlayingMembers": 351,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-07-31",
+        "playingMembers": 487,
+        "nonPlayingMembers": 351,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-01",
+        "playingMembers": 487,
+        "nonPlayingMembers": 352,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-02",
+        "playingMembers": 486,
+        "nonPlayingMembers": 353,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-03",
+        "playingMembers": 486,
+        "nonPlayingMembers": 353,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-04",
+        "playingMembers": 486,
+        "nonPlayingMembers": 353,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-05",
+        "playingMembers": 486,
+        "nonPlayingMembers": 354,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-06",
+        "playingMembers": 487,
+        "nonPlayingMembers": 356,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-07",
+        "playingMembers": 487,
+        "nonPlayingMembers": 356,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-08",
+        "playingMembers": 487,
+        "nonPlayingMembers": 357,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-09",
+        "playingMembers": 484,
+        "nonPlayingMembers": 361,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-10",
+        "playingMembers": 484,
+        "nonPlayingMembers": 361,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-11",
+        "playingMembers": 484,
+        "nonPlayingMembers": 361,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-12",
+        "playingMembers": 484,
+        "nonPlayingMembers": 362,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-13",
+        "playingMembers": 484,
+        "nonPlayingMembers": 366,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-14",
+        "playingMembers": 488,
+        "nonPlayingMembers": 371,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-15",
+        "playingMembers": 487,
+        "nonPlayingMembers": 374,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-16",
+        "playingMembers": 487,
+        "nonPlayingMembers": 374,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-17",
+        "playingMembers": 487,
+        "nonPlayingMembers": 374,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-18",
+        "playingMembers": 487,
+        "nonPlayingMembers": 374,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-19",
+        "playingMembers": 489,
+        "nonPlayingMembers": 373,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-20",
+        "playingMembers": 490,
+        "nonPlayingMembers": 373,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-21",
+        "playingMembers": 490,
+        "nonPlayingMembers": 372,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-22",
+        "playingMembers": 489,
+        "nonPlayingMembers": 372,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-23",
+        "playingMembers": 489,
+        "nonPlayingMembers": 372,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-24",
+        "playingMembers": 489,
+        "nonPlayingMembers": 372,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-25",
+        "playingMembers": 489,
+        "nonPlayingMembers": 372,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-26",
+        "playingMembers": 489,
+        "nonPlayingMembers": 372,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-27",
+        "playingMembers": 489,
+        "nonPlayingMembers": 374,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-28",
+        "playingMembers": 490,
+        "nonPlayingMembers": 374,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-29",
+        "playingMembers": 490,
+        "nonPlayingMembers": 374,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-30",
+        "playingMembers": 490,
+        "nonPlayingMembers": 375,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-08-31",
+        "playingMembers": 490,
+        "nonPlayingMembers": 375,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-01",
+        "playingMembers": 490,
+        "nonPlayingMembers": 375,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-02",
+        "playingMembers": 490,
+        "nonPlayingMembers": 376,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-03",
+        "playingMembers": 490,
+        "nonPlayingMembers": 381,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-04",
+        "playingMembers": 490,
+        "nonPlayingMembers": 381,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-05",
+        "playingMembers": 490,
+        "nonPlayingMembers": 381,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-06",
+        "playingMembers": 490,
+        "nonPlayingMembers": 383,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-07",
+        "playingMembers": 490,
+        "nonPlayingMembers": 383,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-08",
+        "playingMembers": 490,
+        "nonPlayingMembers": 383,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-09",
+        "playingMembers": 490,
+        "nonPlayingMembers": 383,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-10",
+        "playingMembers": 490,
+        "nonPlayingMembers": 384,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-11",
+        "playingMembers": 490,
+        "nonPlayingMembers": 382,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-12",
+        "playingMembers": 492,
+        "nonPlayingMembers": 383,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-13",
+        "playingMembers": 492,
+        "nonPlayingMembers": 383,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-14",
+        "playingMembers": 492,
+        "nonPlayingMembers": 383,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-15",
+        "playingMembers": 492,
+        "nonPlayingMembers": 384,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-16",
+        "playingMembers": 492,
+        "nonPlayingMembers": 385,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-17",
+        "playingMembers": 492,
+        "nonPlayingMembers": 386,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-18",
+        "playingMembers": 492,
+        "nonPlayingMembers": 386,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-19",
+        "playingMembers": 492,
+        "nonPlayingMembers": 387,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-20",
+        "playingMembers": 492,
+        "nonPlayingMembers": 387,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-21",
+        "playingMembers": 492,
+        "nonPlayingMembers": 387,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-22",
+        "playingMembers": 492,
+        "nonPlayingMembers": 387,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-23",
+        "playingMembers": 492,
+        "nonPlayingMembers": 387,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-24",
+        "playingMembers": 492,
+        "nonPlayingMembers": 387,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-25",
+        "playingMembers": 492,
+        "nonPlayingMembers": 387,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-26",
+        "playingMembers": 492,
+        "nonPlayingMembers": 390,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-27",
+        "playingMembers": 492,
+        "nonPlayingMembers": 390,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-28",
+        "playingMembers": 492,
+        "nonPlayingMembers": 390,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-29",
+        "playingMembers": 492,
+        "nonPlayingMembers": 390,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-09-30",
+        "playingMembers": 492,
+        "nonPlayingMembers": 390,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2025-10-01",
+        "playingMembers": 492,
+        "nonPlayingMembers": 390,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-02",
+        "playingMembers": 492,
+        "nonPlayingMembers": 390,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-03",
+        "playingMembers": 492,
+        "nonPlayingMembers": 390,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-04",
+        "playingMembers": 492,
+        "nonPlayingMembers": 390,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-05",
+        "playingMembers": 492,
+        "nonPlayingMembers": 390,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-06",
+        "playingMembers": 492,
+        "nonPlayingMembers": 390,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-07",
+        "playingMembers": 493,
+        "nonPlayingMembers": 390,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-08",
+        "playingMembers": 493,
+        "nonPlayingMembers": 391,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-09",
+        "playingMembers": 493,
+        "nonPlayingMembers": 398,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-10",
+        "playingMembers": 496,
+        "nonPlayingMembers": 398,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-11",
+        "playingMembers": 498,
+        "nonPlayingMembers": 398,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-12",
+        "playingMembers": 498,
+        "nonPlayingMembers": 398,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-13",
+        "playingMembers": 498,
+        "nonPlayingMembers": 398,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-14",
+        "playingMembers": 499,
+        "nonPlayingMembers": 400,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-15",
+        "playingMembers": 499,
+        "nonPlayingMembers": 400,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-16",
+        "playingMembers": 499,
+        "nonPlayingMembers": 403,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-17",
+        "playingMembers": 499,
+        "nonPlayingMembers": 405,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-18",
+        "playingMembers": 501,
+        "nonPlayingMembers": 403,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-19",
+        "playingMembers": 501,
+        "nonPlayingMembers": 403,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-20",
+        "playingMembers": 501,
+        "nonPlayingMembers": 403,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-21",
+        "playingMembers": 501,
+        "nonPlayingMembers": 403,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-22",
+        "playingMembers": 501,
+        "nonPlayingMembers": 403,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-23",
+        "playingMembers": 501,
+        "nonPlayingMembers": 403,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-24",
+        "playingMembers": 501,
+        "nonPlayingMembers": 403,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-25",
+        "playingMembers": 501,
+        "nonPlayingMembers": 403,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-26",
+        "playingMembers": 501,
+        "nonPlayingMembers": 403,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-27",
+        "playingMembers": 501,
+        "nonPlayingMembers": 403,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-28",
+        "playingMembers": 501,
+        "nonPlayingMembers": 403,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-29",
+        "playingMembers": 501,
+        "nonPlayingMembers": 403,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-30",
+        "playingMembers": 501,
+        "nonPlayingMembers": 403,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-10-31",
+        "playingMembers": 501,
+        "nonPlayingMembers": 403,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-01",
+        "playingMembers": 501,
+        "nonPlayingMembers": 403,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-02",
+        "playingMembers": 501,
+        "nonPlayingMembers": 403,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-03",
+        "playingMembers": 501,
+        "nonPlayingMembers": 403,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-04",
+        "playingMembers": 501,
+        "nonPlayingMembers": 403,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-05",
+        "playingMembers": 501,
+        "nonPlayingMembers": 403,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-06",
+        "playingMembers": 501,
+        "nonPlayingMembers": 403,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-07",
+        "playingMembers": 502,
+        "nonPlayingMembers": 404,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-08",
+        "playingMembers": 502,
+        "nonPlayingMembers": 404,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-09",
+        "playingMembers": 502,
+        "nonPlayingMembers": 405,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-10",
+        "playingMembers": 502,
+        "nonPlayingMembers": 405,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-11",
+        "playingMembers": 502,
+        "nonPlayingMembers": 405,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-12",
+        "playingMembers": 502,
+        "nonPlayingMembers": 406,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-13",
+        "playingMembers": 502,
+        "nonPlayingMembers": 406,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-14",
+        "playingMembers": 502,
+        "nonPlayingMembers": 406,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-15",
+        "playingMembers": 502,
+        "nonPlayingMembers": 406,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-16",
+        "playingMembers": 502,
+        "nonPlayingMembers": 406,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-17",
+        "playingMembers": 502,
+        "nonPlayingMembers": 406,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-18",
+        "playingMembers": 502,
+        "nonPlayingMembers": 407,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-19",
+        "playingMembers": 502,
+        "nonPlayingMembers": 408,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-20",
+        "playingMembers": 502,
+        "nonPlayingMembers": 408,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-21",
+        "playingMembers": 502,
+        "nonPlayingMembers": 409,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-22",
+        "playingMembers": 503,
+        "nonPlayingMembers": 411,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-23",
+        "playingMembers": 503,
+        "nonPlayingMembers": 411,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-24",
+        "playingMembers": 503,
+        "nonPlayingMembers": 411,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-25",
+        "playingMembers": 503,
+        "nonPlayingMembers": 411,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-26",
+        "playingMembers": 502,
+        "nonPlayingMembers": 412,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-27",
+        "playingMembers": 502,
+        "nonPlayingMembers": 413,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-28",
+        "playingMembers": 502,
+        "nonPlayingMembers": 413,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-29",
+        "playingMembers": 502,
+        "nonPlayingMembers": 413,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-11-30",
+        "playingMembers": 502,
+        "nonPlayingMembers": 413,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-01",
+        "playingMembers": 502,
+        "nonPlayingMembers": 413,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-02",
+        "playingMembers": 502,
+        "nonPlayingMembers": 414,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-03",
+        "playingMembers": 502,
+        "nonPlayingMembers": 414,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-04",
+        "playingMembers": 502,
+        "nonPlayingMembers": 414,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-05",
+        "playingMembers": 502,
+        "nonPlayingMembers": 414,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-06",
+        "playingMembers": 502,
+        "nonPlayingMembers": 414,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-07",
+        "playingMembers": 502,
+        "nonPlayingMembers": 414,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-08",
+        "playingMembers": 502,
+        "nonPlayingMembers": 414,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-09",
+        "playingMembers": 502,
+        "nonPlayingMembers": 415,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-10",
+        "playingMembers": 502,
+        "nonPlayingMembers": 415,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-11",
+        "playingMembers": 502,
+        "nonPlayingMembers": 415,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-12",
+        "playingMembers": 502,
+        "nonPlayingMembers": 415,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-13",
+        "playingMembers": 502,
+        "nonPlayingMembers": 415,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-14",
+        "playingMembers": 502,
+        "nonPlayingMembers": 415,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-15",
+        "playingMembers": 502,
+        "nonPlayingMembers": 415,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-16",
+        "playingMembers": 502,
+        "nonPlayingMembers": 415,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-17",
+        "playingMembers": 502,
+        "nonPlayingMembers": 415,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-18",
+        "playingMembers": 502,
+        "nonPlayingMembers": 415,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-19",
+        "playingMembers": 502,
+        "nonPlayingMembers": 415,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-20",
+        "playingMembers": 502,
+        "nonPlayingMembers": 415,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-21",
+        "playingMembers": 502,
+        "nonPlayingMembers": 415,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-22",
+        "playingMembers": 502,
+        "nonPlayingMembers": 415,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-23",
+        "playingMembers": 502,
+        "nonPlayingMembers": 415,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-24",
+        "playingMembers": 502,
+        "nonPlayingMembers": 415,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-25",
+        "playingMembers": 502,
+        "nonPlayingMembers": 415,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-26",
+        "playingMembers": 502,
+        "nonPlayingMembers": 415,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-27",
+        "playingMembers": 502,
+        "nonPlayingMembers": 415,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-28",
+        "playingMembers": 502,
+        "nonPlayingMembers": 415,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-29",
+        "playingMembers": 502,
+        "nonPlayingMembers": 415,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-30",
+        "playingMembers": 502,
+        "nonPlayingMembers": 415,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2025-12-31",
+        "playingMembers": 502,
+        "nonPlayingMembers": 415,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-01",
+        "playingMembers": 502,
+        "nonPlayingMembers": 415,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-02",
+        "playingMembers": 502,
+        "nonPlayingMembers": 416,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-03",
+        "playingMembers": 502,
+        "nonPlayingMembers": 416,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-04",
+        "playingMembers": 502,
+        "nonPlayingMembers": 416,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-05",
+        "playingMembers": 502,
+        "nonPlayingMembers": 416,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-06",
+        "playingMembers": 502,
+        "nonPlayingMembers": 416,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-07",
+        "playingMembers": 502,
+        "nonPlayingMembers": 415,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-08",
+        "playingMembers": 504,
+        "nonPlayingMembers": 417,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-09",
+        "playingMembers": 504,
+        "nonPlayingMembers": 417,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-10",
+        "playingMembers": 504,
+        "nonPlayingMembers": 417,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-11",
+        "playingMembers": 504,
+        "nonPlayingMembers": 417,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-12",
+        "playingMembers": 504,
+        "nonPlayingMembers": 411,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-13",
+        "playingMembers": 504,
+        "nonPlayingMembers": 410,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-14",
+        "playingMembers": 504,
+        "nonPlayingMembers": 410,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-15",
+        "playingMembers": 504,
+        "nonPlayingMembers": 409,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-16",
+        "playingMembers": 504,
+        "nonPlayingMembers": 410,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-17",
+        "playingMembers": 504,
+        "nonPlayingMembers": 410,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-18",
+        "playingMembers": 504,
+        "nonPlayingMembers": 410,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-19",
+        "playingMembers": 504,
+        "nonPlayingMembers": 410,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-20",
+        "playingMembers": 504,
+        "nonPlayingMembers": 410,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-21",
+        "playingMembers": 504,
+        "nonPlayingMembers": 410,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-22",
+        "playingMembers": 504,
+        "nonPlayingMembers": 409,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-23",
+        "playingMembers": 503,
+        "nonPlayingMembers": 410,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-24",
+        "playingMembers": 503,
+        "nonPlayingMembers": 410,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-25",
+        "playingMembers": 503,
+        "nonPlayingMembers": 410,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-26",
+        "playingMembers": 503,
+        "nonPlayingMembers": 410,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-27",
+        "playingMembers": 505,
+        "nonPlayingMembers": 410,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-28",
+        "playingMembers": 505,
+        "nonPlayingMembers": 410,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-29",
+        "playingMembers": 505,
+        "nonPlayingMembers": 411,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-30",
+        "playingMembers": 507,
+        "nonPlayingMembers": 411,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-01-31",
+        "playingMembers": 507,
+        "nonPlayingMembers": 413,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-02-01",
+        "playingMembers": 507,
+        "nonPlayingMembers": 413,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-02-02",
+        "playingMembers": 507,
+        "nonPlayingMembers": 413,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-02-03",
+        "playingMembers": 507,
+        "nonPlayingMembers": 415,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-02-04",
+        "playingMembers": 505,
+        "nonPlayingMembers": 417,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-02-05",
+        "playingMembers": 505,
+        "nonPlayingMembers": 417,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-02-06",
+        "playingMembers": 505,
+        "nonPlayingMembers": 417,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-02-07",
+        "playingMembers": 505,
+        "nonPlayingMembers": 417,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-02-08",
+        "playingMembers": 505,
+        "nonPlayingMembers": 417,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-02-09",
+        "playingMembers": 505,
+        "nonPlayingMembers": 418,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-02-10",
+        "playingMembers": 505,
+        "nonPlayingMembers": 418,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-02-11",
+        "playingMembers": 507,
+        "nonPlayingMembers": 418,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-02-12",
+        "playingMembers": 510,
+        "nonPlayingMembers": 418,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-02-13",
+        "playingMembers": 511,
+        "nonPlayingMembers": 418,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-02-14",
+        "playingMembers": 514,
+        "nonPlayingMembers": 418,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-02-15",
+        "playingMembers": 514,
+        "nonPlayingMembers": 418,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-02-16",
+        "playingMembers": 514,
+        "nonPlayingMembers": 418,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-02-17",
+        "playingMembers": 514,
+        "nonPlayingMembers": 419,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-02-18",
+        "playingMembers": 514,
+        "nonPlayingMembers": 419,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-02-19",
+        "playingMembers": 514,
+        "nonPlayingMembers": 419,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-02-20",
+        "playingMembers": 514,
+        "nonPlayingMembers": 419,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-02-21",
+        "playingMembers": 535,
+        "nonPlayingMembers": 400,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-02-22",
+        "playingMembers": 535,
+        "nonPlayingMembers": 400,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-02-23",
+        "playingMembers": 535,
+        "nonPlayingMembers": 401,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-02-24",
+        "playingMembers": 535,
+        "nonPlayingMembers": 418,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-02-25",
+        "playingMembers": 534,
+        "nonPlayingMembers": 422,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-02-26",
+        "playingMembers": 536,
+        "nonPlayingMembers": 420,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-02-27",
+        "playingMembers": 535,
+        "nonPlayingMembers": 421,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-02-28",
+        "playingMembers": 536,
+        "nonPlayingMembers": 420,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-01",
+        "playingMembers": 536,
+        "nonPlayingMembers": 420,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-02",
+        "playingMembers": 536,
+        "nonPlayingMembers": 420,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-03",
+        "playingMembers": 539,
+        "nonPlayingMembers": 422,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-04",
+        "playingMembers": 539,
+        "nonPlayingMembers": 422,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-05",
+        "playingMembers": 539,
+        "nonPlayingMembers": 422,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-06",
+        "playingMembers": 539,
+        "nonPlayingMembers": 422,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-07",
+        "playingMembers": 540,
+        "nonPlayingMembers": 421,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-08",
+        "playingMembers": 540,
+        "nonPlayingMembers": 421,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-09",
+        "playingMembers": 540,
+        "nonPlayingMembers": 422,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-10",
+        "playingMembers": 540,
+        "nonPlayingMembers": 422,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-11",
+        "playingMembers": 540,
+        "nonPlayingMembers": 423,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-12",
+        "playingMembers": 542,
+        "nonPlayingMembers": 423,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-13",
+        "playingMembers": 542,
+        "nonPlayingMembers": 423,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-14",
+        "playingMembers": 544,
+        "nonPlayingMembers": 427,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-15",
+        "playingMembers": 544,
+        "nonPlayingMembers": 427,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-16",
+        "playingMembers": 544,
+        "nonPlayingMembers": 428,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-17",
+        "playingMembers": 545,
+        "nonPlayingMembers": 431,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-18",
+        "playingMembers": 547,
+        "nonPlayingMembers": 431,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-19",
+        "playingMembers": 547,
+        "nonPlayingMembers": 431,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-20",
+        "playingMembers": 547,
+        "nonPlayingMembers": 431,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-21",
+        "playingMembers": 547,
+        "nonPlayingMembers": 431,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-22",
+        "playingMembers": 547,
+        "nonPlayingMembers": 431,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-23",
+        "playingMembers": 547,
+        "nonPlayingMembers": 431,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-24",
+        "playingMembers": 547,
+        "nonPlayingMembers": 431,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-25",
+        "playingMembers": 549,
+        "nonPlayingMembers": 431,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-26",
+        "playingMembers": 548,
+        "nonPlayingMembers": 432,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-27",
+        "playingMembers": 549,
+        "nonPlayingMembers": 432,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-28",
+        "playingMembers": 549,
+        "nonPlayingMembers": 432,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-29",
+        "playingMembers": 549,
+        "nonPlayingMembers": 432,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-30",
+        "playingMembers": 549,
+        "nonPlayingMembers": 432,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-03-31",
+        "playingMembers": 551,
+        "nonPlayingMembers": 432,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-04-01",
+        "playingMembers": 523,
+        "nonPlayingMembers": 423,
+        "targetPlayingMembers": 452.64000000000004
+      },
+      {
+        "date": "2026-04-02",
+        "playingMembers": 498,
+        "nonPlayingMembers": 444,
+        "targetPlayingMembers": 452.85626373626377
+      },
+      {
+        "date": "2026-04-03",
+        "playingMembers": 498,
+        "nonPlayingMembers": 447,
+        "targetPlayingMembers": 453.0725274725275
+      },
+      {
+        "date": "2026-04-04",
+        "playingMembers": 499,
+        "nonPlayingMembers": 447,
+        "targetPlayingMembers": 453.2887912087912
+      },
+      {
+        "date": "2026-04-05",
+        "playingMembers": 499,
+        "nonPlayingMembers": 447,
+        "targetPlayingMembers": 453.505054945055
+      },
+      {
+        "date": "2026-04-06",
+        "playingMembers": 499,
+        "nonPlayingMembers": 452,
+        "targetPlayingMembers": 453.72131868131873
+      },
+      {
+        "date": "2026-04-07",
+        "playingMembers": 500,
+        "nonPlayingMembers": 451,
+        "targetPlayingMembers": 453.93758241758246
+      },
+      {
+        "date": "2026-04-08",
+        "playingMembers": 500,
+        "nonPlayingMembers": 451,
+        "targetPlayingMembers": 454.1538461538462
+      },
+      {
+        "date": "2026-04-09",
+        "playingMembers": 500,
+        "nonPlayingMembers": 451,
+        "targetPlayingMembers": 454.3701098901099
+      },
+      {
+        "date": "2026-04-10",
+        "playingMembers": 499,
+        "nonPlayingMembers": 452,
+        "targetPlayingMembers": 454.58637362637364
+      },
+      {
+        "date": "2026-04-11",
+        "playingMembers": 500,
+        "nonPlayingMembers": 451,
+        "targetPlayingMembers": 454.8026373626374
+      },
+      {
+        "date": "2026-04-12",
+        "playingMembers": 499,
+        "nonPlayingMembers": 452,
+        "targetPlayingMembers": 455.01890109890115
+      },
+      {
+        "date": "2026-04-13",
+        "playingMembers": 497,
+        "nonPlayingMembers": 451,
+        "targetPlayingMembers": 455.2351648351649
+      },
+      {
+        "date": "2026-04-14",
+        "playingMembers": 493,
+        "nonPlayingMembers": 456,
+        "targetPlayingMembers": 455.4514285714286
+      },
+      {
+        "date": "2026-04-15",
+        "playingMembers": 492,
+        "nonPlayingMembers": 459,
+        "targetPlayingMembers": 455.66769230769233
+      },
+      {
+        "date": "2026-04-16",
+        "playingMembers": 487,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 455.88395604395606
+      },
+      {
+        "date": "2026-04-17",
+        "playingMembers": 468,
+        "nonPlayingMembers": 459,
+        "targetPlayingMembers": 456.10021978021985
+      },
+      {
+        "date": "2026-04-18",
+        "playingMembers": 464,
+        "nonPlayingMembers": 458,
+        "targetPlayingMembers": 456.3164835164836
+      },
+      {
+        "date": "2026-04-19",
+        "playingMembers": 464,
+        "nonPlayingMembers": 458,
+        "targetPlayingMembers": 456.5327472527473
+      },
+      {
+        "date": "2026-04-20",
+        "playingMembers": 464,
+        "nonPlayingMembers": 459,
+        "targetPlayingMembers": 456.749010989011
+      },
+      {
+        "date": "2026-04-21",
+        "playingMembers": 467,
+        "nonPlayingMembers": 460,
+        "targetPlayingMembers": 456.96527472527475
+      },
+      {
+        "date": "2026-04-22",
+        "playingMembers": 467,
+        "nonPlayingMembers": 458,
+        "targetPlayingMembers": 457.1815384615385
+      },
+      {
+        "date": "2026-04-23",
+        "playingMembers": 467,
+        "nonPlayingMembers": 458,
+        "targetPlayingMembers": 457.3978021978022
+      },
+      {
+        "date": "2026-04-24",
+        "playingMembers": 467,
+        "nonPlayingMembers": 460,
+        "targetPlayingMembers": 457.614065934066
+      },
+      {
+        "date": "2026-04-25",
+        "playingMembers": 467,
+        "nonPlayingMembers": 462,
+        "targetPlayingMembers": 457.8303296703297
+      },
+      {
+        "date": "2026-04-26",
+        "playingMembers": 467,
+        "nonPlayingMembers": 462,
+        "targetPlayingMembers": 458.04659340659344
+      },
+      {
+        "date": "2026-04-27",
+        "playingMembers": 467,
+        "nonPlayingMembers": 462,
+        "targetPlayingMembers": 458.2628571428572
+      },
+      {
+        "date": "2026-04-28",
+        "playingMembers": 468,
+        "nonPlayingMembers": 465,
+        "targetPlayingMembers": 458.4791208791209
+      },
+      {
+        "date": "2026-04-29",
+        "playingMembers": 470,
+        "nonPlayingMembers": 462,
+        "targetPlayingMembers": 458.6953846153846
+      },
+      {
+        "date": "2026-04-30",
+        "playingMembers": 470,
+        "nonPlayingMembers": 462,
+        "targetPlayingMembers": 458.9116483516484
+      },
+      {
+        "date": "2026-05-01",
+        "playingMembers": 471,
+        "nonPlayingMembers": 461,
+        "targetPlayingMembers": 459.12791208791214
+      },
+      {
+        "date": "2026-05-02",
+        "playingMembers": 470,
+        "nonPlayingMembers": 465,
+        "targetPlayingMembers": 459.34417582417586
+      },
+      {
+        "date": "2026-05-03",
+        "playingMembers": 470,
+        "nonPlayingMembers": 464,
+        "targetPlayingMembers": 459.5604395604396
+      },
+      {
+        "date": "2026-05-04",
+        "playingMembers": 470,
+        "nonPlayingMembers": 464,
+        "targetPlayingMembers": 459.7767032967033
+      },
+      {
+        "date": "2026-05-05",
+        "playingMembers": 470,
+        "nonPlayingMembers": 464,
+        "targetPlayingMembers": 459.99296703296704
+      },
+      {
+        "date": "2026-05-06",
+        "playingMembers": 471,
+        "nonPlayingMembers": 464,
+        "targetPlayingMembers": 460.2092307692308
+      },
+      {
+        "date": "2026-05-07",
+        "playingMembers": 474,
+        "nonPlayingMembers": 464,
+        "targetPlayingMembers": 460.42549450549456
+      },
+      {
+        "date": "2026-05-08",
+        "playingMembers": 474,
+        "nonPlayingMembers": 465,
+        "targetPlayingMembers": 460.6417582417583
+      },
+      {
+        "date": "2026-05-09",
+        "playingMembers": 474,
+        "nonPlayingMembers": 467,
+        "targetPlayingMembers": 460.858021978022
+      },
+      {
+        "date": "2026-05-10",
+        "playingMembers": 474,
+        "nonPlayingMembers": 467,
+        "targetPlayingMembers": 461.07428571428574
+      },
+      {
+        "date": "2026-05-11",
+        "playingMembers": 474,
+        "nonPlayingMembers": 467,
+        "targetPlayingMembers": 461.29054945054946
+      },
+      {
+        "date": "2026-05-12",
+        "playingMembers": 475,
+        "nonPlayingMembers": 468,
+        "targetPlayingMembers": 461.50681318681325
+      },
+      {
+        "date": "2026-05-13",
+        "playingMembers": 476,
+        "nonPlayingMembers": 469,
+        "targetPlayingMembers": 461.723076923077
+      },
+      {
+        "date": "2026-05-14",
+        "playingMembers": 476,
+        "nonPlayingMembers": 470,
+        "targetPlayingMembers": 461.9393406593407
+      },
+      {
+        "date": "2026-05-15",
+        "playingMembers": 479,
+        "nonPlayingMembers": 471,
+        "targetPlayingMembers": 462.1556043956044
+      },
+      {
+        "date": "2026-05-16",
+        "playingMembers": 479,
+        "nonPlayingMembers": 471,
+        "targetPlayingMembers": 462.37186813186815
+      },
+      {
+        "date": "2026-05-17",
+        "playingMembers": 479,
+        "nonPlayingMembers": 471,
+        "targetPlayingMembers": 462.5881318681319
+      },
+      {
+        "date": "2026-05-18",
+        "playingMembers": 479,
+        "nonPlayingMembers": 471,
+        "targetPlayingMembers": 462.8043956043956
+      },
+      {
+        "date": "2026-05-19",
+        "playingMembers": 479,
+        "nonPlayingMembers": 466,
+        "targetPlayingMembers": 463.0206593406594
+      },
+      {
+        "date": "2026-05-20",
+        "playingMembers": 479,
+        "nonPlayingMembers": 467,
+        "targetPlayingMembers": 463.2369230769231
+      },
+      {
+        "date": "2026-05-21",
+        "playingMembers": 479,
+        "nonPlayingMembers": 467,
+        "targetPlayingMembers": 463.45318681318685
+      },
+      {
+        "date": "2026-05-22",
+        "playingMembers": 479,
+        "nonPlayingMembers": 467,
+        "targetPlayingMembers": 463.6694505494506
+      },
+      {
+        "date": "2026-05-23",
+        "playingMembers": 480,
+        "nonPlayingMembers": 468,
+        "targetPlayingMembers": 463.8857142857143
+      },
+      {
+        "date": "2026-05-24",
+        "playingMembers": 480,
+        "nonPlayingMembers": 468,
+        "targetPlayingMembers": 464.101978021978
+      },
+      {
+        "date": "2026-05-25",
+        "playingMembers": 480,
+        "nonPlayingMembers": 468,
+        "targetPlayingMembers": 464.3182417582418
+      },
+      {
+        "date": "2026-05-26",
+        "playingMembers": 480,
+        "nonPlayingMembers": 468,
+        "targetPlayingMembers": 464.53450549450554
+      },
+      {
+        "date": "2026-05-27",
+        "playingMembers": 480,
+        "nonPlayingMembers": 468,
+        "targetPlayingMembers": 464.75076923076927
+      },
+      {
+        "date": "2026-05-28",
+        "playingMembers": 480,
+        "nonPlayingMembers": 469,
+        "targetPlayingMembers": 464.967032967033
+      },
+      {
+        "date": "2026-05-29",
+        "playingMembers": 480,
+        "nonPlayingMembers": 469,
+        "targetPlayingMembers": 465.1832967032967
+      },
+      {
+        "date": "2026-05-30",
+        "playingMembers": 483,
+        "nonPlayingMembers": 470,
+        "targetPlayingMembers": 465.39956043956045
+      },
+      {
+        "date": "2026-05-31",
+        "playingMembers": 483,
+        "nonPlayingMembers": 470,
+        "targetPlayingMembers": 465.61582417582423
+      },
+      {
+        "date": "2026-06-01",
+        "playingMembers": 482,
+        "nonPlayingMembers": 456,
+        "targetPlayingMembers": 465.83208791208796
+      },
+      {
+        "date": "2026-06-02",
+        "playingMembers": 482,
+        "nonPlayingMembers": 454,
+        "targetPlayingMembers": 466.0483516483517
+      },
+      {
+        "date": "2026-06-03",
+        "playingMembers": 482,
+        "nonPlayingMembers": 454,
+        "targetPlayingMembers": 466.2646153846154
+      },
+      {
+        "date": "2026-06-04",
+        "playingMembers": 482,
+        "nonPlayingMembers": 454,
+        "targetPlayingMembers": 466.48087912087914
+      },
+      {
+        "date": "2026-06-05",
+        "playingMembers": 482,
+        "nonPlayingMembers": 458,
+        "targetPlayingMembers": 466.69714285714286
+      },
+      {
+        "date": "2026-06-06",
+        "playingMembers": 481,
+        "nonPlayingMembers": 460,
+        "targetPlayingMembers": 466.91340659340665
+      },
+      {
+        "date": "2026-06-07",
+        "playingMembers": 481,
+        "nonPlayingMembers": 460,
+        "targetPlayingMembers": 467.1296703296704
+      },
+      {
+        "date": "2026-06-08",
+        "playingMembers": 480,
+        "nonPlayingMembers": 460,
+        "targetPlayingMembers": 467.3459340659341
+      },
+      {
+        "date": "2026-06-09",
+        "playingMembers": 480,
+        "nonPlayingMembers": 459,
+        "targetPlayingMembers": 467.56219780219783
+      },
+      {
+        "date": "2026-06-10",
+        "playingMembers": 480,
+        "nonPlayingMembers": 459,
+        "targetPlayingMembers": 467.77846153846156
+      },
+      {
+        "date": "2026-06-11",
+        "playingMembers": 480,
+        "nonPlayingMembers": 460,
+        "targetPlayingMembers": 467.9947252747253
+      },
+      {
+        "date": "2026-06-12",
+        "playingMembers": 480,
+        "nonPlayingMembers": 462,
+        "targetPlayingMembers": 468.210989010989
+      },
+      {
+        "date": "2026-06-13",
+        "playingMembers": 482,
+        "nonPlayingMembers": 463,
+        "targetPlayingMembers": 468.4272527472528
+      },
+      {
+        "date": "2026-06-14",
+        "playingMembers": 482,
+        "nonPlayingMembers": 463,
+        "targetPlayingMembers": 468.6435164835165
+      },
+      {
+        "date": "2026-06-15",
+        "playingMembers": 482,
+        "nonPlayingMembers": 463,
+        "targetPlayingMembers": 468.85978021978025
+      },
+      {
+        "date": "2026-06-16",
+        "playingMembers": 481,
+        "nonPlayingMembers": 464,
+        "targetPlayingMembers": 469.076043956044
+      },
+      {
+        "date": "2026-06-17",
+        "playingMembers": 480,
+        "nonPlayingMembers": 465,
+        "targetPlayingMembers": 469.2923076923077
+      },
+      {
+        "date": "2026-06-18",
+        "playingMembers": 480,
+        "nonPlayingMembers": 465,
+        "targetPlayingMembers": 469.50857142857143
+      },
+      {
+        "date": "2026-06-19",
+        "playingMembers": 480,
+        "nonPlayingMembers": 465,
+        "targetPlayingMembers": 469.7248351648352
+      },
+      {
+        "date": "2026-06-20",
+        "playingMembers": 480,
+        "nonPlayingMembers": 465,
+        "targetPlayingMembers": 469.94109890109894
+      },
+      {
+        "date": "2026-06-21",
+        "playingMembers": 480,
+        "nonPlayingMembers": 465,
+        "targetPlayingMembers": 470.15736263736267
+      },
+      {
+        "date": "2026-06-22",
+        "playingMembers": 480,
+        "nonPlayingMembers": 465,
+        "targetPlayingMembers": 470.3736263736264
+      },
+      {
+        "date": "2026-06-23",
+        "playingMembers": 481,
+        "nonPlayingMembers": 466,
+        "targetPlayingMembers": 470.5898901098901
+      },
+      {
+        "date": "2026-06-24",
+        "playingMembers": 480,
+        "nonPlayingMembers": 466,
+        "targetPlayingMembers": 470.80615384615385
+      },
+      {
+        "date": "2026-06-25",
+        "playingMembers": 480,
+        "nonPlayingMembers": 466,
+        "targetPlayingMembers": 471.02241758241763
+      },
+      {
+        "date": "2026-06-26",
+        "playingMembers": 481,
+        "nonPlayingMembers": 466,
+        "targetPlayingMembers": 471.23868131868136
+      },
+      {
+        "date": "2026-06-27",
+        "playingMembers": 481,
+        "nonPlayingMembers": 466,
+        "targetPlayingMembers": 471.4549450549451
+      },
+      {
+        "date": "2026-06-28",
+        "playingMembers": 481,
+        "nonPlayingMembers": 466,
+        "targetPlayingMembers": 471.6712087912088
+      },
+      {
+        "date": "2026-06-29",
+        "playingMembers": 481,
+        "nonPlayingMembers": 466,
+        "targetPlayingMembers": 471.88747252747254
+      },
+      {
+        "date": "2026-06-30",
+        "playingMembers": 481,
+        "nonPlayingMembers": 466,
+        "targetPlayingMembers": 472.10373626373627
+      },
+      {
+        "date": "2026-07-01",
+        "playingMembers": 481,
+        "nonPlayingMembers": 467,
+        "targetPlayingMembers": 472.32000000000005
+      },
+      {
+        "date": "2026-07-02",
+        "playingMembers": 480,
+        "nonPlayingMembers": 468,
+        "targetPlayingMembers": 472.5362637362638
+      },
+      {
+        "date": "2026-07-03",
+        "playingMembers": 482,
+        "nonPlayingMembers": 470,
+        "targetPlayingMembers": 472.7525274725275
+      },
+      {
+        "date": "2026-07-04",
+        "playingMembers": 482,
+        "nonPlayingMembers": 470,
+        "targetPlayingMembers": 472.96879120879123
+      },
+      {
+        "date": "2026-07-05",
+        "playingMembers": 482,
+        "nonPlayingMembers": 470,
+        "targetPlayingMembers": 473.18505494505496
+      },
+      {
+        "date": "2026-07-06",
+        "playingMembers": 482,
+        "nonPlayingMembers": 472,
+        "targetPlayingMembers": 473.4013186813187
+      },
+      {
+        "date": "2026-07-07",
+        "playingMembers": 482,
+        "nonPlayingMembers": 472,
+        "targetPlayingMembers": 473.6175824175824
+      },
+      {
+        "date": "2026-07-08",
+        "playingMembers": 482,
+        "nonPlayingMembers": 472,
+        "targetPlayingMembers": 473.8338461538462
+      },
+      {
+        "date": "2026-07-09",
+        "playingMembers": 482,
+        "nonPlayingMembers": 472,
+        "targetPlayingMembers": 474.0501098901099
+      },
+      {
+        "date": "2026-07-10",
+        "playingMembers": 482,
+        "nonPlayingMembers": 450,
+        "targetPlayingMembers": 474.26637362637365
+      },
+      {
+        "date": "2026-07-11",
+        "playingMembers": 483,
+        "nonPlayingMembers": 449,
+        "targetPlayingMembers": 474.4826373626374
+      },
+      {
+        "date": "2026-07-12",
+        "playingMembers": 483,
+        "nonPlayingMembers": 449,
+        "targetPlayingMembers": 474.6989010989011
+      },
+      {
+        "date": "2026-07-13",
+        "playingMembers": 483,
+        "nonPlayingMembers": 449,
+        "targetPlayingMembers": 474.91516483516483
+      },
+      {
+        "date": "2026-07-14",
+        "playingMembers": 483,
+        "nonPlayingMembers": 449,
+        "targetPlayingMembers": 475.1314285714286
+      },
+      {
+        "date": "2026-07-15",
+        "playingMembers": 483,
+        "nonPlayingMembers": 449,
+        "targetPlayingMembers": 475.34769230769234
+      },
+      {
+        "date": "2026-07-16",
+        "playingMembers": 483,
+        "nonPlayingMembers": 449,
+        "targetPlayingMembers": 475.56395604395607
+      },
+      {
+        "date": "2026-07-17",
+        "playingMembers": 483,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 475.7802197802198
+      },
+      {
+        "date": "2026-07-18",
+        "playingMembers": 483,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 475.9964835164835
+      },
+      {
+        "date": "2026-07-19",
+        "playingMembers": 483,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 476.21274725274725
+      },
+      {
+        "date": "2026-07-20",
+        "playingMembers": 483,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 476.429010989011
+      },
+      {
+        "date": "2026-07-21",
+        "playingMembers": 483,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 476.64527472527476
+      },
+      {
+        "date": "2026-07-22",
+        "playingMembers": 483,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 476.8615384615385
+      },
+      {
+        "date": "2026-07-23",
+        "playingMembers": 483,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 477.0778021978022
+      },
+      {
+        "date": "2026-07-24",
+        "playingMembers": 483,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 477.29406593406594
+      },
+      {
+        "date": "2026-07-25",
+        "playingMembers": 483,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 477.51032967032967
+      },
+      {
+        "date": "2026-07-26",
+        "playingMembers": 483,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 477.7265934065934
+      },
+      {
+        "date": "2026-07-27",
+        "playingMembers": 483,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 477.9428571428572
+      },
+      {
+        "date": "2026-07-28",
+        "playingMembers": 483,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 478.1591208791209
+      },
+      {
+        "date": "2026-07-29",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 478.37538461538463
+      },
+      {
+        "date": "2026-07-30",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 478.59164835164836
+      },
+      {
+        "date": "2026-07-31",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 478.8079120879121
+      },
+      {
+        "date": "2026-08-01",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 479.0241758241758
+      },
+      {
+        "date": "2026-08-02",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 479.2404395604396
+      },
+      {
+        "date": "2026-08-03",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 479.4567032967033
+      },
+      {
+        "date": "2026-08-04",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 479.67296703296705
+      },
+      {
+        "date": "2026-08-05",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 479.8892307692308
+      },
+      {
+        "date": "2026-08-06",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 480.1054945054945
+      },
+      {
+        "date": "2026-08-07",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 480.32175824175823
+      },
+      {
+        "date": "2026-08-08",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 480.538021978022
+      },
+      {
+        "date": "2026-08-09",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 480.75428571428574
+      },
+      {
+        "date": "2026-08-10",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 480.97054945054947
+      },
+      {
+        "date": "2026-08-11",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 481.1868131868132
+      },
+      {
+        "date": "2026-08-12",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 481.4030769230769
+      },
+      {
+        "date": "2026-08-13",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 481.61934065934065
+      },
+      {
+        "date": "2026-08-14",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 481.83560439560443
+      },
+      {
+        "date": "2026-08-15",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 482.05186813186816
+      },
+      {
+        "date": "2026-08-16",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 482.2681318681319
+      },
+      {
+        "date": "2026-08-17",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 482.4843956043956
+      },
+      {
+        "date": "2026-08-18",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 482.70065934065934
+      },
+      {
+        "date": "2026-08-19",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 482.91692307692307
+      },
+      {
+        "date": "2026-08-20",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 483.13318681318685
+      },
+      {
+        "date": "2026-08-21",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 483.3494505494506
+      },
+      {
+        "date": "2026-08-22",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 483.5657142857143
+      },
+      {
+        "date": "2026-08-23",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 483.78197802197803
+      },
+      {
+        "date": "2026-08-24",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 483.99824175824176
+      },
+      {
+        "date": "2026-08-25",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 484.2145054945055
+      },
+      {
+        "date": "2026-08-26",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 484.4307692307692
+      },
+      {
+        "date": "2026-08-27",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 484.647032967033
+      },
+      {
+        "date": "2026-08-28",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 484.8632967032967
+      },
+      {
+        "date": "2026-08-29",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 485.07956043956045
+      },
+      {
+        "date": "2026-08-30",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 485.2958241758242
+      },
+      {
+        "date": "2026-08-31",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 485.5120879120879
+      },
+      {
+        "date": "2026-09-01",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 485.72835164835163
+      },
+      {
+        "date": "2026-09-02",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 485.9446153846154
+      },
+      {
+        "date": "2026-09-03",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 486.16087912087914
+      },
+      {
+        "date": "2026-09-04",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 486.37714285714287
+      },
+      {
+        "date": "2026-09-05",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 486.5934065934066
+      },
+      {
+        "date": "2026-09-06",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 486.8096703296703
+      },
+      {
+        "date": "2026-09-07",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 487.02593406593405
+      },
+      {
+        "date": "2026-09-08",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 487.2421978021978
+      },
+      {
+        "date": "2026-09-09",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 487.45846153846156
+      },
+      {
+        "date": "2026-09-10",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 487.6747252747253
+      },
+      {
+        "date": "2026-09-11",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 487.890989010989
+      },
+      {
+        "date": "2026-09-12",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 488.10725274725274
+      },
+      {
+        "date": "2026-09-13",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 488.32351648351647
+      },
+      {
+        "date": "2026-09-14",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 488.5397802197802
+      },
+      {
+        "date": "2026-09-15",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 488.756043956044
+      },
+      {
+        "date": "2026-09-16",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 488.9723076923077
+      },
+      {
+        "date": "2026-09-17",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 489.18857142857144
+      },
+      {
+        "date": "2026-09-18",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 489.40483516483516
+      },
+      {
+        "date": "2026-09-19",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 489.6210989010989
+      },
+      {
+        "date": "2026-09-20",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 489.8373626373626
+      },
+      {
+        "date": "2026-09-21",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 490.05362637362634
+      },
+      {
+        "date": "2026-09-22",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 490.2698901098901
+      },
+      {
+        "date": "2026-09-23",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 490.48615384615385
+      },
+      {
+        "date": "2026-09-24",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 490.7024175824176
+      },
+      {
+        "date": "2026-09-25",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 490.9186813186813
+      },
+      {
+        "date": "2026-09-26",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 491.13494505494504
+      },
+      {
+        "date": "2026-09-27",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 491.3512087912088
+      },
+      {
+        "date": "2026-09-28",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 491.56747252747255
+      },
+      {
+        "date": "2026-09-29",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 491.7837362637363
+      },
+      {
+        "date": "2026-09-30",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 492
+      },
+      {
+        "date": "2026-10-01",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-02",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-03",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-04",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-05",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-06",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-07",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-08",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-09",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-10",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-11",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-12",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-13",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-14",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-15",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-16",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-17",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-18",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-19",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-20",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-21",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-22",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-23",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-24",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-25",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-26",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-27",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-28",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-29",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-30",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-10-31",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-01",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-02",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-03",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-04",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-05",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-06",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-07",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-08",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-09",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-10",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-11",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-12",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-13",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-14",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-15",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-16",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-17",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-18",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-19",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-20",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-21",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-22",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-23",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-24",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-25",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-26",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-27",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-28",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-29",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-11-30",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-01",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-02",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-03",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-04",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-05",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-06",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-07",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-08",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-09",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-10",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-11",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-12",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-13",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-14",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-15",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-16",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-17",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-18",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-19",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-20",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-21",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-22",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-23",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-24",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-25",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-26",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-27",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-28",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-29",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      },
+      {
+        "date": "2026-12-30",
+        "playingMembers": 484,
+        "nonPlayingMembers": 457,
+        "targetPlayingMembers": 0
+      }
+    ],
+    "movement": {
+      "fromDate": "2025-10-01",
+      "toDate": "2026-08-02",
+      "playingNewJoiners": 42,
+      "playingMovedIn": 49,
+      "playingMovedOut": 40,
+      "playingLeavers": 55,
+      "playingDeaths": 4,
+      "playingNetMovement": -8,
+      "playingGrowthPercentage": -1.63,
+      "nonPlayingNewJoiners": 54,
+      "nonPlayingMovedIn": 113,
+      "nonPlayingMovedOut": 30,
+      "nonPlayingLeavers": 68,
+      "nonPlayingDeaths": 2,
+      "nonPlayingNetMovement": 67,
+      "nonPlayingGrowthPercentage": 17.18
+    }
+  },
+  "financialLines": [
+    {
+      "key": "turnover",
+      "label": "Turnover",
+      "type": "Income",
+      "displayOrder": 0,
+      "months": [
+        {
+          "year": 2025,
+          "month": 10,
+          "budget": 36275,
+          "actual": 47142
+        },
+        {
+          "year": 2025,
+          "month": 11,
+          "budget": 32043,
+          "actual": 37632
+        },
+        {
+          "year": 2025,
+          "month": 12,
+          "budget": 28106,
+          "actual": 35884
+        },
+        {
+          "year": 2026,
+          "month": 1,
+          "budget": 23287,
+          "actual": 28117
+        },
+        {
+          "year": 2026,
+          "month": 2,
+          "budget": 29004,
+          "actual": 29554
+        },
+        {
+          "year": 2026,
+          "month": 3,
+          "budget": 46197,
+          "actual": 48767
+        },
+        {
+          "year": 2026,
+          "month": 4,
+          "budget": 55584,
+          "actual": 61970
+        },
+        {
+          "year": 2026,
+          "month": 5,
+          "budget": 76459,
+          "actual": 63401
+        },
+        {
+          "year": 2026,
+          "month": 6,
+          "budget": 77663,
+          "actual": 86444.96
+        },
+        {
+          "year": 2026,
+          "month": 7,
+          "budget": 87888,
+          "actual": null
+        },
+        {
+          "year": 2026,
+          "month": 8,
+          "budget": 75287,
+          "actual": null
+        },
+        {
+          "year": 2026,
+          "month": 9,
+          "budget": 62648,
+          "actual": null
+        }
+      ]
+    },
+    {
+      "key": "other-income-subs",
+      "label": "Other Income / Subs",
+      "type": "Income",
+      "displayOrder": 1,
+      "months": [
+        {
+          "year": 2025,
+          "month": 10,
+          "budget": 59115,
+          "actual": 60435
+        },
+        {
+          "year": 2025,
+          "month": 11,
+          "budget": 59301,
+          "actual": 61284
+        },
+        {
+          "year": 2025,
+          "month": 12,
+          "budget": 60352,
+          "actual": 61720
+        },
+        {
+          "year": 2026,
+          "month": 1,
+          "budget": 59812,
+          "actual": 62000
+        },
+        {
+          "year": 2026,
+          "month": 2,
+          "budget": 59812,
+          "actual": 61616
+        },
+        {
+          "year": 2026,
+          "month": 3,
+          "budget": 60022,
+          "actual": 61297
+        },
+        {
+          "year": 2026,
+          "month": 4,
+          "budget": 68653,
+          "actual": 68124
+        },
+        {
+          "year": 2026,
+          "month": 5,
+          "budget": 67412,
+          "actual": 68589
+        },
+        {
+          "year": 2026,
+          "month": 6,
+          "budget": 64197,
+          "actual": 65301.86
+        },
+        {
+          "year": 2026,
+          "month": 7,
+          "budget": 65090,
+          "actual": null
+        },
+        {
+          "year": 2026,
+          "month": 8,
+          "budget": 66299,
+          "actual": null
+        },
+        {
+          "year": 2026,
+          "month": 9,
+          "budget": 67767,
+          "actual": null
+        }
+      ]
+    },
+    {
+      "key": "cost-of-sales",
+      "label": "Cost of Sales",
+      "type": "Expense",
+      "displayOrder": 2,
+      "months": [
+        {
+          "year": 2025,
+          "month": 10,
+          "budget": 68892,
+          "actual": 82189
+        },
+        {
+          "year": 2025,
+          "month": 11,
+          "budget": 67080,
+          "actual": 75680
+        },
+        {
+          "year": 2025,
+          "month": 12,
+          "budget": 61426,
+          "actual": 72259
+        },
+        {
+          "year": 2026,
+          "month": 1,
+          "budget": 59124,
+          "actual": 59717
+        },
+        {
+          "year": 2026,
+          "month": 2,
+          "budget": 61489,
+          "actual": 60592
+        },
+        {
+          "year": 2026,
+          "month": 3,
+          "budget": 65795,
+          "actual": 74356
+        },
+        {
+          "year": 2026,
+          "month": 4,
+          "budget": 73929,
+          "actual": 84746
+        },
+        {
+          "year": 2026,
+          "month": 5,
+          "budget": 79738,
+          "actual": 89724
+        },
+        {
+          "year": 2026,
+          "month": 6,
+          "budget": 79494,
+          "actual": 87896.15
+        },
+        {
+          "year": 2026,
+          "month": 7,
+          "budget": 81414,
+          "actual": null
+        },
+        {
+          "year": 2026,
+          "month": 8,
+          "budget": 80794,
+          "actual": null
+        },
+        {
+          "year": 2026,
+          "month": 9,
+          "budget": 74944,
+          "actual": null
+        }
+      ]
+    },
+    {
+      "key": "overheads",
+      "label": "Overheads",
+      "type": "Expense",
+      "displayOrder": 3,
+      "months": [
+        {
+          "year": 2025,
+          "month": 10,
+          "budget": 31017,
+          "actual": 34614
+        },
+        {
+          "year": 2025,
+          "month": 11,
+          "budget": 31062,
+          "actual": 31861
+        },
+        {
+          "year": 2025,
+          "month": 12,
+          "budget": 30284,
+          "actual": 32338
+        },
+        {
+          "year": 2026,
+          "month": 1,
+          "budget": 30324,
+          "actual": 36187
+        },
+        {
+          "year": 2026,
+          "month": 2,
+          "budget": 29222,
+          "actual": 44193
+        },
+        {
+          "year": 2026,
+          "month": 3,
+          "budget": 30816,
+          "actual": 32936
+        },
+        {
+          "year": 2026,
+          "month": 4,
+          "budget": 31096,
+          "actual": 30866
+        },
+        {
+          "year": 2026,
+          "month": 5,
+          "budget": 31363,
+          "actual": 30574
+        },
+        {
+          "year": 2026,
+          "month": 6,
+          "budget": 32187,
+          "actual": 32999.03
+        },
+        {
+          "year": 2026,
+          "month": 7,
+          "budget": 31976,
+          "actual": null
+        },
+        {
+          "year": 2026,
+          "month": 8,
+          "budget": 34252,
+          "actual": null
+        },
+        {
+          "year": 2026,
+          "month": 9,
+          "budget": 32075,
+          "actual": null
+        }
+      ]
+    },
+    {
+      "key": "depreciation",
+      "label": "Depreciation",
+      "type": "Expense",
+      "displayOrder": 4,
+      "months": [
+        {
+          "year": 2025,
+          "month": 10,
+          "budget": 7263,
+          "actual": 6633
+        },
+        {
+          "year": 2025,
+          "month": 11,
+          "budget": 7380,
+          "actual": 6849
+        },
+        {
+          "year": 2025,
+          "month": 12,
+          "budget": 7380,
+          "actual": 6742
+        },
+        {
+          "year": 2026,
+          "month": 1,
+          "budget": 8255,
+          "actual": 6742
+        },
+        {
+          "year": 2026,
+          "month": 2,
+          "budget": 8255,
+          "actual": 6750
+        },
+        {
+          "year": 2026,
+          "month": 3,
+          "budget": 8371,
+          "actual": 6750
+        },
+        {
+          "year": 2026,
+          "month": 4,
+          "budget": 9938,
+          "actual": 6975
+        },
+        {
+          "year": 2026,
+          "month": 5,
+          "budget": 10188,
+          "actual": 7613
+        },
+        {
+          "year": 2026,
+          "month": 6,
+          "budget": 10446,
+          "actual": 7820
+        },
+        {
+          "year": 2026,
+          "month": 7,
+          "budget": 10446,
+          "actual": null
+        },
+        {
+          "year": 2026,
+          "month": 8,
+          "budget": 10446,
+          "actual": null
+        },
+        {
+          "year": 2026,
+          "month": 9,
+          "budget": 10696,
+          "actual": null
+        }
+      ]
+    }
+  ],
+  "supportingFinancials": {
+    "visitorGreenFees": {
+      "actual": 47171.88,
+      "budget": 46656.11
+    },
+    "foodAndBeverageContribution": {
+      "actual": -57376.09,
+      "budget": -22952.74
+    },
+    "visitorBarAndCatering": {
+      "actual": 110408.67,
+      "budget": 87671.36
+    },
+    "memberBarAndCatering": {
+      "actual": 229306.28,
+      "budget": 221004.22
+    },
+    "membershipSubscriptionFees": {
+      "actual": 554900.3,
+      "budget": 540344.44
+    },
+    "outgoings": {
+      "administrativeExpenditure": 332521.09,
+      "courseExpenditure": 302759.25,
+      "competitionExpenditure": 16230.28,
+      "buggyExpenditure": 3360
+    }
+  },
+  "presentation": {
+    "summary": "This report details the financial performance for the quarter and compares actual profit with projections across revenue sources including membership and catering. It also considers membership retention and tee-time utilisation.",
+    "financialCommentary": [
+      "The Club\u2019s financial position at the end of May was behind budget. The year-to-date accounts showed a loss of approximately \u00A370,000, compared with the budgeted loss of approximately \u00A330,000.",
+      "A significant proportion of this \u00A340,000 difference relates to one-off costs and the timing of expenses during a period of operational change.",
+      "These costs include the final professional fees associated with the food and beverage review, redundancy and notice-period costs following the departure of the former Club Manager, temporary agency staffing costs, historic competition expenses accounted for during May, and additional water charges following earlier billing and meter-reading problems.",
+      "The staffing changes are intended to reduce the Club\u2019s ongoing operating costs. Further changes have subsequently been made to the kitchen staffing structure, but the resulting savings are not yet fully reflected in the figures to the end of May. The accounts therefore include much of the immediate cost of making these changes, while the longer-term savings will become visible over the following months.",
+      "Income was also lower than planned in some areas. Green-fee income was affected by fewer society bookings and by events held during the same period last year not being repeated this year. Beverage sales also continued to be below budget. Both areas remain under close review.",
+      "A number of measures designed to improve food and beverage performance have only recently been introduced. Meal prices were corrected in March, kitchen staffing arrangements have been revised, and a new Food and Beverage Manager is now taking responsibility for the operation. It will take time for the full financial effect of these changes to become visible in the monthly accounts.",
+      "Despite the year-to-date shortfall, the latest forecast continues to show a profitable result for the full financial year. The current forecast is for a profit of approximately \u00A324,500, compared with the original budget of approximately \u00A347,000.",
+      "The Board is monitoring performance closely, particularly food and beverage income, staffing costs and visitor revenue. Further action will be taken where required to protect the Club\u2019s financial position and improve its longer-term performance."
+    ],
+    "membershipNarrative": "At the start of each subscription year, we assume that playing membership will reduce by approximately 8%. This is a pattern we have seen consistently over a number of years and is built into all of our budgets. Our aim is to recruit enough new playing members during the year to recover that reduction and return playing membership to the level recorded at the start of the subscription year.",
+    "outgoings": {
+      "title": "Outgoings vs subscription income",
+      "description": "Additional income from visitor fees and societies supplements membership subscriptions to cover a 12% deficit.",
+      "items": [
+        {
+          "label": "Deficit",
+          "value": 12
+        },
+        {
+          "label": "Admin Costs",
+          "value": 42
+        },
+        {
+          "label": "Course Expenditure",
+          "value": 41
+        },
+        {
+          "label": "Competition Expenditure",
+          "value": 4
+        },
+        {
+          "label": "Buggy Hire Costs",
+          "value": 1
+        }
+      ]
+    },
+    "membership": {
+      "description": "Playing members are individuals over 18 who hold paid membership, granting voting rights within the club.",
+      "playingMemberTypes": [
+        {
+          "label": "7 Day",
+          "value": 341
+        },
+        {
+          "label": "6 Day",
+          "value": 44
+        },
+        {
+          "label": "5 Day",
+          "value": 83
+        },
+        {
+          "label": "Intermediate",
+          "value": 17
+        }
+      ],
+      "allMemberTypes": [
+        {
+          "label": "Playing Members",
+          "value": 485
+        },
+        {
+          "label": "Honorary",
+          "value": 76
+        },
+        {
+          "label": "Junior",
+          "value": 47
+        },
+        {
+          "label": "Pathway",
+          "value": 2
+        },
+        {
+          "label": "House",
+          "value": 46
+        },
+        {
+          "label": "Social",
+          "value": 83
+        },
+        {
+          "label": "Staff",
+          "value": 22
+        },
+        {
+          "label": "Other",
+          "value": 3
+        }
+      ]
+    },
+    "teeTimeUtilisation": {
+      "period": "01/10/23 - 31/12/23",
+      "days": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ],
+      "rows": [
+        {
+          "time": "7am-8am",
+          "values": [
+            93,
+            53,
+            80,
+            67,
+            83,
+            88,
+            92
+          ]
+        },
+        {
+          "time": "8am-9am",
+          "values": [
+            63,
+            40,
+            80,
+            25,
+            79,
+            96,
+            100
+          ]
+        },
+        {
+          "time": "9am-10am",
+          "values": [
+            73,
+            27,
+            63,
+            42,
+            83,
+            92,
+            83
+          ]
+        },
+        {
+          "time": "10am-11am",
+          "values": [
+            37,
+            17,
+            67,
+            42,
+            50,
+            88,
+            100
+          ]
+        },
+        {
+          "time": "11am-12pm",
+          "values": [
+            30,
+            23,
+            43,
+            38,
+            38,
+            96,
+            88
+          ]
+        },
+        {
+          "time": "12pm-1pm",
+          "values": [
+            30,
+            20,
+            50,
+            25,
+            42,
+            75,
+            46
+          ]
+        },
+        {
+          "time": "1pm-2pm",
+          "values": [
+            20,
+            30,
+            23,
+            25,
+            25,
+            25,
+            38
+          ]
+        },
+        {
+          "time": "2pm-3pm",
+          "values": [
+            13,
+            27,
+            27,
+            29,
+            50,
+            17,
+            29
+          ]
+        },
+        {
+          "time": "3pm-4pm",
+          "values": [
+            3,
+            3,
+            3,
+            0,
+            0,
+            4,
+            0
+          ]
+        },
+        {
+          "time": "4pm-5pm",
+          "values": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "totals": [
+        33,
+        22,
+        40,
+        27,
+        41,
+        53,
+        52
+      ],
+      "capacityDivisor": 11
+    },
+    "memberRetention": {
+      "years": [
+        "2024",
+        "2023",
+        "2022",
+        "2021",
+        "2020",
+        "2019",
+        "2018",
+        "2017",
+        "2016",
+        "2015"
+      ],
+      "total": [
+        2,
+        27,
+        -25,
+        9,
+        -105,
+        46,
+        29,
+        21,
+        -7,
+        15
+      ],
+      "male": [
+        8,
+        13,
+        -19,
+        7,
+        -62,
+        34,
+        18,
+        -8,
+        -3,
+        19
+      ],
+      "female": [
+        -3,
+        14,
+        -6,
+        2,
+        -43,
+        12,
+        11,
+        29,
+        -4,
+        -4
+      ]
+    },
+    "gauges": [
+      {
+        "title": "Visitor Green Fees",
+        "value": 47.8,
+        "minimum": 0,
+        "maximum": 100,
+        "prefix": "",
+        "suffix": "%",
+        "decimalPlaces": 1,
+        "bands": [
+          25,
+          25,
+          50
+        ],
+        "actual": null,
+        "budget": null,
+        "variance": null,
+        "performanceText": "",
+        "tone": "neutral"
+      },
+      {
+        "title": "Food \u0026 Beverages Profit",
+        "value": -5831,
+        "minimum": -10000,
+        "maximum": 10000,
+        "prefix": "\u00A3",
+        "suffix": "",
+        "decimalPlaces": 0,
+        "bands": [
+          35,
+          30,
+          35
+        ],
+        "actual": null,
+        "budget": null,
+        "variance": null,
+        "performanceText": "",
+        "tone": "neutral"
+      },
+      {
+        "title": "Visitor Bar \u0026 Catering",
+        "value": 131.5,
+        "minimum": 0,
+        "maximum": 150,
+        "prefix": "",
+        "suffix": "%",
+        "decimalPlaces": 1,
+        "bands": [
+          30,
+          30,
+          40
+        ],
+        "actual": null,
+        "budget": null,
+        "variance": null,
+        "performanceText": "",
+        "tone": "neutral"
+      },
+      {
+        "title": "Member Bar \u0026 Catering",
+        "value": 4046,
+        "minimum": 0,
+        "maximum": 6428,
+        "prefix": "\u00A3",
+        "suffix": "",
+        "decimalPlaces": 0,
+        "bands": [
+          35,
+          35,
+          30
+        ],
+        "actual": null,
+        "budget": null,
+        "variance": null,
+        "performanceText": "",
+        "tone": "neutral"
+      },
+      {
+        "title": "Membership Subscription Fees",
+        "value": 153151,
+        "minimum": 0,
+        "maximum": 180000,
+        "prefix": "\u00A3",
+        "suffix": "",
+        "decimalPlaces": 0,
+        "bands": [
+          25,
+          35,
+          40
+        ],
+        "actual": null,
+        "budget": null,
+        "variance": null,
+        "performanceText": "",
+        "tone": "neutral"
+      }
+    ],
+    "movement": {
+      "since": "Since 30 September 2023",
+      "departures": [
+        {
+          "value": 61,
+          "label": "Playing members have left",
+          "tone": "negative"
+        },
+        {
+          "value": 5,
+          "label": "Playing members have passed away",
+          "tone": "negative"
+        },
+        {
+          "value": 13,
+          "label": "Playing members moved to social membership",
+          "tone": "negative"
+        }
+      ],
+      "changes": [
+        {
+          "value": 10,
+          "label": "Have moved from 7 to 5 day membership",
+          "tone": "warning"
+        },
+        {
+          "value": 5,
+          "label": "Have moved from 6 to 5 day membership",
+          "tone": "warning"
+        },
+        {
+          "value": 4,
+          "label": "Have moved from social to playing member status",
+          "tone": "positive"
+        }
+      ],
+      "promotionSummary": "The promotional offer launched before the end of September saw an additional 60 people join the club as playing members.",
+      "promotionOutcome": "The club therefore saw a net loss of 21 members rather than the 81 that would have been lost without the promotion."
+    },
+    "feedback": {
+      "heading": "How are we doing?",
+      "text": "Is there something you would like to see added to this report? Scan the QR code to send us your suggestions, or email us.",
+      "emailAddress": "comms@botgc.co.uk",
+      "qrCodeImage": "/images/suggestions-qr.png"
+    }
+  },
+  "createdAtUtc": "2026-08-01T17:15:10.2879794+00:00",
+  "updatedAtUtc": "2026-08-03T17:25:57.9460894+00:00"
+}

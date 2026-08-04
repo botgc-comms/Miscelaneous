@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_073_Procedure_When_a_Ball_is_Out_of_Bounds\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "18.2",
+  "ruleName": "Ball Lost or Out of Bounds: Provisional Ball",
+  "title": "Procedure When a Ball is Out of Bounds",
+  "question": "Your ball crosses an out of bounds fence on the 8th hole. You find where it crossed and drop a ball there under one penalty stroke. What is the ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Correct procedure."
+    },
+    {
+      "id": "b",
+      "text": "Correct only if a Local Rule is in place."
+    },
+    {
+      "id": "c",
+      "text": "Incorrect under the Rules of Golf."
+    },
+    {
+      "id": "d",
+      "text": "You must play a provisional ball."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "Under the standard Rules of Golf, if a ball is out of bounds, the player must take stroke and distance relief by playing another ball from where the previous stroke was made, under penalty of one stroke. Dropping a ball at the point it crossed the boundary is not allowed unless a Local Rule specifically permits it.",
+  "juniorVersion": {
+    "title": "What To Do When Your Ball Goes Out of Bounds",
+    "question": "On the 8th hole, your ball goes over the fence and out of bounds. You went to where it crossed and dropped a new ball there, adding one penalty shot. Is this the right thing to do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Yes, that is the right way."
+      },
+      {
+        "id": "b",
+        "text": "Yes, but only if the golf course has a special rule."
+      },
+      {
+        "id": "c",
+        "text": "No, this is not allowed by the normal rules."
+      },
+      {
+        "id": "d",
+        "text": "You have to play a provisional ball."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "If your ball goes out of bounds, the rules say you must take a one-shot penalty and play a new ball from the same spot where you hit the last shot. You are not allowed to just drop a ball where it went out, unless there is a special rule for your course.",
+    "vocabulary": [
+      {
+        "term": "Out of bounds",
+        "simpleMeaning": "When your ball goes over fences or beyond white stakes, it’s outside the golf course."
+      },
+      {
+        "term": "Provisional ball",
+        "simpleMeaning": "A second ball you hit just in case your first ball might be lost or out of bounds."
+      },
+      {
+        "term": "Stroke and distance",
+        "simpleMeaning": "This means you take a penalty shot and hit again from where you last played."
+      }
+    ],
+    "teachingTip": "Remind golfers to watch for white stakes or fences that mark out of bounds. Show them where to play from if their ball goes out.",
+    "likelyMisconceptions": [
+      "Some kids think you can always just drop a ball where it went out.",
+      "Some may not know what a provisional ball is."
+    ]
+  },
+  "generatedAtUtc": "2026-07-22T07:39:04.748Z",
+  "model": "gpt-4.1"
+}

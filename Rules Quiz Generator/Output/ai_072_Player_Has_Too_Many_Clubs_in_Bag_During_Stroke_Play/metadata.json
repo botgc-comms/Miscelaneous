@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "4.1b",
+  "ruleName": "Limit of Clubs; Sharing, Adding or Replacing Clubs",
+  "group": "Clubs",
+  "title": "Player Has Too Many Clubs in Bag During Stroke Play",
+  "question": "On the 9th hole in a stroke play competition, Alison realises she has 15 clubs in her bag. She declares one club out of play. What is the ruling?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Alison receives four penalty strokes."
+    },
+    {
+      "id": "b",
+      "text": "Alison receives eighteen penalty strokes."
+    },
+    {
+      "id": "c",
+      "text": "Alison is disqualified."
+    },
+    {
+      "id": "d",
+      "text": "There is no penalty if she declares a club out of play immediately."
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "Rule 4.1b imposes a penalty of two strokes for each hole where the breach occurred, with a maximum of four penalty strokes in stroke play. Alison must declare a club out of play to avoid further penalty for the remainder of the round.",
+  "imagePrompt": "Create a polished modern semi-realistic illustration, about 75% realistic and 25% stylised, in the established junior golf quiz illustration style. Alison, a female golfer, is standing near the 9th green on a clear day. She is visibly counting and examining the clubs in her golf bag, with one club being held separately as if declared out of play. Her golf bag, with clubs, is clearly shown. A few competitors are in the background, at a distance. The golf ball is several yards away, just off the green. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A female golfer near the 9th green checking her golf bag, holding one club apart from the rest, with a few other players in the background and a golf ball lying just off the green.",
+  "sceneSpec": {
+    "setting": "Golf course, near the 9th green on a clear day.",
+    "players": "One female player (Alison) inspecting her golf bag, a few other competitors in the background.",
+    "ballPosition": "Alison's golf ball is at rest just off the green, several yards away from her.",
+    "ruleMoment": "Alison has just counted her clubs and realises there are 15; she is taking one club out of play.",
+    "educationalFocus": "Highlight the issue of having more than 14 clubs in the bag during play and the correct action of declaring a club out of play.",
+    "mustShow": [
+      "Alison visibly checking her clubs and holding one separate from the bag",
+      "Golf bag with clubs clearly visible",
+      "Competitors in the distant background"
+    ],
+    "mustNotShow": [
+      "Text labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  }
+}

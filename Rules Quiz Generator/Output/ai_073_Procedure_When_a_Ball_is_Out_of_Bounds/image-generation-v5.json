@@ -1,0 +1,10 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "sourcePromptFileName": "final-prompt-v2.txt",
+  "promptFileName": "final-prompt-v5.txt",
+  "imageFileName": "illustration-v5.png",
+  "correctionInstructions": "only show one golf ball in the image. keep the one that is by the white posts\n\nDO NOT SHOW THE BOY DROPPING A BALL. THERE SHOUDL ONLY BE ONE BALL. \n\nshow the boy looking for the ball that is currently resting against a white out of bounds post",
+  "generatedAtUtc": "2026-07-22T08:17:42.451Z"
+}

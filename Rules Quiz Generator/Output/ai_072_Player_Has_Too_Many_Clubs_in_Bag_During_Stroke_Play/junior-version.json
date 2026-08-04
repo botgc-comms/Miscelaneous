@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_072_Player_Has_Too_Many_Clubs_in_Bag_During_Stroke_Play\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "4.1b",
+  "ruleName": "Limit of Clubs; Sharing, Adding or Replacing Clubs",
+  "title": "Player Has Too Many Clubs in Bag During Stroke Play",
+  "question": "On the 9th hole in a stroke play competition, Alison realises she has 15 clubs in her bag. She declares one club out of play. What is the ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Alison receives four penalty strokes."
+    },
+    {
+      "id": "b",
+      "text": "Alison receives eighteen penalty strokes."
+    },
+    {
+      "id": "c",
+      "text": "Alison is disqualified."
+    },
+    {
+      "id": "d",
+      "text": "There is no penalty if she declares a club out of play immediately."
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "Rule 4.1b imposes a penalty of two strokes for each hole where the breach occurred, with a maximum of four penalty strokes in stroke play. Alison must declare a club out of play to avoid further penalty for the remainder of the round.",
+  "juniorVersion": {
+    "title": "Too Many Clubs in the Bag",
+    "question": "On the 9th hole, Alison sees she has 15 clubs in her bag during a golf match where every shot counts. She tells her friends she won’t use one club anymore. What happens now?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Alison gets four penalty shots."
+      },
+      {
+        "id": "b",
+        "text": "Alison gets eighteen penalty shots."
+      },
+      {
+        "id": "c",
+        "text": "Alison cannot finish the match."
+      },
+      {
+        "id": "d",
+        "text": "There is no penalty if she quickly says she won’t use the club."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "The rule says you can only have 14 clubs in your bag when you play. If you have too many and use them, you get two penalty shots for each hole you played with too many, but no more than four in total. Alison must stop using the extra club for the rest of the game.",
+    "vocabulary": [
+      {
+        "term": "Penalty shots",
+        "simpleMeaning": "Extra shots added to your score when you break a rule."
+      },
+      {
+        "term": "Stroke play",
+        "simpleMeaning": "A type of golf game where you count every shot you take."
+      }
+    ],
+    "teachingTip": "Show children how to count their clubs before playing to make sure there are only 14 in the bag.",
+    "likelyMisconceptions": [
+      "Children may think saying you won’t use a club means you don’t get a penalty. Actually, you still get a penalty for having too many clubs at first.",
+      "Some children may think you get a penalty for every hole in the round, but there is a maximum."
+    ]
+  },
+  "generatedAtUtc": "2026-07-22T07:38:54.536Z",
+  "model": "gpt-4.1"
+}

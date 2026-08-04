@@ -1,59 +1,59 @@
 [
   {
     "index": 1,
-    "total": 245,
+    "total": 255,
     "folder": "output\\000_001_Ball_Bounces_Out_Of_The_Hole_Is_It_Holed",
     "title": "Ball Bounces Out Of The Hole – Is It Holed?",
     "ruleNumber": "Def.",
     "ruleName": "Ball bounces back out of the hole",
     "status": "skipped",
     "outputPath": "output\\000_001_Ball_Bounces_Out_Of_The_Hole_Is_It_Holed\\junior-version.json",
-    "durationSeconds": 0.003,
+    "durationSeconds": 0.006,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.460Z"
+    "completedAtUtc": "2026-07-22T12:19:42.650Z"
   },
   {
     "index": 2,
-    "total": 245,
+    "total": 255,
     "folder": "output\\002_001_What_counts_as_the_general_area",
     "title": "What counts as the general area?",
     "ruleNumber": "R2",
     "ruleName": "General area",
     "status": "skipped",
     "outputPath": "output\\002_001_What_counts_as_the_general_area\\junior-version.json",
-    "durationSeconds": 0.004,
+    "durationSeconds": 0.003,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.461Z"
+    "completedAtUtc": "2026-07-22T12:19:42.647Z"
   },
   {
     "index": 3,
-    "total": 245,
+    "total": 255,
     "folder": "output\\004_002_Too_Many_Clubs_Discovered_After_Starting_Round",
     "title": "Too Many Clubs Discovered After Starting Round",
     "ruleNumber": "R4",
     "ruleName": "Maximum of 14 clubs",
     "status": "skipped",
     "outputPath": "output\\004_002_Too_Many_Clubs_Discovered_After_Starting_Round\\junior-version.json",
-    "durationSeconds": 0.004,
+    "durationSeconds": 0.007,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.461Z"
+    "completedAtUtc": "2026-07-22T12:19:42.651Z"
   },
   {
     "index": 4,
-    "total": 245,
+    "total": 255,
     "folder": "output\\004_003_Borrowing_a_Club_During_a_Round",
     "title": "Borrowing a Club During a Round",
     "ruleNumber": "R4",
     "ruleName": "Maximum of 14 clubs",
     "status": "skipped",
     "outputPath": "output\\004_003_Borrowing_a_Club_During_a_Round\\junior-version.json",
-    "durationSeconds": 0.004,
+    "durationSeconds": 0.007,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.462Z"
+    "completedAtUtc": "2026-07-22T12:19:42.651Z"
   },
   {
     "index": 5,
-    "total": 245,
+    "total": 255,
     "folder": "output\\005_001_Penalty_for_Arriving_Late_to_the_Tee",
     "title": "Penalty for Arriving Late to the Tee",
     "ruleNumber": "R5",
@@ -62,37 +62,37 @@
     "outputPath": "output\\005_001_Penalty_for_Arriving_Late_to_the_Tee\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.463Z"
+    "completedAtUtc": "2026-07-22T12:19:42.653Z"
   },
   {
     "index": 6,
-    "total": 245,
+    "total": 255,
     "folder": "output\\005_004_Practising_after_finishing_a_hole",
     "title": "Practising after finishing a hole",
     "ruleNumber": "R5",
     "ruleName": "Practice putting and chipping",
     "status": "skipped",
     "outputPath": "output\\005_004_Practising_after_finishing_a_hole\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.467Z"
+    "completedAtUtc": "2026-07-22T12:19:42.655Z"
   },
   {
     "index": 7,
-    "total": 245,
+    "total": 255,
     "folder": "output\\005_004_What_to_Do_When_Play_Is_Suspended_Due_to_a_Thunderstorm",
     "title": "What to Do When Play Is Suspended Due to a Thunderstorm",
     "ruleNumber": "R5",
     "ruleName": "Suspension of play/thunderstorm",
     "status": "skipped",
     "outputPath": "output\\005_004_What_to_Do_When_Play_Is_Suspended_Due_to_a_Thunderstorm\\junior-version.json",
-    "durationSeconds": 0,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.469Z"
+    "completedAtUtc": "2026-07-22T12:19:42.656Z"
   },
   {
     "index": 8,
-    "total": 245,
+    "total": 255,
     "folder": "output\\005_005_Chipping_and_putting_before_your_tee_shot",
     "title": "Chipping and putting before your tee shot",
     "ruleNumber": "R5",
@@ -101,24 +101,24 @@
     "outputPath": "output\\005_005_Chipping_and_putting_before_your_tee_shot\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.470Z"
+    "completedAtUtc": "2026-07-22T12:19:42.658Z"
   },
   {
     "index": 9,
-    "total": 245,
+    "total": 255,
     "folder": "output\\005_005_What_To_Do_If_Theres_a_Risk_of_Lightning",
     "title": "What To Do If There's a Risk of Lightning",
     "ruleNumber": "R5",
     "ruleName": "Suspension of play/thunderstorm",
     "status": "skipped",
     "outputPath": "output\\005_005_What_To_Do_If_Theres_a_Risk_of_Lightning\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.004,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.472Z"
+    "completedAtUtc": "2026-07-22T12:19:42.664Z"
   },
   {
     "index": 10,
-    "total": 245,
+    "total": 255,
     "folder": "output\\006_001_Penalty_for_hitting_the_wrong_ball_in_a_penalty_area",
     "title": "Penalty for hitting the wrong ball in a penalty area",
     "ruleNumber": "R6",
@@ -127,50 +127,50 @@
     "outputPath": "output\\006_001_Penalty_for_hitting_the_wrong_ball_in_a_penalty_area\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.473Z"
+    "completedAtUtc": "2026-07-22T12:19:42.666Z"
   },
   {
     "index": 11,
-    "total": 245,
+    "total": 255,
     "folder": "output\\006_001_Penalty_for_playing_the_wrong_ball",
     "title": "Penalty for playing the wrong ball",
     "ruleNumber": "R6",
     "ruleName": "Wrong ball",
     "status": "skipped",
     "outputPath": "output\\006_001_Penalty_for_playing_the_wrong_ball\\junior-version.json",
-    "durationSeconds": 0.088,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.563Z"
+    "completedAtUtc": "2026-07-22T12:19:42.668Z"
   },
   {
     "index": 12,
-    "total": 245,
+    "total": 255,
     "folder": "output\\006_001_Playing_from_the_wrong_teeing_area",
     "title": "Playing from the wrong teeing area",
     "ruleNumber": "R6",
     "ruleName": "Playing from the teeing area",
     "status": "skipped",
     "outputPath": "output\\006_001_Playing_from_the_wrong_teeing_area\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.567Z"
+    "completedAtUtc": "2026-07-22T12:19:42.670Z"
   },
   {
     "index": 13,
-    "total": 245,
+    "total": 255,
     "folder": "output\\006_001_What_happens_if_you_tee_off_in_the_wrong_order",
     "title": "What happens if you tee off in the wrong order?",
     "ruleNumber": "6",
     "ruleName": "Playing in the wrong order",
     "status": "skipped",
     "outputPath": "output\\006_001_What_happens_if_you_tee_off_in_the_wrong_order\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.569Z"
+    "completedAtUtc": "2026-07-22T12:19:42.672Z"
   },
   {
     "index": 14,
-    "total": 245,
+    "total": 255,
     "folder": "output\\006_002_Defining_the_teeing_area",
     "title": "Defining the teeing area",
     "ruleNumber": "6",
@@ -179,37 +179,37 @@
     "outputPath": "output\\006_002_Defining_the_teeing_area\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.570Z"
+    "completedAtUtc": "2026-07-22T12:19:42.673Z"
   },
   {
     "index": 15,
-    "total": 245,
+    "total": 255,
     "folder": "output\\006_002_Moving_the_tee_markers",
     "title": "Moving the tee-markers",
     "ruleNumber": "R6",
     "ruleName": "Tee-markers",
     "status": "skipped",
     "outputPath": "output\\006_002_Moving_the_tee_markers\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.004,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.572Z"
+    "completedAtUtc": "2026-07-22T12:19:42.678Z"
   },
   {
     "index": 16,
-    "total": 245,
+    "total": 255,
     "folder": "output\\006_002_Penalty_for_playing_the_wrong_ball",
     "title": "Penalty for playing the wrong ball",
     "ruleNumber": "6",
     "ruleName": "Wrong ball",
     "status": "skipped",
     "outputPath": "output\\006_002_Penalty_for_playing_the_wrong_ball\\junior-version.json",
-    "durationSeconds": 0.003,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.576Z"
+    "completedAtUtc": "2026-07-22T12:19:42.681Z"
   },
   {
     "index": 17,
-    "total": 245,
+    "total": 255,
     "folder": "output\\006_002_What_to_do_if_you_cant_find_your_original_ball_after_hitting_a_wrong_ball",
     "title": "What to do if you can't find your original ball after hitting a wrong ball",
     "ruleNumber": "R6",
@@ -218,11 +218,11 @@
     "outputPath": "output\\006_002_What_to_do_if_you_cant_find_your_original_ball_after_hitting_a_wrong_ball\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.578Z"
+    "completedAtUtc": "2026-07-22T12:19:42.684Z"
   },
   {
     "index": 18,
-    "total": 245,
+    "total": 255,
     "folder": "output\\006_003_Consequence_of_not_correcting_a_wrong_ball_mistake",
     "title": "Consequence of not correcting a wrong ball mistake",
     "ruleNumber": "R6",
@@ -231,11 +231,11 @@
     "outputPath": "output\\006_003_Consequence_of_not_correcting_a_wrong_ball_mistake\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.580Z"
+    "completedAtUtc": "2026-07-22T12:19:42.685Z"
   },
   {
     "index": 19,
-    "total": 245,
+    "total": 255,
     "folder": "output\\006_003_Consequences_if_you_hole_out_with_a_wrong_ball",
     "title": "Consequences if you hole out with a wrong ball",
     "ruleNumber": "6",
@@ -244,37 +244,37 @@
     "outputPath": "output\\006_003_Consequences_if_you_hole_out_with_a_wrong_ball\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.582Z"
+    "completedAtUtc": "2026-07-22T12:19:42.687Z"
   },
   {
     "index": 20,
-    "total": 245,
+    "total": 255,
     "folder": "output\\006_003_Penalty_for_playing_from_outside_the_teeing_area",
     "title": "Penalty for playing from outside the teeing area",
     "ruleNumber": "6",
     "ruleName": "Playing from outside the teeing area",
     "status": "skipped",
     "outputPath": "output\\006_003_Penalty_for_playing_from_outside_the_teeing_area\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.585Z"
+    "completedAtUtc": "2026-07-22T12:19:42.689Z"
   },
   {
     "index": 21,
-    "total": 245,
+    "total": 255,
     "folder": "output\\006_003_Playing_out_of_turn_to_save_time",
     "title": "Playing out of turn to save time",
     "ruleNumber": "R6",
     "ruleName": "Playing in the wrong order",
     "status": "skipped",
     "outputPath": "output\\006_003_Playing_out_of_turn_to_save_time\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.004,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.586Z"
+    "completedAtUtc": "2026-07-22T12:19:42.693Z"
   },
   {
     "index": 22,
-    "total": 245,
+    "total": 255,
     "folder": "output\\006_003_Who_plays_first_on_the_green",
     "title": "Who plays first on the green?",
     "ruleNumber": "R6",
@@ -283,11 +283,11 @@
     "outputPath": "output\\006_003_Who_plays_first_on_the_green\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.588Z"
+    "completedAtUtc": "2026-07-22T12:19:42.694Z"
   },
   {
     "index": 23,
-    "total": 245,
+    "total": 255,
     "folder": "output\\006_004_Correcting_a_teeing_area_mistake",
     "title": "Correcting a teeing area mistake",
     "ruleNumber": "6",
@@ -296,37 +296,37 @@
     "outputPath": "output\\006_004_Correcting_a_teeing_area_mistake\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.589Z"
+    "completedAtUtc": "2026-07-22T12:19:42.697Z"
   },
   {
     "index": 24,
-    "total": 245,
+    "total": 255,
     "folder": "output\\006_004_Order_of_Play_on_the_First_Tee",
     "title": "Order of Play on the First Tee",
     "ruleNumber": "R6",
     "ruleName": "The honour/order of play",
     "status": "skipped",
     "outputPath": "output\\006_004_Order_of_Play_on_the_First_Tee\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.592Z"
+    "completedAtUtc": "2026-07-22T12:19:42.699Z"
   },
   {
     "index": 25,
-    "total": 245,
+    "total": 255,
     "folder": "output\\006_004_Penalty_for_taking_advantage_with_wrong_order_of_play",
     "title": "Penalty for taking advantage with wrong order of play",
     "ruleNumber": "R6",
     "ruleName": "Playing in the wrong order",
     "status": "skipped",
     "outputPath": "output\\006_004_Penalty_for_taking_advantage_with_wrong_order_of_play\\junior-version.json",
-    "durationSeconds": 0,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.594Z"
+    "completedAtUtc": "2026-07-22T12:19:42.700Z"
   },
   {
     "index": 26,
-    "total": 245,
+    "total": 255,
     "folder": "output\\006_004_What_happens_if_your_ball_falls_off_the_tee_accidentally",
     "title": "What happens if your ball falls off the tee accidentally?",
     "ruleNumber": "R6",
@@ -335,11 +335,11 @@
     "outputPath": "output\\006_004_What_happens_if_your_ball_falls_off_the_tee_accidentally\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.595Z"
+    "completedAtUtc": "2026-07-22T12:19:42.701Z"
   },
   {
     "index": 27,
-    "total": 245,
+    "total": 255,
     "folder": "output\\006_005_Does_an_air_shot_count_as_a_stroke",
     "title": "Does an air shot count as a stroke?",
     "ruleNumber": "Def./R6",
@@ -348,24 +348,24 @@
     "outputPath": "output\\006_005_Does_an_air_shot_count_as_a_stroke\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.596Z"
+    "completedAtUtc": "2026-07-22T12:19:42.703Z"
   },
   {
     "index": 28,
-    "total": 245,
+    "total": 255,
     "folder": "output\\007_001_What_to_do_if_you_cant_tell_if_the_ball_is_yours",
     "title": "What to do if you can't tell if the ball is yours",
     "ruleNumber": "R7",
     "ruleName": "Identifying the ball",
     "status": "skipped",
     "outputPath": "output\\007_001_What_to_do_if_you_cant_tell_if_the_ball_is_yours\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.598Z"
+    "completedAtUtc": "2026-07-22T12:19:42.704Z"
   },
   {
     "index": 29,
-    "total": 245,
+    "total": 255,
     "folder": "output\\007_002_What_can_you_do_if_your_ball_sinks_into_the_bunker",
     "title": "What can you do if your ball sinks into the bunker?",
     "ruleNumber": "R7",
@@ -374,24 +374,24 @@
     "outputPath": "output\\007_002_What_can_you_do_if_your_ball_sinks_into_the_bunker\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.600Z"
+    "completedAtUtc": "2026-07-22T12:19:42.706Z"
   },
   {
     "index": 30,
-    "total": 245,
+    "total": 255,
     "folder": "output\\007_003_What_if_you_move_your_ball_while_searching",
     "title": "What if you move your ball while searching?",
     "ruleNumber": "R7",
     "ruleName": "Ball moved during a search",
     "status": "skipped",
     "outputPath": "output\\007_003_What_if_you_move_your_ball_while_searching\\junior-version.json",
-    "durationSeconds": 0,
+    "durationSeconds": 0.004,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.602Z"
+    "completedAtUtc": "2026-07-22T12:19:42.710Z"
   },
   {
     "index": 31,
-    "total": 245,
+    "total": 255,
     "folder": "output\\008_003_Playing_from_a_divot_rut_or_bald_patch",
     "title": "Playing from a divot, rut or bald patch",
     "ruleNumber": "R8",
@@ -400,11 +400,11 @@
     "outputPath": "output\\008_003_Playing_from_a_divot_rut_or_bald_patch\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.603Z"
+    "completedAtUtc": "2026-07-22T12:19:42.712Z"
   },
   {
     "index": 32,
-    "total": 245,
+    "total": 255,
     "folder": "output\\009_001_Ball_moved_while_looking_for_it",
     "title": "Ball moved while looking for it",
     "ruleNumber": "R9",
@@ -413,37 +413,37 @@
     "outputPath": "output\\009_001_Ball_moved_while_looking_for_it\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.604Z"
+    "completedAtUtc": "2026-07-22T12:19:42.714Z"
   },
   {
     "index": 33,
-    "total": 245,
+    "total": 255,
     "folder": "output\\009_001_What_to_do_if_your_ball_is_moved_by_a_dog",
     "title": "What to do if your ball is moved by a dog",
     "ruleNumber": "R9",
     "ruleName": "Ball at rest moved by an outside influence",
     "status": "skipped",
     "outputPath": "output\\009_001_What_to_do_if_your_ball_is_moved_by_a_dog\\junior-version.json",
-    "durationSeconds": 0.003,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.611Z"
+    "completedAtUtc": "2026-07-22T12:19:42.717Z"
   },
   {
     "index": 34,
-    "total": 245,
+    "total": 255,
     "folder": "output\\009_002_Ball_moved_while_preparing_a_stroke",
     "title": "Ball moved while preparing a stroke",
     "ruleNumber": "R9",
     "ruleName": "Ball at rest is moved",
     "status": "skipped",
     "outputPath": "output\\009_002_Ball_moved_while_preparing_a_stroke\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.612Z"
+    "completedAtUtc": "2026-07-22T12:19:42.720Z"
   },
   {
     "index": 35,
-    "total": 245,
+    "total": 255,
     "folder": "output\\009_003_Ball_moved_by_an_animal",
     "title": "Ball moved by an animal",
     "ruleNumber": "R9",
@@ -452,115 +452,115 @@
     "outputPath": "output\\009_003_Ball_moved_by_an_animal\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.614Z"
+    "completedAtUtc": "2026-07-22T12:19:42.722Z"
   },
   {
     "index": 36,
-    "total": 245,
+    "total": 255,
     "folder": "output\\009_004_Ball_moved_by_the_wind_after_a_stroke",
     "title": "Ball moved by the wind after a stroke",
     "ruleNumber": "R9",
     "ruleName": "Ball at rest is moved",
     "status": "skipped",
     "outputPath": "output\\009_004_Ball_moved_by_the_wind_after_a_stroke\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.004,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.615Z"
+    "completedAtUtc": "2026-07-22T12:19:42.726Z"
   },
   {
     "index": 37,
-    "total": 245,
+    "total": 255,
     "folder": "output\\009_004_What_happens_if_you_move_your_ball_on_a_practice_swing",
     "title": "What happens if you move your ball on a practice swing?",
     "ruleNumber": "R9",
     "ruleName": "Ball moved when taking a practice swing",
     "status": "skipped",
     "outputPath": "output\\009_004_What_happens_if_you_move_your_ball_on_a_practice_swing\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.618Z"
+    "completedAtUtc": "2026-07-22T12:19:42.728Z"
   },
   {
     "index": 38,
-    "total": 245,
+    "total": 255,
     "folder": "output\\009_005_Opponent_moves_your_ball_in_match_play",
     "title": "Opponent moves your ball in match play",
     "ruleNumber": "R9",
     "ruleName": "Ball at rest is moved",
     "status": "skipped",
     "outputPath": "output\\009_005_Opponent_moves_your_ball_in_match_play\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.619Z"
+    "completedAtUtc": "2026-07-22T12:19:42.731Z"
   },
   {
     "index": 39,
-    "total": 245,
+    "total": 255,
     "folder": "output\\009_005_Penalty_for_moving_the_ball_when_grounding_the_club",
     "title": "Penalty for moving the ball when grounding the club",
     "ruleNumber": "R9",
     "ruleName": "Ball moved when grounding the club",
     "status": "skipped",
     "outputPath": "output\\009_005_Penalty_for_moving_the_ball_when_grounding_the_club\\junior-version.json",
-    "durationSeconds": 0.003,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.623Z"
+    "completedAtUtc": "2026-07-22T12:19:42.733Z"
   },
   {
     "index": 40,
-    "total": 245,
+    "total": 255,
     "folder": "output\\010_001_What_advice_can_you_ask_for_on_the_course",
     "title": "What advice can you ask for on the course?",
     "ruleNumber": "R10",
     "ruleName": "Advice and line of play",
     "status": "skipped",
     "outputPath": "output\\010_001_What_advice_can_you_ask_for_on_the_course\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.624Z"
+    "completedAtUtc": "2026-07-22T12:19:42.736Z"
   },
   {
     "index": 41,
-    "total": 245,
+    "total": 255,
     "folder": "output\\010_001_What_advice_can_you_ask_for_on_the_golf_course",
     "title": "What advice can you ask for on the golf course?",
     "ruleNumber": "R10",
     "ruleName": "Advice and line of play",
     "status": "skipped",
     "outputPath": "output\\010_001_What_advice_can_you_ask_for_on_the_golf_course\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.005,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.626Z"
+    "completedAtUtc": "2026-07-22T12:19:42.742Z"
   },
   {
     "index": 42,
-    "total": 245,
+    "total": 255,
     "folder": "output\\010_001_When_can_you_discuss_distances_on_the_course",
     "title": "When can you discuss distances on the course?",
     "ruleNumber": "R10",
     "ruleName": "Advice and line of play",
     "status": "skipped",
     "outputPath": "output\\010_001_When_can_you_discuss_distances_on_the_course\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.628Z"
+    "completedAtUtc": "2026-07-22T12:19:42.745Z"
   },
   {
     "index": 43,
-    "total": 245,
+    "total": 255,
     "folder": "output\\010_002_Allowed_questions_in_golf",
     "title": "Allowed questions in golf",
     "ruleNumber": "R10",
     "ruleName": "Advice and line of play",
     "status": "skipped",
     "outputPath": "output\\010_002_Allowed_questions_in_golf\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.630Z"
+    "completedAtUtc": "2026-07-22T12:19:42.748Z"
   },
   {
     "index": 44,
-    "total": 245,
+    "total": 255,
     "folder": "output\\010_002_Giving_advice_before_a_shot",
     "title": "Giving advice before a shot",
     "ruleNumber": "R10",
@@ -569,24 +569,24 @@
     "outputPath": "output\\010_002_Giving_advice_before_a_shot\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.640Z"
+    "completedAtUtc": "2026-07-22T12:19:42.752Z"
   },
   {
     "index": 45,
-    "total": 245,
+    "total": 255,
     "folder": "output\\010_002_Penalty_for_giving_or_asking_for_advice",
     "title": "Penalty for giving or asking for advice",
     "ruleNumber": "R10",
     "ruleName": "Advice and line of play",
     "status": "skipped",
     "outputPath": "output\\010_002_Penalty_for_giving_or_asking_for_advice\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.005,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.641Z"
+    "completedAtUtc": "2026-07-22T12:19:42.758Z"
   },
   {
     "index": 46,
-    "total": 245,
+    "total": 255,
     "folder": "output\\010_003_Umbrellas_and_outside_help_while_putting",
     "title": "Umbrellas and outside help while putting",
     "ruleNumber": "R10",
@@ -595,76 +595,76 @@
     "outputPath": "output\\010_003_Umbrellas_and_outside_help_while_putting\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.643Z"
+    "completedAtUtc": "2026-07-22T12:19:42.761Z"
   },
   {
     "index": 47,
-    "total": 245,
+    "total": 255,
     "folder": "output\\010_003_What_happens_if_you_accidentally_hit_the_ball_twice_in_one_swing",
     "title": "What happens if you accidentally hit the ball twice in one swing?",
     "ruleNumber": "R10",
     "ruleName": "Double hit",
     "status": "skipped",
     "outputPath": "output\\010_003_What_happens_if_you_accidentally_hit_the_ball_twice_in_one_swing\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.645Z"
+    "completedAtUtc": "2026-07-22T12:19:42.765Z"
   },
   {
     "index": 48,
-    "total": 245,
+    "total": 255,
     "folder": "output\\010_003_What_happens_if_you_get_advice_without_asking",
     "title": "What happens if you get advice without asking?",
     "ruleNumber": "R10",
     "ruleName": "Advice and line of play",
     "status": "skipped",
     "outputPath": "output\\010_003_What_happens_if_you_get_advice_without_asking\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.648Z"
+    "completedAtUtc": "2026-07-22T12:19:42.768Z"
   },
   {
     "index": 49,
-    "total": 245,
+    "total": 255,
     "folder": "output\\010_004_Advice_about_line_of_play_on_the_green",
     "title": "Advice about line of play on the green",
     "ruleNumber": "10",
     "ruleName": "Advice and line of play",
     "status": "skipped",
     "outputPath": "output\\010_004_Advice_about_line_of_play_on_the_green\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.006,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.651Z"
+    "completedAtUtc": "2026-07-22T12:19:42.775Z"
   },
   {
     "index": 50,
-    "total": 245,
+    "total": 255,
     "folder": "output\\010_004_If_you_accidentally_double_hit_the_ball",
     "title": "If you accidentally double-hit the ball",
     "ruleNumber": "R10",
     "ruleName": "Double hit",
     "status": "skipped",
     "outputPath": "output\\010_004_If_you_accidentally_double_hit_the_ball\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.003,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.656Z"
+    "completedAtUtc": "2026-07-22T12:19:42.779Z"
   },
   {
     "index": 51,
-    "total": 245,
+    "total": 255,
     "folder": "output\\010_004_Penalty_for_pushing_or_scraping_a_putt",
     "title": "Penalty for pushing or scraping a putt",
     "ruleNumber": "R10",
     "ruleName": "Careless putting",
     "status": "skipped",
     "outputPath": "output\\010_004_Penalty_for_pushing_or_scraping_a_putt\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.005,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.658Z"
+    "completedAtUtc": "2026-07-22T12:19:42.788Z"
   },
   {
     "index": 52,
-    "total": 245,
+    "total": 255,
     "folder": "output\\010_005_What_Happens_If_You_Accidentally_Double_Hit_the_Ball",
     "title": "What Happens If You Accidentally Double-Hit the Ball?",
     "ruleNumber": "R10",
@@ -673,24 +673,24 @@
     "outputPath": "output\\010_005_What_Happens_If_You_Accidentally_Double_Hit_the_Ball\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.661Z"
+    "completedAtUtc": "2026-07-22T12:19:42.791Z"
   },
   {
     "index": 53,
-    "total": 245,
+    "total": 255,
     "folder": "output\\011_001_Ball_hits_players_own_equipment",
     "title": "Ball hits player's own equipment",
     "ruleNumber": "R11",
     "ruleName": "Ball in motion accidentally hits ...",
     "status": "skipped",
     "outputPath": "output\\011_001_Ball_hits_players_own_equipment\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.663Z"
+    "completedAtUtc": "2026-07-22T12:19:42.794Z"
   },
   {
     "index": 54,
-    "total": 245,
+    "total": 255,
     "folder": "output\\011_001_Where_to_drop_a_ball_intentionally_deflected_by_a_person",
     "title": "Where to drop a ball intentionally deflected by a person",
     "ruleNumber": "11",
@@ -699,37 +699,37 @@
     "outputPath": "output\\011_001_Where_to_drop_a_ball_intentionally_deflected_by_a_person\\junior-version.json",
     "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.666Z"
+    "completedAtUtc": "2026-07-22T12:19:42.798Z"
   },
   {
     "index": 55,
-    "total": 245,
+    "total": 255,
     "folder": "output\\011_002_Ball_strikes_an_outside_influence",
     "title": "Ball strikes an outside influence",
     "ruleNumber": "R11",
     "ruleName": "Ball in motion accidentally hits ...",
     "status": "skipped",
     "outputPath": "output\\011_002_Ball_strikes_an_outside_influence\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.004,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.670Z"
+    "completedAtUtc": "2026-07-22T12:19:42.803Z"
   },
   {
     "index": 56,
-    "total": 245,
+    "total": 255,
     "folder": "output\\011_002_Exception_for_balls_intentionally_deflected_on_the_green",
     "title": "Exception for balls intentionally deflected on the green",
     "ruleNumber": "11",
     "ruleName": "Ball in motion intentionally deflected",
     "status": "skipped",
     "outputPath": "output\\011_002_Exception_for_balls_intentionally_deflected_on_the_green\\junior-version.json",
-    "durationSeconds": 0,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.671Z"
+    "completedAtUtc": "2026-07-22T12:19:42.805Z"
   },
   {
     "index": 57,
-    "total": 245,
+    "total": 255,
     "folder": "output\\011_003_Ball_hits_a_ball_marker",
     "title": "Ball hits a ball-marker",
     "ruleNumber": "R11",
@@ -738,11 +738,11 @@
     "outputPath": "output\\011_003_Ball_hits_a_ball_marker\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.673Z"
+    "completedAtUtc": "2026-07-22T12:19:42.807Z"
   },
   {
     "index": 58,
-    "total": 245,
+    "total": 255,
     "folder": "output\\011_003_Ball_hits_another_ball_at_rest",
     "title": "Ball hits another ball at rest",
     "ruleNumber": "R11",
@@ -751,11 +751,11 @@
     "outputPath": "output\\011_003_Ball_hits_another_ball_at_rest\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.675Z"
+    "completedAtUtc": "2026-07-22T12:19:42.809Z"
   },
   {
     "index": 59,
-    "total": 245,
+    "total": 255,
     "folder": "output\\011_003_Penalty_for_intentionally_deflecting_a_moving_ball",
     "title": "Penalty for intentionally deflecting a moving ball",
     "ruleNumber": "11",
@@ -764,11 +764,11 @@
     "outputPath": "output\\011_003_Penalty_for_intentionally_deflecting_a_moving_ball\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.677Z"
+    "completedAtUtc": "2026-07-22T12:19:42.811Z"
   },
   {
     "index": 60,
-    "total": 245,
+    "total": 255,
     "folder": "output\\011_004_Ball_Hits_Another_Player_On_The_Green_What_Now",
     "title": "Ball Hits Another Player On The Green – What Now?",
     "ruleNumber": "R11",
@@ -777,24 +777,24 @@
     "outputPath": "output\\011_004_Ball_Hits_Another_Player_On_The_Green_What_Now\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.679Z"
+    "completedAtUtc": "2026-07-22T12:19:42.813Z"
   },
   {
     "index": 61,
-    "total": 245,
+    "total": 255,
     "folder": "output\\011_004_Ball_striking_another_ball_on_the_green",
     "title": "Ball striking another ball on the green",
     "ruleNumber": "R11",
     "ruleName": "Ball hits another ball",
     "status": "skipped",
     "outputPath": "output\\011_004_Ball_striking_another_ball_on_the_green\\junior-version.json",
-    "durationSeconds": 0,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.680Z"
+    "completedAtUtc": "2026-07-22T12:19:42.819Z"
   },
   {
     "index": 62,
-    "total": 245,
+    "total": 255,
     "folder": "output\\011_004_Objects_as_ball_stoppers",
     "title": "Objects as ball stoppers",
     "ruleNumber": "11",
@@ -803,24 +803,24 @@
     "outputPath": "output\\011_004_Objects_as_ball_stoppers\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.682Z"
+    "completedAtUtc": "2026-07-22T12:19:42.821Z"
   },
   {
     "index": 63,
-    "total": 245,
+    "total": 255,
     "folder": "output\\011_004_Playing_after_your_ball_hits_another_person_or_animal",
     "title": "Playing after your ball hits another person or animal",
     "ruleNumber": "R11",
     "ruleName": "Ball hits an outside influence or the player",
     "status": "skipped",
     "outputPath": "output\\011_004_Playing_after_your_ball_hits_another_person_or_animal\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.686Z"
+    "completedAtUtc": "2026-07-22T12:19:42.824Z"
   },
   {
     "index": 64,
-    "total": 245,
+    "total": 255,
     "folder": "output\\011_005_Ball_accidentally_hits_opponent_in_match_play",
     "title": "Ball accidentally hits opponent in match play",
     "ruleNumber": "R11",
@@ -829,11 +829,11 @@
     "outputPath": "output\\011_005_Ball_accidentally_hits_opponent_in_match_play\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.688Z"
+    "completedAtUtc": "2026-07-22T12:19:42.826Z"
   },
   {
     "index": 65,
-    "total": 245,
+    "total": 255,
     "folder": "output\\011_005_Deliberately_stopping_your_ball_with_equipment",
     "title": "Deliberately stopping your ball with equipment",
     "ruleNumber": "R11",
@@ -842,24 +842,24 @@
     "outputPath": "output\\011_005_Deliberately_stopping_your_ball_with_equipment\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.690Z"
+    "completedAtUtc": "2026-07-22T12:19:42.828Z"
   },
   {
     "index": 66,
-    "total": 245,
+    "total": 255,
     "folder": "output\\012_001_Playing_a_Ball_from_a_Bad_Lie",
     "title": "Playing a Ball from a Bad Lie",
     "ruleNumber": "R12",
     "ruleName": "Old footprints, buried lie, etc.",
     "status": "skipped",
     "outputPath": "output\\012_001_Playing_a_Ball_from_a_Bad_Lie\\junior-version.json",
-    "durationSeconds": 0,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.692Z"
+    "completedAtUtc": "2026-07-22T12:19:42.831Z"
   },
   {
     "index": 67,
-    "total": 245,
+    "total": 255,
     "folder": "output\\012_001_When_is_a_ball_in_the_bunker",
     "title": "When is a ball 'in the bunker'?",
     "ruleNumber": "R12",
@@ -868,37 +868,37 @@
     "outputPath": "output\\012_001_When_is_a_ball_in_the_bunker\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.694Z"
+    "completedAtUtc": "2026-07-22T12:19:42.832Z"
   },
   {
     "index": 68,
-    "total": 245,
+    "total": 255,
     "folder": "output\\012_003_Raking_Between_Bunker_Shots",
     "title": "Raking Between Bunker Shots",
     "ruleNumber": "R12",
     "ruleName": "Ball stays in bunker",
     "status": "skipped",
     "outputPath": "output\\012_003_Raking_Between_Bunker_Shots\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.003,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.696Z"
+    "completedAtUtc": "2026-07-22T12:19:42.837Z"
   },
   {
     "index": 69,
-    "total": 245,
+    "total": 255,
     "folder": "output\\012_004_What_is_not_allowed_before_your_bunker_shot",
     "title": "What is not allowed before your bunker shot?",
     "ruleNumber": "R12",
     "ruleName": "Do not touch or test the sand",
     "status": "skipped",
     "outputPath": "output\\012_004_What_is_not_allowed_before_your_bunker_shot\\junior-version.json",
-    "durationSeconds": 0.004,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.701Z"
+    "completedAtUtc": "2026-07-22T12:19:42.840Z"
   },
   {
     "index": 70,
-    "total": 245,
+    "total": 255,
     "folder": "output\\013_001_Is_the_fringe_part_of_the_green",
     "title": "Is the fringe part of the green?",
     "ruleNumber": "R13",
@@ -907,11 +907,11 @@
     "outputPath": "output\\013_001_Is_the_fringe_part_of_the_green\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.704Z"
+    "completedAtUtc": "2026-07-22T12:19:42.842Z"
   },
   {
     "index": 71,
-    "total": 245,
+    "total": 255,
     "folder": "output\\013_001_Penalty_differences_in_stroke_play_and_match_play",
     "title": "Penalty differences in stroke play and match play",
     "ruleNumber": "R1/3",
@@ -920,76 +920,76 @@
     "outputPath": "output\\013_001_Penalty_differences_in_stroke_play_and_match_play\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.706Z"
+    "completedAtUtc": "2026-07-22T12:19:42.843Z"
   },
   {
     "index": 72,
-    "total": 245,
+    "total": 255,
     "folder": "output\\013_001_Testing_the_Green",
     "title": "Testing the Green",
     "ruleNumber": "R13",
     "ruleName": "Putting Green",
     "status": "skipped",
     "outputPath": "output\\013_001_Testing_the_Green\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.709Z"
+    "completedAtUtc": "2026-07-22T12:19:42.846Z"
   },
   {
     "index": 73,
-    "total": 245,
+    "total": 255,
     "folder": "output\\013_001_What_happens_if_you_accidentally_move_your_ball_on_the_green",
     "title": "What happens if you accidentally move your ball on the green?",
     "ruleNumber": "13",
     "ruleName": "Ball accidentally moved",
     "status": "skipped",
     "outputPath": "output\\013_001_What_happens_if_you_accidentally_move_your_ball_on_the_green\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.711Z"
+    "completedAtUtc": "2026-07-22T12:19:42.848Z"
   },
   {
     "index": 74,
-    "total": 245,
+    "total": 255,
     "folder": "output\\013_002_Ball_lands_on_the_wrong_green",
     "title": "Ball lands on the wrong green",
     "ruleNumber": "R13",
     "ruleName": "Wrong green",
     "status": "skipped",
     "outputPath": "output\\013_002_Ball_lands_on_the_wrong_green\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.713Z"
+    "completedAtUtc": "2026-07-22T12:19:42.852Z"
   },
   {
     "index": 75,
-    "total": 245,
+    "total": 255,
     "folder": "output\\013_002_Ball_wedged_against_the_flagstick",
     "title": "Ball wedged against the flagstick",
     "ruleNumber": "R13",
     "ruleName": "Ball wedged on the flagstick",
     "status": "skipped",
     "outputPath": "output\\013_002_Ball_wedged_against_the_flagstick\\junior-version.json",
-    "durationSeconds": 0.004,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.719Z"
+    "completedAtUtc": "2026-07-22T12:19:42.854Z"
   },
   {
     "index": 76,
-    "total": 245,
+    "total": 255,
     "folder": "output\\013_002_Repairing_Damage_on_the_Green",
     "title": "Repairing Damage on the Green",
     "ruleNumber": "R13",
     "ruleName": "Putting Green",
     "status": "skipped",
     "outputPath": "output\\013_002_Repairing_Damage_on_the_Green\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.721Z"
+    "completedAtUtc": "2026-07-22T12:19:42.856Z"
   },
   {
     "index": 77,
-    "total": 245,
+    "total": 255,
     "folder": "output\\013_002_What_should_you_do_if_your_ball_lands_on_the_wrong_green",
     "title": "What should you do if your ball lands on the wrong green?",
     "ruleNumber": "R13",
@@ -998,24 +998,24 @@
     "outputPath": "output\\013_002_What_should_you_do_if_your_ball_lands_on_the_wrong_green\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.722Z"
+    "completedAtUtc": "2026-07-22T12:19:42.857Z"
   },
   {
     "index": 78,
-    "total": 245,
+    "total": 255,
     "folder": "output\\013_003_If_you_accidentally_move_your_ball_or_marker_when_marking",
     "title": "If you accidentally move your ball or marker when marking",
     "ruleNumber": "R13",
     "ruleName": "Ball moved when marking it",
     "status": "skipped",
     "outputPath": "output\\013_003_If_you_accidentally_move_your_ball_or_marker_when_marking\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.725Z"
+    "completedAtUtc": "2026-07-22T12:19:42.859Z"
   },
   {
     "index": 79,
-    "total": 245,
+    "total": 255,
     "folder": "output\\013_003_Waiting_time_for_a_ball_on_the_edge_of_the_hole",
     "title": "Waiting time for a ball on the edge of the hole",
     "ruleNumber": "R13",
@@ -1024,11 +1024,11 @@
     "outputPath": "output\\013_003_Waiting_time_for_a_ball_on_the_edge_of_the_hole\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.727Z"
+    "completedAtUtc": "2026-07-22T12:19:42.861Z"
   },
   {
     "index": 80,
-    "total": 245,
+    "total": 255,
     "folder": "output\\013_003_What_To_Do_With_An_Embedded_Ball",
     "title": "What To Do With An Embedded Ball",
     "ruleNumber": "R13",
@@ -1037,24 +1037,24 @@
     "outputPath": "output\\013_003_What_To_Do_With_An_Embedded_Ball\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.729Z"
+    "completedAtUtc": "2026-07-22T12:19:42.864Z"
   },
   {
     "index": 81,
-    "total": 245,
+    "total": 255,
     "folder": "output\\013_004_What_happens_if_the_ball_rolls_away_after_being_replaced",
     "title": "What happens if the ball rolls away after being replaced?",
     "ruleNumber": "R13",
     "ruleName": "Ball moves after being put back",
     "status": "skipped",
     "outputPath": "output\\013_004_What_happens_if_the_ball_rolls_away_after_being_replaced\\junior-version.json",
-    "durationSeconds": 0.003,
+    "durationSeconds": 0.004,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.734Z"
+    "completedAtUtc": "2026-07-22T12:19:42.868Z"
   },
   {
     "index": 82,
-    "total": 245,
+    "total": 255,
     "folder": "output\\013_004_Your_ball_hits_the_flagstick_in_the_hole",
     "title": "Your ball hits the flagstick in the hole",
     "ruleNumber": "R13",
@@ -1063,11 +1063,11 @@
     "outputPath": "output\\013_004_Your_ball_hits_the_flagstick_in_the_hole\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.735Z"
+    "completedAtUtc": "2026-07-22T12:19:42.870Z"
   },
   {
     "index": 83,
-    "total": 245,
+    "total": 255,
     "folder": "output\\014_001_Penalty_for_Playing_from_the_Wrong_Spot_After_a_Drop",
     "title": "Penalty for Playing from the Wrong Spot After a Drop",
     "ruleNumber": "R14",
@@ -1076,11 +1076,11 @@
     "outputPath": "output\\014_001_Penalty_for_Playing_from_the_Wrong_Spot_After_a_Drop\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.737Z"
+    "completedAtUtc": "2026-07-22T12:19:42.872Z"
   },
   {
     "index": 84,
-    "total": 245,
+    "total": 255,
     "folder": "output\\014_001_What_is_a_club_length",
     "title": "What is a club-length?",
     "ruleNumber": "14",
@@ -1089,11 +1089,11 @@
     "outputPath": "output\\014_001_What_is_a_club_length\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.739Z"
+    "completedAtUtc": "2026-07-22T12:19:42.875Z"
   },
   {
     "index": 85,
-    "total": 245,
+    "total": 255,
     "folder": "output\\014_001_Who_can_put_the_ball_back",
     "title": "Who can put the ball back?",
     "ruleNumber": "R14",
@@ -1102,11 +1102,11 @@
     "outputPath": "output\\014_001_Who_can_put_the_ball_back\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.741Z"
+    "completedAtUtc": "2026-07-22T12:19:42.877Z"
   },
   {
     "index": 86,
-    "total": 245,
+    "total": 255,
     "folder": "output\\014_002_Correct_way_to_drop_a_ball",
     "title": "Correct way to drop a ball",
     "ruleNumber": "14",
@@ -1115,63 +1115,63 @@
     "outputPath": "output\\014_002_Correct_way_to_drop_a_ball\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.743Z"
+    "completedAtUtc": "2026-07-22T12:19:42.880Z"
   },
   {
     "index": 87,
-    "total": 245,
+    "total": 255,
     "folder": "output\\014_002_Penalty_for_Dropping_Incorrectly_but_Playing_from_the_Right_Spot",
     "title": "Penalty for Dropping Incorrectly but Playing from the Right Spot",
     "ruleNumber": "R14",
     "ruleName": "Incorrect drop",
     "status": "skipped",
     "outputPath": "output\\014_002_Penalty_for_Dropping_Incorrectly_but_Playing_from_the_Right_Spot\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.003,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.744Z"
+    "completedAtUtc": "2026-07-22T12:19:42.884Z"
   },
   {
     "index": 88,
-    "total": 245,
+    "total": 255,
     "folder": "output\\014_003_Penalty_for_Placing_Instead_of_Dropping",
     "title": "Penalty for Placing Instead of Dropping",
     "ruleNumber": "R14",
     "ruleName": "Incorrect drop",
     "status": "skipped",
     "outputPath": "output\\014_003_Penalty_for_Placing_Instead_of_Dropping\\junior-version.json",
-    "durationSeconds": 0.004,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.749Z"
+    "completedAtUtc": "2026-07-22T12:19:42.886Z"
   },
   {
     "index": 89,
-    "total": 245,
+    "total": 255,
     "folder": "output\\014_003_When_must_a_ball_be_dropped_again",
     "title": "When must a ball be dropped again?",
     "ruleNumber": "14",
     "ruleName": "Dropping and re-dropping",
     "status": "skipped",
     "outputPath": "output\\014_003_When_must_a_ball_be_dropped_again\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.752Z"
+    "completedAtUtc": "2026-07-22T12:19:42.887Z"
   },
   {
     "index": 90,
-    "total": 245,
+    "total": 255,
     "folder": "output\\014_004_What_happens_if_the_dropped_ball_rolls_out_of_the_relief_area",
     "title": "What happens if the dropped ball rolls out of the relief area?",
     "ruleNumber": "14",
     "ruleName": "Dropping and re-dropping",
     "status": "skipped",
     "outputPath": "output\\014_004_What_happens_if_the_dropped_ball_rolls_out_of_the_relief_area\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.754Z"
+    "completedAtUtc": "2026-07-22T12:19:42.890Z"
   },
   {
     "index": 91,
-    "total": 245,
+    "total": 255,
     "folder": "output\\014_005_What_do_you_do_if_the_ball_wont_stay_in_the_relief_area",
     "title": "What do you do if the ball won't stay in the relief area?",
     "ruleNumber": "14",
@@ -1180,11 +1180,11 @@
     "outputPath": "output\\014_005_What_do_you_do_if_the_ball_wont_stay_in_the_relief_area\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.756Z"
+    "completedAtUtc": "2026-07-22T12:19:42.891Z"
   },
   {
     "index": 92,
-    "total": 245,
+    "total": 255,
     "folder": "output\\015_002_Marking_to_the_side_to_avoid_another_players_line",
     "title": "Marking to the side to avoid another player's line",
     "ruleNumber": "R15",
@@ -1193,11 +1193,11 @@
     "outputPath": "output\\015_002_Marking_to_the_side_to_avoid_another_players_line\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.759Z"
+    "completedAtUtc": "2026-07-22T12:19:42.893Z"
   },
   {
     "index": 93,
-    "total": 245,
+    "total": 255,
     "folder": "output\\015_002_Moving_loose_impediments",
     "title": "Moving loose impediments",
     "ruleNumber": "R15",
@@ -1206,37 +1206,37 @@
     "outputPath": "output\\015_002_Moving_loose_impediments\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.761Z"
+    "completedAtUtc": "2026-07-22T12:19:42.895Z"
   },
   {
     "index": 94,
-    "total": 245,
+    "total": 255,
     "folder": "output\\015_003_Handling_loose_impediments",
     "title": "Handling loose impediments",
     "ruleNumber": "R15",
     "ruleName": "Loose impediments",
     "status": "skipped",
     "outputPath": "output\\015_003_Handling_loose_impediments\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.004,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.765Z"
+    "completedAtUtc": "2026-07-22T12:19:42.900Z"
   },
   {
     "index": 95,
-    "total": 245,
+    "total": 255,
     "folder": "output\\015_003_Moving_loose_impediments_around_your_ball",
     "title": "Moving loose impediments around your ball",
     "ruleNumber": "Def./R15",
     "ruleName": "Loose impediments",
     "status": "skipped",
     "outputPath": "output\\015_003_Moving_loose_impediments_around_your_ball\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.767Z"
+    "completedAtUtc": "2026-07-22T12:19:42.903Z"
   },
   {
     "index": 96,
-    "total": 245,
+    "total": 255,
     "folder": "output\\015_003_Removing_artificial_objects",
     "title": "Removing artificial objects",
     "ruleNumber": "R15",
@@ -1245,11 +1245,11 @@
     "outputPath": "output\\015_003_Removing_artificial_objects\\junior-version.json",
     "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.770Z"
+    "completedAtUtc": "2026-07-22T12:19:42.906Z"
   },
   {
     "index": 97,
-    "total": 245,
+    "total": 255,
     "folder": "output\\015_004_Dealing_with_movable_obstructions_on_the_course",
     "title": "Dealing with movable obstructions on the course",
     "ruleNumber": "R15",
@@ -1258,11 +1258,11 @@
     "outputPath": "output\\015_004_Dealing_with_movable_obstructions_on_the_course\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.771Z"
+    "completedAtUtc": "2026-07-22T12:19:42.907Z"
   },
   {
     "index": 98,
-    "total": 245,
+    "total": 255,
     "folder": "output\\015_004_Moving_artificial_objects",
     "title": "Moving artificial objects",
     "ruleNumber": "R15",
@@ -1271,11 +1271,11 @@
     "outputPath": "output\\015_004_Moving_artificial_objects\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.773Z"
+    "completedAtUtc": "2026-07-22T12:19:42.909Z"
   },
   {
     "index": 99,
-    "total": 245,
+    "total": 255,
     "folder": "output\\015_004_Removing_Loose_Impediments_on_the_Green",
     "title": "Removing Loose Impediments on the Green",
     "ruleNumber": "R15",
@@ -1284,24 +1284,24 @@
     "outputPath": "output\\015_004_Removing_Loose_Impediments_on_the_Green\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.775Z"
+    "completedAtUtc": "2026-07-22T12:19:42.911Z"
   },
   {
     "index": 100,
-    "total": 245,
+    "total": 255,
     "folder": "output\\015_005_Dealing_with_Movable_Obstructions",
     "title": "Dealing with Movable Obstructions",
     "ruleNumber": "R15",
     "ruleName": "Movable Obstructions",
     "status": "skipped",
     "outputPath": "output\\015_005_Dealing_with_Movable_Obstructions\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.777Z"
+    "completedAtUtc": "2026-07-22T12:19:42.916Z"
   },
   {
     "index": 101,
-    "total": 245,
+    "total": 255,
     "folder": "output\\016_001_Free_relief_for_lost_ball_in_abnormal_course_conditions",
     "title": "Free relief for lost ball in abnormal course conditions",
     "ruleNumber": "R16",
@@ -1310,37 +1310,37 @@
     "outputPath": "output\\016_001_Free_relief_for_lost_ball_in_abnormal_course_conditions\\junior-version.json",
     "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.780Z"
+    "completedAtUtc": "2026-07-22T12:19:42.919Z"
   },
   {
     "index": 102,
-    "total": 245,
+    "total": 255,
     "folder": "output\\016_001_Identifying_Immovable_Obstructions",
     "title": "Identifying Immovable Obstructions",
     "ruleNumber": "16",
     "ruleName": "Abnormal course conditions",
     "status": "skipped",
     "outputPath": "output\\016_001_Identifying_Immovable_Obstructions\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.783Z"
+    "completedAtUtc": "2026-07-22T12:19:42.921Z"
   },
   {
     "index": 103,
-    "total": 245,
+    "total": 255,
     "folder": "output\\016_001_Relief_from_wrong_hole_on_a_double_green",
     "title": "Relief from wrong hole on a double green",
     "ruleNumber": "R16",
     "ruleName": "Double green",
     "status": "skipped",
     "outputPath": "output\\016_001_Relief_from_wrong_hole_on_a_double_green\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.786Z"
+    "completedAtUtc": "2026-07-22T12:19:42.923Z"
   },
   {
     "index": 104,
-    "total": 245,
+    "total": 255,
     "folder": "output\\016_001_Taking_relief_from_a_puddle_or_abnormal_course_condition",
     "title": "Taking relief from a puddle or abnormal course condition",
     "ruleNumber": "R16",
@@ -1349,50 +1349,50 @@
     "outputPath": "output\\016_001_Taking_relief_from_a_puddle_or_abnormal_course_condition\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.789Z"
+    "completedAtUtc": "2026-07-22T12:19:42.925Z"
   },
   {
     "index": 105,
-    "total": 245,
+    "total": 255,
     "folder": "output\\016_001_Taking_relief_from_abnormal_course_conditions_in_a_bunker",
     "title": "Taking relief from abnormal course conditions in a bunker",
     "ruleNumber": "R16",
     "ruleName": "Abnormal course conditions",
     "status": "skipped",
     "outputPath": "output\\016_001_Taking_relief_from_abnormal_course_conditions_in_a_bunker\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.791Z"
+    "completedAtUtc": "2026-07-22T12:19:42.927Z"
   },
   {
     "index": 106,
-    "total": 245,
+    "total": 255,
     "folder": "output\\016_002_Dropping_outside_a_bunker_due_to_abnormal_conditions",
     "title": "Dropping outside a bunker due to abnormal conditions",
     "ruleNumber": "R16",
     "ruleName": "Abnormal course conditions",
     "status": "skipped",
     "outputPath": "output\\016_002_Dropping_outside_a_bunker_due_to_abnormal_conditions\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.004,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.796Z"
+    "completedAtUtc": "2026-07-22T12:19:42.931Z"
   },
   {
     "index": 107,
-    "total": 245,
+    "total": 255,
     "folder": "output\\016_002_Free_Relief_from_Temporary_Water",
     "title": "Free Relief from Temporary Water",
     "ruleNumber": "16",
     "ruleName": "Abnormal course conditions",
     "status": "skipped",
     "outputPath": "output\\016_002_Free_Relief_from_Temporary_Water\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.798Z"
+    "completedAtUtc": "2026-07-22T12:19:42.934Z"
   },
   {
     "index": 108,
-    "total": 245,
+    "total": 255,
     "folder": "output\\016_002_Interference_from_a_sprinkler_near_the_green",
     "title": "Interference from a sprinkler near the green",
     "ruleNumber": "R16",
@@ -1401,115 +1401,115 @@
     "outputPath": "output\\016_002_Interference_from_a_sprinkler_near_the_green\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.800Z"
+    "completedAtUtc": "2026-07-22T12:19:42.936Z"
   },
   {
     "index": 109,
-    "total": 245,
+    "total": 255,
     "folder": "output\\016_002_Taking_relief_for_an_embedded_ball",
     "title": "Taking relief for an embedded ball",
     "ruleNumber": "16",
     "ruleName": "Embedded ball",
     "status": "skipped",
     "outputPath": "output\\016_002_Taking_relief_for_an_embedded_ball\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.802Z"
+    "completedAtUtc": "2026-07-22T12:19:42.939Z"
   },
   {
     "index": 110,
-    "total": 245,
+    "total": 255,
     "folder": "output\\016_003_Animal_holes_and_relief",
     "title": "Animal holes and relief",
     "ruleNumber": "R16",
     "ruleName": "Abnormal course conditions",
     "status": "skipped",
     "outputPath": "output\\016_003_Animal_holes_and_relief\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.804Z"
+    "completedAtUtc": "2026-07-22T12:19:42.941Z"
   },
   {
     "index": 111,
-    "total": 245,
+    "total": 255,
     "folder": "output\\016_003_Free_drop_near_a_dangerous_animal",
     "title": "Free drop near a dangerous animal",
     "ruleNumber": "R16",
     "ruleName": "Dangerous situation",
     "status": "skipped",
     "outputPath": "output\\016_003_Free_drop_near_a_dangerous_animal\\junior-version.json",
-    "durationSeconds": 0,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.806Z"
+    "completedAtUtc": "2026-07-22T12:19:42.946Z"
   },
   {
     "index": 112,
-    "total": 245,
+    "total": 255,
     "folder": "output\\016_003_Recognising_Ground_Under_Repair",
     "title": "Recognising Ground Under Repair",
     "ruleNumber": "16",
     "ruleName": "Abnormal course conditions",
     "status": "skipped",
     "outputPath": "output\\016_003_Recognising_Ground_Under_Repair\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.808Z"
+    "completedAtUtc": "2026-07-22T12:19:42.949Z"
   },
   {
     "index": 113,
-    "total": 245,
+    "total": 255,
     "folder": "output\\016_004_Dealing_with_an_embedded_ball_in_a_penalty_area",
     "title": "Dealing with an embedded ball in a penalty area",
     "ruleNumber": "R16",
     "ruleName": "Embedded ball",
     "status": "skipped",
     "outputPath": "output\\016_004_Dealing_with_an_embedded_ball_in_a_penalty_area\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.812Z"
+    "completedAtUtc": "2026-07-22T12:19:42.952Z"
   },
   {
     "index": 114,
-    "total": 245,
+    "total": 255,
     "folder": "output\\016_004_If_the_bunker_is_completely_flooded",
     "title": "If the bunker is completely flooded",
     "ruleNumber": "R16",
     "ruleName": "Abnormal course conditions",
     "status": "skipped",
     "outputPath": "output\\016_004_If_the_bunker_is_completely_flooded\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.814Z"
+    "completedAtUtc": "2026-07-22T12:19:42.954Z"
   },
   {
     "index": 115,
-    "total": 245,
+    "total": 255,
     "folder": "output\\016_004_Taking_relief_from_obstructions_in_a_penalty_area",
     "title": "Taking relief from obstructions in a penalty area",
     "ruleNumber": "R16",
     "ruleName": "Abnormal course conditions",
     "status": "skipped",
     "outputPath": "output\\016_004_Taking_relief_from_obstructions_in_a_penalty_area\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.816Z"
+    "completedAtUtc": "2026-07-22T12:19:42.956Z"
   },
   {
     "index": 116,
-    "total": 245,
+    "total": 255,
     "folder": "output\\016_004_What_Kind_of_Animal_Holes_Give_Free_Relief",
     "title": "What Kind of Animal Holes Give Free Relief?",
     "ruleNumber": "16",
     "ruleName": "Abnormal course conditions",
     "status": "skipped",
     "outputPath": "output\\016_004_What_Kind_of_Animal_Holes_Give_Free_Relief\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.818Z"
+    "completedAtUtc": "2026-07-22T12:19:42.958Z"
   },
   {
     "index": 117,
-    "total": 245,
+    "total": 255,
     "folder": "output\\016_005_When_Is_Free_Relief_Allowed_for_Abnormal_Course_Conditions",
     "title": "When Is Free Relief Allowed for Abnormal Course Conditions?",
     "ruleNumber": "16",
@@ -1518,11 +1518,11 @@
     "outputPath": "output\\016_005_When_Is_Free_Relief_Allowed_for_Abnormal_Course_Conditions\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.820Z"
+    "completedAtUtc": "2026-07-22T12:19:42.959Z"
   },
   {
     "index": 118,
-    "total": 245,
+    "total": 255,
     "folder": "output\\017_001_Choosing_the_Correct_Relief_Point",
     "title": "Choosing the Correct Relief Point",
     "ruleNumber": "17",
@@ -1531,37 +1531,37 @@
     "outputPath": "output\\017_001_Choosing_the_Correct_Relief_Point\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.822Z"
+    "completedAtUtc": "2026-07-22T12:19:42.965Z"
   },
   {
     "index": 119,
-    "total": 245,
+    "total": 255,
     "folder": "output\\017_001_Options_After_Hitting_Into_a_Red_Penalty_Area",
     "title": "Options After Hitting Into a Red Penalty Area",
     "ruleNumber": "17",
     "ruleName": "Penalty Areas",
     "status": "skipped",
     "outputPath": "output\\017_001_Options_After_Hitting_Into_a_Red_Penalty_Area\\junior-version.json",
-    "durationSeconds": 0.007,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.830Z"
+    "completedAtUtc": "2026-07-22T12:19:42.967Z"
   },
   {
     "index": 120,
-    "total": 245,
+    "total": 255,
     "folder": "output\\017_001_Where_does_the_penalty_area_begin",
     "title": "Where does the penalty area begin?",
     "ruleNumber": "R17",
     "ruleName": "In a penalty area",
     "status": "skipped",
     "outputPath": "output\\017_001_Where_does_the_penalty_area_begin\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.832Z"
+    "completedAtUtc": "2026-07-22T12:19:42.969Z"
   },
   {
     "index": 121,
-    "total": 245,
+    "total": 255,
     "folder": "output\\017_001_Where_to_drop_after_yellow_penalty_area",
     "title": "Where to drop after yellow penalty area",
     "ruleNumber": "17",
@@ -1570,50 +1570,50 @@
     "outputPath": "output\\017_001_Where_to_drop_after_yellow_penalty_area\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.834Z"
+    "completedAtUtc": "2026-07-22T12:19:42.971Z"
   },
   {
     "index": 122,
-    "total": 245,
+    "total": 255,
     "folder": "output\\017_002_Relief_Location_Choices",
     "title": "Relief Location Choices",
     "ruleNumber": "17",
     "ruleName": "Taking Relief from Abnormal Course Conditions",
     "status": "skipped",
     "outputPath": "output\\017_002_Relief_Location_Choices\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.836Z"
+    "completedAtUtc": "2026-07-22T12:19:42.974Z"
   },
   {
     "index": 123,
-    "total": 245,
+    "total": 255,
     "folder": "output\\017_002_Returning_to_previous_spot_after_water_hazard",
     "title": "Returning to previous spot after water hazard",
     "ruleNumber": "17",
     "ruleName": "Penalty area rule",
     "status": "skipped",
     "outputPath": "output\\017_002_Returning_to_previous_spot_after_water_hazard\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.003,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.838Z"
+    "completedAtUtc": "2026-07-22T12:19:42.978Z"
   },
   {
     "index": 124,
-    "total": 245,
+    "total": 255,
     "folder": "output\\017_002_What_happens_if_you_hit_your_ball_into_the_water_again_from_a_penalty_area",
     "title": "What happens if you hit your ball into the water again from a penalty area?",
     "ruleNumber": "R17",
     "ruleName": "Penalty area – Ball lost or not out",
     "status": "skipped",
     "outputPath": "output\\017_002_What_happens_if_you_hit_your_ball_into_the_water_again_from_a_penalty_area\\junior-version.json",
-    "durationSeconds": 0.003,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.842Z"
+    "completedAtUtc": "2026-07-22T12:19:42.981Z"
   },
   {
     "index": 125,
-    "total": 245,
+    "total": 255,
     "folder": "output\\017_002_What_Should_You_Do_After_Losing_a_Ball_in_a_Red_Penalty_Area",
     "title": "What Should You Do After Losing a Ball in a Red Penalty Area?",
     "ruleNumber": "17",
@@ -1622,24 +1622,24 @@
     "outputPath": "output\\017_002_What_Should_You_Do_After_Losing_a_Ball_in_a_Red_Penalty_Area\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.844Z"
+    "completedAtUtc": "2026-07-22T12:19:42.984Z"
   },
   {
     "index": 126,
-    "total": 245,
+    "total": 255,
     "folder": "output\\017_003_Ball_from_penalty_area_goes_out_of_bounds",
     "title": "Ball from penalty area goes out of bounds",
     "ruleNumber": "R17",
     "ruleName": "Penalty area – Ball out of bounds or lost",
     "status": "skipped",
     "outputPath": "output\\017_003_Ball_from_penalty_area_goes_out_of_bounds\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.845Z"
+    "completedAtUtc": "2026-07-22T12:19:42.988Z"
   },
   {
     "index": 127,
-    "total": 245,
+    "total": 255,
     "folder": "output\\017_003_Knowing_When_Local_Rules_Offer_Extra_Options",
     "title": "Knowing When Local Rules Offer Extra Options",
     "ruleNumber": "17",
@@ -1648,24 +1648,24 @@
     "outputPath": "output\\017_003_Knowing_When_Local_Rules_Offer_Extra_Options\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.847Z"
+    "completedAtUtc": "2026-07-22T12:19:42.993Z"
   },
   {
     "index": 128,
-    "total": 245,
+    "total": 255,
     "folder": "output\\017_003_Options_for_playing_from_a_penalty_area",
     "title": "Options for playing from a penalty area",
     "ruleNumber": "R17",
     "ruleName": "In a penalty area",
     "status": "skipped",
     "outputPath": "output\\017_003_Options_for_playing_from_a_penalty_area\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.849Z"
+    "completedAtUtc": "2026-07-22T12:19:42.997Z"
   },
   {
     "index": 129,
-    "total": 245,
+    "total": 255,
     "folder": "output\\017_003_Options_when_your_ball_is_in_a_yellow_penalty_area",
     "title": "Options when your ball is in a yellow penalty area",
     "ruleNumber": "17",
@@ -1674,271 +1674,271 @@
     "outputPath": "output\\017_003_Options_when_your_ball_is_in_a_yellow_penalty_area\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.851Z"
+    "completedAtUtc": "2026-07-22T12:19:42.999Z"
   },
   {
     "index": 130,
-    "total": 245,
+    "total": 255,
     "folder": "output\\017_003_What_if_the_nearest_point_is_in_a_bad_lie",
     "title": "What if the nearest point is in a bad lie?",
     "ruleNumber": "17",
     "ruleName": "Taking Relief from Abnormal Course Conditions",
     "status": "skipped",
     "outputPath": "output\\017_003_What_if_the_nearest_point_is_in_a_bad_lie\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.853Z"
+    "completedAtUtc": "2026-07-22T12:19:43.002Z"
   },
   {
     "index": 131,
-    "total": 245,
+    "total": 255,
     "folder": "output\\017_004_No_Play_Zones_in_Relief_Situations",
     "title": "No Play Zones in Relief Situations",
     "ruleNumber": "17",
     "ruleName": "Taking Relief from Abnormal Course Conditions",
     "status": "skipped",
     "outputPath": "output\\017_004_No_Play_Zones_in_Relief_Situations\\junior-version.json",
-    "durationSeconds": 0.003,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.858Z"
+    "completedAtUtc": "2026-07-22T12:19:43.006Z"
   },
   {
     "index": 132,
-    "total": 245,
+    "total": 255,
     "folder": "output\\018_001_Playing_a_second_ball_without_announcing_it_as_provisional",
     "title": "Playing a second ball without announcing it as provisional",
     "ruleNumber": "R18",
     "ruleName": "Provisional Balls",
     "status": "skipped",
     "outputPath": "output\\018_001_Playing_a_second_ball_without_announcing_it_as_provisional\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.004,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.860Z"
+    "completedAtUtc": "2026-07-22T12:19:43.011Z"
   },
   {
     "index": 133,
-    "total": 245,
+    "total": 255,
     "folder": "output\\018_001_What_happens_if_you_find_your_original_ball_on_the_course",
     "title": "What happens if you find your original ball on the course?",
     "ruleNumber": "R18",
     "ruleName": "Provisional Ball",
     "status": "skipped",
     "outputPath": "output\\018_001_What_happens_if_you_find_your_original_ball_on_the_course\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.003,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.862Z"
+    "completedAtUtc": "2026-07-22T12:19:43.016Z"
   },
   {
     "index": 134,
-    "total": 245,
+    "total": 255,
     "folder": "output\\018_001_When_is_a_ball_out_of_bounds",
     "title": "When is a ball out of bounds?",
     "ruleNumber": "R18",
     "ruleName": "Out of bounds and provisional ball",
     "status": "skipped",
     "outputPath": "output\\018_001_When_is_a_ball_out_of_bounds\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.005,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.865Z"
+    "completedAtUtc": "2026-07-22T12:19:43.025Z"
   },
   {
     "index": 135,
-    "total": 245,
+    "total": 255,
     "folder": "output\\018_002_What_counts_as_a_lost_ball",
     "title": "What counts as a lost ball?",
     "ruleNumber": "R18",
     "ruleName": "Lost ball",
     "status": "skipped",
     "outputPath": "output\\018_002_What_counts_as_a_lost_ball\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.003,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.866Z"
+    "completedAtUtc": "2026-07-22T12:19:43.029Z"
   },
   {
     "index": 136,
-    "total": 245,
+    "total": 255,
     "folder": "output\\018_002_What_do_you_have_to_do_if_your_ball_is_out_of_bounds",
     "title": "What do you have to do if your ball is out of bounds?",
     "ruleNumber": "R18",
     "ruleName": "Out of bounds and provisional ball",
     "status": "skipped",
     "outputPath": "output\\018_002_What_do_you_have_to_do_if_your_ball_is_out_of_bounds\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.869Z"
+    "completedAtUtc": "2026-07-22T12:19:43.033Z"
   },
   {
     "index": 137,
-    "total": 245,
+    "total": 255,
     "folder": "output\\018_002_What_if_the_provisional_ball_is_in_a_better_spot",
     "title": "What if the provisional ball is in a better spot?",
     "ruleNumber": "R18",
     "ruleName": "Provisional Balls",
     "status": "skipped",
     "outputPath": "output\\018_002_What_if_the_provisional_ball_is_in_a_better_spot\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.007,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.870Z"
+    "completedAtUtc": "2026-07-22T12:19:43.042Z"
   },
   {
     "index": 138,
-    "total": 245,
+    "total": 255,
     "folder": "output\\018_003_How_and_when_to_play_a_provisional_ball",
     "title": "How and when to play a provisional ball",
     "ruleNumber": "R18",
     "ruleName": "Provisional/lost ball",
     "status": "skipped",
     "outputPath": "output\\018_003_How_and_when_to_play_a_provisional_ball\\junior-version.json",
-    "durationSeconds": 0.003,
+    "durationSeconds": 0.005,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.874Z"
+    "completedAtUtc": "2026-07-22T12:19:43.056Z"
   },
   {
     "index": 139,
-    "total": 245,
+    "total": 255,
     "folder": "output\\018_003_Provisional_ball_played_past_where_the_original_ball_is_believed_to_be",
     "title": "Provisional ball played past where the original ball is believed to be",
     "ruleNumber": "R18",
     "ruleName": "Provisional Balls",
     "status": "skipped",
     "outputPath": "output\\018_003_Provisional_ball_played_past_where_the_original_ball_is_believed_to_be\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.005,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.876Z"
+    "completedAtUtc": "2026-07-22T12:19:43.063Z"
   },
   {
     "index": 140,
-    "total": 245,
+    "total": 255,
     "folder": "output\\018_003_What_happens_to_your_provisional_ball",
     "title": "What happens to your provisional ball?",
     "ruleNumber": "R18",
     "ruleName": "Out of bounds and provisional ball",
     "status": "skipped",
     "outputPath": "output\\018_003_What_happens_to_your_provisional_ball\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.004,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.878Z"
+    "completedAtUtc": "2026-07-22T12:19:43.069Z"
   },
   {
     "index": 141,
-    "total": 245,
+    "total": 255,
     "folder": "output\\018_003_What_if_your_original_ball_is_out_of_bounds_or_not_found",
     "title": "What if your original ball is out of bounds or not found?",
     "ruleNumber": "R18",
     "ruleName": "Provisional Ball",
     "status": "skipped",
     "outputPath": "output\\018_003_What_if_your_original_ball_is_out_of_bounds_or_not_found\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.005,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.880Z"
+    "completedAtUtc": "2026-07-22T12:19:43.078Z"
   },
   {
     "index": 142,
-    "total": 245,
+    "total": 255,
     "folder": "output\\018_003_When_to_play_a_provisional_ball",
     "title": "When to play a provisional ball",
     "ruleNumber": "18",
     "ruleName": "Playing a provisional ball",
     "status": "skipped",
     "outputPath": "output\\018_003_When_to_play_a_provisional_ball\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.006,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.882Z"
+    "completedAtUtc": "2026-07-22T12:19:43.087Z"
   },
   {
     "index": 143,
-    "total": 245,
+    "total": 255,
     "folder": "output\\018_004_Can_you_play_a_provisional_ball_if_your_ball_is_in_a_penalty_area",
     "title": "Can you play a provisional ball if your ball is in a penalty area?",
     "ruleNumber": "R18",
     "ruleName": "Provisional/lost ball",
     "status": "skipped",
     "outputPath": "output\\018_004_Can_you_play_a_provisional_ball_if_your_ball_is_in_a_penalty_area\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.004,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.885Z"
+    "completedAtUtc": "2026-07-22T12:19:43.092Z"
   },
   {
     "index": 144,
-    "total": 245,
+    "total": 255,
     "folder": "output\\018_004_Provisional_ball_and_penalty_areas",
     "title": "Provisional ball and penalty areas",
     "ruleNumber": "18",
     "ruleName": "Playing a provisional ball",
     "status": "skipped",
     "outputPath": "output\\018_004_Provisional_ball_and_penalty_areas\\junior-version.json",
-    "durationSeconds": 0.003,
+    "durationSeconds": 0.005,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.889Z"
+    "completedAtUtc": "2026-07-22T12:19:43.099Z"
   },
   {
     "index": 145,
-    "total": 245,
+    "total": 255,
     "folder": "output\\019_001_Who_decides_if_a_ball_is_unplayable",
     "title": "Who decides if a ball is unplayable?",
     "ruleNumber": "R19",
     "ruleName": "Unplayable ball",
     "status": "skipped",
     "outputPath": "output\\019_001_Who_decides_if_a_ball_is_unplayable\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.004,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.891Z"
+    "completedAtUtc": "2026-07-22T12:19:43.105Z"
   },
   {
     "index": 146,
-    "total": 245,
+    "total": 255,
     "folder": "output\\019_002_Declaring_a_Ball_Unplayable_in_a_Bunker",
     "title": "Declaring a Ball Unplayable in a Bunker",
     "ruleNumber": "R19",
     "ruleName": "Unplayable ball",
     "status": "skipped",
     "outputPath": "output\\019_002_Declaring_a_Ball_Unplayable_in_a_Bunker\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.004,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.894Z"
+    "completedAtUtc": "2026-07-22T12:19:43.110Z"
   },
   {
     "index": 147,
-    "total": 245,
+    "total": 255,
     "folder": "output\\019_002_What_are_your_options_for_an_unplayable_ball",
     "title": "What are your options for an unplayable ball?",
     "ruleNumber": "R19",
     "ruleName": "Unplayable ball",
     "status": "skipped",
     "outputPath": "output\\019_002_What_are_your_options_for_an_unplayable_ball\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.004,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.896Z"
+    "completedAtUtc": "2026-07-22T12:19:43.116Z"
   },
   {
     "index": 148,
-    "total": 245,
+    "total": 255,
     "folder": "output\\019_003_Options_for_an_Unplayable_Ball_in_a_Bunker",
     "title": "Options for an Unplayable Ball in a Bunker",
     "ruleNumber": "R19",
     "ruleName": "Unplayable ball",
     "status": "skipped",
     "outputPath": "output\\019_003_Options_for_an_Unplayable_Ball_in_a_Bunker\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.003,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.899Z"
+    "completedAtUtc": "2026-07-22T12:19:43.121Z"
   },
   {
     "index": 149,
-    "total": 245,
+    "total": 255,
     "folder": "output\\019_003_What_if_your_dropped_ball_ends_up_back_in_the_same_spot",
     "title": "What if your dropped ball ends up back in the same spot?",
     "ruleNumber": "R19",
     "ruleName": "Unplayable ball",
     "status": "skipped",
     "outputPath": "output\\019_003_What_if_your_dropped_ball_ends_up_back_in_the_same_spot\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.900Z"
+    "completedAtUtc": "2026-07-22T12:19:43.124Z"
   },
   {
     "index": 150,
-    "total": 245,
+    "total": 255,
     "folder": "output\\019_004_Dropping_After_Returning_to_Last_Stroke_Location",
     "title": "Dropping After Returning to Last Stroke Location",
     "ruleNumber": "R19",
@@ -1947,11 +1947,11 @@
     "outputPath": "output\\019_004_Dropping_After_Returning_to_Last_Stroke_Location\\junior-version.json",
     "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.904Z"
+    "completedAtUtc": "2026-07-22T12:19:43.128Z"
   },
   {
     "index": 151,
-    "total": 245,
+    "total": 255,
     "folder": "output\\019_005_Declaring_a_ball_unplayable_in_a_penalty_area",
     "title": "Declaring a ball unplayable in a penalty area",
     "ruleNumber": "R19",
@@ -1960,167 +1960,167 @@
     "outputPath": "output\\019_005_Declaring_a_ball_unplayable_in_a_penalty_area\\junior-version.json",
     "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.908Z"
+    "completedAtUtc": "2026-07-22T12:19:43.132Z"
   },
   {
     "index": 152,
-    "total": 245,
+    "total": 255,
     "folder": "output\\020_003_What_should_you_do_if_youre_unsure_which_rule_applies_stroke_play",
     "title": "What should you do if you’re unsure which rule applies (stroke play)?",
     "ruleNumber": "20",
     "ruleName": "When in doubt about the rules",
     "status": "skipped",
     "outputPath": "output\\020_003_What_should_you_do_if_youre_unsure_which_rule_applies_stroke_play\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.003,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.910Z"
+    "completedAtUtc": "2026-07-22T12:19:43.137Z"
   },
   {
     "index": 153,
-    "total": 245,
+    "total": 255,
     "folder": "output\\020_004_Is_playing_two_balls_allowed_in_match_play",
     "title": "Is playing two balls allowed in match play?",
     "ruleNumber": "20",
     "ruleName": "When in doubt about the rules",
     "status": "skipped",
     "outputPath": "output\\020_004_Is_playing_two_balls_allowed_in_match_play\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.914Z"
+    "completedAtUtc": "2026-07-22T12:19:43.140Z"
   },
   {
     "index": 154,
-    "total": 245,
+    "total": 255,
     "folder": "output\\039_002_Conceding_putts_in_stroke_play",
     "title": "Conceding putts in stroke play",
     "ruleNumber": "R3/9",
     "ruleName": "Putt conceded/ball not holed",
     "status": "skipped",
     "outputPath": "output\\039_002_Conceding_putts_in_stroke_play\\junior-version.json",
-    "durationSeconds": 0,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.916Z"
+    "completedAtUtc": "2026-07-22T12:19:43.144Z"
   },
   {
     "index": 155,
-    "total": 245,
+    "total": 255,
     "folder": "output\\089_001_Moving_or_bending_grass_before_your_shot",
     "title": "Moving or bending grass before your shot",
     "ruleNumber": "R8/9",
     "ruleName": "Do not break anything off or bend anything out of the way",
     "status": "skipped",
     "outputPath": "output\\089_001_Moving_or_bending_grass_before_your_shot\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.006,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.919Z"
+    "completedAtUtc": "2026-07-22T12:19:43.151Z"
   },
   {
     "index": 156,
-    "total": 245,
+    "total": 255,
     "folder": "output\\089_002_Penalty_for_breaking_off_branches_during_a_practice_swing",
     "title": "Penalty for breaking off branches during a practice swing",
     "ruleNumber": "R8/9",
     "ruleName": "Do not break anything off or bend anything out of the way",
     "status": "skipped",
     "outputPath": "output\\089_002_Penalty_for_breaking_off_branches_during_a_practice_swing\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.922Z"
+    "completedAtUtc": "2026-07-22T12:19:43.155Z"
   },
   {
     "index": 157,
-    "total": 245,
+    "total": 255,
     "folder": "output\\1113_002_Flagstick_Hit_Accidentally_What_Happens",
     "title": "Flagstick Hit Accidentally – What Happens?",
     "ruleNumber": "R11/13",
     "ruleName": "Ball hits the flagstick or the person tending it",
     "status": "skipped",
     "outputPath": "output\\1113_002_Flagstick_Hit_Accidentally_What_Happens\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.924Z"
+    "completedAtUtc": "2026-07-22T12:19:43.159Z"
   },
   {
     "index": 158,
-    "total": 245,
+    "total": 255,
     "folder": "output\\1113_003_Flagstick_Used_To_Stop_The_Ball_Whats_The_Penalty",
     "title": "Flagstick Used To Stop The Ball – What's The Penalty?",
     "ruleNumber": "R11/13",
     "ruleName": "Ball hits the flagstick or the person tending it",
     "status": "skipped",
     "outputPath": "output\\1113_003_Flagstick_Used_To_Stop_The_Ball_Whats_The_Penalty\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.926Z"
+    "completedAtUtc": "2026-07-22T12:19:43.164Z"
   },
   {
     "index": 159,
-    "total": 245,
+    "total": 255,
     "folder": "output\\121418_004_What_to_Do_if_Ball_is_Lost_or_Out_of_Bounds_From_Bunker",
     "title": "What to Do if Ball is Lost or Out of Bounds From Bunker",
     "ruleNumber": "R12/14/18",
     "ruleName": "Ball hit out of bounds/lost ball",
     "status": "skipped",
     "outputPath": "output\\121418_004_What_to_Do_if_Ball_is_Lost_or_Out_of_Bounds_From_Bunker\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.929Z"
+    "completedAtUtc": "2026-07-22T12:19:43.168Z"
   },
   {
     "index": 160,
-    "total": 245,
+    "total": 255,
     "folder": "output\\1314_004_How_to_mark_your_ball_on_the_green",
     "title": "How to mark your ball on the green",
     "ruleNumber": "R13/14",
     "ruleName": "Marking and picking up the ball",
     "status": "skipped",
     "outputPath": "output\\1314_004_How_to_mark_your_ball_on_the_green\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.931Z"
+    "completedAtUtc": "2026-07-22T12:19:43.172Z"
   },
   {
     "index": 161,
-    "total": 245,
+    "total": 255,
     "folder": "output\\1415_001_What_to_do_when_two_balls_are_too_close_together",
     "title": "What to do when two balls are too close together",
     "ruleNumber": "R14/15",
     "ruleName": "Balls close to each other",
     "status": "skipped",
     "outputPath": "output\\1415_001_What_to_do_when_two_balls_are_too_close_together\\junior-version.json",
-    "durationSeconds": 0.003,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.936Z"
+    "completedAtUtc": "2026-07-22T12:19:43.177Z"
   },
   {
     "index": 162,
-    "total": 245,
+    "total": 255,
     "folder": "output\\1415_001_What_to_do_when_two_balls_are_very_close_together",
     "title": "What to do when two balls are very close together",
     "ruleNumber": "14/15",
     "ruleName": "Balls close to each other",
     "status": "skipped",
     "outputPath": "output\\1415_001_What_to_do_when_two_balls_are_very_close_together\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.006,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.939Z"
+    "completedAtUtc": "2026-07-22T12:19:43.186Z"
   },
   {
     "index": 163,
-    "total": 245,
+    "total": 255,
     "folder": "output\\1418_002_Time_to_look_for_a_lost_ball",
     "title": "Time to look for a lost ball",
     "ruleNumber": "Def./R14/18",
     "ruleName": "Looking for a ball",
     "status": "skipped",
     "outputPath": "output\\1418_002_Time_to_look_for_a_lost_ball\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.941Z"
+    "completedAtUtc": "2026-07-22T12:19:43.191Z"
   },
   {
     "index": 164,
-    "total": 245,
+    "total": 255,
     "folder": "output\\1618_001_Standing_out_of_bounds_to_play_a_ball",
     "title": "Standing out of bounds to play a ball",
     "ruleNumber": "16/18",
@@ -2129,11 +2129,11 @@
     "outputPath": "output\\1618_001_Standing_out_of_bounds_to_play_a_ball\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.944Z"
+    "completedAtUtc": "2026-07-22T12:19:43.192Z"
   },
   {
     "index": 165,
-    "total": 245,
+    "total": 255,
     "folder": "output\\1618_002_Relief_from_movable_obstructions_outside_the_course",
     "title": "Relief from movable obstructions outside the course",
     "ruleNumber": "16/18",
@@ -2142,24 +2142,24 @@
     "outputPath": "output\\1618_002_Relief_from_movable_obstructions_outside_the_course\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.947Z"
+    "completedAtUtc": "2026-07-22T12:19:43.195Z"
   },
   {
     "index": 166,
-    "total": 245,
+    "total": 255,
     "folder": "output\\1718_002_Ball_possibly_in_a_penalty_area",
     "title": "Ball possibly in a penalty area",
     "ruleNumber": "R17/18",
     "ruleName": "In a penalty area",
     "status": "skipped",
     "outputPath": "output\\1718_002_Ball_possibly_in_a_penalty_area\\junior-version.json",
-    "durationSeconds": 0.003,
+    "durationSeconds": 0.004,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.952Z"
+    "completedAtUtc": "2026-07-22T12:19:43.200Z"
   },
   {
     "index": 167,
-    "total": 245,
+    "total": 255,
     "folder": "output\\1819_002_Original_ball_found_but_is_unplayable",
     "title": "Original ball found but is unplayable",
     "ruleNumber": "R18/19",
@@ -2168,11 +2168,11 @@
     "outputPath": "output\\1819_002_Original_ball_found_but_is_unplayable\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.953Z"
+    "completedAtUtc": "2026-07-22T12:19:43.203Z"
   },
   {
     "index": 168,
-    "total": 245,
+    "total": 255,
     "folder": "output\\321_002_What_must_you_do_with_your_ball_on_each_hole",
     "title": "What must you do with your ball on each hole?",
     "ruleNumber": "R3/21",
@@ -2181,11 +2181,11 @@
     "outputPath": "output\\321_002_What_must_you_do_with_your_ball_on_each_hole\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.955Z"
+    "completedAtUtc": "2026-07-22T12:19:43.207Z"
   },
   {
     "index": 169,
-    "total": 245,
+    "total": 255,
     "folder": "output\\614_003_When_can_you_change_your_golf_ball",
     "title": "When can you change your golf ball?",
     "ruleNumber": "R6/14",
@@ -2194,11 +2194,11 @@
     "outputPath": "output\\614_003_When_can_you_change_your_golf_ball\\junior-version.json",
     "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.958Z"
+    "completedAtUtc": "2026-07-22T12:19:43.209Z"
   },
   {
     "index": 170,
-    "total": 245,
+    "total": 255,
     "folder": "output\\6815_003_What_can_you_do_on_the_tee",
     "title": "What can you do on the tee?",
     "ruleNumber": "R6/8/15",
@@ -2207,63 +2207,63 @@
     "outputPath": "output\\6815_003_What_can_you_do_on_the_tee\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.961Z"
+    "completedAtUtc": "2026-07-22T12:19:43.211Z"
   },
   {
     "index": 171,
-    "total": 245,
+    "total": 255,
     "folder": "output\\689_001_What_should_you_do_if_you_find_your_ball_in_a_tricky_spot",
     "title": "What should you do if you find your ball in a tricky spot?",
     "ruleNumber": "6/8/9",
     "ruleName": "Playing the ball as it lies",
     "status": "skipped",
     "outputPath": "output\\689_001_What_should_you_do_if_you_find_your_ball_in_a_tricky_spot\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.005,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.964Z"
+    "completedAtUtc": "2026-07-22T12:19:43.217Z"
   },
   {
     "index": 172,
-    "total": 245,
+    "total": 255,
     "folder": "output\\689_002_When_must_you_NOT_play_the_ball_as_it_lies",
     "title": "When must you NOT play the ball as it lies?",
     "ruleNumber": "6/8/9",
     "ruleName": "Playing the ball as it lies",
     "status": "skipped",
     "outputPath": "output\\689_002_When_must_you_NOT_play_the_ball_as_it_lies\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.967Z"
+    "completedAtUtc": "2026-07-22T12:19:43.220Z"
   },
   {
     "index": 173,
-    "total": 245,
+    "total": 255,
     "folder": "output\\714_003_How_do_you_check_if_a_ball_in_a_bunker_is_yours",
     "title": "How do you check if a ball in a bunker is yours?",
     "ruleNumber": "R7/14",
     "ruleName": "Identifying the ball",
     "status": "skipped",
     "outputPath": "output\\714_003_How_do_you_check_if_a_ball_in_a_bunker_is_yours\\junior-version.json",
-    "durationSeconds": 0,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.969Z"
+    "completedAtUtc": "2026-07-22T12:19:43.224Z"
   },
   {
     "index": 174,
-    "total": 245,
+    "total": 255,
     "folder": "output\\714_004_Identifying_your_ball",
     "title": "Identifying your ball",
     "ruleNumber": "R7/14",
     "ruleName": "Identifying the ball",
     "status": "skipped",
     "outputPath": "output\\714_004_Identifying_your_ball\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.971Z"
+    "completedAtUtc": "2026-07-22T12:19:43.227Z"
   },
   {
     "index": 175,
-    "total": 245,
+    "total": 255,
     "folder": "output\\812_002_Ball_Rolls_Back_Into_Your_Footprints_in_Bunker",
     "title": "Ball Rolls Back Into Your Footprints in Bunker",
     "ruleNumber": "R8/12",
@@ -2272,37 +2272,37 @@
     "outputPath": "output\\812_002_Ball_Rolls_Back_Into_Your_Footprints_in_Bunker\\junior-version.json",
     "durationSeconds": 0.003,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.975Z"
+    "completedAtUtc": "2026-07-22T12:19:43.231Z"
   },
   {
     "index": 176,
-    "total": 245,
+    "total": 255,
     "folder": "output\\8917_002_Playing_a_ball_in_a_penalty_area",
     "title": "Playing a ball in a penalty area",
     "ruleNumber": "R8/9/17",
     "ruleName": "Playing the ball as it lies",
     "status": "skipped",
     "outputPath": "output\\8917_002_Playing_a_ball_in_a_penalty_area\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.977Z"
+    "completedAtUtc": "2026-07-22T12:19:43.234Z"
   },
   {
     "index": 177,
-    "total": 245,
+    "total": 255,
     "folder": "output\\914_001_What_to_do_if_your_ball_is_moved_by_an_animal",
     "title": "What to do if your ball is moved by an animal",
     "ruleNumber": "R9/14",
     "ruleName": "Ball at rest moved by an outside influence",
     "status": "skipped",
     "outputPath": "output\\914_001_What_to_do_if_your_ball_is_moved_by_an_animal\\junior-version.json",
-    "durationSeconds": 0.003,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.982Z"
+    "completedAtUtc": "2026-07-22T12:19:43.236Z"
   },
   {
     "index": 178,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_001_Cleaning_Mud_Off_a_Ball_Using_the_Putting_Green_Surface",
     "title": "Cleaning Mud Off a Ball Using the Putting Green Surface",
     "ruleNumber": "13.1e",
@@ -2311,63 +2311,63 @@
     "outputPath": "output\\ai_001_Cleaning_Mud_Off_a_Ball_Using_the_Putting_Green_Surface\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.984Z"
+    "completedAtUtc": "2026-07-22T12:19:43.237Z"
   },
   {
     "index": 179,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_002_Can_you_declare_your_ball_lost",
     "title": "Can you declare your ball lost?",
     "ruleNumber": "18.2a(1)",
     "ruleName": "When Ball Is Lost",
     "status": "skipped",
     "outputPath": "output\\ai_002_Can_you_declare_your_ball_lost\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.987Z"
+    "completedAtUtc": "2026-07-22T12:19:43.239Z"
   },
   {
     "index": 180,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_003_Can_You_Remove_an_Out_of_Bounds_Post",
     "title": "Can You Remove an Out of Bounds Post?",
     "ruleNumber": "8.1a",
     "ruleName": "Actions That Improve Conditions Affecting the Stroke",
     "status": "skipped",
     "outputPath": "output\\ai_003_Can_You_Remove_an_Out_of_Bounds_Post\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.990Z"
+    "completedAtUtc": "2026-07-22T12:19:43.241Z"
   },
   {
     "index": 181,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_004_Accidentally_Touching_the_Sand_in_a_Bunker",
     "title": "Accidentally Touching the Sand in a Bunker",
     "ruleNumber": "12.2b",
     "ruleName": "Restrictions on Touching Sand in Bunker",
     "status": "skipped",
     "outputPath": "output\\ai_004_Accidentally_Touching_the_Sand_in_a_Bunker\\junior-version.json",
-    "durationSeconds": 0,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.991Z"
+    "completedAtUtc": "2026-07-22T12:19:43.243Z"
   },
   {
     "index": 182,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_005_Accidental_Double_Hit_During_Stroke",
     "title": "Accidental Double Hit During Stroke",
     "ruleNumber": "10.1a",
     "ruleName": "Fairly Striking the Ball",
     "status": "skipped",
     "outputPath": "output\\ai_005_Accidental_Double_Hit_During_Stroke\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.003,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:13.997Z"
+    "completedAtUtc": "2026-07-22T12:19:43.248Z"
   },
   {
     "index": 183,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_006_Waiting_Time_When_Ball_Is_Hanging_on_the_Edge_of_the_Hole",
     "title": "Waiting Time When Ball Is Hanging on the Edge of the Hole",
     "ruleNumber": "13.3a",
@@ -2376,63 +2376,63 @@
     "outputPath": "output\\ai_006_Waiting_Time_When_Ball_Is_Hanging_on_the_Edge_of_the_Hole\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.000Z"
+    "completedAtUtc": "2026-07-22T12:19:43.251Z"
   },
   {
     "index": 184,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_007_How_Long_May_You_Search_for_a_Ball",
     "title": "How Long May You Search for a Ball?",
     "ruleNumber": "18.2a(1)",
     "ruleName": "Ball Lost or Out of Bounds: Stroke-and-Distance Relief",
     "status": "skipped",
     "outputPath": "output\\ai_007_How_Long_May_You_Search_for_a_Ball\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.003Z"
+    "completedAtUtc": "2026-07-22T12:19:43.253Z"
   },
   {
     "index": 185,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_008_Can_You_Use_a_Club_to_Line_Up_Your_Stance",
     "title": "Can You Use a Club to Line Up Your Stance?",
     "ruleNumber": "10.2b(3)",
     "ruleName": "No Setting Down Object to Help with Taking Stance",
     "status": "skipped",
     "outputPath": "output\\ai_008_Can_You_Use_a_Club_to_Line_Up_Your_Stance\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.005Z"
+    "completedAtUtc": "2026-07-22T12:19:43.256Z"
   },
   {
     "index": 186,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_009_Can_You_Clean_Your_Ball_on_the_Fairway",
     "title": "Can You Clean Your Ball on the Fairway?",
     "ruleNumber": "9.4",
     "ruleName": "Ball Lifted or Deliberately Touched by Player",
     "status": "skipped",
     "outputPath": "output\\ai_009_Can_You_Clean_Your_Ball_on_the_Fairway\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.008Z"
+    "completedAtUtc": "2026-07-22T12:19:43.259Z"
   },
   {
     "index": 187,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_010_Is_it_Allowed_to_Remove_Dew_or_Frost_from_Your_Line_of_Play",
     "title": "Is it Allowed to Remove Dew or Frost from Your Line of Play?",
     "ruleNumber": "8.1a",
     "ruleName": "Actions That Improve Conditions Affecting the Stroke",
     "status": "skipped",
     "outputPath": "output\\ai_010_Is_it_Allowed_to_Remove_Dew_or_Frost_from_Your_Line_of_Play\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.004,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.012Z"
+    "completedAtUtc": "2026-07-22T12:19:43.264Z"
   },
   {
     "index": 188,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_011_Can_You_Remove_a_Rake_Before_Playing",
     "title": "Can You Remove a Rake Before Playing?",
     "ruleNumber": "15.2a",
@@ -2441,11 +2441,11 @@
     "outputPath": "output\\ai_011_Can_You_Remove_a_Rake_Before_Playing\\junior-version.json",
     "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.015Z"
+    "completedAtUtc": "2026-07-22T12:19:43.266Z"
   },
   {
     "index": 189,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_012_Ball_Moves_When_Removing_a_Movable_Obstruction_in_a_Bunker",
     "title": "Ball Moves When Removing a Movable Obstruction in a Bunker",
     "ruleNumber": "15.2a(1), 14.2e",
@@ -2454,24 +2454,24 @@
     "outputPath": "output\\ai_012_Ball_Moves_When_Removing_a_Movable_Obstruction_in_a_Bunker\\junior-version.json",
     "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.017Z"
+    "completedAtUtc": "2026-07-22T12:19:43.269Z"
   },
   {
     "index": 190,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_013_Can_You_Use_a_Stone_to_Mark_Your_Ball",
     "title": "Can You Use a Stone to Mark Your Ball?",
     "ruleNumber": "14.1a",
     "ruleName": "Marking, Lifting and Cleaning Ball",
     "status": "skipped",
     "outputPath": "output\\ai_013_Can_You_Use_a_Stone_to_Mark_Your_Ball\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.020Z"
+    "completedAtUtc": "2026-07-22T12:19:43.272Z"
   },
   {
     "index": 191,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_014_Repairing_a_Pitch_Mark_When_Ball_is_Off_the_Green",
     "title": "Repairing a Pitch Mark When Ball is Off the Green",
     "ruleNumber": "13.1c(2)",
@@ -2480,24 +2480,24 @@
     "outputPath": "output\\ai_014_Repairing_a_Pitch_Mark_When_Ball_is_Off_the_Green\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.022Z"
+    "completedAtUtc": "2026-07-22T12:19:43.275Z"
   },
   {
     "index": 192,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_015_Removing_Loose_Sand_on_the_Fringe",
     "title": "Removing Loose Sand on the Fringe",
     "ruleNumber": "13.1c & 8.1a",
     "ruleName": "Improvements Allowed on the Putting Green; Actions That Improve Conditions Affecting the Stroke",
     "status": "skipped",
     "outputPath": "output\\ai_015_Removing_Loose_Sand_on_the_Fringe\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.025Z"
+    "completedAtUtc": "2026-07-22T12:19:43.279Z"
   },
   {
     "index": 193,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_016_Removing_Sand_from_the_Putting_Green",
     "title": "Removing Sand from the Putting Green",
     "ruleNumber": "13.1c",
@@ -2506,24 +2506,24 @@
     "outputPath": "output\\ai_016_Removing_Sand_from_the_Putting_Green\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.029Z"
+    "completedAtUtc": "2026-07-22T12:19:43.282Z"
   },
   {
     "index": 194,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_017_Lost_Ball_in_a_Pile_of_Leaves",
     "title": "Lost Ball in a Pile of Leaves",
     "ruleNumber": "18.2a(1)",
     "ruleName": "Lost Ball",
     "status": "skipped",
     "outputPath": "output\\ai_017_Lost_Ball_in_a_Pile_of_Leaves\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.031Z"
+    "completedAtUtc": "2026-07-22T12:19:43.285Z"
   },
   {
     "index": 195,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_018_Can_You_Break_a_Branch_to_Make_Your_Swing_Easier",
     "title": "Can You Break a Branch to Make Your Swing Easier?",
     "ruleNumber": "8.1a",
@@ -2532,37 +2532,37 @@
     "outputPath": "output\\ai_018_Can_You_Break_a_Branch_to_Make_Your_Swing_Easier\\junior-version.json",
     "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.035Z"
+    "completedAtUtc": "2026-07-22T12:19:43.288Z"
   },
   {
     "index": 196,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_019_Ball_Accidentally_Moved_While_Searching_in_Rough",
     "title": "Ball Accidentally Moved While Searching in Rough",
     "ruleNumber": "7.4",
     "ruleName": "Ball Accidentally Moved in Trying to Find or Identify It",
     "status": "skipped",
     "outputPath": "output\\ai_019_Ball_Accidentally_Moved_While_Searching_in_Rough\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.038Z"
+    "completedAtUtc": "2026-07-22T12:19:43.291Z"
   },
   {
     "index": 197,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_020_Opponent_Plays_Out_of_Turn",
     "title": "Opponent Plays Out of Turn",
     "ruleNumber": "6.4a",
     "ruleName": "Order of Play in Match Play",
     "status": "skipped",
     "outputPath": "output\\ai_020_Opponent_Plays_Out_of_Turn\\junior-version.json",
-    "durationSeconds": 0.003,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.043Z"
+    "completedAtUtc": "2026-07-22T12:19:43.297Z"
   },
   {
     "index": 198,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_021_Your_Opponent_Plays_Out_of_Turn_What_Are_Your_Options",
     "title": "Your Opponent Plays Out of Turn – What Are Your Options?",
     "ruleNumber": "6.4a",
@@ -2571,11 +2571,11 @@
     "outputPath": "output\\ai_021_Your_Opponent_Plays_Out_of_Turn_What_Are_Your_Options\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.045Z"
+    "completedAtUtc": "2026-07-22T12:19:43.300Z"
   },
   {
     "index": 199,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_022_Forgetting_to_Announce_a_Provisional_Ball",
     "title": "Forgetting to Announce a Provisional Ball",
     "ruleNumber": "18.3b",
@@ -2584,11 +2584,11 @@
     "outputPath": "output\\ai_022_Forgetting_to_Announce_a_Provisional_Ball\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.048Z"
+    "completedAtUtc": "2026-07-22T12:19:43.302Z"
   },
   {
     "index": 200,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_023_No_Room_to_Drop_from_a_Yellow_Penalty_Area",
     "title": "No Room to Drop from a Yellow Penalty Area",
     "ruleNumber": "17.1d",
@@ -2597,11 +2597,11 @@
     "outputPath": "output\\ai_023_No_Room_to_Drop_from_a_Yellow_Penalty_Area\\junior-version.json",
     "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.052Z"
+    "completedAtUtc": "2026-07-22T12:19:43.306Z"
   },
   {
     "index": 201,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_024_Ball_in_a_Fairway_Divot_Free_Relief",
     "title": "Ball in a Fairway Divot: Free Relief?",
     "ruleNumber": "9.1",
@@ -2610,128 +2610,128 @@
     "outputPath": "output\\ai_024_Ball_in_a_Fairway_Divot_Free_Relief\\junior-version.json",
     "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.054Z"
+    "completedAtUtc": "2026-07-22T12:19:43.310Z"
   },
   {
     "index": 202,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_025_Ball_Next_to_a_Movable_Bench",
     "title": "Ball Next to a Movable Bench",
     "ruleNumber": "15.2a",
     "ruleName": "Movable Obstructions",
     "status": "skipped",
     "outputPath": "output\\ai_025_Ball_Next_to_a_Movable_Bench\\junior-version.json",
-    "durationSeconds": 0.003,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.060Z"
+    "completedAtUtc": "2026-07-22T12:19:43.313Z"
   },
   {
     "index": 203,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_026_Relief_from_a_Fixed_Litter_Bin_Interfering_with_Your_Swing",
     "title": "Relief from a Fixed Litter Bin Interfering with Your Swing",
     "ruleNumber": "16.1",
     "ruleName": "Relief from Abnormal Course Conditions (Immovable Obstructions)",
     "status": "skipped",
     "outputPath": "output\\ai_026_Relief_from_a_Fixed_Litter_Bin_Interfering_with_Your_Swing\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.064Z"
+    "completedAtUtc": "2026-07-22T12:19:43.316Z"
   },
   {
     "index": 204,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_027_Ball_Stuck_in_a_Tree_What_Are_Your_Options",
     "title": "Ball Stuck in a Tree - What Are Your Options?",
     "ruleNumber": "19.1",
     "ruleName": "Relief for an Unplayable Ball",
     "status": "skipped",
     "outputPath": "output\\ai_027_Ball_Stuck_in_a_Tree_What_Are_Your_Options\\junior-version.json",
-    "durationSeconds": 0.003,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.068Z"
+    "completedAtUtc": "2026-07-22T12:19:43.319Z"
   },
   {
     "index": 205,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_028_Ball_Resting_on_a_Towel",
     "title": "Ball Resting on a Towel",
     "ruleNumber": "15.2a(1)",
     "ruleName": "Relief from a Movable Obstruction",
     "status": "skipped",
     "outputPath": "output\\ai_028_Ball_Resting_on_a_Towel\\junior-version.json",
-    "durationSeconds": 0.003,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.075Z"
+    "completedAtUtc": "2026-07-22T12:19:43.322Z"
   },
   {
     "index": 206,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_029_Ball_Strikes_Overhead_Power_Line",
     "title": "Ball Strikes Overhead Power Line",
     "ruleNumber": "Model Local Rule E-11, Rule 11.1",
     "ruleName": "Ball Played from Anywhere Other Than Putting Green Strikes Power Line; Ball in Motion Accidentally Hits Person, Animal or Object",
     "status": "skipped",
     "outputPath": "output\\ai_029_Ball_Strikes_Overhead_Power_Line\\junior-version.json",
-    "durationSeconds": 0.003,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.080Z"
+    "completedAtUtc": "2026-07-22T12:19:43.325Z"
   },
   {
     "index": 207,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_030_Ball_in_a_No_Play_Zone_Practice_Area",
     "title": "Ball in a No Play Zone (Practice Area)",
     "ruleNumber": "16.1f",
     "ruleName": "Relief Must Be Taken from Interference by No Play Zone",
     "status": "skipped",
     "outputPath": "output\\ai_030_Ball_in_a_No_Play_Zone_Practice_Area\\junior-version.json",
-    "durationSeconds": 0.004,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.086Z"
+    "completedAtUtc": "2026-07-22T12:19:43.328Z"
   },
   {
     "index": 208,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_031_Ball_Next_to_a_Swarm_of_Bees_Dangerous_Animal_Condition_Relief",
     "title": "Ball Next to a Swarm of Bees – Dangerous Animal Condition Relief",
     "ruleNumber": "16.2",
     "ruleName": "Dangerous Animal Condition",
     "status": "skipped",
     "outputPath": "output\\ai_031_Ball_Next_to_a_Swarm_of_Bees_Dangerous_Animal_Condition_Relief\\junior-version.json",
-    "durationSeconds": 0.019,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.111Z"
+    "completedAtUtc": "2026-07-22T12:19:43.332Z"
   },
   {
     "index": 209,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_032_Ball_Under_a_Parked_Car",
     "title": "Ball Under a Parked Car",
     "ruleNumber": "15.2a & 16.1",
     "ruleName": "Movable and Immovable Obstructions",
     "status": "skipped",
     "outputPath": "output\\ai_032_Ball_Under_a_Parked_Car\\junior-version.json",
-    "durationSeconds": 0.003,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.115Z"
+    "completedAtUtc": "2026-07-22T12:19:43.334Z"
   },
   {
     "index": 210,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_033_Practice_Swing_in_Long_Rough_Improving_Conditions_Affecting_the_Stroke",
     "title": "Practice Swing in Long Rough – Improving Conditions Affecting the Stroke",
     "ruleNumber": "8.1a",
     "ruleName": "Actions That Improve Conditions Affecting the Stroke",
     "status": "skipped",
     "outputPath": "output\\ai_033_Practice_Swing_in_Long_Rough_Improving_Conditions_Affecting_the_Stroke\\junior-version.json",
-    "durationSeconds": 0.019,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.142Z"
+    "completedAtUtc": "2026-07-22T12:19:43.336Z"
   },
   {
     "index": 211,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_034_Can_You_Move_a_Worm_Before_Playing",
     "title": "Can You Move a Worm Before Playing?",
     "ruleNumber": "Rule 15.2a",
@@ -2740,245 +2740,245 @@
     "outputPath": "output\\ai_034_Can_You_Move_a_Worm_Before_Playing\\junior-version.json",
     "durationSeconds": 0.004,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.150Z"
+    "completedAtUtc": "2026-07-22T12:19:43.342Z"
   },
   {
     "index": 212,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_035_Ball_in_Tyre_Tracks_on_Fairway",
     "title": "Ball in Tyre Tracks on Fairway",
     "ruleNumber": "16.1",
     "ruleName": "Relief from Abnormal Course Conditions",
     "status": "skipped",
     "outputPath": "output\\ai_035_Ball_in_Tyre_Tracks_on_Fairway\\junior-version.json",
-    "durationSeconds": 0.008,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.162Z"
+    "completedAtUtc": "2026-07-22T12:19:43.345Z"
   },
   {
     "index": 213,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_036_Concession_of_a_Stroke_in_Match_Play",
     "title": "Concession of a Stroke in Match Play",
     "ruleNumber": "3.2b",
     "ruleName": "Concessions",
     "status": "skipped",
     "outputPath": "output\\ai_036_Concession_of_a_Stroke_in_Match_Play\\junior-version.json",
-    "durationSeconds": 0.012,
+    "durationSeconds": 0.003,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.177Z"
+    "completedAtUtc": "2026-07-22T12:19:43.349Z"
   },
   {
     "index": 214,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_037_Accidental_Contact_with_Sand_in_Bunker_during_Backswing",
     "title": "Accidental Contact with Sand in Bunker during Backswing",
     "ruleNumber": "12.2b",
     "ruleName": "Restrictions on Touching Sand in Bunker",
     "status": "skipped",
     "outputPath": "output\\ai_037_Accidental_Contact_with_Sand_in_Bunker_during_Backswing\\junior-version.json",
-    "durationSeconds": 0.022,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.202Z"
+    "completedAtUtc": "2026-07-22T12:19:43.351Z"
   },
   {
     "index": 215,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_038_Ball_Under_Water_in_Temporary_Water_on_the_Fairway",
     "title": "Ball Under Water in Temporary Water on the Fairway",
     "ruleNumber": "16.1",
     "ruleName": "Relief from Abnormal Course Conditions (Including Immovable Obstructions)",
     "status": "skipped",
     "outputPath": "output\\ai_038_Ball_Under_Water_in_Temporary_Water_on_the_Fairway\\junior-version.json",
-    "durationSeconds": 0.008,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.212Z"
+    "completedAtUtc": "2026-07-22T12:19:43.354Z"
   },
   {
     "index": 216,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_039_Practice_Swing_Moves_Your_Ball",
     "title": "Practice Swing Moves Your Ball",
     "ruleNumber": "9.4",
     "ruleName": "Ball Lifted or Deliberately Touched by Player or Causes It to Move",
     "status": "skipped",
     "outputPath": "output\\ai_039_Practice_Swing_Moves_Your_Ball\\junior-version.json",
-    "durationSeconds": 0.006,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.219Z"
+    "completedAtUtc": "2026-07-22T12:19:43.358Z"
   },
   {
     "index": 217,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_040_Practice_Swing_Knocks_Ball_Off_Tee",
     "title": "Practice Swing Knocks Ball Off Tee",
     "ruleNumber": "6.2b(5)",
     "ruleName": "Ball in Teeing Area Accidentally Falls Off Tee or Is Knocked Off Tee",
     "status": "skipped",
     "outputPath": "output\\ai_040_Practice_Swing_Knocks_Ball_Off_Tee\\junior-version.json",
-    "durationSeconds": 0.007,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.230Z"
+    "completedAtUtc": "2026-07-22T12:19:43.361Z"
   },
   {
     "index": 218,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_041_Practice_Swing_Accidentally_Moves_Ball_in_the_Fairway",
     "title": "Practice Swing Accidentally Moves Ball in the Fairway",
     "ruleNumber": "9.4b",
     "ruleName": "Ball Lifted or Moved by Player",
     "status": "skipped",
     "outputPath": "output\\ai_041_Practice_Swing_Accidentally_Moves_Ball_in_the_Fairway\\junior-version.json",
-    "durationSeconds": 0.006,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.238Z"
+    "completedAtUtc": "2026-07-22T12:19:43.364Z"
   },
   {
     "index": 219,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_042_Practice_Swing_Moves_Ball_on_Putting_Green",
     "title": "Practice Swing Moves Ball on Putting Green",
     "ruleNumber": "13.1d(1)",
     "ruleName": "Actions Affecting Ball on Putting Green",
     "status": "skipped",
     "outputPath": "output\\ai_042_Practice_Swing_Moves_Ball_on_Putting_Green\\junior-version.json",
-    "durationSeconds": 0.003,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.242Z"
+    "completedAtUtc": "2026-07-22T12:19:43.366Z"
   },
   {
     "index": 220,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_043_Ball_on_the_Clubhouse_Patio_Immovable_Obstruction",
     "title": "Ball on the Clubhouse Patio (Immovable Obstruction)",
     "ruleNumber": "16.1",
     "ruleName": "Abnormal Course Conditions – Immovable Obstructions",
     "status": "skipped",
     "outputPath": "output\\ai_043_Ball_on_the_Clubhouse_Patio_Immovable_Obstruction\\junior-version.json",
-    "durationSeconds": 0.007,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.253Z"
+    "completedAtUtc": "2026-07-22T12:19:43.369Z"
   },
   {
     "index": 221,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_044_Ball_Resting_on_Clubhouse_Patio",
     "title": "Ball Resting on Clubhouse Patio",
     "ruleNumber": "16.1",
     "ruleName": "Relief from Immovable Obstructions",
     "status": "skipped",
     "outputPath": "output\\ai_044_Ball_Resting_on_Clubhouse_Patio\\junior-version.json",
-    "durationSeconds": 0.001,
+    "durationSeconds": 0.004,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.255Z"
+    "completedAtUtc": "2026-07-22T12:19:43.374Z"
   },
   {
     "index": 222,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_045_Ball_Breaks_in_Half_After_Hitting_Tree",
     "title": "Ball Breaks in Half After Hitting Tree",
     "ruleNumber": "4.2b",
     "ruleName": "Ball Breaks into Pieces While Playing Hole",
     "status": "skipped",
     "outputPath": "output\\ai_045_Ball_Breaks_in_Half_After_Hitting_Tree\\junior-version.json",
-    "durationSeconds": 0.006,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.264Z"
+    "completedAtUtc": "2026-07-22T12:19:43.376Z"
   },
   {
     "index": 223,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_046_Damaged_Ball_During_Play_of_Hole",
     "title": "Damaged Ball During Play of Hole",
     "ruleNumber": "4.2c",
     "ruleName": "Ball Becomes Cut or Cracked While Playing Hole",
     "status": "skipped",
     "outputPath": "output\\ai_046_Damaged_Ball_During_Play_of_Hole\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.271Z"
+    "completedAtUtc": "2026-07-22T12:19:43.380Z"
   },
   {
     "index": 224,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_047_Adjusting_Your_Driver_During_the_Round",
     "title": "Adjusting Your Driver During the Round",
     "ruleNumber": "4.1a(3)",
     "ruleName": "Deliberately Changing Club's Performance Characteristics During Round",
     "status": "skipped",
     "outputPath": "output\\ai_047_Adjusting_Your_Driver_During_the_Round\\junior-version.json",
-    "durationSeconds": 0.004,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.279Z"
+    "completedAtUtc": "2026-07-22T12:19:43.383Z"
   },
   {
     "index": 225,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_048_Extra_Club_Never_Used",
     "title": "Extra Club Never Used",
     "ruleNumber": "4.1b",
     "ruleName": "Limit of 14 Clubs During Round",
     "status": "skipped",
     "outputPath": "output\\ai_048_Extra_Club_Never_Used\\junior-version.json",
-    "durationSeconds": 0.017,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.301Z"
+    "completedAtUtc": "2026-07-22T12:19:43.388Z"
   },
   {
     "index": 226,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_049_Lateral_Relief_from_Yellow_Penalty_Area",
     "title": "Lateral Relief from Yellow Penalty Area",
     "ruleNumber": "17.1d",
     "ruleName": "Relief for Ball in Penalty Area",
     "status": "skipped",
     "outputPath": "output\\ai_049_Lateral_Relief_from_Yellow_Penalty_Area\\junior-version.json",
-    "durationSeconds": 0.004,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.309Z"
+    "completedAtUtc": "2026-07-22T12:19:43.391Z"
   },
   {
     "index": 227,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_050_Ball_Lost_in_Red_Penalty_Area",
     "title": "Ball Lost in Red Penalty Area",
     "ruleNumber": "17.1c",
     "ruleName": "Relief for Ball Not Found but Known or Virtually Certain to Be in Penalty Area",
     "status": "skipped",
     "outputPath": "output\\ai_050_Ball_Lost_in_Red_Penalty_Area\\junior-version.json",
-    "durationSeconds": 0.003,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.315Z"
+    "completedAtUtc": "2026-07-22T12:19:43.395Z"
   },
   {
     "index": 228,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_051_Ball_Against_a_Boundary_Fence",
     "title": "Ball Against a Boundary Fence",
     "ruleNumber": "Definition of Boundary Object",
     "ruleName": "Boundary Objects",
     "status": "skipped",
     "outputPath": "output\\ai_051_Ball_Against_a_Boundary_Fence\\junior-version.json",
-    "durationSeconds": 0.01,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.327Z"
+    "completedAtUtc": "2026-07-22T12:19:43.397Z"
   },
   {
     "index": 229,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_052_Trolley_Exclusion_Stake_Movable_Obstruction",
     "title": "Trolley Exclusion Stake – Movable Obstruction",
     "ruleNumber": "15.2",
     "ruleName": "Movable Obstructions",
     "status": "skipped",
     "outputPath": "output\\ai_052_Trolley_Exclusion_Stake_Movable_Obstruction\\junior-version.json",
-    "durationSeconds": 0.003,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.330Z"
+    "completedAtUtc": "2026-07-22T12:19:43.401Z"
   },
   {
     "index": 230,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_053_Another_Player_Accidentally_Plays_Your_Ball",
     "title": "Another Player Accidentally Plays Your Ball",
     "ruleNumber": "6.3c",
@@ -2987,141 +2987,141 @@
     "outputPath": "output\\ai_053_Another_Player_Accidentally_Plays_Your_Ball\\junior-version.json",
     "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.335Z"
+    "completedAtUtc": "2026-07-22T12:19:43.405Z"
   },
   {
     "index": 231,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_054_Sprinkler_Head_on_Line_of_Play_Off_the_Putting_Green",
     "title": "Sprinkler Head on Line of Play Off the Putting Green",
     "ruleNumber": "16.1",
     "ruleName": "Relief from Abnormal Course Conditions (Including Immovable Obstructions)",
     "status": "skipped",
     "outputPath": "output\\ai_054_Sprinkler_Head_on_Line_of_Play_Off_the_Putting_Green\\junior-version.json",
-    "durationSeconds": 0.006,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.344Z"
+    "completedAtUtc": "2026-07-22T12:19:43.408Z"
   },
   {
     "index": 232,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_055_Opponent_watching_your_putt",
     "title": "Opponent watching your putt",
     "ruleNumber": "1.2a, 10.2",
     "ruleName": "Standards of Player Conduct; Advice and Other Help",
     "status": "skipped",
     "outputPath": "output\\ai_055_Opponent_watching_your_putt\\junior-version.json",
-    "durationSeconds": 0.003,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.349Z"
+    "completedAtUtc": "2026-07-22T12:19:43.411Z"
   },
   {
     "index": 233,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_056_Forgetting_to_Move_Ball_Marker_Back",
     "title": "Forgetting to Move Ball Marker Back",
     "ruleNumber": "Rule 14.7",
     "ruleName": "Playing from Wrong Place",
     "status": "skipped",
     "outputPath": "output\\ai_056_Forgetting_to_Move_Ball_Marker_Back\\junior-version.json",
-    "durationSeconds": 0.005,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.357Z"
+    "completedAtUtc": "2026-07-22T12:19:43.414Z"
   },
   {
     "index": 234,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_057_Two_Balls_in_the_Hole_Which_Counts",
     "title": "Two Balls in the Hole – Which Counts?",
     "ruleNumber": "6.5",
     "ruleName": "When a Hole Is Completed",
     "status": "skipped",
     "outputPath": "output\\ai_057_Two_Balls_in_the_Hole_Which_Counts\\junior-version.json",
-    "durationSeconds": 0.003,
+    "durationSeconds": 0.004,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.364Z"
+    "completedAtUtc": "2026-07-22T12:19:43.420Z"
   },
   {
     "index": 235,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_058_Playing_a_Provisional_Ball_Before_Reaching_the_Original_Balls_Likely_Position",
     "title": "Playing a Provisional Ball Before Reaching the Original Ball's Likely Position",
     "ruleNumber": "18.3c",
     "ruleName": "Provisional Ball – Actions Before Original Ball Is Found or Lost",
     "status": "skipped",
     "outputPath": "output\\ai_058_Playing_a_Provisional_Ball_Before_Reaching_the_Original_Balls_Likely_Position\\junior-version.json",
-    "durationSeconds": 0.005,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.373Z"
+    "completedAtUtc": "2026-07-22T12:19:43.422Z"
   },
   {
     "index": 236,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_059_Ball_Moved_by_Wind_and_Stopped_by_Measuring_Club",
     "title": "Ball Moved by Wind and Stopped by Measuring Club",
     "ruleNumber": "9.3 & 9.6",
     "ruleName": "Ball Moved by Natural Forces / Ball Stopped by Player’s Equipment",
     "status": "skipped",
     "outputPath": "output\\ai_059_Ball_Moved_by_Wind_and_Stopped_by_Measuring_Club\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.379Z"
+    "completedAtUtc": "2026-07-22T12:19:43.425Z"
   },
   {
     "index": 237,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_060_What_happens_if_you_forget_to_sign_your_scorecard",
     "title": "What happens if you forget to sign your scorecard?",
     "ruleNumber": "3.3b(4)",
     "ruleName": "Certification of Hole Scores",
     "status": "skipped",
     "outputPath": "output\\ai_060_What_happens_if_you_forget_to_sign_your_scorecard\\junior-version.json",
-    "durationSeconds": 0.003,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.384Z"
+    "completedAtUtc": "2026-07-22T12:19:43.429Z"
   },
   {
     "index": 238,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_061_Who_plays_first_when_one_ball_is_on_the_green_and_another_in_a_bunker_closer_to_the_hole",
     "title": "Who plays first when one ball is on the green and another in a bunker closer to the hole?",
     "ruleNumber": "6.4b",
     "ruleName": "Order of Play in Stroke Play",
     "status": "skipped",
     "outputPath": "output\\ai_061_Who_plays_first_when_one_ball_is_on_the_green_and_another_in_a_bunker_closer_to_the_hole\\junior-version.json",
-    "durationSeconds": 0.003,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.390Z"
+    "completedAtUtc": "2026-07-22T12:19:43.432Z"
   },
   {
     "index": 239,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_062_Driver_Breaks_During_the_Round",
     "title": "Driver Breaks During the Round",
     "ruleNumber": "4.1a(2)",
     "ruleName": "Clubs – Damage During Round",
     "status": "skipped",
     "outputPath": "output\\ai_062_Driver_Breaks_During_the_Round\\junior-version.json",
-    "durationSeconds": 0.003,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.397Z"
+    "completedAtUtc": "2026-07-22T12:19:43.435Z"
   },
   {
     "index": 240,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_063_Replacing_a_Club_Broken_in_Anger",
     "title": "Replacing a Club Broken in Anger",
     "ruleNumber": "4.1a(2)",
     "ruleName": "Clubs Broken or Damaged During Round – Deliberately",
     "status": "skipped",
     "outputPath": "output\\ai_063_Replacing_a_Club_Broken_in_Anger\\junior-version.json",
-    "durationSeconds": 0.004,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.403Z"
+    "completedAtUtc": "2026-07-22T12:19:43.439Z"
   },
   {
     "index": 241,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_064_How_far_from_the_nearest_point_of_complete_relief_may_you_drop_your_ball_from_a_cart_path",
     "title": "How far from the nearest point of complete relief may you drop your ball from a cart path?",
     "ruleNumber": "16.1b",
@@ -3130,37 +3130,37 @@
     "outputPath": "output\\ai_064_How_far_from_the_nearest_point_of_complete_relief_may_you_drop_your_ball_from_a_cart_path\\junior-version.json",
     "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.407Z"
+    "completedAtUtc": "2026-07-22T12:19:43.442Z"
   },
   {
     "index": 242,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_065_Lateral_Relief_from_a_Red_Penalty_Area",
     "title": "Lateral Relief from a Red Penalty Area",
     "ruleNumber": "17.1d(3)",
     "ruleName": "Relief for Ball in Penalty Area",
     "status": "skipped",
     "outputPath": "output\\ai_065_Lateral_Relief_from_a_Red_Penalty_Area\\junior-version.json",
-    "durationSeconds": 0.022,
+    "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.431Z"
+    "completedAtUtc": "2026-07-22T12:19:43.445Z"
   },
   {
     "index": 243,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_066_How_far_may_you_drop_for_lateral_relief_from_an_unplayable_ball",
     "title": "How far may you drop for lateral relief from an unplayable ball?",
     "ruleNumber": "19.2c",
     "ruleName": "Unplayable Ball Relief – Lateral Relief",
     "status": "skipped",
     "outputPath": "output\\ai_066_How_far_may_you_drop_for_lateral_relief_from_an_unplayable_ball\\junior-version.json",
-    "durationSeconds": 0.002,
+    "durationSeconds": 0.001,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.436Z"
+    "completedAtUtc": "2026-07-22T12:19:43.448Z"
   },
   {
     "index": 244,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_067_How_Far_May_You_Drop_for_Embedded_Ball_Relief",
     "title": "How Far May You Drop for Embedded Ball Relief?",
     "ruleNumber": "16.3b",
@@ -3169,11 +3169,11 @@
     "outputPath": "output\\ai_067_How_Far_May_You_Drop_for_Embedded_Ball_Relief\\junior-version.json",
     "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.441Z"
+    "completedAtUtc": "2026-07-22T12:19:43.452Z"
   },
   {
     "index": 245,
-    "total": 245,
+    "total": 255,
     "folder": "output\\ai_068_Options_for_Relief_from_a_Yellow_Penalty_Area",
     "title": "Options for Relief from a Yellow Penalty Area",
     "ruleNumber": "17.1d",
@@ -3182,6 +3182,136 @@
     "outputPath": "output\\ai_068_Options_for_Relief_from_a_Yellow_Penalty_Area\\junior-version.json",
     "durationSeconds": 0.002,
     "error": "",
-    "completedAtUtc": "2026-06-26T19:53:14.445Z"
+    "completedAtUtc": "2026-07-22T12:19:43.455Z"
+  },
+  {
+    "index": 246,
+    "total": 255,
+    "folder": "output\\ai_069_Lifting_Equipment_Likely_to_Interfere_with_Ball_in_Motion",
+    "title": "Lifting Equipment Likely to Interfere with Ball in Motion",
+    "ruleNumber": "11.3",
+    "ruleName": "Deliberate Actions to Affect Ball in Motion",
+    "status": "skipped",
+    "outputPath": "output\\ai_069_Lifting_Equipment_Likely_to_Interfere_with_Ball_in_Motion\\junior-version.json",
+    "durationSeconds": 0.001,
+    "error": "",
+    "completedAtUtc": "2026-07-22T12:19:43.458Z"
+  },
+  {
+    "index": 247,
+    "total": 255,
+    "folder": "output\\ai_070_Standing_Behind_an_Opponents_Line_in_Match_Play",
+    "title": "Standing Behind an Opponent's Line in Match Play",
+    "ruleNumber": "1.2",
+    "ruleName": "Standards of Player Conduct",
+    "status": "skipped",
+    "outputPath": "output\\ai_070_Standing_Behind_an_Opponents_Line_in_Match_Play\\junior-version.json",
+    "durationSeconds": 0.001,
+    "error": "",
+    "completedAtUtc": "2026-07-22T12:19:43.461Z"
+  },
+  {
+    "index": 248,
+    "total": 255,
+    "folder": "output\\ai_071_Striking_Grass_on_the_Bunker_Face_with_the_Club_on_the_Backswing",
+    "title": "Striking Grass on the Bunker Face with the Club on the Backswing",
+    "ruleNumber": "12.2b",
+    "ruleName": "What You Can and Cannot Do in Bunkers",
+    "status": "skipped",
+    "outputPath": "output\\ai_071_Striking_Grass_on_the_Bunker_Face_with_the_Club_on_the_Backswing\\junior-version.json",
+    "durationSeconds": 0.003,
+    "error": "",
+    "completedAtUtc": "2026-07-22T12:19:43.467Z"
+  },
+  {
+    "index": 249,
+    "total": 255,
+    "folder": "output\\ai_072_Player_Has_Too_Many_Clubs_in_Bag_During_Stroke_Play",
+    "title": "Player Has Too Many Clubs in Bag During Stroke Play",
+    "ruleNumber": "4.1b",
+    "ruleName": "Limit of Clubs; Sharing, Adding or Replacing Clubs",
+    "status": "skipped",
+    "outputPath": "output\\ai_072_Player_Has_Too_Many_Clubs_in_Bag_During_Stroke_Play\\junior-version.json",
+    "durationSeconds": 0.001,
+    "error": "",
+    "completedAtUtc": "2026-07-22T12:19:43.470Z"
+  },
+  {
+    "index": 250,
+    "total": 255,
+    "folder": "output\\ai_073_Procedure_When_a_Ball_is_Out_of_Bounds",
+    "title": "Procedure When a Ball is Out of Bounds",
+    "ruleNumber": "18.2",
+    "ruleName": "Ball Lost or Out of Bounds: Provisional Ball",
+    "status": "skipped",
+    "outputPath": "output\\ai_073_Procedure_When_a_Ball_is_Out_of_Bounds\\junior-version.json",
+    "durationSeconds": 0.002,
+    "error": "",
+    "completedAtUtc": "2026-07-22T12:19:43.473Z"
+  },
+  {
+    "index": 251,
+    "total": 255,
+    "folder": "output\\ai_074_Tee_Shot_Out_of_Bounds",
+    "title": "Tee Shot Out of Bounds",
+    "ruleNumber": "18.2",
+    "ruleName": "Ball Lost or Out of Bounds: Stroke-and-Distance Relief",
+    "status": "skipped",
+    "outputPath": "output\\ai_074_Tee_Shot_Out_of_Bounds\\junior-version.json",
+    "durationSeconds": 0.001,
+    "error": "",
+    "completedAtUtc": "2026-07-22T12:19:43.475Z"
+  },
+  {
+    "index": 252,
+    "total": 255,
+    "folder": "output\\ai_075_When_to_Play_a_Provisional_Ball",
+    "title": "When to Play a Provisional Ball",
+    "ruleNumber": "18.3",
+    "ruleName": "Provisional Ball",
+    "status": "skipped",
+    "outputPath": "output\\ai_075_When_to_Play_a_Provisional_Ball\\junior-version.json",
+    "durationSeconds": 0.002,
+    "error": "",
+    "completedAtUtc": "2026-07-22T12:19:43.478Z"
+  },
+  {
+    "index": 253,
+    "total": 255,
+    "folder": "output\\ai_076_Is_the_Ball_In_Bounds_If_It_Overhangs_the_Boundary_Line",
+    "title": "Is the Ball In Bounds If It Overhangs the Boundary Line?",
+    "ruleNumber": "18.2a",
+    "ruleName": "Ball Lost or Out of Bounds",
+    "status": "skipped",
+    "outputPath": "output\\ai_076_Is_the_Ball_In_Bounds_If_It_Overhangs_the_Boundary_Line\\junior-version.json",
+    "durationSeconds": 0.001,
+    "error": "",
+    "completedAtUtc": "2026-07-22T12:19:43.484Z"
+  },
+  {
+    "index": 254,
+    "total": 255,
+    "folder": "output\\ai_077_Are_White_Stakes_Themselves_Out_of_Bounds",
+    "title": "Are White Stakes Themselves Out of Bounds?",
+    "ruleNumber": "18.2a",
+    "ruleName": "Ball Lost or Out of Bounds: Stroke-and-Distance Relief Must Be Taken",
+    "status": "skipped",
+    "outputPath": "output\\ai_077_Are_White_Stakes_Themselves_Out_of_Bounds\\junior-version.json",
+    "durationSeconds": 0.002,
+    "error": "",
+    "completedAtUtc": "2026-07-22T12:19:43.488Z"
+  },
+  {
+    "index": 255,
+    "total": 255,
+    "folder": "output\\ai_078_Identifying_the_Boundary_from_a_White_Line",
+    "title": "Identifying the Boundary from a White Line",
+    "ruleNumber": "18.2",
+    "ruleName": "Ball Lost or Out of Bounds: Stroke-and-Distance Relief; Ball Provisional",
+    "status": "skipped",
+    "outputPath": "output\\ai_078_Identifying_the_Boundary_from_a_White_Line\\junior-version.json",
+    "durationSeconds": 0.001,
+    "error": "",
+    "completedAtUtc": "2026-07-22T12:19:43.490Z"
   }
 ]

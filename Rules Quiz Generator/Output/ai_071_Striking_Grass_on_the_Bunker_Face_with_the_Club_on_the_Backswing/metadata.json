@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "12.2b",
+  "ruleName": "What You Can and Cannot Do in Bunkers",
+  "group": "Bunkers",
+  "title": "Striking Grass on the Bunker Face with the Club on the Backswing",
+  "question": "Jezz takes a stroke from a bunker and strikes the grass face with his clubhead on the backswing. What is the ruling?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "There is no penalty."
+    },
+    {
+      "id": "b",
+      "text": "Jezz receives a one-stroke penalty."
+    },
+    {
+      "id": "c",
+      "text": "Jezz receives the general penalty."
+    },
+    {
+      "id": "d",
+      "text": "The ball is to be replaced and the stroke replayed."
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "Rule 12.2b only restricts certain acts involving touching sand in the bunker. Accidentally striking grass on the bunker face during the backswing is permitted.",
+  "imagePrompt": "Create a polished, modern semi-realistic illustration in a junior golf quiz style. Show a golfer in a bunker preparing to hit a shot, with the clubhead brushing the grassy face of the bunker during the backswing. The golf ball should be clearly in the sand near the grass. Focus on showing the moment the clubhead touches the grass, not the sand. The scene should look about 75% realistic and 25% stylised, appealing and clear. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer in a bunker taking a backswing, with the clubhead brushing the grass face of the bunker. The golf ball sits in the sand near the grass.",
+  "sceneSpec": {
+    "setting": "A well-maintained golf course bunker with a grassy face around its edge.",
+    "players": "One golfer, Jezz, is in the bunker preparing for a shot.",
+    "ballPosition": "The ball lies in the sand near the grass face of the bunker.",
+    "ruleMoment": "Jezz’s clubhead is brushing the grass on the bunker face during his backswing.",
+    "educationalFocus": "Shows that touching grass, but not sand, with the club in the bunker is allowed during the backswing.",
+    "mustShow": [
+      "Golfer in bunker making a backswing with clubhead brushing the grass face",
+      "Ball clearly lying in the sand near the grass face"
+    ],
+    "mustNotShow": [
+      "Club touching or disturbing sand",
+      "Any penalty indicators",
+      "Text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards, or speech bubbles"
+    ]
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "11.3",
+  "ruleName": "Deliberate Actions to Affect Ball in Motion",
+  "group": "Putting Green",
+  "title": "Lifting Equipment Likely to Interfere with Ball in Motion",
+  "question": "On the putting green, Jezz hits a putt too hard. Alison picks up Jezz's wedge left on the green before the ball hits the club. What is the ruling?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Jezz receives the general penalty."
+    },
+    {
+      "id": "b",
+      "text": "Both Alison and Jezz receive the general penalty."
+    },
+    {
+      "id": "c",
+      "text": "There is no penalty."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "Under Rule 11.3, equipment that could affect where a ball might come to rest may be lifted or moved while the ball is in motion. Alison is permitted to remove the wedge before the ball reaches it and there is no penalty.",
+  "imagePrompt": "Create a polished, modern semi-realistic golf illustration (about 75% realistic, 25% stylised) in an established junior golf quiz style. Show a close-up of a putting green with a golf ball rolling towards a wedge lying a few feet from the hole. One golfer (Alison) is just lifting the wedge away moments before the ball reaches it. Another golfer (Jezz) is shown having just played the putt. The flagstick is in the hole. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A semi-realistic illustration showing a putting green, a golf ball rolling towards a wedge on the green, Alison picking up the wedge just before the ball arrives, Jezz having just putted, and the flagstick in the hole.",
+  "sceneSpec": {
+    "setting": "A neatly-maintained putting green with a flagstick in the hole.",
+    "players": "Jezz putting, Alison standing near a wedge lying on the green.",
+    "ballPosition": "Jezz’s ball is rolling towards the wedge, which is a few feet from the hole.",
+    "ruleMoment": "Just as the ball approaches the wedge, Alison is depicted in the act of picking up the wedge before the ball can touch it.",
+    "educationalFocus": "Clarifies that equipment interfering with a moving ball may be lifted or moved with no penalty.",
+    "mustShow": [
+      "A golf ball in motion on the green heading towards a wedge.",
+      "Alison picking up the wedge before the ball reaches it.",
+      "Jezz shown after having played the putt.",
+      "Hole and flagstick visible on the green."
+    ],
+    "mustNotShow": [
+      "Text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles."
+    ]
+  }
+}

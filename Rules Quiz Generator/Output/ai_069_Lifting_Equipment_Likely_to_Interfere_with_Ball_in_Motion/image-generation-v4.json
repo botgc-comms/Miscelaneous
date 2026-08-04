@@ -1,0 +1,10 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "sourcePromptFileName": "final-prompt-v2.txt",
+  "promptFileName": "final-prompt-v4.txt",
+  "imageFileName": "illustration-v4.png",
+  "correctionInstructions": "the boy has hit his putt and the ball is rolling past the hole where there is a golf club lying on the green. The girl is reaching down to pick up the club before the ball hits it",
+  "generatedAtUtc": "2026-07-22T08:01:21.464Z"
+}

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_077_Are_White_Stakes_Themselves_Out_of_Bounds\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "18.2a",
+  "ruleName": "Ball Lost or Out of Bounds: Stroke-and-Distance Relief Must Be Taken",
+  "title": "Are White Stakes Themselves Out of Bounds?",
+  "question": "White stakes define out of bounds. Is the stake itself in bounds?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes."
+    },
+    {
+      "id": "b",
+      "text": "No, the stake itself is out of bounds."
+    },
+    {
+      "id": "c",
+      "text": "Only if a Local Rule says so."
+    },
+    {
+      "id": "d",
+      "text": "Only if the committee marks it as such."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "The boundary edge of the course is defined by the course-side points of the white stakes at ground level. The stakes themselves are out of bounds.",
+  "juniorVersion": {
+    "title": "Are White Out of Bounds Posts Out of Bounds Too?",
+    "question": "When you see white posts that show 'out of bounds,' is the post itself out of bounds?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Yes."
+      },
+      {
+        "id": "b",
+        "text": "No, the post is out of bounds."
+      },
+      {
+        "id": "c",
+        "text": "Only if a special rule says so."
+      },
+      {
+        "id": "d",
+        "text": "Only if people running the game say so."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "White posts that show where 'out of bounds' starts are not part of the course. The post itself is out of bounds.",
+    "vocabulary": [
+      {
+        "term": "Out of bounds",
+        "simpleMeaning": "A place you are not allowed to play from. It is usually shown with white posts."
+      },
+      {
+        "term": "Post",
+        "simpleMeaning": "A stick or marker in the ground. Here, it means a white one that shows 'out of bounds'."
+      }
+    ],
+    "teachingTip": "Show kids a real out of bounds post and explain you can't play from that spot or touch it when dropping a ball.",
+    "likelyMisconceptions": [
+      "Some kids may think the post is still on the course because it touches the ground.",
+      "Some may think you can lean on it or touch it for a drop."
+    ]
+  },
+  "generatedAtUtc": "2026-07-22T07:42:19.869Z",
+  "model": "gpt-4.1"
+}

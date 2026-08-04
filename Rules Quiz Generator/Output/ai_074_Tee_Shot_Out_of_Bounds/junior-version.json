@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_074_Tee_Shot_Out_of_Bounds\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "18.2",
+  "ruleName": "Ball Lost or Out of Bounds: Stroke-and-Distance Relief",
+  "title": "Tee Shot Out of Bounds",
+  "question": "Your tee shot is definitely out of bounds. What must you do?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Drop beside where it crossed the boundary."
+    },
+    {
+      "id": "b",
+      "text": "Play from a designated drop zone."
+    },
+    {
+      "id": "c",
+      "text": "Play another ball from where the previous stroke was made under stroke and distance."
+    },
+    {
+      "id": "d",
+      "text": "Play your next shot from the fairway near the boundary."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "When a ball is out of bounds, the player must take stroke-and-distance relief by playing another ball from as near as possible to the spot where the previous stroke was made (Rule 18.2). You do not drop beside where it crossed the boundary, and a designated drop zone or moving to the fairway is not permitted unless specifically provided in a local rule.",
+  "juniorVersion": {
+    "title": "What To Do If Your Ball Goes Out of Bounds from the Tee",
+    "question": "You hit your ball from the tee and it goes out of bounds. What should you do next?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Drop your ball next to where it went out of bounds."
+      },
+      {
+        "id": "b",
+        "text": "Go to a special drop zone to hit your ball."
+      },
+      {
+        "id": "c",
+        "text": "Hit another ball from the tee, where you first played, using stroke-and-distance."
+      },
+      {
+        "id": "d",
+        "text": "Play your next shot from the fairway close to where it went out of bounds."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "If your ball goes out of bounds, you must play a new ball from the same spot as your last shot. Most times, that means going back to the tee and hitting again. You can’t drop the ball where it went out or use a drop zone unless there’s a special rule for that.",
+    "vocabulary": [
+      {
+        "term": "Out of bounds",
+        "simpleMeaning": "A place off the golf course where you are not allowed to play, marked by white stakes or a line."
+      },
+      {
+        "term": "Stroke-and-distance",
+        "simpleMeaning": "You play again from where you last hit and add one extra shot to your score."
+      },
+      {
+        "term": "Drop zone",
+        "simpleMeaning": "A special place where you are sometimes allowed to drop your ball, used only if a special rule says so."
+      }
+    ],
+    "teachingTip": "Show where the out of bounds line is on the course. Practise hitting from the tee again to understand stroke-and-distance.",
+    "likelyMisconceptions": [
+      "Thinking you can just drop your ball near where it went out.",
+      "Believing you can use a drop zone without a special rule.",
+      "Wanting to hit from the edge of the fairway instead of returning to the tee."
+    ]
+  },
+  "generatedAtUtc": "2026-07-22T07:39:13.576Z",
+  "model": "gpt-4.1"
+}

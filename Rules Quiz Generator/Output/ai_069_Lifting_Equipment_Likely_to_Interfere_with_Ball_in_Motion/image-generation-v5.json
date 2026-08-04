@@ -1,0 +1,10 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "sourcePromptFileName": "final-prompt-v2.txt",
+  "promptFileName": "final-prompt-v5.txt",
+  "imageFileName": "illustration-v5.png",
+  "correctionInstructions": "the boy has hit his putt and the ball is rolling past the hole where there is a golf club lying on the green. The girl is reaching down to pick up the club before the ball hits it. \n\nmove the club further away from the hole. \n\nthere should be a straight line between A, B, C and D where A is the boy making the putt, B is the hole, C is the ball and D is the club that the ball might have hit if it had not been lifted out of the way",
+  "generatedAtUtc": "2026-07-22T08:16:10.190Z"
+}

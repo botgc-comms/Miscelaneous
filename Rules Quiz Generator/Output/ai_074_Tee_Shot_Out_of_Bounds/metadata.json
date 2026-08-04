@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "18.2",
+  "ruleName": "Ball Lost or Out of Bounds: Stroke-and-Distance Relief",
+  "group": "Play the Course as You Find It",
+  "title": "Tee Shot Out of Bounds",
+  "question": "Your tee shot is definitely out of bounds. What must you do?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Drop beside where it crossed the boundary."
+    },
+    {
+      "id": "b",
+      "text": "Play from a designated drop zone."
+    },
+    {
+      "id": "c",
+      "text": "Play another ball from where the previous stroke was made under stroke and distance."
+    },
+    {
+      "id": "d",
+      "text": "Play your next shot from the fairway near the boundary."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "When a ball is out of bounds, the player must take stroke-and-distance relief by playing another ball from as near as possible to the spot where the previous stroke was made (Rule 18.2). You do not drop beside where it crossed the boundary, and a designated drop zone or moving to the fairway is not permitted unless specifically provided in a local rule.",
+  "imagePrompt": "A modern, semi-realistic (about 75% realistic, 25% stylised) illustration in a bright, engaging, junior golf quiz style. The scene shows a junior golfer at the teeing area of a golf hole, holding a club and watching their ball. The golf ball is in mid-air, clearly flying over and beyond a line of white stakes or a low fence marking the out of bounds area on one side of the hole. The setting makes it obvious that the ball is out of bounds. Tee markers are present, and the out of bounds area is clear. Show no text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A junior golfer stands by the teeing area, watching a golf ball fly over a line of white stakes marking the out of bounds; the ball is clearly out of bounds.",
+  "sceneSpec": {
+    "setting": "Teeing area of a golf hole with an out of bounds fence or white stakes marking the boundary on one side.",
+    "players": "One golfer, a junior, holding a club near the tee markers, watching their shot.",
+    "ballPosition": "One ball in mid-air flying well beyond the boundary fence or white stakes, clearly out of bounds.",
+    "ruleMoment": "The moment the player and others can see the ball has landed out of bounds beyond the markers.",
+    "educationalFocus": "Recognising the correct procedure when a ball is definitely out of bounds from the tee shot.",
+    "mustShow": [
+      "Golfer on the tee",
+      "Golf ball out of bounds beyond white stakes or a fence",
+      "Tee markers",
+      "Clearly marked out of bounds area"
+    ],
+    "mustNotShow": [
+      "Any text, labels, numbers, arrows or captions",
+      "Drop zones",
+      "Scorecards, rules sheets or diagrams",
+      "Badges, logos, watermarks, club crests",
+      "Speech bubbles"
+    ]
+  }
+}
