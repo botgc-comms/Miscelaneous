@@ -13,32 +13,49 @@
 <body>
   <div class="page-shell">
     <header class="report-header">
-      <img
-        class="club-crest"
-        src="/images/club logo new.svg"
-        alt="Burton-on-Trent Golf Club crest"
-      >
+      <div class="report-header__main">
+        <div class="report-header__content">
+          <p
+            id="report-period"
+            class="eyebrow"
+          ></p>
 
-      <div class="report-header__content">
-        <p
-          id="report-period"
-          class="eyebrow"
-        ></p>
+          <h1 id="report-title">
+            KPI Report
+          </h1>
 
-        <h1 id="report-title">
-          KPI Report
-        </h1>
+          <p id="report-summary"></p>
 
-        <p id="report-summary"></p>
+          <div
+            class="report-header__actions"
+            data-html2canvas-ignore="true"
+          >
+            <button
+              id="download-report-image"
+              class="download-report-button"
+              type="button"
+            >
+              Download
+            </button>
+
+            <a
+              class="admin-link"
+              href="/admin.html"
+            >
+              Edit report
+            </a>
+          </div>
+        </div>
       </div>
 
-      <a
-        class="admin-link"
-        href="/admin.html"
-      >
-        Manage reports
-      </a>
-    </header>
+      <aside class="report-header__crest-panel">
+        <img
+          class="club-crest"
+          src="/images/club logo new.png"
+          alt="Burton-on-Trent Golf Club crest"
+        >
+      </aside>
+</header>
 
     <div class="report-layout">
       <main class="report-main">
@@ -103,21 +120,33 @@
           ></div>
         </section>
 
-        <section class="report-section">
-          <div class="section-heading section-heading--stacked">
+        <section class="report-section report-section--tee">
+          <div class="section-heading">
             <h2>Tee-time utilisation</h2>
-            <p id="tee-period"></p>
+
+            <p
+              id="tee-period"
+              class="tee-period"
+            ></p>
           </div>
 
           <div class="tee-grid">
-            <div
-              id="tee-chart"
-              class="chart chart--tee"
-              role="img"
-              aria-label="Tee-time utilisation stacked area chart"
-            ></div>
+            <div class="tee-chart-panel">
+              <div
+                id="tee-chart"
+                class="chart chart--tee"
+                role="img"
+                aria-label="Tee-time utilisation stacked area chart"
+              ></div>
 
-            <div class="table-wrap table-wrap--compact">
+              <div
+                id="tee-chart-legend"
+                class="tee-chart-legend"
+                aria-label="Tee-time chart legend"
+              ></div>
+            </div>
+
+            <div class="table-wrap tee-table-wrap">
               <table class="tee-table">
                 <thead id="tee-table-head"></thead>
                 <tbody id="tee-table-body"></tbody>
@@ -293,5 +322,6 @@
   ></div>
 
   <script src="/js/report.js?v=11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </body>
 </html>

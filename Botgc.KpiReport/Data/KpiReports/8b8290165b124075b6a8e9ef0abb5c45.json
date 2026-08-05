@@ -1,6 +1,6 @@
 {
   "id": "8b829016-5b12-4075-b6a8-e9ef0abb5c45",
-  "version": 29,
+  "version": 36,
   "title": "KPI Report 2025/26",
   "financialYearStart": "2025-10-01",
   "financialYearEnd": "2026-09-30",
@@ -11,8 +11,8 @@
   "membershipSnapshot": {
     "periodStart": "2025-04-01",
     "dataAsAt": "2026-08-01",
-    "importedAtUtc": "2026-08-03T14:58:35.6639851+00:00",
-    "sourceGeneratedAtUtc": "2026-08-03T00:03:00.0450441+00:00",
+    "importedAtUtc": "2026-08-04T10:43:02.2903671+00:00",
+    "sourceGeneratedAtUtc": "2026-08-04T00:04:15.8764761+00:00",
     "playingMembers": 484,
     "nonPlayingMembers": 457,
     "totalMembers": 941,
@@ -3367,7 +3367,7 @@
     ],
     "movement": {
       "fromDate": "2025-10-01",
-      "toDate": "2026-08-02",
+      "toDate": "2026-08-03",
       "playingNewJoiners": 42,
       "playingMovedIn": 49,
       "playingMovedOut": 40,
@@ -3815,16 +3815,18 @@
     }
   },
   "presentation": {
-    "summary": "This report details the financial performance for the quarter and compares actual profit with projections across revenue sources including membership and catering. It also considers membership retention and tee-time utilisation.",
+    "summary": "This report reviews the Club\u2019s financial performance for the reporting period, comparing actual results with budget and forecasts across key revenue areas, including membership and catering. It also examines membership retention and tee-time utilisation.",
     "financialCommentary": [
-      "The Club\u2019s financial position at the end of May was behind budget. The year-to-date accounts showed a loss of approximately \u00A370,000, compared with the budgeted loss of approximately \u00A330,000.",
-      "A significant proportion of this \u00A340,000 difference relates to one-off costs and the timing of expenses during a period of operational change.",
+      "The Club\u2019s financial position at the end of June remained behind budget, although performance during June represented an improvement. The year-to-date accounts showed a loss of approximately \u00A347,300, compared with the budgeted loss of approximately \u00A38,500.",
+      "June itself delivered a profit of approximately \u00A323,000, compared with a budgeted profit of approximately \u00A319,700. This reduced the year-to-date shortfall against budget from approximately \u00A342,100 at the end of May to approximately \u00A338,800 at the end of June.",
+      "A significant proportion of the remaining difference relates to one-off costs and the timing of expenditure during a period of operational change.",
       "These costs include the final professional fees associated with the food and beverage review, redundancy and notice-period costs following the departure of the former Club Manager, temporary agency staffing costs, historic competition expenses accounted for during May, and additional water charges following earlier billing and meter-reading problems.",
-      "The staffing changes are intended to reduce the Club\u2019s ongoing operating costs. Further changes have subsequently been made to the kitchen staffing structure, but the resulting savings are not yet fully reflected in the figures to the end of May. The accounts therefore include much of the immediate cost of making these changes, while the longer-term savings will become visible over the following months.",
-      "Income was also lower than planned in some areas. Green-fee income was affected by fewer society bookings and by events held during the same period last year not being repeated this year. Beverage sales also continued to be below budget. Both areas remain under close review.",
-      "A number of measures designed to improve food and beverage performance have only recently been introduced. Meal prices were corrected in March, kitchen staffing arrangements have been revised, and a new Food and Beverage Manager is now taking responsibility for the operation. It will take time for the full financial effect of these changes to become visible in the monthly accounts.",
-      "Despite the year-to-date shortfall, the latest forecast continues to show a profitable result for the full financial year. The current forecast is for a profit of approximately \u00A324,500, compared with the original budget of approximately \u00A347,000.",
-      "The Board is monitoring performance closely, particularly food and beverage income, staffing costs and visitor revenue. Further action will be taken where required to protect the Club\u2019s financial position and improve its longer-term performance."
+      "The staffing changes are intended to reduce the Club\u2019s ongoing operating costs. Further changes have subsequently been made to the kitchen staffing structure, but the resulting savings are not yet fully reflected in the year-to-date figures. The accounts therefore include much of the immediate cost of making these changes, while the longer-term savings are expected to become more visible over the coming months.",
+      "Total year-to-date income was approximately \u00A346,000 ahead of budget at the end of June. However, performance remains mixed across individual income streams. Green-fee income has been affected by fewer society bookings and by events held during the same period last year not being repeated this year. Beverage sales have also continued to perform below budget. Both areas remain under close review.",
+      "The principal pressure continues to come from expenditure. Year-to-date cost of sales was approximately \u00A370,200 above budget and overheads were approximately \u00A329,200 above budget. This was partly offset by depreciation being approximately \u00A314,600 below budget.",
+      "A number of measures designed to improve food and beverage performance have only recently been introduced. Meal prices were corrected in March, kitchen staffing arrangements have been revised, and the new Food and Beverage Manager is now taking responsibility for the operation. It will take time for the full financial effect of these changes to become visible in the monthly accounts.",
+      "Despite the year-to-date shortfall, the latest forecast continues to show a profitable result for the full financial year. The current forecast is for a profit of approximately \u00A324,500, compared with an annual budget of approximately \u00A349,400.",
+      "The Board is monitoring performance closely, particularly food and beverage income, staffing costs, cost of sales and visitor revenue. Further action will be taken where required to protect the Club\u2019s financial position and improve its longer-term performance."
     ],
     "membershipNarrative": "At the start of each subscription year, we assume that playing membership will reduce by approximately 8%. This is a pattern we have seen consistently over a number of years and is built into all of our budgets. Our aim is to recruit enough new playing members during the year to recover that reduction and return playing membership to the level recorded at the start of the subscription year.",
     "outgoings": {
@@ -3930,7 +3932,8 @@
             83,
             88,
             92
-          ]
+          ],
+          "contributions": []
         },
         {
           "time": "8am-9am",
@@ -3942,7 +3945,8 @@
             79,
             96,
             100
-          ]
+          ],
+          "contributions": []
         },
         {
           "time": "9am-10am",
@@ -3954,7 +3958,8 @@
             83,
             92,
             83
-          ]
+          ],
+          "contributions": []
         },
         {
           "time": "10am-11am",
@@ -3966,7 +3971,8 @@
             50,
             88,
             100
-          ]
+          ],
+          "contributions": []
         },
         {
           "time": "11am-12pm",
@@ -3978,7 +3984,8 @@
             38,
             96,
             88
-          ]
+          ],
+          "contributions": []
         },
         {
           "time": "12pm-1pm",
@@ -3990,7 +3997,8 @@
             42,
             75,
             46
-          ]
+          ],
+          "contributions": []
         },
         {
           "time": "1pm-2pm",
@@ -4002,7 +4010,8 @@
             25,
             25,
             38
-          ]
+          ],
+          "contributions": []
         },
         {
           "time": "2pm-3pm",
@@ -4014,7 +4023,8 @@
             50,
             17,
             29
-          ]
+          ],
+          "contributions": []
         },
         {
           "time": "3pm-4pm",
@@ -4026,7 +4036,8 @@
             0,
             4,
             0
-          ]
+          ],
+          "contributions": []
         },
         {
           "time": "4pm-5pm",
@@ -4038,7 +4049,8 @@
             0,
             0,
             0
-          ]
+          ],
+          "contributions": []
         }
       ],
       "totals": [
@@ -4246,5 +4258,552 @@
     }
   },
   "createdAtUtc": "2026-08-01T17:15:10.2879794+00:00",
-  "updatedAtUtc": "2026-08-03T17:25:57.9460894+00:00"
+  "updatedAtUtc": "2026-08-04T11:54:19.140167+00:00",
+  "teeTimeSnapshot": {
+    "startDate": "2026-05-01",
+    "endDate": "2026-07-31",
+    "importedAtUtc": "2026-08-04T08:05:23.4375677+00:00",
+    "rows": [
+      {
+        "timeRange": "07:00 - 07:59",
+        "startTime": "07:00:00",
+        "endTime": "07:59:00",
+        "isTotal": false,
+        "percentage": {
+          "monday": 69,
+          "tuesday": 40,
+          "wednesday": 100,
+          "thursday": 68,
+          "friday": 79,
+          "saturday": 94,
+          "sunday": 95,
+          "total": 78
+        },
+        "usedTeeTimes": {
+          "monday": 54,
+          "tuesday": 31,
+          "wednesday": 78,
+          "thursday": 53,
+          "friday": 66,
+          "saturday": 73,
+          "sunday": 74,
+          "total": 429
+        },
+        "totalTeeTimes": {
+          "monday": 78,
+          "tuesday": 78,
+          "wednesday": 78,
+          "thursday": 78,
+          "friday": 84,
+          "saturday": 78,
+          "sunday": 78,
+          "total": 552
+        }
+      },
+      {
+        "timeRange": "08:00 - 08:59",
+        "startTime": "08:00:00",
+        "endTime": "08:59:00",
+        "isTotal": false,
+        "percentage": {
+          "monday": 82,
+          "tuesday": 72,
+          "wednesday": 100,
+          "thursday": 56,
+          "friday": 95,
+          "saturday": 97,
+          "sunday": 95,
+          "total": 86
+        },
+        "usedTeeTimes": {
+          "monday": 64,
+          "tuesday": 56,
+          "wednesday": 78,
+          "thursday": 44,
+          "friday": 80,
+          "saturday": 76,
+          "sunday": 74,
+          "total": 472
+        },
+        "totalTeeTimes": {
+          "monday": 78,
+          "tuesday": 78,
+          "wednesday": 78,
+          "thursday": 78,
+          "friday": 84,
+          "saturday": 78,
+          "sunday": 78,
+          "total": 552
+        }
+      },
+      {
+        "timeRange": "09:00 - 09:59",
+        "startTime": "09:00:00",
+        "endTime": "09:59:00",
+        "isTotal": false,
+        "percentage": {
+          "monday": 95,
+          "tuesday": 41,
+          "wednesday": 100,
+          "thursday": 88,
+          "friday": 75,
+          "saturday": 97,
+          "sunday": 92,
+          "total": 84
+        },
+        "usedTeeTimes": {
+          "monday": 74,
+          "tuesday": 32,
+          "wednesday": 78,
+          "thursday": 69,
+          "friday": 63,
+          "saturday": 76,
+          "sunday": 72,
+          "total": 464
+        },
+        "totalTeeTimes": {
+          "monday": 78,
+          "tuesday": 78,
+          "wednesday": 78,
+          "thursday": 78,
+          "friday": 84,
+          "saturday": 78,
+          "sunday": 78,
+          "total": 552
+        }
+      },
+      {
+        "timeRange": "10:00 - 10:59",
+        "startTime": "10:00:00",
+        "endTime": "10:59:00",
+        "isTotal": false,
+        "percentage": {
+          "monday": 86,
+          "tuesday": 54,
+          "wednesday": 100,
+          "thursday": 91,
+          "friday": 87,
+          "saturday": 96,
+          "sunday": 95,
+          "total": 87
+        },
+        "usedTeeTimes": {
+          "monday": 67,
+          "tuesday": 42,
+          "wednesday": 78,
+          "thursday": 71,
+          "friday": 73,
+          "saturday": 75,
+          "sunday": 74,
+          "total": 480
+        },
+        "totalTeeTimes": {
+          "monday": 78,
+          "tuesday": 78,
+          "wednesday": 78,
+          "thursday": 78,
+          "friday": 84,
+          "saturday": 78,
+          "sunday": 78,
+          "total": 552
+        }
+      },
+      {
+        "timeRange": "11:00 - 11:59",
+        "startTime": "11:00:00",
+        "endTime": "11:59:00",
+        "isTotal": false,
+        "percentage": {
+          "monday": 72,
+          "tuesday": 62,
+          "wednesday": 100,
+          "thursday": 85,
+          "friday": 85,
+          "saturday": 90,
+          "sunday": 95,
+          "total": 84
+        },
+        "usedTeeTimes": {
+          "monday": 56,
+          "tuesday": 48,
+          "wednesday": 78,
+          "thursday": 66,
+          "friday": 71,
+          "saturday": 70,
+          "sunday": 74,
+          "total": 463
+        },
+        "totalTeeTimes": {
+          "monday": 78,
+          "tuesday": 78,
+          "wednesday": 78,
+          "thursday": 78,
+          "friday": 84,
+          "saturday": 78,
+          "sunday": 78,
+          "total": 552
+        }
+      },
+      {
+        "timeRange": "12:00 - 12:59",
+        "startTime": "12:00:00",
+        "endTime": "12:59:00",
+        "isTotal": false,
+        "percentage": {
+          "monday": 81,
+          "tuesday": 64,
+          "wednesday": 100,
+          "thursday": 76,
+          "friday": 74,
+          "saturday": 99,
+          "sunday": 95,
+          "total": 84
+        },
+        "usedTeeTimes": {
+          "monday": 63,
+          "tuesday": 50,
+          "wednesday": 78,
+          "thursday": 59,
+          "friday": 62,
+          "saturday": 77,
+          "sunday": 74,
+          "total": 463
+        },
+        "totalTeeTimes": {
+          "monday": 78,
+          "tuesday": 78,
+          "wednesday": 78,
+          "thursday": 78,
+          "friday": 84,
+          "saturday": 78,
+          "sunday": 78,
+          "total": 552
+        }
+      },
+      {
+        "timeRange": "13:00 - 13:59",
+        "startTime": "13:00:00",
+        "endTime": "13:59:00",
+        "isTotal": false,
+        "percentage": {
+          "monday": 78,
+          "tuesday": 71,
+          "wednesday": 100,
+          "thursday": 73,
+          "friday": 77,
+          "saturday": 100,
+          "sunday": 95,
+          "total": 85
+        },
+        "usedTeeTimes": {
+          "monday": 61,
+          "tuesday": 55,
+          "wednesday": 78,
+          "thursday": 57,
+          "friday": 65,
+          "saturday": 78,
+          "sunday": 74,
+          "total": 468
+        },
+        "totalTeeTimes": {
+          "monday": 78,
+          "tuesday": 78,
+          "wednesday": 78,
+          "thursday": 78,
+          "friday": 84,
+          "saturday": 78,
+          "sunday": 78,
+          "total": 552
+        }
+      },
+      {
+        "timeRange": "14:00 - 14:59",
+        "startTime": "14:00:00",
+        "endTime": "14:59:00",
+        "isTotal": false,
+        "percentage": {
+          "monday": 69,
+          "tuesday": 73,
+          "wednesday": 100,
+          "thursday": 83,
+          "friday": 80,
+          "saturday": 83,
+          "sunday": 88,
+          "total": 82
+        },
+        "usedTeeTimes": {
+          "monday": 54,
+          "tuesday": 57,
+          "wednesday": 78,
+          "thursday": 65,
+          "friday": 67,
+          "saturday": 65,
+          "sunday": 69,
+          "total": 455
+        },
+        "totalTeeTimes": {
+          "monday": 78,
+          "tuesday": 78,
+          "wednesday": 78,
+          "thursday": 78,
+          "friday": 84,
+          "saturday": 78,
+          "sunday": 78,
+          "total": 552
+        }
+      },
+      {
+        "timeRange": "15:00 - 15:59",
+        "startTime": "15:00:00",
+        "endTime": "15:59:00",
+        "isTotal": false,
+        "percentage": {
+          "monday": 78,
+          "tuesday": 67,
+          "wednesday": 100,
+          "thursday": 100,
+          "friday": 81,
+          "saturday": 83,
+          "sunday": 90,
+          "total": 86
+        },
+        "usedTeeTimes": {
+          "monday": 61,
+          "tuesday": 52,
+          "wednesday": 78,
+          "thursday": 78,
+          "friday": 68,
+          "saturday": 65,
+          "sunday": 70,
+          "total": 472
+        },
+        "totalTeeTimes": {
+          "monday": 78,
+          "tuesday": 78,
+          "wednesday": 78,
+          "thursday": 78,
+          "friday": 84,
+          "saturday": 78,
+          "sunday": 78,
+          "total": 552
+        }
+      },
+      {
+        "timeRange": "16:00 - 16:59",
+        "startTime": "16:00:00",
+        "endTime": "16:59:00",
+        "isTotal": false,
+        "percentage": {
+          "monday": 79,
+          "tuesday": 85,
+          "wednesday": 100,
+          "thursday": 100,
+          "friday": 74,
+          "saturday": 56,
+          "sunday": 77,
+          "total": 82
+        },
+        "usedTeeTimes": {
+          "monday": 62,
+          "tuesday": 66,
+          "wednesday": 78,
+          "thursday": 78,
+          "friday": 62,
+          "saturday": 44,
+          "sunday": 60,
+          "total": 450
+        },
+        "totalTeeTimes": {
+          "monday": 78,
+          "tuesday": 78,
+          "wednesday": 78,
+          "thursday": 78,
+          "friday": 84,
+          "saturday": 78,
+          "sunday": 78,
+          "total": 552
+        }
+      },
+      {
+        "timeRange": "17:00 - 17:59",
+        "startTime": "17:00:00",
+        "endTime": "17:59:00",
+        "isTotal": false,
+        "percentage": {
+          "monday": 85,
+          "tuesday": 82,
+          "wednesday": 96,
+          "thursday": 100,
+          "friday": 71,
+          "saturday": 33,
+          "sunday": 60,
+          "total": 75
+        },
+        "usedTeeTimes": {
+          "monday": 66,
+          "tuesday": 64,
+          "wednesday": 75,
+          "thursday": 78,
+          "friday": 60,
+          "saturday": 26,
+          "sunday": 47,
+          "total": 416
+        },
+        "totalTeeTimes": {
+          "monday": 78,
+          "tuesday": 78,
+          "wednesday": 78,
+          "thursday": 78,
+          "friday": 84,
+          "saturday": 78,
+          "sunday": 78,
+          "total": 552
+        }
+      },
+      {
+        "timeRange": "18:00 - 18:59",
+        "startTime": "18:00:00",
+        "endTime": "18:59:00",
+        "isTotal": false,
+        "percentage": {
+          "monday": 67,
+          "tuesday": 72,
+          "wednesday": 63,
+          "thursday": 88,
+          "friday": 57,
+          "saturday": 15,
+          "sunday": 44,
+          "total": 58
+        },
+        "usedTeeTimes": {
+          "monday": 52,
+          "tuesday": 56,
+          "wednesday": 49,
+          "thursday": 69,
+          "friday": 48,
+          "saturday": 12,
+          "sunday": 34,
+          "total": 320
+        },
+        "totalTeeTimes": {
+          "monday": 78,
+          "tuesday": 78,
+          "wednesday": 78,
+          "thursday": 78,
+          "friday": 84,
+          "saturday": 78,
+          "sunday": 78,
+          "total": 552
+        }
+      },
+      {
+        "timeRange": "19:00 - 19:59",
+        "startTime": "19:00:00",
+        "endTime": "19:59:00",
+        "isTotal": false,
+        "percentage": {
+          "monday": 1,
+          "tuesday": 1,
+          "wednesday": 0,
+          "thursday": 13,
+          "friday": 6,
+          "saturday": 4,
+          "sunday": 14,
+          "total": 6
+        },
+        "usedTeeTimes": {
+          "monday": 1,
+          "tuesday": 1,
+          "wednesday": 0,
+          "thursday": 10,
+          "friday": 5,
+          "saturday": 3,
+          "sunday": 11,
+          "total": 31
+        },
+        "totalTeeTimes": {
+          "monday": 78,
+          "tuesday": 78,
+          "wednesday": 78,
+          "thursday": 78,
+          "friday": 84,
+          "saturday": 78,
+          "sunday": 78,
+          "total": 552
+        }
+      },
+      {
+        "timeRange": "20:00 - 20:59",
+        "startTime": "20:00:00",
+        "endTime": "20:59:00",
+        "isTotal": false,
+        "percentage": {
+          "monday": 0,
+          "tuesday": 0,
+          "wednesday": 0,
+          "thursday": 0,
+          "friday": 0,
+          "saturday": 0,
+          "sunday": 0,
+          "total": 0
+        },
+        "usedTeeTimes": {
+          "monday": 0,
+          "tuesday": 0,
+          "wednesday": 0,
+          "thursday": 0,
+          "friday": 0,
+          "saturday": 0,
+          "sunday": 0,
+          "total": 0
+        },
+        "totalTeeTimes": {
+          "monday": 13,
+          "tuesday": 13,
+          "wednesday": 13,
+          "thursday": 13,
+          "friday": 14,
+          "saturday": 13,
+          "sunday": 13,
+          "total": 92
+        }
+      },
+      {
+        "timeRange": "Total",
+        "startTime": null,
+        "endTime": null,
+        "isTotal": true,
+        "percentage": {
+          "monday": 72,
+          "tuesday": 59,
+          "wednesday": 88,
+          "thursday": 78,
+          "friday": 71,
+          "saturday": 72,
+          "sunday": 79,
+          "total": 74
+        },
+        "usedTeeTimes": {
+          "monday": 735,
+          "tuesday": 610,
+          "wednesday": 904,
+          "thursday": 797,
+          "friday": 790,
+          "saturday": 740,
+          "sunday": 807,
+          "total": 5383
+        },
+        "totalTeeTimes": {
+          "monday": 1027,
+          "tuesday": 1027,
+          "wednesday": 1027,
+          "thursday": 1027,
+          "friday": 1106,
+          "saturday": 1027,
+          "sunday": 1027,
+          "total": 7268
+        }
+      }
+    ]
+  }
 }

@@ -24,6 +24,38 @@ builder.Services.Configure<AppSettings>(
     builder.Configuration);
 
 builder.Services.AddHttpClient<
+    ITeeTimeUsageClient,
+    TeeTimeUsageClient>((serviceProvider, client) =>
+{
+    var settings = serviceProvider
+        .GetRequiredService<IOptions<AppSettings>>()
+        .Value;
+
+    if (string.IsNullOrWhiteSpace(settings.API.Url))
+    {
+        throw new InvalidOperationException(
+            "API:Url has not been configured.");
+    }
+
+    client.BaseAddress = new Uri(
+        settings.API.Url,
+        UriKind.Absolute);
+
+    client.DefaultRequestHeaders.Accept.Add(
+        new MediaTypeWithQualityHeaderValue(
+            "application/json"));
+
+    if (!string.IsNullOrWhiteSpace(settings.API.XApiKey))
+    {
+        client.DefaultRequestHeaders.Add(
+            "X-API-KEY",
+            settings.API.XApiKey);
+    }
+
+    client.Timeout = TimeSpan.FromMinutes(5);
+});
+
+builder.Services.AddHttpClient<
     IMembershipReportClient,
     MembershipReportClient>((serviceProvider, client) =>
 {
@@ -58,6 +90,10 @@ builder.Services.AddHttpClient<
 builder.Services.AddScoped<
     IMembershipSnapshotImporter,
     MembershipSnapshotImporter>();
+
+builder.Services.AddScoped<
+    ITeeTimeSnapshotImporter,
+    TeeTimeSnapshotImporter>();
 
 var app = builder.Build();
 
@@ -240,6 +276,97 @@ app.MapDelete("/api/kpi-reports/{reportId:guid}", async (
     }
 });
 
+app.MapPost(
+    "/api/kpi-reports/{reportId:guid}/tee-time-snapshot",
+    async (
+        Guid reportId,
+        ImportTeeTimeSnapshotRequest request,
+        IKpiReportStore store,
+        ITeeTimeSnapshotImporter importer,
+        CancellationToken cancellationToken) =>
+    {
+        var report = await store.GetAsync(
+            reportId,
+            cancellationToken);
+
+        if (report is null)
+        {
+            return Results.NotFound();
+        }
+
+        if (request.Version != report.Version)
+        {
+            return Results.Conflict(new
+            {
+                message =
+                    "The report has been changed since it was loaded.",
+                expectedVersion = request.Version,
+                actualVersion = report.Version
+            });
+        }
+
+        if (request.StartDate == default)
+        {
+            return Results.ValidationProblem(
+                new Dictionary<string, string[]>
+                {
+                    ["startDate"] =
+                    [
+                        "A start date is required."
+                    ]
+                });
+        }
+
+        if (request.EndDate < request.StartDate)
+        {
+            return Results.ValidationProblem(
+                new Dictionary<string, string[]>
+                {
+                    ["endDate"] =
+                    [
+                        "The end date must not be before the start date."
+                    ]
+                });
+        }
+
+        if (request.EndDate >= report.FiguresCorrectAsAt)
+        {
+            return Results.ValidationProblem(
+                new Dictionary<string, string[]>
+                {
+                    ["endDate"] =
+                    [
+                        "The tee-time period must end before " +
+                        "the figures-correct-as-at date."
+                    ]
+                });
+        }
+
+        try
+        {
+            report.TeeTimeSnapshot =
+                await importer.ImportAsync(
+                    request.StartDate,
+                    request.EndDate,
+                    cancellationToken);
+
+            var saved = await store.SaveAsync(
+                report,
+                cancellationToken);
+
+            return Results.Ok(saved);
+        }
+        catch (TeeTimeUsageImportException exception)
+        {
+            return Results.Problem(
+                title:
+                    "Tee-time utilisation could not be imported",
+                detail: exception.Message,
+                statusCode:
+                    StatusCodes.Status502BadGateway);
+        }
+    });
+    
 app.MapFallbackToFile("index.html");
 
 app.Run();

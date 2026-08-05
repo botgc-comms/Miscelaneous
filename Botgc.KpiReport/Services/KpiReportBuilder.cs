@@ -52,7 +52,9 @@ public sealed class KpiReportBuilder : IKpiReportBuilder
                 source.FinancialYearEnd,
                 source.FiguresCorrectAsAt),
             TeeTimeUtilisation =
-                source.Presentation.TeeTimeUtilisation,
+                BuildTeeTimeUtilisation(
+                    source.TeeTimeSnapshot,
+                    source.Presentation.TeeTimeUtilisation),
             MemberRetention =
                 source.Presentation.MemberRetention,
             Gauges = BuildFinancialGauges(
@@ -66,6 +68,244 @@ public sealed class KpiReportBuilder : IKpiReportBuilder
             MembershipMovement = BuildMembershipMovement(
                 source.MembershipSnapshot?.Movement),
         };
+    }
+
+    private static TeeTimeDayValuesData SumTeeTimeValues(
+        IEnumerable<TeeTimeUsageRowData> rows,
+        Func<
+            TeeTimeUsageRowData,
+            TeeTimeDayValuesData> selector)
+    {
+        var values =
+            rows
+                .Select(selector)
+                .ToList();
+
+        return new TeeTimeDayValuesData
+        {
+            Monday =
+                values.Sum(value =>
+                    value.Monday),
+
+            Tuesday =
+                values.Sum(value =>
+                    value.Tuesday),
+
+            Wednesday =
+                values.Sum(value =>
+                    value.Wednesday),
+
+            Thursday =
+                values.Sum(value =>
+                    value.Thursday),
+
+            Friday =
+                values.Sum(value =>
+                    value.Friday),
+
+            Saturday =
+                values.Sum(value =>
+                    value.Saturday),
+
+            Sunday =
+                values.Sum(value =>
+                    value.Sunday),
+
+            Total =
+                values.Sum(value =>
+                    value.Total)
+        };
+    }
+
+    private static TeeTimeDayValuesData CalculateTeeTimePercentages(
+        TeeTimeDayValuesData used,
+        TeeTimeDayValuesData available)
+    {
+        return new TeeTimeDayValuesData
+        {
+            Monday =
+                CalculateTeeTimePercentage(
+                    used.Monday,
+                    available.Monday),
+
+            Tuesday =
+                CalculateTeeTimePercentage(
+                    used.Tuesday,
+                    available.Tuesday),
+
+            Wednesday =
+                CalculateTeeTimePercentage(
+                    used.Wednesday,
+                    available.Wednesday),
+
+            Thursday =
+                CalculateTeeTimePercentage(
+                    used.Thursday,
+                    available.Thursday),
+
+            Friday =
+                CalculateTeeTimePercentage(
+                    used.Friday,
+                    available.Friday),
+
+            Saturday =
+                CalculateTeeTimePercentage(
+                    used.Saturday,
+                    available.Saturday),
+
+            Sunday =
+                CalculateTeeTimePercentage(
+                    used.Sunday,
+                    available.Sunday),
+
+            Total =
+                CalculateTeeTimePercentage(
+                    used.Total,
+                    available.Total)
+        };
+    }
+
+    private static int CalculateTeeTimePercentage(
+        int used,
+        int available)
+    {
+        if (available <= 0)
+        {
+            return 0;
+        }
+
+        return (int)Math.Round(
+            used /
+            (double)available *
+            100d,
+            MidpointRounding.AwayFromZero);
+    }
+
+    private static TeeTimeMetrics BuildTeeTimeUtilisation(
+        TeeTimeSnapshotData? snapshot,
+        TeeTimeMetrics legacy)
+    {
+        if (snapshot is null)
+        {
+            return legacy;
+        }
+
+        var displayCutoff =
+            new TimeOnly(17, 0);
+
+        var hourlyRows =
+            snapshot.Rows
+                .Where(row =>
+                    !row.IsTotal &&
+                    row.StartTime.HasValue &&
+                    row.StartTime.Value <
+                        displayCutoff)
+                .OrderBy(row => row.StartTime)
+                .ToList();
+
+        if (hourlyRows.Count == 0)
+        {
+            return legacy;
+        }
+
+        var usedTotals =
+            SumTeeTimeValues(
+                hourlyRows,
+                row => row.UsedTeeTimes);
+
+        var availableTotals =
+            SumTeeTimeValues(
+                hourlyRows,
+                row => row.TotalTeeTimes);
+
+        var utilisationTotals =
+            CalculateTeeTimePercentages(
+                usedTotals,
+                availableTotals);
+
+        return new TeeTimeMetrics
+        {
+            Period =
+                $"{snapshot.StartDate.ToString(
+                    "d MMMM yyyy",
+                    BritishCulture)} to " +
+                $"{snapshot.EndDate.ToString(
+                    "d MMMM yyyy",
+                    BritishCulture)}",
+
+            Days =
+            [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday"
+            ],
+
+            Rows = hourlyRows
+                .Select(row => new TeeTimeRow
+                {
+                    Time = row.TimeRange,
+
+                    Values =
+                        GetTeeTimeDayValues(
+                            row.Percentage),
+
+                    Contributions =
+                        BuildTeeTimeContributions(
+                            row.UsedTeeTimes,
+                            availableTotals)
+                })
+                .ToList(),
+
+            Totals =
+                GetTeeTimeDayValues(
+                    utilisationTotals),
+
+            CapacityDivisor =
+                Math.Max(
+                    hourlyRows.Count,
+                    1)
+        };
+    }
+
+    private static List<double> GetTeeTimeDayValues(
+        TeeTimeDayValuesData values)
+    {
+        return
+        [
+            values.Monday,
+            values.Tuesday,
+            values.Wednesday,
+            values.Thursday,
+            values.Friday,
+            values.Saturday,
+            values.Sunday
+        ];
+    }
+
+    private static List<double> BuildTeeTimeContributions(
+        TeeTimeDayValuesData used,
+        TeeTimeDayValuesData totalAvailable)
+    {
+        var usedValues =
+            GetTeeTimeDayValues(used);
+
+        var availableValues =
+            GetTeeTimeDayValues(
+                totalAvailable);
+
+        return Enumerable
+            .Range(0, usedValues.Count)
+            .Select(index =>
+                availableValues[index] <= 0
+                    ? 0
+                    : usedValues[index] /
+                    availableValues[index] *
+                    100d)
+            .ToList();
     }
 
     private static MembershipMovementMetrics

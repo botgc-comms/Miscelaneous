@@ -1,6 +1,24 @@
 const SVG_NS = "http://www.w3.org/2000/svg";
 const palette = ["#43afbf", "#a7d43e", "#f3c600", "#f39a00", "#e20d00", "#8ad8dd", "#d4e88a", "#6f9fae", "#ffffff", "#287b92"];
-const teePalette = ["#18546c", "#24748a", "#3a92a2", "#55aeba", "#78c6c6", "#9bd2b0", "#b8dd8f", "#d2e678", "#e5edaa", "#f1f3ca", "#49acbd"];
+const teePalette = [
+  "#567d22",
+  "#638c25",
+  "#719b28",
+  "#80aa2b",
+  "#8fba2e",
+  "#9dca32",
+  "#abd755",
+  "#b9df72",
+  "#c7e68f",
+  "#d4ebab",
+  "#dfeec1",
+  "#e8f1d2",
+  "#eff4df",
+  "#f4f6e9"
+];
+
+const teeUnusedColour =
+  "#49acbd";
 
 function svgElement(tag, attributes = {}, text = null) {
   const element = document.createElementNS(SVG_NS, tag);
@@ -787,16 +805,16 @@ function drawStackedAreaChart(
   container,
   data
 ) {
-  const width = 700;
-  const height = 360;
+  const width = 600;
+  const height = 450;
 
   const margin = {
-    top: 14,
+    top: 18,
     right: 14,
-    bottom: 50,
-    left: 48
+    bottom: 58,
+    left: 58
   };
-
+  
   const svg =
     createSvg(container, width, height);
 
@@ -874,14 +892,35 @@ function drawStackedAreaChart(
   );
 
   const contributions =
-    data.rows.map(
-      row =>
-        row.values.map(
-          value =>
-            value /
-            data.capacityDivisor
+    data.rows.map(row => {
+      const suppliedContributions =
+        Array.isArray(
+          row.contributions
+        ) &&
+        row.contributions.length ===
+          data.days.length
+          ? row.contributions.map(Number)
+          : null;
+
+      if (
+        suppliedContributions &&
+        suppliedContributions.every(
+          Number.isFinite
         )
-    );
+      ) {
+        return suppliedContributions;
+      }
+
+      /*
+      * Legacy fallback for reports created before
+      * weighted tee-time data was imported.
+      */
+      return row.values.map(
+        value =>
+          value /
+          data.capacityDivisor
+      );
+    });
 
   const occupied =
     data.days.map(
@@ -957,15 +996,24 @@ function drawStackedAreaChart(
         svgElement("path", {
           d: path,
           fill:
-            teePalette[
-              seriesIndex %
-              teePalette.length
-            ],
+            seriesIndex ===
+            series.length - 1
+              ? teeUnusedColour
+              : teePalette[
+                  seriesIndex %
+                  teePalette.length
+                ],
+
+          stroke:
+            "rgba(255,255,255,0.18)",
+
+          "stroke-width": 0.7,
+
           opacity:
             seriesIndex ===
             series.length - 1
-              ? 0.9
-              : 0.94
+              ? 0.88
+              : 0.96
         })
       );
     }
@@ -1892,6 +1940,39 @@ function renderFinancialTable(rows) {
   });
 }
 
+function formatTeeHour(hour) {
+  const normalised =
+    ((hour % 24) + 24) % 24;
+
+  const suffix =
+    normalised >= 12
+      ? "pm"
+      : "am";
+
+  const displayHour =
+    normalised % 12 || 12;
+
+  return `${displayHour}${suffix}`;
+}
+
+function formatTeeTimeRange(value) {
+  const match =
+    /^(\d{2}):\d{2}\s*-\s*(\d{2}):\d{2}$/
+      .exec(String(value ?? ""));
+
+  if (!match) {
+    return value ?? "";
+  }
+
+  const startHour =
+    Number(match[1]);
+
+  return (
+    `${formatTeeHour(startHour)}` +
+    `–${formatTeeHour(startHour + 1)}`
+  );
+}
+
 function renderTeeTable(data) {
   const head =
     document.getElementById(
@@ -1934,7 +2015,9 @@ function renderTeeTable(data) {
       document.createElement("td");
 
     timeCell.textContent =
-      row.time;
+      formatTeeTimeRange(
+        row.time
+      );
 
     tr.append(timeCell);
 
@@ -1978,6 +2061,66 @@ function renderTeeTable(data) {
   });
 
   body.append(totalsRow);
+}
+
+function renderTeeLegend(data) {
+  const container =
+    document.getElementById(
+      "tee-chart-legend"
+    );
+
+  if (!container) {
+    return;
+  }
+
+  container.replaceChildren();
+
+  const items = [
+    {
+      label: "Unused",
+      colour: teeUnusedColour
+    },
+    ...data.rows.map(
+      (row, index) => ({
+        label:
+          formatTeeTimeRange(
+            row.time
+          ),
+
+        colour:
+          teePalette[
+            index %
+            teePalette.length
+          ]
+      })
+    )
+  ];
+
+  items.forEach(item => {
+    const entry =
+      document.createElement("span");
+
+    entry.className =
+      "tee-chart-legend__item";
+
+    const swatch =
+      document.createElement("i");
+
+    swatch.className =
+      "tee-chart-legend__swatch";
+
+    swatch.style.background =
+      item.colour;
+
+    entry.append(
+      swatch,
+      document.createTextNode(
+        item.label
+      )
+    );
+
+    container.append(entry);
+  });
 }
 
 function renderMembershipStatistics(
@@ -2294,6 +2437,232 @@ if (hasFinancialValues) {
   });
 }
 
+function waitForAnimationFrame() {
+  return new Promise(resolve => {
+    requestAnimationFrame(() => {
+      resolve();
+    });
+  });
+}
+
+function canvasToPngBlob(canvas) {
+  return new Promise(
+    (resolve, reject) => {
+      canvas.toBlob(
+        blob => {
+          if (blob) {
+            resolve(blob);
+          } else {
+            reject(
+              new Error(
+                "The report image could not be created."
+              )
+            );
+          }
+        },
+        "image/png"
+      );
+    }
+  );
+}
+
+function sanitiseFileName(value) {
+  return String(value ?? "")
+    .trim()
+    .replace(/[^a-z0-9]+/gi, "-")
+    .replace(/^-+|-+$/g, "")
+    .toLowerCase();
+}
+
+async function downloadReportImage() {
+  const button =
+    document.getElementById(
+      "download-report-image"
+    );
+
+  const reportElement =
+    document.querySelector(
+      ".page-shell"
+    );
+
+  if (!button || !reportElement) {
+    return;
+  }
+
+  if (
+    typeof window.html2canvas !==
+    "function"
+  ) {
+    window.alert(
+      "The report-image library has not loaded."
+    );
+
+    return;
+  }
+
+  const originalText =
+    button.textContent;
+
+  button.disabled = true;
+  button.textContent =
+    "Preparing image…";
+
+  try {
+    if (document.fonts?.ready) {
+      await document.fonts.ready;
+    }
+
+    await waitForAnimationFrame();
+
+    const canvas =
+      await window.html2canvas(
+        reportElement,
+        {
+          backgroundColor:
+            "#061a24",
+
+          /*
+           * Good quality without creating an
+           * excessively large browser canvas.
+           */
+          scale: Math.min(
+            window.devicePixelRatio || 1,
+            1.5
+          ),
+
+          useCORS: true,
+          allowTaint: false,
+          logging: false,
+
+          width:
+            reportElement.scrollWidth,
+
+          height:
+            reportElement.scrollHeight,
+
+          windowWidth:
+            reportElement.scrollWidth,
+
+          windowHeight:
+            reportElement.scrollHeight,
+
+          scrollX: 0,
+          scrollY: 0,
+
+          onclone:
+            clonedDocument => {
+              /*
+               * Ensure charts which normally
+               * animate as they enter the
+               * viewport are captured in their
+               * completed state.
+               */
+              clonedDocument
+                .querySelectorAll(
+                  ".chart-svg"
+                )
+                .forEach(svg => {
+                  svg.classList.add(
+                    "chart-svg--visible"
+                  );
+                });
+
+              const captureStyles =
+                clonedDocument
+                  .createElement(
+                    "style"
+                  );
+
+              captureStyles.textContent = `
+                *,
+                *::before,
+                *::after {
+                  animation: none !important;
+                  transition: none !important;
+                }
+
+                .chart-svg,
+                .chart-segment,
+                .chart-segment-label,
+                .chart-gauge-needle {
+                  opacity: 1 !important;
+                  transform: none !important;
+                  clip-path: none !important;
+                }
+              `;
+
+              clonedDocument.head.append(
+                captureStyles
+              );
+            }
+        }
+      );
+
+    const blob =
+      await canvasToPngBlob(
+        canvas
+      );
+
+    const objectUrl =
+      URL.createObjectURL(blob);
+
+    const link =
+      document.createElement("a");
+
+    const reportTitle =
+      document
+        .getElementById(
+          "report-title"
+        )
+        ?.textContent;
+
+    const fileName =
+      sanitiseFileName(
+        reportTitle
+      ) || "kpi-report";
+
+    link.href = objectUrl;
+    link.download =
+      `${fileName}.png`;
+
+    document.body.append(link);
+
+    link.click();
+    link.remove();
+
+    window.setTimeout(
+      () => {
+        URL.revokeObjectURL(
+          objectUrl
+        );
+      },
+      1000
+    );
+  } catch (error) {
+    console.error(
+      "Report image generation failed.",
+      error
+    );
+
+    window.alert(
+      "The report image could not be generated."
+    );
+  } finally {
+    button.disabled = false;
+    button.textContent =
+      originalText;
+  }
+}
+
+document
+  .getElementById(
+    "download-report-image"
+  )
+  ?.addEventListener(
+    "click",
+    downloadReportImage
+  );
+    
 async function fetchReport() {
   const reportId =
     new URLSearchParams(
@@ -2725,6 +3094,10 @@ const hasCalculatedOutgoings =
   );
 
   renderTeeTable(
+    report.teeTimeUtilisation
+  );
+
+  renderTeeLegend(
     report.teeTimeUtilisation
   );
 

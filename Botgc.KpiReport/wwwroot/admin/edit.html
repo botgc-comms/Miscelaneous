@@ -56,6 +56,17 @@
             >
           </label>
 
+          <label class="field field--full">
+            <span>Report description</span>
+
+            <textarea
+              id="report-summary"
+              rows="4"
+              maxlength="1200"
+              placeholder="Enter the introductory description shown beneath the report title."
+            ></textarea>
+          </label>
+
           <label class="field">
             <span>Reporting period starts</span>
             <input
@@ -286,7 +297,90 @@
               <tbody id="non-playing-membership-breakdown-body"></tbody>
             </table>
           </div>
-                </div>
+        </div>
+      </section>
+
+      <section
+        id="tee-time-section"
+        class="admin-card form-section"
+      >
+        <div class="card-heading">
+          <div>
+            <h2>Tee-time utilisation data</h2>
+
+            <p>
+              Import a fixed tee-time utilisation snapshot. The dates default
+              to the three completed months immediately before the
+              figures-correct-as-at date.
+            </p>
+          </div>
+
+          <button
+            id="import-tee-time-button"
+            class="button"
+            type="button"
+          >
+            Import tee-time data
+          </button>
+        </div>
+
+        <p
+          id="tee-time-import-status"
+          class="status-message"
+          aria-live="polite"
+        ></p>
+
+        <div class="form-grid">
+          <label class="field">
+            <span>Start date</span>
+
+            <input
+              id="tee-time-start-date"
+              type="date"
+            >
+          </label>
+
+          <label class="field">
+            <span>End date</span>
+
+            <input
+              id="tee-time-end-date"
+              type="date"
+            >
+          </label>
+
+          <div class="field field--readonly">
+            <span>Snapshot status</span>
+
+            <strong id="tee-time-snapshot-status">
+              Not imported
+            </strong>
+          </div>
+
+          <div class="field field--readonly">
+            <span>Imported</span>
+
+            <strong id="tee-time-imported-at">
+              —
+            </strong>
+          </div>
+
+          <div class="field field--readonly">
+            <span>Imported period</span>
+
+            <strong id="tee-time-imported-period">
+              —
+            </strong>
+          </div>
+
+          <div class="field field--readonly">
+            <span>Overall utilisation</span>
+
+            <strong id="tee-time-overall-utilisation">
+              —
+            </strong>
+          </div>
+        </div>
       </section>
 
       <div class="admin-two-column-panels">

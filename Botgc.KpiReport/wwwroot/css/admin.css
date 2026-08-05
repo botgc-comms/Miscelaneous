@@ -751,3 +751,58 @@ th:last-child {
 .supporting-financial-summary {
   margin-top: 1.25rem;
 }
+
+#tee-time-section {
+  border-left: 5px solid #a7bbc2;
+}
+
+#tee-time-section[data-status="current"] {
+  border-left-color: var(--success);
+}
+
+#tee-time-section .card-heading > .button {
+  flex: none;
+}
+
+#tee-time-section .form-grid {
+  margin-top: 1rem;
+}
+
+#tee-time-section .field--readonly {
+  min-height: 5.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.6rem;
+  background: #f7fafb;
+}
+
+#tee-time-section .field--readonly > span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+#tee-time-section .field--readonly strong {
+  display: block;
+  font-size: 1.05rem;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 900px) {
+  #tee-time-section .card-heading {
+    display: grid;
+  }
+
+  #tee-time-section .card-heading > .button {
+    justify-self: start;
+  }
+}
+
+.field--full {
+  grid-column: 1 / -1;
+}
+
+#report-summary {
+  min-height: 7rem;
+}

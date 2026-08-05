@@ -25,9 +25,35 @@ const playingMembershipBreakdownBody =
 const nonPlayingMembershipBreakdownBody =
   document.getElementById("non-playing-membership-breakdown-body");
 
+const importTeeTimeButton =
+  document.getElementById(
+    "import-tee-time-button"
+  );
+
+const teeTimeImportStatus =
+  document.getElementById(
+    "tee-time-import-status"
+  );
+
+const teeTimeSection =
+  document.getElementById(
+    "tee-time-section"
+  );
+
+const teeTimeStartDateInput =
+  document.getElementById(
+    "tee-time-start-date"
+  );
+
+const teeTimeEndDateInput =
+  document.getElementById(
+    "tee-time-end-date"
+  );
+
 let report = null;
 let hasUnsavedChanges = false;
 let membershipImportInProgress = false;
+let teeTimeImportInProgress = false;
 
 const defaultMembershipNarrative =
   "At the start of each subscription year, we assume that playing " +
@@ -1001,6 +1027,9 @@ function renderMembershipSnapshot() {
       "—"
     );
 
+    renderTeeTimeSnapshot();
+    updateTeeTimeImportButtonState();
+
     membershipBreakdowns.hidden = true;
 
     setMembershipStatus(
@@ -1115,6 +1144,14 @@ function markFormDirty() {
 
   hasUnsavedChanges = true;
 
+  updateTeeTimeImportButtonState();
+
+  if (report.teeTimeSnapshot) {
+    setTeeTimeStatus(
+      "Save the report before refreshing the tee-time data."
+    );
+  }
+
   updateImportButtonState();
 
   if (report.membershipSnapshot) {
@@ -1140,6 +1177,11 @@ function populateForm() {
     "reporting-period-start"
   ).value = report.reportingPeriodStart;
 
+  document.getElementById(
+    "report-summary"
+  ).value =
+    report.presentation?.summary ?? "";
+    
   document.getElementById(
     "reporting-period-end"
   ).value = report.reportingPeriodEnd;
@@ -1199,6 +1241,9 @@ function populateForm() {
   hasUnsavedChanges = false;
 
   renderMembershipSnapshot();
+  initialiseTeeTimeInputs();
+  renderTeeTimeSnapshot();
+  updateTeeTimeImportButtonState();
   updateImportButtonState();
 }
 
@@ -1247,9 +1292,39 @@ async function loadReport() {
   }
 }
 
+function isImportParameterControl(
+  element
+) {
+  return element.matches(
+    "#tee-time-start-date, " +
+    "#tee-time-end-date"
+  );
+}
+
 form.addEventListener(
   "input",
-  markFormDirty
+  event => {
+    if (
+      !isImportParameterControl(
+        event.target
+      )
+    ) {
+      markFormDirty();
+    }
+  }
+);
+
+form.addEventListener(
+  "change",
+  event => {
+    if (
+      !isImportParameterControl(
+        event.target
+      )
+    ) {
+      markFormDirty();
+    }
+  }
 );
 
 form.addEventListener(
@@ -1264,11 +1339,6 @@ form.addEventListener(
       updateSupportingFinancialSummary();
     }
   }
-);
-
-form.addEventListener(
-  "change",
-  markFormDirty
 );
 
 form.addEventListener(
@@ -1309,6 +1379,14 @@ form.addEventListener(
 
     report.presentation ??= {};
 
+    report.presentation.summary =
+      document
+        .getElementById(
+          "report-summary"
+        )
+        .value
+        .trim();
+        
     report.presentation.membershipNarrative =
       document
         .getElementById(
@@ -1436,6 +1514,123 @@ form.addEventListener(
   }
 );
 
+importTeeTimeButton.addEventListener(
+  "click",
+  async () => {
+    if (
+      !report ||
+      hasUnsavedChanges
+    ) {
+      setTeeTimeStatus(
+        "Save the report before importing tee-time data.",
+        "error"
+      );
+
+      return;
+    }
+
+    const startDate =
+      teeTimeStartDateInput.value;
+
+    const endDate =
+      teeTimeEndDateInput.value;
+
+    if (!startDate || !endDate) {
+      setTeeTimeStatus(
+        "Enter both a start date and an end date.",
+        "error"
+      );
+
+      return;
+    }
+
+    if (endDate < startDate) {
+      setTeeTimeStatus(
+        "The end date must not be before the start date.",
+        "error"
+      );
+
+      return;
+    }
+
+    teeTimeImportInProgress = true;
+
+    updateTeeTimeImportButtonState();
+
+    setTeeTimeStatus(
+      "Importing tee-time data…"
+    );
+
+    try {
+      const response = await fetch(
+        `/api/kpi-reports/` +
+        `${encodeURIComponent(
+          report.id
+        )}` +
+        `/tee-time-snapshot`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+          body: JSON.stringify({
+            version: report.version,
+            startDate,
+            endDate
+          })
+        }
+      );
+
+      if (!response.ok) {
+        const problem =
+          await response
+            .json()
+            .catch(() => null);
+
+        const validationMessages =
+          Object.values(
+            problem?.errors ?? {}
+          ).flat();
+
+        throw new Error(
+          validationMessages.join(" ") ||
+          problem?.detail ||
+          problem?.message ||
+          `The server returned ${response.status}.`
+        );
+      }
+
+      report =
+        await response.json();
+
+      hasUnsavedChanges = false;
+
+      document.getElementById(
+        "version-label"
+      ).textContent =
+        `Version ${report.version}`;
+
+      initialiseTeeTimeInputs();
+      renderTeeTimeSnapshot();
+
+      setTeeTimeStatus(
+        "Tee-time utilisation data imported.",
+        "success"
+      );
+    } catch (error) {
+      setTeeTimeStatus(
+        error.message,
+        "error"
+      );
+    } finally {
+      teeTimeImportInProgress = false;
+
+      updateTeeTimeImportButtonState();
+    }
+  }
+);
+
 importMembershipButton.addEventListener(
   "click",
   async () => {
@@ -1520,5 +1715,265 @@ importMembershipButton.addEventListener(
     }
   }
 );
+
+function setTeeTimeStatus(
+  message,
+  kind = ""
+) {
+  teeTimeImportStatus.textContent =
+    message;
+
+  teeTimeImportStatus.className =
+    `status-message${
+      kind
+        ? ` is-${kind}`
+        : ""
+    }`;
+}
+
+function parseIsoDate(value) {
+  const parts =
+    String(value ?? "")
+      .split("-")
+      .map(Number);
+
+  if (
+    parts.length !== 3 ||
+    parts.some(
+      part => !Number.isInteger(part)
+    )
+  ) {
+    return null;
+  }
+
+  return new Date(
+    parts[0],
+    parts[1] - 1,
+    parts[2]
+  );
+}
+
+function toIsoDate(date) {
+  const year =
+    date.getFullYear();
+
+  const month =
+    String(
+      date.getMonth() + 1
+    ).padStart(2, "0");
+
+  const day =
+    String(
+      date.getDate()
+    ).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+function addMonthsClamped(
+  date,
+  months
+) {
+  const target =
+    new Date(
+      date.getFullYear(),
+      date.getMonth() + months,
+      1
+    );
+
+  const finalDay =
+    new Date(
+      target.getFullYear(),
+      target.getMonth() + 1,
+      0
+    ).getDate();
+
+  target.setDate(
+    Math.min(
+      date.getDate(),
+      finalDay
+    )
+  );
+
+  return target;
+}
+
+function getDefaultTeeTimePeriod() {
+  const figuresDate =
+    parseIsoDate(
+      document.getElementById(
+        "figures-correct-as-at"
+      ).value ||
+      report?.figuresCorrectAsAt
+    );
+
+  if (!figuresDate) {
+    return null;
+  }
+
+  const startDate =
+    addMonthsClamped(
+      figuresDate,
+      -3
+    );
+
+  const endDate =
+    new Date(figuresDate);
+
+  endDate.setDate(
+    endDate.getDate() - 1
+  );
+
+  return {
+    startDate:
+      toIsoDate(startDate),
+
+    endDate:
+      toIsoDate(endDate)
+  };
+}
+
+function initialiseTeeTimeInputs() {
+  const snapshot =
+    report?.teeTimeSnapshot;
+
+  if (snapshot) {
+    teeTimeStartDateInput.value =
+      snapshot.startDate;
+
+    teeTimeEndDateInput.value =
+      snapshot.endDate;
+
+    return;
+  }
+
+  const defaults =
+    getDefaultTeeTimePeriod();
+
+  if (!defaults) {
+    return;
+  }
+
+  teeTimeStartDateInput.value =
+    defaults.startDate;
+
+  teeTimeEndDateInput.value =
+    defaults.endDate;
+}
+
+function updateTeeTimeImportButtonState() {
+  const snapshot =
+    report?.teeTimeSnapshot;
+
+  importTeeTimeButton.textContent =
+    snapshot
+      ? "Refresh tee-time data"
+      : "Import tee-time data";
+
+  importTeeTimeButton.disabled =
+    report === null ||
+    teeTimeImportInProgress;
+
+  if (teeTimeImportInProgress) {
+    importTeeTimeButton.textContent =
+      "Importing tee-time data…";
+
+    importTeeTimeButton.title = "";
+
+    return;
+  }
+
+  importTeeTimeButton.title =
+    hasUnsavedChanges
+      ? "Save the report before importing tee-time data."
+      : "";
+}
+
+function renderTeeTimeSnapshot() {
+  const snapshot =
+    report?.teeTimeSnapshot ?? null;
+
+  teeTimeSection.dataset.status =
+    snapshot
+      ? "current"
+      : "missing";
+
+  if (!snapshot) {
+    setText(
+      "tee-time-snapshot-status",
+      "Not imported"
+    );
+
+    setText(
+      "tee-time-imported-at",
+      "—"
+    );
+
+    setText(
+      "tee-time-imported-period",
+      "—"
+    );
+
+    setText(
+      "tee-time-overall-utilisation",
+      "—"
+    );
+
+    setTeeTimeStatus(
+      "No tee-time utilisation snapshot has been imported."
+    );
+
+    updateTeeTimeImportButtonState();
+
+    return;
+  }
+
+  const totalRow =
+    snapshot.rows?.find(
+      row => row.isTotal
+    );
+
+  setText(
+    "tee-time-snapshot-status",
+    "Imported"
+  );
+
+  setText(
+    "tee-time-imported-at",
+    formatDateTime(
+      snapshot.importedAtUtc
+    )
+  );
+
+  setText(
+    "tee-time-imported-period",
+    `${formatDate(
+      snapshot.startDate
+    )} to ${formatDate(
+      snapshot.endDate
+    )}`
+  );
+
+  setText(
+    "tee-time-overall-utilisation",
+    totalRow
+      ? `${integer(
+          totalRow.percentage?.total
+        )}%`
+      : "—"
+  );
+
+  setTeeTimeStatus(
+    `Tee-time data covers ` +
+    `${formatDate(
+      snapshot.startDate
+    )} to ${formatDate(
+      snapshot.endDate
+    )}.`,
+    "success"
+  );
+
+  updateTeeTimeImportButtonState();
+}
 
 loadReport();

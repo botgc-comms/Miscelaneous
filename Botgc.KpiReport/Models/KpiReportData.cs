@@ -17,6 +17,63 @@ public sealed class KpiReportData
     public KpiReportPresentationData Presentation { get; set; } = new();
     public DateTimeOffset CreatedAtUtc { get; set; }
     public DateTimeOffset UpdatedAtUtc { get; set; }
+    public TeeTimeSnapshotData? TeeTimeSnapshot { get; set; }
+}
+
+public sealed class TeeTimeSnapshotData
+{
+    public DateOnly StartDate { get; set; }
+
+    public DateOnly EndDate { get; set; }
+
+    public DateTimeOffset ImportedAtUtc { get; set; }
+
+    public List<TeeTimeUsageRowData> Rows { get; set; } = [];
+}
+
+public sealed class TeeTimeUsageRowData
+{
+    public string TimeRange { get; set; } = string.Empty;
+
+    public TimeOnly? StartTime { get; set; }
+
+    public TimeOnly? EndTime { get; set; }
+
+    public bool IsTotal { get; set; }
+
+    public TeeTimeDayValuesData Percentage { get; set; } = new();
+
+    public TeeTimeDayValuesData UsedTeeTimes { get; set; } = new();
+
+    public TeeTimeDayValuesData TotalTeeTimes { get; set; } = new();
+}
+
+public sealed class TeeTimeDayValuesData
+{
+    public int Monday { get; set; }
+
+    public int Tuesday { get; set; }
+
+    public int Wednesday { get; set; }
+
+    public int Thursday { get; set; }
+
+    public int Friday { get; set; }
+
+    public int Saturday { get; set; }
+
+    public int Sunday { get; set; }
+
+    public int Total { get; set; }
+}
+
+public sealed class ImportTeeTimeSnapshotRequest
+{
+    public int Version { get; set; }
+
+    public DateOnly StartDate { get; set; }
+
+    public DateOnly EndDate { get; set; }
 }
 
 public sealed class SupportingFinancialData

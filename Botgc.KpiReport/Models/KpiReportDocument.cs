@@ -149,18 +149,21 @@ public sealed class MembershipTrendMetrics
     public List<double?> PlayingTarget { get; init; } = [];
 }
 
-public sealed class TeeTimeRow
-{
-    public string Time { get; init; } = string.Empty;
-    public List<double> Values { get; init; } = [];
-}
-
 public sealed class RetentionMetrics
 {
     public List<string> Years { get; init; } = [];
     public List<double> Total { get; init; } = [];
     public List<double> Male { get; init; } = [];
     public List<double> Female { get; init; } = [];
+}
+
+public sealed class TeeTimeRow
+{
+    public string Time { get; init; } = string.Empty;
+
+    public List<double> Values { get; init; } = [];
+
+    public List<double> Contributions { get; init; } = [];
 }
 
 public sealed class GaugeMetric
