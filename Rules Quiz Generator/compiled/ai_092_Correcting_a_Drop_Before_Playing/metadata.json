@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "14.3b(4)",
+  "ruleName": "Dropping Ball in Relief Area",
+  "group": "Relief Procedures",
+  "type": "multiple_choice",
+  "imagePrompt": "A polished, modern semi-realistic illustration (about 75% realistic, 25% stylised) in a junior golf quiz style. Show a female golfer (Rebecca) about to drop a ball from knee height onto a short-grass fairway relief area, with a previously dropped ball already on the ground nearby. The setting is a fairway with a tree line in the distance. Make Rebecca and the two ball positions clear. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A female golfer preparing to drop a golf ball from knee height on a fairway relief area, with another ball lying on the ground beside her.",
+  "sceneSpec": {
+    "setting": "Fairway relief area, clearly marked with short grass and a distant tree line.",
+    "players": "Rebecca stands near the relief area, golf club in hand, preparing to drop the ball again. No other players are present.",
+    "ballPosition": "A golf ball rests on the short grass of the relief area, clearly visible by Rebecca's feet.",
+    "ruleMoment": "Rebecca is about to re-drop the ball correctly from knee height after realising her previous drop was from shoulder height.",
+    "educationalFocus": "The focus is on the correct procedure for dropping a ball (from knee height) and the ability to correct a drop before playing without penalty.",
+    "mustShow": [
+      "Rebecca clearly about to drop the ball from knee height.",
+      "The ball already on the ground in the relief area."
+    ],
+    "mustNotShow": [
+      "Any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles."
+    ]
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Fixing a Drop Before You Hit",
+      "question": "Rebecca needs to drop her ball, but she drops it from her shoulder instead of her knee. The ball stays in the right area. Before she hits it, Rebecca realises she did it wrong, picks up the ball, and drops it again from her knee. Does Rebecca get a penalty?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "She gets one penalty stroke."
+        },
+        {
+          "id": "b",
+          "text": "She gets a general penalty."
+        },
+        {
+          "id": "c",
+          "text": "She gets no penalty."
+        },
+        {
+          "id": "d",
+          "text": "She must put the ball back and play from her first spot."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "Rebecca does not get a penalty because she fixed her mistake before hitting the ball. If you drop the ball the wrong way and realise before you hit it, you can drop again the right way with no penalty.",
+      "vocabulary": [
+        {
+          "term": "Drop",
+          "simpleMeaning": "Letting go of the ball from a certain height so it falls to the ground."
+        },
+        {
+          "term": "Relief area",
+          "simpleMeaning": "The place on the course where you are allowed to drop and play the ball."
+        }
+      ],
+      "teachingTip": "Let children practise dropping a ball from knee height so they get used to the correct way.",
+      "likelyMisconceptions": [
+        "Thinking you get a penalty for ANY mistake, even if you fix it before hitting the ball.",
+        "Believing the drop must always be from shoulder height (the rule changed)."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Correcting a Drop Before Playing",
+      "question": "Rebecca takes relief but drops her ball from shoulder height instead of knee height. The ball stays in the relief area. Before playing it, Rebecca realises her mistake, lifts the ball and drops it correctly. What is the penalty?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "One stroke."
+        },
+        {
+          "id": "b",
+          "text": "General penalty."
+        },
+        {
+          "id": "c",
+          "text": "No penalty."
+        },
+        {
+          "id": "d",
+          "text": "Must replace and play from original spot."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "There is no penalty as Rebecca corrected her dropping procedure before making a stroke. Rule 14.5 allows a player to correct the procedure for putting a ball in play without penalty, provided the ball has not been played."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "ai_092_Correcting_a_Drop_Before_Playing",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v5.png",
+    "promptFileName": "final-prompt-v5.txt",
+    "compiledAtUtc": "2026-08-10T09:27:44.943Z"
+  }
+}

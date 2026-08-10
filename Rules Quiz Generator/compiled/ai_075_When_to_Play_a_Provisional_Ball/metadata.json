@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "18.3",
+  "ruleName": "Provisional Ball",
+  "group": "Ball Lost or Out of Bounds",
+  "type": "multiple_choice",
+  "imagePrompt": "Create a modern, semi-realistic illustration (about 75% realistic, 25% stylised) of a golf teeing area on a long hole. Show a player preparing to play a provisional ball from the tee with their club, while another player watches. In the distance, show the original ball flying towards a line of trees and white stakes marking out of bounds along the right edge of the fairway. The teeing area should have two balls visible: one in flight and one teed up. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer at the tee preparing to play a provisional ball with a club, while another player watches. In the background, the original ball is flying towards trees and white out of bounds stakes along the fairway.",
+  "sceneSpec": {
+    "setting": "The teeing area of a long hole, with a fairway bordered by trees and white stakes indicating an out of bounds line.",
+    "players": "One golfer just finishing their tee shot, another player nearby observing.",
+    "ballPosition": "The original ball is seen flying towards trees near the out of bounds line but still in flight; a second ball is set up on a tee, ready for a provisional shot.",
+    "ruleMoment": "The moment after the original tee shot, before playing a provisional ball.",
+    "educationalFocus": "Highlighting the option to play a provisional ball when unsure if the first is out of bounds.",
+    "mustShow": [
+      "Tee area with two balls (one played, one teed up for provisional)",
+      "White stakes lining the edge of the fairway",
+      "Player preparing to play a provisional shot"
+    ],
+    "mustNotShow": [
+      "Scorecards",
+      "Speech bubbles",
+      "Text or labels",
+      "Numbers",
+      "Diagrams",
+      "Logos",
+      "Badges",
+      "Club crests",
+      "Watermarks",
+      "Captions"
+    ]
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "What to Do If You Think Your Ball Might Be Out",
+      "question": "You think your ball might be out of bounds, but you are not sure. What should you do before you go look for it?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Walk up to where you think your ball is and then decide what to do."
+        },
+        {
+          "id": "b",
+          "text": "Hit another ball now, just in case, and call it a provisional ball."
+        },
+        {
+          "id": "c",
+          "text": "Say straight away that your first ball is lost."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If you think your ball might be out of bounds, you can hit a provisional ball before walking to look for your first one. This saves time, in case your first ball cannot be found or is out of bounds.",
+      "vocabulary": [
+        {
+          "term": "Provisional Ball",
+          "simpleMeaning": "A ball you play just in case your first ball is lost or out of bounds."
+        },
+        {
+          "term": "Out of bounds",
+          "simpleMeaning": "A place outside the golf course where you are not allowed to play from."
+        }
+      ],
+      "teachingTip": "Act out a situation where a ball might be out of bounds to show when to play a provisional ball.",
+      "likelyMisconceptions": [
+        "Kids might think they must always look for their ball first.",
+        "They might think they cannot play a provisional ball unless an adult tells them."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "When to Play a Provisional Ball",
+      "question": "You think your ball may be out of bounds but are not certain. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Wait until you reach the area and decide."
+        },
+        {
+          "id": "b",
+          "text": "Play a provisional ball."
+        },
+        {
+          "id": "c",
+          "text": "Immediately declare the original ball lost."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "To save time, a player may play a provisional ball under Rule 18.3 if they think their ball may be lost outside a penalty area or out of bounds. This allows the player to avoid a long walk back if the original ball is not found or is out of bounds."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "ai_075_When_to_Play_a_Provisional_Ball",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-08-10T09:27:44.818Z"
+  }
+}

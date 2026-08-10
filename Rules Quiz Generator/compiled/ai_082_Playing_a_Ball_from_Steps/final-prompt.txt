@@ -1,0 +1,26 @@
+Create a corrected version of the previous golf rules quiz image.
+
+STYLE LOCK:
+The finished image must match this target style: a realistic photographic golf course background with a clearly hand-drawn illustrated teenage golfer composited naturally into the scene.
+The background environment must look like a real professional golf-course photograph.
+The grass, putting green, fairway, bunker, water, trees, sky, clubhouse and surrounding landscape should appear photographic and realistic.
+The golfer must be a high-quality illustrated character, not a photorealistic person.
+The golfer should look like a polished hand-drawn children's educational publishing illustration placed into the realistic photograph.
+The golfer should have clean illustrated outlines, painted shading, expressive facial features, slightly enlarged eyes, friendly expression, natural body proportions and believable golf posture.
+The golfer should feel like a modern illustrated storybook or golf academy character layered into a real golf scene.
+The illustrated golfer must blend naturally with the lighting and perspective of the photographic background.
+Do not create a fully photorealistic human.
+Do not create anime, manga, comic-book, mascot, plastic 3D, grotesque caricature, or exaggerated cartoon style.
+
+BASE IMAGE PROMPT:
+A modern, semi-realistic (about 75% realistic, 25% stylised) polished golf illustration showing two players beside a set of outdoor steps at the edge of a golf course. One player, Sophie, is preparing to play a stroke at a golf ball lying on a step, while the other player, David, watches from nearby. The focus should be on Sophie and the ball on the steps, with naturalistic light and subtle background details like short grass and a hint of the clubhouse or path. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.
+
+CORRECTION INSTRUCTIONS:
+Generate the first illustration for this newly created quiz item using the existing junior golf quiz illustration style.
+
+Apply the correction instructions even if they change the scene described in the base prompt.
+Where the correction instructions conflict with the base prompt, follow the correction instructions.
+Where the correction instructions conflict with the style lock, follow the style lock.
+Keep the Rules of Golf learning situation clear.
+Show one clear golf rules situation only.
+Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards, written explanations, or speech bubbles.

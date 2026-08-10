@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "9.3",
+  "ruleName": "Ball Moved by Natural Forces",
+  "group": "General Play",
+  "type": "multiple_choice",
+  "imagePrompt": "A polished, modern, semi-realistic golf illustration (roughly 75% realistic, 25% stylised) of a junior golfer standing on a putting green on a windy day. Show her watching as her golf ball, which has not been marked or lifted, has been moved by the wind to a new position on the green. The original ball position should be just visible as a faint mark or impression. The grass and flag in the background should show visible wind movement, such as blowing leaves or a flapping flag. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "Junior golfer on a windy putting green watching her ball after it has been moved by the wind, with the original spot faintly visible.",
+  "sceneSpec": {
+    "setting": "A putting green on a golf course, on a windy day.",
+    "players": "One junior golfer, Hannah, is standing and watching her ball on the green.",
+    "ballPosition": "Her original ball position on the green is visible, and the ball has just finished rolling to a new position on the green after being moved by a gust of wind.",
+    "ruleMoment": "The moment immediately after a gust of wind has moved the ball on the putting green.",
+    "educationalFocus": "Demonstrates what must be done when natural forces move a ball on the putting green before it is marked or lifted.",
+    "mustShow": [
+      "A junior golfer observing her golf ball on the putting green.",
+      "The ball at rest in its new position, with a faint impression or divot showing where it originally lay.",
+      "Wind-disturbed grass or visible gust effects, e.g., flags or leaves blowing."
+    ],
+    "mustNotShow": [
+      "Any marking tools, coins, or ball markers in use.",
+      "Any numbers, text, arrows, labels, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles."
+    ]
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Wind Blows the Ball on the Green",
+      "question": "Hannah's ball is sitting on the green. She hasn't picked it up or marked it. Suddenly, the wind pushes the ball to a new place on the green. What should Hannah do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Put the ball back where it was before the wind moved it."
+        },
+        {
+          "id": "b",
+          "text": "Hit the ball from where the wind moved it to."
+        },
+        {
+          "id": "c",
+          "text": "Put the ball back and add one more shot to her score."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If the wind or rain moves your ball before you touch it, you have to play it from its new place. You don't put it back, and you don't get any penalty.",
+      "vocabulary": [
+        {
+          "term": "Green",
+          "simpleMeaning": "The smooth grass area around the hole where you putt."
+        },
+        {
+          "term": "Marked",
+          "simpleMeaning": "When you place a small coin or marker behind your ball to save its place before picking it up."
+        }
+      ],
+      "teachingTip": "Remind children that natural things like wind or water can move the ball, and when that happens, you just play it from where it stops.",
+      "likelyMisconceptions": [
+        "Children might think they must put the ball back where it was before.",
+        "Children might think they get a penalty when wind moves their ball."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Wind Moves a Ball on the Putting Green",
+      "question": "Hannah’s ball lies on the putting green and has not been marked or lifted. A gust of wind moves the ball to a new position. What should Hannah do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Replace the ball on its original spot."
+        },
+        {
+          "id": "b",
+          "text": "Play the ball from its new position."
+        },
+        {
+          "id": "c",
+          "text": "Replace the ball and take a one-stroke penalty."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "When a ball at rest is moved by natural forces such as wind or water, Rule 9.3 states the player must play the ball from its new position. There is no penalty and the ball is not replaced unless it was already lifted and replaced."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "ai_090_Wind_Moves_a_Ball_on_the_Putting_Green",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-08-10T09:27:44.930Z"
+  }
+}

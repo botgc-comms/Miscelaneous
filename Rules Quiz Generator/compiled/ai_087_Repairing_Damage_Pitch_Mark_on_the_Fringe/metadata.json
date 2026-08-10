@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "13.1c(2)",
+  "ruleName": "Actions Allowed on Putting Green",
+  "group": "General Play",
+  "type": "multiple_choice",
+  "imagePrompt": "Create a polished, semi-realistic (about 75% realistic and 25% stylised) illustration in an established junior golf quiz style. Show a golfer on a green with his ball clearly on the putting green. Depict a visible pitch mark on the fringe between his ball and the hole in his line of play. The scene should be in daylight on a lush, modern course. The hole should be visible beyond the pitch mark. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards, or speech bubbles.",
+  "imageAlt": "A golfer's ball lies on the putting green, with a visible pitch mark on the fringe between the ball and the hole on the player's intended line of play.",
+  "sceneSpec": {
+    "setting": "A well-kept golf green and surrounding fringe on a modern course in daylight.",
+    "players": "One male golfer (Andrew), dressed in standard golf attire.",
+    "ballPosition": "Andrew's ball is clearly lying on the putting green.",
+    "ruleMoment": "Andrew is evaluating his intended line of play towards the hole, noticing a visible pitch mark on the fringe (between the ball and the hole).",
+    "educationalFocus": "Distinguishing what can and cannot be repaired based on the ball’s location and where the damage is.",
+    "mustShow": [
+      "A clear pitch mark visibly on the fringe, directly in Andrew’s intended line to the hole.",
+      "Andrew’s ball on the putting green.",
+      "The hole visible beyond the pitch mark."
+    ],
+    "mustNotShow": [
+      "Multiple pitch marks or areas of repair.",
+      "Any repair tools in use.",
+      "Text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles."
+    ]
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Fixing a Pitch Mark on the Grass Next to the Green",
+      "question": "Andrew's ball is on the putting green. He sees a pitch mark (a small dent made by a ball) where he wants to roll his ball, but the dent is on the grass right next to the green (this part is called the fringe). Can Andrew fix the pitch mark?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, because his ball is on the green."
+        },
+        {
+          "id": "b",
+          "text": "No, because the pitch mark is not on the putting green."
+        },
+        {
+          "id": "c",
+          "text": "Yes, if another player's ball made the dent."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "You are only allowed to fix pitch marks and other damage on the putting green. If the dent is on the fringe, you cannot fix it, even if it is in your way.",
+      "vocabulary": [
+        {
+          "term": "putting green",
+          "simpleMeaning": "The short, smooth grass around the hole where you putt."
+        },
+        {
+          "term": "fringe",
+          "simpleMeaning": "The slightly longer grass right next to the putting green."
+        },
+        {
+          "term": "pitch mark",
+          "simpleMeaning": "A little dent in the grass made when a golf ball lands hard."
+        }
+      ],
+      "teachingTip": "Show the difference between the putting green and the fringe. Use a ball to make a dent (pitch mark) in both places and talk with your players which one they can fix.",
+      "likelyMisconceptions": [
+        "Some children may think that since their ball is on the green, they can fix any damage close by, even on the fringe.",
+        "They might think it is okay to fix a pitch mark anywhere if it helps their putt."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Repairing Damage: Pitch Mark on the Fringe",
+      "question": "Andrew’s ball lies on the putting green. There is a pitch mark on his intended line of play, but the pitch mark itself is on the fringe. May Andrew repair the pitch mark?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes, because his ball is on the putting green."
+        },
+        {
+          "id": "b",
+          "text": "No, because the pitch mark is not on the putting green."
+        },
+        {
+          "id": "c",
+          "text": "Yes, provided it was made by another player’s ball."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "A player may only repair ball marks and other types of damage on the putting green. Andrew is not allowed to repair a pitch mark on the fringe, even if it is on his line of play, because that area is not defined as putting green under the Rules."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "ai_087_Repairing_Damage_Pitch_Mark_on_the_Fringe",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-08-10T09:27:44.911Z"
+  }
+}

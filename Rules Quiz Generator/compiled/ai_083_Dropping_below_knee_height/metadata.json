@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "14.3b",
+  "ruleName": "Dropping a Ball in Relief Area",
+  "group": "Relief Procedures",
+  "type": "multiple_choice",
+  "imagePrompt": "A polished, modern semi-realistic illustration in a 75% realistic, 25% stylised junior golf quiz style. Show a male golfer (James), dressed in a neat golf shirt and cap, standing upright on a fairway relief area. James is dropping a golf ball with his hand clearly well below knee height just above the closely mown grass. There are mature trees and an open sky in the background. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A male golfer standing on fairway grass is dropping a ball from hand position well below his knee, preparing for a stroke, with trees in the background.",
+  "sceneSpec": {
+    "setting": "Fairway or semi-rough relief area, open sky, mature trees in the background",
+    "players": "One male golfer (James), right-handed, wearing a smart golf shirt and cap",
+    "ballPosition": "Ball in the relief area, on closely mown grass",
+    "ruleMoment": "James is shown dropping the ball with his hand clearly below his knee while standing upright",
+    "educationalFocus": "Dropping the ball from the incorrect height (below knee height) during relief procedure",
+    "mustShow": [
+      "James dropping the ball with his hand well below his knee while standing",
+      "Ball being dropped just above the ground in the relief area"
+    ],
+    "mustNotShow": [
+      "Any other player",
+      "Caddies",
+      "Golf cart",
+      "Text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles"
+    ]
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Dropping the ball from the right height",
+      "question": "James needs to drop his ball. Instead of dropping it from his knee, he drops it from very close to the ground. The ball stops in the right spot and James hits it. What happens?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "James gets a one-shot penalty."
+        },
+        {
+          "id": "b",
+          "text": "James gets a bigger penalty."
+        },
+        {
+          "id": "c",
+          "text": "James doesn't get a penalty."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "James has to drop the ball from knee height. If he drops it from much lower, even if it lands in the right place and he plays it, he gets a one-shot penalty.",
+      "vocabulary": [
+        {
+          "term": "Stroke play",
+          "simpleMeaning": "When you count all your shots on each hole to get your score."
+        },
+        {
+          "term": "Relief area",
+          "simpleMeaning": "The spot where you are allowed to drop and play your ball."
+        }
+      ],
+      "teachingTip": "Let children practise dropping the ball from knee height and talk about why the rule is important.",
+      "likelyMisconceptions": [
+        "Some might think it doesn't matter how high you drop the ball from if it lands in the correct place.",
+        "Children may think 'close enough' to the knee is fine or dropping from lower is easier."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Dropping below knee height",
+      "question": "In stroke play, James drops his ball from well below knee height. The ball comes to rest in the relief area and James plays a stroke. What is the ruling?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "James receives a one-stroke penalty."
+        },
+        {
+          "id": "b",
+          "text": "James receives the general penalty."
+        },
+        {
+          "id": "c",
+          "text": "There is no penalty."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "James must drop the ball from knee height when taking relief. If he drops it from well below knee height and plays it from the relief area, he receives a one-stroke penalty under Rule 14.3b."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "ai_083_Dropping_below_knee_height",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-08-10T09:27:44.883Z"
+  }
+}

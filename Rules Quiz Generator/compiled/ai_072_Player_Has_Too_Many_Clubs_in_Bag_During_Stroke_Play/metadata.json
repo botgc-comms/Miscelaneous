@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "4.1b",
+  "ruleName": "Limit of Clubs; Sharing, Adding or Replacing Clubs",
+  "group": "Clubs",
+  "type": "multiple_choice",
+  "imagePrompt": "Create a polished modern semi-realistic illustration, about 75% realistic and 25% stylised, in the established junior golf quiz illustration style. Alison, a female golfer, is standing near the 9th green on a clear day. She is visibly counting and examining the clubs in her golf bag, with one club being held separately as if declared out of play. Her golf bag, with clubs, is clearly shown. A few competitors are in the background, at a distance. The golf ball is several yards away, just off the green. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A female golfer near the 9th green checking her golf bag, holding one club apart from the rest, with a few other players in the background and a golf ball lying just off the green.",
+  "sceneSpec": {
+    "setting": "Golf course, near the 9th green on a clear day.",
+    "players": "One female player (Alison) inspecting her golf bag, a few other competitors in the background.",
+    "ballPosition": "Alison's golf ball is at rest just off the green, several yards away from her.",
+    "ruleMoment": "Alison has just counted her clubs and realises there are 15; she is taking one club out of play.",
+    "educationalFocus": "Highlight the issue of having more than 14 clubs in the bag during play and the correct action of declaring a club out of play.",
+    "mustShow": [
+      "Alison visibly checking her clubs and holding one separate from the bag",
+      "Golf bag with clubs clearly visible",
+      "Competitors in the distant background"
+    ],
+    "mustNotShow": [
+      "Text labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Too Many Clubs in the Bag",
+      "question": "On the 9th hole, Alison sees she has 15 clubs in her bag during a golf match where every shot counts. She tells her friends she won’t use one club anymore. What happens now?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Alison gets four penalty shots."
+        },
+        {
+          "id": "b",
+          "text": "Alison gets eighteen penalty shots."
+        },
+        {
+          "id": "c",
+          "text": "Alison cannot finish the match."
+        },
+        {
+          "id": "d",
+          "text": "There is no penalty if she quickly says she won’t use the club."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "The rule says you can only have 14 clubs in your bag when you play. If you have too many and use them, you get two penalty shots for each hole you played with too many, but no more than four in total. Alison must stop using the extra club for the rest of the game.",
+      "vocabulary": [
+        {
+          "term": "Penalty shots",
+          "simpleMeaning": "Extra shots added to your score when you break a rule."
+        },
+        {
+          "term": "Stroke play",
+          "simpleMeaning": "A type of golf game where you count every shot you take."
+        }
+      ],
+      "teachingTip": "Show children how to count their clubs before playing to make sure there are only 14 in the bag.",
+      "likelyMisconceptions": [
+        "Children may think saying you won’t use a club means you don’t get a penalty. Actually, you still get a penalty for having too many clubs at first.",
+        "Some children may think you get a penalty for every hole in the round, but there is a maximum."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Player Has Too Many Clubs in Bag During Stroke Play",
+      "question": "On the 9th hole in a stroke play competition, Alison realises she has 15 clubs in her bag. She declares one club out of play. What is the ruling?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Alison receives four penalty strokes."
+        },
+        {
+          "id": "b",
+          "text": "Alison receives eighteen penalty strokes."
+        },
+        {
+          "id": "c",
+          "text": "Alison is disqualified."
+        },
+        {
+          "id": "d",
+          "text": "There is no penalty if she declares a club out of play immediately."
+        }
+      ],
+      "correctAnswers": [
+        "a"
+      ],
+      "correctAnswer": "a",
+      "explanation": "Rule 4.1b imposes a penalty of two strokes for each hole where the breach occurred, with a maximum of four penalty strokes in stroke play. Alison must declare a club out of play to avoid further penalty for the remainder of the round."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "ai_072_Player_Has_Too_Many_Clubs_in_Bag_During_Stroke_Play",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-08-10T09:27:44.784Z"
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "16.1",
+  "ruleName": "Relief from Abnormal Course Conditions (Including Immovable Obstructions)",
+  "group": "General Play",
+  "type": "multiple_choice",
+  "imagePrompt": "A polished, modern semi-realistic (about 75% realistic, 25% stylised) illustration in an established junior golf quiz style. Show a male golfer (Peter) on a fairway observing his golf ball slowly moving in a visible patch of temporary water, with ripples around the ball to show its movement. The player is waiting, not acting. Capture recent heavy rain with puddles or shallow standing water on the fairway. The scene must not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer on a fairway watches his golf ball slowly move across a patch of temporary water after rain, illustrating the rules about taking relief when a ball is moving in water.",
+  "sceneSpec": {
+    "setting": "A well-kept golf fairway after heavy rain, with patches of shallow standing water (‘temporary water’) clearly visible.",
+    "players": "One adult male golfer (Peter) shown waiting and watching his golf ball.",
+    "ballPosition": "The ball is shown gently moving along the surface in a puddle of temporary water, not yet having come to rest.",
+    "ruleMoment": "Capture the moment where the player is observing the ball as it moves in the temporary water before choosing to take relief.",
+    "educationalFocus": "Illustrates that a player does not have to lift a moving ball immediately when it is moving in temporary water, as long as play is not unreasonably delayed.",
+    "mustShow": [
+      "Player watching a clearly moving golf ball in temporary water on the fairway",
+      "Visible ripples or water disturbance showing ball movement",
+      "Obvious puddle or patch of temporary water beneath the ball"
+    ],
+    "mustNotShow": [
+      "No text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles"
+    ]
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Ball floating in a puddle: Do you have to pick it up right away?",
+      "question": "Peter’s ball is slowly floating in a puddle, and he wants to move it because of the water. Does Peter need to pick up the ball straight away?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes."
+        },
+        {
+          "id": "b",
+          "text": "No. He can wait and let the ball stop in a better spot, as long as he doesn’t take too long."
+        },
+        {
+          "id": "c",
+          "text": "Yes, unless another player says it’s okay to wait."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "If your ball is moving on its own in a puddle, you can wait for it to stop in a nicer place before picking it up. Just don’t wait too long, so you don't slow down the game.",
+      "vocabulary": [
+        {
+          "term": "Relief",
+          "simpleMeaning": "Moving your ball to a better place when something like water or a big thing is in your way."
+        },
+        {
+          "term": "Temporary Water",
+          "simpleMeaning": "A puddle of water on the course that shouldn’t be there all the time, like after rain."
+        }
+      ],
+      "teachingTip": "Act out a ball moving in a puddle and talk about when to pick it up and when it’s okay to wait.",
+      "likelyMisconceptions": [
+        "Some kids may think you must pick up the ball right away, but you can wait if it’s not slowing down play.",
+        "Kids may think you need another player to say it’s okay to wait, but you don’t."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Ball moving in temporary water: must the player lift it immediately?",
+      "question": "Peter’s ball is moving in temporary water and he intends to take relief. Must Peter immediately lift the moving ball?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes."
+        },
+        {
+          "id": "b",
+          "text": "No. He may allow it to move to a better position before taking relief, provided he does not unreasonably delay play."
+        },
+        {
+          "id": "c",
+          "text": "Yes, unless another player agrees otherwise."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "A player whose ball is moving in temporary water may allow it to come to rest in a better position before taking relief, provided that they do not unreasonably delay play. There is no requirement to lift the ball immediately."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "ai_091_Ball_moving_in_temporary_water_must_the_player_lift_it_immediately",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-08-10T09:27:44.937Z"
+  }
+}

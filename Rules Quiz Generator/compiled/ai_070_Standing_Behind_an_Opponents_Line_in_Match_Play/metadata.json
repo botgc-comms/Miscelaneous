@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "1.2",
+  "ruleName": "Standards of Player Conduct",
+  "group": "Behaviour & Etiquette",
+  "type": "multiple_choice",
+  "imagePrompt": "A semi-realistic, polished modern illustration in a junior golf quiz style showing a calm, sunny putting green. Alison is addressed to her golf ball, lining up a putt, while Jezz is crouched directly behind Alison’s line of play, observing. The hole should be clearly visible on the green. Both players should be dressed appropriately for golf. No text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards, or speech bubbles.",
+  "imageAlt": "A golfer about to putt on the green with her opponent crouching directly behind her line of play.",
+  "sceneSpec": {
+    "setting": "Putting green during a match play round",
+    "players": "Two players: Alison preparing for a putt, Jezz positioned directly behind Alison's line of play, crouching.",
+    "ballPosition": "On the putting green, close to the hole",
+    "ruleMoment": "Just as Alison is about to putt, with Jezz directly behind her line.",
+    "educationalFocus": "Demonstrates that standing behind an opponent's line is not a breach of the Rules in match play, though it may be poor etiquette.",
+    "mustShow": [
+      "A putting green with a visible hole",
+      "Alison addressing her ball and preparing to putt",
+      "Jezz clearly behind Alison, crouching on her line of play",
+      "Both players in appropriate golf attire"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Standing Behind Where Someone Aims in a Match (Match Play)",
+      "question": "In match play, Jezz kneels down right behind the line where Alison is putting. What happens?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Jezz loses the hole."
+        },
+        {
+          "id": "b",
+          "text": "There is no penalty."
+        },
+        {
+          "id": "c",
+          "text": "Jezz is disqualified."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "It’s not polite, but the rules don’t give a penalty if someone stands behind where you aim in match play.",
+      "vocabulary": [
+        {
+          "term": "Match play",
+          "simpleMeaning": "A type of golf game where you try to win more holes than your opponent."
+        },
+        {
+          "term": "Line of play",
+          "simpleMeaning": "The direction you want your ball to go on the green."
+        }
+      ],
+      "teachingTip": "You can talk about being respectful to others even though the rules don’t give a penalty for standing behind someone in match play.",
+      "likelyMisconceptions": [
+        "Children may think there is always a penalty for standing behind someone’s line.",
+        "Children may mix up rules for stroke play and match play."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Standing Behind an Opponent's Line in Match Play",
+      "question": "In match play, Jezz crouches directly behind Alison's line of play as she takes her putt. What is the ruling?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Jezz loses the hole."
+        },
+        {
+          "id": "b",
+          "text": "There is no penalty."
+        },
+        {
+          "id": "c",
+          "text": "Jezz is disqualified."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "The Rules do not prohibit a player or opponent from standing directly behind another player's line of play. It may be considered poor etiquette, but there is no Rules penalty."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "ai_070_Standing_Behind_an_Opponents_Line_in_Match_Play",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v4.png",
+    "promptFileName": "final-prompt-v4.txt",
+    "compiledAtUtc": "2026-08-10T09:27:44.769Z"
+  }
+}

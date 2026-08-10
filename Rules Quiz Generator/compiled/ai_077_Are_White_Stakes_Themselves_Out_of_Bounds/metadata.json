@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "18.2a",
+  "ruleName": "Ball Lost or Out of Bounds: Stroke-and-Distance Relief Must Be Taken",
+  "group": "Out of Bounds",
+  "type": "multiple_choice",
+  "imagePrompt": "Create a polished, modern semi-realistic illustration (about 75% realistic, 25% stylised) in the established junior golf quiz style. Show the edge of a golf course with rough grass transitioning to longer, wild grass behind a clear white out of bounds stake. Place a golf ball on the in-bounds side, close to but not touching the white stake. Include a golfer on the course side looking at the ball and stake. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer observes a golf ball lying just in bounds next to a white out of bounds stake at the edge of a golf course.",
+  "sceneSpec": {
+    "setting": "Edge of a golf course boundary line, with rough grass on the course side and longer grass or natural area beyond.",
+    "players": "One golfer standing on the course side, observing a white stake positioned along the boundary.",
+    "ballPosition": "A golf ball resting in bounds, close to but not touching the base of a white out of bounds stake.",
+    "ruleMoment": "The golfer visually checking the position of the white stake and the ball relative to the out of bounds line.",
+    "educationalFocus": "Clear identification of the position and status of an out of bounds stake and how it relates to the rules.",
+    "mustShow": [
+      "White out of bounds stake firmly planted along the course boundary",
+      "Golf ball sitting on the grass in bounds, very close to the stake",
+      "Golfer observing the situation"
+    ],
+    "mustNotShow": [
+      "Any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles"
+    ]
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Are White Out of Bounds Posts Out of Bounds Too?",
+      "question": "When you see white posts that show 'out of bounds,' is the post itself out of bounds?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes."
+        },
+        {
+          "id": "b",
+          "text": "No, the post is out of bounds."
+        },
+        {
+          "id": "c",
+          "text": "Only if a special rule says so."
+        },
+        {
+          "id": "d",
+          "text": "Only if people running the game say so."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "White posts that show where 'out of bounds' starts are not part of the course. The post itself is out of bounds.",
+      "vocabulary": [
+        {
+          "term": "Out of bounds",
+          "simpleMeaning": "A place you are not allowed to play from. It is usually shown with white posts."
+        },
+        {
+          "term": "Post",
+          "simpleMeaning": "A stick or marker in the ground. Here, it means a white one that shows 'out of bounds'."
+        }
+      ],
+      "teachingTip": "Show kids a real out of bounds post and explain you can't play from that spot or touch it when dropping a ball.",
+      "likelyMisconceptions": [
+        "Some kids may think the post is still on the course because it touches the ground.",
+        "Some may think you can lean on it or touch it for a drop."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Are White Stakes Themselves Out of Bounds?",
+      "question": "White stakes define out of bounds. Is the stake itself in bounds?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Yes."
+        },
+        {
+          "id": "b",
+          "text": "No, the stake itself is out of bounds."
+        },
+        {
+          "id": "c",
+          "text": "Only if a Local Rule says so."
+        },
+        {
+          "id": "d",
+          "text": "Only if the committee marks it as such."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "The boundary edge of the course is defined by the course-side points of the white stakes at ground level. The stakes themselves are out of bounds."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "ai_077_Are_White_Stakes_Themselves_Out_of_Bounds",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-08-10T09:27:44.832Z"
+  }
+}

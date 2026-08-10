@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "16.1a",
+  "ruleName": "Relief from Abnormal Course Conditions (Including Immovable Obstructions)",
+  "group": "Rules: Abnormal Course Conditions",
+  "type": "multiple_choice",
+  "imagePrompt": "A modern, semi-realistic (about 75% realistic, 25% stylised) polished golf illustration showing two players beside a set of outdoor steps at the edge of a golf course. One player, Sophie, is preparing to play a stroke at a golf ball lying on a step, while the other player, David, watches from nearby. The focus should be on Sophie and the ball on the steps, with naturalistic light and subtle background details like short grass and a hint of the clubhouse or path. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "Sophie about to play her ball from a step on a set of course steps, with David watching nearby on the golf course.",
+  "sceneSpec": {
+    "setting": "Golf green or closely mown area adjacent to a clubhouse or path with steps.",
+    "players": "Two players, Sophie preparing to play, David watching nearby.",
+    "ballPosition": "Ball resting on one of the steps.",
+    "ruleMoment": "Sophie getting ready to make a stroke at the ball from the steps.",
+    "educationalFocus": "Highlighting that relief from immovable obstructions is optional – the player may play the ball as it lies.",
+    "mustShow": [
+      "Sophie about to play the ball directly from a step",
+      "David standing nearby observing"
+    ],
+    "mustNotShow": [
+      "Any penalty indicators",
+      "Dropping action",
+      "Text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles"
+    ]
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Can Sophie Hit Her Ball from the Steps?",
+      "question": "Sophie’s ball lands on some steps next to the path. She says she wants to hit it from there. David tells her she has to move it. Sophie decides to hit the ball from the steps. What happens?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Sophie gets a penalty."
+        },
+        {
+          "id": "b",
+          "text": "There is no penalty."
+        },
+        {
+          "id": "c",
+          "text": "David gets a penalty for telling Sophie what to do."
+        },
+        {
+          "id": "d",
+          "text": "Sophie must drop the ball somewhere else and gets a penalty if she doesn’t."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "Sophie is allowed to hit her ball from the steps if she wants to. She does not have to move it. There is no penalty for this.",
+      "vocabulary": [
+        {
+          "term": "Immovable Obstruction",
+          "simpleMeaning": "Something on the course that you can’t move, like steps or a big sign."
+        },
+        {
+          "term": "Relief",
+          "simpleMeaning": "A choice to move your ball to a better spot when it is on something like steps or a path."
+        }
+      ],
+      "teachingTip": "Let children try playing from different places like paths or steps. Show they do not have to move the ball if they don’t want to.",
+      "likelyMisconceptions": [
+        "Children may think they always have to move the ball off a path or steps.",
+        "Children may believe they get a penalty just for playing from the steps."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Playing a Ball from Steps",
+      "question": "Sophie wants to play her ball as it lies from some steps, but David insists she must take relief. Sophie chooses to play the ball from the steps. What is the ruling?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Sophie receives the general penalty."
+        },
+        {
+          "id": "b",
+          "text": "There is no penalty."
+        },
+        {
+          "id": "c",
+          "text": "David receives the general penalty for giving advice."
+        },
+        {
+          "id": "d",
+          "text": "Sophie must take a drop and gets a penalty if she does not."
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "There is no penalty for playing a ball as it lies on immovable obstructions such as steps. Relief is optional under Rule 16.1a."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "ai_082_Playing_a_Ball_from_Steps",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v3.png",
+    "promptFileName": "final-prompt-v3.txt",
+    "compiledAtUtc": "2026-08-10T09:27:44.875Z"
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "11.3",
+  "ruleName": "Deliberate Actions to Affect Ball in Motion",
+  "group": "Putting Green",
+  "type": "multiple_choice",
+  "imagePrompt": "Create a polished, modern semi-realistic golf illustration (about 75% realistic, 25% stylised) in an established junior golf quiz style. Show a close-up of a putting green with a golf ball rolling towards a wedge lying a few feet from the hole. One golfer (Alison) is just lifting the wedge away moments before the ball reaches it. Another golfer (Jezz) is shown having just played the putt. The flagstick is in the hole. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A semi-realistic illustration showing a putting green, a golf ball rolling towards a wedge on the green, Alison picking up the wedge just before the ball arrives, Jezz having just putted, and the flagstick in the hole.",
+  "sceneSpec": {
+    "setting": "A neatly-maintained putting green with a flagstick in the hole.",
+    "players": "Jezz putting, Alison standing near a wedge lying on the green.",
+    "ballPosition": "Jezz’s ball is rolling towards the wedge, which is a few feet from the hole.",
+    "ruleMoment": "Just as the ball approaches the wedge, Alison is depicted in the act of picking up the wedge before the ball can touch it.",
+    "educationalFocus": "Clarifies that equipment interfering with a moving ball may be lifted or moved with no penalty.",
+    "mustShow": [
+      "A golf ball in motion on the green heading towards a wedge.",
+      "Alison picking up the wedge before the ball reaches it.",
+      "Jezz shown after having played the putt.",
+      "Hole and flagstick visible on the green."
+    ],
+    "mustNotShow": [
+      "Text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles."
+    ]
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Picking Up a Club on the Green While the Ball is Rolling",
+      "question": "Jezz hits her ball too hard on the green. Alison sees that Jezz's wedge is lying on the green and might get in the way. Alison quickly picks up the wedge before the ball gets there. What should happen?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Jezz gets a penalty."
+        },
+        {
+          "id": "b",
+          "text": "Both Alison and Jezz get a penalty."
+        },
+        {
+          "id": "c",
+          "text": "No one gets a penalty."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "No one gets a penalty. It's okay to pick up something, like a wedge, to stop it from getting in the way of a moving ball.",
+      "vocabulary": [
+        {
+          "term": "putting green",
+          "simpleMeaning": "The smooth grassy area around the hole where you putt the ball."
+        },
+        {
+          "term": "wedge",
+          "simpleMeaning": "A type of golf club used for short shots."
+        }
+      ],
+      "teachingTip": "Remind young golfers they can move clubs or other things if they think a rolling ball might hit them.",
+      "likelyMisconceptions": [
+        "Kids might think you can't touch anything while a ball is moving.",
+        "Kids might think someone will always get a penalty if they touch equipment when a ball is rolling."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Lifting Equipment Likely to Interfere with Ball in Motion",
+      "question": "On the putting green, Jezz hits a putt too hard. Alison picks up Jezz's wedge left on the green before the ball hits the club. What is the ruling?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Jezz receives the general penalty."
+        },
+        {
+          "id": "b",
+          "text": "Both Alison and Jezz receive the general penalty."
+        },
+        {
+          "id": "c",
+          "text": "There is no penalty."
+        }
+      ],
+      "correctAnswers": [
+        "c"
+      ],
+      "correctAnswer": "c",
+      "explanation": "Under Rule 11.3, equipment that could affect where a ball might come to rest may be lifted or moved while the ball is in motion. Alison is permitted to remove the wedge before the ball reaches it and there is no penalty."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "ai_069_Lifting_Equipment_Likely_to_Interfere_with_Ball_in_Motion",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v5.png",
+    "promptFileName": "final-prompt-v5.txt",
+    "compiledAtUtc": "2026-08-10T09:27:44.763Z"
+  }
+}
