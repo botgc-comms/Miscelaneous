@@ -1,0 +1,10 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "sourcePromptFileName": "final-prompt-v2.txt",
+  "promptFileName": "final-prompt-v4.txt",
+  "imageFileName": "illustration-v4.png",
+  "correctionInstructions": "the image is great, but the ball and chair should be on opposite sides of the write line. The ball should be in bounds on the golf course, and the chair sholud be out of bounds on the other side of the white line",
+  "generatedAtUtc": "2026-08-10T07:13:43.087Z"
+}

@@ -1,0 +1,10 @@
+{
+  "model": "gpt-image-2",
+  "size": "1024x1024",
+  "quality": "high",
+  "sourcePromptFileName": "final-prompt-v2.txt",
+  "promptFileName": "final-prompt-v5.txt",
+  "imageFileName": "illustration-v5.png",
+  "correctionInstructions": "the girl shoudl be dropping the ball from shoulder height stood tall with her arm outstretched. Only show one ball in the image. YOU HAVE SHOWN TWO BALLS IN THE IMAGE> ONLY SHOW ONE",
+  "generatedAtUtc": "2026-08-10T07:18:01.133Z"
+}
