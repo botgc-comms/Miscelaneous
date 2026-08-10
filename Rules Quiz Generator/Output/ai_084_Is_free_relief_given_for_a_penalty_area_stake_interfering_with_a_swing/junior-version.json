@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_084_Is_free_relief_given_for_a_penalty_area_stake_interfering_with_a_swing\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "17.1b",
+  "ruleName": "Relief for Ball in Penalty Area",
+  "title": "Is free relief given for a penalty-area stake interfering with a swing?",
+  "question": "Emma’s ball lies in a red penalty area. One of the red stakes interferes with her swing. The stake is embedded in concrete and cannot be moved. Is Emma entitled to free relief from the stake?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, because the stake is an immovable obstruction."
+    },
+    {
+      "id": "b",
+      "text": "Yes, but only because it interferes with her swing."
+    },
+    {
+      "id": "c",
+      "text": "No."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "No free relief is available from immovable obstructions such as penalty area stakes when the ball lies in a penalty area. The Rules do not allow relief for an artificial object in these circumstances.",
+  "juniorVersion": {
+    "title": "Can Emma get a free drop if a red stake is in her way in the penalty area?",
+    "question": "Emma's ball is in the red area by a pond. There is a red post stuck in the ground, and she can't move it. The post is in the way of her swing. Can Emma take a free drop away from the post?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Yes, because the post cannot be moved."
+      },
+      {
+        "id": "b",
+        "text": "Yes, because the post is in the way of her swing."
+      },
+      {
+        "id": "c",
+        "text": "No."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "Emma cannot get a free drop from the red post if her ball is in the penalty area. She has to play the ball as it is or take a penalty drop.",
+    "vocabulary": [
+      {
+        "term": "Penalty area",
+        "simpleMeaning": "A place with red or yellow lines or posts, like a pond or stream, where special rules apply."
+      },
+      {
+        "term": "Free drop",
+        "simpleMeaning": "A drop where you don’t get a penalty."
+      },
+      {
+        "term": "Immovable",
+        "simpleMeaning": "Something you cannot move, like a post stuck in concrete."
+      }
+    ],
+    "teachingTip": "Help children look for colour markers on the course and explain that the rules are different in those areas.",
+    "likelyMisconceptions": [
+      "Kids may think they can always move their ball away from things in the penalty area.",
+      "They might believe all posts or signs give free drops."
+    ]
+  },
+  "generatedAtUtc": "2026-08-10T06:42:58.159Z",
+  "model": "gpt-4.1"
+}

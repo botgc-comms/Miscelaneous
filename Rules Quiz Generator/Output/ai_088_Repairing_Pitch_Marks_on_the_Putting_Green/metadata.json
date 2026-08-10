@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "13.1c(2)",
+  "ruleName": "Repair of Damage on Putting Green",
+  "group": "General Play",
+  "title": "Repairing Pitch Marks on the Putting Green",
+  "question": "Lucy's ball lies on the fringe and she intends to putt. There is a pitch mark on her line of play, and the pitch mark itself is on the putting green. May Lucy repair it?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes."
+    },
+    {
+      "id": "b",
+      "text": "No."
+    },
+    {
+      "id": "c",
+      "text": "Only with the agreement of another player."
+    },
+    {
+      "id": "d",
+      "text": "Only if her ball also lies on the green."
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "Lucy is allowed to repair damage such as pitch marks on the putting green, even if her ball is not on the green. The Rules permit the repair of damage on the green that is on the line of play for any player, regardless of where their ball lies.",
+  "imagePrompt": "A modern, semi-realistic (about 75% realistic, 25% stylised) illustration in a junior golf quiz style, showing a female golfer (Lucy) on the fringe of a green. Her ball is clearly on the fringe, just off the putting green, and she is preparing to repair a visible pitch mark located on the green, directly between her ball and the hole. The golf hole is visible, showing her intended line of play passes over the pitch mark. The setting is a well-kept golf green and surrounding fringe area. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A female golfer standing on the fringe just off the green, preparing to repair a pitch mark on the putting green between her ball and the hole.",
+  "sceneSpec": {
+    "setting": "Golf course putting green and fringe area",
+    "players": "One female golfer (Lucy), preparing to putt",
+    "ballPosition": "The ball lies on the fringe, just off the edge of the green",
+    "ruleMoment": "Lucy is about to repair a visible pitch mark on the putting green that is on her line of play towards the hole",
+    "educationalFocus": "Show that a player may repair pitch marks on the green even if the ball is off the green",
+    "mustShow": [
+      "Lucy's ball clearly lying on the fringe",
+      "A visible pitch mark on the green directly between Lucy's ball and the hole",
+      "Hole in view to establish intended line of play",
+      "Lucy preparing to repair the pitch mark"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  }
+}

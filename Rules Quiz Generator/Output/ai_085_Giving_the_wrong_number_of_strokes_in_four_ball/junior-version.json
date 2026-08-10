@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_085_Giving_the_wrong_number_of_strokes_in_four_ball\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "23.8",
+  "ruleName": "Four-Ball: Wrong Number of Strokes Given",
+  "title": "Giving the wrong number of strokes in four-ball",
+  "question": "In a four-ball match, Daniel is asked by an opponent how many strokes he has taken. Daniel says three and his opponent concedes the hole. Daniel then realises he had actually taken four strokes. What is the ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "The concession stands and there is no penalty."
+    },
+    {
+      "id": "b",
+      "text": "The hole must be replayed."
+    },
+    {
+      "id": "c",
+      "text": "Daniel’s side loses the hole."
+    },
+    {
+      "id": "d",
+      "text": "Daniel is penalised two strokes but the concession stands."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "In four-ball match play, if a player gives a wrong number of strokes taken that affects an opponent’s understanding of the match situation, their side loses the hole (Rule 23.8a(2)).",
+  "juniorVersion": {
+    "title": "Telling the wrong score in four-ball",
+    "question": "In a four-ball team game, Daniel's opponent asks, 'How many shots have you played?' Daniel says 'three', so the opponent gives up (concedes) the hole. But Daniel then remembers he actually took four shots. What is the right thing to do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "The score counts and nothing happens."
+      },
+      {
+        "id": "b",
+        "text": "Everyone plays the hole again."
+      },
+      {
+        "id": "c",
+        "text": "Daniel's team loses the hole."
+      },
+      {
+        "id": "d",
+        "text": "Daniel gets two extra shots, but the score counts."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "If you say the wrong number of shots and your opponent makes a choice because of it, your team loses the hole. It's important to always say the right score in four-ball.",
+    "vocabulary": [
+      {
+        "term": "Four-ball",
+        "simpleMeaning": "A team game where two players play their own ball and the best score counts for the team."
+      },
+      {
+        "term": "Concede",
+        "simpleMeaning": "To let the other player or team win the hole without finishing."
+      },
+      {
+        "term": "Stroke",
+        "simpleMeaning": "A shot or hit of the ball."
+      }
+    ],
+    "teachingTip": "Remind kids to count their shots out loud or on their fingers to be sure of their score before saying it to anyone.",
+    "likelyMisconceptions": [
+      "Thinking you can just correct your score after the hole is over.",
+      "Thinking the hole doesn't count and should be played again."
+    ]
+  },
+  "generatedAtUtc": "2026-08-10T06:43:05.557Z",
+  "model": "gpt-4.1"
+}

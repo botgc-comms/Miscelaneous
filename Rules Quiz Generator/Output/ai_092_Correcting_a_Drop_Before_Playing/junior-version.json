@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_092_Correcting_a_Drop_Before_Playing\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "14.3b(4)",
+  "ruleName": "Dropping Ball in Relief Area",
+  "title": "Correcting a Drop Before Playing",
+  "question": "Rebecca takes relief but drops her ball from shoulder height instead of knee height. The ball stays in the relief area. Before playing it, Rebecca realises her mistake, lifts the ball and drops it correctly. What is the penalty?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "One stroke."
+    },
+    {
+      "id": "b",
+      "text": "General penalty."
+    },
+    {
+      "id": "c",
+      "text": "No penalty."
+    },
+    {
+      "id": "d",
+      "text": "Must replace and play from original spot."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "There is no penalty as Rebecca corrected her dropping procedure before making a stroke. Rule 14.5 allows a player to correct the procedure for putting a ball in play without penalty, provided the ball has not been played.",
+  "juniorVersion": {
+    "title": "Fixing a Drop Before You Hit",
+    "question": "Rebecca needs to drop her ball, but she drops it from her shoulder instead of her knee. The ball stays in the right area. Before she hits it, Rebecca realises she did it wrong, picks up the ball, and drops it again from her knee. Does Rebecca get a penalty?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "She gets one penalty stroke."
+      },
+      {
+        "id": "b",
+        "text": "She gets a general penalty."
+      },
+      {
+        "id": "c",
+        "text": "She gets no penalty."
+      },
+      {
+        "id": "d",
+        "text": "She must put the ball back and play from her first spot."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "Rebecca does not get a penalty because she fixed her mistake before hitting the ball. If you drop the ball the wrong way and realise before you hit it, you can drop again the right way with no penalty.",
+    "vocabulary": [
+      {
+        "term": "Drop",
+        "simpleMeaning": "Letting go of the ball from a certain height so it falls to the ground."
+      },
+      {
+        "term": "Relief area",
+        "simpleMeaning": "The place on the course where you are allowed to drop and play the ball."
+      }
+    ],
+    "teachingTip": "Let children practise dropping a ball from knee height so they get used to the correct way.",
+    "likelyMisconceptions": [
+      "Thinking you get a penalty for ANY mistake, even if you fix it before hitting the ball.",
+      "Believing the drop must always be from shoulder height (the rule changed)."
+    ]
+  },
+  "generatedAtUtc": "2026-08-10T06:48:21.470Z",
+  "model": "gpt-4.1"
+}

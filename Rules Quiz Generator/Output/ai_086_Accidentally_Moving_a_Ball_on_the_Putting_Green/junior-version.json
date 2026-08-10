@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_086_Accidentally_Moving_a_Ball_on_the_Putting_Green\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "13.1d",
+  "ruleName": "Ball Played as It Lies; Ball on Putting Green",
+  "title": "Accidentally Moving a Ball on the Putting Green",
+  "question": "Charlotte misses a short putt. While tapping down a spike mark, she accidentally causes her ball to move. She picks the ball up without first marking its position so that she can replace it. What is the ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Charlotte receives a one-stroke penalty for lifting the ball without marking it."
+    },
+    {
+      "id": "b",
+      "text": "Charlotte receives the general penalty."
+    },
+    {
+      "id": "c",
+      "text": "There is no penalty, provided the ball is replaced on its original spot."
+    },
+    {
+      "id": "d",
+      "text": "She is disqualified."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "There is no penalty for accidentally moving a ball on the putting green, provided the ball is replaced on its original spot. The player may lift the ball even if it was not first marked, but must replace it.",
+  "juniorVersion": {
+    "title": "Moving Your Ball by Mistake on the Green",
+    "question": "Charlotte misses a short putt. When she tries to fix a spike mark with her putter, she bumps her ball and it moves by accident. She picks up the ball to put it back, but she forgets to mark where it was first. What should happen?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Charlotte gets one penalty shot for picking up the ball without marking first."
+      },
+      {
+        "id": "b",
+        "text": "Charlotte gets two penalty shots."
+      },
+      {
+        "id": "c",
+        "text": "There is no penalty if she puts the ball back where it was."
+      },
+      {
+        "id": "d",
+        "text": "She is out of the game."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "If your ball on the green moves by accident, you do not get a penalty. You must just put the ball back where it was before it moved.",
+    "vocabulary": [
+      {
+        "term": "putting green",
+        "simpleMeaning": "The smooth grass around the hole where you try to putt the ball in."
+      },
+      {
+        "term": "marking",
+        "simpleMeaning": "Putting a small coin or marker behind your ball to show where it was so you can put it back in the right spot."
+      },
+      {
+        "term": "spike mark",
+        "simpleMeaning": "A small bump or hole left on the green by someone's shoe."
+      }
+    ],
+    "teachingTip": "Let children practise picking up and replacing their ball on the green without a marker, to see how important it is to remember the spot.",
+    "likelyMisconceptions": [
+      "Players might think they always get a penalty if their ball moves on the green.",
+      "Players might think they always have to mark the spot before picking up the ball when it moves by mistake.",
+      "Players might think moving the ball on the green by accident is cheating."
+    ]
+  },
+  "generatedAtUtc": "2026-08-10T06:45:15.197Z",
+  "model": "gpt-4.1"
+}

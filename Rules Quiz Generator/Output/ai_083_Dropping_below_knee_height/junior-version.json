@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_083_Dropping_below_knee_height\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "14.3b",
+  "ruleName": "Dropping a Ball in Relief Area",
+  "title": "Dropping below knee height",
+  "question": "In stroke play, James drops his ball from well below knee height. The ball comes to rest in the relief area and James plays a stroke. What is the ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "James receives a one-stroke penalty."
+    },
+    {
+      "id": "b",
+      "text": "James receives the general penalty."
+    },
+    {
+      "id": "c",
+      "text": "There is no penalty."
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "James must drop the ball from knee height when taking relief. If he drops it from well below knee height and plays it from the relief area, he receives a one-stroke penalty under Rule 14.3b.",
+  "juniorVersion": {
+    "title": "Dropping the ball from the right height",
+    "question": "James needs to drop his ball. Instead of dropping it from his knee, he drops it from very close to the ground. The ball stops in the right spot and James hits it. What happens?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "James gets a one-shot penalty."
+      },
+      {
+        "id": "b",
+        "text": "James gets a bigger penalty."
+      },
+      {
+        "id": "c",
+        "text": "James doesn't get a penalty."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "James has to drop the ball from knee height. If he drops it from much lower, even if it lands in the right place and he plays it, he gets a one-shot penalty.",
+    "vocabulary": [
+      {
+        "term": "Stroke play",
+        "simpleMeaning": "When you count all your shots on each hole to get your score."
+      },
+      {
+        "term": "Relief area",
+        "simpleMeaning": "The spot where you are allowed to drop and play your ball."
+      }
+    ],
+    "teachingTip": "Let children practise dropping the ball from knee height and talk about why the rule is important.",
+    "likelyMisconceptions": [
+      "Some might think it doesn't matter how high you drop the ball from if it lands in the correct place.",
+      "Children may think 'close enough' to the knee is fine or dropping from lower is easier."
+    ]
+  },
+  "generatedAtUtc": "2026-08-10T06:42:50.791Z",
+  "model": "gpt-4.1"
+}

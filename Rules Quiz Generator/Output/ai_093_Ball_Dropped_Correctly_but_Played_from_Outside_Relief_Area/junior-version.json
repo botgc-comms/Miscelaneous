@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_093_Ball_Dropped_Correctly_but_Played_from_Outside_Relief_Area\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "14.3c",
+  "ruleName": "Dropping, Re-dropping, and Placing",
+  "title": "Ball Dropped Correctly but Played from Outside Relief Area",
+  "question": "After correctly dropping his ball from knee height, Michael's ball rolls outside the required relief area but he plays it from where it came to rest. What is the ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No penalty because the drop itself was correct."
+    },
+    {
+      "id": "b",
+      "text": "One-stroke penalty."
+    },
+    {
+      "id": "c",
+      "text": "General penalty for playing from a wrong place."
+    },
+    {
+      "id": "d",
+      "text": "The ball must be re-dropped only, with no penalty."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "There is no penalty for the drop itself if performed correctly, but if the ball comes to rest outside the required relief area and the player plays it from there, they have played from a wrong place and receive the general penalty (two strokes in stroke play or loss of hole in match play) under Rule 14.7a.",
+  "juniorVersion": {
+    "title": "What if You Hit Your Ball from the Wrong Spot After a Drop?",
+    "question": "Michael drops his ball from his knee, just like the rules say. His ball rolls away and stops outside the place he was supposed to drop in. He hits the ball from there anyway. What happens?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "No penalty because he dropped it right."
+      },
+      {
+        "id": "b",
+        "text": "He gets one penalty stroke."
+      },
+      {
+        "id": "c",
+        "text": "He gets a bigger penalty for playing from the wrong spot."
+      },
+      {
+        "id": "d",
+        "text": "He has to drop again with no penalty."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "Michael dropped the ball the right way, but he hit it from the wrong spot. The rules say that's not allowed, so he gets a bigger penalty. You must always play the ball from inside the correct area after a drop.",
+    "vocabulary": [
+      {
+        "term": "relief area",
+        "simpleMeaning": "The spot or space where the rules let you drop and play your ball."
+      },
+      {
+        "term": "general penalty",
+        "simpleMeaning": "A bigger penalty. It is two shots added to your score in stroke play, or you lose the hole in match play."
+      }
+    ],
+    "teachingTip": "Show kids how to find and mark the relief area with tees or objects, so they know where the ball must stay after a drop.",
+    "likelyMisconceptions": [
+      "Kids may think dropping the ball right is all that matters, but hitting the ball from the correct spot is also important.",
+      "Some may think they can play from anywhere the ball stops after a drop, but it must be inside the relief area."
+    ]
+  },
+  "generatedAtUtc": "2026-08-10T06:48:43.727Z",
+  "model": "gpt-4.1"
+}

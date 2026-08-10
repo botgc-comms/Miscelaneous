@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "17.1b",
+  "ruleName": "Relief for Ball in Penalty Area",
+  "group": "Penalty Areas",
+  "title": "Is free relief given for a penalty-area stake interfering with a swing?",
+  "question": "Emma’s ball lies in a red penalty area. One of the red stakes interferes with her swing. The stake is embedded in concrete and cannot be moved. Is Emma entitled to free relief from the stake?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, because the stake is an immovable obstruction."
+    },
+    {
+      "id": "b",
+      "text": "Yes, but only because it interferes with her swing."
+    },
+    {
+      "id": "c",
+      "text": "No."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "No free relief is available from immovable obstructions such as penalty area stakes when the ball lies in a penalty area. The Rules do not allow relief for an artificial object in these circumstances.",
+  "imagePrompt": "Create a modern semi-realistic illustration (about 75% realistic, 25% stylised) in the established junior golf quiz style. Show a female golfer preparing to play a shot with her ball lying inside a clearly marked red penalty area. A red penalty area stake, embedded firmly in the ground, is positioned so it would interfere with her swing. The stake must be obviously unmovable. The scene should convey that the golfer cannot take relief due to rules. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A female golfer preparing to swing at a ball located inside a red penalty area, with an immovable red stake interfering with her swing path.",
+  "sceneSpec": {
+    "setting": "Edge of a golf course penalty area, red stakes visible",
+    "players": "One female golfer preparing for a shot",
+    "ballPosition": "Ball lying clearly within a red penalty area, close to an immovable red stake embedded in the ground",
+    "ruleMoment": "The golfer is addressing the ball and the stake is affecting her swing path",
+    "educationalFocus": "Clarifies that no free relief is provided from a penalty area stake interfering with a stroke from within the penalty area",
+    "mustShow": [
+      "Red penalty area stake secured in the ground",
+      "Golf ball inside the penalty area, near the stake",
+      "Golfer preparing to swing with the stake interfering"
+    ],
+    "mustNotShow": [
+      "Any relief procedure",
+      "Player moving the stake",
+      "Any signage or text",
+      "Numbers, diagrams, badges, logos, watermarks, captions, club crests, scorecards or speech bubbles"
+    ]
+  }
+}

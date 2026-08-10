@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_081_Replacing_the_Flag_during_a_Putt_in_Match_Play\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "Rule 11.8",
+  "ruleName": "Ball Deflected by Person Attending or Holding Up Flagstick or Anything Else",
+  "title": "Replacing the Flag during a Putt in Match Play",
+  "question": "In match play, Rachel deliberately replaces the flagstick in the hole while Mark is putting. Mark’s putt is then deflected by the flagstick. What is the ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Rachel loses the hole."
+    },
+    {
+      "id": "b",
+      "text": "There is no penalty."
+    },
+    {
+      "id": "c",
+      "text": "Rachel receives a one-stroke penalty."
+    },
+    {
+      "id": "d",
+      "text": "The hole is replayed."
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "Under Rule 11.8, in match play, if a player deliberately takes an action to affect a ball in motion (for example, replacing the flagstick while an opponent’s ball is rolling towards the hole), they lose the hole.",
+  "juniorVersion": {
+    "title": "Putting and the Flag in a Match",
+    "question": "Rachel and Mark are playing a match. While Mark is trying to putt, Rachel puts the flagstick back in the hole on purpose. Mark’s ball then hits the flagstick. What happens?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Rachel loses this hole."
+      },
+      {
+        "id": "b",
+        "text": "No one gets a penalty."
+      },
+      {
+        "id": "c",
+        "text": "Rachel gets one extra shot."
+      },
+      {
+        "id": "d",
+        "text": "They play the hole again."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "If you put the flagstick back in the hole on purpose while your friend’s ball is rolling, and the ball then hits the flagstick, you lose that hole in match play.",
+    "vocabulary": [
+      {
+        "term": "Flagstick",
+        "simpleMeaning": "The tall stick that goes in the hole to show where it is on the green."
+      },
+      {
+        "term": "Match play",
+        "simpleMeaning": "A game of golf where you try to win more holes than your friend, not count all your shots for the whole round."
+      }
+    ],
+    "teachingTip": "Remind children to wait until everyone has finished putting before touching the flagstick, so no one is distracted or gets in trouble.",
+    "likelyMisconceptions": [
+      "It’s okay to put the flag back while someone is putting if you think it will help them.",
+      "Nothing happens if the ball hits the flag after you put it back during someone else’s putt."
+    ]
+  },
+  "generatedAtUtc": "2026-08-10T06:42:43.269Z",
+  "model": "gpt-4.1"
+}

@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_080_Movable_obstruction_interfering_with_stance_but_out_of_bounds\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "15.2a",
+  "ruleName": "Movable Obstructions",
+  "title": "Movable obstruction interfering with stance but out of bounds",
+  "question": "Jezz’s ball is in bounds, but a movable obstruction that is out of bounds interferes with his stance. He removes the movable obstruction. What is the ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Jezz receives a one-stroke penalty."
+    },
+    {
+      "id": "b",
+      "text": "Jezz receives the general penalty."
+    },
+    {
+      "id": "c",
+      "text": "There is no penalty."
+    }
+  ],
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "Under Rule 15.2a, a player may remove a movable obstruction anywhere on or off the course without penalty.",
+  "juniorVersion": {
+    "title": "Moving Something in the Way Even If It's Out of Bounds",
+    "question": "Jezz's ball is on the golf course, but something he can move, like a can, is just outside the course and gets in the way of where he stands. Jezz moves it out of the way. What happens now?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Jezz gets one extra shot as a penalty."
+      },
+      {
+        "id": "b",
+        "text": "Jezz gets a big penalty."
+      },
+      {
+        "id": "c",
+        "text": "Jezz does not get any penalty."
+      }
+    ],
+    "correctAnswers": [
+      "c"
+    ],
+    "explanation": "You can move things like cans or bottles out of your way, even if they are off the course. You don't get a penalty.",
+    "vocabulary": [
+      {
+        "term": "Movable obstruction",
+        "simpleMeaning": "Something on or near the golf course like a can or bottle, that you can pick up and move."
+      },
+      {
+        "term": "Out of bounds",
+        "simpleMeaning": "A place outside the golf course where you are not supposed to play."
+      }
+    ],
+    "teachingTip": "Let children practise spotting things they can and cannot move, like twigs or bins, and teach why out of bounds things can be moved, too.",
+    "likelyMisconceptions": [
+      "Children may think they can't move things that are out of bounds, even if those things are in their way.",
+      "Children may worry about getting a penalty for moving things that are off the course."
+    ]
+  },
+  "generatedAtUtc": "2026-08-10T06:41:38.862Z",
+  "model": "gpt-4.1"
+}

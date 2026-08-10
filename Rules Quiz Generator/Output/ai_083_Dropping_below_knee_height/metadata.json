@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "14.3b",
+  "ruleName": "Dropping a Ball in Relief Area",
+  "group": "Relief Procedures",
+  "title": "Dropping below knee height",
+  "question": "In stroke play, James drops his ball from well below knee height. The ball comes to rest in the relief area and James plays a stroke. What is the ruling?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "James receives a one-stroke penalty."
+    },
+    {
+      "id": "b",
+      "text": "James receives the general penalty."
+    },
+    {
+      "id": "c",
+      "text": "There is no penalty."
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "James must drop the ball from knee height when taking relief. If he drops it from well below knee height and plays it from the relief area, he receives a one-stroke penalty under Rule 14.3b.",
+  "imagePrompt": "A polished, modern semi-realistic illustration in a 75% realistic, 25% stylised junior golf quiz style. Show a male golfer (James), dressed in a neat golf shirt and cap, standing upright on a fairway relief area. James is dropping a golf ball with his hand clearly well below knee height just above the closely mown grass. There are mature trees and an open sky in the background. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A male golfer standing on fairway grass is dropping a ball from hand position well below his knee, preparing for a stroke, with trees in the background.",
+  "sceneSpec": {
+    "setting": "Fairway or semi-rough relief area, open sky, mature trees in the background",
+    "players": "One male golfer (James), right-handed, wearing a smart golf shirt and cap",
+    "ballPosition": "Ball in the relief area, on closely mown grass",
+    "ruleMoment": "James is shown dropping the ball with his hand clearly below his knee while standing upright",
+    "educationalFocus": "Dropping the ball from the incorrect height (below knee height) during relief procedure",
+    "mustShow": [
+      "James dropping the ball with his hand well below his knee while standing",
+      "Ball being dropped just above the ground in the relief area"
+    ],
+    "mustNotShow": [
+      "Any other player",
+      "Caddies",
+      "Golf cart",
+      "Text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles"
+    ]
+  }
+}

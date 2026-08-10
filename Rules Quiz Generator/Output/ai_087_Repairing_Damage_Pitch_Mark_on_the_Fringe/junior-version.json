@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_087_Repairing_Damage_Pitch_Mark_on_the_Fringe\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "13.1c(2)",
+  "ruleName": "Actions Allowed on Putting Green",
+  "title": "Repairing Damage: Pitch Mark on the Fringe",
+  "question": "Andrew’s ball lies on the putting green. There is a pitch mark on his intended line of play, but the pitch mark itself is on the fringe. May Andrew repair the pitch mark?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, because his ball is on the putting green."
+    },
+    {
+      "id": "b",
+      "text": "No, because the pitch mark is not on the putting green."
+    },
+    {
+      "id": "c",
+      "text": "Yes, provided it was made by another player’s ball."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "A player may only repair ball marks and other types of damage on the putting green. Andrew is not allowed to repair a pitch mark on the fringe, even if it is on his line of play, because that area is not defined as putting green under the Rules.",
+  "juniorVersion": {
+    "title": "Fixing a Pitch Mark on the Grass Next to the Green",
+    "question": "Andrew's ball is on the putting green. He sees a pitch mark (a small dent made by a ball) where he wants to roll his ball, but the dent is on the grass right next to the green (this part is called the fringe). Can Andrew fix the pitch mark?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Yes, because his ball is on the green."
+      },
+      {
+        "id": "b",
+        "text": "No, because the pitch mark is not on the putting green."
+      },
+      {
+        "id": "c",
+        "text": "Yes, if another player's ball made the dent."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "You are only allowed to fix pitch marks and other damage on the putting green. If the dent is on the fringe, you cannot fix it, even if it is in your way.",
+    "vocabulary": [
+      {
+        "term": "putting green",
+        "simpleMeaning": "The short, smooth grass around the hole where you putt."
+      },
+      {
+        "term": "fringe",
+        "simpleMeaning": "The slightly longer grass right next to the putting green."
+      },
+      {
+        "term": "pitch mark",
+        "simpleMeaning": "A little dent in the grass made when a golf ball lands hard."
+      }
+    ],
+    "teachingTip": "Show the difference between the putting green and the fringe. Use a ball to make a dent (pitch mark) in both places and talk with your players which one they can fix.",
+    "likelyMisconceptions": [
+      "Some children may think that since their ball is on the green, they can fix any damage close by, even on the fringe.",
+      "They might think it is okay to fix a pitch mark anywhere if it helps their putt."
+    ]
+  },
+  "generatedAtUtc": "2026-08-10T06:45:33.997Z",
+  "model": "gpt-4.1"
+}

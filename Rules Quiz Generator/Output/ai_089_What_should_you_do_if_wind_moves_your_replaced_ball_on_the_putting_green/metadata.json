@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "9.3",
+  "ruleName": "Ball Moved by Natural Forces",
+  "group": "Putting Green",
+  "title": "What should you do if wind moves your replaced ball on the putting green?",
+  "question": "After Robert marks, lifts and replaces his ball on the putting green, a gust of wind moves his ball before he makes his stroke. What should Robert do according to the Rules of Golf?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball from its new position."
+    },
+    {
+      "id": "b",
+      "text": "Replace the ball on its original spot without penalty."
+    },
+    {
+      "id": "c",
+      "text": "Replace the ball and add one penalty stroke."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "Under Rule 9.3, if a player's ball on the putting green has been lifted and replaced and then moves due to natural forces (like wind), the ball must be replaced on its original spot without penalty.",
+  "imagePrompt": "Create a polished, modern semi-realistic (around 75% realistic, 25% stylised) illustration in the established junior golf quiz illustration style. Show a putting green with a single golfer in golf clothing observing his ball that has just moved away from a visible ball marker. The ball marker clearly shows where the ball was before the wind blew it. The weather should appear slightly breezy, but the setting otherwise calm and clear. Do not include any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer stands on a putting green watching his ball, which has moved away from a visible marker due to wind, with the marker showing the original position.",
+  "sceneSpec": {
+    "setting": "Putting green in calm weather, with a hint of a breeze indicated.",
+    "players": "One player (Robert) in golf attire, standing near his marked/replaced ball on the green. No caddie or other players visible.",
+    "ballPosition": "A golf ball that has just moved a short distance from a marked/replaced position, marker still visible where the ball was.",
+    "ruleMoment": "The moment just after the wind has pushed the replaced ball from its original position, with Robert watching it happen.",
+    "educationalFocus": "Clarifies what to do when natural forces move a replaced ball on the putting green.",
+    "mustShow": [
+      "A putting green",
+      "One golfer observing",
+      "A moved golf ball a short distance from a ball marker",
+      "A visible ball marker indicating the original spot"
+    ],
+    "mustNotShow": [
+      "Any text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles"
+    ]
+  }
+}

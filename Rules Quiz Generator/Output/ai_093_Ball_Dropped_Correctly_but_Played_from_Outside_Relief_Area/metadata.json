@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "14.3c",
+  "ruleName": "Dropping, Re-dropping, and Placing",
+  "group": "Procedures for Ball: Relief Areas, Dropping, Marking",
+  "title": "Ball Dropped Correctly but Played from Outside Relief Area",
+  "question": "After correctly dropping his ball from knee height, Michael's ball rolls outside the required relief area but he plays it from where it came to rest. What is the ruling?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "No penalty because the drop itself was correct."
+    },
+    {
+      "id": "b",
+      "text": "One-stroke penalty."
+    },
+    {
+      "id": "c",
+      "text": "General penalty for playing from a wrong place."
+    },
+    {
+      "id": "d",
+      "text": "The ball must be re-dropped only, with no penalty."
+    }
+  ],
+  "correctAnswer": "c",
+  "correctAnswers": [
+    "c"
+  ],
+  "explanation": "There is no penalty for the drop itself if performed correctly, but if the ball comes to rest outside the required relief area and the player plays it from there, they have played from a wrong place and receive the general penalty (two strokes in stroke play or loss of hole in match play) under Rule 14.7a.",
+  "imagePrompt": "A modern, semi-realistic golf illustration (about 75% realistic, 25% stylised) showing a golfer in standard golf attire who has just dropped a ball from knee height. The ball is clearly resting outside a subtle but recognisable relief area boundary on the edge of the fairway and rough (boundary indicated by mown lines or small white discs, without any labels or text). The player is about to play or has just played the ball from this wrong place. No text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A golfer stands on the edge of the fairway, having just dropped a ball that has finished outside a clearly marked relief area. The player is about to play the ball from outside the relief area.",
+  "sceneSpec": {
+    "setting": "Light rough, edge of the fairway, with relief area indicated by subtle course features (such as a spray-painted line or small white discs) typical of golf courses but with no overt markers.",
+    "players": "One player (Michael), dressed in standard golf attire, standing with club in hand after having just dropped a ball.",
+    "ballPosition": "Golf ball at rest clearly outside the visible relief area. Player is addressing the ball and about to play or just played.",
+    "ruleMoment": "Just after the ball has been played from outside the relief area following a correct drop.",
+    "educationalFocus": "Demonstrates that a correct drop must still result in the ball coming to rest in the relief area.",
+    "mustShow": [
+      "Player (Michael) in realistic but approachable style",
+      "Golf ball resting outside the subtle but recognisable relief area boundary",
+      "Player clearly has just played or is about to play the ball from outside the relief area"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  }
+}

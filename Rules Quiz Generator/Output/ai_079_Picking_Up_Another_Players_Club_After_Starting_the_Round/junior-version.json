@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_079_Picking_Up_Another_Players_Club_After_Starting_the_Round\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "4.1b",
+  "ruleName": "Limit of 14 Clubs; Sharing, Adding or Replacing Clubs During Round",
+  "title": "Picking Up Another Player’s Club After Starting the Round",
+  "question": "After starting a round, a player finds a wedge on the course that belongs to another player and, without realising, puts it in their own bag. They already have 14 clubs. What is the correct ruling?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "There is no penalty, but the player must not use the club that doesn’t belong to them."
+    },
+    {
+      "id": "b",
+      "text": "The player is penalised for having more than 14 clubs."
+    },
+    {
+      "id": "c",
+      "text": "The player can use the extra club with no penalty."
+    },
+    {
+      "id": "d",
+      "text": "The player must stop play until the club is returned."
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "If another player’s club is inadvertently put into a player’s bag after their round has started, it is not counted towards the 14-club limit, provided it is not used. There is no penalty as long as the player does not make a stroke with the extra club.",
+  "juniorVersion": {
+    "title": "What Happens If You Pick Up Someone Else’s Club?",
+    "question": "You have started your round and already have 14 clubs in your bag. You find another golfer’s wedge on the course and, not knowing, put it in your own bag. What should happen?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "You don’t get a penalty, but you can’t use the extra club."
+      },
+      {
+        "id": "b",
+        "text": "You get a penalty for having more than 14 clubs."
+      },
+      {
+        "id": "c",
+        "text": "You can play with the extra club without a penalty."
+      },
+      {
+        "id": "d",
+        "text": "You must stop playing until you give the club back."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "You won’t get in trouble if you pick up someone else’s club by mistake and put it in your bag, as long as you don’t use it to play any shots.",
+    "vocabulary": [
+      {
+        "term": "Wedge",
+        "simpleMeaning": "A wedge is a type of golf club used for short, high shots, like getting out of sand or getting close to the hole."
+      }
+    ],
+    "teachingTip": "Remind juniors to always count their clubs before starting and never use a club that doesn't belong to them, even if it’s in their bag by accident.",
+    "likelyMisconceptions": [
+      "Some kids might think just touching or having the club means they get a penalty.",
+      "Some might believe they can play with extra clubs if they find them."
+    ]
+  },
+  "generatedAtUtc": "2026-08-08T08:43:29.994Z",
+  "model": "gpt-4.1"
+}

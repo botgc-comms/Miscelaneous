@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_089_What_should_you_do_if_wind_moves_your_replaced_ball_on_the_putting_green\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "9.3",
+  "ruleName": "Ball Moved by Natural Forces",
+  "title": "What should you do if wind moves your replaced ball on the putting green?",
+  "question": "After Robert marks, lifts and replaces his ball on the putting green, a gust of wind moves his ball before he makes his stroke. What should Robert do according to the Rules of Golf?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Play the ball from its new position."
+    },
+    {
+      "id": "b",
+      "text": "Replace the ball on its original spot without penalty."
+    },
+    {
+      "id": "c",
+      "text": "Replace the ball and add one penalty stroke."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "Under Rule 9.3, if a player's ball on the putting green has been lifted and replaced and then moves due to natural forces (like wind), the ball must be replaced on its original spot without penalty.",
+  "juniorVersion": {
+    "title": "What should you do if the wind blows your ball after you put it back on the green?",
+    "question": "Robert picks up his ball to clean it on the putting green and puts it back. Before he hits it, the wind blows his ball to a new spot. What should Robert do now?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Play the ball from where the wind moved it."
+      },
+      {
+        "id": "b",
+        "text": "Put the ball back where it was before the wind moved it. No penalty."
+      },
+      {
+        "id": "c",
+        "text": "Put the ball back where it was and add a penalty."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If you already marked and put your ball back on the green, but wind moves it, you need to put the ball back where it was. You do not get a penalty.",
+    "vocabulary": [
+      {
+        "term": "Putting green",
+        "simpleMeaning": "The short, smooth grass around the hole where you use your putter."
+      },
+      {
+        "term": "Mark",
+        "simpleMeaning": "To put a small marker down to show where your ball was before you pick it up."
+      }
+    ],
+    "teachingTip": "Show kids how to mark their ball and where to replace it if it moves before they putt.",
+    "likelyMisconceptions": [
+      "Some kids might think they should always play the ball from where it rolls to, but on the green after replacing, it needs to go back."
+    ]
+  },
+  "generatedAtUtc": "2026-08-10T06:45:49.574Z",
+  "model": "gpt-4.1"
+}

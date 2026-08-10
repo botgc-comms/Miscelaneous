@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_090_Wind_Moves_a_Ball_on_the_Putting_Green\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "9.3",
+  "ruleName": "Ball Moved by Natural Forces",
+  "title": "Wind Moves a Ball on the Putting Green",
+  "question": "Hannah’s ball lies on the putting green and has not been marked or lifted. A gust of wind moves the ball to a new position. What should Hannah do?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Replace the ball on its original spot."
+    },
+    {
+      "id": "b",
+      "text": "Play the ball from its new position."
+    },
+    {
+      "id": "c",
+      "text": "Replace the ball and take a one-stroke penalty."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "When a ball at rest is moved by natural forces such as wind or water, Rule 9.3 states the player must play the ball from its new position. There is no penalty and the ball is not replaced unless it was already lifted and replaced.",
+  "juniorVersion": {
+    "title": "Wind Blows the Ball on the Green",
+    "question": "Hannah's ball is sitting on the green. She hasn't picked it up or marked it. Suddenly, the wind pushes the ball to a new place on the green. What should Hannah do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Put the ball back where it was before the wind moved it."
+      },
+      {
+        "id": "b",
+        "text": "Hit the ball from where the wind moved it to."
+      },
+      {
+        "id": "c",
+        "text": "Put the ball back and add one more shot to her score."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "If the wind or rain moves your ball before you touch it, you have to play it from its new place. You don't put it back, and you don't get any penalty.",
+    "vocabulary": [
+      {
+        "term": "Green",
+        "simpleMeaning": "The smooth grass area around the hole where you putt."
+      },
+      {
+        "term": "Marked",
+        "simpleMeaning": "When you place a small coin or marker behind your ball to save its place before picking it up."
+      }
+    ],
+    "teachingTip": "Remind children that natural things like wind or water can move the ball, and when that happens, you just play it from where it stops.",
+    "likelyMisconceptions": [
+      "Children might think they must put the ball back where it was before.",
+      "Children might think they get a penalty when wind moves their ball."
+    ]
+  },
+  "generatedAtUtc": "2026-08-10T06:45:53.323Z",
+  "model": "gpt-4.1"
+}
