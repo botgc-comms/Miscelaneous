@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 92" role="img" aria-label="BOTGC">
+  <path d="M40 3 72 14v30c0 20-12 35-32 45C20 79 8 64 8 44V14L40 3Z" fill="#f6eedc" stroke="#c6a15b" stroke-width="4"/>
+  <path d="M40 11 64 19v24c0 15-8 27-24 36-16-9-24-21-24-36V19l24-8Z" fill="#0d3548"/>
+  <circle cx="40" cy="35" r="14" fill="#ffffff"/>
+  <path d="M39 21v28M39 22c7 3 11 7 13 13-5-2-9-2-13 0" fill="none" stroke="#2f6b55" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="39" cy="49" r="3" fill="#c6a15b"/>
+  <text x="40" y="67" text-anchor="middle" fill="#ffffff" font-family="Georgia, serif" font-size="13" font-weight="700">BOTGC</text>
+</svg>

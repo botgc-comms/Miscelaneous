@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Digital Artwork | Burton-on-Trent Golf Club</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <a class="club-brand" href="#" aria-label="Burton-on-Trent Golf Club Event Playbook">
+                <img src="/assets/botgc-mark.svg" alt="">
+                <span>
+                    <strong>Burton-on-Trent</strong>
+                    <small>Golf Club</small>
+                </span>
+            </a>
+
+            <nav class="side-nav" aria-label="Event Playbook">
+                <a href="#"><span class="nav-icon">⌂</span>Overview</a>
+                <a href="#"><span class="nav-icon">◇</span>Event Playbook</a>
+                <a href="#"><span class="nav-icon">✓</span>Task Board</a>
+                <a href="#"><span class="nav-icon">▦</span>Event Catalogue</a>
+                <a class="active" href="#"><span class="nav-icon">✦</span>Digital Artwork</a>
+                <a href="#"><span class="nav-icon">↺</span>Retrospectives</a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <span class="status-dot"></span>
+                <div>
+                    <strong id="generationMode">Checking generator…</strong>
+                    <small>OpenAI key remains server-side</small>
+                </div>
+            </div>
+        </aside>
+
+        <main class="page">
+            <header class="page-header">
+                <div>
+                    <div class="breadcrumb">EVENT PLAYBOOK <span>/</span> DIGITAL ARTWORK</div>
+                    <h1>Event Poster Studio</h1>
+                    <p>Create one campaign concept, refine it until it is right, then produce matching artwork for the clubhouse, member communications and print.</p>
+                </div>
+                <button id="publishTopButton" class="button button-gold" type="button" disabled>Publish artwork</button>
+            </header>
+
+            <section class="workflow-strip" aria-label="Poster creation workflow">
+                <div class="workflow-step active" data-step="1"><span>1</span><strong>Brief</strong><small>Event & style</small></div>
+                <div class="workflow-line"></div>
+                <div class="workflow-step" data-step="2"><span>2</span><strong>Generate</strong><small>Primary artwork</small></div>
+                <div class="workflow-line"></div>
+                <div class="workflow-step" data-step="3"><span>3</span><strong>Adapt</strong><small>Other formats</small></div>
+                <div class="workflow-line"></div>
+                <div class="workflow-step" data-step="4"><span>4</span><strong>Publish</strong><small>YoDeck & email</small></div>
+            </section>
+
+            <div class="content-grid">
+                <section class="panel brief-panel">
+                    <div class="panel-heading">
+                        <div>
+                            <p class="section-kicker">Creative brief</p>
+                            <h2>Tell the studio what this event is</h2>
+                        </div>
+                        <span class="required-pill">Event catalogue</span>
+                    </div>
+
+                    <div class="two-column-fields">
+                        <label class="field">
+                            <span>Event</span>
+                            <select id="eventSelect"></select>
+                        </label>
+                        <label class="field">
+                            <span>Event date</span>
+                            <input id="eventDate" type="date">
+                        </label>
+                    </div>
+
+                    <label class="field">
+                        <span>Event description</span>
+                        <textarea id="eventDescription" rows="7"></textarea>
+                        <small>This is the reusable catalogue description that explains the event to the image generator.</small>
+                    </label>
+
+                    <div class="field">
+                        <span>Poster style</span>
+                        <div id="styleOptions" class="style-options"></div>
+                    </div>
+
+                    <div class="poster-content-box">
+                        <div>
+                            <p class="section-kicker">Poster content</p>
+                            <h3>What should be added to the finished artwork?</h3>
+                        </div>
+                        <div class="toggle-grid">
+                            <label class="check-card selected" id="dateCard">
+                                <input id="includeDate" type="checkbox" checked>
+                                <span class="check-mark">✓</span>
+                                <span><strong>Event date</strong><small>Use the date above</small></span>
+                            </label>
+                            <label class="check-card" id="priceCard">
+                                <input id="includePrice" type="checkbox">
+                                <span class="check-mark">✓</span>
+                                <span><strong>Price</strong><small>Add a price badge</small></span>
+                            </label>
+                        </div>
+                        <label id="priceField" class="field hidden">
+                            <span>Price to display</span>
+                            <input id="price" type="text" placeholder="£12.50">
+                        </label>
+                    </div>
+
+                    <label class="field">
+                        <span>Additional creative instructions <em>optional</em></span>
+                        <textarea id="additionalInstructions" rows="4" placeholder="For example: show the player attempting a ridiculous shot over mature trees towards a distant green."></textarea>
+                    </label>
+
+                    <div class="format-picker">
+                        <div>
+                            <p class="section-kicker">Outputs</p>
+                            <h3>Create the campaign in these formats</h3>
+                        </div>
+                        <div id="outputOptions" class="output-options"></div>
+                    </div>
+
+                    <button id="generateButton" class="button button-primary button-large" type="button">
+                        <span>✦</span> Generate campaign artwork
+                    </button>
+                </section>
+
+                <div class="campaign-column">
+                    <aside class="panel campaign-panel">
+                        <div class="panel-heading compact">
+                            <div>
+                                <p class="section-kicker">Campaign preview</p>
+                                <h2 id="campaignTitle">No artwork generated</h2>
+                            </div>
+                            <span id="campaignStatus" class="status-pill neutral">Not started</span>
+                        </div>
+
+                        <div id="emptyState" class="empty-state">
+                            <div class="empty-art">
+                                <img src="/assets/botgc-mark.svg" alt="">
+                                <span class="spark spark-one">✦</span>
+                                <span class="spark spark-two">✦</span>
+                            </div>
+                            <h3>Your event campaign will appear here</h3>
+                            <p>The clubhouse poster is created first. The studio then uses that artwork as the reference for the square and A4 versions.</p>
+                        </div>
+
+                        <div id="generationProgress" class="generation-progress hidden">
+                            <div class="progress-row" data-progress="primary">
+                                <span class="progress-icon">1</span>
+                                <div><strong>Primary clubhouse artwork</strong><small>Creating the campaign concept</small></div>
+                                <span class="progress-state">Waiting</span>
+                            </div>
+                            <div class="progress-row" data-progress="variants">
+                                <span class="progress-icon">2</span>
+                                <div><strong>Campaign adaptations</strong><small>Recomposing from the primary image</small></div>
+                                <span class="progress-state">Waiting</span>
+                            </div>
+                            <div class="progress-row" data-progress="compose">
+                                <span class="progress-icon">3</span>
+                                <div><strong>Final output preparation</strong><small>Sizing each AI-designed finished poster for its delivery format</small></div>
+                                <span class="progress-state">Waiting</span>
+                            </div>
+                        </div>
+                    </aside>
+
+                    <section id="generatedArtworkPanel" class="panel generated-artwork-panel hidden">
+                        <div class="panel-heading compact">
+                            <div>
+                                <p class="section-kicker">Generated artwork</p>
+                                <h2>Campaign assets</h2>
+                                <p class="panel-copy">Each finished poster appears here immediately, without waiting for the rest of the campaign to finish generating.</p>
+                            </div>
+                            <span id="generatedArtworkCount" class="status-pill neutral">0 ready</span>
+                        </div>
+
+                        <div id="posterResults" class="poster-results"></div>
+
+                        <div id="refinementPanel" class="refinement-panel hidden">
+                            <div>
+                                <p class="section-kicker">Not quite right?</p>
+                                <h3>Refine the whole campaign</h3>
+                                <p>Tell the generator what worked and what should change. A new primary is created from the previous attempt, then the other formats are rebuilt from it.</p>
+                            </div>
+                            <textarea id="refinementNotes" rows="4" placeholder="For example: I like the composition but the golfer feels too serious. Make it funnier and show more of the strange route across the course."></textarea>
+                            <button id="regenerateButton" class="button button-secondary" type="button">Regenerate with feedback</button>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <section id="publishPanel" class="panel publish-panel hidden">
+                <div class="panel-heading">
+                    <div>
+                        <p class="section-kicker">Release</p>
+                        <h2>Publish the approved campaign</h2>
+                        <p class="panel-copy">The real YoDeck and membership email integrations will plug into this final action. The prototype completes the workflow and simulates both destinations.</p>
+                    </div>
+                </div>
+
+                <div class="publish-options">
+                    <label class="publish-option selected" id="yodeckCard">
+                        <input id="publishYodeck" type="checkbox" checked>
+                        <span class="publish-icon">▣</span>
+                        <span><strong>Clubhouse screens</strong><small>Publish via YoDeck</small></span>
+                        <span class="destination-check">✓</span>
+                    </label>
+                    <label class="publish-option" id="emailCard">
+                        <input id="publishEmail" type="checkbox">
+                        <span class="publish-icon">✉</span>
+                        <span><strong>Membership email</strong><small>Prepare campaign for email integration</small></span>
+                        <span class="destination-check">✓</span>
+                    </label>
+                </div>
+
+                <div class="publish-action-row">
+                    <div id="publishMessage" class="publish-message">Nothing has been published yet.</div>
+                    <button id="publishButton" class="button button-gold button-large" type="button">Publish selected artwork</button>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="/app.js" type="module"></script>
+</body>
+</html>

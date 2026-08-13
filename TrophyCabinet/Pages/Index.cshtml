@@ -1,0 +1,143 @@
+@page
+@model TrophyCabinetDemo.Pages.IndexModel
+@{
+    const int sourceWidth = 1024;
+    const int topSectionHeight = 569;
+    const int middleSectionHeight = 345;
+    const int bottomShelfY = 394;
+
+    var rowCount = Model.Cabinet.RowCount;
+    var middleCount = Math.Max(0, rowCount - 2);
+
+    var hingeCount = rowCount switch
+    {
+        <= 2 => 2,
+        <= 4 => 3,
+        _ => 4
+    };
+}
+
+<link rel="stylesheet" href="/css/site.css" />
+
+<main class="page-shell">
+    <section
+        class="cabinet"
+        style="
+            --source-width:@sourceWidth;
+            --middle-section-height:@middleSectionHeight;"
+        aria-label="Digital trophy cabinet">
+
+        <div class="cabinet__background" aria-hidden="true">
+            <img src="/images/cabinet/cabinet-top.png" class="cabinet__section" alt="" />
+
+            @for (var index = 0; index < middleCount; index++)
+            {
+                <img src="/images/cabinet/cabinet-middle.png" class="cabinet__section" alt="" />
+            }
+
+            <img src="/images/cabinet/cabinet-bottom.png" class="cabinet__section" alt="" />
+        </div>
+
+        <div class="cabinet__trophies">
+            @foreach (var shelf in Model.Cabinet.Shelves)
+            {
+                var shelfY = shelf.RowIndex == 0
+                    ? topSectionHeight
+                    : shelf.RowIndex < rowCount - 1
+                        ? topSectionHeight + (shelf.RowIndex * middleSectionHeight)
+                        : topSectionHeight
+                            + (middleCount * middleSectionHeight)
+                            + bottomShelfY;
+
+                <div
+                    class="cabinet__shelf"
+                    style="--shelf-y:@shelfY;">
+
+                    @foreach (var trophy in shelf.Trophies)
+                    {
+                        var fileName = System.IO.Path.GetFileNameWithoutExtension(trophy.ImageUrl);
+
+                        var trophyName = !string.IsNullOrWhiteSpace(trophy.Name)
+                            ? trophy.Name
+                            : fileName
+                                .Replace("-", " ")
+                                .Replace("_", " ");
+
+                        trophyName = System.Text.RegularExpressions.Regex.Replace(
+                            trophyName.Trim(),
+                            @"^[A-Za-z]\d+\s*(?:the)?\s*",
+                            string.Empty,
+                            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+                        trophyName = trophyName.Trim();
+
+                        <article
+                            class="trophy trophy--span-@trophy.CellSpan"
+                            style="
+                                --start-column:@trophy.StartColumn;
+                                --cell-span:@trophy.CellSpan;
+                                --relative-height:@trophy.RelativeHeight;">
+
+                            <img
+                                src="@trophy.ImageUrl"
+                                alt="@trophyName"
+                                class="trophy__image" />
+
+                            <div class="trophy__plaque">
+                                <img
+                                    src="/images/cabinet/trophy-plaque.png"
+                                    class="trophy__plaque-image"
+                                    alt=""
+                                    aria-hidden="true" />
+
+                                <span class="trophy__plaque-text">
+                                    @trophyName
+                                </span>
+                            </div>
+                        </article>
+                    }
+                </div>
+            }
+        </div>
+
+        <img
+            src="/images/cabinet/glass-overlay.png"
+            class="cabinet__glass"
+            alt=""
+            aria-hidden="true" />
+
+        <img
+            src="/images/cabinet/reflection-left.png"
+            class="cabinet__reflection"
+            alt=""
+            aria-hidden="true" />
+
+        <div class="cabinet__hinges" aria-hidden="true">
+            @for (var index = 0; index < hingeCount; index++)
+            {
+                var top = hingeCount == 1
+                    ? 50m
+                    : 8m + (index * (84m / (hingeCount - 1)));
+
+                <img
+                    src="/images/cabinet/hinges-overlay.png"
+                    class="cabinet__hinge cabinet__hinge--left"
+                    style="top:@($"{top:0.##}%");"
+                    alt="" />
+            }
+        </div>
+
+        <img
+            src="/images/cabinet/handles.png"
+            class="cabinet__handles"
+            alt=""
+            aria-hidden="true" />
+    </section>
+</main>
+
+<script>
+    window.addEventListener("scroll", () => {
+        document.body.style.backgroundPositionY =
+            `${window.scrollY * 0.3}px`;
+    });
+</script>   

@@ -1,0 +1,300 @@
+{
+  "brand": {
+    "name": "Burton-on-Trent Golf Club",
+    "shortName": "BOTGC",
+    "strapline": "Event Playbook"
+  },
+  "prompting": {
+    "creativeDirectorInstruction": "You are the senior creative director and image-prompt writer for Burton-on-Trent Golf Club's Event Playbook. Convert the supplied structured event, style, output and organiser data into one sophisticated prompt for GPT Image 2. The image model must create the campaign illustration only, never the final typographic poster. Make the scene concrete, specific and visually directed rather than merely paraphrasing the input. The event concept must drive the image; the style preset controls treatment only. Treat style names such as 'Cartoon & Playful', 'Photorealistic' and 'Vintage Golf Poster' as internal metadata that must never appear as words, labels, captions or signs in the generated image. Convert requested poster content such as title, date and price into protected negative-space requirements because the application will render those elements after image generation. Prefer one strong focal scene, clear storytelling, deliberate depth, expressive detail and premium composition. When adapting an existing primary image, preserve campaign identity and recompose intentionally for the new aspect ratio rather than inventing a different scene. Return only the final image-generation or image-edit prompt as plain text with useful section headings. Do not return analysis, JSON, markdown fences or commentary.",
+    "globalImageRules": [
+      "Create campaign artwork only; the application adds all final typography and Club treatment afterwards.",
+      "Use one clear visual idea that communicates the event within a few seconds.",
+      "Design for viewing at distance as well as close inspection.",
+      "Protect deliberate negative space in the configured overlay zones.",
+      "Keep important subjects comfortably inside safe edges so the artwork can be adapted into other formats.",
+      "Make the result feel commissioned for a premium golf-club event rather than generic stock imagery or concept art.",
+      "Use supporting detail to enrich the main story without competing with it.",
+      "If organiser instructions conflict with the event's defining concept, preserve the defining concept and interpret the organiser instruction in a compatible way."
+    ],
+    "globalExclusions": [
+      "Do not render readable words, titles, dates, prices, slogans, captions or call-to-action text inside the generated artwork.",
+      "Do not render the style preset name or any phrase describing the visual style.",
+      "Do not include the Club logo, website address, Event Playbook label, watermarks or interface elements.",
+      "Do not create a finished poster layout with typographic panels, headline lettering or promotional badges.",
+      "Do not fill reserved overlay areas with busy detail.",
+      "Do not add decorative signboards, ribbons or plaques containing invented text.",
+      "Do not literalise prompt-writing terminology, metadata labels or instructions as visual content."
+    ]
+  },
+  "events": [
+    {
+      "id": "steeple-chase",
+      "name": "Steeple Chase",
+      "description": "The Steeple Chase transforms the familiar golf course into a completely different challenge. Players tee off from one hole towards a different green, creating unusual routes across the course and forcing them to negotiate trees, slopes and other features from directions they would never normally encounter. It is deliberately unconventional, fun and unpredictable, rewarding imagination and course management as much as normal golfing ability.",
+      "defaultDate": "2026-09-12",
+      "defaultPrice": "£12.50",
+      "sceneRecipe": {
+        "centralIdea": "Make the absurdity instantly understandable: a golfer is standing on the tee of one hole and deliberately attempting an enormous shot over a ridiculous barrier of mature trees towards the clearly visible green of a completely different hole.",
+        "primaryScene": "Show a comical golfer on a tee box immediately after an ambitious heroic drive, frozen in an exaggerated follow-through and looking slightly alarmed by the decision. Establish a dense wall of tall mature trees as a major obstacle between the golfer and a distant, unmistakably separate green. Show the golf ball on a dramatic high arc over the trees so the route can be understood at a glance.",
+        "mustShow": [
+          "The teeing golfer must be a strong foreground focal point with expressive body language.",
+          "A dense and visually substantial wall of trees must clearly obstruct the normal route.",
+          "The wrong destination green must be visible beyond the trees and spatially readable as belonging to another part of the course.",
+          "The golf-ball trajectory must connect the golfer, tree barrier and distant green into one immediately understandable visual story.",
+          "Include a second golfer, caddie or onlooker reacting with disbelief, concern or baffled admiration."
+        ],
+        "supportingDetails": [
+          "Include a few woodland animals such as an owl, squirrel, rabbit, fox or deer watching the shot with amused concern.",
+          "Use rich foliage, leaves, branches and course contours to make the scene feel specific and storybook-rich.",
+          "Small visual jokes are welcome when they remain subordinate to the central golf shot.",
+          "If a rustic direction-sign shape is useful compositionally it may appear only as an unreadable decorative object with no legible wording."
+        ],
+        "moodAndHumour": [
+          "The humour should come from the ridiculous sporting situation and character reactions rather than from text in the scene.",
+          "Make the golfer's confidence and the absurd route feel charmingly at odds with one another.",
+          "The overall feeling should be warm, funny, eccentric and inviting rather than slapstick or chaotic."
+        ],
+        "avoid": [
+          "Do not show the golfer simply playing a normal straight golf hole.",
+          "Do not hide the distant target green behind the trees or make the intended route ambiguous.",
+          "Do not make the tree obstacle a minor background feature.",
+          "Do not turn the woodland animals into the main subject.",
+          "Do not use embedded slogans, hand-lettered event copy or readable direction signs to explain the joke."
+        ]
+      }
+    },
+    {
+      "id": "junior-open",
+      "name": "Junior Open",
+      "description": "A welcoming but competitive junior golf event bringing together young golfers for a day of enjoyable competition, achievement and club atmosphere. It should feel energetic, ambitious and friendly, celebrating young people playing golf at Burton-on-Trent Golf Club.",
+      "defaultDate": "2026-08-30",
+      "defaultPrice": "£8.00",
+      "sceneRecipe": {
+        "centralIdea": "Celebrate young golfers taking part in a genuine competitive event while keeping the atmosphere welcoming, positive and full of possibility.",
+        "primaryScene": "Build the image around one or more junior golfers engaged in a meaningful competitive golf moment on a beautiful course, with confident movement, concentration and a visible sense of achievement.",
+        "mustShow": [
+          "Junior golfers should feel capable, engaged and age-appropriate rather than posed like adult professionals.",
+          "Golf must be immediately recognisable through authentic course context and action.",
+          "The image should balance competition with warmth and inclusion."
+        ],
+        "supportingDetails": [
+          "Use course landscape, flags, clubs and subtle spectator or teammate context to create event atmosphere.",
+          "Show natural interaction and energy rather than static line-ups."
+        ],
+        "moodAndHumour": [
+          "Optimistic, energetic, welcoming and aspirational.",
+          "Allow small moments of personality without making the event feel childish."
+        ],
+        "avoid": [
+          "Do not portray children as miniature adult professionals in overly formal poses.",
+          "Do not make the scene look like generic golf stock photography or a coaching lesson."
+        ]
+      }
+    },
+    {
+      "id": "captains-dinner",
+      "name": "Captain's Dinner",
+      "description": "A formal evening social event with dining, speeches and a traditional golf-club atmosphere. The event should feel polished, warm and prestigious, with a sense of occasion and understated elegance.",
+      "defaultDate": "2026-11-14",
+      "defaultPrice": "£35.00",
+      "sceneRecipe": {
+        "centralIdea": "Create a sense of an important but welcoming Club occasion: beautifully prepared dining, warm hospitality and understated golf-club tradition.",
+        "primaryScene": "Show an elegant clubhouse evening with carefully dressed tables, warm low lighting, polished glassware and guests arriving or enjoying the occasion, with subtle visual cues to golf-club heritage.",
+        "mustShow": [
+          "The dining environment must feel premium, warm and real.",
+          "Include enough human presence to communicate a social occasion without making the image crowded.",
+          "Use lighting and composition to create a clear focal area suitable for a formal event campaign."
+        ],
+        "supportingDetails": [
+          "Tasteful table settings, glassware, subtle floral or traditional decoration and restrained golf-club details.",
+          "Warm pools of light and rich material textures."
+        ],
+        "moodAndHumour": [
+          "Elegant, convivial, confident and welcoming.",
+          "No overt comedy; personality should come through natural human warmth."
+        ],
+        "avoid": [
+          "Do not make the scene look like a generic wedding reception or corporate conference.",
+          "Do not overdecorate or make the image ostentatious."
+        ]
+      }
+    },
+    {
+      "id": "christmas-party",
+      "name": "Christmas Party",
+      "description": "A festive clubhouse celebration with dining, music and a lively social atmosphere. The feeling should be warm, seasonal and inviting, with festive colour, clubhouse comfort and a clear sense of fun.",
+      "defaultDate": "2026-12-19",
+      "defaultPrice": "£22.00",
+      "sceneRecipe": {
+        "centralIdea": "Show the clubhouse transformed into a warm festive social occasion that members would immediately want to join.",
+        "primaryScene": "Create an inviting clubhouse Christmas scene with groups of members enjoying a lively evening, warm lighting, tasteful festive decoration and a clear sense of celebration.",
+        "mustShow": [
+          "The clubhouse social atmosphere must be the main subject.",
+          "Festive decoration should be obvious but tasteful.",
+          "People should look naturally engaged with one another rather than posed."
+        ],
+        "supportingDetails": [
+          "Warm fairy lights, greenery, seasonal table details and subtle golf-club context.",
+          "Use depth and layered groups to suggest a lively evening without visual clutter."
+        ],
+        "moodAndHumour": [
+          "Warm, convivial, celebratory and slightly playful.",
+          "The image should feel welcoming to members rather than exclusive or formal."
+        ],
+        "avoid": [
+          "Do not make it look like a generic commercial Christmas advert.",
+          "Do not overwhelm the scene with novelty Christmas props."
+        ]
+      }
+    }
+  ],
+  "styles": [
+    {
+      "id": "cartoon-playful",
+      "name": "Cartoon & Playful",
+      "summary": "Whimsical hand-drawn storybook artwork with warmth, character and humour.",
+      "styleDirection": "Create a richly observed whimsical British storybook illustration: hand-drawn and characterful, with the warmth and craft of traditional children's picture-book art adapted into a premium golf-club campaign. The treatment should feel genuinely illustrated rather than like a generic cartoon filter.",
+      "visualLanguage": [
+        "Loose but confident hand-drawn ink outlines with natural variation rather than mechanically perfect vector edges.",
+        "Textured watercolour and gouache-like washes with visible paper-like warmth and subtle pigment variation.",
+        "Warm slightly muted natural colours led by rich greens, earthy browns, creams, mosses and restrained golden yellows.",
+        "Expressive faces, hands and body language with gently exaggerated proportions and perspective.",
+        "Detailed trees, leaves, branches, grass and environmental storytelling that rewards closer viewing.",
+        "Strong silhouette and readable staging so the central joke remains clear from across a room.",
+        "Use decorative natural framing only where it supports the composition; never let decorative foliage become typographic poster furniture."
+      ],
+      "mood": [
+        "Charming, eccentric, warm and mischievous.",
+        "Humorous without becoming childish or visually cheap.",
+        "Premium enough to feel commissioned for a real Club event."
+      ],
+      "avoid": [
+        "Avoid photorealism, glossy 3D rendering, flat clip-art, generic comic-book styling and slick corporate vector art.",
+        "Avoid automatically creating vintage headline lettering, ribbons, badges or printed-poster text merely because the style is illustrative.",
+        "Avoid imitating a named living artist; describe the visual characteristics directly."
+      ]
+    },
+    {
+      "id": "serious-formal",
+      "name": "Serious & Formal",
+      "summary": "Elegant, restrained and suitable for premium dinners, presentations and formal occasions.",
+      "styleDirection": "Create a refined premium editorial campaign image with understated traditional golf-club character, balanced composition and sophisticated visual restraint.",
+      "visualLanguage": [
+        "Controlled, elegant composition with clear hierarchy and purposeful negative space.",
+        "Rich but restrained colour, natural materials and subtle atmospheric lighting.",
+        "Premium editorial finish rather than corporate brochure imagery."
+      ],
+      "mood": [
+        "Established, confident, warm and distinguished.",
+        "Formal without feeling cold or inaccessible."
+      ],
+      "avoid": [
+        "Avoid corporate conference imagery, excessive luxury clichés and generic black-tie stock scenes.",
+        "Avoid embedded typography or ornamental headline devices."
+      ]
+    },
+    {
+      "id": "photorealistic",
+      "name": "Photorealistic",
+      "summary": "Authentic people, clubhouse and course detail with cinematic photography-style lighting.",
+      "styleDirection": "Create premium photorealistic campaign photography with believable people, authentic golf-course or clubhouse detail, natural materials and cinematic but credible light. The image should look deliberately art-directed rather than like generic stock photography.",
+      "visualLanguage": [
+        "Naturalistic anatomy, clothing, equipment and course detail.",
+        "Cinematic depth, controlled highlights and realistic atmospheric perspective.",
+        "Strong photographic composition with clear subject separation and intentional negative space."
+      ],
+      "mood": [
+        "Authentic, aspirational and polished.",
+        "Emotionally believable rather than staged."
+      ],
+      "avoid": [
+        "Avoid artificial HDR, overprocessed skin, impossible golf technique and generic stock-photo smiles.",
+        "Avoid embedding style labels, poster text or graphic design elements into the photograph."
+      ]
+    },
+    {
+      "id": "modern-graphic",
+      "name": "Modern Graphic",
+      "summary": "Bold contemporary campaign artwork with clean shapes and strong visual hierarchy.",
+      "styleDirection": "Create a bold contemporary editorial illustration with simplified graphic forms, strong silhouette, confident negative space and a distinctive modern campaign identity.",
+      "visualLanguage": [
+        "Clean simplified geometry combined with enough texture to prevent a sterile corporate appearance.",
+        "Controlled contemporary colour palette with one or two strong visual accents.",
+        "Dynamic cropping and strong directional movement where appropriate."
+      ],
+      "mood": [
+        "Confident, energetic and contemporary.",
+        "Distinctive on a large digital screen while still readable at small sizes."
+      ],
+      "avoid": [
+        "Avoid generic infographic styling, app-illustration clichés and flat stock vectors.",
+        "Avoid rendered typography or fake poster copy."
+      ]
+    },
+    {
+      "id": "vintage-golf",
+      "name": "Vintage Golf Poster",
+      "summary": "Classic tournament-poster character with a tasteful nostalgic feel.",
+      "styleDirection": "Create a painterly illustration with the visual character of classic mid-century sporting travel and tournament art: restrained print texture, confident shapes, natural period-inspired colour and timeless golf atmosphere. Keep it sophisticated rather than kitsch.",
+      "visualLanguage": [
+        "Painterly shapes and subtle print-like texture without fake damage or excessive ageing.",
+        "Traditional sporting composition with strong landscape depth and confident human figures.",
+        "Muted heritage palette balanced by clear focal contrast."
+      ],
+      "mood": [
+        "Timeless, established and quietly nostalgic.",
+        "Premium and evocative rather than novelty-retro."
+      ],
+      "avoid": [
+        "Do not render the words 'Vintage Golf Poster' or any other style description into the artwork.",
+        "Avoid fake poster headlines, fake dates, invented sponsor copy and decorative typography.",
+        "Avoid distressed-paper gimmicks that overpower the scene."
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "id": "clubhouse",
+      "name": "Clubhouse Digital Display",
+      "width": 2160,
+      "height": 3840,
+      "openAiSize": "1024x1536",
+      "purpose": "Primary portrait artwork for the Club's 43-inch 4K portrait displays.",
+      "compositionGuidance": "Build a tall 9:16 hero composition with a clear visual story readable across a clubhouse room. Use the full height intelligently, keep the main subject large enough to read at distance and avoid placing critical detail at the extreme edges.",
+      "reservedOverlayZones": [
+        "Keep the upper 20 to 24 percent comparatively calm for Club name and large event-title overlay.",
+        "Keep a usable area around the lower 78 to 88 percent for date and optional price treatment.",
+        "Keep the extreme lower edge calm enough for a discreet Club footer treatment."
+      ],
+      "isPrimary": true
+    },
+    {
+      "id": "social",
+      "name": "Email & Social",
+      "width": 1080,
+      "height": 1080,
+      "openAiSize": "1024x1024",
+      "purpose": "Square campaign artwork for email and social media.",
+      "compositionGuidance": "Recompose the approved campaign into a square frame with the defining action clearly centred and immediately recognisable at small size. Preserve the same characters, event logic, palette and atmosphere rather than simply cropping the portrait source.",
+      "reservedOverlayZones": [
+        "Keep a controlled upper band available for the event title overlay.",
+        "Protect a compact lower area for date or price treatment without weakening the central scene."
+      ],
+      "isPrimary": false
+    },
+    {
+      "id": "a4",
+      "name": "A4 Print",
+      "width": 2480,
+      "height": 3508,
+      "openAiSize": "1024x1536",
+      "purpose": "Portrait poster suitable for A4 printing at 300 DPI.",
+      "compositionGuidance": "Recompose the campaign for an A-series portrait frame. Preserve the approved concept and visual identity while allowing slightly more supporting environmental detail than the digital-screen version. Keep the focal story strong at normal poster-viewing distance.",
+      "reservedOverlayZones": [
+        "Keep the upper area calm enough for title and Club treatment.",
+        "Keep a lower information area suitable for date and price overlay while preserving the scene's visual flow."
+      ],
+      "isPrimary": false
+    }
+  ]
+}
