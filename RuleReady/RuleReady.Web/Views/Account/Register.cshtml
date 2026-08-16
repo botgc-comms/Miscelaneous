@@ -1,0 +1,20 @@
+@model RegisterViewModel
+@{
+    ViewData["Title"] = "Create your RuleReady account";
+}
+<div class="auth-card">
+    <div class="eyebrow">GET RULEREADY</div>
+    <h1>Create your account</h1>
+    <p>Your RuleReady identity stays with you even if you belong to more than one club.</p>
+    <form method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Intent" />
+        <div asp-validation-summary="ModelOnly" class="validation"></div>
+        <label>Email address<input asp-for="Email" type="email" autocomplete="email" /></label>
+        <label>Display name <span class="optional">optional</span><input asp-for="DisplayName" autocomplete="name" /></label>
+        <label>England Golf Membership Number <span class="optional">optional</span><input asp-for="EnglandGolfMembershipNumber" /></label>
+        <label>Password<input asp-for="Password" type="password" autocomplete="new-password" /></label>
+        <label>Confirm password<input asp-for="ConfirmPassword" type="password" autocomplete="new-password" /></label>
+        <button class="button primary wide" type="submit">Create account</button>
+    </form>
+</div>

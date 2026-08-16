@@ -1,0 +1,37 @@
+@model StartPersonalQuizViewModel
+@{
+    ViewData["Title"] = "Challenge yourself";
+}
+<div class="page-heading">
+    <div class="eyebrow">PERSONAL CHALLENGE</div>
+    <h1>Choose how you want to be tested.</h1>
+</div>
+<form method="post" class="panel form-grid">
+    @Html.AntiForgeryToken()
+    <label>Quiz format
+        <select asp-for="Mode">
+            <option value="OwnTime">In your own time</option>
+            <option value="TimedSitting">Single timed sitting</option>
+            <option value="PerQuestionCountdown">Countdown per question</option>
+        </select>
+    </label>
+    <label>Difficulty
+        <select asp-for="Difficulty">
+            <option>Easy</option>
+            <option selected>Medium</option>
+            <option>Hard</option>
+        </select>
+    </label>
+    <label>Learning level
+        <select asp-for="LearningLevel">
+            <option value="foundation">Foundation</option>
+            <option value="standard">Standard</option>
+        </select>
+    </label>
+    <label>Questions<input asp-for="QuestionCount" type="number" min="1" max="100" /></label>
+    <label>Pass mark<input asp-for="PassMark" type="number" min="0" max="100" /></label>
+    <label>Timed sitting: minutes<input asp-for="TotalTimeMinutes" type="number" min="1" max="180" /></label>
+    <label>Per question: seconds<input asp-for="SecondsPerQuestion" type="number" min="5" max="600" /></label>
+    <input asp-for="Audience" type="hidden" />
+    <button class="button primary" type="submit">Start challenge</button>
+</form>

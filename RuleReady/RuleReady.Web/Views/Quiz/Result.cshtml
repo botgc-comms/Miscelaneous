@@ -1,0 +1,14 @@
+@model QuizAttempt
+@{
+    ViewData["Title"] = "Quiz result";
+    var passed = Model.Status == QuizAttemptStatus.Finished && Model.CorrectCount >= Model.PassMark;
+}
+<div class="result-hero @(passed ? "passed" : "")">
+    <div class="eyebrow">QUIZ COMPLETE</div>
+    <h1>@Model.CorrectCount / @Model.TotalQuestions</h1>
+    <p>@(passed ? "You passed this RuleReady challenge." : Model.Status == QuizAttemptStatus.Expired ? "The time limit expired." : "Keep learning and have another go.")</p>
+    <div class="actions">
+        <a class="button primary" href="/quiz/new">Another challenge</a>
+        <a class="button secondary" href="/dashboard">Dashboard</a>
+    </div>
+</div>

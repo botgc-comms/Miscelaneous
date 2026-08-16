@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 2,
+  "sourceImageName": "pageb-09.png",
+  "ruleNumber": "Def.",
+  "ruleName": "Ball bounces back out of the hole",
+  "group": "Ball bounces back out of the hole",
+  "type": "multiple_choice",
+  "imagePrompt": "A teen boy golfer stands just off the hole on the green, looking surprised as his golf ball pops back out of the cup and comes to rest nearby.",
+  "imageAlt": "A golf ball bouncing out of the hole and stopping on the green, with a surprised teenage golfer nearby.",
+  "sceneSpec": {
+    "setting": "putting_green",
+    "golferAge": "teen",
+    "golferGender": "girl",
+    "handedness": "right",
+    "action": "standing_near_ball",
+    "clubInHand": "putter",
+    "ballCount": 1,
+    "stakeColour": "none",
+    "waterVisible": false,
+    "bunkerVisible": false,
+    "teeMarkerVisible": false,
+    "greenVisible": true,
+    "treesVisible": false,
+    "weather": "sunny",
+    "prohibitedElements": [],
+    "ethnicity": "mixed",
+    "skinTone": "light",
+    "clothingTopColour": "orange",
+    "clothingBottomColour": "navy",
+    "hat": true
+  },
+  "imageVerification": {
+    "pass": true,
+    "score": 97,
+    "issues": [
+      "Golf ball, putter, and golfer details all visually correct and realistic.",
+      "Illustration clearly depicts a teenage girl with mixed/light skin tone, orange top, navy bottoms, and a golf cap.",
+      "Posture, club grip, and proportions all plausible and on-model for golf.",
+      "Only one golf ball shown, correct size and believable position by the hole.",
+      "Green looks realistic; no bunkers, water, or stakes as specified."
+    ],
+    "repairPrompt": "No major repairs needed. If possible, exaggerate the 'ball just popped out of the hole' moment by showing a slight motion blur or trace behind the ball to clarify recent movement for teaching clarity."
+  },
+  "imageFileName": "illustration.png",
+  "promptFileName": "final-prompt.txt",
+  "questions": [
+    {
+      "audience": "junior-friendly",
+      "membershipCategories": [
+        "Junior Cadet",
+        "Junior Course Cadet"
+      ],
+      "title": "Ball Pops Out of the Hole – What Now?",
+      "question": "You hit your ball and it drops into the hole, but then it jumps back out and stops on the grass. What should you do?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Count the ball as in the hole and go to the next hole"
+        },
+        {
+          "id": "b",
+          "text": "Play the ball from where it stopped and try to get it in the hole"
+        },
+        {
+          "id": "c",
+          "text": "Add a penalty and pick up your ball"
+        },
+        {
+          "id": "d",
+          "text": "Put the ball in the hole and move on"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "Your ball has to stay in the hole and stop there to count as in. If it bounces out and stops outside the hole, you have to hit your next shot from where your ball is now.",
+      "vocabulary": [
+        {
+          "term": "Holed",
+          "simpleMeaning": "Your ball is holed when it is all the way in the hole and stops there."
+        }
+      ],
+      "teachingTip": "Show children how a ball must stay in the hole to be counted. You could use a cup and drop a ball in to show when it counts.",
+      "likelyMisconceptions": [
+        "Thinking the ball counts even if it just drops in the hole for a second.",
+        "Thinking you add a penalty if the ball bounces out of the hole."
+      ]
+    },
+    {
+      "audience": "standard",
+      "membershipCategories": [
+        "Junior"
+      ],
+      "title": "Ball Bounces Out Of The Hole – Is It Holed?",
+      "question": "Your ball drops into the hole but bounces out and comes to rest outside. What do you need to do next?",
+      "type": "multiple_choice",
+      "choices": [
+        {
+          "id": "a",
+          "text": "Count the ball as holed and move to the next hole"
+        },
+        {
+          "id": "b",
+          "text": "Play the ball as it lies and try to hole out"
+        },
+        {
+          "id": "c",
+          "text": "Add a penalty stroke and pick up your ball"
+        },
+        {
+          "id": "d",
+          "text": "Place the ball in the hole and continue"
+        }
+      ],
+      "correctAnswers": [
+        "b"
+      ],
+      "correctAnswer": "b",
+      "explanation": "A ball is only considered holed if it comes to rest within the hole. If it bounces out and stops outside the hole, you must play the ball as it lies and try to hole out."
+    }
+  ],
+  "compiledFrom": {
+    "sourceFolder": "000_001_Ball_Bounces_Out_Of_The_Hole_Is_It_Holed",
+    "originalMetadataFileName": "metadata.json",
+    "questionFileName": null,
+    "juniorQuestionFileName": null,
+    "imageFileName": "illustration-v2.png",
+    "promptFileName": "final-prompt-v2.txt",
+    "compiledAtUtc": "2026-08-10T09:27:42.939Z"
+  }
+}

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - RuleReady</title>
+    <link rel="stylesheet" href="/css/site.css" />
+</head>
+<body>
+<header class="topbar">
+    <a class="brand" href="/">RuleReady<span>.golf</span></a>
+    <nav>
+        <a href="/pricing">Pricing</a>
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <a href="/dashboard">Dashboard</a>
+            <a href="/quiz/new">Challenge yourself</a>
+            <a href="/quiz/join">Enter quiz code</a>
+            <form method="post" action="/account/logout" class="inline-form">
+                @Html.AntiForgeryToken()
+                <button class="link-button" type="submit">Sign out</button>
+            </form>
+        }
+        else
+        {
+            <a href="/account/login">Sign in</a>
+            <a class="nav-cta" href="/account/register">Get RuleReady</a>
+        }
+    </nav>
+</header>
+<main class="shell">
+    @RenderBody()
+</main>
+<footer class="footer">
+    <strong>RuleReady</strong>
+    <span>Rules education for better golf.</span>
+</footer>
+<script>
+document.querySelectorAll("[data-countdown]").forEach(function (element) {
+    let remaining = Number(element.dataset.countdown);
+    const form = document.getElementById(element.dataset.form);
+    const render = function () {
+        element.textContent = remaining + "s";
+        if (remaining <= 0) {
+            const inputs = form.querySelectorAll("input[type=checkbox],input[type=radio]");
+            inputs.forEach(function (input) { input.checked = false; });
+            form.submit();
+            return;
+        }
+        remaining -= 1;
+        window.setTimeout(render, 1000);
+    };
+    render();
+});
+</script>
+</body>
+</html>

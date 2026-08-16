@@ -1,0 +1,17 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Sign in";
+}
+<div class="auth-card">
+    <div class="eyebrow">WELCOME BACK</div>
+    <h1>Sign in to RuleReady</h1>
+    <form method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="validation"></div>
+        <label>Email address<input asp-for="Email" type="email" autocomplete="email" /></label>
+        <label>Password<input asp-for="Password" type="password" autocomplete="current-password" /></label>
+        <label class="check"><input asp-for="RememberMe" /> Keep me signed in</label>
+        <button class="button primary wide" type="submit">Sign in</button>
+    </form>
+    <a href="/account/forgot-password">Forgotten your password?</a>
+</div>

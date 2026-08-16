@@ -1,0 +1,16 @@
+@model CreateOrganisationViewModel
+@{
+    ViewData["Title"] = "Set up an organisation";
+}
+<div class="auth-card">
+    <div class="eyebrow">RULEREADY FOR ORGANISATIONS</div>
+    <h1>Set up your organisation</h1>
+    <form method="post">
+        @Html.AntiForgeryToken()
+        <label>Name<input asp-for="Name" required /></label>
+        <label>Type
+            <select asp-for="Type" asp-items="Html.GetEnumSelectList<OrganisationType>()"></select>
+        </label>
+        <button class="button primary wide" type="submit">Create organisation</button>
+    </form>
+</div>

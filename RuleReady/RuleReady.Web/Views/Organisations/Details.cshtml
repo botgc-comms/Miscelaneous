@@ -1,0 +1,41 @@
+@model Organisation
+@{
+    ViewData["Title"] = Model.Name;
+    var campaigns = ViewData["Campaigns"] as IReadOnlyList<QuizCampaign> ?? [];
+    var attemptCount = (int)(ViewData["AttemptCount"] ?? 0);
+    var averageScore = (double)(ViewData["AverageScore"] ?? 0d);
+}
+<div class="page-heading">
+    <div class="eyebrow">@Model.Type.ToString().ToUpperInvariant()</div>
+    <h1>@Model.Name</h1>
+    <p>Organisation slug: <strong>@Model.Slug</strong></p>
+    <a class="button primary" href="/organisations/@Model.Id/campaigns/new">Issue a quiz</a>
+</div>
+
+<div class="stats">
+    <div><strong>@attemptCount</strong><span>completed attempts</span></div>
+    <div><strong>@averageScore.ToString("0")%</strong><span>average score</span></div>
+    <div><strong>@campaigns.Count</strong><span>quiz campaigns</span></div>
+</div>
+
+<section class="section">
+    <h2>Issued quizzes</h2>
+    @if (campaigns.Count == 0)
+    {
+        <div class="empty">No quizzes have been issued yet.</div>
+    }
+    else
+    {
+        <div class="campaign-grid">
+        @foreach (var campaign in campaigns)
+        {
+            <div class="campaign-card">
+                <div class="eyebrow">@campaign.Mode</div>
+                <h3>@campaign.Name</h3>
+                <div class="access-code">@campaign.AccessCode</div>
+                <p>@campaign.QuestionCount questions · pass @campaign.PassMark · @campaign.Difficulty</p>
+            </div>
+        }
+        </div>
+    }
+</section>

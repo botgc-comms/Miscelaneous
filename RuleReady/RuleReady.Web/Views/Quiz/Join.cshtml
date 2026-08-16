@@ -1,0 +1,14 @@
+@{
+    ViewData["Title"] = "Enter quiz code";
+}
+<div class="auth-card">
+    <div class="eyebrow">CLUB OR ORGANISATION QUIZ</div>
+    <h1>Enter your quiz code</h1>
+    <p>Your club or organisation will give you an eight-character RuleReady code.</p>
+    <form method="post">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="validation"></div>
+        <label>Quiz code<input name="accessCode" maxlength="8" autocomplete="off" class="code-input" required /></label>
+        <button class="button primary wide" type="submit">Open quiz</button>
+    </form>
+</div>

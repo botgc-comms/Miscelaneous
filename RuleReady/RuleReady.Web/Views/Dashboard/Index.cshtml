@@ -1,0 +1,69 @@
+@model ApplicationUser
+@{
+    ViewData["Title"] = "Dashboard";
+    var attempts = ViewData["Attempts"] as IReadOnlyList<QuizAttempt> ?? [];
+    var organisations = ViewData["Organisations"] as IReadOnlyList<UserOrganisation> ?? [];
+}
+<div class="page-heading">
+    <div class="eyebrow">YOUR RULEREADY</div>
+    <h1>@(string.IsNullOrWhiteSpace(Model.DisplayName) ? "Ready for your next challenge?" : $"Ready, {Model.DisplayName}?")</h1>
+    <div class="actions">
+        <a class="button primary" href="/quiz/new">Challenge yourself</a>
+        <a class="button secondary" href="/quiz/join">Enter quiz code</a>
+    </div>
+</div>
+
+<div class="grid two">
+    <section class="panel">
+        <h2>Your clubs and organisations</h2>
+        @if (organisations.Count == 0)
+        {
+            <p>You have not associated this account with a club yet.</p>
+        }
+        else
+        {
+            <ul class="clean-list">
+            @foreach (var relationship in organisations)
+            {
+                <li><strong>@relationship.Organisation?.Name</strong><span>@relationship.Status</span></li>
+            }
+            </ul>
+        }
+        <form method="post" action="/organisations/associate" class="stack">
+            @Html.AntiForgeryToken()
+            <label>Associate another club by RuleReady slug<input name="organisationSlug" required /></label>
+            <button class="button secondary" type="submit">Associate club</button>
+        </form>
+    </section>
+
+    <section class="panel">
+        <h2>Your account</h2>
+        <dl class="facts">
+            <dt>RuleReady ID</dt><dd>@Model.RuleReadyUserId</dd>
+            <dt>Email</dt><dd>@Model.Email</dd>
+            <dt>England Golf number</dt><dd>@(Model.EnglandGolfMembershipNumber ?? "Not supplied")</dd>
+        </dl>
+        <a href="/organisations/create?type=Club">Set up a club or organisation</a>
+    </section>
+</div>
+
+<section class="section">
+    <h2>Recent attempts</h2>
+    @if (attempts.Count == 0)
+    {
+        <div class="empty">You have not taken a RuleReady quiz yet.</div>
+    }
+    else
+    {
+        <div class="attempt-grid">
+        @foreach (var attempt in attempts)
+        {
+            <a class="attempt-card" href="/quiz/@attempt.AttemptId/result">
+                <strong>@attempt.CorrectCount / @attempt.TotalQuestions</strong>
+                <span>@attempt.Mode</span>
+                <small>@attempt.StartedAtUtc.ToLocalTime().ToString("dd MMM yyyy HH:mm")</small>
+            </a>
+        }
+        </div>
+    }
+</section>

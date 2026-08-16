@@ -1,0 +1,61 @@
+@model QuizQuestionForUser
+@{
+    ViewData["Title"] = $"Question {Model.Number}";
+    var attempt = (QuizAttempt)ViewData["Attempt"]!;
+}
+<div class="quiz-shell">
+    <div class="quiz-topline">
+        <span>Question @Model.Number of @Model.Total</span>
+        @if (attempt.Mode == QuizMode.TimedSitting && attempt.ExpiresAtUtc.HasValue)
+        {
+            <span>Finish by @attempt.ExpiresAtUtc.Value.ToLocalTime().ToString("HH:mm:ss")</span>
+        }
+        @if (Model.SecondsRemaining.HasValue)
+        {
+            <span class="timer" data-countdown="@Model.SecondsRemaining.Value" data-form="answer-form"></span>
+        }
+    </div>
+
+    @if (TempData["AnswerFeedback"] is string feedback)
+    {
+        <div class="feedback">
+            <strong>@feedback</strong>
+            <span>@TempData["AnswerExplanation"]</span>
+        </div>
+    }
+
+    <article class="question-card">
+        @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+        {
+            <img src="@Model.ImageUrl" alt="@Model.ImageAlt" />
+        }
+        <div class="question-content">
+            <h1>@Model.Text</h1>
+            @if (Model.Vocabulary.Count > 0)
+            {
+                <div class="vocabulary">
+                    @foreach (var item in Model.Vocabulary)
+                    {
+                        <span><strong>@item.Term:</strong> @item.SimpleMeaning</span>
+                    }
+                </div>
+            }
+            <form id="answer-form" method="post" action="/quiz/@attempt.AttemptId/answer">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="QuestionId" value="@Model.Id" />
+                <div class="answer-list">
+                @foreach (var choice in Model.Choices)
+                {
+                    <label class="answer-choice">
+                        <input type="@(Model.AllowMultipleAnswers ? "checkbox" : "radio")"
+                               name="SelectedAnswerIds"
+                               value="@choice.Id" />
+                        <span>@choice.Text</span>
+                    </label>
+                }
+                </div>
+                <button class="button primary wide" type="submit">Submit answer</button>
+            </form>
+        </div>
+    </article>
+</div>

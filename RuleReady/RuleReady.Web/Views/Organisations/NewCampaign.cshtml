@@ -1,0 +1,42 @@
+@model CampaignCreateViewModel
+@{
+    ViewData["Title"] = "Issue a quiz";
+}
+<div class="page-heading">
+    <div class="eyebrow">ISSUE A QUIZ</div>
+    <h1>Choose the assessment experience.</h1>
+</div>
+<form method="post" class="panel form-grid">
+    @Html.AntiForgeryToken()
+    <input asp-for="OrganisationId" type="hidden" />
+    <label>Quiz name<input asp-for="Name" required /></label>
+    <label>Format
+        <select asp-for="Mode">
+            <option value="OwnTime">In your own time</option>
+            <option value="TimedSitting">Single timed sitting</option>
+            <option value="PerQuestionCountdown">Countdown per question</option>
+        </select>
+    </label>
+    <label>Difficulty
+        <select asp-for="Difficulty">
+            <option>Easy</option>
+            <option selected>Medium</option>
+            <option>Hard</option>
+        </select>
+    </label>
+    <label>Learning level
+        <select asp-for="LearningLevel">
+            <option value="foundation">Foundation</option>
+            <option value="standard">Standard</option>
+        </select>
+    </label>
+    <label>Questions<input asp-for="QuestionCount" type="number" min="1" max="100" /></label>
+    <label>Pass mark<input asp-for="PassMark" type="number" min="0" max="100" /></label>
+    <label>Timed sitting: minutes<input asp-for="TotalTimeMinutes" type="number" min="1" max="180" /></label>
+    <label>Per question: seconds<input asp-for="SecondsPerQuestion" type="number" min="5" max="600" /></label>
+    <label>Opens <span class="optional">optional</span><input asp-for="OpensAtUtc" type="datetime-local" /></label>
+    <label>Closes <span class="optional">optional</span><input asp-for="ClosesAtUtc" type="datetime-local" /></label>
+    <label class="check"><input asp-for="AllowMultipleAttempts" /> Allow multiple attempts</label>
+    <input asp-for="Audience" type="hidden" />
+    <button class="button primary" type="submit">Publish quiz</button>
+</form>
