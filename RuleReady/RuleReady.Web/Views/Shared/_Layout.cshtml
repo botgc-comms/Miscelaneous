@@ -52,6 +52,93 @@ document.querySelectorAll("[data-countdown]").forEach(function (element) {
     };
     render();
 });
+
+
+(function () {
+    const carousel = document.querySelector("[data-scenario-carousel]");
+    if (!carousel) {
+        return;
+    }
+
+    const cards = Array.from(carousel.querySelectorAll("[data-scenario-card]"));
+    const classes = ["is-up-2", "is-up-1", "is-centre", "is-down-1", "is-down-2", "is-hidden"];
+    let currentIndex = 0;
+    let timer = null;
+    let isPaused = false;
+
+    function updateCarousel() {
+        cards.forEach(function (card, index) {
+            classes.forEach(function (className) {
+                card.classList.remove(className);
+            });
+
+            const offset = (index - currentIndex + cards.length) % cards.length;
+
+            if (offset === 0) {
+                card.classList.add("is-centre");
+            } else if (offset === 1) {
+                card.classList.add("is-down-1");
+            } else if (offset === 2) {
+                card.classList.add("is-down-2");
+            } else if (offset === cards.length - 1) {
+                card.classList.add("is-up-1");
+            } else if (offset === cards.length - 2) {
+                card.classList.add("is-up-2");
+            } else {
+                card.classList.add("is-hidden");
+            }
+        });
+    }
+
+    function next() {
+        currentIndex = (currentIndex + 1) % cards.length;
+        updateCarousel();
+    }
+
+    function start() {
+        if (timer !== null || isPaused) {
+            return;
+        }
+        timer = window.setInterval(next, 4000);
+    }
+
+    function stop() {
+        if (timer !== null) {
+            window.clearInterval(timer);
+            timer = null;
+        }
+    }
+
+    cards.forEach(function (card, index) {
+        card.addEventListener("click", function () {
+            currentIndex = index;
+            updateCarousel();
+            stop();
+            start();
+        });
+    });
+
+    carousel.addEventListener("mouseenter", function () {
+        isPaused = true;
+        stop();
+    });
+
+    carousel.addEventListener("mouseleave", function () {
+        isPaused = false;
+        start();
+    });
+
+    document.addEventListener("visibilitychange", function () {
+        if (document.hidden) {
+            stop();
+        } else if (!isPaused) {
+            start();
+        }
+    });
+
+    updateCarousel();
+    start();
+})();
 </script>
 </body>
 </html>

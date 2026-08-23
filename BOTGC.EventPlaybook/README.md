@@ -1,0 +1,247 @@
+# BOTGC Event Playbook
+
+> **Baseline project:** this is the consolidated Event Playbook application used as the starting point for ongoing development.
+
+This solution deliberately integrates the two successful prototypes without replacing either of them:
+
+1. the original **Event Playbook** interaction model — master questions, conditional modules, deadline codes, generated tasks and task board;
+2. the later **Poster Studio** — GPT-assisted creative direction, GPT Image 2 generation, progressive display of outputs, regeneration feedback and multiple campaign formats.
+
+## Runtime
+
+- ASP.NET Core / .NET 8
+- Static browser UI for the Playbook, preserving the original prototype interaction
+- ASP.NET Core APIs for OpenAI poster generation, task completion links and notification integration seams
+- JSON-driven Playbook and poster configuration
+
+## Run
+
+```powershell
+dotnet restore
+dotnet run
+```
+
+The default development profile listens on:
+
+```text
+http://localhost:5098
+```
+
+Open the root URL for the Event Playbook. Use **Poster Studio** from the Playbook to open the digital artwork workflow for the selected event.
+
+## OpenAI configuration
+
+The application uses the existing environment-variable convention:
+
+```text
+OPENAI_API_KEY
+OPENAI_IMAGE_MODEL
+OPENAI_IMAGE_QUALITY
+OPENAI_PROMPT_MODEL
+```
+
+Defaults when the optional model variables are absent:
+
+```text
+OPENAI_IMAGE_MODEL=gpt-image-2
+OPENAI_IMAGE_QUALITY=high
+OPENAI_PROMPT_MODEL=gpt-5.6
+```
+
+`OPENAI_API_KEY` is never stored in browser code or application configuration.
+
+## appsettings.json
+
+`appsettings.json` and environment-specific variants are ignored by Git. `appsettings.example.json` is safe to commit.
+
+## Preserved Event Playbook functionality
+
+The integrated application retains all 98 item IDs from the original Playbook configuration, including:
+
+- master event questions;
+- Golf, Clubhouse, Catering, Communications, Presentation, Staffing, Safety and Close-down modules;
+- conditional questions;
+- automatic task generation;
+- B4/B3/B2/B1/DT/A1/A2 deadline codes;
+- event-specific calculated dates;
+- task assignment, notes and completion;
+- multiple simultaneous events;
+- task filtering;
+- JSON and CSV export;
+- loading a Playbook JSON definition.
+
+The integrated configuration extends that original set rather than replacing it.
+
+## Operational task extensions
+
+### Responsibility roles and default owners
+
+Tasks can define:
+
+```json
+{
+  "responsibleArea": "Food & Beverage",
+  "defaultOwnerRoleId": "food-beverage-manager"
+}
+```
+
+The Playbook resolves that role through the responsibility directory. Roles may define fallback roles, so a task can fall back from a specialised responsibility to the Food & Beverage Manager and finally to the Event Coordinator.
+
+Contacts do not need an IG identity. The directory supports employees, volunteers, suppliers or other event contributors using name and email details.
+
+### Assignment notifications
+
+When a task receives an owner, an assignment notification is created automatically. Due-soon reminders and overdue notifications are also generated automatically.
+
+The current ASP.NET Core notification endpoint writes messages to:
+
+```text
+App_Data/notification-outbox.jsonl
+```
+
+That is an intentional development provider. It gives the Club email and/or Monday integration a clean replacement point without pretending that an external delivery contract has already been agreed.
+
+### Secure completion links
+
+Assigned tasks receive a completion token registered server-side. A recipient can use:
+
+```text
+/complete.html?token=...
+```
+
+to view the task and explicitly mark it complete without requiring an IG account. Completion state is persisted under `App_Data` and synchronised back into the event task board when the organiser next opens the Playbook.
+
+### Escalation
+
+Tasks approaching their due date create reminders. Overdue tasks create an owner notification and a separate escalation addressed to the event organiser.
+
+## Derived operational facts and advisories
+
+The Playbook now distinguishes:
+
+- **answers/facts** collected from questions;
+- **derived facts** calculated from those answers;
+- **visibility rules** controlling what appears;
+- **task rules** creating work;
+- **advisory rules** challenging potentially risky human decisions.
+
+The first implemented derived-fact journey is the catering-hours scenario.
+
+The Golf module now asks for:
+
+- number of holes;
+- first tee time;
+- last tee time.
+
+The Playbook derives the expected golfer return window. Normal catering hours are configured as **09:00–17:00**.
+
+If the organiser says catering hours will **not** be extended while the expected last golf finish is after 17:00, the Catering module displays an advisory explaining the calculated return time and asks the organiser to reconsider. The organiser may continue with No, but must record the reason for overriding the advisory.
+
+The same mechanism can later support sunset, room capacity, supplier access, staffing or other derived operational risks.
+
+## Playbook administration
+
+The Admin view provides:
+
+- responsibility/contact management;
+- adding questions to a module/section;
+- adding tasks with deadline and default-owner role;
+- simple conditional visibility against another answer;
+- creation of derived-fact advisory rules;
+- Draft → Validate → Publish behaviour.
+
+Validation checks include:
+
+- duplicate IDs;
+- missing referenced questions;
+- unknown deadline codes;
+- unknown responsibility roles;
+- advisory targets;
+- circular question visibility dependencies.
+
+Existing event records retain the Playbook version they were created against.
+
+## Event catalogue, cloning and retrospectives
+
+The Event Catalogue retains event plans and allows a previous event to be cloned. The clone starts with the previous answers but creates a fresh operational task state.
+
+The Retrospective captures:
+
+- actual attendance;
+- revenue;
+- direct costs;
+- what worked;
+- what did not work;
+- what should change next time;
+- whether the event should run again.
+
+Those lessons are visible in the catalogue and travel naturally into the decision to clone/replay an event.
+
+## Poster Studio
+
+The Poster Studio remains the later working poster project rather than a rewrite.
+
+It retains:
+
+- event description as a major creative input;
+- style presets;
+- GPT-based creative-director prompt generation;
+- `gpt-image-2` image generation/editing;
+- exact event title/date/price supplied to the image model;
+- complete AI-designed poster typography rather than a browser text overlay;
+- primary 2160 × 3840 clubhouse artwork;
+- 1080 × 1080 email/social version;
+- 2480 × 3508 A4 version;
+- primary artwork generated first;
+- derivative formats generated from the primary campaign;
+- each image appearing as soon as it becomes available;
+- regeneration using organiser feedback;
+- future YoDeck and membership-email publishing seams.
+
+The Poster Studio now also accepts event name, date and description from the active Event Playbook event. A generic custom-event definition allows newly created Playbook events to use Poster Studio before they have their own permanent event-catalogue scene recipe.
+
+## External integration boundaries
+
+The following external integrations are deliberately represented as explicit seams rather than invented APIs:
+
+- Club email delivery for task assignments/reminders/escalations;
+- Monday.com task creation/synchronisation;
+- YoDeck publishing;
+- membership campaign email delivery;
+- IG identity linking.
+
+The internal task, notification, completion and poster workflows are already shaped so these providers can be connected without redesigning the Playbook UI.
+
+## Catalogue-first workflow (21 August 2026)
+
+The application now opens on the Event Catalogue. The catalogue is the starting point for the Event Playbook and groups events by the year in which they take place.
+
+Each event tile shows the event date, status, description and task/retrospective counts. When a square Digital Artwork output has been generated, a compressed square campaign thumbnail is retained with the event and displayed on its catalogue tile.
+
+Selecting **View event summary** shows the event description, every task generated by the Playbook and its completion state, and all recorded retrospective results.
+
+Open events can be closed from the catalogue or summary using **Close & create new**. Closed events remain in the catalogue as history and can be used as the basis for a future event.
+
+Creating an event now captures the event name, organiser, provisional event date, a detailed description and the six planning milestones. Milestones default from the event date to:
+
+- B4 Initial planning: 60 days before;
+- B3 Detailed planning: 60 days before;
+- B2 Final arrangements: 30 days before;
+- B1 Final checks: 7 days before;
+- DT Event day: event date;
+- A1 Post-event review: 7 days after.
+
+The organiser can change any of those dates during event creation or later in the planning timeline. Generated task deadlines use the actual milestone dates for that event.
+
+The new-event screen explicitly explains that a detailed event description gives the AI better context for both artwork generation and future planning assistance.
+
+## Poster continuity and planner hierarchy (21 August 2026)
+
+Poster generation is now session-aware per Event Playbook event. If an organiser starts generating artwork, navigates to another part of the application and then returns to Digital Artwork, the same in-memory generation session is remounted: live progress, completed outputs, refinement state and generated canvases are restored instead of starting again. Generation continues while another Event Playbook view is open. Separate events maintain separate artwork sessions.
+
+The planner question/task presentation has also been redesigned to restore the hierarchy of the original playbook concept. Questions use a dedicated decision rail with answered state. Generated tasks use a visually distinct action treatment with the planning milestone shown as a prominent B4/B3/B2/B1/DT/A1/A2 marker, milestone name and actual due date. The Task Board uses the same milestone language so deadlines are recognisable consistently across the planner and operational views.
+
+
+## Current merged build
+
+This build preserves the refined Golf and Presentation/Prizes planning flow, Image Library and automatic studio references, supporting image uploads, text-safe poster fitting, and the polished event-summary dialog.

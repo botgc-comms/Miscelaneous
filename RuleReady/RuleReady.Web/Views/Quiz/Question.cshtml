@@ -24,10 +24,12 @@
         </div>
     }
 
-    <article class="question-card">
+    <article class="question-card @(string.IsNullOrWhiteSpace(Model.ImageUrl) ? "question-card--text-only" : "")">
         @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
         {
-            <img src="@Model.ImageUrl" alt="@Model.ImageAlt" />
+            <div class="question-media">
+                <img src="@Model.ImageUrl" alt="@Model.ImageAlt" />
+            </div>
         }
         <div class="question-content">
             <h1>@Model.Text</h1>

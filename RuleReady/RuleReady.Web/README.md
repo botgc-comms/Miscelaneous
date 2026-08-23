@@ -29,7 +29,7 @@ RuleReady is a standalone ASP.NET Core Rules of Golf learning and assessment ser
 
 ## Run
 
-Install the .NET 10 SDK, then from `RuleReady.Web` run:
+Install the .NET 9 SDK, then from `RuleReady.Web` run:
 
 ```text
 dotnet restore
@@ -85,3 +85,15 @@ The application contains the data model for licences and subscriptions, but does
 The development email sender should be replaced by the chosen production email provider before public launch.
 
 External partner/API authentication should be added when the first embedded RuleReady integration is defined.
+
+## Homepage
+
+The homepage now uses the supplied RuleReady quiz illustrations in a stacked scenario treatment and a local SVG course landscape. No external image service or Azure storage is required for local development.
+
+## Refinements
+
+The homepage now uses a generated PNG landscape background (`wwwroot/images/home-hero-course.png`), a rotating three-panel scenario stack, and the pricing page contains starter commercial pricing. Quiz questions render image and content side by side on laptop/desktop screens and stack cleanly on smaller screens.
+
+## Final homepage carousel
+
+The scenario illustrations now use a vertical auto-rotating depth carousel. Five scenarios are available, with the centre card dominant, adjacent cards visible above and below, automatic rotation every four seconds, hover pause, and click-to-focus behaviour.

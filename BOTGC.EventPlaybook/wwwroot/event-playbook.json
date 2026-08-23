@@ -1,0 +1,2828 @@
+{
+  "schemaVersion": "2.0",
+  "id": "botgc-event-playbook",
+  "title": "Event Playbook",
+  "description": "A data-driven event planning guide that turns answers into dated, assignable tasks, operational advisories and reusable event knowledge.",
+  "deadlineCodes": [
+    {
+      "code": "B4",
+      "label": "Initial planning",
+      "offsetDays": -60,
+      "description": "Initial planning milestone, normally around 60 days before the event."
+    },
+    {
+      "code": "B3",
+      "label": "Detailed planning",
+      "offsetDays": -20,
+      "description": "Detailed planning milestone, normally around 20 days before the event."
+    },
+    {
+      "code": "B2",
+      "label": "Final arrangements",
+      "offsetDays": -7,
+      "description": "Final arrangements milestone, normally around one week before the event."
+    },
+    {
+      "code": "B1",
+      "label": "Final checks",
+      "offsetDays": -1,
+      "description": "Final checks milestone, normally the day before the event."
+    },
+    {
+      "code": "DT",
+      "label": "Event day",
+      "offsetDays": 0,
+      "description": "The date of the event."
+    },
+    {
+      "code": "A1",
+      "label": "Immediate follow-up",
+      "offsetDays": 1,
+      "description": "Immediate close-down and follow-up work, normally the day after the event."
+    },
+    {
+      "code": "A2",
+      "label": "Post-event review",
+      "offsetDays": 7,
+      "description": "Post-event review and retrospective, normally one week after the event."
+    }
+  ],
+  "modules": [
+    {
+      "id": "start",
+      "title": "Start here",
+      "shortTitle": "Start",
+      "description": "Define the event and decide which specialist planning modules are required.",
+      "activation": {
+        "always": true
+      },
+      "sections": [
+        {
+          "id": "event-basics",
+          "title": "Event basics",
+          "items": [
+            {
+              "id": "event-date",
+              "type": "question",
+              "answerType": "date",
+              "label": "What is the provisional event date?",
+              "bind": "eventDate",
+              "required": true,
+              "source": "pdf"
+            },
+            {
+              "id": "golf-involved",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Does it involve golf?",
+              "required": true,
+              "source": "pdf"
+            },
+            {
+              "id": "clubhouse-involved",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will any clubhouse room or reserved seating area be used?",
+              "required": true,
+              "source": "expanded"
+            },
+            {
+              "id": "catering-involved",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will food or drink need to be planned specifically for the event?",
+              "required": true,
+              "source": "expanded"
+            },
+            {
+              "id": "communications-involved",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will the event need member or visitor communications, advertising or booking information?",
+              "required": true,
+              "source": "expanded"
+            },
+            {
+              "id": "presentation-involved",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will there be prizes, presentations, speeches or a formal welcome?",
+              "required": true,
+              "source": "expanded"
+            },
+            {
+              "id": "staffing-involved",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will staff, volunteers or organisers need specific event-day duties?",
+              "required": true,
+              "source": "expanded"
+            },
+            {
+              "id": "safety-involved",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Does the event need a specific safety, safeguarding or contingency review?",
+              "required": true,
+              "source": "expanded"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "golf",
+      "title": "Golf",
+      "shortTitle": "Golf",
+      "description": "Tee-time planning, competition setup, course preparation, registration and golf-day operations.",
+      "activation": {
+        "all": [
+          {
+            "questionId": "golf-involved",
+            "operator": "equals",
+            "value": true
+          }
+        ]
+      },
+      "sections": [
+        {
+          "id": "golf-access",
+          "title": "Tee times and course access",
+          "items": [
+            {
+              "id": "tee-times-reserved",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Are the required tee times already reserved?",
+              "helpText": "The event date is already fixed. This confirms whether the course allocation for that date has actually been secured.",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "tee-time-reservation-owner",
+              "type": "question",
+              "answerType": "singleChoice",
+              "label": "Who should arrange the tee-time reservation?",
+              "options": [
+                {
+                  "value": "handicap-committee",
+                  "label": "H&C Committee / Golf Manager"
+                },
+                {
+                  "value": "pro-shop",
+                  "label": "Professional Shop"
+                },
+                {
+                  "value": "event-organiser",
+                  "label": "Event or section organiser"
+                }
+              ],
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "tee-times-reserved",
+                    "operator": "equals",
+                    "value": false
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "reserve-tee-times-hc",
+              "type": "task",
+              "title": "Agree and reserve the required tee-time allocation with H&C",
+              "detail": "If H&C cannot accommodate the required allocation, return to the event details and reconsider the event date before the rest of the plan is progressed.",
+              "deadlineCode": "B4",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "tee-time-reservation-owner",
+                    "operator": "equals",
+                    "value": "handicap-committee"
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Golf Operations",
+              "defaultOwnerRoleId": "golf-manager"
+            },
+            {
+              "id": "reserve-tee-times-pro-shop",
+              "type": "task",
+              "title": "Ask the Professional Shop to reserve the required tee times",
+              "detail": "Confirm the first and last tee-time allocation and any restrictions that apply.",
+              "deadlineCode": "B4",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "tee-time-reservation-owner",
+                    "operator": "equals",
+                    "value": "pro-shop"
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Golf Operations",
+              "defaultOwnerRoleId": "professional-shop"
+            },
+            {
+              "id": "reserve-tee-times-organiser",
+              "type": "task",
+              "title": "Arrange the required tee-time allocation for the event",
+              "detail": "The event or section organiser is responsible for securing the tee-time allocation and confirming it in the plan.",
+              "deadlineCode": "B4",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "tee-time-reservation-owner",
+                    "operator": "equals",
+                    "value": "event-organiser"
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator"
+            },
+            {
+              "id": "golf-type",
+              "type": "question",
+              "answerType": "singleChoice",
+              "label": "What type of golf is involved?",
+              "options": [
+                {
+                  "value": "competition",
+                  "label": "Competition"
+                },
+                {
+                  "value": "social",
+                  "label": "Social golf"
+                },
+                {
+                  "value": "match",
+                  "label": "Team or club match"
+                },
+                {
+                  "value": "corporate",
+                  "label": "Society or corporate golf"
+                }
+              ],
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "competition-holes",
+              "type": "question",
+              "answerType": "singleChoice",
+              "label": "How many holes will competitors play?",
+              "options": [
+                {
+                  "value": 9,
+                  "label": "9 holes"
+                },
+                {
+                  "value": 18,
+                  "label": "18 holes"
+                },
+                {
+                  "value": 36,
+                  "label": "36 holes"
+                },
+                {
+                  "value": "other",
+                  "label": "Other / unusual number"
+                }
+              ],
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "competition-holes-other",
+              "type": "question",
+              "answerType": "number",
+              "label": "How many holes will actually be played?",
+              "helpText": "Use this for unusual events such as the seven-hole Steeple Chase.",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "competition-holes",
+                    "operator": "equals",
+                    "value": "other"
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "golf-start-method",
+              "type": "question",
+              "answerType": "singleChoice",
+              "label": "How will players start?",
+              "options": [
+                {
+                  "value": "tee-times",
+                  "label": "Normal staggered tee times"
+                },
+                {
+                  "value": "shotgun",
+                  "label": "Shotgun start"
+                }
+              ],
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "tee-time-window",
+              "type": "question",
+              "answerType": "timeRange",
+              "label": "What is the first and last tee time?",
+              "helpText": "These times are used to estimate when the first and last groups will return to the clubhouse.",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "golf-start-method",
+                    "operator": "equals",
+                    "value": "tee-times"
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "shotgun-start-time",
+              "type": "question",
+              "answerType": "time",
+              "label": "What time is the shotgun start?",
+              "helpText": "A shotgun start creates a much more concentrated return to the clubhouse because most players finish at around the same time.",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "golf-start-method",
+                    "operator": "equals",
+                    "value": "shotgun"
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "golf-return-window-note",
+              "type": "note",
+              "title": "Expected clubhouse return",
+              "body": "The Playbook estimates when players will return using the number of holes and the starting pattern. This feeds directly into catering, bar and staffing considerations.",
+              "source": "refined"
+            }
+          ]
+        },
+        {
+          "id": "competition-arrangements",
+          "title": "Competition and scoring arrangements",
+          "items": [
+            {
+              "id": "competition-format",
+              "type": "question",
+              "answerType": "singleChoice",
+              "label": "What competition format will be used?",
+              "options": [
+                {
+                  "value": "stableford",
+                  "label": "Stableford"
+                },
+                {
+                  "value": "medal",
+                  "label": "Stroke play / medal"
+                },
+                {
+                  "value": "match-play",
+                  "label": "Match play"
+                },
+                {
+                  "value": "betterball",
+                  "label": "Fourball / betterball"
+                },
+                {
+                  "value": "team",
+                  "label": "Team / scramble"
+                },
+                {
+                  "value": "other",
+                  "label": "Other"
+                }
+              ],
+              "showWhen": {
+                "any": [
+                  {
+                    "questionId": "golf-type",
+                    "operator": "equals",
+                    "value": "competition"
+                  },
+                  {
+                    "questionId": "golf-type",
+                    "operator": "equals",
+                    "value": "match"
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "competition-format-other",
+              "type": "question",
+              "answerType": "text",
+              "label": "Describe the competition format",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "competition-format",
+                    "operator": "equals",
+                    "value": "other"
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "competition-setup-task",
+              "type": "task",
+              "title": "Confirm the competition format, tees, handicap rules and scoring arrangements",
+              "deadlineCode": "B3",
+              "showWhen": {
+                "any": [
+                  {
+                    "questionId": "golf-type",
+                    "operator": "equals",
+                    "value": "competition"
+                  },
+                  {
+                    "questionId": "golf-type",
+                    "operator": "equals",
+                    "value": "match"
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Golf Operations",
+              "defaultOwnerRoleId": "golf-manager"
+            },
+            {
+              "id": "golf-results-required",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will results need to be calculated, published or announced on the day?",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "results-task",
+              "type": "task",
+              "title": "Assign responsibility for collecting scores, calculating results and producing the final result",
+              "deadlineCode": "B1",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "golf-results-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Golf Operations",
+              "defaultOwnerRoleId": "professional-shop"
+            },
+            {
+              "id": "additional-golf-fees",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Are any additional golf fees or payments due on the day?",
+              "helpText": "For example entry fees, sweep payments, visitor green fees or other event-specific charges.",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "additional-golf-fee-details",
+              "type": "question",
+              "answerType": "text",
+              "label": "What needs to be paid, collected or reconciled?",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "additional-golf-fees",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "golf-fees-task",
+              "type": "task",
+              "title": "Confirm how event-day golf fees will be collected and reconciled",
+              "deadlineCode": "B1",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "additional-golf-fees",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Golf Operations",
+              "defaultOwnerRoleId": "professional-shop"
+            }
+          ]
+        },
+        {
+          "id": "course-setup",
+          "title": "Non-standard course setup",
+          "items": [
+            {
+              "id": "special-course-setup",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Does the course need any non-standard setup, signage, markers, equipment or hole arrangements?",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "special-course-requirements",
+              "type": "question",
+              "answerType": "multiChoice",
+              "label": "What non-standard course requirements are involved?",
+              "options": [
+                {
+                  "value": "on-course-signage",
+                  "label": "On-course signage / direction signs"
+                },
+                {
+                  "value": "special-holes",
+                  "label": "Special hole setup / obstacles / unusual features"
+                },
+                {
+                  "value": "markers-tees",
+                  "label": "Special tees, markers or course markings"
+                },
+                {
+                  "value": "special-scorecards",
+                  "label": "Special scorecards / route cards"
+                },
+                {
+                  "value": "equipment",
+                  "label": "Equipment or consumables to purchase (for example glow sticks)"
+                },
+                {
+                  "value": "lighting-power",
+                  "label": "Temporary lighting / power"
+                },
+                {
+                  "value": "other",
+                  "label": "Other non-standard setup"
+                }
+              ],
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "special-course-setup",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "special-course-details",
+              "type": "question",
+              "answerType": "text",
+              "label": "Describe the non-standard course setup",
+              "helpText": "Record enough detail that the course team and event organiser know exactly what has to be installed, moved, purchased, printed or removed.",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "special-course-setup",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "course-setup-task",
+              "type": "task",
+              "title": "Agree and document the complete non-standard course setup",
+              "deadlineCode": "B2",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "special-course-setup",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Course",
+              "defaultOwnerRoleId": "greens"
+            },
+            {
+              "id": "course-signage-task",
+              "type": "task",
+              "title": "Prepare and position all required on-course signage",
+              "deadlineCode": "B1",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "special-course-requirements",
+                    "operator": "contains",
+                    "value": "on-course-signage"
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Golf Operations",
+              "defaultOwnerRoleId": "golf-manager"
+            },
+            {
+              "id": "special-scorecards-task",
+              "type": "task",
+              "title": "Design and print the event-specific scorecards or route cards",
+              "deadlineCode": "B1",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "special-course-requirements",
+                    "operator": "contains",
+                    "value": "special-scorecards"
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Golf Operations",
+              "defaultOwnerRoleId": "professional-shop"
+            },
+            {
+              "id": "special-equipment-task",
+              "type": "task",
+              "title": "Purchase or source all non-standard course equipment and consumables",
+              "detail": "Examples include glow sticks, temporary markers, novelty obstacles, lighting equipment or event-specific materials.",
+              "deadlineCode": "B2",
+              "showWhen": {
+                "any": [
+                  {
+                    "questionId": "special-course-requirements",
+                    "operator": "contains",
+                    "value": "equipment"
+                  },
+                  {
+                    "questionId": "special-course-requirements",
+                    "operator": "contains",
+                    "value": "lighting-power"
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator"
+            },
+            {
+              "id": "special-hole-installation-task",
+              "type": "task",
+              "title": "Brief the Greens Team and schedule installation of special hole features",
+              "deadlineCode": "B1",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "special-course-requirements",
+                    "operator": "contains",
+                    "value": "special-holes"
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Course",
+              "defaultOwnerRoleId": "greens"
+            }
+          ]
+        },
+        {
+          "id": "golf-day-operations",
+          "title": "Arrival and on-course operations",
+          "items": [
+            {
+              "id": "arrival-sign-in",
+              "type": "question",
+              "answerType": "singleChoice",
+              "label": "Where will players check in or sign in on arrival?",
+              "options": [
+                {
+                  "value": "pro-shop",
+                  "label": "Professional Shop"
+                },
+                {
+                  "value": "clubhouse-desk",
+                  "label": "Clubhouse registration desk"
+                },
+                {
+                  "value": "organiser",
+                  "label": "With the event organiser"
+                },
+                {
+                  "value": "not-required",
+                  "label": "No formal sign-in required"
+                }
+              ],
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "registration-desk-task",
+              "type": "task",
+              "title": "Prepare and staff the player registration / sign-in point",
+              "deadlineCode": "B1",
+              "showWhen": {
+                "any": [
+                  {
+                    "questionId": "arrival-sign-in",
+                    "operator": "equals",
+                    "value": "clubhouse-desk"
+                  },
+                  {
+                    "questionId": "arrival-sign-in",
+                    "operator": "equals",
+                    "value": "organiser"
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator"
+            },
+            {
+              "id": "arrival-direction-signage",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Is arrival signage needed outside or inside the clubhouse to direct players to registration?",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "arrival-signage-task",
+              "type": "task",
+              "title": "Prepare and position arrival and registration signage",
+              "deadlineCode": "B1",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "arrival-direction-signage",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Clubhouse",
+              "defaultOwnerRoleId": "clubhouse"
+            },
+            {
+              "id": "starter-required",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Is a starter or first-tee marshal required?",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "starter-task",
+              "type": "task",
+              "title": "Assign a starter or first-tee marshal and provide the event briefing",
+              "deadlineCode": "B1",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "starter-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Golf Operations",
+              "defaultOwnerRoleId": "golf-manager"
+            },
+            {
+              "id": "course-marshals-required",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Are on-course marshals required?",
+              "helpText": "Consider pace of play, unusual routes, safety pinch points, junior supervision and special-format events.",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "course-marshals-task",
+              "type": "task",
+              "title": "Recruit, position and brief the required on-course marshals",
+              "deadlineCode": "B1",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "course-marshals-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Golf Operations",
+              "defaultOwnerRoleId": "event-coordinator"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "presentation",
+      "title": "Presentation and prizes",
+      "shortTitle": "Presentation",
+      "description": "Trophies, prizes, presentation equipment, prize-table setup and the formal running order.",
+      "activation": {
+        "all": [
+          {
+            "questionId": "presentation-involved",
+            "operator": "equals",
+            "value": true
+          }
+        ]
+      },
+      "sections": [
+        {
+          "id": "prizes-trophies",
+          "title": "Prizes and trophies",
+          "items": [
+            {
+              "id": "prizes-required",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Are prizes, trophies, vouchers or awards required?",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "prize-types",
+              "type": "question",
+              "answerType": "multiChoice",
+              "label": "What needs to be presented?",
+              "options": [
+                {
+                  "value": "trophy",
+                  "label": "Trophy / cup"
+                },
+                {
+                  "value": "shop-credit",
+                  "label": "Professional Shop credit / voucher"
+                },
+                {
+                  "value": "physical-prizes",
+                  "label": "Physical prizes"
+                },
+                {
+                  "value": "cash",
+                  "label": "Cash / monetary prize"
+                },
+                {
+                  "value": "medals",
+                  "label": "Medals / awards"
+                },
+                {
+                  "value": "other",
+                  "label": "Other"
+                }
+              ],
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "prizes-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "trophy-from-cabinet",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Does a trophy need to be retrieved from the trophy cabinet?",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "prize-types",
+                    "operator": "contains",
+                    "value": "trophy"
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "retrieve-trophy-task",
+              "type": "task",
+              "title": "Retrieve the correct trophy, check its condition and have it ready for presentation",
+              "deadlineCode": "B1",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "trophy-from-cabinet",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator"
+            },
+            {
+              "id": "pro-shop-prizes-task",
+              "type": "task",
+              "title": "Confirm the required prizes or Professional Shop credit with the Professional Shop",
+              "deadlineCode": "B2",
+              "showWhen": {
+                "any": [
+                  {
+                    "questionId": "prize-types",
+                    "operator": "contains",
+                    "value": "shop-credit"
+                  },
+                  {
+                    "questionId": "prize-types",
+                    "operator": "contains",
+                    "value": "physical-prizes"
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Golf Operations",
+              "defaultOwnerRoleId": "professional-shop"
+            },
+            {
+              "id": "prize-labels-required",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Do prizes or trophies need winner labels, place cards or presentation notes?",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "prizes-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "prize-labels-task",
+              "type": "task",
+              "title": "Prepare winner labels, place cards and presentation notes for the prizes",
+              "deadlineCode": "B1",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "prize-labels-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator"
+            }
+          ]
+        },
+        {
+          "id": "presentation-setup",
+          "title": "Presentation setup",
+          "items": [
+            {
+              "id": "prize-table-required",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Does a prize / trophy table need to be set up?",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "prize-table-task",
+              "type": "task",
+              "title": "Prepare the prize table, presentation cloth and prize display",
+              "detail": "Check that the presentation table, club cloth/tablecloth, trophies, prizes and winner labels are laid out before the presentation starts.",
+              "deadlineCode": "DT",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "prize-table-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Clubhouse",
+              "defaultOwnerRoleId": "clubhouse"
+            },
+            {
+              "id": "presentation-microphone-needed",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will a microphone or PA system be needed for the presentation or announcements?",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "presentation-microphone-task",
+              "type": "task",
+              "title": "Set up and test the microphone / PA system before the presentation",
+              "deadlineCode": "B1",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "presentation-microphone-needed",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Clubhouse",
+              "defaultOwnerRoleId": "clubhouse"
+            },
+            {
+              "id": "speaker-required",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Does someone need to welcome guests, make announcements or present prizes?",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "speaker-task",
+              "type": "task",
+              "title": "Assign the presenter and prepare the running order, winners and key announcements",
+              "deadlineCode": "B1",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "speaker-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator"
+            },
+            {
+              "id": "photos-required",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Should photographs be taken of winners, trophies or the presentation?",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "photos-task",
+              "type": "task",
+              "title": "Assign someone to take the required presentation photographs and confirm the shots needed",
+              "deadlineCode": "B1",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "photos-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Communications",
+              "defaultOwnerRoleId": "communications"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "clubhouse",
+      "title": "Clubhouse",
+      "shortTitle": "Clubhouse",
+      "description": "Seating, room dressing, audio-visual equipment and digital signage.",
+      "activation": {
+        "all": [
+          {
+            "questionId": "clubhouse-involved",
+            "operator": "equals",
+            "value": true
+          }
+        ]
+      },
+      "sections": [
+        {
+          "id": "seating",
+          "title": "1.1 Seating arrangements and table setup",
+          "items": [
+            {
+              "id": "seated-dining",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will there be seated dining or reserved tables for guests?",
+              "required": true,
+              "source": "pdf"
+            },
+            {
+              "id": "tablecloths-task",
+              "type": "task",
+              "title": "Ensure tablecloths and decorations are available",
+              "deadlineCode": "B2",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "seated-dining",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Clubhouse",
+              "defaultOwnerRoleId": "clubhouse"
+            },
+            {
+              "id": "seating-chart-task",
+              "type": "task",
+              "title": "Prepare a seating chart and assign table numbers if necessary",
+              "deadlineCode": "B1",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "seated-dining",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Clubhouse",
+              "defaultOwnerRoleId": "clubhouse"
+            },
+            {
+              "id": "setup-seating-task",
+              "type": "task",
+              "title": "Set up tables and seating according to the agreed arrangement",
+              "deadlineCode": "DT",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "seated-dining",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Clubhouse",
+              "defaultOwnerRoleId": "clubhouse"
+            },
+            {
+              "id": "remove-seating-task",
+              "type": "task",
+              "title": "Remove and store the tables and seating",
+              "deadlineCode": "DT",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "seated-dining",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Clubhouse",
+              "defaultOwnerRoleId": "clubhouse"
+            }
+          ]
+        },
+        {
+          "id": "room-dressing",
+          "title": "1.2 Dressing the room",
+          "items": [
+            {
+              "id": "room-theme",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Is there a specific theme that the room should be dressed for?",
+              "helpText": "The original playbook notes that some events will not normally require the room to be decorated.",
+              "required": true,
+              "source": "pdf"
+            },
+            {
+              "id": "external-decoration-coordination",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Do we need to coordinate the decorations with an external party, such as client-provided decorations or an external vendor?",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "room-theme",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "required": true,
+              "source": "pdf"
+            },
+            {
+              "id": "confirm-decoration-task",
+              "type": "task",
+              "title": "Confirm theme and decoration requirements with the client or organiser",
+              "deadlineCode": "B2",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "external-decoration-coordination",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Clubhouse",
+              "defaultOwnerRoleId": "clubhouse"
+            },
+            {
+              "id": "decoration-items-required",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Are there any items that need to be ordered to complete the decorations?",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "room-theme",
+                    "operator": "equals",
+                    "value": true
+                  },
+                  {
+                    "questionId": "external-decoration-coordination",
+                    "operator": "equals",
+                    "value": false
+                  }
+                ]
+              },
+              "required": true,
+              "source": "pdf"
+            },
+            {
+              "id": "order-decoration-task",
+              "type": "task",
+              "title": "Order supplies to dress the room",
+              "deadlineCode": "B3",
+              "detail": "Create as many individual tasks as are useful if several separate items must be ordered.",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "decoration-items-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Clubhouse",
+              "defaultOwnerRoleId": "clubhouse"
+            },
+            {
+              "id": "decorate-room-task",
+              "type": "task",
+              "title": "Set up decorations according to the agreed theme",
+              "deadlineCode": "DT",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "room-theme",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Clubhouse",
+              "defaultOwnerRoleId": "clubhouse"
+            },
+            {
+              "id": "brief-room-task",
+              "type": "task",
+              "title": "Update the staff briefing in relation to decorating the room",
+              "deadlineCode": "B2",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "room-theme",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Clubhouse",
+              "defaultOwnerRoleId": "clubhouse"
+            },
+            {
+              "id": "decorations-removed",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Do the decorations need to be removed after the event?",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "room-theme",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "required": true,
+              "source": "pdf"
+            },
+            {
+              "id": "remove-decorations-task",
+              "type": "task",
+              "title": "Remove decorations and return the room to its standard setup",
+              "deadlineCode": "A1",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "decorations-removed",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Clubhouse",
+              "defaultOwnerRoleId": "clubhouse"
+            }
+          ]
+        },
+        {
+          "id": "av-signage",
+          "title": "1.3 Audio-visual and digital signage setup",
+          "items": [
+            {
+              "id": "music-played",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will music be played during the event?",
+              "required": true,
+              "source": "pdf"
+            },
+            {
+              "id": "music-selection-task",
+              "type": "task",
+              "title": "Determine the appropriate music selection and record it in the event plan",
+              "deadlineCode": "B2",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "music-played",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Clubhouse",
+              "defaultOwnerRoleId": "clubhouse"
+            },
+            {
+              "id": "play-music-task",
+              "type": "task",
+              "title": "Set up and play the selected music",
+              "deadlineCode": "DT",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "music-played",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Clubhouse",
+              "defaultOwnerRoleId": "clubhouse"
+            },
+            {
+              "id": "screen-channel",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will a specific channel, such as a sports event, need to be displayed on the screens?",
+              "helpText": "The original playbook notes that this will not normally be required.",
+              "required": true,
+              "source": "pdf"
+            },
+            {
+              "id": "display-channel-task",
+              "type": "task",
+              "title": "Set up and display the specified channel during the event and record the channel in the plan",
+              "deadlineCode": "DT",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "screen-channel",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Clubhouse",
+              "defaultOwnerRoleId": "clubhouse"
+            },
+            {
+              "id": "digital-signage",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will digital signage screens display specific images or information?",
+              "helpText": "The original playbook notes that some events will not normally require digital signage screens.",
+              "required": true,
+              "source": "pdf"
+            },
+            {
+              "id": "digital-signage-task",
+              "type": "task",
+              "title": "Prepare artwork and set it up on YoDeck to activate on the event date",
+              "deadlineCode": "B1",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "digital-signage",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Communications",
+              "defaultOwnerRoleId": "communications"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "catering",
+      "title": "Catering",
+      "shortTitle": "Catering",
+      "description": "Food preparation, menus, ordering, vouchers and payment arrangements.",
+      "activation": {
+        "all": [
+          {
+            "questionId": "catering-involved",
+            "operator": "equals",
+            "value": true
+          }
+        ]
+      },
+      "sections": [
+        {
+          "id": "catering-hours",
+          "title": "Opening hours and post-golf demand",
+          "items": [
+            {
+              "id": "required-catering-start",
+              "type": "question",
+              "answerType": "time",
+              "label": "From what time is catering likely to be required?",
+              "required": false,
+              "source": "expanded"
+            },
+            {
+              "id": "extend-catering-hours",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will catering opening hours need to be extended beyond the normal 09:00–17:00 service for this event?",
+              "required": true,
+              "source": "expanded"
+            },
+            {
+              "id": "extended-catering-until",
+              "type": "question",
+              "answerType": "time",
+              "label": "Until what time should catering remain available?",
+              "required": true,
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "extend-catering-hours",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "expanded"
+            },
+            {
+              "id": "extended-catering-service",
+              "type": "question",
+              "answerType": "singleChoice",
+              "label": "What food service should be available during the extended period?",
+              "options": [
+                {
+                  "value": "full-menu",
+                  "label": "Full menu"
+                },
+                {
+                  "value": "reduced-menu",
+                  "label": "Reduced menu"
+                },
+                {
+                  "value": "hot-food",
+                  "label": "Hot food only"
+                },
+                {
+                  "value": "cold-food",
+                  "label": "Cold food / sandwiches"
+                },
+                {
+                  "value": "breakfast",
+                  "label": "Breakfast"
+                },
+                {
+                  "value": "preordered",
+                  "label": "Pre-ordered meals only"
+                },
+                {
+                  "value": "other",
+                  "label": "Other"
+                }
+              ],
+              "required": true,
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "extend-catering-hours",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "expanded"
+            },
+            {
+              "id": "peak-catering-staffing",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will additional catering or bar staffing be needed for the expected post-golf demand?",
+              "helpText": "The return forecast from the Golf module is shown here so that this decision is based on when players are actually expected back in the clubhouse.",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "peak-catering-staffing-task",
+              "type": "task",
+              "title": "Plan additional catering / bar cover for the expected post-golf demand peak",
+              "deadlineCode": "B2",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "peak-catering-staffing",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Food & Beverage",
+              "defaultOwnerRoleId": "food-beverage-manager"
+            },
+            {
+              "id": "arrange-extended-catering",
+              "type": "task",
+              "title": "Agree extended catering hours and service with the Food & Beverage Manager",
+              "deadlineCode": "B3",
+              "responsibleArea": "Food & Beverage",
+              "defaultOwnerRoleId": "food-beverage-manager",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "extend-catering-hours",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "expanded"
+            },
+            {
+              "id": "staff-extended-catering",
+              "type": "task",
+              "title": "Confirm staffing cover for the extended catering period",
+              "deadlineCode": "B2",
+              "responsibleArea": "Food & Beverage",
+              "defaultOwnerRoleId": "food-beverage-manager",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "extend-catering-hours",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "expanded"
+            },
+            {
+              "id": "brief-extended-catering",
+              "type": "task",
+              "title": "Include the agreed extended catering hours and service in the event-day staff briefing",
+              "deadlineCode": "B1",
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "extend-catering-hours",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "expanded"
+            }
+          ]
+        },
+        {
+          "id": "food-preparation",
+          "title": "2.1 Food preparation",
+          "items": [
+            {
+              "id": "food-prepared",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will food be prepared for the event?",
+              "required": true,
+              "source": "pdf"
+            },
+            {
+              "id": "external-food-supplier",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will an external supplier be responsible for providing the food, such as a hog roast?",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "food-prepared",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "required": true,
+              "source": "pdf"
+            },
+            {
+              "id": "supplier-booking-task",
+              "type": "task",
+              "title": "Confirm the supplier booking and exchange details of the event",
+              "deadlineCode": "B3",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "external-food-supplier",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Food & Beverage",
+              "defaultOwnerRoleId": "food-beverage-manager"
+            },
+            {
+              "id": "supplier-access-task",
+              "type": "task",
+              "title": "Arrange access to the club and facilities, including power and waste disposal",
+              "deadlineCode": "B2",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "external-food-supplier",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Food & Beverage",
+              "defaultOwnerRoleId": "food-beverage-manager"
+            },
+            {
+              "id": "supplier-briefing-task",
+              "type": "task",
+              "title": "Include information about the supplier in the staff briefing",
+              "deadlineCode": "B2",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "external-food-supplier",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Food & Beverage",
+              "defaultOwnerRoleId": "food-beverage-manager"
+            },
+            {
+              "id": "additional-food-staff",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will we need additional staff to assist with food preparation or serving?",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "food-prepared",
+                    "operator": "equals",
+                    "value": true
+                  },
+                  {
+                    "questionId": "external-food-supplier",
+                    "operator": "equals",
+                    "value": false
+                  }
+                ]
+              },
+              "required": true,
+              "source": "pdf"
+            },
+            {
+              "id": "food-staff-task",
+              "type": "task",
+              "title": "Coordinate roles and shifts for additional food preparation or serving staff",
+              "deadlineCode": "B3",
+              "detail": "Confirm schedules, specific roles and any required training or briefing for additional helpers working in the kitchen.",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "additional-food-staff",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Food & Beverage",
+              "defaultOwnerRoleId": "food-beverage-manager"
+            }
+          ]
+        },
+        {
+          "id": "menu",
+          "title": "2.2 Menu",
+          "items": [
+            {
+              "id": "different-menu",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will the food served be different from the standard club menu?",
+              "required": true,
+              "source": "pdf"
+            },
+            {
+              "id": "agree-menu-task",
+              "type": "task",
+              "title": "Decide what food will be served and agree it with stakeholders",
+              "deadlineCode": "B3",
+              "detail": "Consider seasonal items, event type, guest preferences, budget and dietary restrictions.",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "different-menu",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Food & Beverage",
+              "defaultOwnerRoleId": "food-beverage-manager"
+            },
+            {
+              "id": "printed-menus",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Are printed menus required?",
+              "required": true,
+              "source": "pdf"
+            },
+            {
+              "id": "menu-design-task",
+              "type": "task",
+              "title": "Create the printed menu design",
+              "deadlineCode": "B3",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "printed-menus",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Food & Beverage",
+              "defaultOwnerRoleId": "food-beverage-manager"
+            },
+            {
+              "id": "menu-print-task",
+              "type": "task",
+              "title": "Arrange for the menu to be printed",
+              "deadlineCode": "B2",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "printed-menus",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Food & Beverage",
+              "defaultOwnerRoleId": "food-beverage-manager"
+            },
+            {
+              "id": "digital-menu",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Are menus to be advertised digitally?",
+              "required": true,
+              "source": "pdf"
+            },
+            {
+              "id": "digital-menu-task",
+              "type": "task",
+              "title": "Design the digital menu and set it up to display at the correct time",
+              "deadlineCode": "B2",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "digital-menu",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Food & Beverage",
+              "defaultOwnerRoleId": "food-beverage-manager"
+            },
+            {
+              "id": "menu-briefing-task",
+              "type": "task",
+              "title": "Include information about the menu in the staff briefing",
+              "deadlineCode": "B2",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "digital-menu",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Food & Beverage",
+              "defaultOwnerRoleId": "food-beverage-manager"
+            }
+          ]
+        },
+        {
+          "id": "ordering",
+          "title": "2.3 Ordering",
+          "items": [
+            {
+              "id": "orders-timing",
+              "type": "question",
+              "answerType": "singleChoice",
+              "label": "When will orders be taken?",
+              "options": [
+                {
+                  "value": "not-required",
+                  "label": "Orders not required"
+                },
+                {
+                  "value": "in-advance",
+                  "label": "In advance"
+                },
+                {
+                  "value": "when-required",
+                  "label": "When required"
+                }
+              ],
+              "required": true,
+              "source": "pdf"
+            },
+            {
+              "id": "orders-location",
+              "type": "question",
+              "answerType": "singleChoice",
+              "label": "Where will orders be taken?",
+              "options": [
+                {
+                  "value": "pro-shop",
+                  "label": "Pro Shop"
+                },
+                {
+                  "value": "bar",
+                  "label": "At the bar"
+                },
+                {
+                  "value": "organiser",
+                  "label": "Taken by an organiser"
+                }
+              ],
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "orders-timing",
+                    "operator": "equals",
+                    "value": "in-advance"
+                  }
+                ]
+              },
+              "required": true,
+              "source": "pdf"
+            },
+            {
+              "id": "pro-shop-order-task",
+              "type": "task",
+              "title": "Set up an order collection method with the Pro Shop staff",
+              "deadlineCode": "B2",
+              "detail": "Ensure Pro Shop staff know the cut-off time for collecting orders, especially where the kitchen is working to a tight schedule.",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "orders-location",
+                    "operator": "equals",
+                    "value": "pro-shop"
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Golf Operations",
+              "defaultOwnerRoleId": "professional-shop"
+            },
+            {
+              "id": "kitchen-transfer-task",
+              "type": "task",
+              "title": "Arrange a system for transferring orders to the kitchen",
+              "deadlineCode": "B2",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "orders-location",
+                    "operator": "equals",
+                    "value": "pro-shop"
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Food & Beverage",
+              "defaultOwnerRoleId": "food-beverage-manager"
+            },
+            {
+              "id": "organiser-order-task",
+              "type": "task",
+              "title": "Set up an order collection method with the event organiser",
+              "deadlineCode": "B2",
+              "detail": "Agree whether individual meal choices need to be linked to named people or whether only the total quantity of each meal is required.",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "orders-location",
+                    "operator": "equals",
+                    "value": "organiser"
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Food & Beverage",
+              "defaultOwnerRoleId": "food-beverage-manager"
+            },
+            {
+              "id": "bar-order-task",
+              "type": "task",
+              "title": "Set up an order collection method for the bar staff",
+              "deadlineCode": "B2",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "orders-location",
+                    "operator": "equals",
+                    "value": "bar"
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Food & Beverage",
+              "defaultOwnerRoleId": "food-beverage-manager"
+            }
+          ]
+        },
+        {
+          "id": "payment",
+          "title": "2.4 Payment",
+          "items": [
+            {
+              "id": "vouchers-required",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Should vouchers be issued to be used in exchange for food or drink?",
+              "required": true,
+              "source": "pdf"
+            },
+            {
+              "id": "voucher-print-task",
+              "type": "task",
+              "title": "Design and print a sufficient number of food vouchers, including spares",
+              "deadlineCode": "B1",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "vouchers-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Food & Beverage",
+              "defaultOwnerRoleId": "food-beverage-manager"
+            },
+            {
+              "id": "voucher-location",
+              "type": "question",
+              "answerType": "singleChoice",
+              "label": "Where will the vouchers be issued?",
+              "options": [
+                {
+                  "value": "pro-shop",
+                  "label": "Pro Shop"
+                },
+                {
+                  "value": "organiser",
+                  "label": "Distributed by an organiser"
+                },
+                {
+                  "value": "bar",
+                  "label": "At the bar"
+                }
+              ],
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "vouchers-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "required": true,
+              "source": "pdf"
+            },
+            {
+              "id": "meal-charge",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will there be a charge for the meal?",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "vouchers-required",
+                    "operator": "equals",
+                    "value": true
+                  },
+                  {
+                    "questionId": "voucher-location",
+                    "operator": "in",
+                    "value": [
+                      "pro-shop",
+                      "organiser"
+                    ]
+                  }
+                ]
+              },
+              "required": true,
+              "source": "pdf"
+            },
+            {
+              "id": "distribute-vouchers-task",
+              "type": "task",
+              "title": "Distribute vouchers and advise guests regarding the payment method",
+              "deadlineCode": "DT",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "meal-charge",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Finance",
+              "defaultOwnerRoleId": "finance"
+            },
+            {
+              "id": "collect-payment-task",
+              "type": "task",
+              "title": "Collect all meal payments and provide them to the accounts team",
+              "deadlineCode": "A1",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "meal-charge",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Finance",
+              "defaultOwnerRoleId": "finance"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "communications",
+      "title": "Communications and bookings",
+      "shortTitle": "Comms",
+      "description": "Promotion, entry information, booking deadlines and participant instructions.",
+      "activation": {
+        "all": [
+          {
+            "questionId": "communications-involved",
+            "operator": "equals",
+            "value": true
+          }
+        ]
+      },
+      "sections": [
+        {
+          "id": "communications-plan",
+          "title": "Promotion and participant information",
+          "items": [
+            {
+              "id": "audience",
+              "type": "question",
+              "answerType": "multiChoice",
+              "label": "Who needs to hear about the event?",
+              "options": [
+                {
+                  "value": "members",
+                  "label": "Members"
+                },
+                {
+                  "value": "visitors",
+                  "label": "Visitors"
+                },
+                {
+                  "value": "teams",
+                  "label": "Visiting teams or clubs"
+                },
+                {
+                  "value": "staff",
+                  "label": "Staff"
+                },
+                {
+                  "value": "suppliers",
+                  "label": "Suppliers"
+                }
+              ],
+              "required": true,
+              "source": "expanded"
+            },
+            {
+              "id": "booking-required",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Do attendees need to book, enter, buy a ticket or confirm attendance?",
+              "required": true,
+              "source": "expanded"
+            },
+            {
+              "id": "booking-details-task",
+              "type": "task",
+              "title": "Confirm the booking method, capacity, price and closing date",
+              "deadlineCode": "B3",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "booking-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "expanded",
+              "responsibleArea": "Communications",
+              "defaultOwnerRoleId": "communications"
+            },
+            {
+              "id": "promotion-required",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Should the event be promoted through club channels?",
+              "required": true,
+              "source": "expanded"
+            },
+            {
+              "id": "promotion-task",
+              "type": "task",
+              "title": "Prepare and schedule the event announcement across the agreed club channels",
+              "deadlineCode": "B3",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "promotion-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "expanded",
+              "responsibleArea": "Communications",
+              "defaultOwnerRoleId": "communications"
+            },
+            {
+              "id": "final-instructions-required",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Do attendees need final instructions before the event?",
+              "required": true,
+              "source": "expanded"
+            },
+            {
+              "id": "final-instructions-task",
+              "type": "task",
+              "title": "Send final attendee instructions covering timings, arrival, dress, payment and any event-specific information",
+              "deadlineCode": "B1",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "final-instructions-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "expanded",
+              "responsibleArea": "Finance",
+              "defaultOwnerRoleId": "finance"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "staffing",
+      "title": "Staffing and responsibilities",
+      "shortTitle": "Staffing",
+      "description": "Make event-day ownership explicit so important jobs do not remain assumed or unassigned.",
+      "activation": {
+        "all": [
+          {
+            "questionId": "staffing-involved",
+            "operator": "equals",
+            "value": true
+          }
+        ]
+      },
+      "sections": [
+        {
+          "id": "roles",
+          "title": "Roles and briefing",
+          "items": [
+            {
+              "id": "event-lead-assigned",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Has one person been identified as the event lead on the day?",
+              "required": true,
+              "source": "expanded"
+            },
+            {
+              "id": "event-lead-task",
+              "type": "task",
+              "title": "Assign the event-day lead and make their authority and responsibilities clear",
+              "deadlineCode": "B2",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "event-lead-assigned",
+                    "operator": "equals",
+                    "value": false
+                  }
+                ]
+              },
+              "source": "expanded",
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator"
+            },
+            {
+              "id": "specific-jobs-required",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Are there specific arrival, setup, registration, service, presentation or close-down jobs that must be allocated?",
+              "required": true,
+              "source": "expanded"
+            },
+            {
+              "id": "roles-task",
+              "type": "task",
+              "title": "Create the event-day duty list and assign every named job to an individual",
+              "deadlineCode": "B1",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "specific-jobs-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "expanded",
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator"
+            },
+            {
+              "id": "staff-briefing-required",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Is a formal staff or volunteer briefing required?",
+              "required": true,
+              "source": "expanded"
+            },
+            {
+              "id": "staff-briefing-task",
+              "type": "task",
+              "title": "Prepare and issue the final event briefing with timings, roles, contacts and contingency arrangements",
+              "deadlineCode": "B1",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "staff-briefing-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "expanded",
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "safety",
+      "title": "Safety and contingency",
+      "shortTitle": "Safety",
+      "description": "Event-specific safety, safeguarding, first-aid and fallback planning.",
+      "activation": {
+        "all": [
+          {
+            "questionId": "safety-involved",
+            "operator": "equals",
+            "value": true
+          }
+        ]
+      },
+      "sections": [
+        {
+          "id": "safety-check",
+          "title": "Safety and contingency review",
+          "items": [
+            {
+              "id": "risk-assessment-required",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Does the event introduce risks that require a specific risk assessment or control plan?",
+              "required": true,
+              "source": "expanded"
+            },
+            {
+              "id": "risk-assessment-task",
+              "type": "task",
+              "title": "Complete the event risk assessment and record any required controls",
+              "deadlineCode": "B2",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "risk-assessment-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "expanded",
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator"
+            },
+            {
+              "id": "juniors-involved",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will children or junior members take part in the event?",
+              "required": true,
+              "source": "expanded"
+            },
+            {
+              "id": "safeguarding-task",
+              "type": "task",
+              "title": "Confirm the safeguarding arrangements, supervision and responsible contacts for juniors",
+              "deadlineCode": "B2",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "juniors-involved",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "expanded",
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator"
+            },
+            {
+              "id": "weather-contingency",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Could weather materially affect the event or require a fallback plan?",
+              "required": true,
+              "source": "expanded"
+            },
+            {
+              "id": "weather-task",
+              "type": "task",
+              "title": "Agree the weather contingency, cancellation decision process and communication route",
+              "deadlineCode": "B1",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "weather-contingency",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "expanded",
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "close-down",
+      "title": "Close-down and follow-up",
+      "shortTitle": "Close-down",
+      "description": "Return the club to normal, settle outstanding items and capture lessons for next time.",
+      "activation": {
+        "always": true
+      },
+      "sections": [
+        {
+          "id": "close-down-tasks",
+          "title": "After the event",
+          "items": [
+            {
+              "id": "general-close-down-required",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will anything need to be reset, removed, returned or cleared after the event?",
+              "required": true,
+              "source": "expanded"
+            },
+            {
+              "id": "general-close-down-task",
+              "type": "task",
+              "title": "Assign the event close-down and confirm the clubhouse, course and equipment are returned to their normal state",
+              "deadlineCode": "A1",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "general-close-down-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "expanded",
+              "responsibleArea": "Golf Operations",
+              "defaultOwnerRoleId": "golf-manager"
+            },
+            {
+              "id": "post-event-review",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Should the organiser record what worked well and what should change next time?",
+              "required": true,
+              "source": "expanded"
+            },
+            {
+              "id": "review-task",
+              "type": "task",
+              "title": "Complete a short post-event review and update the playbook where a recurring issue or missing question was identified",
+              "deadlineCode": "A2",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "post-event-review",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "expanded",
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator"
+            },
+            {
+              "id": "complete-retrospective",
+              "type": "task",
+              "title": "Complete the post-event retrospective and record financial and operational lessons",
+              "deadlineCode": "A2",
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator",
+              "source": "expanded"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "responsibilityRoles": [
+    {
+      "id": "event-coordinator",
+      "name": "Event Coordinator",
+      "area": "Event Coordination",
+      "fallbackRoleId": null
+    },
+    {
+      "id": "food-beverage-manager",
+      "name": "Food & Beverage Manager",
+      "area": "Food & Beverage",
+      "fallbackRoleId": "event-coordinator"
+    },
+    {
+      "id": "halfway-house",
+      "name": "Halfway House",
+      "area": "Food & Beverage",
+      "fallbackRoleId": "food-beverage-manager"
+    },
+    {
+      "id": "golf-manager",
+      "name": "Golf Manager / H&C",
+      "area": "Golf Operations",
+      "fallbackRoleId": "event-coordinator"
+    },
+    {
+      "id": "professional-shop",
+      "name": "Professional Shop",
+      "area": "Golf Operations",
+      "fallbackRoleId": "golf-manager"
+    },
+    {
+      "id": "communications",
+      "name": "Communications",
+      "area": "Communications",
+      "fallbackRoleId": "event-coordinator"
+    },
+    {
+      "id": "clubhouse",
+      "name": "Clubhouse / House Team",
+      "area": "Clubhouse",
+      "fallbackRoleId": "event-coordinator"
+    },
+    {
+      "id": "office",
+      "name": "Club Office",
+      "area": "Administration",
+      "fallbackRoleId": "event-coordinator"
+    },
+    {
+      "id": "finance",
+      "name": "Finance / Accounts",
+      "area": "Finance",
+      "fallbackRoleId": "office"
+    },
+    {
+      "id": "greens",
+      "name": "Greens Team",
+      "area": "Course",
+      "fallbackRoleId": "golf-manager"
+    }
+  ],
+  "defaultContacts": [
+    {
+      "id": "contact-event-coordinator",
+      "name": "Event Coordinator",
+      "email": "",
+      "roleIds": [
+        "event-coordinator"
+      ],
+      "active": true
+    },
+    {
+      "id": "contact-fb-manager",
+      "name": "Food & Beverage Manager",
+      "email": "",
+      "roleIds": [
+        "food-beverage-manager",
+        "halfway-house"
+      ],
+      "active": true
+    },
+    {
+      "id": "contact-golf-manager",
+      "name": "Golf Manager / H&C",
+      "email": "",
+      "roleIds": [
+        "golf-manager"
+      ],
+      "active": true
+    },
+    {
+      "id": "contact-pro-shop",
+      "name": "Professional Shop",
+      "email": "",
+      "roleIds": [
+        "professional-shop"
+      ],
+      "active": true
+    },
+    {
+      "id": "contact-communications",
+      "name": "Communications",
+      "email": "",
+      "roleIds": [
+        "communications"
+      ],
+      "active": true
+    },
+    {
+      "id": "contact-clubhouse",
+      "name": "Clubhouse / House Team",
+      "email": "",
+      "roleIds": [
+        "clubhouse"
+      ],
+      "active": true
+    }
+  ],
+  "operatingHours": {
+    "catering": {
+      "opens": "09:00",
+      "closes": "17:00"
+    }
+  },
+  "roundDurationRules": [
+    {
+      "holes": 9,
+      "minutes": 120
+    },
+    {
+      "holes": 18,
+      "minutes": 240
+    },
+    {
+      "holes": 36,
+      "minutes": 480
+    }
+  ],
+  "advisoryRules": [
+    {
+      "id": "catering-after-golf",
+      "title": "Players may return after catering closes",
+      "severity": "warning",
+      "targetQuestionId": "extend-catering-hours",
+      "triggerAnswer": false,
+      "derivedCondition": {
+        "fact": "expectedLatestGolfFinish",
+        "operator": "laterThan",
+        "valueFact": "cateringClosingTime"
+      },
+      "message": "Based on the tee sheet and expected round duration, competitors are expected to return until approximately {expectedLatestGolfFinish}. Normal catering closes at {cateringClosingTime}. Are you sure catering hours should not be extended?",
+      "requireOverrideReason": true
+    },
+    {
+      "id": "catering-before-opening",
+      "title": "Food may be required before catering opens",
+      "severity": "warning",
+      "targetQuestionId": "extend-catering-hours",
+      "triggerAnswer": false,
+      "derivedCondition": {
+        "fact": "requiredCateringStart",
+        "operator": "earlierThan",
+        "valueFact": "cateringOpeningTime"
+      },
+      "message": "The event indicates food may be needed from {requiredCateringStart}, while normal catering opens at {cateringOpeningTime}. Are you sure catering hours should not be extended?",
+      "requireOverrideReason": true
+    },
+    {
+      "id": "shotgun-catering-peak",
+      "title": "Shotgun finish creates a concentrated clubhouse peak",
+      "severity": "warning",
+      "targetQuestionId": "peak-catering-staffing",
+      "triggerAnswer": false,
+      "derivedCondition": {
+        "fact": "golfArrivalPattern",
+        "operator": "equals",
+        "value": "concentrated"
+      },
+      "message": "This event uses a shotgun start, so most players are expected back in the clubhouse at around {expectedLatestGolfFinish}. That creates a concentrated demand peak rather than a normal staggered return. Are you sure no additional catering or bar cover is needed?",
+      "requireOverrideReason": true
+    }
+  ],
+  "retrospective": {
+    "enabled": true,
+    "deadlineCode": "A1",
+    "fields": [
+      {
+        "id": "actual-attendance",
+        "label": "Actual attendance",
+        "type": "number"
+      },
+      {
+        "id": "revenue",
+        "label": "Revenue",
+        "type": "currency"
+      },
+      {
+        "id": "costs",
+        "label": "Direct costs",
+        "type": "currency"
+      },
+      {
+        "id": "worked-well",
+        "label": "What worked particularly well?",
+        "type": "textarea"
+      },
+      {
+        "id": "did-not-work",
+        "label": "What did not work?",
+        "type": "textarea"
+      },
+      {
+        "id": "change-next-time",
+        "label": "What should we change next time?",
+        "type": "textarea"
+      },
+      {
+        "id": "run-again",
+        "label": "Should we run this event again?",
+        "type": "yesNo"
+      }
+    ]
+  }
+}

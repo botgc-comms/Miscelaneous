@@ -1,0 +1,34 @@
+<svg width="1600" height="650" viewBox="0 0 1600 650" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="fade" x1="800" y1="110" x2="800" y2="650" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F9F7F0" stop-opacity="0"/>
+      <stop offset="1" stop-color="#F3EFE3"/>
+    </linearGradient>
+    <linearGradient id="fairway" x1="800" y1="270" x2="800" y2="650" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#DDE8C8"/>
+      <stop offset="1" stop-color="#C7D8A9"/>
+    </linearGradient>
+    <filter id="blur"><feGaussianBlur stdDeviation="10"/></filter>
+  </defs>
+  <path d="M0 386C184 321 279 336 449 382C618 428 751 401 879 355C1012 307 1168 287 1316 336C1419 370 1515 372 1600 346V650H0V386Z" fill="#E4EBD4"/>
+  <path d="M0 440C176 372 327 410 464 455C614 504 744 483 903 424C1065 364 1221 362 1372 408C1465 436 1537 435 1600 417V650H0V440Z" fill="url(#fairway)"/>
+  <path d="M0 520C166 476 297 483 453 526C600 567 758 573 918 524C1090 471 1243 475 1415 522C1484 541 1546 543 1600 532V650H0V520Z" fill="#BFD09D"/>
+  <ellipse cx="721" cy="535" rx="116" ry="24" fill="#F4E9CD" opacity=".9"/>
+  <ellipse cx="1115" cy="468" rx="75" ry="18" fill="#F4E9CD" opacity=".88"/>
+  <ellipse cx="350" cy="468" rx="178" ry="53" fill="#AEC98A"/>
+  <ellipse cx="350" cy="468" rx="119" ry="35" fill="#9DBD78"/>
+  <path d="M355 458V334" stroke="#183D2E" stroke-width="5" stroke-linecap="round"/>
+  <path d="M358 334L424 355L358 379V334Z" fill="#D95545"/>
+  <circle cx="351" cy="471" r="5" fill="#F9F8F4"/>
+  <g opacity=".42">
+    <path d="M72 403L104 318L136 403H72Z" fill="#567C59"/>
+    <rect x="101" y="397" width="6" height="33" fill="#567C59"/>
+    <path d="M118 412L152 321L186 412H118Z" fill="#6F916B"/>
+    <rect x="149" y="406" width="6" height="31" fill="#6F916B"/>
+    <path d="M1312 389L1347 294L1382 389H1312Z" fill="#6B8A65"/>
+    <rect x="1344" y="383" width="6" height="34" fill="#6B8A65"/>
+    <path d="M1370 398L1402 312L1434 398H1370Z" fill="#567C59"/>
+    <rect x="1399" y="392" width="6" height="32" fill="#567C59"/>
+  </g>
+  <path d="M0 0H1600V650H0V0Z" fill="url(#fade)"/>
+</svg>

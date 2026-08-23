@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Complete Event Task | Burton-on-Trent Golf Club</title>
+  <link rel="stylesheet" href="./playbook.css">
+</head>
+<body>
+  <main class="completion-page">
+    <section class="completion-card" id="completionCard">
+      <div class="brand completion-brand">
+        <img class="brand-mark brand-mark-image" src="./assets/botgc-mark.svg" alt="">
+        <div>
+          <div class="brand-kicker">Burton-on-Trent Golf Club</div>
+          <h1>Event task</h1>
+        </div>
+      </div>
+      <div id="completionContent" class="completion-content">Loading task…</div>
+    </section>
+  </main>
+  <script type="module">
+    const content = document.getElementById('completionContent');
+    const token = new URLSearchParams(location.search).get('token');
+
+    if (!token) {
+      content.innerHTML = '<h2>Invalid task link</h2><p>This completion link does not contain a task token.</p>';
+    } else {
+      const response = await fetch(`/api/tasks/completion-links/${encodeURIComponent(token)}`);
+      if (!response.ok) {
+        content.innerHTML = '<h2>Task link not found</h2><p>The link may have expired or may not have been registered.</p>';
+      } else {
+        const task = await response.json();
+        render(task);
+      }
+    }
+
+    function render(task) {
+      if (task.completedAtUtc) {
+        content.innerHTML = `
+          <div class="success-mark">✓</div>
+          <h2>Task completed</h2>
+          <p><strong>${escapeHtml(task.taskTitle)}</strong></p>
+          <p class="help-text">${escapeHtml(task.eventName)}</p>
+          <p>This task was completed on ${new Date(task.completedAtUtc).toLocaleString('en-GB')}.</p>`;
+        return;
+      }
+
+      content.innerHTML = `
+        <span class="eyebrow">${escapeHtml(task.eventName)}</span>
+        <h2>${escapeHtml(task.taskTitle)}</h2>
+        ${task.assignee ? `<p>Assigned to <strong>${escapeHtml(task.assignee)}</strong></p>` : ''}
+        ${task.dueDate ? `<p>Due <strong>${new Date(task.dueDate + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</strong></p>` : ''}
+        <label class="completion-notes"><span>Completion note <em>optional</em></span><textarea id="completionNotes" rows="4" placeholder="Add anything the event coordinator should know"></textarea></label>
+        <button class="button button-primary" id="completeButton">Mark task complete</button>`;
+
+      document.getElementById('completeButton').addEventListener('click', async () => {
+        const button = document.getElementById('completeButton');
+        button.disabled = true;
+        button.textContent = 'Completing…';
+        const result = await fetch(`/api/tasks/completion-links/${encodeURIComponent(token)}/complete`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ notes: document.getElementById('completionNotes').value })
+        });
+        if (!result.ok) {
+          button.disabled = false;
+          button.textContent = 'Mark task complete';
+          alert('The task could not be completed.');
+          return;
+        }
+        render(await result.json());
+      });
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
+    }
+  </script>
+</body>
+</html>
