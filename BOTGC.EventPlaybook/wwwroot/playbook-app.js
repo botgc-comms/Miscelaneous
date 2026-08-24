@@ -644,28 +644,56 @@
     const holesAnswer = getQuestionValue('competition-holes', event);
     const customHoles = Number(getQuestionValue('competition-holes-other', event));
     const holes = holesAnswer === 'other' ? customHoles : Number(holesAnswer);
+    const playerCountValue = getQuestionValue('golf-player-count', event);
+    const supporterCountValue = getQuestionValue('golf-supporter-count', event);
+    const roundDurationValue = getQuestionValue('golf-expected-round-minutes', event);
     const startMethod = getQuestionValue('golf-start-method', event);
     const teeWindow = getQuestionValue('tee-time-window', event) ?? {};
     const shotgunStart = getQuestionValue('shotgun-start-time', event);
+
+    const playerCountNumber = Number(playerCountValue);
+    const supporterCountNumber = Number(supporterCountValue);
+    const roundDurationNumber = Number(roundDurationValue);
+    const playerCount = playerCountValue !== null && playerCountValue !== undefined && playerCountValue !== '' && Number.isFinite(playerCountNumber) && playerCountNumber > 0
+      ? playerCountNumber
+      : null;
+    const supporterCount = supporterCountValue !== null && supporterCountValue !== undefined && supporterCountValue !== '' && Number.isFinite(supporterCountNumber) && supporterCountNumber >= 0
+      ? supporterCountNumber
+      : null;
+    const duration = roundDurationValue !== null && roundDurationValue !== undefined && roundDurationValue !== '' && Number.isFinite(roundDurationNumber) && roundDurationNumber > 0
+      ? roundDurationNumber
+      : null;
+    const expectedClubhouseReturnCount = playerCount !== null && supporterCount !== null
+      ? playerCount + supporterCount
+      : null;
 
     const firstStartValue = startMethod === 'shotgun' ? shotgunStart : teeWindow.start;
     const lastStartValue = startMethod === 'shotgun' ? shotgunStart : teeWindow.end;
     const firstTee = minutesFromTime(firstStartValue);
     const lastTee = minutesFromTime(lastStartValue);
 
-    const configuredDuration = (playbook.roundDurationRules ?? []).find(rule => Number(rule.holes) === holes)?.minutes ?? null;
-    const duration = configuredDuration ?? (Number.isFinite(holes) && holes > 0 ? Math.round(holes * (240 / 18)) : null);
     const cateringOpeningTime = playbook.operatingHours?.catering?.opens ?? '09:00';
     const cateringClosingTime = playbook.operatingHours?.catering?.closes ?? '17:00';
     const requiredCateringStart = getQuestionValue('required-catering-start', event) ?? null;
     const expectedFirstGolfFinish = firstTee !== null && duration !== null ? timeFromMinutes(firstTee + duration) : null;
     const expectedLatestGolfFinish = lastTee !== null && duration !== null ? timeFromMinutes(lastTee + duration) : null;
     const golfArrivalPattern = startMethod === 'shotgun' ? 'concentrated' : startMethod === 'tee-times' ? 'staggered' : null;
+    const severityThresholds = golfArrivalPattern ? playbook.golfReturnSeverityRules?.[golfArrivalPattern] : null;
+    let golfReturnSeverity = 'neutral';
+    if (expectedClubhouseReturnCount !== null && severityThresholds) {
+      if (expectedClubhouseReturnCount >= Number(severityThresholds.red)) golfReturnSeverity = 'red';
+      else if (expectedClubhouseReturnCount >= Number(severityThresholds.amber)) golfReturnSeverity = 'amber';
+      else golfReturnSeverity = 'green';
+    }
 
     return {
       competitionHoles: Number.isFinite(holes) && holes > 0 ? holes : null,
+      expectedPlayerCount: playerCount,
+      expectedSupporterCount: supporterCount,
+      expectedClubhouseReturnCount,
       golfStartMethod: startMethod ?? null,
       golfArrivalPattern,
+      golfReturnSeverity,
       expectedRoundMinutes: duration,
       expectedFirstGolfFinish,
       expectedLatestGolfFinish,
@@ -1492,22 +1520,64 @@
   }
 
   function renderNote(item, event) {
-    const facts = deriveFacts(event);
-    const returnText = facts.expectedLatestGolfFinish
-      ? facts.golfArrivalPattern === 'concentrated'
-        ? `Around ${facts.expectedLatestGolfFinish} · concentrated shotgun return`
-        : `${facts.expectedFirstGolfFinish}–${facts.expectedLatestGolfFinish} · staggered return`
-      : null;
-    const extra = item.id === 'golf-return-window-note' && returnText
-      ? `<div class="derived-fact-strip"><strong>Expected clubhouse return</strong><span>${escapeHtml(returnText)}</span></div>`
-      : '';
+    if (item.id === 'golf-return-window-note') {
+      const facts = deriveFacts(event);
+      const severityLabels = {
+        green: 'Green impact',
+        amber: 'Amber impact',
+        red: 'Red impact',
+        neutral: 'Needs answers'
+      };
+      const returnTime = facts.expectedLatestGolfFinish
+        ? facts.golfArrivalPattern === 'concentrated'
+          ? `Around ${facts.expectedLatestGolfFinish}`
+          : `${facts.expectedFirstGolfFinish}-${facts.expectedLatestGolfFinish}`
+        : 'Add duration and start time';
+      const attendance = facts.expectedClubhouseReturnCount !== null
+        ? `${facts.expectedClubhouseReturnCount} people`
+        : 'Add players and supporters';
+      const roundDuration = facts.expectedRoundMinutes !== null
+        ? `${facts.expectedRoundMinutes} minutes`
+        : 'Add expected duration';
+      const pattern = facts.golfArrivalPattern === 'concentrated'
+        ? 'Concentrated shotgun return'
+        : facts.golfArrivalPattern === 'staggered'
+          ? 'Staggered return window'
+          : 'Select a start pattern';
+      const impactMessage = facts.golfReturnSeverity === 'red'
+        ? `${attendance} are expected around the finish. This is a high-impact return: confirm catering and bar capacity, seating and operational staffing before play ends.`
+        : facts.golfReturnSeverity === 'amber'
+          ? `${attendance} are expected around the finish. Allow for a noticeable demand peak and confirm catering, bar and staffing cover.`
+          : facts.golfReturnSeverity === 'green'
+            ? `${attendance} are expected around the finish. Standard operational cover is likely to be sufficient, but should still be confirmed.`
+            : 'Answer the round duration, start pattern, player count and supporter count to calculate the return forecast and its operational severity.';
+
+      return `
+        <article class="flow-item note-item golf-return-note severity-${facts.golfReturnSeverity}" data-item-id="${item.id}">
+          <div class="flow-rail"><span class="type-badge note-badge">Info</span></div>
+          <div class="flow-body">
+            <div class="golf-return-heading">
+              <div class="task-title">${escapeHtml(item.title ?? 'Expected clubhouse return')}</div>
+              <span class="golf-return-severity">${escapeHtml(severityLabels[facts.golfReturnSeverity])}</span>
+            </div>
+            <p class="help-text">${escapeHtml(item.body ?? '')}</p>
+            <div class="golf-return-metrics">
+              <div><small>Expected return</small><strong>${escapeHtml(returnTime)}</strong></div>
+              <div><small>People around finish</small><strong>${escapeHtml(attendance)}</strong></div>
+              <div><small>Round duration</small><strong>${escapeHtml(roundDuration)}</strong></div>
+            </div>
+            <p class="golf-return-pattern">${escapeHtml(pattern)}</p>
+            <p class="golf-return-impact">${escapeHtml(impactMessage)}</p>
+          </div>
+        </article>`;
+    }
+
     return `
       <article class="flow-item note-item" data-item-id="${item.id}">
         <div class="flow-rail"><span class="type-badge note-badge">Info</span></div>
         <div class="flow-body">
           <div class="task-title">${escapeHtml(item.title ?? 'Information')}</div>
           <p class="help-text">${escapeHtml(item.body ?? '')}</p>
-          ${extra}
         </div>
       </article>`;
   }
@@ -1543,10 +1613,13 @@
     const patternText = facts.golfArrivalPattern === 'concentrated'
       ? 'Shotgun start — demand is likely to arrive in one concentrated peak.'
       : 'Staggered tee times — demand should build and fall more gradually.';
+    const attendanceText = facts.expectedClubhouseReturnCount !== null
+      ? ` Plan for ${facts.expectedClubhouseReturnCount} players and supporters around the finish (${facts.golfReturnSeverity} impact).`
+      : '';
 
     return `<div class="derived-consideration-card">
       <div class="derived-consideration-icon">↳</div>
-      <div><strong>Golf return forecast</strong><p>${escapeHtml(returnText)} Normal catering hours are ${escapeHtml(facts.cateringOpeningTime)}–${escapeHtml(facts.cateringClosingTime)}.</p><small>${escapeHtml(patternText)}</small></div>
+      <div><strong>Golf return forecast</strong><p>${escapeHtml(returnText)}${escapeHtml(attendanceText)} Normal catering hours are ${escapeHtml(facts.cateringOpeningTime)}–${escapeHtml(facts.cateringClosingTime)}.</p><small>${escapeHtml(patternText)}</small></div>
     </div>`;
   }
 
@@ -1604,8 +1677,15 @@
         `;
       case 'date':
         return `<input class="answer-input" type="date" value="${escapeHtml(value ?? '')}" data-question-input="${item.id}">`;
-      case 'number':
-        return `<input class="answer-input" type="number" value="${escapeHtml(value ?? '')}" data-question-input="${item.id}">`;
+      case 'number': {
+        const min = Number.isFinite(Number(item.min)) ? ` min="${escapeHtml(item.min)}"` : '';
+        const max = Number.isFinite(Number(item.max)) ? ` max="${escapeHtml(item.max)}"` : '';
+        const step = Number.isFinite(Number(item.step)) ? ` step="${escapeHtml(item.step)}"` : '';
+        return `<div class="number-answer-control">
+          <input class="answer-input" type="number" value="${escapeHtml(value ?? '')}"${min}${max}${step} data-question-input="${item.id}">
+          ${item.unit ? `<span class="number-input-unit">${escapeHtml(item.unit)}</span>` : ''}
+        </div>`;
+      }
       case 'time':
         return `<input class="answer-input" type="time" value="${escapeHtml(value ?? '')}" data-question-input="${item.id}">`;
       case 'timeRange': {
@@ -2282,6 +2362,20 @@
     });
 
     document.querySelectorAll('[data-question-input]').forEach(element => {
+      element.addEventListener('input', () => {
+        const event = getActiveEvent();
+        if (!event) return;
+        const indexed = itemIndex.get(element.dataset.questionInput);
+        if (!indexed || indexed.item.type !== 'question') return;
+        if (indexed.item.bind === 'eventDate') {
+          event.eventDate = element.value;
+          event.milestoneDates ??= {};
+          event.milestoneDates.DT = element.value;
+        } else {
+          event.answers[element.dataset.questionInput] = element.value;
+        }
+        saveState();
+      });
       element.addEventListener('change', () => {
         const event = getActiveEvent();
         if (!event) return;

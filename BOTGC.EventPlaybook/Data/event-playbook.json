@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "2.0",
+  "schemaVersion": "2.1",
   "id": "botgc-event-playbook",
   "title": "Event Playbook",
   "description": "A data-driven event planning guide that turns answers into dated, assignable tasks, operational advisories and reusable event knowledge.",
@@ -317,6 +317,45 @@
               "source": "refined"
             },
             {
+              "id": "golf-player-count",
+              "type": "question",
+              "answerType": "number",
+              "label": "How many players are taking part?",
+              "helpText": "Include every competitor expected to return to the clubhouse after play.",
+              "min": 1,
+              "max": 500,
+              "step": 1,
+              "unit": "players",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "golf-supporter-count",
+              "type": "question",
+              "answerType": "number",
+              "label": "How many parents, guardians or other supporters should we plan for around the finish?",
+              "helpText": "Enter 0 if no supporters are expected. This is combined with the player count to estimate clubhouse demand.",
+              "min": 0,
+              "max": 1000,
+              "step": 1,
+              "unit": "supporters",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "golf-expected-round-minutes",
+              "type": "question",
+              "answerType": "number",
+              "label": "How long do you expect one group to take to complete the round?",
+              "helpText": "Use the likely pace for this age group, competition format and number of holes. This duration drives the expected clubhouse return time.",
+              "min": 15,
+              "max": 720,
+              "step": 5,
+              "unit": "minutes",
+              "required": true,
+              "source": "refined"
+            },
+            {
               "id": "golf-start-method",
               "type": "question",
               "answerType": "singleChoice",
@@ -374,7 +413,7 @@
               "id": "golf-return-window-note",
               "type": "note",
               "title": "Expected clubhouse return",
-              "body": "The Playbook estimates when players will return using the number of holes and the starting pattern. This feeds directly into catering, bar and staffing considerations.",
+              "body": "The Playbook combines the expected round duration, start pattern, player count and supporter count to forecast the return time and likely operational impact.",
               "source": "refined"
             }
           ]
@@ -574,6 +613,14 @@
                   "label": "Special tees, markers or course markings"
                 },
                 {
+                  "value": "nearest-pin-markers",
+                  "label": "Nearest-to-the-pin markers"
+                },
+                {
+                  "value": "longest-drive-markers",
+                  "label": "Longest-drive markers"
+                },
+                {
                   "value": "special-scorecards",
                   "label": "Special scorecards / route cards"
                 },
@@ -657,9 +704,34 @@
               "defaultOwnerRoleId": "golf-manager"
             },
             {
+              "id": "competition-markers-task",
+              "type": "task",
+              "title": "Prepare and position the selected competition markers",
+              "detail": "Confirm the relevant holes and position the nearest-to-the-pin and/or longest-drive markers before play.",
+              "deadlineCode": "B1",
+              "showWhen": {
+                "any": [
+                  {
+                    "questionId": "special-course-requirements",
+                    "operator": "contains",
+                    "value": "nearest-pin-markers"
+                  },
+                  {
+                    "questionId": "special-course-requirements",
+                    "operator": "contains",
+                    "value": "longest-drive-markers"
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Golf Operations",
+              "defaultOwnerRoleId": "golf-manager"
+            },
+            {
               "id": "special-scorecards-task",
               "type": "task",
-              "title": "Design and print the event-specific scorecards or route cards",
+              "title": "Print, prepare or obtain the event-specific scorecards or route cards",
+              "detail": "Confirm whether the cards need to be produced internally or obtained from an external competition provider such as the Golf Foundation, then have the correct quantity ready before play.",
               "deadlineCode": "B1",
               "showWhen": {
                 "all": [
@@ -2740,6 +2812,16 @@
       "minutes": 480
     }
   ],
+  "golfReturnSeverityRules": {
+    "concentrated": {
+      "amber": 25,
+      "red": 50
+    },
+    "staggered": {
+      "amber": 60,
+      "red": 120
+    }
+  },
   "advisoryRules": [
     {
       "id": "catering-after-golf",
