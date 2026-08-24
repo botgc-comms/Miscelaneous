@@ -4,18 +4,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Complete Event Task | Burton-on-Trent Golf Club</title>
-  <link rel="stylesheet" href="./playbook.css">
+  <link rel="stylesheet" href="./playbook.css?v=20260824-shared-persistence-1">
+  <link rel="stylesheet" href="./complete.css?v=20260824-completion-layout-1">
 </head>
-<body>
+<body class="completion-body">
   <main class="completion-page">
     <section class="completion-card" id="completionCard">
-      <div class="brand completion-brand">
-        <img class="brand-mark brand-mark-image" src="./assets/botgc-mark.svg" alt="">
+      <header class="completion-brand">
+        <span class="completion-mark">
+          <img class="brand-mark brand-mark-image" src="./assets/botgc-mark.svg" width="56" height="64" alt="Burton-on-Trent Golf Club crest">
+        </span>
         <div>
           <div class="brand-kicker">Burton-on-Trent Golf Club</div>
           <h1>Event task</h1>
         </div>
-      </div>
+      </header>
       <div id="completionContent" class="completion-content">Loading task…</div>
     </section>
   </main>
@@ -23,16 +26,19 @@
     const content = document.getElementById('completionContent');
     const token = new URLSearchParams(location.search).get('token');
 
-    if (!token) {
-      content.innerHTML = '<h2>Invalid task link</h2><p>This completion link does not contain a task token.</p>';
-    } else {
-      const response = await fetch(`/api/tasks/completion-links/${encodeURIComponent(token)}`);
-      if (!response.ok) {
-        content.innerHTML = '<h2>Task link not found</h2><p>The link may have expired or may not have been registered.</p>';
+    try {
+      if (!token) {
+        content.innerHTML = '<div class="completion-state-mark">!</div><h2>Invalid task link</h2><p>This completion link does not contain a task token.</p>';
       } else {
-        const task = await response.json();
-        render(task);
+        const response = await fetch(`/api/tasks/completion-links/${encodeURIComponent(token)}`);
+        if (!response.ok) {
+          content.innerHTML = '<div class="completion-state-mark">!</div><h2>Task link not found</h2><p>The link may have expired or may not have been registered.</p>';
+        } else {
+          render(await response.json());
+        }
       }
+    } catch {
+      content.innerHTML = '<div class="completion-state-mark">!</div><h2>Unable to load this task</h2><p>Please check your connection and try the link again.</p>';
     }
 
     function render(task) {
@@ -47,10 +53,12 @@
       }
 
       content.innerHTML = `
-        <span class="eyebrow">${escapeHtml(task.eventName)}</span>
+        <span class="eyebrow completion-eyebrow">${escapeHtml(task.eventName)}</span>
         <h2>${escapeHtml(task.taskTitle)}</h2>
-        ${task.assignee ? `<p>Assigned to <strong>${escapeHtml(task.assignee)}</strong></p>` : ''}
-        ${task.dueDate ? `<p>Due <strong>${new Date(task.dueDate + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</strong></p>` : ''}
+        <div class="completion-details">
+          ${task.assignee ? `<div><span>Assigned to</span><strong>${escapeHtml(task.assignee)}</strong></div>` : ''}
+          ${task.dueDate ? `<div><span>Due</span><strong>${new Date(task.dueDate + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</strong></div>` : ''}
+        </div>
         <label class="completion-notes"><span>Completion note <em>optional</em></span><textarea id="completionNotes" rows="4" placeholder="Add anything the event coordinator should know"></textarea></label>
         <button class="button button-primary" id="completeButton">Mark task complete</button>`;
 

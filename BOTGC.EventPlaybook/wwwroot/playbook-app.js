@@ -1358,7 +1358,7 @@
 
     bindEvents();
     if (state.activeView === 'artwork' && event) {
-      import('./poster-app.js?v=20260824-shared-persistence-1')
+      import('./poster-app.js?v=20260824-catalogue-cover-1')
         .then(module => module.mountPosterStudio({
           eventId: event.id,
           eventName: event.name,
@@ -1378,6 +1378,7 @@
               target.cataloguePosterThumbnail = thumbnailDataUrl;
               target.cataloguePosterSourceOutputId = artworkInfo.outputId ?? null;
               target.cataloguePosterSourceIsSquare = incomingIsSquare;
+              target.cataloguePosterThumbnailMode = 'cover';
               target.posterUpdatedAt = artworkInfo.generatedAt ?? new Date().toISOString();
               saveState();
             }
@@ -1387,13 +1388,17 @@
             if (!target || !thumbnailDataUrl) return;
             target.cataloguePosterThumbnail = thumbnailDataUrl;
             target.cataloguePosterSourceIsSquare = true;
+            target.cataloguePosterThumbnailMode = 'cover';
             target.posterUpdatedAt = new Date().toISOString();
             saveState();
           },
-          onArtworkPublished: thumbnailDataUrl => {
+          onArtworkPublished: (thumbnailDataUrl, artworkInfo = {}) => {
             const target = state.events.find(item => item.id === event.id);
             if (!target || !thumbnailDataUrl) return;
             target.publishedCataloguePosterThumbnail = thumbnailDataUrl;
+            target.publishedCataloguePosterSourceOutputId = artworkInfo.outputId ?? null;
+            target.publishedCataloguePosterSourceIsSquare = artworkInfo.isSquare === true;
+            target.publishedCataloguePosterThumbnailMode = 'cover';
             target.posterPublishedAt = new Date().toISOString();
             saveState();
           }
@@ -2236,11 +2241,25 @@
     const retroCount = Object.values(event.retrospective ?? {}).filter(value => value !== '' && value !== null && value !== undefined).length;
     const closed = Boolean(event.closedAt);
     const current = event.id === state.activeEventId;
+    const usesPublishedArtwork = Boolean(event.publishedCataloguePosterThumbnail);
+    const catalogueArtwork = event.publishedCataloguePosterThumbnail || event.cataloguePosterThumbnail || '';
+    const sourceIsSquare = usesPublishedArtwork
+      ? event.publishedCataloguePosterSourceIsSquare ?? event.cataloguePosterSourceIsSquare
+      : event.cataloguePosterSourceIsSquare;
+    const sourceOutputId = usesPublishedArtwork
+      ? event.publishedCataloguePosterSourceOutputId ?? event.cataloguePosterSourceOutputId
+      : event.cataloguePosterSourceOutputId;
+    const thumbnailMode = usesPublishedArtwork
+      ? event.publishedCataloguePosterThumbnailMode ?? event.cataloguePosterThumbnailMode
+      : event.cataloguePosterThumbnailMode;
+    const legacyPortraitClass = catalogueArtwork && sourceIsSquare === false && thumbnailMode !== 'cover'
+      ? sourceOutputId === 'a4' ? ' legacy-fitted-a4' : ' legacy-fitted-portrait'
+      : '';
     return `
       <article class="catalogue-card${closed ? ' closed' : ''}${current ? ' current' : ''}">
         <button class="catalogue-poster" data-event-summary="${escapeHtml(event.id)}" aria-label="View summary for ${escapeHtml(event.name)}">
-          ${(event.publishedCataloguePosterThumbnail || event.cataloguePosterThumbnail)
-            ? `<img src="${escapeHtml(event.publishedCataloguePosterThumbnail || event.cataloguePosterThumbnail)}" alt="Square campaign artwork for ${escapeHtml(event.name)}">`
+          ${catalogueArtwork
+            ? `<img class="${legacyPortraitClass.trim()}" src="${escapeHtml(catalogueArtwork)}" alt="Campaign artwork for ${escapeHtml(event.name)}">`
             : `<span class="catalogue-poster-placeholder"><img src="./assets/botgc-mark.svg" alt=""><small>Artwork not generated yet</small></span>`}
           <span class="catalogue-status ${closed ? 'closed' : 'open'}">${closed ? 'Closed' : 'Open'}</span>
           ${current ? '<span class="catalogue-current-badge">Current event</span>' : ''}
@@ -2261,7 +2280,8 @@
           <div class="button-row">
             <button class="button button-primary" data-event-summary="${escapeHtml(event.id)}">View event summary</button>
             ${closed
-              ? `<button class="button button-secondary" data-clone-event="${escapeHtml(event.id)}">Create from this event</button>`
+              ? `<button class="button button-primary" data-reopen-event="${escapeHtml(event.id)}">Reopen event</button>
+                 <button class="button button-secondary" data-clone-event="${escapeHtml(event.id)}">Create from this event</button>`
               : `<button class="button button-secondary" data-open-event="${escapeHtml(event.id)}" aria-label="${escapeHtml(current ? `Continue planning ${event.name}` : `Select ${event.name} and open planner`)}">${current ? 'Continue planning' : 'Select & open planner'}</button>
                  <button class="button button-secondary catalogue-close" data-close-event="${escapeHtml(event.id)}">Close & create new</button>`}
           </div>
@@ -2310,7 +2330,7 @@
       <div class="summary-dialog-footer">
         ${event.closedAt ? `<span class="summary-closed">Closed ${escapeHtml(formatDate(event.closedAt.substring(0,10)))}</span>` : '<span></span>'}
         <div class="button-row">
-          ${event.closedAt ? `<button class="button button-primary" data-clone-event="${escapeHtml(event.id)}">Create from this event</button>` : `<button class="button button-secondary" data-open-event="${escapeHtml(event.id)}">Open planner</button><button class="button button-primary" data-close-event="${escapeHtml(event.id)}">Close & create new</button>`}
+          ${event.closedAt ? `<button class="button button-primary" data-reopen-event="${escapeHtml(event.id)}">Reopen event</button><button class="button button-secondary" data-clone-event="${escapeHtml(event.id)}">Create from this event</button>` : `<button class="button button-secondary" data-open-event="${escapeHtml(event.id)}">Open planner</button><button class="button button-primary" data-close-event="${escapeHtml(event.id)}">Close & create new</button>`}
         </div>
       </div>`;
   }
@@ -2573,12 +2593,25 @@
     if (!target.closedAt) target.closedAt = new Date().toISOString();
     saveState();
     document.getElementById('event-summary-dialog')?.close();
+    render();
     const dialog = document.getElementById('new-event-dialog');
     const form = document.getElementById('new-event-form');
     form?.reset();
     populateNewEventMilestones('', true);
     dialog?.showModal();
     requestAnimationFrame(() => document.getElementById('new-event-name')?.focus());
+  }
+
+  function reopenEvent(eventId) {
+    const target = state.events.find(item => item.id === eventId);
+    if (!target || !target.closedAt) return;
+    target.closedAt = null;
+    target.reopenedAt = new Date().toISOString();
+    state.activeEventId = target.id;
+    state.activeView = 'module:start';
+    saveState();
+    document.getElementById('event-summary-dialog')?.close();
+    render();
   }
 
   function bindSummaryDialogEvents() {
@@ -2596,6 +2629,9 @@
     });
     document.querySelectorAll('#event-summary-dialog [data-close-event]').forEach(element => {
       element.addEventListener('click', () => closeEventAndCreateNew(element.dataset.closeEvent));
+    });
+    document.querySelectorAll('#event-summary-dialog [data-reopen-event]').forEach(element => {
+      element.addEventListener('click', () => reopenEvent(element.dataset.reopenEvent));
     });
     document.querySelectorAll('#event-summary-dialog [data-clone-event]').forEach(element => {
       element.addEventListener('click', () => {
@@ -2854,6 +2890,10 @@
 
     document.querySelectorAll('[data-close-event]').forEach(element => {
       element.addEventListener('click', () => closeEventAndCreateNew(element.dataset.closeEvent));
+    });
+
+    document.querySelectorAll('[data-reopen-event]').forEach(element => {
+      element.addEventListener('click', () => reopenEvent(element.dataset.reopenEvent));
     });
 
     document.querySelectorAll('[data-clone-event]').forEach(element => {

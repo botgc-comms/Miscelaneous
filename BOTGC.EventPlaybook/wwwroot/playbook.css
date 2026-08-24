@@ -440,6 +440,17 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(198,161,91,.22)!i
   object-fit: cover;
 }
 
+/* Older portrait thumbnails were saved with the complete poster letterboxed
+   inside a square. Zoom those cached previews until a new cover thumbnail or
+   purpose-made square campaign image replaces them. */
+.catalogue-poster > img.legacy-fitted-portrait {
+  transform: scale(1.9);
+}
+
+.catalogue-poster > img.legacy-fitted-a4 {
+  transform: scale(1.52);
+}
+
 .catalogue-poster-placeholder {
   display: grid;
   width: 100%;

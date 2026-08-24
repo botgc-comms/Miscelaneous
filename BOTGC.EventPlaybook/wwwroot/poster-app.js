@@ -1172,10 +1172,11 @@ function createCatalogueThumbnail(sourceCanvas) {
     canvas.height = size;
     const context = canvas.getContext('2d');
 
-    // Preserve the complete poster inside the square catalogue tile. Portrait
-    // artwork is framed against a soft extension of itself instead of losing
-    // its title, club mark or other edge content to a centre crop.
-    drawArtworkFitted(context, sourceCanvas, size, size);
+    // Catalogue cards are always edge-to-edge squares. Until a purpose-made
+    // square output exists, crop the portrait master centrally for this small
+    // preview; the complete uncropped poster remains available in the studio.
+    context.clearRect(0, 0, size, size);
+    drawImageCover(context, sourceCanvas, size, size);
     return canvas.toDataURL('image/jpeg', 0.84);
 }
 
@@ -1423,7 +1424,11 @@ async function publishCampaign() {
 
         if (bestOutput && typeof session.context?.onArtworkPublished === 'function') {
             const bestCanvas = session.posterCanvases.get(bestOutput.id);
-            session.context.onArtworkPublished(createCatalogueThumbnail(bestCanvas));
+            session.context.onArtworkPublished(createCatalogueThumbnail(bestCanvas), {
+                outputId: bestOutput.id,
+                isSquare: bestOutput.width === bestOutput.height,
+                generatedAt: new Date().toISOString()
+            });
         }
 
         setWorkflowStep(session, 4, true);

@@ -1,0 +1,244 @@
+.completion-body {
+  min-height: 100vh;
+}
+
+.completion-page {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: clamp(22px, 6vw, 72px) 18px;
+}
+
+.completion-card {
+  width: min(100%, 720px);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: 0 24px 60px rgba(13, 53, 72, .14);
+}
+
+.completion-brand {
+  position: relative;
+  display: flex;
+  min-height: 132px;
+  align-items: center;
+  gap: 18px;
+  overflow: hidden;
+  padding: 24px clamp(22px, 5vw, 42px);
+  color: #fff;
+  background:
+    radial-gradient(circle at 92% 10%, rgba(198, 161, 91, .28), transparent 15rem),
+    linear-gradient(120deg, var(--deep), var(--navy) 58%, var(--blue));
+}
+
+.completion-brand::after {
+  position: absolute;
+  inset: auto 0 0;
+  height: 4px;
+  content: "";
+  background: linear-gradient(90deg, var(--gold), #e3cf99, var(--gold));
+}
+
+.completion-mark {
+  display: grid;
+  width: 72px;
+  height: 78px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, .24);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12);
+}
+
+.completion-mark img {
+  display: block;
+  width: 50px;
+  height: 58px;
+  object-fit: contain;
+}
+
+.completion-brand .brand-kicker {
+  margin-bottom: 5px;
+  color: #efd99e;
+  font-size: .68rem;
+  font-weight: 900;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.completion-brand h1 {
+  margin: 0;
+  color: #fff;
+  font: 700 clamp(1.85rem, 5vw, 2.6rem)/1 Georgia, "Times New Roman", serif;
+  letter-spacing: -.025em;
+}
+
+.completion-content {
+  padding: clamp(26px, 6vw, 48px) clamp(22px, 6vw, 48px) clamp(30px, 7vw, 52px);
+}
+
+.completion-content > .completion-eyebrow {
+  display: block;
+  margin-bottom: 10px !important;
+}
+
+.completion-content h2 {
+  max-width: 610px;
+  margin: 0 0 20px;
+  color: var(--navy);
+  font: 700 clamp(1.55rem, 4vw, 2.2rem)/1.18 Georgia, "Times New Roman", serif;
+  letter-spacing: -.015em;
+}
+
+.completion-content > p {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: .9rem;
+  line-height: 1.6;
+}
+
+.completion-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0 0 28px;
+}
+
+.completion-details > div {
+  display: grid;
+  min-height: 76px;
+  align-content: center;
+  gap: 5px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #f7faf9;
+}
+
+.completion-details span {
+  color: var(--muted);
+  font-size: .64rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.completion-details strong {
+  color: var(--green-dark);
+  font-size: .86rem;
+  line-height: 1.35;
+}
+
+.completion-notes {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.completion-notes > span {
+  color: #42575b;
+  font-size: .76rem;
+  font-weight: 850;
+}
+
+.completion-notes em {
+  color: #83918f;
+  font-size: .68rem;
+  font-weight: 500;
+}
+
+.completion-notes textarea {
+  width: 100%;
+  min-height: 112px;
+  resize: vertical;
+  padding: 12px 13px;
+  border: 1px solid #b9cbc7;
+  border-radius: 10px;
+  outline: none;
+  color: var(--text);
+  background: #fbfcfc;
+  font-size: .86rem;
+  line-height: 1.5;
+}
+
+.completion-notes textarea:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(19, 74, 99, .1);
+}
+
+.completion-content .button {
+  min-height: 46px !important;
+  padding-right: 20px !important;
+  padding-left: 20px !important;
+  font-size: .78rem !important;
+}
+
+.completion-content .button:disabled {
+  cursor: wait;
+  opacity: .65;
+}
+
+.success-mark,
+.completion-state-mark {
+  display: grid;
+  width: 54px;
+  height: 54px;
+  place-items: center;
+  margin-bottom: 18px;
+  border-radius: 50%;
+  color: #fff;
+  background: var(--green);
+  box-shadow: 0 8px 18px rgba(54, 95, 87, .2);
+  font-size: 1.5rem;
+  font-weight: 900;
+}
+
+.completion-state-mark {
+  color: var(--navy);
+  background: var(--gold);
+}
+
+@media (max-width: 560px) {
+  .completion-page {
+    place-items: start center;
+    padding: 0;
+  }
+
+  .completion-card {
+    min-height: 100vh;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .completion-brand {
+    min-height: 116px;
+    gap: 14px;
+    padding: 19px 18px;
+  }
+
+  .completion-mark {
+    width: 62px;
+    height: 68px;
+    border-radius: 13px;
+  }
+
+  .completion-mark img {
+    width: 44px;
+    height: 51px;
+  }
+
+  .completion-brand .brand-kicker {
+    font-size: .56rem;
+  }
+
+  .completion-details {
+    grid-template-columns: 1fr;
+  }
+
+  .completion-content .button {
+    width: 100%;
+  }
+}
