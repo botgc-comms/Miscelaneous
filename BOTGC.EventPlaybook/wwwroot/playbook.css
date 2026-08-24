@@ -201,6 +201,8 @@ button{cursor:pointer}
 .choice-group{display:flex!important;flex-wrap:wrap!important;gap:6px!important;margin-top:8px!important}
 .choice-button{min-width:52px!important;min-height:32px!important;padding:5px 10px!important;border:1px solid #c4d1cf!important;border-radius:999px!important;color:var(--green)!important;background:#fff!important;font-size:.63rem!important;font-weight:850!important}
 .choice-button.selected{border-color:var(--blue)!important;color:#fff!important;background:var(--blue)!important;box-shadow:0 4px 10px rgba(19,74,99,.13)!important}
+.choice-button.dont-know-choice{border-color:#dec992!important;color:#805d1f!important;background:#fffdf7!important}
+.choice-button.dont-know-choice.selected{border-color:#ad7923!important;color:#fff!important;background:#ad7923!important;box-shadow:0 4px 10px rgba(173,121,35,.18)!important}
 .answer-input{width:min(100%,420px)!important;margin-top:8px!important}
 .multi-choice-group{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important;margin-top:9px!important}
 .check-choice{display:flex!important;align-items:center!important;gap:8px!important;min-height:36px!important;padding:7px 9px!important;border:1px solid var(--border)!important;border-radius:8px!important;background:#fff!important;font-size:.64rem!important;font-weight:750!important}
@@ -1108,6 +1110,10 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(198,161,91,.22)!i
 .question-flow-rail small { color:#6e8580; font-size:.55rem; font-weight:850; letter-spacing:.06em; text-transform:uppercase; }
 .question-item.answered .question-flow-rail { background:linear-gradient(180deg,#edf7f1,#e7f2ed)!important; }
 .question-item.answered .question-state-mark { border-color:#365f57; color:#fff; background:#365f57; }
+.question-item.pending-decision .question-flow-rail { background:linear-gradient(180deg,#fff9eb,#fbf1d9)!important; }
+.question-item.pending-decision .question-state-mark { border-color:#b8862f; color:#fff; background:#b8862f; }
+.question-item.pending-decision .question-flow-rail small { color:#8a641f!important; }
+.question-item.pending-decision + .task-item { border-top-color:#e2c77d!important; background:linear-gradient(90deg,#fff8e6 0,#fff 30%)!important; }
 .question-flow-body { padding:20px 22px!important; }
 .question-flow-body .question-label-row label {
   color:#0d3548!important; font-family:Georgia,"Times New Roman",serif!important;

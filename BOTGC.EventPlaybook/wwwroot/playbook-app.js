@@ -152,6 +152,25 @@
     return response.json();
   }
 
+  function buildDontKnowTask(question) {
+    if (!question?.allowDontKnow || !question.dontKnowTask) return null;
+    return {
+      ...question.dontKnowTask,
+      id: question.dontKnowTask.id ?? `${question.id}-decision-task`,
+      type: 'task',
+      decisionForQuestionId: question.id,
+      showWhen: {
+        all: [
+          {
+            questionId: question.id,
+            operator: 'equals',
+            value: 'dont-know'
+          }
+        ]
+      }
+    };
+  }
+
   function validatePlaybook(candidate) {
     if (!candidate || typeof candidate !== 'object') {
       throw new Error('The selected file does not contain a JSON object.');
@@ -187,6 +206,18 @@
           if (item.type === 'task') tasks.push(item);
         }
       }
+    }
+
+    for (const question of questions.values()) {
+      if (question.allowDontKnow && !question.dontKnowTask) {
+        throw new Error(`${question.id} allows Don't know but does not define a decision task.`);
+      }
+      const decisionTask = buildDontKnowTask(question);
+      if (!decisionTask) continue;
+      if (ids.has(decisionTask.id)) throw new Error(`Duplicate item id: ${decisionTask.id}`);
+      ids.add(decisionTask.id);
+      itemTypes.set(decisionTask.id, 'task');
+      tasks.push(decisionTask);
     }
 
     function referencedQuestions(condition, result = []) {
@@ -244,6 +275,8 @@
       for (const section of module.sections) {
         for (const item of section.items) {
           itemIndex.set(item.id, { item, module, section });
+          const decisionTask = buildDontKnowTask(item);
+          if (decisionTask) itemIndex.set(decisionTask.id, { item: decisionTask, module, section });
         }
       }
     }
@@ -427,7 +460,7 @@
   }
 
   function isAnsweredValue(value) {
-    if (value === undefined || value === null || value === '') {
+    if (value === undefined || value === null || value === '' || value === 'dont-know') {
       return false;
     }
     if (Array.isArray(value)) {
@@ -785,14 +818,18 @@
 
       for (const section of module.sections) {
         for (const item of section.items) {
-          if (item.type !== 'task' || !isItemVisible(item, event)) {
-            continue;
+          const taskItems = item.type === 'task'
+            ? [item]
+            : item.type === 'question'
+              ? [buildDontKnowTask(item)].filter(Boolean)
+              : [];
+          for (const taskItem of taskItems) {
+            if (!isItemVisible(taskItem, event)) continue;
+            const dueDate = getDueDate(taskItem.deadlineCode, event);
+            const task = { item: taskItem, module, section, dueDate, state: event.taskState[taskItem.id] ?? {} };
+            task.state = ensureOperationalTaskState(event, task);
+            tasks.push(task);
           }
-
-          const dueDate = getDueDate(item.deadlineCode, event);
-          const task = { item, module, section, dueDate, state: event.taskState[item.id] ?? {} };
-          task.state = ensureOperationalTaskState(event, task);
-          tasks.push(task);
         }
       }
     }
@@ -1513,7 +1550,13 @@
           <h3>${escapeHtml(section.title)}</h3>
         </div>
         <div class="flow-list">
-          ${visibleItems.map(item => item.type === 'question' ? renderQuestion(item, event) : item.type === 'note' ? renderNote(item, event) : renderInlineTask(item, event)).join('')}
+          ${visibleItems.map(item => {
+            if (item.type === 'question') {
+              const decisionTask = buildDontKnowTask(item);
+              return renderQuestion(item, event) + (decisionTask && isItemVisible(decisionTask, event) ? renderInlineTask(decisionTask, event) : '');
+            }
+            return item.type === 'note' ? renderNote(item, event) : renderInlineTask(item, event);
+          }).join('')}
         </div>
       </section>
     `;
@@ -1625,13 +1668,14 @@
 
   function renderQuestion(item, event) {
     const value = getQuestionValue(item.id, event);
+    const pending = value === 'dont-know';
     const answered = isAnsweredValue(value);
     return `
-      <article class="flow-item question-item ${answered ? 'answered' : ''}" data-item-id="${item.id}">
+      <article class="flow-item question-item ${answered ? 'answered' : ''} ${pending ? 'pending-decision' : ''}" data-item-id="${item.id}">
         <div class="flow-rail question-flow-rail">
           <span class="type-badge question-badge">Question</span>
-          <span class="question-state-mark">${answered ? '✓' : '?'}</span>
-          <small>${answered ? 'Answered' : 'Decision'}</small>
+          <span class="question-state-mark">${pending ? '…' : answered ? '✓' : '?'}</span>
+          <small>${pending ? 'Pending' : answered ? 'Answered' : 'Decision'}</small>
         </div>
         <div class="flow-body question-flow-body">
           <div class="question-label-row">
@@ -1654,6 +1698,7 @@
           <div class="choice-group yes-no-group" role="group" aria-label="${escapeHtml(item.label)}">
             <button class="choice-button ${value === true ? 'selected' : ''}" data-question-id="${item.id}" data-answer-json="true">Yes</button>
             <button class="choice-button ${value === false ? 'selected' : ''}" data-question-id="${item.id}" data-answer-json="false">No</button>
+            ${item.allowDontKnow ? `<button class="choice-button dont-know-choice ${value === 'dont-know' ? 'selected' : ''}" data-question-id="${item.id}" data-answer-json="${escapeHtml(JSON.stringify('dont-know'))}">Don't know</button>` : ''}
           </div>
         `;
       case 'singleChoice':
@@ -2255,6 +2300,8 @@
     } else {
       event.answers[questionId] = value;
     }
+    const decisionTask = buildDontKnowTask(indexed.item);
+    if (decisionTask && value !== 'dont-know') delete event.taskState[decisionTask.id];
     normaliseAnswers(event);
     for (const rule of playbook.advisoryRules ?? []) {
       if (rule.targetQuestionId === questionId && value !== rule.triggerAnswer) delete event.advisoryOverrides?.[rule.id];

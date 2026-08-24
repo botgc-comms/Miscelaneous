@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "2.1",
+  "schemaVersion": "2.2",
   "id": "botgc-event-playbook",
   "title": "Event Playbook",
   "description": "A data-driven event planning guide that turns answers into dated, assignable tasks, operational advisories and reusable event knowledge.",
@@ -75,6 +75,16 @@
               "type": "question",
               "answerType": "yesNo",
               "label": "Does it involve golf?",
+              "allowDontKnow": true,
+              "dontKnowTask": {
+                "id": "decide-golf-involvement",
+                "title": "Decide whether the event involves golf",
+                "detail": "Consult the event organiser and Golf team, then return to this question and replace Don't know with Yes or No.",
+                "deadlineCode": "B4",
+                "responsibleArea": "Golf Operations",
+                "defaultOwnerRoleId": "golf-manager",
+                "source": "refined"
+              },
               "required": true,
               "source": "pdf"
             },
@@ -83,6 +93,16 @@
               "type": "question",
               "answerType": "yesNo",
               "label": "Will any clubhouse room or reserved seating area be used?",
+              "allowDontKnow": true,
+              "dontKnowTask": {
+                "id": "decide-clubhouse-involvement",
+                "title": "Decide whether a clubhouse room or reserved seating area will be used",
+                "detail": "Consult the event organiser and Clubhouse team, then return to this question and replace Don't know with Yes or No.",
+                "deadlineCode": "B3",
+                "responsibleArea": "Clubhouse",
+                "defaultOwnerRoleId": "clubhouse",
+                "source": "refined"
+              },
               "required": true,
               "source": "expanded"
             },
@@ -91,6 +111,16 @@
               "type": "question",
               "answerType": "yesNo",
               "label": "Will food or drink need to be planned specifically for the event?",
+              "allowDontKnow": true,
+              "dontKnowTask": {
+                "id": "decide-catering-involvement",
+                "title": "Decide if food or drink needs to be planned specifically for the event",
+                "detail": "Consult the event organiser and Food & Beverage team, then return to this question and replace Don't know with Yes or No.",
+                "deadlineCode": "B3",
+                "responsibleArea": "Food & Beverage",
+                "defaultOwnerRoleId": "food-beverage-manager",
+                "source": "refined"
+              },
               "required": true,
               "source": "expanded"
             },
@@ -99,6 +129,16 @@
               "type": "question",
               "answerType": "yesNo",
               "label": "Will the event need member or visitor communications, advertising or booking information?",
+              "allowDontKnow": true,
+              "dontKnowTask": {
+                "id": "decide-communications-involvement",
+                "title": "Decide whether member or visitor communications, advertising or booking information will be needed",
+                "detail": "Consult the event organiser and Communications team, then return to this question and replace Don't know with Yes or No.",
+                "deadlineCode": "B3",
+                "responsibleArea": "Communications",
+                "defaultOwnerRoleId": "communications",
+                "source": "refined"
+              },
               "required": true,
               "source": "expanded"
             },
@@ -107,6 +147,16 @@
               "type": "question",
               "answerType": "yesNo",
               "label": "Will there be prizes, presentations, speeches or a formal welcome?",
+              "allowDontKnow": true,
+              "dontKnowTask": {
+                "id": "decide-presentation-involvement",
+                "title": "Decide whether prizes, presentations, speeches or a formal welcome will be included",
+                "detail": "Consult the event organiser and relevant club teams, then return to this question and replace Don't know with Yes or No.",
+                "deadlineCode": "B3",
+                "responsibleArea": "Event Coordination",
+                "defaultOwnerRoleId": "event-coordinator",
+                "source": "refined"
+              },
               "required": true,
               "source": "expanded"
             },
@@ -115,6 +165,16 @@
               "type": "question",
               "answerType": "yesNo",
               "label": "Will staff, volunteers or organisers need specific event-day duties?",
+              "allowDontKnow": true,
+              "dontKnowTask": {
+                "id": "decide-staffing-involvement",
+                "title": "Decide whether staff, volunteers or organisers need specific event-day duties",
+                "detail": "Consult the event organiser and department leads, then return to this question and replace Don't know with Yes or No.",
+                "deadlineCode": "B2",
+                "responsibleArea": "Event Coordination",
+                "defaultOwnerRoleId": "event-coordinator",
+                "source": "refined"
+              },
               "required": true,
               "source": "expanded"
             },
@@ -123,6 +183,16 @@
               "type": "question",
               "answerType": "yesNo",
               "label": "Does the event need a specific safety, safeguarding or contingency review?",
+              "allowDontKnow": true,
+              "dontKnowTask": {
+                "id": "decide-safety-involvement",
+                "title": "Decide whether the event needs a specific safety, safeguarding or contingency review",
+                "detail": "Consult the event organiser and responsible club leads, then return to this question and replace Don't know with Yes or No.",
+                "deadlineCode": "B3",
+                "responsibleArea": "Event Coordination",
+                "defaultOwnerRoleId": "event-coordinator",
+                "source": "refined"
+              },
               "required": true,
               "source": "expanded"
             }
