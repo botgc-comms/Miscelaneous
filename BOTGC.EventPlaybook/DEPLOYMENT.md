@@ -4,14 +4,15 @@ The simplest hosted development environment for this project is a Render Web Ser
 
 ## Deploy to Render
 
-1. Push this directory to a private GitHub repository.
+1. Commit and push the latest `BOTGC.EventPlaybook` changes to the `botgc-comms/Miscelaneous` GitHub repository.
 2. Sign in to Render and choose **New → Blueprint**.
-3. Connect the repository containing `render.yaml`.
-4. Enter the prompted secret values:
+3. Connect the `botgc-comms/Miscelaneous` repository.
+4. Set **Blueprint Path** to `BOTGC.EventPlaybook/render.yaml` and select the branch you want to deploy.
+5. Enter the prompted secret values:
    - `DEMO_PASSWORD`: a strong shared password for approved testers;
    - `OPENAI_API_KEY`: the server-side OpenAI API key, or leave it empty to use mock artwork generation.
-5. Apply the Blueprint and wait for `/health` to pass.
-6. Open the generated `onrender.com` URL and sign in with the shared password.
+6. Click **Deploy Blueprint** and wait for `/health` to pass.
+7. Open the generated `onrender.com` URL and sign in with the shared password.
 
 Render automatically rebuilds and deploys the service whenever a commit reaches the connected branch. Change `autoDeployTrigger` in `render.yaml` to `checksPass` after adding a GitHub Actions build if deployments should wait for CI.
 

@@ -4,6 +4,7 @@ services:
     runtime: docker
     plan: free
     region: frankfurt
+    rootDir: BOTGC.EventPlaybook
     dockerfilePath: ./Dockerfile
     dockerContext: .
     healthCheckPath: /health
