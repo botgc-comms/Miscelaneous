@@ -2,13 +2,17 @@ services:
   - type: web
     name: botgc-event-playbook-dev
     runtime: docker
-    plan: free
+    plan: starter
     region: frankfurt
     rootDir: BOTGC.EventPlaybook
     dockerfilePath: ./Dockerfile
     dockerContext: .
     healthCheckPath: /health
     autoDeployTrigger: commit
+    disk:
+      name: botgc-playbook-data
+      mountPath: /app/App_Data
+      sizeGB: 1
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production

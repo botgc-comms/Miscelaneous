@@ -9,6 +9,10 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 150L * 1024L * 1024L;
+});
 builder.Logging.ClearProviders();
 builder.Logging.AddSimpleConsole(options =>
 {
@@ -56,6 +60,9 @@ builder.Services.AddHttpClient("OpenAI", client =>
 builder.Services.AddSingleton<IImagePromptService, OpenAiPromptService>();
 builder.Services.AddSingleton<IOpenAiImageService, OpenAiImageService>();
 builder.Services.AddSingleton<ITaskCompletionRegistry, TaskCompletionRegistry>();
+builder.Services.AddSingleton<PrototypePersistenceStore>();
+builder.Services.AddSingleton<ISharedPlaybookStateStore>(services => services.GetRequiredService<PrototypePersistenceStore>());
+builder.Services.AddSingleton<IPosterSessionStore>(services => services.GetRequiredService<PrototypePersistenceStore>());
 builder.Services
     .AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionDirectory));
@@ -177,6 +184,52 @@ app.MapGet("/api/poster/config", (IPosterConfigurationService configurationServi
         promptModel = effectivePromptModel,
         apiKeySource = hasApiKey ? "OPENAI_API_KEY" : "not configured"
     });
+});
+
+app.MapGet("/api/shared-state", async (
+    ISharedPlaybookStateStore store,
+    CancellationToken cancellationToken) =>
+{
+    return Results.Ok(await store.GetAsync(cancellationToken));
+});
+
+app.MapPut("/api/shared-state", async (
+    SaveSharedPlaybookStateRequest request,
+    ISharedPlaybookStateStore store,
+    CancellationToken cancellationToken) =>
+{
+    if (request.State.ValueKind != System.Text.Json.JsonValueKind.Object)
+    {
+        return Results.BadRequest(new { error = "Shared state must be a JSON object." });
+    }
+
+    var result = await store.SaveAsync(request, cancellationToken);
+    return result.Conflict ? Results.Conflict(result.Document) : Results.Ok(result.Document);
+});
+
+app.MapGet("/api/poster/session", async (
+    string key,
+    IPosterSessionStore store,
+    CancellationToken cancellationToken) =>
+{
+    if (string.IsNullOrWhiteSpace(key)) return Results.BadRequest(new { error = "A session key is required." });
+    var document = await store.GetAsync(key.Trim(), cancellationToken);
+    return document is null ? Results.NotFound() : Results.Ok(document);
+});
+
+app.MapPut("/api/poster/session", async (
+    string key,
+    SavePosterSessionRequest request,
+    IPosterSessionStore store,
+    CancellationToken cancellationToken) =>
+{
+    if (string.IsNullOrWhiteSpace(key)) return Results.BadRequest(new { error = "A session key is required." });
+    if (request.Session.ValueKind != System.Text.Json.JsonValueKind.Object)
+    {
+        return Results.BadRequest(new { error = "Poster session must be a JSON object." });
+    }
+
+    return Results.Ok(await store.SaveAsync(key.Trim(), request.Session, cancellationToken));
 });
 
 app.MapPost("/api/poster/generate-primary", async (

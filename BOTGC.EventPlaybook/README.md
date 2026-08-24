@@ -31,7 +31,7 @@ Open the root URL for the Event Playbook. Use **Poster Studio** from the Playboo
 
 ## Hosted development preview
 
-The repository includes a Docker image, Render Blueprint and optional shared-password screen for a protected development deployment. See [DEPLOYMENT.md](DEPLOYMENT.md) for the deployment steps and the current browser-local persistence limitations.
+The repository includes a Docker image, Render Blueprint, persistent-disk configuration and optional shared-password screen for a protected development deployment. Event workspaces and Poster Studio campaigns are shared through the server while browser storage remains a local cache. See [DEPLOYMENT.md](DEPLOYMENT.md) for setup and prototype-collaboration limits.
 
 ## OpenAI configuration
 

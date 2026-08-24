@@ -4,6 +4,7 @@
   const STORAGE_STATE = 'botgc-event-playbook-state-v2';
   const STORAGE_TEMPLATE = 'botgc-event-playbook-template-v1';
   const REFERENCE_LIBRARY_STORAGE = 'botgc-event-playbook-reference-library-v1';
+  const STORAGE_SHARED_MIGRATED = 'botgc-event-playbook-shared-migration-v1';
 
   const DEFAULT_MILESTONE_OFFSETS = Object.freeze({
     B4: -60,
@@ -32,6 +33,13 @@
   let itemIndex = new Map();
   let moduleIndex = new Map();
   let state = loadState();
+  let sharedStateReady = false;
+  let sharedStateRevision = 0;
+  let lastSyncedSharedState = null;
+  let sharedStateSaveTimer = null;
+  let sharedStateSaveInFlight = false;
+  let sharedStateSavePending = false;
+  let applyingSharedState = false;
   const requestedView = new URLSearchParams(window.location.search).get('view');
   if (['tasks', 'catalogue', 'artwork', 'retrospective', 'admin', 'references'].includes(requestedView)) {
     state.activeView = requestedView;
@@ -128,6 +136,244 @@
 
   function saveState() {
     localStorage.setItem(STORAGE_STATE, JSON.stringify(state));
+    if (sharedStateReady && !applyingSharedState) scheduleSharedStateSave();
+  }
+
+  function emptySharedState() {
+    return {
+      schemaVersion: 1,
+      deadlineOffsets: {},
+      contacts: [],
+      events: []
+    };
+  }
+
+  function normaliseSharedState(value) {
+    const candidate = value && typeof value === 'object' ? value : {};
+    return {
+      schemaVersion: 1,
+      deadlineOffsets: candidate.deadlineOffsets && typeof candidate.deadlineOffsets === 'object'
+        ? structuredClone(candidate.deadlineOffsets)
+        : {},
+      contacts: Array.isArray(candidate.contacts) ? structuredClone(candidate.contacts) : [],
+      events: Array.isArray(candidate.events) ? structuredClone(candidate.events) : []
+    };
+  }
+
+  function getSharedStateSnapshot() {
+    return normaliseSharedState({
+      deadlineOffsets: state.deadlineOffsets,
+      contacts: state.contacts,
+      events: state.events
+    });
+  }
+
+  function valuesEqual(left, right) {
+    return JSON.stringify(left) === JSON.stringify(right);
+  }
+
+  function mergeChangedValue(base, local, remote) {
+    if (valuesEqual(local, base)) return structuredClone(remote);
+    if (valuesEqual(remote, base)) return structuredClone(local);
+    const localIsObject = local && typeof local === 'object' && !Array.isArray(local);
+    const remoteIsObject = remote && typeof remote === 'object' && !Array.isArray(remote);
+    const baseObject = base && typeof base === 'object' && !Array.isArray(base) ? base : {};
+    if (!localIsObject || !remoteIsObject) return structuredClone(local);
+
+    const merged = {};
+    const keys = new Set([...Object.keys(baseObject), ...Object.keys(local), ...Object.keys(remote)]);
+    for (const key of keys) {
+      const value = mergeChangedValue(baseObject[key], local[key], remote[key]);
+      if (value !== undefined) merged[key] = value;
+    }
+    return merged;
+  }
+
+  function mergeEntitiesById(baseItems, localItems, remoteItems) {
+    const base = new Map((baseItems ?? []).filter(item => item?.id).map(item => [item.id, item]));
+    const local = new Map((localItems ?? []).filter(item => item?.id).map(item => [item.id, item]));
+    const remote = new Map((remoteItems ?? []).filter(item => item?.id).map(item => [item.id, item]));
+    const order = [...new Set([...(remoteItems ?? []).map(item => item?.id), ...(localItems ?? []).map(item => item?.id)].filter(Boolean))];
+    const merged = [];
+
+    for (const id of order) {
+      const baseItem = base.get(id);
+      const localItem = local.get(id);
+      const remoteItem = remote.get(id);
+      if (!localItem && !remoteItem) continue;
+      if (!baseItem) {
+        merged.push(localItem && remoteItem ? mergeChangedValue({}, localItem, remoteItem) : structuredClone(localItem ?? remoteItem));
+        continue;
+      }
+      if (!localItem) {
+        if (!valuesEqual(remoteItem, baseItem)) merged.push(structuredClone(remoteItem));
+        continue;
+      }
+      if (!remoteItem) {
+        if (!valuesEqual(localItem, baseItem)) merged.push(structuredClone(localItem));
+        continue;
+      }
+      merged.push(mergeChangedValue(baseItem, localItem, remoteItem));
+    }
+    return merged;
+  }
+
+  function mergeSharedStates(baseValue, localValue, remoteValue) {
+    const base = normaliseSharedState(baseValue);
+    const local = normaliseSharedState(localValue);
+    const remote = normaliseSharedState(remoteValue);
+    return {
+      schemaVersion: 1,
+      deadlineOffsets: mergeChangedValue(base.deadlineOffsets, local.deadlineOffsets, remote.deadlineOffsets),
+      contacts: mergeEntitiesById(base.contacts, local.contacts, remote.contacts),
+      events: mergeEntitiesById(base.events, local.events, remote.events)
+    };
+  }
+
+  function applySharedState(sharedValue) {
+    const shared = normaliseSharedState(sharedValue);
+    applyingSharedState = true;
+    state.deadlineOffsets = shared.deadlineOffsets;
+    state.contacts = shared.contacts;
+    state.events = shared.events;
+    if (state.activeEventId && !state.events.some(event => event.id === state.activeEventId)) {
+      state.activeEventId = null;
+      state.activeView = 'catalogue';
+    }
+    localStorage.setItem(STORAGE_STATE, JSON.stringify(state));
+    applyingSharedState = false;
+  }
+
+  function scheduleSharedStateSave(delay = 450) {
+    if (!sharedStateReady) return;
+    if (sharedStateSaveTimer) clearTimeout(sharedStateSaveTimer);
+    sharedStateSaveTimer = setTimeout(() => {
+      sharedStateSaveTimer = null;
+      persistSharedState();
+    }, delay);
+  }
+
+  async function persistSharedState() {
+    if (!sharedStateReady) return false;
+    if (sharedStateSaveInFlight) {
+      sharedStateSavePending = true;
+      return false;
+    }
+
+    const localSnapshot = getSharedStateSnapshot();
+    if (lastSyncedSharedState && valuesEqual(localSnapshot, lastSyncedSharedState)) return true;
+
+    sharedStateSaveInFlight = true;
+    let retry = false;
+    let saved = false;
+    try {
+      const response = await fetch('/api/shared-state', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ revision: sharedStateRevision, state: localSnapshot })
+      });
+      const document = await response.json();
+      if (response.status === 409) {
+        const remote = normaliseSharedState(document.state);
+        const merged = mergeSharedStates(lastSyncedSharedState ?? emptySharedState(), localSnapshot, remote);
+        sharedStateRevision = Number(document.revision) || 0;
+        lastSyncedSharedState = remote;
+        applySharedState(merged);
+        retry = true;
+      } else if (!response.ok) {
+        throw new Error(document?.error ?? `Shared state save failed (${response.status}).`);
+      } else {
+        sharedStateRevision = Number(document.revision) || sharedStateRevision + 1;
+        lastSyncedSharedState = normaliseSharedState(document.state ?? localSnapshot);
+        saved = true;
+      }
+    } catch (error) {
+      console.warn('Unable to save the shared event workspace. The browser cache is still available.', error);
+      retry = true;
+    } finally {
+      sharedStateSaveInFlight = false;
+      if (retry || sharedStateSavePending) {
+        sharedStateSavePending = false;
+        scheduleSharedStateSave(retry ? 1500 : 100);
+      }
+    }
+    return saved;
+  }
+
+  async function pollSharedState() {
+    if (!sharedStateReady || sharedStateSaveInFlight) return;
+    if (document.activeElement?.matches?.('input, textarea, select, [contenteditable="true"]')) return;
+    try {
+      const response = await fetch('/api/shared-state', { cache: 'no-store' });
+      if (!response.ok) return;
+      const document = await response.json();
+      const revision = Number(document.revision) || 0;
+      if (revision <= sharedStateRevision || !document.state) return;
+
+      const remote = normaliseSharedState(document.state);
+      const local = getSharedStateSnapshot();
+      const hasLocalChanges = lastSyncedSharedState && !valuesEqual(local, lastSyncedSharedState);
+      const next = hasLocalChanges
+        ? mergeSharedStates(lastSyncedSharedState, local, remote)
+        : remote;
+      sharedStateRevision = revision;
+      lastSyncedSharedState = remote;
+      applySharedState(next);
+      render();
+      if (hasLocalChanges) scheduleSharedStateSave(100);
+    } catch (error) {
+      console.warn('Unable to refresh the shared event workspace.', error);
+    }
+  }
+
+  async function initialiseSharedState() {
+    try {
+      const browserSnapshot = getSharedStateSnapshot();
+      const shouldMigrateBrowserData = localStorage.getItem(STORAGE_SHARED_MIGRATED) !== '1';
+      const response = await fetch('/api/shared-state', { cache: 'no-store' });
+      if (!response.ok) throw new Error(`Shared state load failed (${response.status}).`);
+      const document = await response.json();
+      sharedStateRevision = Number(document.revision) || 0;
+      let needsMigrationSave = false;
+      if (document.state) {
+        const remote = normaliseSharedState(document.state);
+        lastSyncedSharedState = remote;
+        let initial = remote;
+        if (shouldMigrateBrowserData) {
+          const remoteEventIds = new Set(remote.events.map(event => event.id));
+          const remoteContactIds = new Set(remote.contacts.map(contact => contact.id));
+          const legacyEvents = browserSnapshot.events.filter(event => event?.id && !remoteEventIds.has(event.id));
+          const legacyContacts = browserSnapshot.contacts.filter(contact => contact?.id && !remoteContactIds.has(contact.id));
+          needsMigrationSave = legacyEvents.length > 0 || legacyContacts.length > 0;
+          if (needsMigrationSave) {
+            initial = normaliseSharedState({
+              deadlineOffsets: Object.keys(remote.deadlineOffsets).length > 0
+                ? remote.deadlineOffsets
+                : browserSnapshot.deadlineOffsets,
+              contacts: [...remote.contacts, ...legacyContacts],
+              events: [...remote.events, ...legacyEvents]
+            });
+          }
+        }
+        applySharedState(initial);
+      } else {
+        lastSyncedSharedState = emptySharedState();
+        needsMigrationSave = browserSnapshot.events.length > 0 || browserSnapshot.contacts.length > 0;
+      }
+      sharedStateReady = true;
+      if (needsMigrationSave) {
+        const migrated = await persistSharedState();
+        if (migrated && valuesEqual(getSharedStateSnapshot(), lastSyncedSharedState)) {
+          localStorage.setItem(STORAGE_SHARED_MIGRATED, '1');
+        }
+      } else if (shouldMigrateBrowserData) {
+        localStorage.setItem(STORAGE_SHARED_MIGRATED, '1');
+      }
+      window.setInterval(pollSharedState, 7000);
+    } catch (error) {
+      console.warn('Shared storage is unavailable; continuing with this browser cache.', error);
+      sharedStateReady = false;
+    }
   }
 
   async function loadInitialPlaybook() {
@@ -1112,7 +1358,7 @@
 
     bindEvents();
     if (state.activeView === 'artwork' && event) {
-      import('./poster-app.js?v=20260823-selected-event-context-2')
+      import('./poster-app.js?v=20260824-shared-persistence-1')
         .then(module => module.mountPosterStudio({
           eventId: event.id,
           eventName: event.name,
@@ -3097,12 +3343,12 @@
 
   loadInitialPlaybook()
     .then(async candidate => {
-      migrateMilestoneState();
       candidate = migratePlaybookMilestoneCodes(candidate);
       validatePlaybook(candidate);
       playbook = candidate;
-      saveState();
       indexPlaybook();
+      await initialiseSharedState();
+      migrateMilestoneState();
       initialiseOperationalState();
       const params = new URLSearchParams(location.search);
       const requestedView = params.get('view');

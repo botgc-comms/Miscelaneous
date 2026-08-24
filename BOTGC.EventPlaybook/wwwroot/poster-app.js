@@ -29,6 +29,7 @@ function createSession(key, context) {
         generationSnapshot: null,
         persistTimer: null,
         persistenceChain: Promise.resolve(),
+        serverRevision: 0,
         customEventName: (context?.eventName ?? '').trim(),
         form: {
             eventId: null,
@@ -127,6 +128,28 @@ async function writeStoredSession(record) {
         transaction.onerror = () => reject(transaction.error ?? new Error('Unable to save the Poster Studio session.'));
         transaction.onabort = () => reject(transaction.error ?? new Error('Saving the Poster Studio session was interrupted.'));
     });
+}
+
+async function readServerSession(key) {
+    const response = await fetch(`/api/poster/session?key=${encodeURIComponent(key)}`, { cache: 'no-store' });
+    if (response.status === 404) return null;
+    if (!response.ok) {
+        throw new Error(`Poster Studio shared session load failed (${response.status}).`);
+    }
+    return response.json();
+}
+
+async function writeServerSession(key, record) {
+    const response = await fetch(`/api/poster/session?key=${encodeURIComponent(key)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ session: record })
+    });
+    const document = await response.json();
+    if (!response.ok) {
+        throw new Error(document?.error ?? `Poster Studio shared session save failed (${response.status}).`);
+    }
+    return document;
 }
 
 function serialiseSession(session) {
@@ -324,14 +347,31 @@ function createGenerationContext(session, isRegeneration) {
 async function hydrateSession(session) {
     if (session.hydrated) return session.restoredFromStorage;
 
+    let stored = null;
+    let serverDocument = null;
     try {
-        session.restoredFromStorage = applyStoredSession(session, await readStoredSession(session.key));
+        serverDocument = await readServerSession(session.key);
+        if (serverDocument?.session) {
+            stored = serverDocument.session;
+            session.serverRevision = Number(serverDocument.revision) || 0;
+        }
     } catch (error) {
-        console.warn('Unable to restore the saved Poster Studio session.', error);
-        session.restoredFromStorage = false;
+        console.warn('Unable to restore the shared Poster Studio session. Trying the browser cache.', error);
     }
 
+    if (!stored) {
+        try {
+            stored = await readStoredSession(session.key);
+        } catch (error) {
+            console.warn('Unable to restore the browser-cached Poster Studio session.', error);
+        }
+    }
+
+    session.restoredFromStorage = applyStoredSession(session, stored);
     session.hydrated = true;
+    if (session.restoredFromStorage && !serverDocument) {
+        scheduleSessionPersistence(session);
+    }
     return session.restoredFromStorage;
 }
 
@@ -345,8 +385,16 @@ async function persistSession(session) {
     const record = serialiseSession(session);
     session.persistenceChain = session.persistenceChain
         .catch(() => undefined)
-        .then(() => writeStoredSession(record))
-        .catch(error => console.warn('Unable to save the Poster Studio session.', error));
+        .then(async () => {
+            try {
+                await writeStoredSession(record);
+            } catch (error) {
+                console.warn('Unable to update the browser-cached Poster Studio session.', error);
+            }
+            const document = await writeServerSession(session.key, record);
+            session.serverRevision = Number(document.revision) || session.serverRevision;
+        })
+        .catch(error => console.warn('Unable to save the shared Poster Studio session.', error));
 
     return session.persistenceChain;
 }
@@ -354,7 +402,7 @@ async function persistSession(session) {
 function scheduleSessionPersistence(session) {
     if (!session?.hydrated) return;
     if (session.persistTimer) clearTimeout(session.persistTimer);
-    session.persistTimer = setTimeout(() => persistSession(session), 120);
+    session.persistTimer = setTimeout(() => persistSession(session), 750);
 }
 
 function isSessionVisible(session) {
