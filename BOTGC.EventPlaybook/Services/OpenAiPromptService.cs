@@ -24,11 +24,13 @@ public sealed class OpenAiPromptService(
         CancellationToken cancellationToken)
     {
         var configuration = posterConfiguration.Get();
+        var styleVariation = ResolveStyleVariation(style, request.StyleVariationId);
         var fallbackPrompt = BuildPrimaryFallbackPrompt(
             configuration,
             request,
             eventDefinition,
             style,
+            styleVariation,
             output);
 
         if (string.IsNullOrWhiteSpace(_options.ApiKey))
@@ -43,7 +45,7 @@ public sealed class OpenAiPromptService(
         var brief = new
         {
             task = "Create the final image-generation prompt for the PRIMARY finished event poster. The prompt must visibly dramatise the organiser-supplied event description, not merely acknowledge it.",
-            brand = configuration.Brand.Name,
+            brand = request.IncludeClubBranding ? configuration.Brand.Name : null,
             eventData = new
             {
                 title = eventDefinition.Name,
@@ -58,7 +60,16 @@ public sealed class OpenAiPromptService(
                 style.StyleDirection,
                 style.VisualLanguage,
                 style.Mood,
-                style.Avoid
+                style.Avoid,
+                selectedVariation = styleVariation is null
+                    ? null
+                    : new
+                    {
+                        metadataId = styleVariation.Id,
+                        namedIllustrator = styleVariation.ArtistName,
+                        explicitStyleInstruction = $"Create this poster in the style of {styleVariation.ArtistName}.",
+                        styleVariation.StyleDirection
+                    }
             },
             output = new
             {
@@ -72,11 +83,17 @@ public sealed class OpenAiPromptService(
             posterContent = new
             {
                 renderAsFinishedPoster = true,
-                clubName = configuration.Brand.Name,
+                clubName = request.IncludeClubBranding ? configuration.Brand.Name : null,
+                clubBrandingRequested = request.IncludeClubBranding,
                 eventTitle = eventDefinition.Name,
                 eventDate = request.IncludeDate ? FormatEventDate(request.EventDate) : null,
                 price = request.IncludePrice ? request.Price?.Trim() : null,
-                exactTextRule = "Render the supplied club name, event title, date and price exactly as written. Do not paraphrase, correct, abbreviate or invent alternatives.",
+                exactTextRule = request.IncludeClubBranding
+                    ? "Render the supplied club name, event title, date and price exactly as written. Do not paraphrase, correct, abbreviate or invent alternatives."
+                    : "Render the supplied event title, date and price exactly as written. Do not paraphrase, correct, abbreviate or invent alternatives.",
+                clubBrandingRule = request.IncludeClubBranding
+                    ? "The real Club mark will be applied after generation. Keep the upper-right safe area visually quiet for it, but do not draw, imitate or invent a crest, shield, monogram or logo."
+                    : "This is an internal Club asset. Do not show the Club name, BOTGC initials, a crest, shield, monogram, wordmark or any other Club logo or branding anywhere in the poster.",
                 textSafetyRule = "Every required word must be fully visible. Obey the output-specific safe margins as a hard boundary. No glyph, word, date, price, text box, text badge or text-bearing panel may touch, cross or be clipped by any image edge. Reflow or reduce type size before violating the safe area.",
                 supportingCopyRule = "You may devise a short event-specific subtitle, explanatory line and call to action when they improve the poster. Keep them concise, relevant and consistent with the event description.",
                 stylePresetNameIsMetadataOnly = true
@@ -105,11 +122,13 @@ public sealed class OpenAiPromptService(
         CancellationToken cancellationToken)
     {
         var configuration = posterConfiguration.Get();
+        var styleVariation = ResolveStyleVariation(style, request.StyleVariationId);
         var fallbackPrompt = BuildVariantFallbackPrompt(
             configuration,
             request,
             eventDefinition,
             style,
+            styleVariation,
             output);
 
         if (string.IsNullOrWhiteSpace(_options.ApiKey))
@@ -123,9 +142,9 @@ public sealed class OpenAiPromptService(
 
         var brief = new
         {
-            task = "Create the final image-edit prompt for adapting the supplied PRIMARY finished event poster into another format.",
-            sourceImageInstruction = "The supplied image is the approved finished campaign poster and must remain recognisably the same campaign. Preserve the exact required text and recompose the complete design rather than inventing a new concept.",
-            brand = configuration.Brand.Name,
+            task = "Create the final image-edit prompt for adapting the supplied DIGITAL-SCREEN MASTER poster into another format. The result is another version of the same campaign, with only the compositional differences required by the target dimensions.",
+            sourceImageInstruction = "The first attached image, named primary-campaign-artwork.png, is the authoritative key reference and approved finished campaign master. Preserve its subjects, campaign idea, art direction, palette, visual details, typography character and exact required text. Supporting images are secondary references only. Recompose the complete design for the new frame rather than cropping the master or inventing a new concept.",
+            brand = request.IncludeClubBranding ? configuration.Brand.Name : null,
             eventData = new
             {
                 title = eventDefinition.Name,
@@ -140,7 +159,16 @@ public sealed class OpenAiPromptService(
                 style.StyleDirection,
                 style.VisualLanguage,
                 style.Mood,
-                style.Avoid
+                style.Avoid,
+                selectedVariation = styleVariation is null
+                    ? null
+                    : new
+                    {
+                        metadataId = styleVariation.Id,
+                        namedIllustrator = styleVariation.ArtistName,
+                        explicitStyleInstruction = $"Preserve the master campaign's {styleVariation.ArtistName} illustration style.",
+                        styleVariation.StyleDirection
+                    }
             },
             targetOutput = new
             {
@@ -154,12 +182,17 @@ public sealed class OpenAiPromptService(
             posterContent = new
             {
                 renderAsFinishedPoster = true,
-                clubName = configuration.Brand.Name,
+                clubName = request.IncludeClubBranding ? configuration.Brand.Name : null,
+                clubBrandingRequested = request.IncludeClubBranding,
                 eventTitle = eventDefinition.Name,
                 eventDate = request.IncludeDate ? FormatEventDate(request.EventDate) : null,
                 price = request.IncludePrice ? request.Price?.Trim() : null,
                 exactTextRule = "Preserve and render all supplied required text exactly. The adapted image must not change spelling, wording, dates, currency or event identity.",
+                clubBrandingRule = request.IncludeClubBranding
+                    ? "The real Club mark will be applied after generation. Keep the upper-right safe area visually quiet for it, but do not draw, imitate or invent a crest, shield, monogram or logo."
+                    : "Remove and do not reproduce any Club name, BOTGC initials, crest, shield, monogram, wordmark or other Club logo that may be present in the source artwork.",
                 textSafetyRule = "Recompose every text element fully inside the target output safe margins. No glyph, word, date, price, text box, text badge or text-bearing panel may be cropped, clipped or touch an image edge. Reduce or reflow typography as needed.",
+                adaptationContinuityRule = "The target must read as the same campaign at a different dimension: retain the master's recognisable scene and hierarchy, then reposition, reflow or resize elements only as needed. Never solve the aspect-ratio change with a crop.",
                 supportingCopyRule = "Preserve useful supporting campaign copy from the primary poster unless the target format requires a shorter version for legibility.",
                 stylePresetNameIsMetadataOnly = true
             },
@@ -278,6 +311,7 @@ public sealed class OpenAiPromptService(
         GeneratePosterRequest request,
         EventDefinition eventDefinition,
         PosterStyleDefinition style,
+        PosterStyleVariationDefinition? styleVariation,
         PosterOutputDefinition output)
     {
         var builder = new StringBuilder();
@@ -296,6 +330,12 @@ public sealed class OpenAiPromptService(
         builder.AppendLine();
         builder.AppendLine("VISUAL STYLE");
         builder.AppendLine(style.StyleDirection);
+        if (styleVariation is not null)
+        {
+            builder.AppendLine($"Create this poster in the style of {styleVariation.ArtistName}.");
+            builder.AppendLine("Use the named illustrator as the explicit visual-style reference while creating a new, event-specific composition:");
+            builder.AppendLine(styleVariation.StyleDirection);
+        }
         AppendList(builder, style.VisualLanguage);
         builder.AppendLine();
         builder.AppendLine("MOOD AND CHARACTER");
@@ -315,7 +355,15 @@ public sealed class OpenAiPromptService(
             "Use any separately supplied supporting images as factual visual references for distinctive event details. If a supporting image shows a trophy, prop, mascot or other important object, incorporate that recognisable design into the poster rather than inventing a generic substitute.");
         builder.AppendLine();
         builder.AppendLine("REQUIRED POSTER TEXT");
-        builder.AppendLine($"Club name: {configuration.Brand.Name}");
+        if (request.IncludeClubBranding)
+        {
+            builder.AppendLine($"Club name: {configuration.Brand.Name}");
+            builder.AppendLine("The real Club mark will be applied after generation. Keep the upper-right safe area visually quiet for it, but do not draw, imitate or invent a crest, shield, monogram or logo.");
+        }
+        else
+        {
+            builder.AppendLine("Do not include the Club name, BOTGC initials, a crest, shield, monogram, wordmark or any other Club logo or branding anywhere in the poster.");
+        }
         builder.AppendLine($"Event title: {eventDefinition.Name}");
 
         if (request.IncludeDate)
@@ -365,12 +413,14 @@ public sealed class OpenAiPromptService(
         GenerateVariantRequest request,
         EventDefinition eventDefinition,
         PosterStyleDefinition style,
+        PosterStyleVariationDefinition? styleVariation,
         PosterOutputDefinition output)
     {
         var builder = new StringBuilder();
         builder.AppendLine($"Adapt the supplied approved '{eventDefinition.Name}' campaign artwork for {output.Name}.");
+        builder.AppendLine("The first attached image, primary-campaign-artwork.png, is the authoritative digital-screen master and dominant key reference. Any other attached files are supporting references only.");
         builder.AppendLine("Preserve the same campaign concept, main characters or subjects, visual language, palette, mood and storytelling. The result must obviously belong to the same campaign.");
-        builder.AppendLine("Recompose the scene deliberately for the new frame. Do not merely crop the source image and do not invent a different campaign concept.");
+        builder.AppendLine("Recompose the scene and typography deliberately for the new frame. Never crop, zoom or clip the source to fill the target. Reposition, reflow or reduce elements so every required word remains complete and comfortably inside the target safe area.");
         builder.AppendLine($"Target composition: {output.Width}:{output.Height}. {output.CompositionGuidance}");
         AppendList(builder, output.ReservedOverlayZones);
         builder.AppendLine("Maintain the event's defining visual idea:");
@@ -378,6 +428,12 @@ public sealed class OpenAiPromptService(
         AppendList(builder, eventDefinition.SceneRecipe.MustShow);
         builder.AppendLine("Keep the selected visual style consistent:");
         builder.AppendLine(style.StyleDirection);
+        if (styleVariation is not null)
+        {
+            builder.AppendLine($"Preserve the master campaign's {styleVariation.ArtistName} illustration style.");
+            builder.AppendLine("Use the same named illustrator reference consistently for this adapted format:");
+            builder.AppendLine(styleVariation.StyleDirection);
+        }
 
         if (!string.IsNullOrWhiteSpace(request.AdditionalInstructions))
         {
@@ -393,7 +449,15 @@ public sealed class OpenAiPromptService(
             "Use any separately supplied supporting images as visual references for specific objects or details that the campaign should preserve, such as a trophy, prop, mascot or other distinctive event asset.");
 
         builder.AppendLine("REQUIRED TEXT TO PRESERVE");
-        builder.AppendLine($"Club name: {configuration.Brand.Name}");
+        if (request.IncludeClubBranding)
+        {
+            builder.AppendLine($"Club name: {configuration.Brand.Name}");
+            builder.AppendLine("The real Club mark will be applied after generation. Keep the upper-right safe area visually quiet for it, but do not draw, imitate or invent a crest, shield, monogram or logo.");
+        }
+        else
+        {
+            builder.AppendLine("Remove and do not reproduce any Club name, BOTGC initials, crest, shield, monogram, wordmark or other Club logo that may be present in the source artwork.");
+        }
         builder.AppendLine($"Event title: {eventDefinition.Name}");
 
         if (request.IncludeDate)
@@ -413,6 +477,30 @@ public sealed class OpenAiPromptService(
         AppendList(builder, eventDefinition.SceneRecipe.Avoid);
 
         return builder.ToString().Trim();
+    }
+
+
+    private static PosterStyleVariationDefinition? ResolveStyleVariation(
+        PosterStyleDefinition style,
+        string? variationId)
+    {
+        if (style.Variations.Count == 0)
+        {
+            return null;
+        }
+
+        if (!string.IsNullOrWhiteSpace(variationId))
+        {
+            var selected = style.Variations.FirstOrDefault(variation =>
+                string.Equals(variation.Id, variationId, StringComparison.OrdinalIgnoreCase));
+
+            if (selected is not null)
+            {
+                return selected;
+            }
+        }
+
+        return style.Variations[Random.Shared.Next(style.Variations.Count)];
     }
 
 

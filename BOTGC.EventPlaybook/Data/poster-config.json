@@ -10,16 +10,16 @@
       "Create the complete finished event poster, including integrated typography and campaign artwork.",
       "TEXT SAFETY IS A HARD REQUIREMENT: every required word and every text-bearing shape must be completely inside the safe area with visible breathing room on every side.",
       "Never crop, clip, truncate or run any letterform off an edge. Do not let large headline typography touch the top, left, right or bottom boundary.",
-      "When a downstream centre-crop is specified, compose typography for the surviving safe rectangle rather than for the full generated source image.",
+      "When adapting artwork to another aspect ratio, deliberately recompose and reflow it. Never use a centre crop that can remove typography, branding or important subjects.",
       "Treat the organiser-supplied event description as a visual brief, not background metadata.",
       "Explicitly show the most distinctive concrete elements from the event description. Unusual people, animals, costumes, performers, food, props and activities should materially shape the composition.",
       "Do not substitute a generic golf ball, golfer, clubhouse or fairway for a richer event story when the organiser has supplied more distinctive visual material.",
       "For playful, theatrical or eccentric events, allow the scene to be joyful, surprising, busy and characterful while keeping one dominant focal idea and clear poster hierarchy.",
       "Use one clear visual idea that communicates the event within a few seconds.",
       "Design for viewing at distance as well as close inspection; headline, date and other essential information must remain highly legible.",
-      "Render the supplied Club name, event title, date and price exactly as provided. Treat them as immutable copy, not suggestions.",
+      "Render the Club name only when club branding is explicitly requested. Always render the supplied event title, date and price exactly as provided and treat requested copy as immutable, not suggestions.",
       "Use typography, banners, plaques, ribbons, badges or signboards only when they belong naturally to the selected visual style and improve the hierarchy.",
-      "Keep important subjects and essential text comfortably inside safe edges so the poster can be adapted into other formats and centre-cropped where necessary.",
+      "Keep important subjects and essential text comfortably inside safe edges so the poster can be intentionally recomposed into other formats without clipping or cropping content.",
       "Make the result feel commissioned for a premium golf-club event rather than generic stock imagery, concept art or a templated software graphic.",
       "Use supporting detail to enrich the main story without competing with the title, date or central event concept.",
       "If organiser instructions conflict with the event's defining concept, preserve the defining concept and interpret the organiser instruction in a compatible way."
@@ -29,6 +29,7 @@
       "Do not invent or alter dates, prices, sponsor names, competition details, website addresses or Club names.",
       "Do not misspell, paraphrase, abbreviate or substitute the supplied required poster copy.",
       "Do not include the Event Playbook label, interface elements, watermarks or fake logos.",
+      "Unless club branding is explicitly requested, do not include the Club name, BOTGC initials, a crest, shield, monogram, wordmark or any other Club branding.",
       "Do not invent dense blocks of small text simply to make the result look like a poster.",
       "Do not literalise prompt-writing terminology, metadata labels or generation instructions as visual content.",
       "Do not allow decorative poster furniture to overwhelm the central event story or essential information.",
@@ -285,6 +286,95 @@
         "Avoid fake poster headlines, fake dates, invented sponsor copy and decorative typography.",
         "Avoid distressed-paper gimmicks that overpower the scene."
       ]
+    },
+    {
+      "id": "childrens-book",
+      "name": "Children's Book",
+      "summary": "A well-known historical children's illustrator is selected by name for each new campaign.",
+      "styleDirection": "Create an original premium children's picture-book illustration with strong visual storytelling, expressive characters and handcrafted warmth. For each campaign, use the separately supplied named historical illustrator as the explicit style reference and follow that selection consistently across every output.",
+      "visualLanguage": [
+        "Make the event readable as one clear narrative moment with expressive gesture, environmental detail and a strong focal silhouette.",
+        "Use convincingly handmade marks, materials and surface texture rather than a generic digital cartoon filter.",
+        "Keep the composition sophisticated enough for a real Club campaign while retaining the warmth, surprise and visual wit of a memorable picture book.",
+        "Integrate required poster text carefully without letting decorative illustration compromise legibility or safe margins."
+      ],
+      "mood": [
+        "Imaginative, warm, characterful and inviting.",
+        "Playful where appropriate to the event, but never visually cheap or infantile."
+      ],
+      "avoid": [
+        "Do not reproduce recognisable copyrighted characters, scenes, costumes, compositions or book-cover layouts.",
+        "Do not reproduce or trace a specific existing illustration; create a new event-specific scene.",
+        "Avoid generic animation-studio rendering, glossy 3D characters, clip-art and synthetic vector smoothness.",
+        "Do not render the illustrator's name, style name or random direction identifier as poster copy."
+      ],
+      "variations": [
+        {
+          "id": "delicate-countryside-watercolour",
+          "artistName": "Beatrix Potter",
+          "styleDirection": "Use delicate natural-history watercolour, fine restrained outlines, accurately observed animals and plants, pale paper, muted botanical colour and a classic English countryside atmosphere. Keep the scale intimate, elegant and gently humorous."
+        },
+        {
+          "id": "classic-pen-and-ink",
+          "artistName": "E. H. Shepard",
+          "styleDirection": "Use traditional expressive pen-and-ink drawing with economical hatching, lyrical countryside observation and selective soft colour washes. Favour believable gesture, quiet humour and spacious page-like composition."
+        },
+        {
+          "id": "ornate-fairytale",
+          "artistName": "Arthur Rackham",
+          "styleDirection": "Use intricately drawn trees, roots, foliage and fantastical environmental detail with sinuous ink contours, subdued watercolour and a slightly mysterious fairytale atmosphere. Make the magic richly crafted and atmospheric rather than frightening."
+        },
+        {
+          "id": "victorian-engraving",
+          "artistName": "John Tenniel",
+          "styleDirection": "Use crisp black-and-white Victorian engraving language: meticulous cross-hatching, formal line work, eccentric proportions and theatrical staging. Keep the result highly legible and allow optional restrained spot colour only when it strengthens the hierarchy."
+        },
+        {
+          "id": "warm-simple-line",
+          "artistName": "Judith Kerr",
+          "styleDirection": "Use deceptively simple expressive line drawing, flat but softly textured colour and warm domestic observation. Give every face and pose emotional clarity while keeping the scene uncluttered, friendly and gently funny."
+        },
+        {
+          "id": "observational-everyday",
+          "artistName": "Shirley Hughes",
+          "styleDirection": "Use richly observed everyday characters, natural body language, layered group activity and warm painted colour. Capture convincing small human moments and environmental details with a welcoming, lived-in sense of place."
+        },
+        {
+          "id": "soft-pencil-nostalgia",
+          "artistName": "Raymond Briggs",
+          "styleDirection": "Use soft coloured pencil, crayon and pastel texture with visible grain, glowing seasonal light and tender visual storytelling. Build a warm nostalgic atmosphere through gentle edges, quiet expressions and hand-worked tonal layers."
+        },
+        {
+          "id": "painted-paper-collage",
+          "artistName": "Eric Carle",
+          "styleDirection": "Construct the scene from bold hand-painted paper shapes with torn and cut edges, visible layered fibres, simplified forms and saturated colour. Use rhythmic repetition and tactile collage depth while retaining a clear event narrative."
+        },
+        {
+          "id": "intricate-fantastical",
+          "artistName": "Maurice Sendak",
+          "styleDirection": "Use carefully rendered pen-and-watercolour fantasy illustration with dense patterned texture, unusual but appealing creatures, cross-hatched shadows and a dreamlike sense of scale. Balance strangeness with warmth and emotional clarity."
+        },
+        {
+          "id": "bright-geometric-patchwork",
+          "artistName": "David McKee",
+          "styleDirection": "Use simple rounded shapes, vivid geometric colour, patchwork pattern and strong clean design. Build characters and scenery from cheerful blocks of colour while maintaining visual rhythm and an unmistakable central story."
+        },
+        {
+          "id": "graphic-silhouette",
+          "artistName": "Jan Pieńkowski",
+          "styleDirection": "Use bold black silhouettes, sharp profile shapes and a very limited palette of striking flat colours. Create theatrical visual clarity through contrast, cut-paper edges and carefully staged negative space."
+        },
+        {
+          "id": "jewel-toned-painterly",
+          "artistName": "Brian Wildsmith",
+          "styleDirection": "Use richly layered painterly colour, luminous jewel-like hues, expressive brush texture and lavishly observed birds, animals or landscape details. Keep the palette vibrant and celebratory without losing subject clarity."
+        },
+        {
+          "id": "mid-century-travel-story",
+          "artistName": "M. Sasek",
+          "styleDirection": "Use a charming mid-century illustrated travel-book aesthetic with simplified architecture, elongated figures, hand-painted gouache texture, playful perspective and a restrained period palette. Make the venue feel distinctive, stylish and full of local character."
+        }
+      ]
     }
   ],
   "outputs": [
@@ -297,7 +387,7 @@
       "purpose": "Primary portrait artwork for the Club's 43-inch 4K portrait displays.",
       "compositionGuidance": "Build a tall 9:16 hero poster with a clear visual story readable across a clubhouse room. The generated source image must be treated as a complete finished poster, not a rough background. Assume the final application will preserve the full artwork and therefore design an elegant full poster with balanced margins. All required text must sit comfortably inside a generous inner safe rectangle at least 16% in from the left and right edges and at least 10% in from the top and bottom. No title, club name, date, price, badge, subtitle, call to action or supporting text may clip, kiss the edge or be partially obscured. If space is tight, reduce the text size, add line breaks or simplify the layout rather than risking cropped typography.",
       "reservedOverlayZones": [
-        "Keep the full club name and event title completely visible, centred or carefully aligned, with generous breathing room around every letter.",
+        "Keep the event title completely visible with generous breathing room. When club branding is requested, keep the upper-right safe area visually quiet for the real Club mark that will be applied after generation.",
         "If the event title is long, reflow it over multiple lines or reduce its size. Never allow the first or last characters to touch the image edge.",
         "Keep the event date fully visible beneath the title in a clearly separated line or plaque.",
         "Keep optional price and supporting copy in a secondary zone that remains fully inside the safe area.",

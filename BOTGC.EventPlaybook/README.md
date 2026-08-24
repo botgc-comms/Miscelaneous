@@ -29,6 +29,10 @@ http://localhost:5098
 
 Open the root URL for the Event Playbook. Use **Poster Studio** from the Playbook to open the digital artwork workflow for the selected event.
 
+## Hosted development preview
+
+The repository includes a Docker image, Render Blueprint and optional shared-password screen for a protected development deployment. See [DEPLOYMENT.md](DEPLOYMENT.md) for the deployment steps and the current browser-local persistence limitations.
+
 ## OpenAI configuration
 
 The application uses the existing environment-variable convention:

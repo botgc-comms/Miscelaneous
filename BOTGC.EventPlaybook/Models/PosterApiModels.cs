@@ -8,6 +8,8 @@ public sealed class GeneratePosterRequest
 
     public required string StyleId { get; init; }
 
+    public string? StyleVariationId { get; init; }
+
     public required string EventDate { get; init; }
 
     public required string Description { get; init; }
@@ -15,6 +17,8 @@ public sealed class GeneratePosterRequest
     public bool IncludeDate { get; init; }
 
     public bool IncludePrice { get; init; }
+
+    public bool IncludeClubBranding { get; init; }
 
     public string? Price { get; init; }
 
@@ -35,6 +39,8 @@ public sealed class GenerateVariantRequest
 
     public required string StyleId { get; init; }
 
+    public string? StyleVariationId { get; init; }
+
     public required string OutputId { get; init; }
 
     public required string EventDate { get; init; }
@@ -46,6 +52,8 @@ public sealed class GenerateVariantRequest
     public bool IncludeDate { get; init; }
 
     public bool IncludePrice { get; init; }
+
+    public bool IncludeClubBranding { get; init; }
 
     public string? Price { get; init; }
 

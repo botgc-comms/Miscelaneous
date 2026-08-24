@@ -932,7 +932,8 @@
       : state.activeView === 'admin' ? 'Configure the questions, tasks, ownership rules and advisories that make up the club event planning process.'
       : state.activeView === 'retrospective' ? 'Capture what worked, what did not and what the next organiser should know before this event is run again.'
       : 'Plan the event consistently from first decision to final close-down, with every relevant question, responsibility and deadline in one place.';
-    const showPlannerContext = Boolean(event) && (isPlanningView || state.activeView === 'tasks' || state.activeView === 'retrospective' || state.activeView === 'admin');
+    const showEventEditor = Boolean(event) && state.activeView === 'module:start';
+    const showEventTools = Boolean(event) && (isPlanningView || state.activeView === 'tasks' || state.activeView === 'retrospective');
 
     app.innerHTML = `
       <div class="app-shell">
@@ -947,24 +948,14 @@
 
           <nav class="side-nav" aria-label="Event Playbook">
             <button class="${state.activeView === 'catalogue' ? 'active' : ''}" data-view="catalogue"><span class="nav-icon">▦</span>Event Catalogue</button>
+            <span class="side-nav-group-label">Current event workspace</span>
             <button class="${isPlanningView ? 'active' : ''}" data-view="module:start" ${event ? '' : 'disabled'}><span class="nav-icon">◇</span>Event Planner</button>
             <button class="${state.activeView === 'tasks' ? 'active' : ''}" data-view="tasks" ${event ? '' : 'disabled'}><span class="nav-icon">✓</span>Task Board</button>
             <button class="${state.activeView === 'artwork' ? 'active' : ''}" data-view="artwork" ${event ? '' : 'disabled'}><span class="nav-icon">✦</span>Digital Artwork</button>
-            <button class="${state.activeView === 'references' ? 'active' : ''}" data-view="references"><span class="nav-icon">▣</span>Image Library</button>
             <button class="${state.activeView === 'retrospective' ? 'active' : ''}" data-view="retrospective" ${event ? '' : 'disabled'}><span class="nav-icon">↺</span>Retrospectives</button>
           </nav>
 
-          ${isPlanningView && event ? `<section class="sidebar-section event-switcher">
-            <div class="sidebar-section-heading">
-              <span>Current events</span>
-              <button class="sidebar-add-button" data-action="new-event" title="Create event" aria-label="Create event">+</button>
-            </div>
-            <div class="event-list">
-              ${state.events.map(item => renderEventListItem(item)).join('')}
-            </div>
-          </section>
-
-          <section class="sidebar-section module-nav" aria-label="Planning modules">
+          ${isPlanningView && event ? `<section class="sidebar-section module-nav" aria-label="Planning modules">
             <div class="sidebar-section-heading">
               <span>Planning modules</span>
               <small>${questionProgress.answered}/${questionProgress.total}</small>
@@ -972,12 +963,21 @@
             ${activeModules.map(module => renderModuleNav(module, event)).join('')}
           </section>` : ''}
 
+          <nav class="sidebar-utility-nav" aria-label="Shared resources">
+            <span>Shared resource</span>
+            <button class="${state.activeView === 'references' ? 'active' : ''}" data-view="references">
+              <span class="nav-icon">▣</span>
+              <span><strong>Image Library</strong><small>Available to every event</small></span>
+            </button>
+          </nav>
+
           <div class="sidebar-footer">
-            <div class="sidebar-progress-copy">
-              <strong>${questionProgress.percent}% planned</strong>
-              <small>${doneTasks} of ${tasks.length} tasks complete</small>
-            </div>
-            <div class="progress-track"><div class="progress-fill" style="width:${questionProgress.percent}%"></div></div>
+            ${event ? `<div class="sidebar-progress-copy">
+                <strong>${questionProgress.percent}% planned</strong>
+                <small>${doneTasks} of ${tasks.length} tasks complete</small>
+              </div>
+              <div class="progress-track"><div class="progress-fill" style="width:${questionProgress.percent}%"></div></div>`
+              : '<div class="sidebar-progress-copy"><strong>No event selected</strong><small>Choose one from the catalogue</small></div>'}
             <button class="sidebar-admin-link ${state.activeView === 'admin' ? 'active' : ''}" data-view="admin">⚙ Playbook administration</button>
           </div>
         </aside>
@@ -990,11 +990,27 @@
               <p>${escapeHtml(shellIntro)}</p>
             </div>
             <div class="app-page-hero-actions">
-              ${state.activeView === 'artwork' ? '<button id="publishTopButton" class="button button-gold" type="button" disabled>Publish artwork</button>' : state.activeView === 'references' ? '<button class="button button-gold" data-action="add-library-image">Add image</button>' : '<button class="button button-gold" data-action="new-event">New event</button>'}
+              ${event ? `<section class="hero-event-context${event.closedAt ? ' closed' : ''}" aria-label="Current selected event">
+                  <div class="hero-event-context-copy">
+                    <span><i></i>${event.closedAt ? 'Closed event' : 'Current selected event'}</span>
+                    <strong>${escapeHtml(event.name || 'Untitled event')}</strong>
+                    <small>${escapeHtml(event.eventDate ? formatDate(event.eventDate) : 'Date not set')} · ${escapeHtml(event.organiser || 'Organiser not assigned')}</small>
+                  </div>
+                  <button type="button" data-view="catalogue">Change event</button>
+                </section>`
+                : `<section class="hero-event-context empty" aria-label="No event selected">
+                    <div class="hero-event-context-copy"><span>No event selected</span><strong>Choose an event to begin</strong><small>Planner, tasks, artwork and retrospectives share one selected event.</small></div>
+                    <button type="button" data-view="catalogue">Choose event</button>
+                  </section>`}
+              ${state.activeView === 'artwork' ? '<button id="publishTopButton" class="button button-gold hero-page-action" type="button" disabled>Publish artwork</button>'
+                : state.activeView === 'references' ? '<button class="button button-gold hero-page-action" data-action="add-library-image">Add image</button>'
+                : state.activeView === 'catalogue' ? '<button class="button button-gold hero-page-action" data-action="new-event">New event</button>'
+                : state.activeView === 'admin' ? '<button class="button button-gold hero-page-action" data-action="load-playbook">Load playbook JSON</button>'
+                : ''}
             </div>
           </header>
 
-          ${showPlannerContext ? `
+          ${showEventEditor ? `
           <section class="event-context-bar">
             <div class="event-context-primary">
               <span class="section-kicker">Active event</span>
@@ -1008,14 +1024,12 @@
               <span>Event description</span>
               <textarea rows="3" data-event-field="description" placeholder="Describe what makes this event distinctive">${escapeHtml(event.description)}</textarea>
             </label>
-          </section>
-
-          <section class="utility-toolbar" aria-label="Event actions">
-            <button class="toolbar-button" data-view="artwork">✦ Poster Studio</button>
-            <button class="toolbar-button" data-action="export-plan">Export event plan</button>
-            <button class="toolbar-button" data-action="export-csv">Export tasks CSV</button>
-            <button class="toolbar-button" data-action="load-playbook">Load playbook JSON</button>
           </section>` : ''}
+
+          ${showEventTools ? `<section class="utility-toolbar" aria-label="Event actions">
+              <button class="toolbar-button" data-action="export-plan">Export event plan</button>
+              <button class="toolbar-button" data-action="export-csv">Export tasks CSV</button>
+            </section>` : ''}
 
           <main class="main-content ${state.activeView === 'artwork' ? 'poster-studio' : ''}">
             ${state.activeView === 'catalogue' ? renderCatalogue() : state.activeView === 'references' ? renderReferenceLibrary() : !event ? renderEmptyState() : state.activeView === 'tasks' ? renderTaskBoard(event, tasks) : state.activeView === 'artwork' ? renderArtworkStudio(event) : state.activeView === 'admin' ? renderAdmin(event) : state.activeView === 'retrospective' ? renderRetrospective(event) : renderModuleView(event)}
@@ -1033,7 +1047,7 @@
 
     bindEvents();
     if (state.activeView === 'artwork' && event) {
-      import('./poster-app.js?v=20260821-catalogue-any-generated-artwork')
+      import('./poster-app.js?v=20260823-selected-event-context-2')
         .then(module => module.mountPosterStudio({
           eventId: event.id,
           eventName: event.name,
@@ -1282,6 +1296,7 @@
   }
 
   function renderArtworkStudio(event) {
+    const retainedArtworkThumbnail = event.publishedCataloguePosterThumbnail || event.cataloguePosterThumbnail || '';
     return `
       <section class="workflow-strip" aria-label="Poster creation workflow">
         <div class="workflow-step active" data-step="1"><span>1</span><strong>Brief</strong><small>Event & style</small></div>
@@ -1298,20 +1313,17 @@
       <div class="content-grid">
         <section class="panel brief-panel">
           <div class="panel-heading">
-            <div><p class="section-kicker">Creative brief</p><h2>Tell the studio what this event is</h2></div>
-            <span class="required-pill">Event catalogue</span>
+            <div><p class="section-kicker">Creative brief</p><h2>Shape the artwork for this event</h2></div>
+            <span class="required-pill">Selected event</span>
           </div>
-          <div class="two-column-fields">
-            <label class="field"><span>Event</span><select id="eventSelect"></select></label>
-            <label class="field"><span>Event date</span><input id="eventDate" type="date"></label>
-          </div>
-          <label class="field"><span>Event description</span><textarea id="eventDescription" rows="7"></textarea><small>This is the reusable catalogue description that explains the event to the image generator.</small></label>
+          <label class="field"><span>Event description</span><textarea id="eventDescription" rows="7"></textarea><small>The selected event supplies its name and date automatically. Use this description to shape the generated artwork.</small></label>
           <div class="field"><span>Poster style</span><div id="styleOptions" class="style-options"></div></div>
           <div class="poster-content-box">
             <div><p class="section-kicker">Poster content</p><h3>What should be added to the finished artwork?</h3></div>
             <div class="toggle-grid">
-              <label class="check-card selected" id="dateCard"><input id="includeDate" type="checkbox" checked><span class="check-mark">✓</span><span><strong>Event date</strong><small>Use the date above</small></span></label>
+              <label class="check-card selected" id="dateCard"><input id="includeDate" type="checkbox" checked><span class="check-mark">✓</span><span><strong>Event date</strong><small>Use the selected event date</small></span></label>
               <label class="check-card" id="priceCard"><input id="includePrice" type="checkbox"><span class="check-mark">✓</span><span><strong>Price</strong><small>Add a price badge</small></span></label>
+              <label class="check-card" id="brandingCard"><input id="includeClubBranding" type="checkbox"><span class="check-mark">✓</span><span><strong>Club logo</strong><small>External promotion only</small></span></label>
             </div>
             <label id="priceField" class="field hidden"><span>Price to display</span><input id="price" type="text" placeholder="£12.50"></label>
           </div>
@@ -1336,11 +1348,17 @@
         <div class="campaign-column">
           <aside class="panel campaign-panel">
             <div class="panel-heading compact"><div><p class="section-kicker">Campaign preview</p><h2 id="campaignTitle">${escapeHtml(event.name || 'No artwork generated')}</h2></div><span id="campaignStatus" class="status-pill neutral">Not started</span></div>
-            <div id="emptyState" class="empty-state"><div class="empty-art"><img src="/assets/botgc-mark.svg" alt=""><span class="spark spark-one">✦</span><span class="spark spark-two">✦</span></div><h3>Your event campaign will appear here</h3><p>The clubhouse poster is created first. The studio then uses that artwork as the reference for the square and A4 versions.</p></div>
+            <div id="emptyState" class="empty-state">${retainedArtworkThumbnail
+              ? `<div class="saved-catalogue-art"><img src="${escapeHtml(retainedArtworkThumbnail)}" alt="Previously generated campaign artwork for ${escapeHtml(event.name)}"></div><span class="status-pill ready">Saved with this event</span><h3>Previously generated campaign</h3><p>This older catalogue preview is connected to the event, but it may have been cropped into a square. Generate the campaign again once to retain uncropped full-size formats and the studio settings here.</p>`
+              : '<div class="empty-art"><img src="/assets/botgc-mark.svg" alt=""><span class="spark spark-one">✦</span><span class="spark spark-two">✦</span></div><h3>Your event campaign will appear here</h3><p>The clubhouse poster is created first. The studio then recomposes that artwork for square and A4 versions without cropping the approved design.</p>'}</div>
             <div id="generationProgress" class="generation-progress hidden">
-              <div class="progress-row" data-progress="primary"><span class="progress-icon">1</span><div><strong>Primary clubhouse artwork</strong><small>Creating the campaign concept</small></div><span class="progress-state">Waiting</span></div>
-              <div class="progress-row" data-progress="variants"><span class="progress-icon">2</span><div><strong>Campaign adaptations</strong><small>Recomposing from the primary image</small></div><span class="progress-state">Waiting</span></div>
+              <div class="progress-row" data-progress="primary"><span class="progress-icon">1</span><div><strong>Digital-screen master artwork</strong><small>Generated first and retained as the campaign reference</small></div><span class="progress-state">Waiting</span></div>
+              <div class="progress-row" data-progress="variants"><span class="progress-icon">2</span><div><strong>Reference-led format adaptations</strong><small>Recomposing that approved master for each selected dimension</small></div><span class="progress-state">Waiting</span></div>
               <div class="progress-row" data-progress="compose"><span class="progress-icon">3</span><div><strong>Final output preparation</strong><small>Sizing each AI-designed finished poster for its delivery format</small></div><span class="progress-state">Waiting</span></div>
+              <div class="generation-controls">
+                <small id="generationElapsed">High-quality artwork can take several minutes.</small>
+                <button id="cancelGenerationButton" class="button button-secondary hidden" type="button">Cancel generation</button>
+              </div>
             </div>
           </aside>
           <section id="generatedArtworkPanel" class="panel generated-artwork-panel hidden">
@@ -1370,6 +1388,11 @@
 
     const progress = moduleProgress(module, event);
     const tasks = getActiveTasks(event).filter(task => task.module.id === module.id);
+    const visibleSections = module.sections.filter(section => section.items.some(item => isItemVisible(item, event)));
+    const sectionColumns = [[], []];
+    visibleSections.forEach((section, index) => {
+      sectionColumns[index % 2].push(renderSection(section, event, index));
+    });
 
     return `
       <section class="page-header">
@@ -1393,7 +1416,8 @@
         </div>
       ` : `
         <div class="module-sections planner-module-grid">
-          ${module.sections.map(section => renderSection(section, event)).join('')}
+          <div class="planner-module-column">${sectionColumns[0].join('')}</div>
+          <div class="planner-module-column">${sectionColumns[1].join('')}</div>
         </div>
       `}
 
@@ -1447,14 +1471,16 @@
     `;
   }
 
-  function renderSection(section, event) {
+  function renderSection(section, event, layoutOrder = null) {
     const visibleItems = section.items.filter(item => isItemVisible(item, event));
     if (visibleItems.length === 0) {
       return '';
     }
 
+    const orderStyle = Number.isInteger(layoutOrder) ? ` style="--section-order:${layoutOrder}"` : '';
+
     return `
-      <section class="playbook-section">
+      <section class="playbook-section"${orderStyle}>
         <div class="section-heading">
           <h3>${escapeHtml(section.title)}</h3>
         </div>
@@ -1838,13 +1864,15 @@
     const completed = tasks.filter(task => task.state.completed).length;
     const retroCount = Object.values(event.retrospective ?? {}).filter(value => value !== '' && value !== null && value !== undefined).length;
     const closed = Boolean(event.closedAt);
+    const current = event.id === state.activeEventId;
     return `
-      <article class="catalogue-card ${closed ? 'closed' : ''}">
+      <article class="catalogue-card${closed ? ' closed' : ''}${current ? ' current' : ''}">
         <button class="catalogue-poster" data-event-summary="${escapeHtml(event.id)}" aria-label="View summary for ${escapeHtml(event.name)}">
           ${(event.publishedCataloguePosterThumbnail || event.cataloguePosterThumbnail)
             ? `<img src="${escapeHtml(event.publishedCataloguePosterThumbnail || event.cataloguePosterThumbnail)}" alt="Square campaign artwork for ${escapeHtml(event.name)}">`
             : `<span class="catalogue-poster-placeholder"><img src="./assets/botgc-mark.svg" alt=""><small>Artwork not generated yet</small></span>`}
           <span class="catalogue-status ${closed ? 'closed' : 'open'}">${closed ? 'Closed' : 'Open'}</span>
+          ${current ? '<span class="catalogue-current-badge">Current event</span>' : ''}
         </button>
         <div class="catalogue-card-body">
           <div class="catalogue-card-heading">
@@ -1863,7 +1891,7 @@
             <button class="button button-primary" data-event-summary="${escapeHtml(event.id)}">View event summary</button>
             ${closed
               ? `<button class="button button-secondary" data-clone-event="${escapeHtml(event.id)}">Create from this event</button>`
-              : `<button class="button button-secondary" data-open-event="${escapeHtml(event.id)}">Open planner</button>
+              : `<button class="button button-secondary" data-open-event="${escapeHtml(event.id)}" aria-label="${escapeHtml(current ? `Continue planning ${event.name}` : `Select ${event.name} and open planner`)}">${current ? 'Continue planning' : 'Select & open planner'}</button>
                  <button class="button button-secondary catalogue-close" data-close-event="${escapeHtml(event.id)}">Close & create new</button>`}
           </div>
         </div>

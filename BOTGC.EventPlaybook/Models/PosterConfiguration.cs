@@ -76,6 +76,17 @@ public sealed class PosterStyleDefinition
     public required List<string> Mood { get; init; }
 
     public required List<string> Avoid { get; init; }
+
+    public List<PosterStyleVariationDefinition> Variations { get; init; } = [];
+}
+
+public sealed class PosterStyleVariationDefinition
+{
+    public required string Id { get; init; }
+
+    public required string ArtistName { get; init; }
+
+    public required string StyleDirection { get; init; }
 }
 
 public sealed class PosterOutputDefinition

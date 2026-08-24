@@ -1,0 +1,16 @@
+.git
+.github
+.vs
+.vscode
+bin
+obj
+App_Data
+*.user
+*.suo
+appsettings.json
+appsettings.*.json
+.env
+.env.*
+Dockerfile*
+README.md
+DEPLOYMENT.md

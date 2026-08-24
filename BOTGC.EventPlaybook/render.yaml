@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: botgc-event-playbook-dev
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeployTrigger: commit
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: DEMO_PASSWORD
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_IMAGE_MODEL
+        value: gpt-image-2
+      - key: OPENAI_IMAGE_QUALITY
+        value: high
+      - key: OPENAI_PROMPT_MODEL
+        value: gpt-5.6

@@ -1,8 +1,14 @@
 const sessions = new Map();
 const REFERENCE_LIBRARY_STORAGE_KEY = 'botgc-event-playbook-reference-library-v1';
 const MAX_AUTOMATIC_REFERENCES = 3;
+const STUDIO_DATABASE_NAME = 'botgc-event-playbook-poster-studio';
+const STUDIO_DATABASE_VERSION = 1;
+const STUDIO_SESSION_STORE = 'event-sessions';
+const POSTER_REQUEST_TIMEOUT_MS = 5 * 60 * 1000;
+const INTERRUPTED_GENERATION_MESSAGE = 'The previous generation did not finish. Your settings are safe; generate the campaign again when you are ready.';
 let activeSession = null;
 let configCache = null;
+let studioDatabasePromise = null;
 let elements = {};
 let currentContext = {};
 
@@ -18,6 +24,11 @@ function createSession(key, context) {
         posterCanvases: new Map(),
         isGenerating: false,
         initialised: false,
+        hydrated: false,
+        restoredFromStorage: false,
+        generationSnapshot: null,
+        persistTimer: null,
+        persistenceChain: Promise.resolve(),
         customEventName: (context?.eventName ?? '').trim(),
         form: {
             eventId: null,
@@ -26,12 +37,15 @@ function createSession(key, context) {
             description: context?.description ?? '',
             includeDate: true,
             includePrice: false,
+            includeClubBranding: false,
             price: '',
             additionalInstructions: '',
             refinementNotes: '',
             supportingImages: [],
             useLibraryReferences: true,
-            selectedLibraryReferences: []
+            selectedLibraryReferences: [],
+            publishToYodeck: true,
+            publishByEmail: false
         },
         progress: {
             primary: { cssClass: '', label: 'Waiting' },
@@ -44,7 +58,10 @@ function createSession(key, context) {
         refinementVisible: false,
         publishVisible: false,
         errorMessage: null,
-        generationPromise: null
+        generationPromise: null,
+        generationAbortController: null,
+        generationStartedAt: null,
+        generationTimer: null
     };
 }
 
@@ -65,6 +82,279 @@ function getOrCreateSession(context) {
         session.form.eventName = context.eventName.trim();
     }
     return session;
+}
+
+function openStudioDatabase() {
+    if (!('indexedDB' in window)) {
+        return Promise.resolve(null);
+    }
+
+    studioDatabasePromise ??= new Promise((resolve, reject) => {
+        const request = indexedDB.open(STUDIO_DATABASE_NAME, STUDIO_DATABASE_VERSION);
+        request.onupgradeneeded = () => {
+            const database = request.result;
+            if (!database.objectStoreNames.contains(STUDIO_SESSION_STORE)) {
+                database.createObjectStore(STUDIO_SESSION_STORE, { keyPath: 'key' });
+            }
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error ?? new Error('Unable to open Poster Studio storage.'));
+    });
+
+    return studioDatabasePromise;
+}
+
+async function readStoredSession(key) {
+    const database = await openStudioDatabase();
+    if (!database) return null;
+
+    return new Promise((resolve, reject) => {
+        const transaction = database.transaction(STUDIO_SESSION_STORE, 'readonly');
+        const request = transaction.objectStore(STUDIO_SESSION_STORE).get(key);
+        request.onsuccess = () => resolve(request.result ?? null);
+        request.onerror = () => reject(request.error ?? new Error('Unable to read the saved Poster Studio session.'));
+    });
+}
+
+async function writeStoredSession(record) {
+    const database = await openStudioDatabase();
+    if (!database) return;
+
+    return new Promise((resolve, reject) => {
+        const transaction = database.transaction(STUDIO_SESSION_STORE, 'readwrite');
+        transaction.objectStore(STUDIO_SESSION_STORE).put(record);
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error ?? new Error('Unable to save the Poster Studio session.'));
+        transaction.onabort = () => reject(transaction.error ?? new Error('Saving the Poster Studio session was interrupted.'));
+    });
+}
+
+function serialiseSession(session) {
+    const form = session.generationSnapshot?.form ?? session.form;
+    const generationWasInterrupted = session.isGenerating && session.campaignStatus.mode === 'generating';
+    const compactGenerationSnapshot = session.generationSnapshot
+        ? {
+            generatedAt: session.generationSnapshot.generatedAt,
+            selectedStyleId: session.generationSnapshot.selectedStyleId,
+            styleVariationId: session.generationSnapshot.styleVariationId,
+            selectedOutputIds: session.generationSnapshot.selectedOutputIds
+        }
+        : null;
+
+    return {
+        key: session.key,
+        schemaVersion: 2,
+        savedAt: new Date().toISOString(),
+        selectedStyleId: session.selectedStyleId,
+        selectedOutputIds: [...session.selectedOutputIds],
+        primaryArtworkDataUrl: session.primaryArtworkDataUrl,
+        artworkByOutput: Object.fromEntries(session.artworkByOutput),
+        generationSnapshot: compactGenerationSnapshot,
+        form: {
+            eventId: form.eventId,
+            eventName: form.eventName,
+            eventDate: form.eventDate,
+            description: form.description,
+            includeDate: form.includeDate,
+            includePrice: form.includePrice,
+            includeClubBranding: form.includeClubBranding,
+            price: form.price,
+            additionalInstructions: form.additionalInstructions,
+            refinementNotes: form.refinementNotes,
+            supportingImages: form.supportingImages,
+            useLibraryReferences: form.useLibraryReferences,
+            publishToYodeck: session.form.publishToYodeck,
+            publishByEmail: session.form.publishByEmail
+        },
+        workflowStep: generationWasInterrupted ? 1 : session.workflowStep,
+        workflowComplete: generationWasInterrupted ? false : session.workflowComplete,
+        campaignStatus: generationWasInterrupted
+            ? { text: 'Generation interrupted', mode: 'neutral' }
+            : session.campaignStatus,
+        errorMessage: generationWasInterrupted ? INTERRUPTED_GENERATION_MESSAGE : session.errorMessage,
+        refinementVisible: session.refinementVisible,
+        publishVisible: session.publishVisible
+    };
+}
+
+function applyStoredSession(session, stored) {
+    if (!stored || typeof stored !== 'object') return false;
+    const storedGenerationWasInterrupted = stored.campaignStatus?.mode === 'generating';
+
+    if (typeof stored.selectedStyleId === 'string') {
+        session.selectedStyleId = stored.selectedStyleId;
+    }
+    if (Array.isArray(stored.selectedOutputIds)) {
+        session.selectedOutputIds = new Set(stored.selectedOutputIds.filter(value => typeof value === 'string'));
+    }
+
+    const storedForm = stored.form && typeof stored.form === 'object' ? stored.form : {};
+    const stringFields = ['eventId', 'eventName', 'eventDate', 'description', 'price', 'additionalInstructions', 'refinementNotes'];
+    for (const field of stringFields) {
+        if (typeof storedForm[field] === 'string') session.form[field] = storedForm[field];
+    }
+    if (typeof storedForm.includeDate === 'boolean') session.form.includeDate = storedForm.includeDate;
+    if (typeof storedForm.includePrice === 'boolean') session.form.includePrice = storedForm.includePrice;
+    if (typeof storedForm.includeClubBranding === 'boolean') session.form.includeClubBranding = storedForm.includeClubBranding;
+    if (typeof storedForm.useLibraryReferences === 'boolean') session.form.useLibraryReferences = storedForm.useLibraryReferences;
+    if (typeof storedForm.publishToYodeck === 'boolean') session.form.publishToYodeck = storedForm.publishToYodeck;
+    if (typeof storedForm.publishByEmail === 'boolean') session.form.publishByEmail = storedForm.publishByEmail;
+    if (Array.isArray(storedForm.supportingImages)) session.form.supportingImages = storedForm.supportingImages;
+    session.form.selectedLibraryReferences = [];
+
+    session.primaryArtworkDataUrl = typeof stored.primaryArtworkDataUrl === 'string' ? stored.primaryArtworkDataUrl : null;
+    session.artworkByOutput = new Map(
+        stored.artworkByOutput && typeof stored.artworkByOutput === 'object'
+            ? Object.entries(stored.artworkByOutput).filter(([, value]) => typeof value === 'string' && value.startsWith('data:image/'))
+            : []
+    );
+
+    if (session.artworkByOutput.size > 0 && applyGenerationSnapshot(session, stored.generationSnapshot)) {
+        session.generationSnapshot = {
+            generatedAt: stored.generationSnapshot.generatedAt,
+            selectedStyleId: session.selectedStyleId,
+            styleVariationId: typeof stored.generationSnapshot.styleVariationId === 'string'
+                ? stored.generationSnapshot.styleVariationId
+                : null,
+            selectedOutputIds: [...session.selectedOutputIds],
+            form: cloneGenerationForm(session.form)
+        };
+    }
+
+    if (Number.isFinite(stored.workflowStep)) session.workflowStep = stored.workflowStep;
+    if (typeof stored.workflowComplete === 'boolean') session.workflowComplete = stored.workflowComplete;
+    if (stored.campaignStatus && typeof stored.campaignStatus.text === 'string' && typeof stored.campaignStatus.mode === 'string') {
+        session.campaignStatus = stored.campaignStatus;
+    }
+    if (typeof stored.errorMessage === 'string' && stored.errorMessage.trim()) {
+        session.errorMessage = stored.errorMessage.trim();
+    }
+    if (typeof stored.refinementVisible === 'boolean') session.refinementVisible = stored.refinementVisible;
+    if (typeof stored.publishVisible === 'boolean') session.publishVisible = stored.publishVisible;
+
+    if (session.artworkByOutput.size > 0) {
+        session.progress = {
+            primary: { cssClass: 'complete', label: 'Restored' },
+            variants: { cssClass: 'complete', label: 'Restored' },
+            compose: { cssClass: 'complete', label: 'Restored' }
+        };
+        session.campaignStatus = { text: 'Saved artwork restored', mode: 'ready' };
+        session.workflowStep = 3;
+        session.workflowComplete = true;
+        session.errorMessage = null;
+        session.refinementVisible = true;
+        session.publishVisible = true;
+    } else if (storedGenerationWasInterrupted) {
+        session.workflowStep = 1;
+        session.workflowComplete = false;
+        session.campaignStatus = { text: 'Generation interrupted', mode: 'neutral' };
+        session.errorMessage = INTERRUPTED_GENERATION_MESSAGE;
+        session.refinementVisible = false;
+        session.publishVisible = false;
+    }
+
+    return true;
+}
+
+function createGenerationSnapshot(session, isRegeneration) {
+    return {
+        generatedAt: new Date().toISOString(),
+        selectedStyleId: session.selectedStyleId,
+        styleVariationId: selectStyleVariationId(session, isRegeneration),
+        selectedOutputIds: [...session.selectedOutputIds],
+        form: cloneGenerationForm(session.form)
+    };
+}
+
+function cloneGenerationForm(form) {
+    return {
+        eventId: form.eventId,
+        eventName: form.eventName,
+        eventDate: form.eventDate,
+        description: form.description,
+        includeDate: form.includeDate,
+        includePrice: form.includePrice,
+        includeClubBranding: form.includeClubBranding,
+        price: form.price,
+        additionalInstructions: form.additionalInstructions,
+        refinementNotes: form.refinementNotes,
+        supportingImages: (form.supportingImages ?? []).map(image => ({ ...image })),
+        useLibraryReferences: form.useLibraryReferences
+    };
+}
+
+function applyGenerationSnapshot(session, snapshot) {
+    if (!snapshot || typeof snapshot !== 'object') return false;
+
+    let applied = false;
+
+    if (typeof snapshot.selectedStyleId === 'string') {
+        session.selectedStyleId = snapshot.selectedStyleId;
+        applied = true;
+    }
+    if (Array.isArray(snapshot.selectedOutputIds)) {
+        session.selectedOutputIds = new Set(snapshot.selectedOutputIds.filter(value => typeof value === 'string'));
+        applied = true;
+    }
+
+    if (!snapshot.form || typeof snapshot.form !== 'object') return applied;
+
+    const stringFields = ['eventId', 'eventName', 'eventDate', 'description', 'price', 'additionalInstructions', 'refinementNotes'];
+    for (const field of stringFields) {
+        if (typeof snapshot.form[field] === 'string') session.form[field] = snapshot.form[field];
+    }
+    for (const field of ['includeDate', 'includePrice', 'includeClubBranding', 'useLibraryReferences']) {
+        if (typeof snapshot.form[field] === 'boolean') session.form[field] = snapshot.form[field];
+    }
+    if (Array.isArray(snapshot.form.supportingImages)) {
+        session.form.supportingImages = snapshot.form.supportingImages.map(image => ({ ...image }));
+    }
+
+    return true;
+}
+
+function createGenerationContext(session, isRegeneration) {
+    return {
+        snapshot: createGenerationSnapshot(session, isRegeneration),
+        supportingImages: buildSupportingImagesPayload(session),
+        previousArtworkDataUrl: session.primaryArtworkDataUrl
+    };
+}
+
+async function hydrateSession(session) {
+    if (session.hydrated) return session.restoredFromStorage;
+
+    try {
+        session.restoredFromStorage = applyStoredSession(session, await readStoredSession(session.key));
+    } catch (error) {
+        console.warn('Unable to restore the saved Poster Studio session.', error);
+        session.restoredFromStorage = false;
+    }
+
+    session.hydrated = true;
+    return session.restoredFromStorage;
+}
+
+async function persistSession(session) {
+    if (!session?.hydrated) return;
+    if (session.persistTimer) {
+        clearTimeout(session.persistTimer);
+        session.persistTimer = null;
+    }
+
+    const record = serialiseSession(session);
+    session.persistenceChain = session.persistenceChain
+        .catch(() => undefined)
+        .then(() => writeStoredSession(record))
+        .catch(error => console.warn('Unable to save the Poster Studio session.', error));
+
+    return session.persistenceChain;
+}
+
+function scheduleSessionPersistence(session) {
+    if (!session?.hydrated) return;
+    if (session.persistTimer) clearTimeout(session.persistTimer);
+    session.persistTimer = setTimeout(() => persistSession(session), 120);
 }
 
 function isSessionVisible(session) {
@@ -92,6 +382,21 @@ function tokenise(text) {
 
 function getSelectedStyle(session) {
     return session.config?.styles?.find(style => style.id === session.selectedStyleId) ?? null;
+}
+
+function selectStyleVariationId(session, isRegeneration) {
+    const style = getSelectedStyle(session);
+    const variations = Array.isArray(style?.variations) ? style.variations : [];
+    if (variations.length === 0) return null;
+
+    const previousVariationId = session.generationSnapshot?.styleVariationId;
+    const canReusePrevious = isRegeneration
+        && session.generationSnapshot?.selectedStyleId === session.selectedStyleId
+        && variations.some(variation => variation.id === previousVariationId);
+
+    if (canReusePrevious) return previousVariationId;
+
+    return variations[Math.floor(Math.random() * variations.length)].id;
 }
 
 function scoreReferenceMatch(reference, tokens) {
@@ -184,14 +489,14 @@ export async function mountPosterStudio(context = {}) {
     activeSession = getOrCreateSession(currentContext);
 
     elements = {
-        eventSelect: document.querySelector('#eventSelect'),
-        eventDate: document.querySelector('#eventDate'),
         eventDescription: document.querySelector('#eventDescription'),
         styleOptions: document.querySelector('#styleOptions'),
         includeDate: document.querySelector('#includeDate'),
         includePrice: document.querySelector('#includePrice'),
+        includeClubBranding: document.querySelector('#includeClubBranding'),
         dateCard: document.querySelector('#dateCard'),
         priceCard: document.querySelector('#priceCard'),
+        brandingCard: document.querySelector('#brandingCard'),
         priceField: document.querySelector('#priceField'),
         price: document.querySelector('#price'),
         additionalInstructions: document.querySelector('#additionalInstructions'),
@@ -206,6 +511,8 @@ export async function mountPosterStudio(context = {}) {
         campaignStatus: document.querySelector('#campaignStatus'),
         emptyState: document.querySelector('#emptyState'),
         generationProgress: document.querySelector('#generationProgress'),
+        generationElapsed: document.querySelector('#generationElapsed'),
+        cancelGenerationButton: document.querySelector('#cancelGenerationButton'),
         generatedArtworkPanel: document.querySelector('#generatedArtworkPanel'),
         generatedArtworkCount: document.querySelector('#generatedArtworkCount'),
         posterResults: document.querySelector('#posterResults'),
@@ -222,7 +529,7 @@ export async function mountPosterStudio(context = {}) {
         publishMessage: document.querySelector('#publishMessage')
     };
 
-    if (!elements.eventSelect || !elements.generateButton) {
+    if (!elements.generateButton) {
         return;
     }
 
@@ -239,47 +546,51 @@ async function initialise(session) {
     }
 
     session.config = configCache;
+    const restored = await hydrateSession(session);
+    synchroniseSelectedEventContext(session, !restored && !session.initialised);
+
+    if (!session.config.styles.some(style => style.id === session.selectedStyleId)) {
+        session.selectedStyleId = null;
+    }
+    session.selectedOutputIds = new Set(
+        [...session.selectedOutputIds].filter(outputId => session.config.outputs.some(output => output.id === outputId))
+    );
+
     if (elements.generationMode) {
         elements.generationMode.textContent = session.config.generationMode === 'openai'
             ? `OpenAI live generation · ${session.config.imageModel} · ${session.config.imageQuality} · creative director ${session.config.promptModel}`
             : `Prototype mock generation · configured for ${session.config.imageModel} · creative director ${session.config.promptModel}`;
     }
 
-    renderEvents(session);
+    session.initialised = true;
+
     renderStyles(session);
     renderOutputs(session);
-
-    if (!session.initialised) {
-        const matching = session.config.events.find(event => event.name.toLocaleLowerCase() === session.customEventName.toLocaleLowerCase());
-        session.form.eventId = matching?.id ?? (session.customEventName ? 'custom-event' : session.config.events[0]?.id);
-        elements.eventSelect.value = session.form.eventId;
-        seedFormFromSelectedEvent(session);
-        if (session.context.eventDate) session.form.eventDate = session.context.eventDate;
-        if (session.context.description) session.form.description = session.context.description;
-        session.initialised = true;
-    }
+    await rebuildPersistedCanvases(session);
 
     applyFormToDom(session);
     updateAutomaticReferenceSelection(session);
     wireEvents(session);
     restoreSessionToDom(session);
+    scheduleSessionPersistence(session);
 }
 
-function renderEvents(session) {
-    elements.eventSelect.innerHTML = '';
-    for (const event of session.config.events) {
-        const option = document.createElement('option');
-        option.value = event.id;
-        option.textContent = event.name;
-        elements.eventSelect.append(option);
-    }
+async function rebuildPersistedCanvases(session) {
+    if (session.posterCanvases.size > 0 || session.artworkByOutput.size === 0) return;
 
-    if (session.customEventName && !session.config.events.some(event => event.name.toLocaleLowerCase() === session.customEventName.toLocaleLowerCase())) {
-        const option = document.createElement('option');
-        option.value = 'custom-event';
-        option.textContent = session.customEventName;
-        elements.eventSelect.append(option);
-    }
+    await Promise.all(session.config.outputs.map(async output => {
+        const dataUrl = session.artworkByOutput.get(output.id);
+        if (!dataUrl) return;
+
+        try {
+            session.posterCanvases.set(output.id, await createFinishedPoster(output, dataUrl, session.form.includeClubBranding));
+        } catch (error) {
+            console.warn(`Unable to restore saved artwork for ${output.name}.`, error);
+        }
+    }));
+
+    const primaryOutput = getPrimaryOutput(session);
+    session.primaryArtworkDataUrl ??= primaryOutput ? session.artworkByOutput.get(primaryOutput.id) ?? null : null;
 }
 
 function renderStyles(session) {
@@ -322,19 +633,13 @@ function renderOutputs(session) {
 }
 
 function wireEvents(session) {
-    elements.eventSelect.addEventListener('change', () => {
-        session.form.eventId = elements.eventSelect.value;
-        seedFormFromSelectedEvent(session);
-        applyFormToDom(session);
-        updateAutomaticReferenceSelection(session);
-    });
-
     elements.styleOptions.addEventListener('change', event => {
         const input = event.target.closest('input[name="posterStyle"]');
         if (!input) return;
         session.selectedStyleId = input.value;
         elements.styleOptions.querySelectorAll('.style-card').forEach(card => card.classList.toggle('selected', card.dataset.styleId === session.selectedStyleId));
         updateAutomaticReferenceSelection(session);
+        scheduleSessionPersistence(session);
     });
 
     elements.outputOptions.addEventListener('change', event => {
@@ -342,10 +647,13 @@ function wireEvents(session) {
         if (!input) return;
         if (input.checked) session.selectedOutputIds.add(input.value); else session.selectedOutputIds.delete(input.value);
         input.closest('.output-card')?.classList.toggle('selected', input.checked);
+        scheduleSessionPersistence(session);
     });
 
-    const capture = () => captureFormFromDom(session);
-    elements.eventDate.addEventListener('change', () => { capture(); updateAutomaticReferenceSelection(session); });
+    const capture = () => {
+        captureFormFromDom(session);
+        scheduleSessionPersistence(session);
+    };
     elements.eventDescription.addEventListener('input', () => { capture(); updateAutomaticReferenceSelection(session); });
     elements.price.addEventListener('input', capture);
     elements.additionalInstructions.addEventListener('input', () => { capture(); updateAutomaticReferenceSelection(session); });
@@ -357,17 +665,20 @@ function wireEvents(session) {
         if (files.length === 0) return;
         await addSupportingFiles(session, files);
         input.value = '';
+        scheduleSessionPersistence(session);
     });
 
     elements.supportingFilesList?.addEventListener('click', event => {
         const button = event.target.closest('[data-remove-supporting-file]');
         if (!button) return;
         removeSupportingFile(session, button.dataset.removeSupportingFile);
+        scheduleSessionPersistence(session);
     });
 
     elements.useLibraryReferences?.addEventListener('change', () => {
         session.form.useLibraryReferences = elements.useLibraryReferences.checked;
         updateAutomaticReferenceSelection(session);
+        scheduleSessionPersistence(session);
     });
 
     elements.includeDate.addEventListener('change', () => {
@@ -379,50 +690,85 @@ function wireEvents(session) {
         elements.priceCard.classList.toggle('selected', elements.includePrice.checked);
         elements.priceField.classList.toggle('hidden', !elements.includePrice.checked);
     });
-    elements.publishYodeck.addEventListener('change', () => elements.yodeckCard.classList.toggle('selected', elements.publishYodeck.checked));
-    elements.publishEmail.addEventListener('change', () => elements.emailCard.classList.toggle('selected', elements.publishEmail.checked));
+    elements.includeClubBranding.addEventListener('change', async () => {
+        capture();
+        elements.brandingCard.classList.toggle('selected', elements.includeClubBranding.checked);
+        await recomposeSavedArtwork(session);
+        scheduleSessionPersistence(session);
+    });
+    elements.publishYodeck.addEventListener('change', () => {
+        capture();
+        elements.yodeckCard.classList.toggle('selected', elements.publishYodeck.checked);
+    });
+    elements.publishEmail.addEventListener('change', () => {
+        capture();
+        elements.emailCard.classList.toggle('selected', elements.publishEmail.checked);
+    });
 
     elements.generateButton.addEventListener('click', () => generateCampaign(session, false));
     elements.regenerateButton.addEventListener('click', () => generateCampaign(session, true));
+    elements.cancelGenerationButton.addEventListener('click', () => cancelGeneration(session));
     elements.publishButton.addEventListener('click', publishCampaign);
     elements.publishTopButton.addEventListener('click', () => elements.publishPanel.scrollIntoView({ behavior: 'smooth' }));
 }
 
-function seedFormFromSelectedEvent(session) {
-    const event = getSelectedEvent(session);
-    session.form.eventId = event.id;
-    session.form.eventName = event.id === 'custom-event' ? session.customEventName : event.name;
-    session.form.eventDate = session.context.eventDate || event.defaultDate || '';
-    session.form.description = session.context.description || event.description || '';
-    session.form.price = event.defaultPrice ?? '';
+function synchroniseSelectedEventContext(session, seedBrief = false) {
+    const context = session.context ?? {};
+    const contextEventName = typeof context.eventName === 'string' ? context.eventName.trim() : '';
+    const catalogueEvent = session.config?.events?.find(event =>
+        contextEventName && event.name.toLocaleLowerCase() === contextEventName.toLocaleLowerCase()
+    );
+
+    // The poster API's eventId selects a prompt recipe, while session.key keeps
+    // the artwork tied to the real application event. Custom catalogue events
+    // therefore use the shared custom-event recipe with their own name/date.
+    session.form.eventId = catalogueEvent?.id ?? 'custom-event';
+    if (contextEventName) {
+        session.customEventName = contextEventName;
+        session.form.eventName = contextEventName;
+    }
+    if (typeof context.eventDate === 'string') {
+        session.form.eventDate = context.eventDate;
+    }
+
+    if (seedBrief) {
+        session.form.description = typeof context.description === 'string' && context.description.trim()
+            ? context.description
+            : catalogueEvent?.description ?? session.form.description;
+        session.form.price = catalogueEvent?.defaultPrice ?? session.form.price;
+    }
 }
 
 function captureFormFromDom(session) {
     if (!isSessionVisible(session)) return;
-    session.form.eventId = elements.eventSelect.value;
-    session.form.eventName = getCampaignEventName(session);
-    session.form.eventDate = elements.eventDate.value;
+    synchroniseSelectedEventContext(session);
     session.form.description = elements.eventDescription.value;
     session.form.includeDate = elements.includeDate.checked;
     session.form.includePrice = elements.includePrice.checked;
+    session.form.includeClubBranding = elements.includeClubBranding.checked;
     session.form.price = elements.price.value;
     session.form.additionalInstructions = elements.additionalInstructions.value;
     session.form.refinementNotes = elements.refinementNotes.value;
     session.form.useLibraryReferences = elements.useLibraryReferences?.checked !== false;
+    session.form.publishToYodeck = elements.publishYodeck.checked;
+    session.form.publishByEmail = elements.publishEmail.checked;
 }
 
 function applyFormToDom(session) {
-    elements.eventSelect.value = session.form.eventId ?? 'custom-event';
-    elements.eventDate.value = session.form.eventDate ?? '';
     elements.eventDescription.value = session.form.description ?? '';
     elements.includeDate.checked = session.form.includeDate !== false;
     elements.includePrice.checked = session.form.includePrice === true;
+    elements.includeClubBranding.checked = session.form.includeClubBranding === true;
     elements.price.value = session.form.price ?? '';
     elements.additionalInstructions.value = session.form.additionalInstructions ?? '';
     elements.refinementNotes.value = session.form.refinementNotes ?? '';
     if (elements.useLibraryReferences) {
         elements.useLibraryReferences.checked = session.form.useLibraryReferences !== false;
     }
+    elements.publishYodeck.checked = session.form.publishToYodeck !== false;
+    elements.publishEmail.checked = session.form.publishByEmail === true;
+    elements.yodeckCard.classList.toggle('selected', elements.publishYodeck.checked);
+    elements.emailCard.classList.toggle('selected', elements.publishEmail.checked);
     if (elements.supportingFilesInput) {
         elements.supportingFilesInput.value = '';
     }
@@ -430,6 +776,7 @@ function applyFormToDom(session) {
     renderSupportingFiles(session);
     elements.dateCard.classList.toggle('selected', elements.includeDate.checked);
     elements.priceCard.classList.toggle('selected', elements.includePrice.checked);
+    elements.brandingCard.classList.toggle('selected', elements.includeClubBranding.checked);
     elements.priceField.classList.toggle('hidden', !elements.includePrice.checked);
     elements.campaignTitle.textContent = session.form.eventName || session.customEventName || 'Current event';
 }
@@ -449,6 +796,13 @@ function restoreSessionToDom(session) {
     elements.refinementPanel.classList.toggle('hidden', !session.refinementVisible);
     elements.publishPanel.classList.toggle('hidden', !session.publishVisible);
     elements.publishTopButton.disabled = !session.publishVisible;
+    if (!session.isGenerating && elements.generationElapsed) {
+        elements.generationElapsed.textContent = session.errorMessage
+            ? 'The form is unlocked and ready to try again.'
+            : session.posterCanvases.size > 0
+                ? 'All saved campaign formats are ready.'
+                : 'High-quality artwork can take several minutes.';
+    }
     setBusy(session, session.isGenerating);
 
     if (session.errorMessage) {
@@ -460,7 +814,10 @@ async function generateCampaign(session, isRegeneration) {
     if (session.isGenerating) return session.generationPromise;
 
     captureFormFromDom(session);
+    const generation = createGenerationContext(session, isRegeneration);
     const generationContext = session.context;
+    const generationController = new AbortController();
+    session.generationAbortController = generationController;
     session.isGenerating = true;
     session.errorMessage = null;
     session.refinementVisible = false;
@@ -469,35 +826,41 @@ async function generateCampaign(session, isRegeneration) {
     setWorkflowStep(session, 2);
     beginGenerationProgress(session, isRegeneration);
     setCampaignStatus(session, 'Generating', 'generating');
+    startGenerationClock(session);
+    scheduleSessionPersistence(session);
 
     session.generationPromise = (async () => {
         try {
             const primaryOutput = getPrimaryOutput(session);
             setProgressState(session, 'primary', 'active', isRegeneration ? 'Refining' : 'Generating');
-            const primaryResponse = await generatePrimary(session, isRegeneration);
-            session.primaryArtworkDataUrl = primaryResponse.dataUrl;
-            session.artworkByOutput.set(primaryOutput.id, primaryResponse.dataUrl);
+            const primaryResponse = await generatePrimary(generation, isRegeneration, generationController.signal);
+            const masterArtworkDataUrl = primaryResponse.dataUrl;
+            session.primaryArtworkDataUrl = masterArtworkDataUrl;
+            session.artworkByOutput.set(primaryOutput.id, masterArtworkDataUrl);
 
             setProgressState(session, 'compose', 'active', 'Sizing');
-            await composeOutput(session, primaryOutput, primaryResponse.dataUrl, generationContext);
+            await composeOutput(session, primaryOutput, masterArtworkDataUrl, generationContext);
             renderCampaignResults(session);
             setProgressState(session, 'primary', 'complete', 'Complete');
             setProgressState(session, 'compose', 'active', 'Primary ready');
+            scheduleSessionPersistence(session);
 
-            const variants = getSelectedOutputs(session).filter(output => !output.isPrimary);
+            const selectedOutputIds = new Set(generation.snapshot.selectedOutputIds);
+            const variants = session.config.outputs.filter(output => selectedOutputIds.has(output.id) && !output.isPrimary);
             setWorkflowStep(session, 3);
             setProgressState(session, 'variants', 'active', variants.length === 0 ? 'Not selected' : `0 of ${variants.length} ready`);
 
             if (variants.length > 0) {
                 let completedVariants = 0;
                 await Promise.all(variants.map(async output => {
-                    const generatedVariant = await generateVariant(session, output);
+                    const generatedVariant = await generateVariant(generation, output, masterArtworkDataUrl, generationController.signal);
                     session.artworkByOutput.set(output.id, generatedVariant.dataUrl);
                     await composeOutput(session, output, generatedVariant.dataUrl, generationContext);
                     completedVariants += 1;
                     setProgressState(session, 'variants', 'active', `${completedVariants} of ${variants.length} ready`);
                     setProgressState(session, 'compose', 'active', `${session.posterCanvases.size} ready`);
                     renderCampaignResults(session);
+                    scheduleSessionPersistence(session);
                 }));
             }
 
@@ -507,71 +870,79 @@ async function generateCampaign(session, isRegeneration) {
             setWorkflowStep(session, 3, true);
             session.refinementVisible = true;
             session.publishVisible = true;
+            session.generationSnapshot = generation.snapshot;
             if (isSessionVisible(session)) {
                 elements.refinementPanel.classList.remove('hidden');
                 elements.publishPanel.classList.remove('hidden');
                 elements.publishTopButton.disabled = false;
             }
+            await persistSession(session);
         } catch (error) {
-            console.error(error);
+            if (!generationController.signal.aborted) generationController.abort();
+            if (error?.name !== 'AbortError' && error?.name !== 'TimeoutError') console.error(error);
             session.errorMessage = error instanceof Error ? error.message : 'The artwork could not be generated.';
-            setCampaignStatus(session, 'Generation failed', 'neutral');
+            const statusText = error?.name === 'AbortError'
+                ? 'Generation cancelled'
+                : error?.name === 'TimeoutError'
+                    ? 'Generation timed out'
+                    : 'Generation failed';
+            setCampaignStatus(session, statusText, 'neutral');
             renderGenerationError(session);
+            scheduleSessionPersistence(session);
         } finally {
+            stopGenerationClock(session);
             session.isGenerating = false;
             session.generationPromise = null;
+            if (session.generationAbortController === generationController) {
+                session.generationAbortController = null;
+            }
             setBusy(session, false);
+            await persistSession(session);
         }
     })();
 
     return session.generationPromise;
 }
 
-async function generatePrimary(session, isRegeneration) {
-    const response = await fetch('/api/poster/generate-primary', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            eventId: session.form.eventId,
-            eventName: session.form.eventName,
-            styleId: session.selectedStyleId,
-            eventDate: session.form.eventDate,
-            description: session.form.description,
-            includeDate: session.form.includeDate,
-            includePrice: session.form.includePrice,
-            price: session.form.price,
-            additionalInstructions: session.form.additionalInstructions,
-            refinementNotes: isRegeneration ? session.form.refinementNotes : '',
-            previousArtworkDataUrl: isRegeneration ? session.primaryArtworkDataUrl : null,
-            supportingImages: buildSupportingImagesPayload(session)
-        })
-    });
-
-    return readApiResponse(response);
+async function generatePrimary(generation, isRegeneration, signal) {
+    const form = generation.snapshot.form;
+    return postPosterRequest('/api/poster/generate-primary', {
+            eventId: form.eventId,
+            eventName: form.eventName,
+            styleId: generation.snapshot.selectedStyleId,
+            styleVariationId: generation.snapshot.styleVariationId,
+            eventDate: form.eventDate,
+            description: form.description,
+            includeDate: form.includeDate,
+            includePrice: form.includePrice,
+            includeClubBranding: form.includeClubBranding,
+            price: form.price,
+            additionalInstructions: form.additionalInstructions,
+            refinementNotes: isRegeneration ? form.refinementNotes : '',
+            previousArtworkDataUrl: isRegeneration ? generation.previousArtworkDataUrl : null,
+            supportingImages: generation.supportingImages
+        }, signal);
 }
 
-async function generateVariant(session, output) {
-    const response = await fetch('/api/poster/generate-variant', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            eventId: session.form.eventId,
-            eventName: session.form.eventName,
-            styleId: session.selectedStyleId,
+async function generateVariant(generation, output, masterArtworkDataUrl, signal) {
+    const form = generation.snapshot.form;
+    return postPosterRequest('/api/poster/generate-variant', {
+            eventId: form.eventId,
+            eventName: form.eventName,
+            styleId: generation.snapshot.selectedStyleId,
+            styleVariationId: generation.snapshot.styleVariationId,
             outputId: output.id,
-            eventDate: session.form.eventDate,
-            description: session.form.description,
-            primaryArtworkDataUrl: session.primaryArtworkDataUrl,
-            includeDate: session.form.includeDate,
-            includePrice: session.form.includePrice,
-            price: session.form.price,
-            additionalInstructions: session.form.additionalInstructions,
-            refinementNotes: session.form.refinementNotes,
-            supportingImages: buildSupportingImagesPayload(session)
-        })
-    });
-
-    return readApiResponse(response);
+            eventDate: form.eventDate,
+            description: form.description,
+            primaryArtworkDataUrl: masterArtworkDataUrl,
+            includeDate: form.includeDate,
+            includePrice: form.includePrice,
+            includeClubBranding: form.includeClubBranding,
+            price: form.price,
+            additionalInstructions: form.additionalInstructions,
+            refinementNotes: form.refinementNotes,
+            supportingImages: generation.supportingImages
+        }, signal);
 }
 
 
@@ -650,8 +1021,65 @@ function fileToDataUrl(file) {
     });
 }
 
+async function postPosterRequest(url, payload, sessionSignal) {
+    if (sessionSignal?.aborted) {
+        throw createGenerationError('AbortError', 'Generation cancelled. Your saved settings and previous artwork are unchanged.');
+    }
+
+    const requestController = new AbortController();
+    let timedOut = false;
+    const abortRequest = () => requestController.abort();
+    sessionSignal?.addEventListener('abort', abortRequest, { once: true });
+    const timeoutId = setTimeout(() => {
+        timedOut = true;
+        requestController.abort();
+    }, POSTER_REQUEST_TIMEOUT_MS);
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            signal: requestController.signal
+        });
+
+        return await readApiResponse(response);
+    } catch (error) {
+        if (timedOut) {
+            throw createGenerationError(
+                'TimeoutError',
+                'The image service did not finish this artwork within five minutes. Your settings are safe; try again or choose fewer output formats.'
+            );
+        }
+        if (sessionSignal?.aborted || error?.name === 'AbortError') {
+            throw createGenerationError('AbortError', 'Generation cancelled. Your saved settings and previous artwork are unchanged.');
+        }
+        if (error instanceof TypeError) {
+            throw new Error('Poster Studio could not reach the image service. Check that the application server is running, then try again.');
+        }
+        throw error;
+    } finally {
+        clearTimeout(timeoutId);
+        sessionSignal?.removeEventListener('abort', abortRequest);
+    }
+}
+
+function createGenerationError(name, message) {
+    const error = new Error(message);
+    error.name = name;
+    return error;
+}
+
 async function readApiResponse(response) {
-    const body = await response.json();
+    const responseText = await response.text();
+    let body = {};
+    if (responseText) {
+        try {
+            body = JSON.parse(responseText);
+        } catch {
+            body = { detail: responseText };
+        }
+    }
 
     if (!response.ok) {
         throw new Error(body.detail ?? body.error ?? 'The image service returned an error.');
@@ -661,7 +1089,7 @@ async function readApiResponse(response) {
 }
 
 async function composeOutput(session, output, artworkDataUrl, generationContext) {
-    const canvas = await createFinishedPoster(output, artworkDataUrl);
+    const canvas = await createFinishedPoster(output, artworkDataUrl, session.form.includeClubBranding);
     session.posterCanvases.set(output.id, canvas);
 
     // Any completed campaign artwork can immediately provide a catalogue
@@ -696,27 +1124,14 @@ function createCatalogueThumbnail(sourceCanvas) {
     canvas.height = size;
     const context = canvas.getContext('2d');
 
-    // Centre-crop any generated format into a proper square thumbnail rather
-    // than distorting a portrait poster to fit the catalogue card.
-    const sourceRatio = sourceCanvas.width / sourceCanvas.height;
-    let sx = 0;
-    let sy = 0;
-    let sw = sourceCanvas.width;
-    let sh = sourceCanvas.height;
-
-    if (sourceRatio > 1) {
-        sw = sourceCanvas.height;
-        sx = (sourceCanvas.width - sw) / 2;
-    } else if (sourceRatio < 1) {
-        sh = sourceCanvas.width;
-        sy = (sourceCanvas.height - sh) / 2;
-    }
-
-    context.drawImage(sourceCanvas, sx, sy, sw, sh, 0, 0, size, size);
+    // Preserve the complete poster inside the square catalogue tile. Portrait
+    // artwork is framed against a soft extension of itself instead of losing
+    // its title, club mark or other edge content to a centre crop.
+    drawArtworkFitted(context, sourceCanvas, size, size);
     return canvas.toDataURL('image/jpeg', 0.84);
 }
 
-async function createFinishedPoster(output, artworkDataUrl) {
+async function createFinishedPoster(output, artworkDataUrl, includeClubBranding = false) {
     const canvas = document.createElement('canvas');
     canvas.width = output.width;
     canvas.height = output.height;
@@ -724,8 +1139,51 @@ async function createFinishedPoster(output, artworkDataUrl) {
     const image = await loadImage(artworkDataUrl);
 
     drawArtworkFitted(context, image, canvas.width, canvas.height);
+    if (includeClubBranding) {
+        await drawClubBranding(context, canvas.width, canvas.height);
+    }
 
     return canvas;
+}
+
+async function recomposeSavedArtwork(session) {
+    if (session.artworkByOutput.size === 0) return;
+
+    session.posterCanvases.clear();
+    await Promise.all(session.config.outputs.map(async output => {
+        const dataUrl = session.artworkByOutput.get(output.id);
+        if (!dataUrl) return;
+        session.posterCanvases.set(output.id, await createFinishedPoster(output, dataUrl, session.form.includeClubBranding));
+    }));
+
+    if (isSessionVisible(session)) renderCampaignResults(session);
+}
+
+async function drawClubBranding(context, width, height) {
+    const mark = await loadImage('/assets/botgc-mark.svg');
+    const markHeight = Math.round(Math.min(height * 0.11, width * 0.14));
+    const markWidth = Math.round(markHeight * (80 / 92));
+    const edgeInset = Math.round(Math.min(width, height) * 0.06);
+    const padding = Math.round(markHeight * 0.16);
+    const x = width - edgeInset - markWidth;
+    const y = edgeInset;
+
+    context.save();
+    context.fillStyle = 'rgba(255,255,255,0.9)';
+    context.shadowColor = 'rgba(13,53,72,0.2)';
+    context.shadowBlur = Math.max(10, Math.round(markHeight * 0.12));
+    roundRect(
+        context,
+        x - padding,
+        y - padding,
+        markWidth + (padding * 2),
+        markHeight + (padding * 2),
+        Math.round(markHeight * 0.15)
+    );
+    context.fill();
+    context.shadowColor = 'transparent';
+    context.drawImage(mark, x, y, markWidth, markHeight);
+    context.restore();
 }
 
 function drawArtworkFitted(context, image, width, height) {
@@ -864,7 +1322,7 @@ function createPosterFooter(output, canvas) {
     download.textContent = 'Download PNG';
     download.addEventListener('click', event => {
         event.preventDefault();
-        downloadCanvas(canvas, `${slugify(activeSession?.form?.eventName || getSelectedEvent(activeSession).name)}-${output.id}.png`);
+        downloadCanvas(canvas, `${slugify(activeSession?.form?.eventName || 'current-event')}-${output.id}.png`);
     });
     footer.append(copy, download);
     return footer;
@@ -921,6 +1379,7 @@ async function publishCampaign() {
         }
 
         setWorkflowStep(session, 4, true);
+        await persistSession(session);
     } catch (error) {
         elements.publishMessage.textContent = error instanceof Error ? error.message : 'Publishing failed.';
     } finally {
@@ -942,6 +1401,7 @@ function beginGenerationProgress(session, isRegeneration) {
     }
 
     if (!isSessionVisible(session)) return;
+    elements.generationProgress.querySelector('[data-generation-error]')?.remove();
     elements.emptyState.classList.add('hidden');
     elements.refinementPanel.classList.add('hidden');
     elements.generationProgress.classList.remove('hidden');
@@ -984,10 +1444,70 @@ function setWorkflowStep(session, step, complete = false) {
     });
 }
 
+function startGenerationClock(session) {
+    stopGenerationClock(session, false);
+    session.generationStartedAt = Date.now();
+
+    const updateElapsed = () => {
+        if (!isSessionVisible(session) || !elements.generationElapsed || !session.generationStartedAt) return;
+        const elapsedSeconds = Math.max(0, Math.floor((Date.now() - session.generationStartedAt) / 1000));
+        elements.generationElapsed.textContent = `Working for ${formatElapsedTime(elapsedSeconds)}. High-quality artwork can take several minutes.`;
+    };
+
+    updateElapsed();
+    session.generationTimer = setInterval(updateElapsed, 1000);
+}
+
+function stopGenerationClock(session, showFinishedTime = true) {
+    if (session.generationTimer) {
+        clearInterval(session.generationTimer);
+        session.generationTimer = null;
+    }
+
+    if (showFinishedTime && session.generationStartedAt && isSessionVisible(session) && elements.generationElapsed) {
+        const elapsedSeconds = Math.max(0, Math.floor((Date.now() - session.generationStartedAt) / 1000));
+        const outcome = session.campaignStatus.mode === 'ready' ? 'Finished' : 'Stopped';
+        elements.generationElapsed.textContent = `${outcome} after ${formatElapsedTime(elapsedSeconds)}.`;
+    }
+    session.generationStartedAt = null;
+}
+
+function formatElapsedTime(totalSeconds) {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return minutes > 0 ? `${minutes}m ${String(seconds).padStart(2, '0')}s` : `${seconds}s`;
+}
+
+function cancelGeneration(session) {
+    if (!session.isGenerating || !session.generationAbortController) return;
+    setCampaignStatus(session, 'Cancelling', 'generating');
+    session.generationAbortController.abort();
+    if (isSessionVisible(session) && elements.cancelGenerationButton) {
+        elements.cancelGenerationButton.disabled = true;
+        elements.cancelGenerationButton.textContent = 'Cancelling…';
+    }
+}
+
 function setBusy(session, isBusy) {
     if (!isSessionVisible(session)) return;
     elements.generateButton.disabled = isBusy;
     elements.regenerateButton.disabled = isBusy;
+    if (elements.cancelGenerationButton) {
+        elements.cancelGenerationButton.classList.toggle('hidden', !isBusy);
+        elements.cancelGenerationButton.disabled = !isBusy;
+        elements.cancelGenerationButton.textContent = 'Cancel generation';
+    }
+    document.querySelectorAll('.poster-studio .brief-panel input, .poster-studio .brief-panel select, .poster-studio .brief-panel textarea').forEach(control => {
+        if (isBusy) {
+            if (!Object.hasOwn(control.dataset, 'posterWasDisabled')) {
+                control.dataset.posterWasDisabled = control.disabled ? 'true' : 'false';
+            }
+            control.disabled = true;
+        } else if (Object.hasOwn(control.dataset, 'posterWasDisabled')) {
+            control.disabled = control.dataset.posterWasDisabled === 'true';
+            delete control.dataset.posterWasDisabled;
+        }
+    });
     document.body.classList.toggle('busy', isBusy);
 }
 
@@ -999,23 +1519,7 @@ function renderGenerationError(session) {
 }
 
 function getCampaignEventName(session) {
-    const selected = getSelectedEvent(session);
-    return selected.id === 'custom-event' && session.customEventName ? session.customEventName : selected.name;
-}
-
-function getSelectedEvent(session) {
-    const eventId = session?.form?.eventId ?? elements.eventSelect?.value;
-    return session.config.events.find(event => event.id === eventId) ?? {
-        id: 'custom-event',
-        name: session.customEventName || session.form.eventName || 'Current event',
-        defaultDate: session.context.eventDate || '',
-        description: session.context.description || '',
-        defaultPrice: ''
-    };
-}
-
-function getSelectedStyle(session = activeSession) {
-    return session.config.styles.find(style => style.id === session.selectedStyleId);
+    return session.customEventName || session.form.eventName || 'Current event';
 }
 
 function getPrimaryOutput(session = activeSession) {

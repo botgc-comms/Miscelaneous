@@ -1,8 +1,20 @@
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 using BOTGC.EventPlaybook.Models;
 using BOTGC.EventPlaybook.Options;
 using BOTGC.EventPlaybook.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Logging.ClearProviders();
+builder.Logging.AddSimpleConsole(options =>
+{
+    options.SingleLine = true;
+    options.TimestampFormat = "yyyy-MM-dd HH:mm:ss ";
+});
 
 const string defaultImageModel = "gpt-image-2";
 const string defaultPromptModel = "gpt-5.6";
@@ -11,6 +23,10 @@ var openAiApiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY")?.Trim() 
 var openAiImageModel = Environment.GetEnvironmentVariable("OPENAI_IMAGE_MODEL")?.Trim();
 var openAiImageQuality = Environment.GetEnvironmentVariable("OPENAI_IMAGE_QUALITY")?.Trim();
 var openAiPromptModel = Environment.GetEnvironmentVariable("OPENAI_PROMPT_MODEL")?.Trim();
+var demoPassword = Environment.GetEnvironmentVariable("DEMO_PASSWORD") ?? string.Empty;
+const string demoCookieScheme = "BOTGC.EventPlaybook.Demo";
+var dataProtectionDirectory = Path.Combine(builder.Environment.ContentRootPath, "App_Data", "DataProtection-Keys");
+Directory.CreateDirectory(dataProtectionDirectory);
 
 var effectiveImageModel = string.IsNullOrWhiteSpace(openAiImageModel)
     ? defaultImageModel
@@ -40,18 +56,100 @@ builder.Services.AddHttpClient("OpenAI", client =>
 builder.Services.AddSingleton<IImagePromptService, OpenAiPromptService>();
 builder.Services.AddSingleton<IOpenAiImageService, OpenAiImageService>();
 builder.Services.AddSingleton<ITaskCompletionRegistry, TaskCompletionRegistry>();
+builder.Services
+    .AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionDirectory));
+builder.Services
+    .AddAuthentication(demoCookieScheme)
+    .AddCookie(demoCookieScheme, options =>
+    {
+        options.Cookie.Name = "BOTGC.EventPlaybook.DemoAccess";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+        options.ExpireTimeSpan = TimeSpan.FromHours(12);
+        options.SlidingExpiration = true;
+    });
 
 var app = builder.Build();
 
 app.Logger.LogInformation(
-    "Poster Studio configured. API key: {ApiKeyStatus}; image model: {ImageModel}; image quality: {ImageQuality}; prompt model: {PromptModel}",
+    "Poster Studio configured. API key: {ApiKeyStatus}; image model: {ImageModel}; image quality: {ImageQuality}; prompt model: {PromptModel}; demo access: {DemoAccessStatus}",
     string.IsNullOrWhiteSpace(openAiApiKey) ? "not configured - mock mode" : "OPENAI_API_KEY",
     effectiveImageModel,
     effectiveImageQuality,
-    effectivePromptModel);
+    effectivePromptModel,
+    string.IsNullOrWhiteSpace(demoPassword) ? "disabled" : "password protected");
+
+app.UseAuthentication();
+
+if (!string.IsNullOrWhiteSpace(demoPassword))
+{
+    app.Use(async (context, next) =>
+    {
+        var path = context.Request.Path;
+        var isPublicPath = path.StartsWithSegments("/demo-login.html") ||
+                           path.StartsWithSegments("/auth/login") ||
+                           path.StartsWithSegments("/health");
+
+        if (isPublicPath || context.User.Identity?.IsAuthenticated == true)
+        {
+            await next();
+            return;
+        }
+
+        if (path.StartsWithSegments("/api"))
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            await context.Response.WriteAsJsonAsync(new { error = "Demo access authentication is required." });
+            return;
+        }
+
+        var requestedUrl = $"{context.Request.PathBase}{context.Request.Path}{context.Request.QueryString}";
+        context.Response.Redirect($"/demo-login.html?returnUrl={Uri.EscapeDataString(requestedUrl)}");
+    });
+}
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
+
+app.MapPost("/auth/login", async (HttpContext context, CancellationToken cancellationToken) =>
+{
+    if (string.IsNullOrWhiteSpace(demoPassword))
+    {
+        return Results.NotFound();
+    }
+
+    var form = await context.Request.ReadFormAsync(cancellationToken);
+    var returnUrl = NormaliseLocalReturnUrl(form["returnUrl"].ToString());
+
+    if (!PasswordMatches(form["password"].ToString(), demoPassword))
+    {
+        var failureUrl = $"/demo-login.html?error=1&returnUrl={Uri.EscapeDataString(returnUrl)}";
+        return Results.Redirect(failureUrl);
+    }
+
+    var identity = new ClaimsIdentity(
+        [new Claim(ClaimTypes.Name, "Development tester")],
+        demoCookieScheme);
+    var principal = new ClaimsPrincipal(identity);
+    await context.SignInAsync(
+        demoCookieScheme,
+        principal,
+        new AuthenticationProperties
+        {
+            IsPersistent = true,
+            ExpiresUtc = DateTimeOffset.UtcNow.AddHours(12)
+        });
+
+    return Results.Redirect(returnUrl);
+});
+
+app.MapPost("/auth/logout", async (HttpContext context) =>
+{
+    await context.SignOutAsync(demoCookieScheme);
+    return Results.Redirect("/demo-login.html");
+});
 
 app.MapGet("/api/poster/config", (IPosterConfigurationService configurationService) =>
 {
@@ -66,7 +164,11 @@ app.MapGet("/api/poster/config", (IPosterConfigurationService configurationServi
         {
             x.Id,
             x.Name,
-            x.Summary
+            x.Summary,
+            variations = x.Variations.Select(variation => new
+            {
+                variation.Id
+            })
         }),
         outputs = configurationModel.Outputs,
         generationMode = hasApiKey ? "openai" : "mock",
@@ -215,3 +317,23 @@ app.MapGet("/api/tasks/events/{eventId}/completions", async (
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
 app.Run();
+
+static bool PasswordMatches(string suppliedPassword, string configuredPassword)
+{
+    var suppliedHash = SHA256.HashData(Encoding.UTF8.GetBytes(suppliedPassword));
+    var configuredHash = SHA256.HashData(Encoding.UTF8.GetBytes(configuredPassword));
+    return CryptographicOperations.FixedTimeEquals(suppliedHash, configuredHash);
+}
+
+static string NormaliseLocalReturnUrl(string? returnUrl)
+{
+    if (string.IsNullOrWhiteSpace(returnUrl) ||
+        !returnUrl.StartsWith('/') ||
+        returnUrl.StartsWith("//", StringComparison.Ordinal) ||
+        returnUrl.StartsWith("/\\", StringComparison.Ordinal))
+    {
+        return "/";
+    }
+
+    return returnUrl;
+}

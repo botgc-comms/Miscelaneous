@@ -216,7 +216,7 @@
     background: var(--mist);
 }.poster-studio .toggle-grid{
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
     gap: 10px;
 }.poster-studio .check-card{
     position: relative;
@@ -367,6 +367,19 @@
 }.poster-studio .empty-art img{
     width: 78px;
     filter: saturate(0.85);
+}.poster-studio .saved-catalogue-art{
+    width: min(100%, 280px);
+    overflow: hidden;
+    aspect-ratio: 1;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: #eef5f2;
+    box-shadow: 0 16px 38px rgba(13, 53, 72, 0.14);
+}.poster-studio .saved-catalogue-art img{
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }.poster-studio .spark{
     position: absolute;
     color: var(--gold);
@@ -382,6 +395,17 @@
     display: grid;
     gap: 10px;
     margin-bottom: 18px;
+}.poster-studio .generation-controls{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 4px 2px 0;
+}.poster-studio .generation-controls small{
+    color: #6f7f85;
+    font-size: 0.72rem;
+}.poster-studio .generation-controls .button{
+    flex: 0 0 auto;
 }.poster-studio .progress-row{
     display: grid;
     grid-template-columns: 36px minmax(0, 1fr) auto;
