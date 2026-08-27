@@ -75,7 +75,10 @@
           activeEventId: null,
           activeView: 'catalogue',
           taskFilter: 'open',
+          taskBoardMode: 'mine',
+          taskBoardPersonId: '',
           deadlineOffsets: {},
+          directoryInitialised: false,
           roles: [],
           contacts: [],
           notificationOutbox: [],
@@ -90,7 +93,10 @@
         activeEventId: parsed.activeEventId ?? null,
         activeView: parsed.activeView ?? 'catalogue',
         taskFilter: parsed.taskFilter ?? 'open',
+        taskBoardMode: parsed.taskBoardMode === 'overview' ? 'overview' : 'mine',
+        taskBoardPersonId: String(parsed.taskBoardPersonId ?? ''),
         deadlineOffsets: parsed.deadlineOffsets && typeof parsed.deadlineOffsets === 'object' ? parsed.deadlineOffsets : {},
+        directoryInitialised: parsed.directoryInitialised === true,
         roles: Array.isArray(parsed.roles) ? parsed.roles : [],
         contacts: Array.isArray(parsed.contacts) ? parsed.contacts : [],
         notificationOutbox: Array.isArray(parsed.notificationOutbox) ? parsed.notificationOutbox : [],
@@ -103,7 +109,10 @@
         activeEventId: null,
         activeView: 'catalogue',
         taskFilter: 'open',
+        taskBoardMode: 'mine',
+        taskBoardPersonId: '',
         deadlineOffsets: {},
+        directoryInitialised: false,
         roles: [],
         contacts: [],
         notificationOutbox: [],
@@ -166,8 +175,9 @@
 
   function emptySharedState() {
     return {
-      schemaVersion: 2,
+      schemaVersion: 3,
       deadlineOffsets: {},
+      directoryInitialised: false,
       roles: [],
       contacts: [],
       events: []
@@ -176,13 +186,16 @@
 
   function normaliseSharedState(value) {
     const candidate = value && typeof value === 'object' ? value : {};
+    const roles = Array.isArray(candidate.roles) ? structuredClone(candidate.roles) : [];
+    const contacts = Array.isArray(candidate.contacts) ? structuredClone(candidate.contacts) : [];
     return {
-      schemaVersion: 2,
+      schemaVersion: 3,
       deadlineOffsets: candidate.deadlineOffsets && typeof candidate.deadlineOffsets === 'object'
         ? structuredClone(candidate.deadlineOffsets)
         : {},
-      roles: Array.isArray(candidate.roles) ? structuredClone(candidate.roles) : [],
-      contacts: Array.isArray(candidate.contacts) ? structuredClone(candidate.contacts) : [],
+      directoryInitialised: candidate.directoryInitialised === true,
+      roles,
+      contacts,
       events: Array.isArray(candidate.events) ? structuredClone(candidate.events) : []
     };
   }
@@ -190,6 +203,7 @@
   function getSharedStateSnapshot() {
     return normaliseSharedState({
       deadlineOffsets: state.deadlineOffsets,
+      directoryInitialised: state.directoryInitialised,
       roles: state.roles,
       contacts: state.contacts,
       events: state.events
@@ -251,8 +265,9 @@
     const local = normaliseSharedState(localValue);
     const remote = normaliseSharedState(remoteValue);
     return {
-      schemaVersion: 2,
+      schemaVersion: 3,
       deadlineOffsets: mergeChangedValue(base.deadlineOffsets, local.deadlineOffsets, remote.deadlineOffsets),
+      directoryInitialised: Boolean(mergeChangedValue(base.directoryInitialised, local.directoryInitialised, remote.directoryInitialised)),
       roles: mergeEntitiesById(base.roles, local.roles, remote.roles),
       contacts: mergeEntitiesById(base.contacts, local.contacts, remote.contacts),
       events: mergeEntitiesById(base.events, local.events, remote.events)
@@ -263,6 +278,7 @@
     const shared = normaliseSharedState(sharedValue);
     applyingSharedState = true;
     state.deadlineOffsets = shared.deadlineOffsets;
+    state.directoryInitialised = shared.directoryInitialised;
     state.roles = shared.roles;
     state.contacts = shared.contacts;
     state.events = shared.events;
@@ -382,6 +398,7 @@
               deadlineOffsets: Object.keys(remote.deadlineOffsets).length > 0
                 ? remote.deadlineOffsets
                 : browserSnapshot.deadlineOffsets,
+              directoryInitialised: remote.directoryInitialised || browserSnapshot.directoryInitialised,
               roles: [...remote.roles, ...legacyRoles],
               contacts: [...remote.contacts, ...legacyContacts],
               events: [...remote.events, ...legacyEvents]
@@ -897,6 +914,7 @@
   }
 
   function initialiseOperationalState() {
+    const shouldSeedDirectory = state.directoryInitialised !== true;
     const bundledRoles = playbook.responsibilityRoles ?? [];
     const existingRoles = new Map((Array.isArray(state.roles) ? state.roles : []).filter(role => role?.id).map(role => [role.id, role]));
     const directoryRolesWereMissing = existingRoles.size === 0;
@@ -905,12 +923,22 @@
       if (!state.roles.some(candidate => candidate.id === role.id)) state.roles.push(normaliseDirectoryRole(role));
     }
 
-    if (!Array.isArray(state.contacts) || state.contacts.length === 0) state.contacts = structuredClone(playbook.defaultContacts ?? []);
+    const eventCoordinatorRole = state.roles.find(role => role.id === 'event-coordinator');
+    if (eventCoordinatorRole) {
+      // This is deliberately a per-event responsibility. It always follows
+      // the organiser selected on the event rather than a standing mailbox.
+      eventCoordinatorRole.ownerContactId = '';
+      eventCoordinatorRole.mailboxEmail = '';
+      eventCoordinatorRole.fallbackRoleId = null;
+    }
+
+    if (!Array.isArray(state.contacts)) state.contacts = [];
+    if (shouldSeedDirectory && state.contacts.length === 0) state.contacts = structuredClone(playbook.defaultContacts ?? []);
     state.contacts = state.contacts.map(normaliseDirectoryContact);
 
     let simon = state.contacts.find(contact => contact.email?.toLocaleLowerCase() === 'simon@maraboustork.co.uk')
       ?? state.contacts.find(contact => contact.name?.toLocaleLowerCase() === 'simon parsons');
-    if (!simon) {
+    if (shouldSeedDirectory && !simon) {
       simon = normaliseDirectoryContact({
         id: 'person-simon-parsons',
         type: 'person',
@@ -927,7 +955,8 @@
     }
 
     const communicationsRole = state.roles.find(role => role.id === 'communications');
-    if (directoryRolesWereMissing && communicationsRole && !communicationsRole.ownerContactId) communicationsRole.ownerContactId = simon.id;
+    if (directoryRolesWereMissing && communicationsRole && !communicationsRole.ownerContactId && simon) communicationsRole.ownerContactId = simon.id;
+    state.directoryInitialised = true;
     saveState();
   }
 
@@ -984,7 +1013,7 @@
     if (roleId === 'event-coordinator' && event?.organiser) {
       const organiserContact = event.organiserRef?.kind === 'person'
         ? contactById(event.organiserRef.id)
-        : state.contacts.find(contact => contact.active !== false && contact.name.toLocaleLowerCase() === event.organiser.toLocaleLowerCase());
+        : state.contacts.find(contact => contact.active !== false && contact.type === 'person' && contact.name.toLocaleLowerCase() === event.organiser.toLocaleLowerCase());
       return organiserContact ?? { id: 'event-organiser', name: event.organiser, email: '', roleIds: ['event-coordinator'], active: true };
     }
 
@@ -1010,14 +1039,16 @@
   function findAssignmentReference(value, mode = 'person-or-role') {
     const search = String(value ?? '').trim().toLocaleLowerCase();
     if (!search) return null;
-    const person = (state.contacts ?? []).find(contact => contact.active !== false && (
+    const role = responsibilityRoles().find(item => item.active !== false && (item.id.toLocaleLowerCase() === search || item.name.toLocaleLowerCase() === search));
+    const person = (state.contacts ?? []).find(contact => contact.active !== false
+      && (mode !== 'person' || contact.type === 'person') && (
       contact.id.toLocaleLowerCase() === search ||
       contact.name.toLocaleLowerCase() === search ||
       contact.email?.toLocaleLowerCase() === search
     ));
-    if (person && (mode !== 'person' || person.type === 'person')) return { kind: 'person', id: person.id };
+    if (mode !== 'person' && role && person?.email?.toLocaleLowerCase() !== search) return { kind: 'role', id: role.id };
+    if (person) return { kind: 'person', id: person.id };
     if (mode === 'person') return null;
-    const role = responsibilityRoles().find(item => item.active !== false && (item.id.toLocaleLowerCase() === search || item.name.toLocaleLowerCase() === search));
     return role ? { kind: 'role', id: role.id } : null;
   }
 
@@ -1064,13 +1095,16 @@
     if (mode !== 'person') {
       for (const role of responsibilityRoles().filter(role => role.active !== false && role.selectableForTasks !== false)) {
         const recipient = assignmentRecipient({ kind: 'role', id: role.id }, event);
+        const detail = role.id === 'event-coordinator'
+          ? (event?.organiser ? `${recipient.name || event.organiser}${recipient.email ? ` · ${recipient.email}` : ''}` : 'Uses the organiser selected for each event')
+          : (recipient.email ? `${recipient.name || 'Shared mailbox'} · ${recipient.email}` : 'Contact route not configured');
         options.push({
           kind: 'role',
           id: role.id,
           name: role.name,
           label: role.name,
           typeLabel: 'Role',
-          detail: recipient.email ? `${recipient.name || 'Shared mailbox'} · ${recipient.email}` : 'Contact route not configured',
+          detail,
           search: `${role.name} ${role.area} ${recipient.name} ${recipient.email}`.toLocaleLowerCase()
         });
       }
@@ -1106,7 +1140,7 @@
     return `<div class="assignment-picker ${compact ? 'compact' : ''}" data-assignment-picker data-assignment-mode="${escapeHtml(mode)}" ${targetAttributes}>
       <div class="assignment-picker-input-row">
         <input ${id ? `id="${escapeHtml(id)}"` : ''} type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" autocomplete="off" value="${escapeHtml(display)}" placeholder="Start typing a person or role" data-assignment-input data-selected-kind="${escapeHtml(reference?.kind ?? '')}" data-selected-id="${escapeHtml(reference?.id ?? '')}" ${required ? 'required' : ''}>
-        <button type="button" class="assignment-picker-toggle" data-assignment-toggle aria-label="Show people and roles">⌄</button>
+        <button type="button" class="assignment-picker-toggle" data-assignment-toggle aria-label="Show people and roles" aria-expanded="false"><span class="assignment-picker-chevron" aria-hidden="true"></span></button>
       </div>
       <div class="assignment-picker-menu" role="listbox" hidden>
         ${options.map(option => `<button type="button" role="option" data-assignment-option data-kind="${escapeHtml(option.kind)}" data-id="${escapeHtml(option.id)}" data-name="${escapeHtml(option.name)}" data-search="${escapeHtml(option.search)}">
@@ -2592,46 +2626,172 @@
     return `${item.detail ?? ''} The current plan identifies: ${parties.join(', ')}.`.trim();
   }
 
-  function renderTaskBoard(event, tasks) {
-    const open = tasks.filter(task => !task.state.completed);
-    const done = tasks.filter(task => task.state.completed);
-    const missingDates = tasks.filter(task => task.item.deadlineCode && !task.dueDate);
-    const unassigned = tasks.filter(task => !task.state.assignee);
-    const overdue = tasks.filter(task => taskTimingStatus(task) === 'overdue');
-    const dueSoon = tasks.filter(task => taskTimingStatus(task) === 'due-soon');
-    const advisories = getActiveAdvisories(event);
-    processReminderRules(event, tasks);
+  function taskBoardPeople() {
+    return (state.contacts ?? [])
+      .filter(contact => contact.active !== false && contact.type === 'person' && contact.canReceiveTasks !== false)
+      .sort((left, right) => left.name.localeCompare(right.name));
+  }
 
-    const filter = state.taskFilter ?? 'open';
-    const filtered = tasks.filter(task => {
+  function resolveTaskBoardPerson(event) {
+    const people = taskBoardPeople();
+    let person = people.find(contact => contact.id === state.taskBoardPersonId) ?? null;
+    if (!person) person = people.find(contact => contact.canLogin === true) ?? null;
+    if (!person && event.organiserRef?.kind === 'person') person = people.find(contact => contact.id === event.organiserRef.id) ?? null;
+    if (!person && event.organiser) person = people.find(contact => contact.name.toLocaleLowerCase() === event.organiser.toLocaleLowerCase()) ?? null;
+    if (!person) person = people[0] ?? null;
+    if (person) state.taskBoardPersonId = person.id;
+    return person;
+  }
+
+  function taskBelongsToPerson(task, event, person) {
+    if (!person) return false;
+    const reference = taskAssignmentReference(task.state);
+    if (reference?.kind === 'person') return reference.id === person.id;
+    if (reference?.kind === 'role') {
+      const recipient = contactForRole(reference.id, event);
+      if (recipient?.id === person.id) return true;
+      if (recipient?.email && person.email && recipient.email.toLocaleLowerCase() === person.email.toLocaleLowerCase()) return true;
+      return Boolean(recipient?.name && recipient.name.toLocaleLowerCase() === person.name.toLocaleLowerCase());
+    }
+    const assigned = String(task.state.assignee ?? '').trim().toLocaleLowerCase();
+    return Boolean(assigned && (assigned === person.name.toLocaleLowerCase() || assigned === person.email?.toLocaleLowerCase()));
+  }
+
+  function taskDaysUntilDue(task) {
+    if (!task.dueDate) return null;
+    const today = new Date(`${toIsoDate(new Date())}T12:00:00`);
+    const due = new Date(`${task.dueDate}T12:00:00`);
+    if (Number.isNaN(due.getTime())) return null;
+    return Math.round((due - today) / 86400000);
+  }
+
+  function taskHorizon(task) {
+    if (task.state.completed) return 'completed';
+    const days = taskDaysUntilDue(task);
+    if (days === null) return 'undated';
+    if (days <= 2) return 'attention';
+    if (days <= 7) return 'next-days';
+    if (days <= 28) return 'next-weeks';
+    return 'later';
+  }
+
+  function taskDueRelativeLabel(task) {
+    if (task.state.completed) return 'Completed';
+    const days = taskDaysUntilDue(task);
+    if (days === null) return 'Date not configured';
+    if (days < -1) return `${Math.abs(days)} days overdue`;
+    if (days === -1) return '1 day overdue';
+    if (days === 0) return 'Due today';
+    if (days === 1) return 'Due tomorrow';
+    return `Due in ${days} days`;
+  }
+
+  function taskHorizonDefinition(horizon, tasks) {
+    const overdue = tasks.filter(task => (taskDaysUntilDue(task) ?? 0) < 0).length;
+    const definitions = {
+      attention: {
+        label: 'Needs attention',
+        description: overdue ? `${overdue} overdue; the remainder are due today or within two days.` : 'Due today or within the next two days.',
+        icon: '!'
+      },
+      'next-days': { label: 'Next few days', description: 'Due in three to seven days.', icon: '7' },
+      'next-weeks': { label: 'Next few weeks', description: 'Due in eight to twenty-eight days.', icon: '28' },
+      later: { label: 'Later', description: 'Planned more than four weeks ahead.', icon: '→' },
+      undated: { label: 'Date needed', description: 'Waiting for a planning milestone or event date.', icon: '?' },
+      completed: { label: 'Completed', description: 'Finished tasks retained for the event record.', icon: '✓' }
+    };
+    return definitions[horizon] ?? definitions.later;
+  }
+
+  function renderTaskTimelineGroup(horizon, tasks, event) {
+    if (!tasks.length) return '';
+    const definition = taskHorizonDefinition(horizon, tasks);
+    const expanded = ['attention', 'next-days', 'next-weeks'].includes(horizon);
+    return `
+      <details class="task-timeline-group horizon-${escapeHtml(horizon)}" ${expanded ? 'open' : ''}>
+        <summary>
+          <span class="task-timeline-icon">${escapeHtml(definition.icon)}</span>
+          <span class="task-timeline-heading"><strong>${escapeHtml(definition.label)}</strong><small>${escapeHtml(definition.description)}</small></span>
+          <span class="task-timeline-count">${tasks.length}</span>
+          <span class="task-timeline-chevron" aria-hidden="true"></span>
+        </summary>
+        <div class="task-group-list">${tasks.map(task => renderTaskBoardCard(task, event)).join('')}</div>
+      </details>`;
+  }
+
+  function renderTaskBoard(event, tasks) {
+    processReminderRules(event, tasks);
+    const mode = state.taskBoardMode === 'overview' ? 'overview' : 'mine';
+    const people = taskBoardPeople();
+    const person = resolveTaskBoardPerson(event);
+    const scoped = mode === 'mine' ? tasks.filter(task => taskBelongsToPerson(task, event, person)) : tasks;
+    const open = scoped.filter(task => !task.state.completed);
+    const done = scoped.filter(task => task.state.completed);
+    const unassigned = scoped.filter(task => !task.state.assignee && !task.state.completed);
+    const missingDates = scoped.filter(task => task.item.deadlineCode && !task.dueDate && !task.state.completed);
+    const attention = open.filter(task => taskHorizon(task) === 'attention');
+    const overdue = attention.filter(task => (taskDaysUntilDue(task) ?? 0) < 0);
+    const nextDays = open.filter(task => taskHorizon(task) === 'next-days');
+    const nextWeeks = open.filter(task => taskHorizon(task) === 'next-weeks');
+    const later = open.filter(task => ['later', 'undated'].includes(taskHorizon(task)));
+    const allowedFilters = mode === 'overview' ? ['open', 'unassigned', 'done', 'all'] : ['open', 'done', 'all'];
+    const filter = allowedFilters.includes(state.taskFilter) ? state.taskFilter : 'open';
+    const filtered = scoped.filter(task => {
       if (filter === 'open') return !task.state.completed;
       if (filter === 'done') return task.state.completed;
       if (filter === 'unassigned') return !task.state.assignee && !task.state.completed;
-      if (filter === 'overdue') return taskTimingStatus(task) === 'overdue';
-      if (filter === 'due-soon') return taskTimingStatus(task) === 'due-soon';
       return true;
     });
+    const grouped = new Map(['attention', 'next-days', 'next-weeks', 'later', 'undated', 'completed'].map(key => [key, []]));
+    for (const task of filtered) grouped.get(taskHorizon(task)).push(task);
+
+    const focusHeading = mode === 'mine'
+      ? attention.length
+        ? `${attention.length} of your task${attention.length === 1 ? '' : 's'} need attention`
+        : 'Nothing requires your urgent attention'
+      : attention.length
+        ? `${attention.length} task${attention.length === 1 ? '' : 's'} need organiser attention`
+        : 'The event is currently on track';
+    const focusCopy = attention.length
+      ? `${overdue.length ? `${overdue.length} ${overdue.length === 1 ? 'is' : 'are'} overdue. ` : ''}Start here, then use the next-few-days and next-few-weeks groups when you have capacity.`
+      : `${nextDays.length} due in the next few days and ${nextWeeks.length} due in the next few weeks.${mode === 'overview' && unassigned.length ? ` ${unassigned.length} open ${unassigned.length === 1 ? 'task is' : 'tasks are'} unassigned.` : ''}`;
+    const filters = mode === 'overview'
+      ? [['open', 'Open'], ['unassigned', `Unassigned (${unassigned.length})`], ['done', 'Completed'], ['all', 'All']]
+      : [['open', 'Open'], ['done', 'Completed'], ['all', 'All']];
+    const scopeLabel = mode === 'mine' && person ? `${person.name}'s` : 'event';
 
     return `
       <section class="page-header">
         <div>
-          <div class="eyebrow">Live output</div>
+          <div class="eyebrow">Event delivery</div>
           <h2>Task board</h2>
-          <p>Tasks are generated from the answers in the playbook. Change an answer and the task list changes with it.</p>
+          <p>${mode === 'mine' ? 'Start with what needs your attention now, then move ahead when you have capacity.' : 'See workload, ownership and deadlines across the whole event without facing one undifferentiated list.'}</p>
         </div>
         <div class="page-progress task-progress">
-          <strong>${done.length}/${tasks.length}</strong>
-          <span>tasks complete</span>
+          <strong>${done.length}/${scoped.length}</strong>
+          <span>${escapeHtml(scopeLabel)} tasks complete</span>
         </div>
       </section>
 
-      <section class="task-stat-grid">
-        <div class="stat-card"><span>Open</span><strong>${open.length}</strong></div>
-        <div class="stat-card"><span>Completed</span><strong>${done.length}</strong></div>
-        <div class="stat-card ${unassigned.length ? 'warning' : ''}"><span>Unassigned</span><strong>${unassigned.length}</strong></div>
-        <div class="stat-card ${overdue.length ? 'warning' : ''}"><span>Overdue</span><strong>${overdue.length}</strong></div>
-        <div class="stat-card ${dueSoon.length ? 'warning' : ''}"><span>Due soon</span><strong>${dueSoon.length}</strong></div>
-        <div class="stat-card ${advisories.length ? 'warning' : ''}"><span>Advisories</span><strong>${advisories.length}</strong></div>
+      <section class="task-board-viewbar" aria-label="Task board view">
+        <div class="task-board-mode-switch">
+          <button type="button" class="${mode === 'mine' ? 'active' : ''}" data-task-board-mode="mine" aria-pressed="${mode === 'mine'}"><span>My tasks</span><small>Personal focus</small></button>
+          <button type="button" class="${mode === 'overview' ? 'active' : ''}" data-task-board-mode="overview" aria-pressed="${mode === 'overview'}"><span>Event overview</span><small>Organiser view</small></button>
+        </div>
+        ${mode === 'mine' ? `<label class="task-board-person"><span>Working as</span>${people.length ? `<select data-task-board-person>${people.map(candidate => `<option value="${escapeHtml(candidate.id)}" ${candidate.id === person?.id ? 'selected' : ''}>${escapeHtml(candidate.name)}</option>`).join('')}</select>` : '<button type="button" class="text-button inline" data-view="directory">Add a person in People & Roles</button>'}</label>` : `<div class="task-board-overview-note"><span>${unassigned.length}</span><small>open task${unassigned.length === 1 ? '' : 's'} without an owner</small></div>`}
+      </section>
+
+      <section class="task-focus-banner ${attention.length ? 'urgent' : 'clear'}">
+        <span class="task-focus-icon">${attention.length ? '!' : '✓'}</span>
+        <div><span>${mode === 'mine' ? 'Your focus' : 'Event focus'}</span><h3>${escapeHtml(focusHeading)}</h3><p>${escapeHtml(focusCopy)}</p></div>
+        ${mode === 'overview' && unassigned.length ? `<button type="button" class="button button-secondary" data-task-filter="unassigned">Review unassigned</button>` : ''}
+      </section>
+
+      <section class="task-horizon-strip" aria-label="Open tasks by time horizon">
+        <div class="${attention.length ? 'urgent' : ''}"><span>Needs attention</span><strong>${attention.length}</strong><small>${overdue.length} overdue</small></div>
+        <div><span>Next few days</span><strong>${nextDays.length}</strong><small>3–7 days</small></div>
+        <div><span>Next few weeks</span><strong>${nextWeeks.length}</strong><small>8–28 days</small></div>
+        <div><span>Later or undated</span><strong>${later.length}</strong><small>Beyond four weeks</small></div>
       </section>
 
       ${missingDates.length ? `
@@ -2644,14 +2804,7 @@
 
       <section class="task-toolbar">
         <div class="filter-tabs">
-          ${[
-            ['open', 'Open'],
-            ['all', 'All'],
-            ['overdue', 'Overdue'],
-            ['due-soon', 'Due soon'],
-            ['unassigned', 'Unassigned'],
-            ['done', 'Completed']
-          ].map(([value, label]) => `<button class="filter-tab ${filter === value ? 'active' : ''}" data-task-filter="${value}">${label}</button>`).join('')}
+          ${filters.map(([value, label]) => `<button class="filter-tab ${filter === value ? 'active' : ''}" data-task-filter="${value}">${escapeHtml(label)}</button>`).join('')}
         </div>
         <div class="task-toolbar-actions">
           <button class="button button-secondary" data-action="send-notifications">Send queued notifications</button>
@@ -2660,12 +2813,12 @@
         </div>
       </section>
 
-      <div class="task-board-list">
-        ${filtered.length ? filtered.map(task => renderTaskBoardCard(task, event)).join('') : `
+      <div class="task-timeline">
+        ${filtered.length ? ['attention', 'next-days', 'next-weeks', 'later', 'undated', 'completed'].map(horizon => renderTaskTimelineGroup(horizon, grouped.get(horizon), event)).join('') : `
           <div class="empty-state">
             <div class="empty-icon">✓</div>
-            <h3>No tasks in this view</h3>
-            <p>Answer more playbook questions or choose a different task filter.</p>
+            <h3>${mode === 'mine' ? `No ${filter === 'done' ? 'completed' : 'open'} tasks for ${escapeHtml(person?.name ?? 'this person')}` : 'No tasks in this view'}</h3>
+            <p>${mode === 'mine' ? 'Switch to Event overview to see the whole event, or choose another person.' : 'Choose another filter or return to the planner to create the remaining work.'}</p>
           </div>
         `}
       </div>
@@ -2677,9 +2830,12 @@
     const taskState = task.state;
     const dueLabel = dueDate ? formatDate(dueDate) : item.deadlineCode ? `Deadline ${item.deadlineCode} is not configured` : 'No due date';
     const detail = getTaskDetail(item, event);
+    const horizon = taskHorizon(task);
+    const owner = taskState.assignee || (item.defaultOwnerRoleId ? roleById(item.defaultOwnerRoleId)?.name : '') || 'Awaiting owner';
+    const relativeDue = taskDueRelativeLabel(task);
     return `
-      <article class="task-card ${taskState.completed ? 'completed' : ''}">
-        <label class="task-card-check">
+      <article class="task-card timing-${escapeHtml(horizon)} ${taskState.completed ? 'completed' : ''}">
+        <label class="task-card-check" title="${taskState.completed ? 'Mark task open' : 'Mark task complete'}">
           <input type="checkbox" data-task-complete="${item.id}" ${taskState.completed ? 'checked' : ''}>
           <span></span>
         </label>
@@ -2688,9 +2844,9 @@
             <div>
               <div class="task-module-label">${escapeHtml(module.title)}${item.responsibleArea ? ` · ${escapeHtml(item.responsibleArea)}` : ''}</div>
               <h3>${escapeHtml(item.title)}</h3>
-              ${item.defaultOwnerRoleId ? `<small class="default-owner-label">Default: ${escapeHtml(roleById(item.defaultOwnerRoleId)?.name ?? item.defaultOwnerRoleId)}</small>` : ''}
+              <div class="task-card-summary-meta"><span class="task-owner-chip">${escapeHtml(owner)}</span><span class="task-relative-due">${escapeHtml(relativeDue)}</span></div>
             </div>
-            <div class="task-due-block ${dueDate ? '' : 'missing'}">
+            <div class="task-due-block ${dueDate ? '' : 'missing'} ${horizon === 'attention' ? 'urgent' : ''}">
               <span class="task-board-milestone-code">${escapeHtml(item.deadlineCode ?? '—')}</span>
               <span class="task-board-milestone-copy">
                 <small>${escapeHtml(item.deadlineCode ? (MILESTONE_LABELS[item.deadlineCode] ?? item.deadlineCode) : 'No milestone')}</small>
@@ -2698,23 +2854,28 @@
               </span>
             </div>
           </div>
-          ${detail ? `<p class="task-detail">${escapeHtml(detail)}</p>` : ''}
-          <div class="task-fields">
-            <div class="task-assignment-field">
-              <span>Assigned to</span>
-              ${renderAssignmentPicker({ value: taskAssignmentReference(taskState) ?? taskState.assignee, fallback: taskState.assignee, eligibleRoleId: task.item.defaultOwnerRoleId, taskId: item.id })}
+          <details class="task-card-manage">
+            <summary><span>Details and assignment</span><span class="task-card-manage-chevron" aria-hidden="true"></span></summary>
+            <div class="task-card-manage-body">
+              ${detail ? `<p class="task-detail">${escapeHtml(detail)}</p>` : ''}
+              <div class="task-fields">
+                <div class="task-assignment-field">
+                  <span>Assigned to</span>
+                  ${renderAssignmentPicker({ value: taskAssignmentReference(taskState) ?? taskState.assignee, fallback: taskState.assignee, eligibleRoleId: task.item.defaultOwnerRoleId, taskId: item.id })}
+                </div>
+                <label class="task-notes-field">
+                  <span>Task notes</span>
+                  <input type="text" value="${escapeHtml(taskState.notes ?? '')}" placeholder="Add any event-specific detail" data-task-notes="${item.id}">
+                </label>
+              </div>
+              <div class="task-operational-row">
+                <span class="notification-chip ${taskState.notificationStatus ?? 'none'}">${taskState.notificationStatus === 'queued' ? 'Assignment notification queued' : taskState.notificationStatus === 'outbox' ? 'Notification written to development outbox' : taskState.assignee ? 'Owner assigned' : 'Awaiting owner'}</span>
+                ${taskState.assignee && !assignmentRecipient(taskAssignmentReference(taskState) ?? taskState.assignee, event).email ? `<span class="notification-chip warning">No email configured for this person or role</span>` : ''}
+                ${taskState.completionToken ? `<button class="text-button inline" data-copy-completion="${escapeHtml(item.id)}">Copy completion link</button>` : ''}
+                ${taskState.completedAt ? `<span class="completed-at">Completed ${escapeHtml(formatDate(taskState.completedAt.substring(0,10)))}</span>` : ''}
+              </div>
             </div>
-            <label class="task-notes-field">
-              <span>Task notes</span>
-              <input type="text" value="${escapeHtml(taskState.notes ?? '')}" placeholder="Add any event-specific detail" data-task-notes="${item.id}">
-            </label>
-          </div>
-          <div class="task-operational-row">
-            <span class="notification-chip ${taskState.notificationStatus ?? 'none'}">${taskState.notificationStatus === 'queued' ? 'Assignment notification queued' : taskState.notificationStatus === 'outbox' ? 'Notification written to development outbox' : taskState.assignee ? 'Owner assigned' : 'Awaiting owner'}</span>
-            ${taskState.assignee && !assignmentRecipient(taskAssignmentReference(taskState) ?? taskState.assignee, event).email ? `<span class="notification-chip warning">No email configured for this person or role</span>` : ''}
-            ${taskState.completionToken ? `<button class="text-button inline" data-copy-completion="${escapeHtml(item.id)}">Copy completion link</button>` : ''}
-            ${taskState.completedAt ? `<span class="completed-at">Completed ${escapeHtml(formatDate(taskState.completedAt.substring(0,10)))}</span>` : ''}
-          </div>
+          </details>
         </div>
       </article>
     `;
@@ -2925,6 +3086,7 @@
   }
 
   function roleRouteSummary(role) {
+    if (role.id === 'event-coordinator') return 'Uses the organiser selected separately for each event';
     const linked = role.ownerContactId ? contactById(role.ownerContactId) : null;
     if (linked) return `${linked.name}${linked.email ? ` · ${linked.email}` : ' · no email configured'}`;
     if (role.mailboxEmail) return role.mailboxEmail;
@@ -2932,11 +3094,74 @@
     return inherited ? `Falls back to ${inherited.name}` : 'No contact route configured';
   }
 
+  function roleHasContactRoute(role) {
+    if (!role) return false;
+    if (role.id === 'event-coordinator') return true;
+    return Boolean(contactForRole(role.id, null)?.email);
+  }
+
+  function explicitDirectoryReference(value) {
+    return value && typeof value === 'object' && ['person', 'role'].includes(value.kind) && value.id
+      ? { kind: value.kind, id: String(value.id) }
+      : null;
+  }
+
+  function eventDirectoryAssignmentValues(event) {
+    const values = [
+      event.organiserRef,
+      event.organiser,
+      event.lifecycle?.decisionOwnerRef,
+      event.lifecycle?.decisionOwner,
+      event.lifecycle?.communicationsOwnerRef,
+      event.lifecycle?.communicationsOwner,
+      ...Object.values(event.answers ?? {})
+    ];
+    for (const taskState of Object.values(event.taskState ?? {})) {
+      values.push(
+        taskState?.assignmentKind && taskState?.assignmentId
+          ? { kind: taskState.assignmentKind, id: taskState.assignmentId }
+          : taskState?.assignee
+      );
+    }
+    return values.filter(value => value !== undefined && value !== null && value !== '');
+  }
+
+  function roleReferenceUsesContact(roleId, event, contactId) {
+    const role = roleById(roleId);
+    if (!role) return false;
+    if (role.ownerContactId === contactId) return true;
+    return contactForRole(roleId, event)?.id === contactId;
+  }
+
+  function legacyAssignmentUsesContact(value, event, contact) {
+    if (typeof value !== 'string') return false;
+    const search = value.trim().toLocaleLowerCase();
+    if (!search) return false;
+    const matchingRole = responsibilityRoles().find(role => role.id.toLocaleLowerCase() === search || role.name.toLocaleLowerCase() === search);
+    if (matchingRole && contact.type === 'mailbox' && !contact.email) return false;
+    if (matchingRole && roleReferenceUsesContact(matchingRole.id, event, contact.id)) return true;
+    const matchesContact = contact.name.toLocaleLowerCase() === search || Boolean(contact.email && contact.email.toLocaleLowerCase() === search);
+    if (!matchesContact) return false;
+    // Old prototype data sometimes created an empty mailbox contact with the
+    // same name as a role. Treat that ambiguous string as the role so the
+    // obsolete duplicate contact can still be removed safely.
+    return true;
+  }
+
+  function contactEventUsage(contact) {
+    return (state.events ?? []).filter(event => eventDirectoryAssignmentValues(event).some(value => {
+      const reference = explicitDirectoryReference(value);
+      if (reference?.kind === 'person') return reference.id === contact.id;
+      if (reference?.kind === 'role') return roleReferenceUsesContact(reference.id, event, contact.id);
+      return legacyAssignmentUsesContact(value, event, contact);
+    }));
+  }
+
   function renderDirectory() {
     const activeContacts = (state.contacts ?? []).filter(contact => contact.active !== false);
     const activeRoles = responsibilityRoles().filter(role => role.active !== false);
     const loginContacts = activeContacts.filter(contact => contact.canLogin);
-    const unroutedRoles = activeRoles.filter(role => !assignmentRecipient({ kind: 'role', id: role.id }, getActiveEvent()).email);
+    const unroutedRoles = activeRoles.filter(role => !roleHasContactRoute(role));
     return `
       <section class="directory-overview">
         <div><span class="eyebrow">Shared directory</span><h2>People, contact routes and responsibilities</h2><p>Use stable people and role records everywhere the Playbook asks who owns a decision or task. Changing an email address or the person behind a role updates future notifications without rewriting every event.</p></div>
@@ -2944,17 +3169,18 @@
           <div><strong>${activeContacts.length}</strong><span>active contacts</span></div>
           <div><strong>${activeRoles.length}</strong><span>active roles</span></div>
           <div><strong>${loginContacts.length}</strong><span>login-enabled</span></div>
-          <div class="${unroutedRoles.length ? 'warning' : ''}"><strong>${unroutedRoles.length}</strong><span>roles without email</span></div>
+          <div class="${unroutedRoles.length ? 'warning' : ''}"><strong>${unroutedRoles.length}</strong><span>roles without a route</span></div>
         </div>
       </section>
       <section class="directory-login-note"><span>Login-ready directory</span><p>Platform permissions and login eligibility are recorded here now. Individual invitations and enforced access will use these records when production identity is connected.</p></section>
+      <section class="directory-model-note"><strong>Roles describe the responsibility; contacts describe who can perform it.</strong><p>Event Coordinator is deliberately different: it always follows the named organiser selected for that event. Departmental roles such as Communications or Food &amp; Beverage may instead use a linked person or a shared fallback mailbox.</p></section>
       <div class="directory-layout">
         <section class="directory-panel directory-people-panel">
-          <div class="directory-panel-heading"><div><span class="eyebrow">Contacts</span><h3>People and mailboxes</h3><p>Only active contacts allowed to receive tasks appear in assignment controls, and only for the operational roles they can perform.</p></div><button class="button button-primary" data-action="add-directory-contact">Add person</button></div>
+          <div class="directory-panel-heading"><div><span class="eyebrow">Contacts</span><h3>People and shared mailboxes</h3><p>Only active contacts allowed to receive tasks appear in assignment controls, and only for the operational roles they can perform.</p></div><button class="button button-primary" data-action="add-directory-contact">Add person</button></div>
           <div class="directory-card-list">${(state.contacts ?? []).map(renderDirectoryContact).join('')}</div>
         </section>
         <section class="directory-panel directory-roles-panel">
-          <div class="directory-panel-heading"><div><span class="eyebrow">Responsibilities</span><h3>Assignable roles</h3><p>A role can route to a named person, a shared mailbox, or a fallback role.</p></div><button class="button button-secondary" data-action="add-directory-role">Add role</button></div>
+          <div class="directory-panel-heading"><div><span class="eyebrow">Responsibilities</span><h3>Assignable roles</h3><p>Most roles may route to a named person, shared mailbox or fallback role. Event Coordinator is resolved from each event instead.</p></div><button class="button button-secondary" data-action="add-directory-role">Add role</button></div>
           <div class="directory-card-list">${responsibilityRoles().map(renderDirectoryRole).join('')}</div>
         </section>
       </div>`;
@@ -2962,6 +3188,10 @@
 
   function renderDirectoryContact(contact) {
     const roles = responsibilityRoles();
+    const eventUsage = contactEventUsage(contact);
+    const linkedRoles = roles.filter(role => role.ownerContactId === contact.id);
+    const recordLabel = contact.type === 'mailbox' ? 'mailbox' : 'person';
+    const usageNames = eventUsage.map(event => event.name || 'Untitled event');
     return `<article class="directory-card ${contact.active === false ? 'inactive' : ''}" data-directory-contact-id="${escapeHtml(contact.id)}">
       <div class="directory-card-heading">
         <div class="directory-avatar ${contact.type === 'mailbox' ? 'mailbox' : ''}">${contact.type === 'mailbox' ? '@' : escapeHtml((contact.name || '?').trim().charAt(0).toUpperCase())}</div>
@@ -2985,6 +3215,14 @@
         ${PLATFORM_ROLE_DEFINITIONS.map(role => `<label title="${escapeHtml(role.description)}"><input type="checkbox" data-directory-platform-role="${escapeHtml(role.id)}" ${contact.platformRoleIds?.includes(role.id) ? 'checked' : ''}><span>${escapeHtml(role.name)}</span></label>`).join('')}
       </div></fieldset>
       <label class="directory-notes"><span>Notes</span><input type="text" value="${escapeHtml(contact.notes ?? '')}" data-directory-contact-field="notes" placeholder="Optional contact or availability note"></label>
+      <div class="directory-record-actions ${eventUsage.length ? 'protected' : ''}">
+        <span>${eventUsage.length
+          ? `<strong>Cannot delete:</strong> used by ${eventUsage.length} event${eventUsage.length === 1 ? '' : 's'} — ${escapeHtml(usageNames.slice(0, 3).join(', '))}${usageNames.length > 3 ? ` and ${usageNames.length - 3} more` : ''}`
+          : linkedRoles.length
+            ? `Not used by an event. Deleting will also unlink ${linkedRoles.length} role${linkedRoles.length === 1 ? '' : 's'}.`
+            : 'Not used by an event and safe to delete.'}</span>
+        <button type="button" class="directory-delete-button" data-delete-directory-contact="${escapeHtml(contact.id)}" ${eventUsage.length ? `disabled title="Used by ${escapeHtml(usageNames.join(', '))}"` : ''}>Delete ${recordLabel}</button>
+      </div>
     </article>`;
   }
 
@@ -2992,19 +3230,22 @@
     const contacts = (state.contacts ?? []).filter(contact => contact.active !== false);
     const roles = responsibilityRoles().filter(candidate => candidate.id !== role.id);
     const usage = [...itemIndex.values()].filter(indexed => indexed.item.defaultOwnerRoleId === role.id).length;
+    const dynamicEventCoordinator = role.id === 'event-coordinator';
     return `<article class="directory-card directory-role-card ${role.active === false ? 'inactive' : ''}" data-directory-role-id="${escapeHtml(role.id)}">
       <div class="directory-card-heading">
         <div class="directory-avatar role">R</div>
         <div><strong>${escapeHtml(role.name)}</strong><small>${escapeHtml(role.area || 'No area')} · default for ${usage} task${usage === 1 ? '' : 's'}</small></div>
         <label class="directory-active-toggle"><input type="checkbox" data-directory-role-boolean="active" ${role.active !== false ? 'checked' : ''}><span>Active</span></label>
       </div>
-      <div class="directory-route-summary ${assignmentRecipient({ kind: 'role', id: role.id }, getActiveEvent()).email ? '' : 'warning'}"><span>Current route</span><strong>${escapeHtml(roleRouteSummary(role))}</strong></div>
+      <div class="directory-route-summary ${dynamicEventCoordinator ? 'dynamic' : roleHasContactRoute(role) ? '' : 'warning'}"><span>${dynamicEventCoordinator ? 'Per-event role' : 'Current route'}</span><strong>${escapeHtml(roleRouteSummary(role))}</strong></div>
       <div class="directory-form-grid">
         <label><span>Role name</span><input type="text" value="${escapeHtml(role.name)}" data-directory-role-field="name" required></label>
         <label><span>Operational area</span><input type="text" value="${escapeHtml(role.area ?? '')}" data-directory-role-field="area" placeholder="For example Communications"></label>
-        <label><span>Linked person or mailbox</span><select data-directory-role-field="ownerContactId"><option value="">Not linked</option>${contacts.map(contact => `<option value="${escapeHtml(contact.id)}" ${role.ownerContactId === contact.id ? 'selected' : ''}>${escapeHtml(contact.name)}${contact.email ? ` · ${escapeHtml(contact.email)}` : ''}</option>`).join('')}</select></label>
-        <label><span>Role mailbox email</span><input type="email" value="${escapeHtml(role.mailboxEmail ?? '')}" data-directory-role-field="mailboxEmail" placeholder="Used when no contact is linked"></label>
-        <label><span>Fallback role</span><select data-directory-role-field="fallbackRoleId"><option value="">No fallback</option>${roles.map(candidate => `<option value="${escapeHtml(candidate.id)}" ${role.fallbackRoleId === candidate.id ? 'selected' : ''}>${escapeHtml(candidate.name)}</option>`).join('')}</select></label>
+        ${dynamicEventCoordinator
+          ? `<div class="directory-dynamic-role-note"><strong>No default mailbox is needed.</strong><span>Mark the appropriate people as able to perform Event Coordinator. The organiser chosen when an event is created becomes its coordinator.</span></div>`
+          : `<label><span>Linked person or mailbox</span><select data-directory-role-field="ownerContactId"><option value="">Not linked</option>${contacts.map(contact => `<option value="${escapeHtml(contact.id)}" ${role.ownerContactId === contact.id ? 'selected' : ''}>${escapeHtml(contact.name)}${contact.email ? ` · ${escapeHtml(contact.email)}` : ''}</option>`).join('')}</select></label>
+            <label><span>Fallback mailbox email</span><input type="email" value="${escapeHtml(role.mailboxEmail ?? '')}" data-directory-role-field="mailboxEmail" placeholder="Optional, used when no person is linked"><small>Use this for a genuine shared departmental address. It does not create another contact record.</small></label>
+            <label><span>Fallback role</span><select data-directory-role-field="fallbackRoleId"><option value="">No fallback</option>${roles.map(candidate => `<option value="${escapeHtml(candidate.id)}" ${role.fallbackRoleId === candidate.id ? 'selected' : ''}>${escapeHtml(candidate.name)}</option>`).join('')}</select></label>`}
       </div>
       <div class="directory-option-row"><label><input type="checkbox" data-directory-role-boolean="selectableForTasks" ${role.selectableForTasks !== false ? 'checked' : ''}><span>Available in task assignment controls</span></label></div>
       <small class="directory-record-id">Stable role ID: ${escapeHtml(role.id)}</small>
@@ -3512,14 +3753,19 @@
       const toggle = picker.querySelector('[data-assignment-toggle]');
       const options = [...picker.querySelectorAll('[data-assignment-option]')];
       if (!input || !menu) return;
+      const clippingContainer = picker.closest('.playbook-section, .task-card');
 
       const showMenu = () => {
         menu.hidden = false;
         input.setAttribute('aria-expanded', 'true');
+        toggle?.setAttribute('aria-expanded', 'true');
+        clippingContainer?.classList.add('assignment-menu-open');
       };
       const hideMenu = () => {
         menu.hidden = true;
         input.setAttribute('aria-expanded', 'false');
+        toggle?.setAttribute('aria-expanded', 'false');
+        clippingContainer?.classList.remove('assignment-menu-open');
       };
       const filter = () => {
         const search = input.value.trim().toLocaleLowerCase();
@@ -3798,6 +4044,22 @@
       });
     });
 
+    document.querySelectorAll('[data-task-board-mode]').forEach(element => {
+      element.addEventListener('click', () => {
+        state.taskBoardMode = element.dataset.taskBoardMode === 'overview' ? 'overview' : 'mine';
+        if (state.taskBoardMode === 'mine' && state.taskFilter === 'unassigned') state.taskFilter = 'open';
+        saveState();
+        render();
+      });
+    });
+
+    document.querySelector('[data-task-board-person]')?.addEventListener('change', eventArgs => {
+      state.taskBoardPersonId = eventArgs.currentTarget.value;
+      state.taskFilter = 'open';
+      saveState();
+      render();
+    });
+
     document.querySelectorAll('[data-action="new-event"]').forEach(element => {
       element.addEventListener('click', () => {
         const dialog = document.getElementById('new-event-dialog');
@@ -4049,6 +4311,32 @@
           ? [...new Set([...(contact.platformRoleIds ?? []), roleId])]
           : (contact.platformRoleIds ?? []).filter(id => id !== roleId);
         saveState();
+      });
+    });
+
+    document.querySelectorAll('[data-delete-directory-contact]').forEach(element => {
+      element.addEventListener('click', () => {
+        const contact = state.contacts.find(item => item.id === element.dataset.deleteDirectoryContact);
+        if (!contact) return;
+        const eventUsage = contactEventUsage(contact);
+        if (eventUsage.length) {
+          alert(`${contact.name} cannot be deleted because it is used by ${eventUsage.map(event => event.name || 'Untitled event').join(', ')}.`);
+          render();
+          return;
+        }
+
+        const linkedRoles = responsibilityRoles().filter(role => role.ownerContactId === contact.id);
+        const recordLabel = contact.type === 'mailbox' ? 'shared mailbox' : 'person';
+        const unlinkMessage = linkedRoles.length
+          ? `\n\nThis will also remove it as the contact route for: ${linkedRoles.map(role => role.name).join(', ')}.`
+          : '';
+        if (!confirm(`Delete the ${recordLabel} “${contact.name}”? This cannot be undone.${unlinkMessage}`)) return;
+
+        state.contacts = state.contacts.filter(item => item.id !== contact.id);
+        for (const role of linkedRoles) role.ownerContactId = '';
+        refreshStructuredAssignments();
+        saveState();
+        render();
       });
     });
 

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "2.3",
+  "schemaVersion": "2.4",
   "id": "botgc-event-playbook",
   "title": "Event Playbook",
   "description": "A data-driven event planning guide that turns answers into dated, assignable tasks, operational advisories and reusable event knowledge.",
@@ -1342,7 +1342,7 @@
               "options": [
                 {
                   "value": "trophy",
-                  "label": "Trophy / cup"
+                  "label": "Existing or new trophy / cup"
                 },
                 {
                   "value": "shop-credit",
@@ -1350,15 +1350,19 @@
                 },
                 {
                   "value": "physical-prizes",
-                  "label": "Physical prizes"
+                  "label": "Physical prizes / merchandise"
                 },
                 {
-                  "value": "cash",
-                  "label": "Cash / monetary prize"
+                  "value": "external-voucher",
+                  "label": "External voucher / gift card"
                 },
                 {
                   "value": "medals",
                   "label": "Medals / awards"
+                },
+                {
+                  "value": "cash",
+                  "label": "Cash / monetary prize"
                 },
                 {
                   "value": "other",
@@ -1376,6 +1380,43 @@
               },
               "required": true,
               "source": "refined"
+            },
+            {
+              "id": "prize-requirements-detail",
+              "type": "question",
+              "answerType": "text",
+              "label": "What prizes are required, including the winner categories, quantities and values?",
+              "helpText": "Record enough detail to obtain the correct prizes and approve the overall cost, for example winner, runner-up, nearest the pin, quantity and value.",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "prizes-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "agree-prize-requirements-task",
+              "type": "task",
+              "title": "Agree the exact prize categories, quantities, values and overall budget",
+              "detail": "Confirm the prize specification with the organiser before anything is ordered, purchased or allocated from existing stock.",
+              "deadlineCode": "B3",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "prizes-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator"
             },
             {
               "id": "trophy-from-cabinet",
@@ -1413,9 +1454,121 @@
               "defaultOwnerRoleId": "event-coordinator"
             },
             {
+              "id": "trophy-alternative-source",
+              "type": "question",
+              "answerType": "singleChoice",
+              "label": "If it is not in the trophy cabinet, how will the trophy or cup be obtained?",
+              "options": [
+                {
+                  "value": "existing-holder",
+                  "label": "Collect an existing trophy held elsewhere"
+                },
+                {
+                  "value": "professional-shop",
+                  "label": "Order a new trophy through the Professional Shop"
+                },
+                {
+                  "value": "external-supplier",
+                  "label": "Purchase a new trophy externally through Finance / Accounts"
+                }
+              ],
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "prize-types",
+                    "operator": "contains",
+                    "value": "trophy"
+                  },
+                  {
+                    "questionId": "trophy-from-cabinet",
+                    "operator": "equals",
+                    "value": false
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "collect-existing-trophy-task",
+              "type": "task",
+              "title": "Collect the existing trophy from its current holder and check its condition",
+              "detail": "Confirm who holds it, when it will be returned and whether cleaning, repair or engraving is required before presentation.",
+              "deadlineCode": "B2",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "trophy-alternative-source",
+                    "operator": "equals",
+                    "value": "existing-holder"
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator"
+            },
+            {
+              "id": "physical-prize-source",
+              "type": "question",
+              "answerType": "singleChoice",
+              "label": "Who will provide the physical prizes, merchandise, medals or awards?",
+              "helpText": "The Professional Shop is normally the first option, but prizes can instead be bought externally or allocated from items already held.",
+              "options": [
+                {
+                  "value": "professional-shop",
+                  "label": "Professional Shop"
+                },
+                {
+                  "value": "external-supplier",
+                  "label": "External supplier via Finance / Accounts"
+                },
+                {
+                  "value": "already-available",
+                  "label": "Already held by the club or organiser"
+                }
+              ],
+              "showWhen": {
+                "any": [
+                  {
+                    "questionId": "prize-types",
+                    "operator": "contains",
+                    "value": "physical-prizes"
+                  },
+                  {
+                    "questionId": "prize-types",
+                    "operator": "contains",
+                    "value": "medals"
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "confirm-held-prizes-task",
+              "type": "task",
+              "title": "Confirm the prizes already held are suitable, complete and reserved for the event",
+              "detail": "Check quantities, condition and location so replacements can still be obtained if anything is missing.",
+              "deadlineCode": "B2",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "physical-prize-source",
+                    "operator": "equals",
+                    "value": "already-available"
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator"
+            },
+            {
               "id": "pro-shop-prizes-task",
               "type": "task",
-              "title": "Confirm the required prizes or Professional Shop credit with the Professional Shop",
+              "title": "Order the agreed prizes, trophies, medals or vouchers through the Professional Shop",
+              "detail": "Give the Professional Shop the approved specification and confirm availability, cost, delivery or collection date and how the club will be charged.",
               "deadlineCode": "B2",
               "showWhen": {
                 "any": [
@@ -1425,15 +1578,116 @@
                     "value": "shop-credit"
                   },
                   {
-                    "questionId": "prize-types",
-                    "operator": "contains",
-                    "value": "physical-prizes"
+                    "questionId": "trophy-alternative-source",
+                    "operator": "equals",
+                    "value": "professional-shop"
+                  },
+                  {
+                    "questionId": "physical-prize-source",
+                    "operator": "equals",
+                    "value": "professional-shop"
                   }
                 ]
               },
               "source": "refined",
               "responsibleArea": "Golf Operations",
               "defaultOwnerRoleId": "professional-shop"
+            },
+            {
+              "id": "pro-shop-prize-payment-task",
+              "type": "task",
+              "title": "Approve and arrange payment for prizes or vouchers ordered through the Professional Shop",
+              "detail": "Confirm the approved amount, payment method and the invoice or internal charge needed for reconciliation.",
+              "deadlineCode": "B2",
+              "showWhen": {
+                "any": [
+                  {
+                    "questionId": "prize-types",
+                    "operator": "contains",
+                    "value": "shop-credit"
+                  },
+                  {
+                    "questionId": "trophy-alternative-source",
+                    "operator": "equals",
+                    "value": "professional-shop"
+                  },
+                  {
+                    "questionId": "physical-prize-source",
+                    "operator": "equals",
+                    "value": "professional-shop"
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Finance",
+              "defaultOwnerRoleId": "finance"
+            },
+            {
+              "id": "external-prize-procurement-task",
+              "type": "task",
+              "title": "Purchase the agreed external prizes, trophies or vouchers",
+              "detail": "Confirm the supplier, face value or specification, total cost, delivery date and evidence required for payment reconciliation.",
+              "deadlineCode": "B2",
+              "showWhen": {
+                "any": [
+                  {
+                    "questionId": "prize-types",
+                    "operator": "contains",
+                    "value": "external-voucher"
+                  },
+                  {
+                    "questionId": "trophy-alternative-source",
+                    "operator": "equals",
+                    "value": "external-supplier"
+                  },
+                  {
+                    "questionId": "physical-prize-source",
+                    "operator": "equals",
+                    "value": "external-supplier"
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Finance",
+              "defaultOwnerRoleId": "finance"
+            },
+            {
+              "id": "cash-prize-task",
+              "type": "task",
+              "title": "Authorise, prepare and account for the cash or monetary prizes",
+              "detail": "Confirm each amount, how it will be issued, who will hold it before presentation and how receipt or collection will be recorded.",
+              "deadlineCode": "B2",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "prize-types",
+                    "operator": "contains",
+                    "value": "cash"
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Finance",
+              "defaultOwnerRoleId": "finance"
+            },
+            {
+              "id": "other-prize-arrangements-task",
+              "type": "task",
+              "title": "Agree how the other prizes or awards will be sourced and paid for",
+              "detail": "Record the owner, supplier or holder, approved cost and the date by which each item must be available.",
+              "deadlineCode": "B2",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "prize-types",
+                    "operator": "contains",
+                    "value": "other"
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator"
             },
             {
               "id": "prize-labels-required",

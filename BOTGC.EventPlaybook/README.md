@@ -91,9 +91,13 @@ Tasks can define:
 
 The dedicated **People & Roles** page is the shared operational directory. It records people and shared mailboxes, email and telephone details, the roles each contact can perform, whether they may receive tasks, and their intended platform permissions. It also records assignable roles such as Communications and routes each role to a named contact, role mailbox or fallback role.
 
+**Event Coordinator** is a per-event role rather than a standing mailbox. It always resolves to the organiser selected for that event. Other departmental roles, such as Communications or Food & Beverage, may use a linked person or an optional shared fallback mailbox.
+
 Task owners, event organisers and ownership questions use one typeahead/dropdown control backed by that directory. For tasks, named people are offered only when their directory record says they can receive tasks and can perform the task's operational role; assignable role records remain available for role-based routing. Assignments retain the stable person or role ID rather than just copying a name. This means a task assigned to **Communications** continues to follow that role if its linked person or mailbox changes later.
 
 Contacts do not need an existing platform identity. The directory supports employees, volunteers, suppliers or other event contributors. Login eligibility and intended Team member/Organiser/Admin permissions are stored now; actual invitations and enforcement remain an explicit production identity-integration boundary.
+
+People and shared-mailbox records can be deleted when no current or historical event uses them, either directly or through a routed role. Event-linked records are protected and identify the events retaining them. Deleting an otherwise-unused contact also clears any directory role route that pointed to it.
 
 ### Assignment notifications
 
