@@ -27,6 +27,20 @@ var openAiApiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY")?.Trim() 
 var openAiImageModel = Environment.GetEnvironmentVariable("OPENAI_IMAGE_MODEL")?.Trim();
 var openAiImageQuality = Environment.GetEnvironmentVariable("OPENAI_IMAGE_QUALITY")?.Trim();
 var openAiPromptModel = Environment.GetEnvironmentVariable("OPENAI_PROMPT_MODEL")?.Trim();
+var yodeckApiToken = Environment.GetEnvironmentVariable("YODECK_API_TOKEN")?.Trim() ?? string.Empty;
+var yodeckApiTokenLabel = Environment.GetEnvironmentVariable("YODECK_API_TOKEN_LABEL")?.Trim();
+var yodeckApiBaseUrl = Environment.GetEnvironmentVariable("YODECK_API_BASE_URL")?.Trim();
+var yodeckPlaylistName = Environment.GetEnvironmentVariable("YODECK_PLAYLIST_NAME")?.Trim();
+var yodeckPlaylistId = long.TryParse(
+    Environment.GetEnvironmentVariable("YODECK_PLAYLIST_ID"),
+    out var configuredYodeckPlaylistId)
+        ? configuredYodeckPlaylistId
+        : 0;
+var yodeckMediaDuration = int.TryParse(
+    Environment.GetEnvironmentVariable("YODECK_MEDIA_DURATION_SECONDS"),
+    out var configuredYodeckMediaDuration)
+        ? Math.Clamp(configuredYodeckMediaDuration, 5, 300)
+        : 15;
 var demoPassword = Environment.GetEnvironmentVariable("DEMO_PASSWORD") ?? string.Empty;
 const string demoCookieScheme = "BOTGC.EventPlaybook.Demo";
 var dataProtectionDirectory = Path.Combine(builder.Environment.ContentRootPath, "App_Data", "DataProtection-Keys");
@@ -51,6 +65,21 @@ builder.Services.Configure<OpenAiOptions>(options =>
     options.ImageQuality = effectiveImageQuality;
     options.PromptModel = effectivePromptModel;
 });
+builder.Services.Configure<YodeckOptions>(options =>
+{
+    options.ApiToken = yodeckApiToken;
+    options.ApiTokenLabel = string.IsNullOrWhiteSpace(yodeckApiTokenLabel)
+        ? "event-playbook"
+        : yodeckApiTokenLabel;
+    options.ApiBaseUrl = string.IsNullOrWhiteSpace(yodeckApiBaseUrl)
+        ? "https://app.yodeck.com/api/v2/"
+        : yodeckApiBaseUrl.TrimEnd('/') + "/";
+    options.PlaylistId = yodeckPlaylistId;
+    options.PlaylistName = string.IsNullOrWhiteSpace(yodeckPlaylistName)
+        ? "Clubhouse"
+        : yodeckPlaylistName;
+    options.MediaDurationSeconds = yodeckMediaDuration;
+});
 builder.Services.AddSingleton<IPosterConfigurationService, PosterConfigurationService>();
 builder.Services.AddHttpClient("OpenAI", client =>
 {
@@ -59,6 +88,14 @@ builder.Services.AddHttpClient("OpenAI", client =>
 });
 builder.Services.AddSingleton<IImagePromptService, OpenAiPromptService>();
 builder.Services.AddSingleton<IOpenAiImageService, OpenAiImageService>();
+builder.Services.AddHttpClient("Yodeck", client =>
+{
+    client.BaseAddress = new Uri(string.IsNullOrWhiteSpace(yodeckApiBaseUrl)
+        ? "https://app.yodeck.com/api/v2/"
+        : yodeckApiBaseUrl.TrimEnd('/') + "/");
+    client.Timeout = TimeSpan.FromMinutes(3);
+});
+builder.Services.AddSingleton<IYodeckPublisher, YodeckPublisher>();
 builder.Services.AddSingleton<ITaskCompletionRegistry, TaskCompletionRegistry>();
 builder.Services.AddSingleton<PrototypePersistenceStore>();
 builder.Services.AddSingleton<ISharedPlaybookStateStore>(services => services.GetRequiredService<PrototypePersistenceStore>());
@@ -81,11 +118,14 @@ builder.Services
 var app = builder.Build();
 
 app.Logger.LogInformation(
-    "Poster Studio configured. API key: {ApiKeyStatus}; image model: {ImageModel}; image quality: {ImageQuality}; prompt model: {PromptModel}; demo access: {DemoAccessStatus}",
+    "Poster Studio configured. API key: {ApiKeyStatus}; image model: {ImageModel}; image quality: {ImageQuality}; prompt model: {PromptModel}; Yodeck: {YodeckStatus}; demo access: {DemoAccessStatus}",
     string.IsNullOrWhiteSpace(openAiApiKey) ? "not configured - mock mode" : "OPENAI_API_KEY",
     effectiveImageModel,
     effectiveImageQuality,
     effectivePromptModel,
+    !string.IsNullOrWhiteSpace(yodeckApiToken) && yodeckPlaylistId > 0
+        ? $"playlist {yodeckPlaylistId}"
+        : "not configured",
     string.IsNullOrWhiteSpace(demoPassword) ? "disabled" : "password protected");
 
 app.UseAuthentication();
@@ -158,7 +198,9 @@ app.MapPost("/auth/logout", async (HttpContext context) =>
     return Results.Redirect("/demo-login.html");
 });
 
-app.MapGet("/api/poster/config", (IPosterConfigurationService configurationService) =>
+app.MapGet("/api/poster/config", (
+    IPosterConfigurationService configurationService,
+    IYodeckPublisher yodeckPublisher) =>
 {
     var configurationModel = configurationService.Get();
     var hasApiKey = !string.IsNullOrWhiteSpace(openAiApiKey);
@@ -182,7 +224,19 @@ app.MapGet("/api/poster/config", (IPosterConfigurationService configurationServi
         imageModel = effectiveImageModel,
         imageQuality = effectiveImageQuality,
         promptModel = effectivePromptModel,
-        apiKeySource = hasApiKey ? "OPENAI_API_KEY" : "not configured"
+        apiKeySource = hasApiKey ? "OPENAI_API_KEY" : "not configured",
+        yodeck = new
+        {
+            configured = yodeckPublisher.IsConfigured,
+            playlistId = yodeckPlaylistId > 0 ? yodeckPlaylistId : (long?)null,
+            playlistName = string.IsNullOrWhiteSpace(yodeckPlaylistName) ? "Clubhouse" : yodeckPlaylistName,
+            mediaDurationSeconds = yodeckMediaDuration,
+            missingSettings = new[]
+            {
+                string.IsNullOrWhiteSpace(yodeckApiToken) ? "YODECK_API_TOKEN" : null,
+                yodeckPlaylistId <= 0 ? "YODECK_PLAYLIST_ID" : null
+            }.Where(value => value is not null)
+        }
     });
 });
 
@@ -284,22 +338,98 @@ app.MapPost("/api/poster/generate-variant", async (
     }
 });
 
-app.MapPost("/api/poster/publish", async (PublishRequest request, CancellationToken cancellationToken) =>
+app.MapPost("/api/poster/publish", async (
+    PublishRequest request,
+    IYodeckPublisher yodeckPublisher,
+    CancellationToken cancellationToken) =>
 {
-    await Task.Delay(600, cancellationToken);
-
-    return Results.Ok(new
+    if (!request.PublishToYodeck)
     {
-        success = true,
-        eventName = request.EventName,
-        assets = request.Assets.Count,
-        yodeck = request.PublishToYodeck
-            ? "Prototype: assets accepted for future YoDeck integration."
-            : "Not selected.",
-        email = request.PublishByEmail
-            ? "Prototype: assets accepted for future membership email integration."
-            : "Not selected."
-    });
+        return Results.BadRequest(new { error = "Select Clubhouse screens before publishing." });
+    }
+
+    if (!DateOnly.TryParseExact(request.EventDate, "yyyy-MM-dd", out var eventDate) ||
+        !DateOnly.TryParseExact(request.StartDate, "yyyy-MM-dd", out var startDate))
+    {
+        return Results.BadRequest(new { error = "A valid start date and event date are required." });
+    }
+
+    if (startDate > eventDate)
+    {
+        return Results.BadRequest(new { error = "The poster start date cannot be after the event date." });
+    }
+
+    if (string.IsNullOrWhiteSpace(request.EventId) ||
+        string.IsNullOrWhiteSpace(request.EventName) ||
+        string.IsNullOrWhiteSpace(request.MediaName) ||
+        request.DigitalScreenAsset is null)
+    {
+        return Results.BadRequest(new { error = "Event, media name and digital-screen artwork are required." });
+    }
+
+    if (!string.Equals(request.DigitalScreenAsset.OutputId, "clubhouse", StringComparison.OrdinalIgnoreCase))
+    {
+        return Results.BadRequest(new { error = "The Clubhouse Digital Display artwork must be used for Yodeck." });
+    }
+
+    if (!TryDecodePngDataUrl(request.DigitalScreenAsset.DataUrl, out var imageBytes, out var imageError))
+    {
+        return Results.BadRequest(new { error = imageError });
+    }
+
+    var tags = request.Tags
+        .Select(tag => tag.Trim())
+        .Where(tag => !string.IsNullOrWhiteSpace(tag))
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .Take(20)
+        .ToList();
+
+    if (!tags.Contains("event-playbook", StringComparer.OrdinalIgnoreCase))
+    {
+        tags.Insert(0, "event-playbook");
+    }
+
+    try
+    {
+        var published = await yodeckPublisher.PublishAsync(new YodeckPublishCommand
+        {
+            EventId = request.EventId.Trim(),
+            EventName = request.EventName.Trim(),
+            StartDate = startDate,
+            EndDate = eventDate,
+            MediaName = request.MediaName.Trim(),
+            Tags = tags,
+            ImageBytes = imageBytes
+        }, cancellationToken);
+
+        return Results.Ok(new
+        {
+            success = true,
+            eventName = request.EventName,
+            assets = 1,
+            yodeck = new
+            {
+                published.MediaId,
+                published.MediaName,
+                published.PlaylistId,
+                published.PlaylistName,
+                startDate = published.StartDate.ToString("yyyy-MM-dd"),
+                endDate = published.EndDate.ToString("yyyy-MM-dd"),
+                published.Tags
+            },
+            email = request.PublishByEmail
+                ? "Prototype: artwork retained for the future membership email integration."
+                : null
+        });
+    }
+    catch (InvalidOperationException exception)
+    {
+        return Results.Problem(
+            exception.Message,
+            statusCode: yodeckPublisher.IsConfigured
+                ? StatusCodes.Status502BadGateway
+                : StatusCodes.Status503ServiceUnavailable);
+    }
 });
 
 
@@ -376,6 +506,44 @@ static bool PasswordMatches(string suppliedPassword, string configuredPassword)
     var suppliedHash = SHA256.HashData(Encoding.UTF8.GetBytes(suppliedPassword));
     var configuredHash = SHA256.HashData(Encoding.UTF8.GetBytes(configuredPassword));
     return CryptographicOperations.FixedTimeEquals(suppliedHash, configuredHash);
+}
+
+static bool TryDecodePngDataUrl(string? dataUrl, out byte[] imageBytes, out string error)
+{
+    imageBytes = [];
+    error = string.Empty;
+
+    const string prefix = "data:image/png;base64,";
+    if (string.IsNullOrWhiteSpace(dataUrl) || !dataUrl.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+    {
+        error = "The digital-screen artwork must be supplied as a PNG image.";
+        return false;
+    }
+
+    try
+    {
+        imageBytes = Convert.FromBase64String(dataUrl[prefix.Length..]);
+    }
+    catch (FormatException)
+    {
+        error = "The digital-screen artwork contains invalid image data.";
+        return false;
+    }
+
+    if (imageBytes.Length == 0 || imageBytes.Length > 40 * 1024 * 1024)
+    {
+        error = "The digital-screen artwork is empty or larger than the 40 MB upload limit.";
+        return false;
+    }
+
+    ReadOnlySpan<byte> pngSignature = [137, 80, 78, 71, 13, 10, 26, 10];
+    if (imageBytes.Length < pngSignature.Length || !imageBytes.AsSpan(0, pngSignature.Length).SequenceEqual(pngSignature))
+    {
+        error = "The digital-screen artwork is not a valid PNG image.";
+        return false;
+    }
+
+    return true;
 }
 
 static string NormaliseLocalReturnUrl(string? returnUrl)

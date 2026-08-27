@@ -84,7 +84,11 @@ public sealed class PosterStyleVariationDefinition
 {
     public required string Id { get; init; }
 
-    public required string ArtistName { get; init; }
+    public required string Name { get; init; }
+
+    public string? ArtistName { get; init; }
+
+    public string? ReferenceWork { get; init; }
 
     public required string StyleDirection { get; init; }
 }

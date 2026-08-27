@@ -208,6 +208,38 @@
         "Avoid photorealism, glossy 3D rendering, flat clip-art, generic comic-book styling and slick corporate vector art.",
         "Avoid automatically creating vintage headline lettering, ribbons, badges or printed-poster text merely because the style is illustrative.",
         "Avoid imitating a named living artist; describe the visual characteristics directly."
+      ],
+      "variations": [
+        {
+          "id": "loose-ink-watercolour-comedy",
+          "name": "Loose ink-and-watercolour comedy",
+          "styleDirection": "Stage the event as a lively observational cartoon drawn with fast, broken ink lines and translucent watercolour washes. Use off-kilter perspective, expressive physical comedy and many small background reactions, while keeping the main action and poster hierarchy immediately readable."
+        },
+        {
+          "id": "cut-paper-character-collage",
+          "name": "Cut-paper character collage",
+          "styleDirection": "Build the scene from irregular hand-cut paper shapes, painted tissue textures, torn edges and layered shadows. Give the characters simple but highly expressive silhouettes and use overlapping collage planes to create depth without becoming slick vector art."
+        },
+        {
+          "id": "bold-screenprint-cartoon",
+          "name": "Bold screen-print cartoon",
+          "styleDirection": "Use chunky hand-drawn contours, a restricted four-colour screen-print palette, visible ink overlap and bold comic staging. Favour one exaggerated action, graphic shadows and strong negative space rather than a densely painted storybook scene."
+        },
+        {
+          "id": "soft-chalk-pastel-story",
+          "name": "Soft chalk-and-pastel story",
+          "styleDirection": "Render the event in soft chalk, wax crayon and pastel with grainy paper texture, rounded forms and warm diffuse light. Make the humour gentle and character-led, using colour blocking and expressive poses rather than hard outlines."
+        },
+        {
+          "id": "newspaper-ink-caricature",
+          "name": "Newspaper ink caricature",
+          "styleDirection": "Use witty editorial-cartoon drawing with energetic brush-and-pen marks, selective flat colour, purposeful white space and sharply observed gestures. Exaggerate props and poses for humour while keeping people affectionate rather than grotesque."
+        },
+        {
+          "id": "folk-gouache-tableau",
+          "name": "Folk-art gouache tableau",
+          "styleDirection": "Create a decorative hand-painted folk tableau using opaque gouache, flattened perspective, patterned foliage and rhythmic groups of figures. Let repeated shapes and border-like natural details build charm, but keep all typography separate, spacious and completely legible."
+        }
       ]
     },
     {
@@ -227,6 +259,38 @@
       "avoid": [
         "Avoid corporate conference imagery, excessive luxury clich\u00e9s and generic black-tie stock scenes.",
         "Avoid embedded typography or ornamental headline devices."
+      ],
+      "variations": [
+        {
+          "id": "candlelit-editorial",
+          "name": "Candlelit editorial",
+          "styleDirection": "Use low-key candlelit or lamplit atmosphere, deep natural shadows, restrained warm highlights and an editorial composition inspired by premium hospitality photography. Keep faces and materials believable and the mood intimate rather than theatrical."
+        },
+        {
+          "id": "architectural-minimalism",
+          "name": "Architectural minimalism",
+          "styleDirection": "Build a calm, symmetrical composition around the clubhouse architecture or course landscape, using precise lines, generous negative space and a limited stone, cream, navy and green palette. Human figures should be small, purposeful accents rather than the dominant subject."
+        },
+        {
+          "id": "heritage-still-life",
+          "name": "Heritage still life",
+          "styleDirection": "Express the event through an art-directed still life of authentic objects, materials and setting details: polished wood, scorecards, glassware, trophies, flowers or golf equipment as appropriate. Use museum-like light and immaculate spacing without luxury-brand clich\u00e9s."
+        },
+        {
+          "id": "monochrome-documentary",
+          "name": "Monochrome documentary",
+          "styleDirection": "Use refined black-and-white documentary photography with subtle film grain, controlled contrast and one restrained brand-colour accent. Capture a candid, emotionally credible moment rather than a posed group portrait."
+        },
+        {
+          "id": "painterly-evening",
+          "name": "Painterly evening",
+          "styleDirection": "Create a sophisticated painterly scene at dusk with broad controlled brushwork, atmospheric depth and a restrained heritage palette. Let pools of warm interior light contrast with cool landscape tones and preserve generous space for the event hierarchy."
+        },
+        {
+          "id": "ceremonial-portrait",
+          "name": "Ceremonial portrait",
+          "styleDirection": "Compose a dignified environmental group portrait with formal but natural posture, carefully balanced spacing and subtle references to the event. Use soft directional light and rich, quiet colour; avoid rows of people staring like a corporate team photograph."
+        }
       ]
     },
     {
@@ -246,6 +310,38 @@
       "avoid": [
         "Avoid artificial HDR, overprocessed skin, impossible golf technique and generic stock-photo smiles.",
         "Avoid embedding style labels, poster text or graphic design elements into the photograph."
+      ],
+      "variations": [
+        {
+          "id": "golden-hour-reportage",
+          "name": "Golden-hour reportage",
+          "styleDirection": "Photograph the event as candid golden-hour reportage with long natural shadows, backlit atmosphere and unforced human interaction. Use a slightly wider environmental frame so the Club setting contributes strongly to the story."
+        },
+        {
+          "id": "crisp-sports-action",
+          "name": "Crisp sports action",
+          "styleDirection": "Use high-end sports photography with a decisive action moment, fast shutter clarity, compressed telephoto depth and authentic technique. Keep the energy physical and immediate, with spectators or surroundings providing believable context."
+        },
+        {
+          "id": "cinematic-night-event",
+          "name": "Cinematic night event",
+          "styleDirection": "Create a credible night-time or blue-hour photograph with practical lights, controlled colour contrast, atmospheric haze and cinematic depth. Protect skin tones and real detail; do not turn the scene into fantasy CGI."
+        },
+        {
+          "id": "intimate-environmental-portrait",
+          "name": "Intimate environmental portrait",
+          "styleDirection": "Focus on one or two believable people in an environmental portrait, using shallow depth of field, subtle window or open-shade light and meaningful event details around them. Prioritise expression and quiet narrative over spectacle."
+        },
+        {
+          "id": "elevated-course-spectacle",
+          "name": "Elevated course spectacle",
+          "styleDirection": "Use an elevated wide-angle viewpoint that reveals the shape of the course, movement of participants and scale of the occasion. Keep geometry and people realistic, with crisp layered depth and a strong graphic pattern in the landscape."
+        },
+        {
+          "id": "clubhouse-lifestyle-documentary",
+          "name": "Clubhouse lifestyle documentary",
+          "styleDirection": "Create warm interior lifestyle reportage with authentic candid groups, natural mixed light, tactile clubhouse materials and small event-specific details. The scene should feel observed during a real occasion, never staged as generic hospitality stock photography."
+        }
       ]
     },
     {
@@ -265,6 +361,38 @@
       "avoid": [
         "Avoid generic infographic styling, app-illustration clich\u00e9s and flat stock vectors.",
         "Avoid rendered typography or fake poster copy."
+      ],
+      "variations": [
+        {
+          "id": "geometric-paper-cut",
+          "name": "Geometric paper cut",
+          "styleDirection": "Construct the event from bold geometric paper-cut layers with tactile fibres, crisp shadows and a focused palette. Use large intersecting shapes to frame the subject and make the composition feel physical rather than like flat software icons."
+        },
+        {
+          "id": "swiss-editorial-grid",
+          "name": "Swiss editorial grid",
+          "styleDirection": "Use an asymmetric editorial grid, disciplined negative space, cropped photographic or illustrated fragments and a restrained palette with one vivid accent. Keep the image confident and poster-like without rendering placeholder typography."
+        },
+        {
+          "id": "bold-linocut",
+          "name": "Bold linocut",
+          "styleDirection": "Render the scene as a contemporary linocut with carved black marks, rough ink texture, muscular silhouettes and two or three strong spot colours. Use directional cuts to create movement and landscape depth."
+        },
+        {
+          "id": "duotone-screenprint",
+          "name": "Duotone screen print",
+          "styleDirection": "Use a high-contrast duotone screen-print treatment with halftone texture, purposeful misregistration and oversized simplified forms. Let one strong subject dominate while secondary detail appears through pattern and tone."
+        },
+        {
+          "id": "abstract-editorial-collage",
+          "name": "Abstract editorial collage",
+          "styleDirection": "Combine torn photographic fragments, painted marks, textured colour fields and simple drawn symbols into a sophisticated editorial collage. Make the event subject unmistakable despite the abstraction and preserve a clean text-safe structure."
+        },
+        {
+          "id": "dynamic-isometric-scene",
+          "name": "Dynamic isometric scene",
+          "styleDirection": "Build a stylised isometric scene with simplified architecture, course features and tiny active figures arranged as one lively system. Use dimensional shading and unusual spatial storytelling while avoiding generic tech-diagram aesthetics."
+        }
       ]
     },
     {
@@ -285,6 +413,38 @@
         "Do not render the words 'Vintage Golf Poster' or any other style description into the artwork.",
         "Avoid fake poster headlines, fake dates, invented sponsor copy and decorative typography.",
         "Avoid distressed-paper gimmicks that overpower the scene."
+      ],
+      "variations": [
+        {
+          "id": "railway-travel-lithograph",
+          "name": "1930s railway travel lithograph",
+          "styleDirection": "Use monumental landscape shapes, airbrushed gradients, simplified heroic figures and the refined colour economy of a 1930s British railway travel lithograph. Keep surfaces clean and restored rather than artificially damaged."
+        },
+        {
+          "id": "fifties-tournament-painting",
+          "name": "1950s tournament painting",
+          "styleDirection": "Create a mid-century tournament illustration with confident painted figures, sunlit course depth, broad brush shapes and restrained period colour. Stage the moment like a classic sporting programme cover, without copying any existing poster."
+        },
+        {
+          "id": "public-information-illustration",
+          "name": "Public-information illustration",
+          "styleDirection": "Use the direct visual clarity of a 1940s public-information illustration: strong diagonal staging, economical painted realism, purposeful gestures and a limited utilitarian palette. Keep the tone welcoming rather than propagandistic."
+        },
+        {
+          "id": "art-deco-sporting",
+          "name": "Art Deco sporting",
+          "styleDirection": "Use elegant Art Deco geometry, streamlined athletic silhouettes, stepped framing and a luxurious but limited palette of cream, deep green, navy and gold. Let repeated angles and arcs create movement without relying on ornamental text."
+        },
+        {
+          "id": "sixties-offset-colour",
+          "name": "1960s offset colour",
+          "styleDirection": "Use flat offset-printed colour, simplified angular figures, bold negative space and playful mid-century cropping. Add subtle ink texture and registration character while keeping the overall composition bright, clean and graphic."
+        },
+        {
+          "id": "heritage-woodcut",
+          "name": "Heritage woodcut",
+          "styleDirection": "Render the event as a sophisticated colour woodcut with visible carved grain, layered ink blocks, strong landscape rhythm and sturdy human silhouettes. Use a natural heritage palette and crisp visual hierarchy rather than fake antique distress."
+        }
       ]
     },
     {
@@ -311,67 +471,93 @@
       "variations": [
         {
           "id": "delicate-countryside-watercolour",
+          "name": "Delicate countryside watercolour",
           "artistName": "Beatrix Potter",
+          "referenceWork": "The Tale of Peter Rabbit",
           "styleDirection": "Use delicate natural-history watercolour, fine restrained outlines, accurately observed animals and plants, pale paper, muted botanical colour and a classic English countryside atmosphere. Keep the scale intimate, elegant and gently humorous."
         },
         {
           "id": "classic-pen-and-ink",
+          "name": "Classic pen and ink",
           "artistName": "E. H. Shepard",
+          "referenceWork": "Winnie-the-Pooh",
           "styleDirection": "Use traditional expressive pen-and-ink drawing with economical hatching, lyrical countryside observation and selective soft colour washes. Favour believable gesture, quiet humour and spacious page-like composition."
         },
         {
           "id": "ornate-fairytale",
+          "name": "Ornate fairytale",
           "artistName": "Arthur Rackham",
+          "referenceWork": "Peter Pan in Kensington Gardens",
           "styleDirection": "Use intricately drawn trees, roots, foliage and fantastical environmental detail with sinuous ink contours, subdued watercolour and a slightly mysterious fairytale atmosphere. Make the magic richly crafted and atmospheric rather than frightening."
         },
         {
           "id": "victorian-engraving",
+          "name": "Victorian engraving",
           "artistName": "John Tenniel",
+          "referenceWork": "Alice's Adventures in Wonderland",
           "styleDirection": "Use crisp black-and-white Victorian engraving language: meticulous cross-hatching, formal line work, eccentric proportions and theatrical staging. Keep the result highly legible and allow optional restrained spot colour only when it strengthens the hierarchy."
         },
         {
           "id": "warm-simple-line",
+          "name": "Warm simple line",
           "artistName": "Judith Kerr",
+          "referenceWork": "The Tiger Who Came to Tea",
           "styleDirection": "Use deceptively simple expressive line drawing, flat but softly textured colour and warm domestic observation. Give every face and pose emotional clarity while keeping the scene uncluttered, friendly and gently funny."
         },
         {
           "id": "observational-everyday",
+          "name": "Observational everyday life",
           "artistName": "Shirley Hughes",
+          "referenceWork": "Dogger",
           "styleDirection": "Use richly observed everyday characters, natural body language, layered group activity and warm painted colour. Capture convincing small human moments and environmental details with a welcoming, lived-in sense of place."
         },
         {
           "id": "soft-pencil-nostalgia",
+          "name": "Soft pencil nostalgia",
           "artistName": "Raymond Briggs",
+          "referenceWork": "The Snowman",
           "styleDirection": "Use soft coloured pencil, crayon and pastel texture with visible grain, glowing seasonal light and tender visual storytelling. Build a warm nostalgic atmosphere through gentle edges, quiet expressions and hand-worked tonal layers."
         },
         {
           "id": "painted-paper-collage",
+          "name": "Painted-paper collage",
           "artistName": "Eric Carle",
+          "referenceWork": "The Very Hungry Caterpillar",
           "styleDirection": "Construct the scene from bold hand-painted paper shapes with torn and cut edges, visible layered fibres, simplified forms and saturated colour. Use rhythmic repetition and tactile collage depth while retaining a clear event narrative."
         },
         {
           "id": "intricate-fantastical",
+          "name": "Intricate fantastical",
           "artistName": "Maurice Sendak",
+          "referenceWork": "Where the Wild Things Are",
           "styleDirection": "Use carefully rendered pen-and-watercolour fantasy illustration with dense patterned texture, unusual but appealing creatures, cross-hatched shadows and a dreamlike sense of scale. Balance strangeness with warmth and emotional clarity."
         },
         {
           "id": "bright-geometric-patchwork",
+          "name": "Bright geometric patchwork",
           "artistName": "David McKee",
+          "referenceWork": "Elmer",
           "styleDirection": "Use simple rounded shapes, vivid geometric colour, patchwork pattern and strong clean design. Build characters and scenery from cheerful blocks of colour while maintaining visual rhythm and an unmistakable central story."
         },
         {
           "id": "graphic-silhouette",
+          "name": "Graphic silhouette",
           "artistName": "Jan Pieńkowski",
+          "referenceWork": "Meg and Mog",
           "styleDirection": "Use bold black silhouettes, sharp profile shapes and a very limited palette of striking flat colours. Create theatrical visual clarity through contrast, cut-paper edges and carefully staged negative space."
         },
         {
           "id": "jewel-toned-painterly",
+          "name": "Jewel-toned painterly",
           "artistName": "Brian Wildsmith",
+          "referenceWork": "Birds",
           "styleDirection": "Use richly layered painterly colour, luminous jewel-like hues, expressive brush texture and lavishly observed birds, animals or landscape details. Keep the palette vibrant and celebratory without losing subject clarity."
         },
         {
           "id": "mid-century-travel-story",
+          "name": "Mid-century travel story",
           "artistName": "M. Sasek",
+          "referenceWork": "This Is London",
           "styleDirection": "Use a charming mid-century illustrated travel-book aesthetic with simplified architecture, elongated figures, hand-painted gouache texture, playful perspective and a restrained period palette. Make the venue feel distinctive, stylish and full of local character."
         }
       ]

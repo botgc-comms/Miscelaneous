@@ -66,8 +66,10 @@ public sealed class OpenAiPromptService(
                     : new
                     {
                         metadataId = styleVariation.Id,
+                        metadataName = styleVariation.Name,
                         namedIllustrator = styleVariation.ArtistName,
-                        explicitStyleInstruction = $"Create this poster in the style of {styleVariation.ArtistName}.",
+                        referenceWork = styleVariation.ReferenceWork,
+                        explicitStyleInstruction = BuildExplicitVariationInstruction(styleVariation, isVariant: false),
                         styleVariation.StyleDirection
                     }
             },
@@ -165,8 +167,10 @@ public sealed class OpenAiPromptService(
                     : new
                     {
                         metadataId = styleVariation.Id,
+                        metadataName = styleVariation.Name,
                         namedIllustrator = styleVariation.ArtistName,
-                        explicitStyleInstruction = $"Preserve the master campaign's {styleVariation.ArtistName} illustration style.",
+                        referenceWork = styleVariation.ReferenceWork,
+                        explicitStyleInstruction = BuildExplicitVariationInstruction(styleVariation, isVariant: true),
                         styleVariation.StyleDirection
                     }
             },
@@ -332,8 +336,8 @@ public sealed class OpenAiPromptService(
         builder.AppendLine(style.StyleDirection);
         if (styleVariation is not null)
         {
-            builder.AppendLine($"Create this poster in the style of {styleVariation.ArtistName}.");
-            builder.AppendLine("Use the named illustrator as the explicit visual-style reference while creating a new, event-specific composition:");
+            builder.AppendLine(BuildExplicitVariationInstruction(styleVariation, isVariant: false));
+            builder.AppendLine("Use this selected art direction consistently while creating a new, event-specific composition:");
             builder.AppendLine(styleVariation.StyleDirection);
         }
         AppendList(builder, style.VisualLanguage);
@@ -430,8 +434,8 @@ public sealed class OpenAiPromptService(
         builder.AppendLine(style.StyleDirection);
         if (styleVariation is not null)
         {
-            builder.AppendLine($"Preserve the master campaign's {styleVariation.ArtistName} illustration style.");
-            builder.AppendLine("Use the same named illustrator reference consistently for this adapted format:");
+            builder.AppendLine(BuildExplicitVariationInstruction(styleVariation, isVariant: true));
+            builder.AppendLine("Use the same selected art direction consistently for this adapted format:");
             builder.AppendLine(styleVariation.StyleDirection);
         }
 
@@ -501,6 +505,26 @@ public sealed class OpenAiPromptService(
         }
 
         return style.Variations[Random.Shared.Next(style.Variations.Count)];
+    }
+
+    private static string BuildExplicitVariationInstruction(
+        PosterStyleVariationDefinition variation,
+        bool isVariant)
+    {
+        if (string.IsNullOrWhiteSpace(variation.ArtistName))
+        {
+            return isVariant
+                ? $"Preserve the master campaign's '{variation.Name}' art direction."
+                : $"Use the selected '{variation.Name}' art direction.";
+        }
+
+        var workReference = string.IsNullOrWhiteSpace(variation.ReferenceWork)
+            ? string.Empty
+            : $", taking {variation.ReferenceWork} as the named reference work";
+
+        return isVariant
+            ? $"Preserve the master campaign's style of {variation.ArtistName}{workReference}."
+            : $"Create this poster in the style of {variation.ArtistName}{workReference}.";
     }
 
 

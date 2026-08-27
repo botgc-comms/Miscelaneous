@@ -1358,7 +1358,7 @@
 
     bindEvents();
     if (state.activeView === 'artwork' && event) {
-      import('./poster-app.js?v=20260824-catalogue-cover-1')
+      import('./poster-app.js?v=20260827-yodeck-publish-1')
         .then(module => module.mountPosterStudio({
           eventId: event.id,
           eventName: event.name,
@@ -1621,7 +1621,7 @@
         <div class="workflow-line"></div>
         <div class="workflow-step" data-step="3"><span>3</span><strong>Adapt</strong><small>Other formats</small></div>
         <div class="workflow-line"></div>
-        <div class="workflow-step" data-step="4"><span>4</span><strong>Publish</strong><small>YoDeck & email</small></div>
+        <div class="workflow-step" data-step="4"><span>4</span><strong>Publish</strong><small>Yodeck & email</small></div>
       </section>
 
       <div class="poster-runtime-status"><span class="status-dot"></span><strong id="generationMode">Checking generator…</strong><small>OpenAI key remains server-side</small></div>
@@ -1686,13 +1686,37 @@
       </div>
 
       <section id="publishPanel" class="panel publish-panel hidden">
-        <div class="panel-heading"><div><p class="section-kicker">Release</p><h2>Publish the approved campaign</h2><p class="panel-copy">The real YoDeck and membership email integrations will plug into this final action. The prototype completes the workflow and simulates both destinations.</p></div></div>
+        <div class="panel-heading"><div><p class="section-kicker">Release</p><h2>Publish the approved campaign</h2><p class="panel-copy">Send the digital-screen master to the Yodeck media library and add it to the Clubhouse playlist for a controlled date window.</p></div></div>
         <div class="publish-options">
-          <label class="publish-option selected" id="yodeckCard"><input id="publishYodeck" type="checkbox" checked><span class="publish-icon">▣</span><span><strong>Clubhouse screens</strong><small>Publish via YoDeck</small></span><span class="destination-check">✓</span></label>
+          <label class="publish-option selected" id="yodeckCard"><input id="publishYodeck" type="checkbox" checked><span class="publish-icon">▣</span><span><strong>Clubhouse screens</strong><small>Upload and schedule through Yodeck</small></span><span class="destination-check">✓</span></label>
           <label class="publish-option" id="emailCard"><input id="publishEmail" type="checkbox"><span class="publish-icon">✉</span><span><strong>Membership email</strong><small>Prepare campaign for email integration</small></span><span class="destination-check">✓</span></label>
         </div>
-        <div class="publish-action-row"><div id="publishMessage" class="publish-message">Nothing has been published yet.</div><button id="publishButton" class="button button-gold button-large" type="button">Publish selected artwork</button></div>
-      </section>`;
+        <div class="publish-action-row"><div id="publishMessage" class="publish-message">Nothing has been published yet.</div><button id="publishButton" class="button button-gold button-large" type="button">Choose publishing dates</button></div>
+      </section>
+
+      <dialog id="posterPublishDialog" class="poster-publish-dialog">
+        <form id="posterPublishForm">
+          <div class="poster-publish-heading">
+            <div><p class="eyebrow">Clubhouse screens</p><h2>Publish to Yodeck</h2><p>Upload the finished digital-screen master, tag it for the media library and control when it can appear.</p></div>
+            <button id="closePosterPublishDialog" class="icon-button" type="button" aria-label="Close publishing dialog">×</button>
+          </div>
+          <div class="poster-publish-body">
+            <aside class="poster-publish-preview"><img id="posterPublishPreview" alt="Digital-screen artwork selected for Yodeck"><span>Clubhouse Digital Display</span><small>2160 × 3840 PNG</small></aside>
+            <div class="poster-publish-fields">
+              <div id="yodeckConnectionStatus" class="yodeck-connection-status checking"><span></span><div><strong>Checking Yodeck connection…</strong><small>The API token remains on the server.</small></div></div>
+              <label class="field"><span>Media library name</span><input id="yodeckMediaName" type="text" maxlength="180" required><small>This is the name staff will see in Yodeck.</small></label>
+              <label class="field"><span>Media tags</span><input id="yodeckTags" type="text" placeholder="event-playbook, clubhouse-screens, event-name"><small>Separate tags with commas. Event Playbook is always added automatically.</small></label>
+              <div class="poster-publish-date-grid">
+                <label class="field"><span>Start showing</span><input id="yodeckStartDate" type="date" required><small>The poster becomes available from the start of this day.</small></label>
+                <label class="field"><span>Stop showing</span><input id="yodeckEndDate" type="date" readonly><small>Fixed to the end of the selected event date.</small></label>
+              </div>
+              <div class="yodeck-playlist-summary"><span>Playlist</span><strong id="yodeckPlaylistName">Clubhouse</strong><small>The artwork is appended without replacing existing playlist items.</small></div>
+              <div id="posterPublishDialogMessage" class="poster-publish-dialog-message" role="status"></div>
+            </div>
+          </div>
+          <div class="poster-publish-actions"><button id="cancelPosterPublish" class="button button-secondary" type="button">Cancel</button><button id="confirmPosterPublish" class="button button-gold button-large" type="submit">Upload & add to playlist</button></div>
+        </form>
+      </dialog>`;
   }
 
   function renderModuleView(event) {

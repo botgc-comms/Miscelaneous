@@ -17,6 +17,268 @@
   --pad:clamp(24px,2.6vw,48px);
   --shadow:0 10px 28px rgba(13,53,72,.08);
 }
+
+/* ========================================================================
+   POSTER PUBLISH DIALOG — server-side Yodeck release workflow
+   ======================================================================== */
+.poster-publish-dialog {
+  width: min(980px, calc(100vw - 48px)) !important;
+  max-width: 980px !important;
+  max-height: calc(100vh - 48px) !important;
+  margin: auto !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  border: 0 !important;
+  border-radius: 20px !important;
+  color: #20363d !important;
+  background: #fff !important;
+  box-shadow: 0 30px 90px rgba(4,28,40,.34) !important;
+}
+
+.poster-publish-dialog::backdrop {
+  background: rgba(4,28,40,.62) !important;
+  backdrop-filter: blur(5px) !important;
+}
+
+.poster-publish-dialog form {
+  display: flex !important;
+  max-height: calc(100vh - 48px) !important;
+  flex-direction: column !important;
+  margin: 0 !important;
+}
+
+.poster-publish-heading {
+  display: flex !important;
+  flex: 0 0 auto !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 24px !important;
+  padding: 23px 27px 21px !important;
+  border-bottom: 4px solid #c6a15b !important;
+  color: #fff !important;
+  background: radial-gradient(circle at 91% 10%,rgba(198,161,91,.2),transparent 18rem),linear-gradient(118deg,#092b3b,#0d3548 58%,#134a63) !important;
+}
+
+.poster-publish-heading .eyebrow {
+  color: #f1d895 !important;
+}
+
+.poster-publish-heading h2 {
+  margin: 0 !important;
+  color: #fff !important;
+  font: 700 1.85rem/1.05 Georgia,"Times New Roman",serif !important;
+}
+
+.poster-publish-heading p:last-child {
+  max-width: 700px !important;
+  margin: 7px 0 0 !important;
+  color: rgba(255,255,255,.75) !important;
+  font-size: .72rem !important;
+  line-height: 1.5 !important;
+}
+
+.poster-publish-heading .icon-button {
+  display: grid !important;
+  width: 36px !important;
+  height: 36px !important;
+  flex: 0 0 36px !important;
+  place-items: center !important;
+  padding: 0 !important;
+  border: 1px solid rgba(255,255,255,.22) !important;
+  border-radius: 10px !important;
+  color: #fff !important;
+  background: rgba(255,255,255,.08) !important;
+  font-size: 1.2rem !important;
+}
+
+.poster-publish-body {
+  display: grid !important;
+  min-height: 0 !important;
+  grid-template-columns: 250px minmax(0,1fr) !important;
+  gap: 23px !important;
+  overflow-y: auto !important;
+  padding: 23px 25px !important;
+  background: #f5f8f7 !important;
+}
+
+.poster-publish-preview {
+  display: grid !important;
+  align-self: start !important;
+  justify-items: center !important;
+  gap: 6px !important;
+  padding: 13px !important;
+  border: 1px solid #d5e0dd !important;
+  border-radius: 14px !important;
+  background: #fff !important;
+  box-shadow: 0 10px 24px rgba(13,53,72,.08) !important;
+}
+
+.poster-publish-preview img {
+  display: block !important;
+  width: 100% !important;
+  aspect-ratio: 9/16 !important;
+  object-fit: contain !important;
+  border-radius: 8px !important;
+  background: #eaf0ee !important;
+}
+
+.poster-publish-preview span {
+  margin-top: 4px !important;
+  color: #0d3548 !important;
+  font-size: .69rem !important;
+  font-weight: 900 !important;
+}
+
+.poster-publish-preview small {
+  color: #74868a !important;
+  font-size: .58rem !important;
+}
+
+.poster-publish-fields {
+  display: grid !important;
+  min-width: 0 !important;
+  align-content: start !important;
+  gap: 14px !important;
+}
+
+.poster-publish-fields .field {
+  display: grid !important;
+  gap: 6px !important;
+  margin: 0 !important;
+}
+
+.poster-publish-fields .field > span,
+.yodeck-playlist-summary > span {
+  color: #52666b !important;
+  font-size: .59rem !important;
+  font-weight: 900 !important;
+  letter-spacing: .07em !important;
+  text-transform: uppercase !important;
+}
+
+.poster-publish-fields input {
+  width: 100% !important;
+  min-height: 42px !important;
+  padding: 8px 10px !important;
+  border: 1px solid #bacbc7 !important;
+  border-radius: 8px !important;
+  color: #20363d !important;
+  background: #fff !important;
+  font-size: .74rem !important;
+}
+
+.poster-publish-fields input[readonly] {
+  color: #52666b !important;
+  background: #edf3f1 !important;
+}
+
+.poster-publish-fields .field small,
+.yodeck-playlist-summary small {
+  color: #738589 !important;
+  font-size: .59rem !important;
+  line-height: 1.4 !important;
+}
+
+.poster-publish-date-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 12px !important;
+}
+
+.yodeck-connection-status {
+  display: grid !important;
+  grid-template-columns: 11px minmax(0,1fr) !important;
+  gap: 10px !important;
+  align-items: center !important;
+  padding: 11px 12px !important;
+  border: 1px solid #d6e1de !important;
+  border-radius: 10px !important;
+  background: #fff !important;
+}
+
+.yodeck-connection-status > span {
+  width: 9px !important;
+  height: 9px !important;
+  border-radius: 50% !important;
+  background: #c6a15b !important;
+  box-shadow: 0 0 0 4px rgba(198,161,91,.14) !important;
+}
+
+.yodeck-connection-status.ready > span {
+  background: #4b9676 !important;
+  box-shadow: 0 0 0 4px rgba(75,150,118,.14) !important;
+}
+
+.yodeck-connection-status.unavailable > span {
+  background: #b65c51 !important;
+  box-shadow: 0 0 0 4px rgba(182,92,81,.14) !important;
+}
+
+.yodeck-connection-status div {
+  display: grid !important;
+  gap: 2px !important;
+}
+
+.yodeck-connection-status strong {
+  color: #0d3548 !important;
+  font-size: .69rem !important;
+}
+
+.yodeck-connection-status small {
+  color: #738589 !important;
+  font-size: .58rem !important;
+  line-height: 1.35 !important;
+}
+
+.yodeck-playlist-summary {
+  display: grid !important;
+  gap: 4px !important;
+  padding: 11px 12px !important;
+  border-left: 4px solid #c6a15b !important;
+  border-radius: 8px !important;
+  background: #fff !important;
+}
+
+.yodeck-playlist-summary strong {
+  color: #0d3548 !important;
+  font: 700 1rem/1.15 Georgia,"Times New Roman",serif !important;
+}
+
+.poster-publish-dialog-message {
+  min-height: 20px !important;
+  color: #52666b !important;
+  font-size: .65rem !important;
+  line-height: 1.45 !important;
+}
+
+.poster-publish-dialog-message.working { color: #80652e !important; }
+.poster-publish-dialog-message.success { color: #286648 !important; font-weight: 800 !important; }
+.poster-publish-dialog-message.error { color: #a34238 !important; font-weight: 800 !important; }
+
+.poster-publish-actions {
+  display: flex !important;
+  flex: 0 0 auto !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+  padding: 14px 24px 18px !important;
+  border-top: 1px solid #dce5e2 !important;
+  background: #fff !important;
+}
+
+@media (max-width: 760px) {
+  .poster-publish-dialog {
+    width: calc(100vw - 20px) !important;
+    max-height: calc(100vh - 20px) !important;
+    border-radius: 15px !important;
+  }
+
+  .poster-publish-dialog form { max-height: calc(100vh - 20px) !important; }
+  .poster-publish-heading { padding: 20px 18px !important; }
+  .poster-publish-body { grid-template-columns: 1fr !important; padding: 16px !important; }
+  .poster-publish-preview { display: none !important; }
+  .poster-publish-date-grid { grid-template-columns: 1fr !important; }
+  .poster-publish-actions { padding: 12px 14px 14px !important; }
+}
 *{box-sizing:border-box}
 html,body{width:100%;min-width:320px;min-height:100%;margin:0!important;padding:0!important;background:var(--bg)}
 body{min-height:100vh;overflow-x:hidden;color:var(--text);font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at 90% 0,rgba(198,161,91,.1),transparent 32rem),var(--bg)}

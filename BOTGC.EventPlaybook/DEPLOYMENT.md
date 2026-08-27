@@ -10,7 +10,9 @@ The simplest hosted development environment for this project is a Render Web Ser
 4. Set **Blueprint Path** to `BOTGC.EventPlaybook/render.yaml` and select the branch you want to deploy.
 5. Enter the prompted secret values:
    - `DEMO_PASSWORD`: a strong shared password for approved testers;
-   - `OPENAI_API_KEY`: the server-side OpenAI API key, or leave it empty to use mock artwork generation.
+   - `OPENAI_API_KEY`: the server-side OpenAI API key, or leave it empty to use mock artwork generation;
+   - `YODECK_API_TOKEN`: an API token with Media and Playlists view/change access;
+   - `YODECK_PLAYLIST_ID`: the numeric ID of the existing Clubhouse playlist.
 6. Click **Deploy Blueprint** and wait for `/health` to pass.
 7. Open the generated `onrender.com` URL and sign in with the shared password.
 
@@ -27,8 +29,16 @@ Render automatically rebuilds and deploys the service whenever a commit reaches 
 | `OPENAI_IMAGE_MODEL` | No | Defaults to `gpt-image-2`. |
 | `OPENAI_IMAGE_QUALITY` | No | Defaults to `high`. |
 | `OPENAI_PROMPT_MODEL` | No | Defaults to `gpt-5.6`. |
+| `YODECK_API_TOKEN` | For Yodeck publishing | Server-side token created under Yodeck **Account Settings → Advanced Settings → API Tokens**. |
+| `YODECK_PLAYLIST_ID` | For Yodeck publishing | Numeric ID of the existing Clubhouse playlist to which event artwork is appended. |
+| `YODECK_API_TOKEN_LABEL` | No | Label sent in Yodeck's `Token label:value` authorization header. Defaults to `event-playbook`. |
+| `YODECK_PLAYLIST_NAME` | No | Friendly playlist name shown in the publishing dialog. Defaults to `Clubhouse`. |
+| `YODECK_MEDIA_DURATION_SECONDS` | No | Display duration of each poster within the playlist. Defaults to 15 seconds. |
+| `YODECK_API_BASE_URL` | No | Defaults to `https://app.yodeck.com/api/v2/`; primarily useful for local integration testing. |
 
 Secrets belong in Render's Environment settings. Do not commit them to Git, the Dockerfile or `render.yaml`.
+
+The Yodeck token requires permission to view and change both **Media** and **Playlists** in the workspace that contains the Clubhouse playlist. Publishing creates a tagged PNG media item with an availability window from the chosen start date through 23:59:59 on the event date, uploads the file using Yodeck's signed upload URL, and appends the item to the existing playlist. Existing playlist items are preserved.
 
 ## Local password-protected testing
 

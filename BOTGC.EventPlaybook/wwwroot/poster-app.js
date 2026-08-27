@@ -46,7 +46,10 @@ function createSession(key, context) {
             useLibraryReferences: true,
             selectedLibraryReferences: [],
             publishToYodeck: true,
-            publishByEmail: false
+            publishByEmail: false,
+            publishMediaName: '',
+            publishTags: '',
+            publishStartDate: ''
         },
         progress: {
             primary: { cssClass: '', label: 'Waiting' },
@@ -187,7 +190,10 @@ function serialiseSession(session) {
             supportingImages: form.supportingImages,
             useLibraryReferences: form.useLibraryReferences,
             publishToYodeck: session.form.publishToYodeck,
-            publishByEmail: session.form.publishByEmail
+            publishByEmail: session.form.publishByEmail,
+            publishMediaName: session.form.publishMediaName,
+            publishTags: session.form.publishTags,
+            publishStartDate: session.form.publishStartDate
         },
         workflowStep: generationWasInterrupted ? 1 : session.workflowStep,
         workflowComplete: generationWasInterrupted ? false : session.workflowComplete,
@@ -212,7 +218,7 @@ function applyStoredSession(session, stored) {
     }
 
     const storedForm = stored.form && typeof stored.form === 'object' ? stored.form : {};
-    const stringFields = ['eventId', 'eventName', 'eventDate', 'description', 'price', 'additionalInstructions', 'refinementNotes'];
+    const stringFields = ['eventId', 'eventName', 'eventDate', 'description', 'price', 'additionalInstructions', 'refinementNotes', 'publishMediaName', 'publishTags', 'publishStartDate'];
     for (const field of stringFields) {
         if (typeof storedForm[field] === 'string') session.form[field] = storedForm[field];
     }
@@ -438,13 +444,15 @@ function selectStyleVariationId(session, isRegeneration) {
     if (variations.length === 0) return null;
 
     const previousVariationId = session.generationSnapshot?.styleVariationId;
-    const canReusePrevious = isRegeneration
-        && session.generationSnapshot?.selectedStyleId === session.selectedStyleId
-        && variations.some(variation => variation.id === previousVariationId);
+    const isSameStyleAsPrevious = session.generationSnapshot?.selectedStyleId === session.selectedStyleId;
+    const candidates = variations.length > 1 && isSameStyleAsPrevious && previousVariationId
+        ? variations.filter(variation => variation.id !== previousVariationId)
+        : variations;
 
-    if (canReusePrevious) return previousVariationId;
-
-    return variations[Math.floor(Math.random() * variations.length)].id;
+    // One variation is selected for the whole campaign so every derivative
+    // remains visually related to the digital-screen master. A subsequent
+    // generation rotates away from the immediately previous direction.
+    return candidates[Math.floor(Math.random() * candidates.length)].id;
 }
 
 function scoreReferenceMatch(reference, tokens) {
@@ -574,7 +582,20 @@ export async function mountPosterStudio(context = {}) {
         emailCard: document.querySelector('#emailCard'),
         publishButton: document.querySelector('#publishButton'),
         publishTopButton: document.querySelector('#publishTopButton'),
-        publishMessage: document.querySelector('#publishMessage')
+        publishMessage: document.querySelector('#publishMessage'),
+        publishDialog: document.querySelector('#posterPublishDialog'),
+        publishForm: document.querySelector('#posterPublishForm'),
+        publishPreview: document.querySelector('#posterPublishPreview'),
+        publishDialogClose: document.querySelector('#closePosterPublishDialog'),
+        publishDialogCancel: document.querySelector('#cancelPosterPublish'),
+        publishDialogConfirm: document.querySelector('#confirmPosterPublish'),
+        publishDialogMessage: document.querySelector('#posterPublishDialogMessage'),
+        yodeckConnectionStatus: document.querySelector('#yodeckConnectionStatus'),
+        yodeckMediaName: document.querySelector('#yodeckMediaName'),
+        yodeckTags: document.querySelector('#yodeckTags'),
+        yodeckStartDate: document.querySelector('#yodeckStartDate'),
+        yodeckEndDate: document.querySelector('#yodeckEndDate'),
+        yodeckPlaylistName: document.querySelector('#yodeckPlaylistName')
     };
 
     if (!elements.generateButton) {
@@ -756,8 +777,18 @@ function wireEvents(session) {
     elements.generateButton.addEventListener('click', () => generateCampaign(session, false));
     elements.regenerateButton.addEventListener('click', () => generateCampaign(session, true));
     elements.cancelGenerationButton.addEventListener('click', () => cancelGeneration(session));
-    elements.publishButton.addEventListener('click', publishCampaign);
-    elements.publishTopButton.addEventListener('click', () => elements.publishPanel.scrollIntoView({ behavior: 'smooth' }));
+    elements.publishButton.addEventListener('click', openPublishDialog);
+    elements.publishTopButton.addEventListener('click', openPublishDialog);
+    elements.publishDialogClose?.addEventListener('click', closePublishDialog);
+    elements.publishDialogCancel?.addEventListener('click', closePublishDialog);
+    elements.publishDialog?.addEventListener('close', () => {
+        capturePublishDialog(session);
+        scheduleSessionPersistence(session);
+    });
+    elements.publishForm?.addEventListener('submit', event => {
+        event.preventDefault();
+        publishCampaign();
+    });
 }
 
 function synchroniseSelectedEventContext(session, seedBrief = false) {
@@ -1392,28 +1423,142 @@ function downloadCanvas(canvas, fileName) {
     }, 'image/png');
 }
 
+function getLocalTodayIso() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+function getDefaultPublishTags(session) {
+    return [
+        'event-playbook',
+        'clubhouse-screens',
+        slugify(getCampaignEventName(session))
+    ].filter(Boolean).join(', ');
+}
+
+function capturePublishDialog(session) {
+    if (!elements.yodeckMediaName) return;
+    session.form.publishMediaName = elements.yodeckMediaName?.value.trim() ?? '';
+    session.form.publishTags = elements.yodeckTags?.value.trim() ?? '';
+    session.form.publishStartDate = elements.yodeckStartDate?.value ?? '';
+}
+
+function openPublishDialog() {
+    const session = activeSession;
+    if (!session || !elements.publishDialog) return;
+
+    if (!elements.publishYodeck.checked) {
+        elements.publishMessage.textContent = 'Select Clubhouse screens to publish the digital-screen artwork through Yodeck.';
+        elements.publishPanel.scrollIntoView({ behavior: 'smooth' });
+        return;
+    }
+
+    const primaryOutput = getPrimaryOutput(session);
+    const primaryCanvas = primaryOutput ? session.posterCanvases.get(primaryOutput.id) : null;
+    if (!primaryOutput || !primaryCanvas) {
+        elements.publishMessage.textContent = 'Generate the Clubhouse Digital Display artwork before publishing.';
+        return;
+    }
+
+    const eventDate = session.form.eventDate;
+    const today = getLocalTodayIso();
+    const defaultStartDate = today <= eventDate ? today : eventDate;
+    const savedStartDate = session.form.publishStartDate;
+    const startDate = savedStartDate && savedStartDate <= eventDate ? savedStartDate : defaultStartDate;
+
+    elements.publishPreview.src = primaryCanvas.toDataURL('image/png');
+    elements.yodeckMediaName.value = session.form.publishMediaName
+        || `${getCampaignEventName(session)} — Clubhouse screens — ${eventDate}`;
+    elements.yodeckTags.value = session.form.publishTags || getDefaultPublishTags(session);
+    elements.yodeckStartDate.value = startDate;
+    elements.yodeckStartDate.min = defaultStartDate;
+    elements.yodeckStartDate.max = eventDate;
+    elements.yodeckEndDate.value = eventDate;
+    elements.publishDialogMessage.textContent = '';
+    elements.publishDialogMessage.className = 'poster-publish-dialog-message';
+    elements.publishDialogConfirm.textContent = 'Upload & add to playlist';
+
+    const yodeck = session.config?.yodeck ?? {};
+    elements.yodeckPlaylistName.textContent = yodeck.playlistName || 'Clubhouse';
+    elements.yodeckConnectionStatus.className = `yodeck-connection-status ${yodeck.configured ? 'ready' : 'unavailable'}`;
+    elements.yodeckConnectionStatus.innerHTML = yodeck.configured
+        ? '<span></span><div><strong>Yodeck is configured</strong><small>The API token remains on the server and will not be sent to this browser.</small></div>'
+        : `<span></span><div><strong>Yodeck needs configuring</strong><small>Add ${escapeHtml((yodeck.missingSettings ?? []).join(' and ') || 'the Yodeck server settings')} in Render before publishing.</small></div>`;
+    elements.publishDialogConfirm.disabled = !yodeck.configured;
+
+    elements.publishDialog.showModal();
+    requestAnimationFrame(() => elements.yodeckMediaName.focus());
+}
+
+function closePublishDialog() {
+    const session = activeSession;
+    if (session) {
+        capturePublishDialog(session);
+        scheduleSessionPersistence(session);
+    }
+    elements.publishDialog?.close();
+}
+
 async function publishCampaign() {
     const session = activeSession;
-    const assets = getSelectedOutputs(session)
-        .filter(output => session.posterCanvases.has(output.id))
-        .map(output => ({ outputId: output.id, name: output.name }));
+    const primaryOutput = getPrimaryOutput(session);
+    const primaryCanvas = primaryOutput ? session.posterCanvases.get(primaryOutput.id) : null;
+    if (!primaryOutput || !primaryCanvas) {
+        elements.publishDialogMessage.textContent = 'The Clubhouse Digital Display artwork is not ready.';
+        elements.publishDialogMessage.className = 'poster-publish-dialog-message error';
+        return;
+    }
+
+    capturePublishDialog(session);
+    const startDate = session.form.publishStartDate;
+    const eventDate = session.form.eventDate;
+    if (!startDate || startDate > eventDate) {
+        elements.publishDialogMessage.textContent = 'Choose a start date on or before the event date.';
+        elements.publishDialogMessage.className = 'poster-publish-dialog-message error';
+        return;
+    }
+
+    const tags = session.form.publishTags
+        .split(',')
+        .map(tag => tag.trim())
+        .filter(Boolean);
 
     elements.publishButton.disabled = true;
-    elements.publishMessage.textContent = 'Publishing selected artwork…';
+    elements.publishDialogConfirm.disabled = true;
+    elements.publishDialogConfirm.textContent = 'Uploading to Yodeck…';
+    elements.publishMessage.textContent = 'Uploading the digital-screen master to Yodeck…';
+    elements.publishDialogMessage.textContent = 'Creating the media item, uploading the PNG and updating the Clubhouse playlist…';
+    elements.publishDialogMessage.className = 'poster-publish-dialog-message working';
 
     try {
         const response = await fetch('/api/poster/publish', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+                eventId: session.context?.eventId || session.key,
                 eventName: getCampaignEventName(session),
-                assets,
-                publishToYodeck: elements.publishYodeck.checked,
+                eventDate,
+                startDate,
+                mediaName: session.form.publishMediaName,
+                tags,
+                digitalScreenAsset: {
+                    outputId: primaryOutput.id,
+                    name: primaryOutput.name,
+                    dataUrl: primaryCanvas.toDataURL('image/png')
+                },
+                publishToYodeck: true,
                 publishByEmail: elements.publishEmail.checked
             })
         });
         const result = await readApiResponse(response);
-        elements.publishMessage.textContent = `${result.assets} campaign asset${result.assets === 1 ? '' : 's'} accepted. ${result.yodeck} ${result.email}`;
+        const yodeckResult = result.yodeck;
+        elements.publishMessage.textContent = `Published “${yodeckResult.mediaName}” to the ${yodeckResult.playlistName} playlist for ${yodeckResult.startDate} to ${yodeckResult.endDate}.`;
+        elements.publishDialogMessage.textContent = `Published successfully. Yodeck media item ${yodeckResult.mediaId} is now in the ${yodeckResult.playlistName} playlist.`;
+        elements.publishDialogMessage.className = 'poster-publish-dialog-message success';
+        elements.publishDialogConfirm.textContent = 'Published';
 
         const selectedOutputs = getSelectedOutputs(session);
         const squareOutput = selectedOutputs
@@ -1434,7 +1579,12 @@ async function publishCampaign() {
         setWorkflowStep(session, 4, true);
         await persistSession(session);
     } catch (error) {
-        elements.publishMessage.textContent = error instanceof Error ? error.message : 'Publishing failed.';
+        const message = error instanceof Error ? error.message : 'Publishing failed.';
+        elements.publishMessage.textContent = message;
+        elements.publishDialogMessage.textContent = message;
+        elements.publishDialogMessage.className = 'poster-publish-dialog-message error';
+        elements.publishDialogConfirm.textContent = 'Try publishing again';
+        elements.publishDialogConfirm.disabled = false;
     } finally {
         elements.publishButton.disabled = false;
     }

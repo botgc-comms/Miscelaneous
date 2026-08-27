@@ -26,3 +26,13 @@ services:
         value: high
       - key: OPENAI_PROMPT_MODEL
         value: gpt-5.6
+      - key: YODECK_API_TOKEN
+        sync: false
+      - key: YODECK_PLAYLIST_ID
+        sync: false
+      - key: YODECK_API_TOKEN_LABEL
+        value: event-playbook
+      - key: YODECK_PLAYLIST_NAME
+        value: Clubhouse
+      - key: YODECK_MEDIA_DURATION_SECONDS
+        value: 15

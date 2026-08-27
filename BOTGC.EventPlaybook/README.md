@@ -200,7 +200,8 @@ It retains:
 - derivative formats generated from the primary campaign;
 - each image appearing as soon as it becomes available;
 - regeneration using organiser feedback;
-- future YoDeck and membership-email publishing seams.
+- real Yodeck media-library upload, tagging, availability dates and Clubhouse-playlist publishing;
+- a future membership-email publishing seam.
 
 The Poster Studio now also accepts event name, date and description from the active Event Playbook event. A generic custom-event definition allows newly created Playbook events to use Poster Studio before they have their own permanent event-catalogue scene recipe.
 
@@ -210,7 +211,6 @@ The following external integrations are deliberately represented as explicit sea
 
 - Club email delivery for task assignments/reminders/escalations;
 - Monday.com task creation/synchronisation;
-- YoDeck publishing;
 - membership campaign email delivery;
 - IG identity linking.
 
