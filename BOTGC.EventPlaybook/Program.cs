@@ -225,17 +225,11 @@ app.MapGet("/api/poster/config", (
         imageQuality = effectiveImageQuality,
         promptModel = effectivePromptModel,
         apiKeySource = hasApiKey ? "OPENAI_API_KEY" : "not configured",
-        yodeck = new
+        clubhouseScreens = new
         {
             configured = yodeckPublisher.IsConfigured,
-            playlistId = yodeckPlaylistId > 0 ? yodeckPlaylistId : (long?)null,
-            playlistName = string.IsNullOrWhiteSpace(yodeckPlaylistName) ? "Clubhouse" : yodeckPlaylistName,
-            mediaDurationSeconds = yodeckMediaDuration,
-            missingSettings = new[]
-            {
-                string.IsNullOrWhiteSpace(yodeckApiToken) ? "YODECK_API_TOKEN" : null,
-                yodeckPlaylistId <= 0 ? "YODECK_PLAYLIST_ID" : null
-            }.Where(value => value is not null)
+            destinationName = string.IsNullOrWhiteSpace(yodeckPlaylistName) ? "Clubhouse screens" : yodeckPlaylistName,
+            mediaDurationSeconds = yodeckMediaDuration
         }
     });
 });
@@ -343,9 +337,9 @@ app.MapPost("/api/poster/publish", async (
     IYodeckPublisher yodeckPublisher,
     CancellationToken cancellationToken) =>
 {
-    if (!request.PublishToYodeck)
+    if (!request.SendToClubhouseScreens)
     {
-        return Results.BadRequest(new { error = "Select Clubhouse screens before publishing." });
+        return Results.BadRequest(new { error = "Choose the clubhouse screens before sharing." });
     }
 
     if (!DateOnly.TryParseExact(request.EventDate, "yyyy-MM-dd", out var eventDate) ||
@@ -369,7 +363,7 @@ app.MapPost("/api/poster/publish", async (
 
     if (!string.Equals(request.DigitalScreenAsset.OutputId, "clubhouse", StringComparison.OrdinalIgnoreCase))
     {
-        return Results.BadRequest(new { error = "The Clubhouse Digital Display artwork must be used for Yodeck." });
+        return Results.BadRequest(new { error = "The Clubhouse Digital Display artwork must be used for clubhouse screen sharing." });
     }
 
     if (!TryDecodePngDataUrl(request.DigitalScreenAsset.DataUrl, out var imageBytes, out var imageError))
@@ -407,19 +401,15 @@ app.MapPost("/api/poster/publish", async (
             success = true,
             eventName = request.EventName,
             assets = 1,
-            yodeck = new
+            clubhouseScreens = new
             {
-                published.MediaId,
-                published.MediaName,
-                published.PlaylistId,
-                published.PlaylistName,
+                artworkId = published.MediaId,
+                artworkName = published.MediaName,
+                destinationName = published.PlaylistName,
                 startDate = published.StartDate.ToString("yyyy-MM-dd"),
                 endDate = published.EndDate.ToString("yyyy-MM-dd"),
                 published.Tags
-            },
-            email = request.PublishByEmail
-                ? "Prototype: artwork retained for the future membership email integration."
-                : null
+            }
         });
     }
     catch (InvalidOperationException exception)

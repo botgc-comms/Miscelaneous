@@ -1313,7 +1313,7 @@
                     <div class="hero-event-context-copy"><span>No event selected</span><strong>Choose an event to begin</strong><small>Planner, tasks, artwork and retrospectives share one selected event.</small></div>
                     <button type="button" data-view="catalogue">Choose event</button>
                   </section>`}
-              ${state.activeView === 'artwork' ? '<button id="publishTopButton" class="button button-gold hero-page-action" type="button" disabled>Publish artwork</button>'
+              ${state.activeView === 'artwork' ? '<button id="shareTopButton" class="button button-gold hero-page-action" type="button" disabled>Share artwork</button>'
                 : state.activeView === 'references' ? '<button class="button button-gold hero-page-action" data-action="add-library-image">Add image</button>'
                 : state.activeView === 'catalogue' ? '<button class="button button-gold hero-page-action" data-action="new-event">New event</button>'
                 : state.activeView === 'admin' ? '<button class="button button-gold hero-page-action" data-action="load-playbook">Load playbook JSON</button>'
@@ -1358,7 +1358,7 @@
 
     bindEvents();
     if (state.activeView === 'artwork' && event) {
-      import('./poster-app.js?v=20260827-yodeck-publish-1')
+      import('./poster-app.js?v=20260827-share-workflow-1')
         .then(module => module.mountPosterStudio({
           eventId: event.id,
           eventName: event.name,
@@ -1621,7 +1621,7 @@
         <div class="workflow-line"></div>
         <div class="workflow-step" data-step="3"><span>3</span><strong>Adapt</strong><small>Other formats</small></div>
         <div class="workflow-line"></div>
-        <div class="workflow-step" data-step="4"><span>4</span><strong>Publish</strong><small>Yodeck & email</small></div>
+        <div class="workflow-step" data-step="4"><span>4</span><strong>Share</strong><small>Screens & members</small></div>
       </section>
 
       <div class="poster-runtime-status"><span class="status-dot"></span><strong id="generationMode">Checking generator…</strong><small>OpenAI key remains server-side</small></div>
@@ -1685,36 +1685,44 @@
         </div>
       </div>
 
-      <section id="publishPanel" class="panel publish-panel hidden">
-        <div class="panel-heading"><div><p class="section-kicker">Release</p><h2>Publish the approved campaign</h2><p class="panel-copy">Send the digital-screen master to the Yodeck media library and add it to the Clubhouse playlist for a controlled date window.</p></div></div>
-        <div class="publish-options">
-          <label class="publish-option selected" id="yodeckCard"><input id="publishYodeck" type="checkbox" checked><span class="publish-icon">▣</span><span><strong>Clubhouse screens</strong><small>Upload and schedule through Yodeck</small></span><span class="destination-check">✓</span></label>
-          <label class="publish-option" id="emailCard"><input id="publishEmail" type="checkbox"><span class="publish-icon">✉</span><span><strong>Membership email</strong><small>Prepare campaign for email integration</small></span><span class="destination-check">✓</span></label>
+      <section id="sharePanel" class="panel publish-panel share-panel hidden">
+        <div class="panel-heading"><div><p class="section-kicker">Share</p><h2>Share the approved campaign</h2><p class="panel-copy">Choose where the event should be communicated. Each channel has its own settings and can be used independently.</p></div></div>
+        <div class="share-actions">
+          <article class="share-action-card">
+            <span class="share-action-icon">▣</span>
+            <div><h3>Clubhouse screens</h3><p>Choose when the digital-screen artwork should appear around the clubhouse.</p></div>
+            <button id="shareScreensButton" class="button button-gold" type="button">Send to clubhouse screens</button>
+          </article>
+          <article class="share-action-card pending">
+            <span class="share-action-icon">✉</span>
+            <div><h3>Members</h3><p>Use the campaign artwork in an email to the club membership.</p><span class="share-action-status">Email connection coming next</span></div>
+            <button id="shareEmailButton" class="button button-secondary" type="button">Email to members</button>
+          </article>
         </div>
-        <div class="publish-action-row"><div id="publishMessage" class="publish-message">Nothing has been published yet.</div><button id="publishButton" class="button button-gold button-large" type="button">Choose publishing dates</button></div>
+        <div id="shareMessage" class="publish-message share-message" role="status">This campaign has not been shared yet.</div>
       </section>
 
       <dialog id="posterPublishDialog" class="poster-publish-dialog">
         <form id="posterPublishForm">
           <div class="poster-publish-heading">
-            <div><p class="eyebrow">Clubhouse screens</p><h2>Publish to Yodeck</h2><p>Upload the finished digital-screen master, tag it for the media library and control when it can appear.</p></div>
-            <button id="closePosterPublishDialog" class="icon-button" type="button" aria-label="Close publishing dialog">×</button>
+            <div><p class="eyebrow">Share artwork</p><h2>Send to clubhouse screens</h2><p>Choose how the digital-screen artwork should be identified and when it should appear.</p></div>
+            <button id="closePosterPublishDialog" class="icon-button" type="button" aria-label="Close clubhouse screen sharing dialog">×</button>
           </div>
           <div class="poster-publish-body">
-            <aside class="poster-publish-preview"><img id="posterPublishPreview" alt="Digital-screen artwork selected for Yodeck"><span>Clubhouse Digital Display</span><small>2160 × 3840 PNG</small></aside>
+            <aside class="poster-publish-preview"><img id="posterPublishPreview" alt="Artwork selected for the clubhouse screens"><span>Clubhouse Digital Display</span><small>2160 × 3840 PNG</small></aside>
             <div class="poster-publish-fields">
-              <div id="yodeckConnectionStatus" class="yodeck-connection-status checking"><span></span><div><strong>Checking Yodeck connection…</strong><small>The API token remains on the server.</small></div></div>
-              <label class="field"><span>Media library name</span><input id="yodeckMediaName" type="text" maxlength="180" required><small>This is the name staff will see in Yodeck.</small></label>
-              <label class="field"><span>Media tags</span><input id="yodeckTags" type="text" placeholder="event-playbook, clubhouse-screens, event-name"><small>Separate tags with commas. Event Playbook is always added automatically.</small></label>
+              <div id="yodeckConnectionStatus" class="yodeck-connection-status checking"><span></span><div><strong>Checking the clubhouse screen connection…</strong><small>The connection is managed securely by Event Playbook.</small></div></div>
+              <label class="field"><span>Artwork name</span><input id="yodeckMediaName" type="text" maxlength="180" required><small>This is how the artwork will be identified in the screen library.</small></label>
+              <label class="field"><span>Tags</span><input id="yodeckTags" type="text" placeholder="event-playbook, clubhouse-screens, event-name"><small>Separate tags with commas. Event Playbook is always added automatically.</small></label>
               <div class="poster-publish-date-grid">
                 <label class="field"><span>Start showing</span><input id="yodeckStartDate" type="date" required><small>The poster becomes available from the start of this day.</small></label>
                 <label class="field"><span>Stop showing</span><input id="yodeckEndDate" type="date" readonly><small>Fixed to the end of the selected event date.</small></label>
               </div>
-              <div class="yodeck-playlist-summary"><span>Playlist</span><strong id="yodeckPlaylistName">Clubhouse</strong><small>The artwork is appended without replacing existing playlist items.</small></div>
+              <div class="yodeck-playlist-summary"><span>Destination</span><strong id="yodeckPlaylistName">Clubhouse screens</strong><small>The artwork is added to the existing screen rotation without replacing anything already there.</small></div>
               <div id="posterPublishDialogMessage" class="poster-publish-dialog-message" role="status"></div>
             </div>
           </div>
-          <div class="poster-publish-actions"><button id="cancelPosterPublish" class="button button-secondary" type="button">Cancel</button><button id="confirmPosterPublish" class="button button-gold button-large" type="submit">Upload & add to playlist</button></div>
+          <div class="poster-publish-actions"><button id="cancelPosterPublish" class="button button-secondary" type="button">Cancel</button><button id="confirmPosterPublish" class="button button-gold button-large" type="submit">Send to clubhouse screens</button></div>
         </form>
       </dialog>`;
   }

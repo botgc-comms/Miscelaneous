@@ -100,9 +100,7 @@ public sealed class PublishRequest
 
     public required PublishAsset DigitalScreenAsset { get; init; }
 
-    public bool PublishToYodeck { get; init; } = true;
-
-    public bool PublishByEmail { get; init; }
+    public bool SendToClubhouseScreens { get; init; } = true;
 }
 
 public sealed class PublishAsset

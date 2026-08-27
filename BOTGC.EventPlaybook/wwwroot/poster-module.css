@@ -580,6 +580,59 @@
     color: var(--muted);
     line-height: 1.45;
     font-size: 0.83rem;
+}.poster-studio .share-actions{
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}.poster-studio .share-action-card{
+    display: grid;
+    grid-template-columns: 46px minmax(0, 1fr);
+    gap: 13px;
+    align-items: start;
+    min-height: 154px;
+    padding: 17px;
+    border: 1px solid #c7d4d2;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #fff 0%, #f6faf8 100%);
+}.poster-studio .share-action-card.pending{
+    background: linear-gradient(180deg, #fff 0%, #f8f6f0 100%);
+}.poster-studio .share-action-icon{
+    display: grid;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    border-radius: 11px;
+    color: var(--gold);
+    background: var(--ink);
+    font-size: 1.12rem;
+}.poster-studio .share-action-card h3{
+    margin: 1px 0 5px;
+    color: var(--ink);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.04rem;
+}.poster-studio .share-action-card p{
+    margin: 0;
+    color: var(--muted);
+    font-size: .75rem;
+    line-height: 1.5;
+}.poster-studio .share-action-card .button{
+    grid-column: 1 / -1;
+    align-self: end;
+    justify-self: start;
+}.poster-studio .share-action-status{
+    display: inline-flex;
+    margin-top: 9px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    color: #80652e;
+    background: #f7eed8;
+    font-size: .61rem;
+    font-weight: 800;
+}.poster-studio .share-message{
+    min-height: 20px;
+    margin-top: 16px;
+    padding-top: 15px;
+    border-top: 1px solid var(--line);
 }.poster-studio .hidden{
     display: none !important;
 }.poster-studio .busy{
@@ -602,7 +655,7 @@
         overflow-x: auto;
     }.poster-studio .workflow-step{
         min-width: 98px;
-    }.poster-studio .two-column-fields, .poster-studio .style-options, .poster-studio .toggle-grid, .poster-studio .variant-grid, .poster-studio .publish-options{
+    }.poster-studio .two-column-fields, .poster-studio .style-options, .poster-studio .toggle-grid, .poster-studio .variant-grid, .poster-studio .publish-options, .poster-studio .share-actions{
         grid-template-columns: 1fr;
     }.poster-studio .brief-panel, .poster-studio .campaign-panel, .poster-studio .publish-panel{
         padding: 19px;

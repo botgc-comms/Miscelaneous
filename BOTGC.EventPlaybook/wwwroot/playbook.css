@@ -19,7 +19,7 @@
 }
 
 /* ========================================================================
-   POSTER PUBLISH DIALOG — server-side Yodeck release workflow
+   POSTER SCREEN-SHARING DIALOG — server-side delivery workflow
    ======================================================================== */
 .poster-publish-dialog {
   width: min(980px, calc(100vw - 48px)) !important;

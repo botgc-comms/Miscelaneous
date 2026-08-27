@@ -24,7 +24,7 @@ public sealed class YodeckPublisher(
         if (!IsConfigured)
         {
             throw new InvalidOperationException(
-                "Yodeck publishing is not configured. Add YODECK_API_TOKEN and YODECK_PLAYLIST_ID to the server environment.");
+                "Clubhouse screen sharing is not configured. Ask an administrator to complete the server connection settings.");
         }
 
         var playlist = await GetPlaylistAsync(cancellationToken);
@@ -33,7 +33,7 @@ public sealed class YodeckPublisher(
 
         var media = await CreateMediaAsync(command, workspaceId, cancellationToken);
         var mediaId = ReadInt64(media, "id")
-            ?? throw new InvalidOperationException("Yodeck created the media resource but did not return its ID.");
+            ?? throw new InvalidOperationException("The screen service created the artwork but did not return its ID.");
 
         try
         {
@@ -50,8 +50,8 @@ public sealed class YodeckPublisher(
                 mediaId,
                 command.EventId);
             throw new InvalidOperationException(
-                $"Yodeck created media item {mediaId}, but the upload or playlist update did not finish. " +
-                "The item may need removing or completing in Yodeck before retrying.",
+                $"The screen service created artwork item {mediaId}, but the upload or screen-rotation update did not finish. " +
+                "An administrator may need to remove or complete the item before retrying.",
                 exception);
         }
 
@@ -80,7 +80,7 @@ public sealed class YodeckPublisher(
             $"playlists/{_options.PlaylistId}",
             content: null,
             cancellationToken);
-        return await ReadObjectAsync(response, "retrieve the Clubhouse playlist", cancellationToken);
+        return await ReadObjectAsync(response, "retrieve the Clubhouse screen rotation", cancellationToken);
     }
 
     private async Task<JsonObject> CreateMediaAsync(
@@ -107,7 +107,15 @@ public sealed class YodeckPublisher(
                 ["enable"] = true,
                 ["available_after"] = $"{command.StartDate:yyyy-MM-dd}T00:00:00",
                 ["available_before"] = $"{command.EndDate:yyyy-MM-dd}T23:59:59",
-                ["availability_slots"] = new JsonArray()
+                ["availability_slots"] = new JsonArray
+                {
+                    new JsonObject
+                    {
+                        ["start"] = "00:00:00",
+                        ["end"] = "23:59:59",
+                        ["days_of_week"] = "1111111"
+                    }
+                }
             },
             ["arguments"] = new JsonObject()
         };
@@ -123,7 +131,7 @@ public sealed class YodeckPublisher(
             "media",
             content,
             cancellationToken);
-        return await ReadObjectAsync(response, "create the Yodeck media item", cancellationToken);
+        return await ReadObjectAsync(response, "create the clubhouse screen artwork item", cancellationToken);
     }
 
     private async Task<string> GetUploadUrlAsync(long mediaId, CancellationToken cancellationToken)
@@ -133,9 +141,9 @@ public sealed class YodeckPublisher(
             $"media/{mediaId}/upload",
             content: null,
             cancellationToken);
-        var payload = await ReadObjectAsync(response, "request the Yodeck upload URL", cancellationToken);
+        var payload = await ReadObjectAsync(response, "request the screen artwork upload URL", cancellationToken);
         return ReadString(payload, "upload_url")
-            ?? throw new InvalidOperationException("Yodeck did not return an upload URL for the media item.");
+            ?? throw new InvalidOperationException("The screen service did not return an upload URL for the artwork.");
     }
 
     private async Task UploadImageAsync(
@@ -153,7 +161,7 @@ public sealed class YodeckPublisher(
         {
             var details = await response.Content.ReadAsStringAsync(cancellationToken);
             throw new InvalidOperationException(
-                $"The Yodeck signed file upload failed ({(int)response.StatusCode}). {TrimDetails(details)}");
+                $"The clubhouse screen artwork upload failed ({(int)response.StatusCode}). {TrimDetails(details)}");
         }
     }
 
@@ -168,7 +176,7 @@ public sealed class YodeckPublisher(
             $"media/{mediaId}/upload/complete",
             content,
             cancellationToken);
-        await EnsureSuccessAsync(response, "complete the Yodeck media upload", cancellationToken);
+        await EnsureSuccessAsync(response, "complete the clubhouse screen artwork upload", cancellationToken);
     }
 
     private async Task AppendToPlaylistAsync(
@@ -204,7 +212,7 @@ public sealed class YodeckPublisher(
             $"playlists/{_options.PlaylistId}",
             content,
             cancellationToken);
-        await EnsureSuccessAsync(response, "add the media item to the Clubhouse playlist", cancellationToken);
+        await EnsureSuccessAsync(response, "add the artwork to the Clubhouse screen rotation", cancellationToken);
     }
 
     private async Task<HttpResponseMessage> SendYodeckAsync(
@@ -260,7 +268,7 @@ public sealed class YodeckPublisher(
         await EnsureSuccessAsync(response, action, cancellationToken);
         var node = await response.Content.ReadFromJsonAsync<JsonNode>(cancellationToken: cancellationToken);
         return node as JsonObject
-            ?? throw new InvalidOperationException($"Yodeck returned an unexpected response while trying to {action}.");
+            ?? throw new InvalidOperationException($"The screen service returned an unexpected response while trying to {action}.");
     }
 
     private static async Task EnsureSuccessAsync(
@@ -275,7 +283,7 @@ public sealed class YodeckPublisher(
             ? $" Retry after approximately {Math.Ceiling(delay.TotalSeconds)} seconds."
             : string.Empty;
         throw new InvalidOperationException(
-            $"Yodeck could not {action} ({(int)response.StatusCode}).{retryAfter} {TrimDetails(details)}".Trim());
+            $"The screen service could not {action} ({(int)response.StatusCode}).{retryAfter} {TrimDetails(details)}".Trim());
     }
 
     private static long? ReadInt64(JsonObject value, string propertyName) =>
