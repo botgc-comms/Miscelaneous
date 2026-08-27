@@ -144,6 +144,12 @@ public sealed class YodeckPublishResult
     public required DateOnly EndDate { get; init; }
 
     public required IReadOnlyList<string> Tags { get; init; }
+
+    public required bool MediaWasCreated { get; init; }
+
+    public required bool PlaylistWasChanged { get; init; }
+
+    public required int DuplicatePlaylistEntriesRemoved { get; init; }
 }
 
 

@@ -921,7 +921,27 @@
   margin-top:.25rem;
 }.poster-studio .automatic-references-link{
   justify-self:start;
-  padding:0;
+  display:inline-flex;
+  min-height:38px;
+  align-items:center;
+  gap:.55rem;
+  padding:.55rem .85rem;
+  border:1px solid #b9c8c5;
+  border-radius:10px;
+  color:var(--green);
+  background:#fff;
+  box-shadow:0 4px 10px rgba(13,53,72,.05);
+  font-size:.68rem;
+  font-weight:850;
+  cursor:pointer;
+}.poster-studio .automatic-references-link::after{
+  content:"→";
+  color:var(--gold);
+  font-size:.9rem;
+}.poster-studio .automatic-references-link:hover{
+  border-color:var(--blue);
+  color:var(--blue);
+  background:#f2f7f5;
 }.poster-studio .supporting-file-section{
   display:grid;
   gap:.65rem;

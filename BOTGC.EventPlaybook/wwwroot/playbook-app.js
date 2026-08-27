@@ -569,6 +569,7 @@
         changedBy: organiser,
         reason: '',
         memberUpdate: '',
+        interestedParties: [],
         history: []
       },
       playbookVersion: playbook?.schemaVersion ?? '1.0',
@@ -642,6 +643,7 @@
     event.lifecycle.changedBy ??= event.organiser ?? '';
     event.lifecycle.reason ??= '';
     event.lifecycle.memberUpdate ??= '';
+    event.lifecycle.interestedParties = Array.isArray(event.lifecycle.interestedParties) ? event.lifecycle.interestedParties : [];
     event.lifecycle.history = Array.isArray(event.lifecycle.history) ? event.lifecycle.history : [];
     event.answers ??= {};
     if (!event.answers['event-decision-owner'] && event.lifecycle.decisionOwner) {
@@ -711,9 +713,11 @@
       return !conditionMatches(condition.not, event);
     }
 
-    const actual = condition.eventField
-      ? condition.eventField.split('.').reduce((value, key) => value?.[key], event)
-      : getQuestionValue(condition.questionId, event);
+    const actual = condition.evidenceArea
+      ? hasCancellationEvidence(event, condition.evidenceArea)
+      : condition.eventField
+        ? condition.eventField.split('.').reduce((value, key) => value?.[key], event)
+        : getQuestionValue(condition.questionId, event);
     switch (condition.operator) {
       case 'equals':
         return actual === condition.value;
@@ -736,6 +740,68 @@
 
   function isItemVisible(item, event) {
     return conditionMatches(item.showWhen, event);
+  }
+
+  function taskStateShowsBriefingOrCommitment(taskState) {
+    if (!taskState || typeof taskState !== 'object') return false;
+    return taskState.completed === true ||
+      taskState.assignedBy === 'manual' ||
+      Boolean(taskState.notes?.trim()) ||
+      taskState.notificationStatus === 'sent';
+  }
+
+  function hasCancellationEvidence(event, area) {
+    const answerSignals = {
+      'Food & Beverage': [],
+      Communications: ['member-communications-sent'],
+      'Golf Operations': ['tee-times-reserved'],
+      Clubhouse: [],
+      Course: []
+    };
+    if ((answerSignals[area] ?? []).some(questionId => getQuestionValue(questionId, event) === true)) return true;
+
+    return Object.entries(event.taskState ?? {}).some(([taskId, taskState]) => {
+      const indexed = itemIndex.get(taskId);
+      if (!indexed?.item || indexed.module?.id === 'event-control') return false;
+      return indexed.item.responsibleArea === area && taskStateShowsBriefingOrCommitment(taskState);
+    });
+  }
+
+  function deriveCancellationStakeholders(event) {
+    const stakeholders = [];
+    const seen = new Set();
+    const add = (name, area) => {
+      const cleanedName = String(name ?? '').trim();
+      const cleanedArea = String(area ?? '').trim();
+      if (!cleanedName && !cleanedArea) return;
+      const key = `${cleanedName.toLocaleLowerCase()}|${cleanedArea.toLocaleLowerCase()}`;
+      if (seen.has(key)) return;
+      seen.add(key);
+      stakeholders.push({ name: cleanedName, area: cleanedArea });
+    };
+
+    for (const [taskId, taskState] of Object.entries(event.taskState ?? {})) {
+      const indexed = itemIndex.get(taskId);
+      if (!indexed?.item || indexed.module?.id === 'event-control' || !taskStateShowsBriefingOrCommitment(taskState)) continue;
+      add(taskState.assignee, indexed.item.responsibleArea);
+    }
+
+    const areaOwners = [
+      ['Food & Beverage', 'food-beverage-manager', 'food-beverage'],
+      ['Clubhouse', 'clubhouse', 'clubhouse'],
+      ['Golf Operations', 'golf-manager', 'golf'],
+      ['Course', 'greens', 'golf'],
+      ['Communications', 'communications', 'communications']
+    ];
+    const selectedAreas = getQuestionValue('event-affected-areas', event) ?? [];
+    for (const [area, roleId, affectedAreaValue] of areaOwners) {
+      if (!selectedAreas.includes(affectedAreaValue) && !hasCancellationEvidence(event, area)) continue;
+      add(contactForRole(roleId, event)?.name, area);
+    }
+
+    if (selectedAreas.includes('suppliers')) add('', 'External suppliers or performers');
+    if (selectedAreas.includes('staffing')) add('', 'Other staff or volunteers');
+    return stakeholders;
   }
 
   function normaliseAnswers(event) {
@@ -1117,6 +1183,7 @@
       changedBy: sourceEvent.organiser ?? '',
       reason: '',
       memberUpdate: '',
+      interestedParties: [],
       history: []
     };
     delete copy.milestoneDates.CX;
@@ -1443,7 +1510,7 @@
 
     bindEvents();
     if (state.activeView === 'artwork' && event) {
-      import('./poster-app.js?v=20260827-recovery-1')
+      import('./poster-app.js?v=20260827-yodeck-upsert-1')
         .then(module => module.mountPosterStudio({
           eventId: event.id,
           eventName: event.name,
@@ -1709,8 +1776,6 @@
         <div class="workflow-step" data-step="4"><span>4</span><strong>Share</strong><small>Screens & members</small></div>
       </section>
 
-      <div class="poster-runtime-status"><span class="status-dot"></span><strong id="generationMode">Checking generator…</strong><small>OpenAI key remains server-side</small></div>
-
       <div class="content-grid">
         <section class="panel brief-panel">
           <div class="panel-heading">
@@ -1928,14 +1993,14 @@
               </label>
               <div class="event-status-owner-grid">
                 <label class="field"><span>Decision made by</span><input id="event-status-decision-owner" type="text" value="${escapeHtml(lifecycle.decisionOwner || event.organiser)}" list="team-list" required></label>
-                <label class="field"><span>Communications owner</span><input id="event-status-communications-owner" type="text" value="${escapeHtml(lifecycle.communicationsOwner)}" list="team-list"><small>Required for cancellation or postponement.</small></label>
+                <label class="field"><span>Communications owner</span><input id="event-status-communications-owner" type="text" value="${escapeHtml(lifecycle.communicationsOwner)}" list="team-list"><small>Required when member or participant communications have already been sent or scheduled.</small></label>
               </div>
               <div id="event-status-change-fields" class="event-status-change-fields ${reasonRequired ? '' : 'hidden'}">
                 <label class="field"><span>Reason for the change</span><textarea id="event-status-reason" rows="3" ${reasonRequired ? 'required' : ''} placeholder="Record the operational reason, not just ‘organiser decision’.">${escapeHtml(lifecycle.reason)}</textarea></label>
               </div>
               <div id="event-status-member-fields" class="event-status-change-fields ${changeStatus ? '' : 'hidden'}">
                 <label class="field"><span>Authoritative member or participant update</span><textarea id="event-status-member-update" rows="5" placeholder="For example: Tonight’s event has been cancelled. Please disregard the earlier message about additional catering support. We apologise for the short notice.">${escapeHtml(lifecycle.memberUpdate)}</textarea><small>Record one agreed message here. The generated Communications task uses this as the source wording.</small></label>
-                <div class="event-change-warning"><strong>A coordinated response checklist will activate immediately.</strong><span>Operational owners will receive tasks to stand down resources, stop scheduled publicity and issue the agreed update.</span></div>
+                <div class="event-change-warning"><strong>A coordinated cancellation response will activate immediately.</strong><span>The organiser owns the overall notification task. Departmental follow-ups appear only where completed work, task notes or sent briefings indicate that something may need to be unwound.</span></div>
               </div>
             </section>
             <aside class="event-status-history">
@@ -2210,6 +2275,7 @@
     const dueDate = getDueDate(item.deadlineCode, event);
     const dueText = dueDate ? formatDate(dueDate) : item.deadlineCode ? `Configure ${item.deadlineCode}` : 'No deadline';
     const milestoneLabel = item.deadlineCode ? (MILESTONE_LABELS[item.deadlineCode] ?? item.deadlineCode) : 'No milestone';
+    const detail = getTaskDetail(item, event);
     return `
       <article class="flow-item task-item ${taskState.completed ? 'completed' : ''}" data-item-id="${item.id}">
         <div class="flow-rail task-flow-rail">
@@ -2224,7 +2290,7 @@
           <div class="task-inline-heading">
             <div>
               <div class="task-title">${escapeHtml(item.title)}</div>
-              ${item.detail ? `<p class="help-text">${escapeHtml(item.detail)}</p>` : ''}
+              ${detail ? `<p class="help-text">${escapeHtml(detail)}</p>` : ''}
             </div>
             <label class="complete-toggle task-complete-control" title="Mark task complete">
               <input type="checkbox" data-task-complete="${item.id}" ${taskState.completed ? 'checked' : ''}>
@@ -2241,6 +2307,20 @@
         </div>
       </article>
     `;
+  }
+
+  function getTaskDetail(item, event) {
+    if (item.dynamicDetail !== 'cancellation-coordination') return item.detail ?? '';
+    const interestedParties = Array.isArray(event.lifecycle?.interestedParties) ? event.lifecycle.interestedParties : [];
+    const parties = interestedParties.map(party => {
+      const name = String(party?.name ?? '').trim();
+      const area = String(party?.area ?? '').trim();
+      return name && area ? `${name} (${area})` : name || area;
+    }).filter(Boolean);
+    if (!parties.length) {
+      return `${item.detail ?? ''} Review completed and assigned work to identify anyone already briefed or committed.`.trim();
+    }
+    return `${item.detail ?? ''} The current plan identifies: ${parties.join(', ')}.`.trim();
   }
 
   function renderTaskBoard(event, tasks) {
@@ -2327,6 +2407,7 @@
     const { item, module, dueDate } = task;
     const taskState = task.state;
     const dueLabel = dueDate ? formatDate(dueDate) : item.deadlineCode ? `Deadline ${item.deadlineCode} is not configured` : 'No due date';
+    const detail = getTaskDetail(item, event);
     return `
       <article class="task-card ${taskState.completed ? 'completed' : ''}">
         <label class="task-card-check">
@@ -2348,7 +2429,7 @@
               </span>
             </div>
           </div>
-          ${item.detail ? `<p class="task-detail">${escapeHtml(item.detail)}</p>` : ''}
+          ${detail ? `<p class="task-detail">${escapeHtml(detail)}</p>` : ''}
           <div class="task-fields">
             <label>
               <span>Assigned to</span>
@@ -2820,11 +2901,13 @@
 
     const status = select.value;
     const isChangeResponse = CHANGE_RESPONSE_STATUSES.has(status);
+    const event = state.events.find(item => item.id === state.activeEventId);
+    const requiresCommunicationsOwner = isChangeResponse && event && hasCancellationEvidence(event, 'Communications');
     const needsReason = isChangeResponse || status === 'at-risk';
     reasonFields?.classList.toggle('hidden', !needsReason);
     memberFields?.classList.toggle('hidden', !isChangeResponse);
     if (reason) reason.required = needsReason;
-    if (communicationsOwner) communicationsOwner.required = isChangeResponse;
+    if (communicationsOwner) communicationsOwner.required = Boolean(requiresCommunicationsOwner);
     if (guidance) guidance.textContent = EVENT_STATUS_DEFINITIONS[status]?.summary ?? '';
   }
 
@@ -2850,12 +2933,14 @@
     const decisionOwner = document.getElementById('event-status-decision-owner')?.value.trim() ?? '';
     const communicationsOwner = document.getElementById('event-status-communications-owner')?.value.trim() ?? '';
     const isChangeResponse = CHANGE_RESPONSE_STATUSES.has(nextStatus);
+    const requiresCommunicationsOwner = isChangeResponse && hasCancellationEvidence(event, 'Communications');
     const needsReason = isChangeResponse || nextStatus === 'at-risk';
     const reason = needsReason ? document.getElementById('event-status-reason')?.value.trim() ?? '' : '';
     const memberUpdate = isChangeResponse ? document.getElementById('event-status-member-update')?.value.trim() ?? '' : '';
-    if (!EVENT_STATUS_DEFINITIONS[nextStatus] || !decisionOwner || (needsReason && !reason) || (isChangeResponse && !communicationsOwner)) return false;
+    if (!EVENT_STATUS_DEFINITIONS[nextStatus] || !decisionOwner || (needsReason && !reason) || (requiresCommunicationsOwner && !communicationsOwner)) return false;
 
     const now = new Date().toISOString();
+    const interestedParties = isChangeResponse ? deriveCancellationStakeholders(event) : [];
     const changed = nextStatus !== lifecycle.status ||
       decisionOwner !== lifecycle.decisionOwner ||
       communicationsOwner !== lifecycle.communicationsOwner ||
@@ -2868,7 +2953,8 @@
         changedBy: decisionOwner,
         communicationsOwner,
         reason,
-        memberUpdate
+        memberUpdate,
+        interestedParties: structuredClone(interestedParties)
       });
     }
 
@@ -2879,6 +2965,7 @@
     lifecycle.changedBy = decisionOwner;
     lifecycle.reason = reason;
     lifecycle.memberUpdate = memberUpdate;
+    lifecycle.interestedParties = interestedParties;
     event.answers['event-decision-owner'] = decisionOwner;
     event.answers['event-communications-owner'] = communicationsOwner;
     updateTeam(event, decisionOwner);
@@ -2889,8 +2976,9 @@
       event.milestoneDates.CX = localDateFromTimestamp(now);
       if (nextStatus === 'cancelled') event.cancelledAt = now;
       if (nextStatus === 'postponed') event.postponedAt = now;
+      const cancellationCoordinator = String(event.organiser ?? '').trim() || decisionOwner;
       const explicitOwners = [
-        ['notify-operational-leads-of-event-change', decisionOwner],
+        ['notify-operational-leads-of-event-change', cancellationCoordinator],
         ['issue-authoritative-event-change-message', communicationsOwner],
         ['stop-scheduled-event-publicity', communicationsOwner]
       ];

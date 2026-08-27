@@ -15,6 +15,7 @@ public sealed class YodeckPublisher(
 {
     private readonly YodeckOptions _options = options.Value;
     private readonly SemaphoreSlim _mediaTagGate = new(1, 1);
+    private readonly SemaphoreSlim _publishGate = new(1, 1);
 
     public bool IsConfigured => _options.IsConfigured;
 
@@ -28,40 +29,70 @@ public sealed class YodeckPublisher(
                 "Clubhouse screen sharing is not configured. Ask an administrator to complete the server connection settings.");
         }
 
+        await _publishGate.WaitAsync(cancellationToken);
+        try
+        {
+            return await UpsertAsync(command, cancellationToken);
+        }
+        finally
+        {
+            _publishGate.Release();
+        }
+    }
+
+    private async Task<YodeckPublishResult> UpsertAsync(
+        YodeckPublishCommand command,
+        CancellationToken cancellationToken)
+    {
         var playlist = await GetPlaylistAsync(cancellationToken);
         var playlistName = ReadString(playlist, "name") ?? _options.PlaylistName;
         var workspaceId = ReadNestedInt64(playlist, "workspace", "id");
+        var eventTag = BuildEventTag(command.EventId);
+        var tags = BuildMediaTags(command.Tags, eventTag);
 
-        await EnsureMediaTagsAsync(command.Tags, cancellationToken);
-        var media = await CreateMediaAsync(command, workspaceId, cancellationToken);
+        await EnsureMediaTagsAsync(tags, cancellationToken);
+        var matchingMedia = await FindEventMediaAsync(command.EventId, eventTag, workspaceId, cancellationToken);
+        var media = SelectCanonicalMedia(matchingMedia, playlist);
+        var mediaWasCreated = media is null;
+        media = mediaWasCreated
+            ? await CreateMediaAsync(command, tags, workspaceId, cancellationToken)
+            : await UpdateMediaAsync(media!, command, tags, cancellationToken);
         var mediaId = ReadInt64(media, "id")
-            ?? throw new InvalidOperationException("The screen service created the artwork but did not return its ID.");
+            ?? throw new InvalidOperationException("The screen service did not return an ID for the event artwork.");
 
+        PlaylistUpdateResult playlistUpdate;
         try
         {
             var uploadUrl = await GetUploadUrlAsync(mediaId, cancellationToken);
             await UploadImageAsync(uploadUrl, command.ImageBytes, cancellationToken);
             await CompleteUploadAsync(mediaId, uploadUrl, cancellationToken);
-            await AppendToPlaylistAsync(playlist, mediaId, cancellationToken);
+            playlistUpdate = await EnsurePlaylistContainsAsync(
+                playlist,
+                mediaId,
+                matchingMedia.Select(item => ReadInt64(item, "id")).OfType<long>().ToHashSet(),
+                cancellationToken);
         }
         catch (Exception exception)
         {
             logger.LogError(
                 exception,
-                "Yodeck publishing failed after creating media {MediaId} for event {EventId}.",
+                "Yodeck publishing failed while upserting media {MediaId} for event {EventId}.",
                 mediaId,
                 command.EventId);
             throw new InvalidOperationException(
-                $"The screen service created artwork item {mediaId}, but the upload or screen-rotation update did not finish. " +
-                "An administrator may need to remove or complete the item before retrying.",
+                $"The screen service retained artwork item {mediaId}, but the image upload or screen-rotation update did not finish. " +
+                "Try again: Event Playbook will recover by updating this same item rather than creating another one.",
                 exception);
         }
 
         logger.LogInformation(
-            "Published event {EventId} to Yodeck media {MediaId} and playlist {PlaylistId}.",
-            command.EventId,
+            "{Operation} Yodeck media {MediaId} for event {EventId}; playlist {PlaylistId} changed: {PlaylistChanged}; duplicate entries removed: {DuplicatesRemoved}.",
+            mediaWasCreated ? "Created" : "Updated",
             mediaId,
-            _options.PlaylistId);
+            command.EventId,
+            _options.PlaylistId,
+            playlistUpdate.Changed,
+            playlistUpdate.DuplicateEntriesRemoved);
 
         return new YodeckPublishResult
         {
@@ -71,8 +102,34 @@ public sealed class YodeckPublisher(
             PlaylistName = playlistName,
             StartDate = command.StartDate,
             EndDate = command.EndDate,
-            Tags = command.Tags
+            Tags = tags,
+            MediaWasCreated = mediaWasCreated,
+            PlaylistWasChanged = playlistUpdate.Changed,
+            DuplicatePlaylistEntriesRemoved = playlistUpdate.DuplicateEntriesRemoved
         };
+    }
+
+    private static IReadOnlyList<string> BuildMediaTags(
+        IReadOnlyCollection<string> requestedTags,
+        string eventTag)
+    {
+        var result = new List<string> { "event-playbook", eventTag };
+        foreach (var tag in requestedTags)
+        {
+            var value = tag.Trim();
+            if (string.IsNullOrWhiteSpace(value) || result.Contains(value, StringComparer.OrdinalIgnoreCase)) continue;
+            if (result.Count >= 20) break;
+            result.Add(value);
+        }
+        return result;
+    }
+
+    private static string BuildEventTag(string eventId)
+    {
+        var normalised = new string(eventId.Trim().ToLowerInvariant()
+            .Select(character => char.IsLetterOrDigit(character) || character == '-' ? character : '-')
+            .ToArray()).Trim('-');
+        return $"event-playbook-{normalised}";
     }
 
     private async Task EnsureMediaTagsAsync(
@@ -145,12 +202,112 @@ public sealed class YodeckPublisher(
         return await ReadObjectAsync(response, "retrieve the Clubhouse screen rotation", cancellationToken);
     }
 
-    private async Task<JsonObject> CreateMediaAsync(
-        YodeckPublishCommand command,
+    private async Task<List<JsonObject>> FindEventMediaAsync(
+        string eventId,
+        string eventTag,
         long? workspaceId,
         CancellationToken cancellationToken)
     {
-        var payload = new JsonObject
+        var taggedMedia = await GetMediaByTagAsync(eventTag, workspaceId, cancellationToken);
+        var exactTaggedMatches = taggedMedia
+            .Where(item => HasTag(item, eventTag) || MatchesEventDescription(item, eventId))
+            .ToList();
+        if (exactTaggedMatches.Count > 0) return exactTaggedMatches;
+
+        // Media created by earlier Event Playbook versions did not have the
+        // per-event tag, but did record the event ID in the description.
+        var legacyMedia = await GetMediaByTagAsync("event-playbook", workspaceId, cancellationToken);
+        return legacyMedia.Where(item => MatchesEventDescription(item, eventId)).ToList();
+    }
+
+    private async Task<List<JsonObject>> GetMediaByTagAsync(
+        string tag,
+        long? workspaceId,
+        CancellationToken cancellationToken)
+    {
+        var results = new List<JsonObject>();
+        var visitedPages = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var workspaceFilter = workspaceId is > 0 ? $"&workspace={workspaceId.Value}" : string.Empty;
+        string? pageUrl = $"media?limit=100&media_type=image&tags={Uri.EscapeDataString(tag)}{workspaceFilter}";
+
+        while (!string.IsNullOrWhiteSpace(pageUrl) && visitedPages.Add(pageUrl))
+        {
+            using var response = await SendYodeckAsync(HttpMethod.Get, pageUrl, content: null, cancellationToken);
+            var page = await ReadObjectAsync(response, "look for existing event artwork", cancellationToken);
+            if (page["results"] is JsonArray pageResults)
+            {
+                results.AddRange(pageResults.OfType<JsonObject>());
+            }
+            pageUrl = ReadString(page, "next");
+        }
+
+        return results;
+    }
+
+    private static JsonObject? SelectCanonicalMedia(
+        IReadOnlyCollection<JsonObject> candidates,
+        JsonObject playlist)
+    {
+        if (candidates.Count == 0) return null;
+        var playlistMediaIds = playlist["items"] is JsonArray items
+            ? items.OfType<JsonObject>()
+                .Where(item => string.Equals(ReadString(item, "type"), "media", StringComparison.OrdinalIgnoreCase))
+                .Select(item => ReadInt64(item, "id"))
+                .OfType<long>()
+                .ToHashSet()
+            : [];
+
+        return candidates
+            .OrderByDescending(item => ReadInt64(item, "id") is { } id && playlistMediaIds.Contains(id))
+            .ThenByDescending(item => ReadTimestamp(item, "last_modified"))
+            .ThenByDescending(item => ReadInt64(item, "id") ?? 0)
+            .First();
+    }
+
+    private async Task<JsonObject> CreateMediaAsync(
+        YodeckPublishCommand command,
+        IReadOnlyCollection<string> tags,
+        long? workspaceId,
+        CancellationToken cancellationToken)
+    {
+        var payload = BuildMediaPayload(command, tags);
+        payload["arguments"] = new JsonObject();
+
+        if (workspaceId is > 0)
+        {
+            payload["workspace"] = workspaceId.Value;
+        }
+
+        using var content = JsonContent.Create(payload);
+        using var response = await SendYodeckAsync(
+            HttpMethod.Post,
+            "media",
+            content,
+            cancellationToken);
+        return await ReadObjectAsync(response, "create the clubhouse screen artwork item", cancellationToken);
+    }
+
+    private async Task<JsonObject> UpdateMediaAsync(
+        JsonObject existingMedia,
+        YodeckPublishCommand command,
+        IReadOnlyCollection<string> tags,
+        CancellationToken cancellationToken)
+    {
+        var mediaId = ReadInt64(existingMedia, "id")
+            ?? throw new InvalidOperationException("The existing screen artwork did not include its ID.");
+        using var content = JsonContent.Create(BuildMediaPayload(command, tags));
+        using var response = await SendYodeckAsync(
+            HttpMethod.Patch,
+            $"media/{mediaId}",
+            content,
+            cancellationToken);
+        return await ReadObjectAsync(response, "update the existing clubhouse screen artwork item", cancellationToken);
+    }
+
+    private JsonObject BuildMediaPayload(
+        YodeckPublishCommand command,
+        IReadOnlyCollection<string> tags) =>
+        new()
         {
             ["name"] = command.MediaName,
             ["media_origin"] = new JsonObject
@@ -159,9 +316,9 @@ public sealed class YodeckPublisher(
                 ["source"] = "local",
                 ["format"] = null
             },
-            ["description"] = $"Event Playbook artwork for {command.EventName} ({command.EventId}).",
+            ["description"] = $"Event Playbook event id: {command.EventId}. Artwork for {command.EventName}.",
             ["default_duration"] = Math.Clamp(_options.MediaDurationSeconds, 5, 300),
-            ["tags"] = new JsonArray(command.Tags
+            ["tags"] = new JsonArray(tags
                 .Select(tag => (JsonNode?)JsonValue.Create(tag))
                 .ToArray()),
             ["availability_schedule"] = new JsonObject
@@ -178,23 +335,8 @@ public sealed class YodeckPublisher(
                         ["days_of_week"] = "1111111"
                     }
                 }
-            },
-            ["arguments"] = new JsonObject()
+            }
         };
-
-        if (workspaceId is > 0)
-        {
-            payload["workspace"] = workspaceId.Value;
-        }
-
-        using var content = JsonContent.Create(payload);
-        using var response = await SendYodeckAsync(
-            HttpMethod.Post,
-            "media",
-            content,
-            cancellationToken);
-        return await ReadObjectAsync(response, "create the clubhouse screen artwork item", cancellationToken);
-    }
 
     private async Task<string> GetUploadUrlAsync(long mediaId, CancellationToken cancellationToken)
     {
@@ -241,13 +383,18 @@ public sealed class YodeckPublisher(
         await EnsureSuccessAsync(response, "complete the clubhouse screen artwork upload", cancellationToken);
     }
 
-    private async Task AppendToPlaylistAsync(
+    private async Task<PlaylistUpdateResult> EnsurePlaylistContainsAsync(
         JsonObject playlist,
         long mediaId,
+        IReadOnlySet<long> matchingMediaIds,
         CancellationToken cancellationToken)
     {
         var items = new JsonArray();
         var highestPriority = 0L;
+        var canonicalItemFound = false;
+        var changed = false;
+        var duplicateEntriesRemoved = 0;
+        var duration = Math.Clamp(_options.MediaDurationSeconds, 5, 300);
 
         if (playlist["items"] is JsonArray existingItems)
         {
@@ -255,18 +402,55 @@ public sealed class YodeckPublisher(
             {
                 var normalised = NormalisePlaylistItem(existing);
                 if (normalised is null) continue;
+
+                var itemType = ReadString(normalised, "type");
+                var itemId = ReadInt64(normalised, "id");
+                if (string.Equals(itemType, "media", StringComparison.OrdinalIgnoreCase) && itemId is { } id)
+                {
+                    if (id == mediaId)
+                    {
+                        if (canonicalItemFound)
+                        {
+                            duplicateEntriesRemoved += 1;
+                            changed = true;
+                            continue;
+                        }
+                        canonicalItemFound = true;
+                        if ((ReadInt64(normalised, "duration") ?? 0) != duration)
+                        {
+                            normalised["duration"] = duration;
+                            changed = true;
+                        }
+                    }
+                    else if (matchingMediaIds.Contains(id))
+                    {
+                        duplicateEntriesRemoved += 1;
+                        changed = true;
+                        continue;
+                    }
+                }
+
                 items.Add(normalised);
                 highestPriority = Math.Max(highestPriority, ReadInt64(normalised, "priority") ?? 0);
             }
         }
 
-        items.Add(new JsonObject
+        if (!canonicalItemFound)
         {
-            ["id"] = mediaId,
-            ["priority"] = highestPriority + 1,
-            ["duration"] = Math.Clamp(_options.MediaDurationSeconds, 5, 300),
-            ["type"] = "media"
-        });
+            items.Add(new JsonObject
+            {
+                ["id"] = mediaId,
+                ["priority"] = highestPriority + 1,
+                ["duration"] = duration,
+                ["type"] = "media"
+            });
+            changed = true;
+        }
+
+        if (!changed)
+        {
+            return new PlaylistUpdateResult(false, 0);
+        }
 
         using var content = JsonContent.Create(new JsonObject { ["items"] = items });
         using var response = await SendYodeckAsync(
@@ -274,7 +458,8 @@ public sealed class YodeckPublisher(
             $"playlists/{_options.PlaylistId}",
             content,
             cancellationToken);
-        await EnsureSuccessAsync(response, "add the artwork to the Clubhouse screen rotation", cancellationToken);
+        await EnsureSuccessAsync(response, "update the Clubhouse screen rotation", cancellationToken);
+        return new PlaylistUpdateResult(true, duplicateEntriesRemoved);
     }
 
     private async Task<HttpResponseMessage> SendYodeckAsync(
@@ -354,6 +539,24 @@ public sealed class YodeckPublisher(
     private static long? ReadNestedInt64(JsonObject value, string objectName, string propertyName) =>
         value[objectName] is JsonObject nested ? ReadInt64(nested, propertyName) : null;
 
+    private static DateTimeOffset ReadTimestamp(JsonObject value, string propertyName) =>
+        DateTimeOffset.TryParse(ReadString(value, propertyName), out var timestamp)
+            ? timestamp
+            : DateTimeOffset.MinValue;
+
+    private static bool HasTag(JsonObject value, string expectedTag) =>
+        value["tags"] is JsonArray tags && tags.Any(tag =>
+            tag is JsonValue textTag &&
+            textTag.TryGetValue<string>(out var tagName) &&
+            string.Equals(tagName, expectedTag, StringComparison.OrdinalIgnoreCase));
+
+    private static bool MatchesEventDescription(JsonObject value, string eventId)
+    {
+        var description = ReadString(value, "description") ?? string.Empty;
+        return description.Contains($"Event Playbook event id: {eventId}.", StringComparison.OrdinalIgnoreCase) ||
+            description.Contains($"({eventId}).", StringComparison.OrdinalIgnoreCase);
+    }
+
     private static string? ReadString(JsonObject value, string propertyName) =>
         value[propertyName] is JsonValue node && node.TryGetValue<string>(out var text) ? text : null;
 
@@ -362,4 +565,6 @@ public sealed class YodeckPublisher(
         var compact = details.Replace('\r', ' ').Replace('\n', ' ').Trim();
         return compact.Length <= 400 ? compact : compact[..400] + "…";
     }
+
+    private sealed record PlaylistUpdateResult(bool Changed, int DuplicateEntriesRemoved);
 }

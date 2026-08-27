@@ -60,6 +60,7 @@ function createSession(key, context) {
         campaignStatus: { text: 'Not started', mode: 'neutral' },
         refinementVisible: false,
         publishVisible: false,
+        screenPublication: null,
         errorMessage: null,
         generationPromise: null,
         generationAbortController: null,
@@ -168,7 +169,7 @@ function serialiseSession(session) {
 
     return {
         key: session.key,
-        schemaVersion: 2,
+        schemaVersion: 3,
         savedAt: new Date().toISOString(),
         selectedStyleId: session.selectedStyleId,
         selectedOutputIds: [...session.selectedOutputIds],
@@ -200,7 +201,8 @@ function serialiseSession(session) {
             : session.campaignStatus,
         errorMessage: generationWasInterrupted ? INTERRUPTED_GENERATION_MESSAGE : session.errorMessage,
         refinementVisible: session.refinementVisible,
-        publishVisible: session.publishVisible
+        publishVisible: session.publishVisible,
+        screenPublication: session.screenPublication
     };
 }
 
@@ -262,6 +264,16 @@ function applyStoredSession(session, stored) {
     }
     if (typeof stored.refinementVisible === 'boolean') session.refinementVisible = stored.refinementVisible;
     if (typeof stored.publishVisible === 'boolean') session.publishVisible = stored.publishVisible;
+    if (stored.screenPublication && typeof stored.screenPublication === 'object' && Number(stored.screenPublication.mediaId) > 0) {
+        session.screenPublication = {
+            mediaId: Number(stored.screenPublication.mediaId),
+            mediaName: String(stored.screenPublication.mediaName ?? ''),
+            destinationName: String(stored.screenPublication.destinationName ?? ''),
+            startDate: String(stored.screenPublication.startDate ?? ''),
+            endDate: String(stored.screenPublication.endDate ?? ''),
+            updatedAt: String(stored.screenPublication.updatedAt ?? '')
+        };
+    }
 
     if (session.artworkByOutput.size > 0) {
         const selectedVariants = session.config.outputs.filter(output =>
@@ -855,6 +867,10 @@ function restoreSessionToDom(session) {
     elements.refinementPanel.classList.toggle('hidden', !session.refinementVisible);
     elements.sharePanel.classList.toggle('hidden', !session.publishVisible);
     elements.shareTopButton.disabled = !session.publishVisible;
+    if (elements.shareMessage && session.screenPublication) {
+        const publication = session.screenPublication;
+        elements.shareMessage.textContent = `“${publication.mediaName}” is scheduled on ${publication.destinationName} from ${publication.startDate} to ${publication.endDate}. Sending again will update the same screen item.`;
+    }
     if (!session.isGenerating && elements.generationElapsed) {
         elements.generationElapsed.textContent = session.errorMessage
             ? 'The form is unlocked and ready to try again.'
@@ -1622,7 +1638,9 @@ function openScreenShareDialog() {
     elements.yodeckEndDate.value = eventDate;
     elements.publishDialogMessage.textContent = '';
     elements.publishDialogMessage.className = 'poster-publish-dialog-message';
-    elements.publishDialogConfirm.textContent = 'Send to clubhouse screens';
+    elements.publishDialogConfirm.textContent = session.screenPublication
+        ? 'Update clubhouse screens'
+        : 'Send to clubhouse screens';
 
     const screenConnection = session.config?.clubhouseScreens ?? {};
     elements.yodeckPlaylistName.textContent = screenConnection.destinationName || 'Clubhouse screens';
@@ -1631,6 +1649,9 @@ function openScreenShareDialog() {
         ? '<span></span><div><strong>Clubhouse screen connection ready</strong><small>Artwork is sent securely from Event Playbook.</small></div>'
         : '<span></span><div><strong>Clubhouse screen connection unavailable</strong><small>Ask an administrator to complete the server connection before sharing.</small></div>';
     elements.publishDialogConfirm.disabled = !screenConnection.configured;
+    if (screenConnection.configured && session.screenPublication) {
+        elements.publishDialogMessage.textContent = 'This event already has a clubhouse-screen item. Sending again will replace its image, name, tags and dates without adding another playlist entry.';
+    }
 
     elements.publishDialog.showModal();
     requestAnimationFrame(() => elements.yodeckMediaName.focus());
@@ -1697,10 +1718,23 @@ async function sendToClubhouseScreens() {
         });
         const result = await readApiResponse(response);
         const screenResult = result.clubhouseScreens;
-        elements.shareMessage.textContent = `“${screenResult.artworkName}” will appear on ${screenResult.destinationName} from ${screenResult.startDate} to ${screenResult.endDate}.`;
-        elements.publishDialogMessage.textContent = `Sent successfully. The artwork is now scheduled for ${screenResult.destinationName}.`;
+        const wasUpdated = screenResult.operation === 'updated';
+        session.screenPublication = {
+            mediaId: Number(screenResult.artworkId),
+            mediaName: screenResult.artworkName,
+            destinationName: screenResult.destinationName,
+            startDate: screenResult.startDate,
+            endDate: screenResult.endDate,
+            updatedAt: new Date().toISOString()
+        };
+        elements.shareMessage.textContent = wasUpdated
+            ? `“${screenResult.artworkName}” was updated on ${screenResult.destinationName}; its schedule now runs from ${screenResult.startDate} to ${screenResult.endDate}.`
+            : `“${screenResult.artworkName}” will appear on ${screenResult.destinationName} from ${screenResult.startDate} to ${screenResult.endDate}.`;
+        elements.publishDialogMessage.textContent = wasUpdated
+            ? `Updated successfully. No additional screen-library or playlist item was created.`
+            : `Sent successfully. The artwork is now scheduled for ${screenResult.destinationName}.`;
         elements.publishDialogMessage.className = 'poster-publish-dialog-message success';
-        elements.publishDialogConfirm.textContent = 'Sent to clubhouse screens';
+        elements.publishDialogConfirm.textContent = wasUpdated ? 'Clubhouse screens updated' : 'Sent to clubhouse screens';
 
         const selectedOutputs = getSelectedOutputs(session);
         const squareOutput = selectedOutputs

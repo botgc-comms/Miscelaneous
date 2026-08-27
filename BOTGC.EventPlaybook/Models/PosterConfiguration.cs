@@ -26,6 +26,8 @@ public sealed class PromptingConfiguration
 {
     public required string CreativeDirectorInstruction { get; init; }
 
+    public required string ColourQualityDirection { get; init; }
+
     public required List<string> GlobalImageRules { get; init; }
 
     public required List<string> GlobalExclusions { get; init; }
@@ -71,6 +73,8 @@ public sealed class PosterStyleDefinition
 
     public required string StyleDirection { get; init; }
 
+    public required string ColourDirection { get; init; }
+
     public required List<string> VisualLanguage { get; init; }
 
     public required List<string> Mood { get; init; }
@@ -91,6 +95,8 @@ public sealed class PosterStyleVariationDefinition
     public string? ReferenceWork { get; init; }
 
     public required string StyleDirection { get; init; }
+
+    public string? ColourDirection { get; init; }
 }
 
 public sealed class PosterOutputDefinition

@@ -5,7 +5,8 @@
     "strapline": "Event Playbook"
   },
   "prompting": {
-    "creativeDirectorInstruction": "You are the senior creative director and image-prompt writer for Burton-on-Trent Golf Club's Event Playbook. Convert the supplied structured event, organiser description, style, output, exact poster copy and organiser data into one sophisticated prompt for GPT Image 2. The organiser's event description is the PRIMARY source of truth for the visual concept. Read it as a creative brief: extract its concrete people, animals, costumes, activities, entertainment, food, setting, jokes, props and unusual features, then deliberately stage the most distinctive of those elements in the finished poster. A vivid or eccentric description must produce a vivid or eccentric visual concept. Never reduce a richly described event to generic golf imagery simply because it is taking place at a golf club. The image model must create the COMPLETE FINISHED EVENT POSTER, integrating campaign artwork and typography into one coherent design. Make the scene concrete, specific and visually directed rather than merely paraphrasing the input. The event concept drives subject matter; the style preset controls treatment only. Treat style names such as 'Cartoon & Playful', 'Photorealistic' and 'Vintage Golf Poster' as internal metadata that must never appear as words, labels, captions or signs in the poster. The supplied club name, event title, event date and price are authoritative copy: instruct the image model to render them exactly, preserving spelling, punctuation, numbers and currency. You may devise concise supporting campaign copy, a subtitle and a call to action when they materially strengthen the poster, but do not invent event facts. Design typography as part of the visual language of the selected style rather than as a generic software overlay. Typography safety is non-negotiable: every required word, date, price, subtitle and call-to-action must be fully visible with generous breathing room. Never place any letterform, text box, badge containing text or essential copy against an image edge. Treat the outer edge as a no-type zone and keep complete words and their containers well inside the output-specific safe area, accounting for any downstream centre-crop. Use clear hierarchy, large readable display text and purposeful poster furniture only when it strengthens the concept. Prefer one strong focal scene, clear storytelling, deliberate depth, expressive detail and premium composition. Before finalising the prompt, perform a silent visual-coverage check: every highly distinctive element from the organiser description should either be visible in the main scene or intentionally represented as a meaningful supporting detail. When adapting an existing primary poster, preserve campaign identity, exact required copy and recognisable artwork while recomposing intentionally for the new aspect ratio rather than inventing a different campaign. Return only the final image-generation or image-edit prompt as plain text with useful section headings. Do not return analysis, JSON, markdown fences or commentary.",
+    "creativeDirectorInstruction": "You are the senior creative director and image-prompt writer for Burton-on-Trent Golf Club's Event Playbook. Convert the supplied structured event, organiser description, style, output, exact poster copy and organiser data into one sophisticated prompt for GPT Image 2. The organiser's event description is the PRIMARY source of truth for the visual concept. Read it as a creative brief: extract its concrete people, animals, costumes, activities, entertainment, food, setting, jokes, props and unusual features, then deliberately stage the most distinctive of those elements in the finished poster. A vivid or eccentric description must produce a vivid or eccentric visual concept. Never reduce a richly described event to generic golf imagery simply because it is taking place at a golf club. The image model must create the COMPLETE FINISHED EVENT POSTER, integrating campaign artwork and typography into one coherent design. Make the scene concrete, specific and visually directed rather than merely paraphrasing the input. The event concept drives subject matter; the style preset controls treatment only. Treat style names such as 'Cartoon & Playful', 'Photorealistic' and 'Vintage Golf Poster' as internal metadata that must never appear as words, labels, captions or signs in the poster. The supplied club name, event title, event date and price are authoritative copy: instruct the image model to render them exactly, preserving spelling, punctuation, numbers and currency. You may devise concise supporting campaign copy, a subtitle and a call to action when they materially strengthen the poster, but do not invent event facts. Design typography as part of the visual language of the selected style rather than as a generic software overlay. Typography safety is non-negotiable: every required word, date, price, subtitle and call-to-action must be fully visible with generous breathing room. Never place any letterform, text box, badge containing text or essential copy against an image edge. Treat the outer edge as a no-type zone and keep complete words and their containers well inside the output-specific safe area, accounting for any downstream centre-crop. Colour quality is also non-negotiable: translate the selected style into a luminous, colour-rich, high-contrast palette appropriate to that style, and explicitly reject beige, muddy, washed-out or monotonous colour grading unless the organiser has deliberately requested it. Use clear hierarchy, large readable display text and purposeful poster furniture only when it strengthens the concept. Prefer one strong focal scene, clear storytelling, deliberate depth, expressive detail and premium composition. Before finalising the prompt, perform a silent visual-coverage check: every highly distinctive element from the organiser description should either be visible in the main scene or intentionally represented as a meaningful supporting detail. When adapting an existing primary poster, preserve campaign identity, exact required copy and recognisable artwork while recomposing intentionally for the new aspect ratio rather than inventing a different campaign. Return only the final image-generation or image-edit prompt as plain text with useful section headings. Do not return analysis, JSON, markdown fences or commentary.",
+    "colourQualityDirection": "Create an engaging, luminous and colour-rich poster with crisp tonal separation, clean highlights and multiple clearly distinct hues. Use at least two vivid accent colours in addition to the dominant colour family, with enough brightness and contrast to command attention on a digital screen. Do not default to beige, tan, sepia, parchment, muddy brown, dusty desaturation, grey-green wash, faded vintage grading, low-contrast haze or a near-monochrome palette. Warmth must come from light and colour relationships, not an overall brown or cream cast. Even formal, heritage, night-time and period-inspired treatments must retain clean colour, bright focal accents and strong separation. Only use an intentionally monochrome or heavily muted palette when the organiser explicitly requests it; even then, retain one vivid accent and strong contrast.",
     "globalImageRules": [
       "Create the complete finished event poster, including integrated typography and campaign artwork.",
       "The generated image is the finished artwork and must occupy the entire requested frame edge to edge. Never depict it as an inset page, floating poster, bordered print, framed sheet, presentation mockup, canvas-within-a-canvas or smaller design over a blurred duplicate background.",
@@ -22,6 +23,8 @@
       "Use typography, banners, plaques, ribbons, badges or signboards only when they belong naturally to the selected visual style and improve the hierarchy.",
       "Keep important subjects and essential text comfortably inside safe edges so the poster can be intentionally recomposed into other formats without clipping or cropping content.",
       "Make the result feel commissioned for a premium golf-club event rather than generic stock imagery, concept art or a templated software graphic.",
+      "Use a visually engaging, luminous and colour-rich palette with crisp light-dark separation and at least two clearly distinct vivid accent colours appropriate to the selected style.",
+      "Keep formal and vintage treatments sophisticated through jewel tones, clean period inks and controlled contrast rather than beige, sepia or general desaturation.",
       "Use supporting detail to enrich the main story without competing with the title, date or central event concept.",
       "If organiser instructions conflict with the event's defining concept, preserve the defining concept and interpret the organiser instruction in a compatible way."
     ],
@@ -34,7 +37,9 @@
       "Do not invent dense blocks of small text simply to make the result look like a poster.",
       "Do not literalise prompt-writing terminology, metadata labels or generation instructions as visual content.",
       "Do not allow decorative poster furniture to overwhelm the central event story or essential information.",
-      "Do not ignore, minimise or omit the event's most unusual organiser-supplied details in favour of safer generic golf imagery."
+      "Do not ignore, minimise or omit the event's most unusual organiser-supplied details in favour of safer generic golf imagery.",
+      "Do not use beige, tan, sepia, parchment, muddy brown, grey-green, washed-out, faded or low-contrast colour grading as the default visual treatment.",
+      "Do not make the poster monochrome or nearly monochrome unless the organiser explicitly requests it."
     ]
   },
   "events": [
@@ -191,10 +196,11 @@
       "name": "Cartoon & Playful",
       "summary": "Whimsical hand-drawn storybook artwork with warmth, character and humour.",
       "styleDirection": "Create a richly observed whimsical British storybook illustration: hand-drawn and characterful, with the warmth and craft of traditional children's picture-book art adapted into a premium golf-club campaign. The treatment should feel genuinely illustrated rather than like a generic cartoon filter.",
+      "colourDirection": "Use a bright hand-painted palette with clean greens and blues plus cheerful coral, red, orange or sunshine-yellow accents. Preserve pigment texture without allowing the washes to become dusty, brown or faded; any paper tone must remain a minor clean neutral rather than casting the whole image beige.",
       "visualLanguage": [
         "Loose but confident hand-drawn ink outlines with natural variation rather than mechanically perfect vector edges.",
         "Textured watercolour and gouache-like washes with visible paper-like warmth and subtle pigment variation.",
-        "Warm slightly muted natural colours led by rich greens, earthy browns, creams, mosses and restrained golden yellows.",
+        "Luminous natural colour led by fresh greens and blues, balanced with clear coral, vermilion, orange or sunshine-yellow accents and clean light neutrals.",
         "Expressive faces, hands and body language with gently exaggerated proportions and perspective.",
         "Detailed trees, leaves, branches, grass and environmental storytelling that rewards closer viewing.",
         "Strong silhouette and readable staging so the central joke remains clear from across a room.",
@@ -214,32 +220,32 @@
         {
           "id": "loose-ink-watercolour-comedy",
           "name": "Loose ink-and-watercolour comedy",
-          "styleDirection": "Stage the event as a lively observational cartoon drawn with fast, broken ink lines and translucent watercolour washes. Use off-kilter perspective, expressive physical comedy and many small background reactions, while keeping the main action and poster hierarchy immediately readable."
+          "styleDirection": "Stage the event as a lively observational cartoon drawn with fast, broken ink lines and translucent watercolour washes. Use off-kilter perspective, expressive physical comedy and many small background reactions, while keeping the main action and poster hierarchy immediately readable. Keep the washes luminous with fresh cobalt, leaf green, coral and golden-yellow accents rather than a brown or faded cast."
         },
         {
           "id": "cut-paper-character-collage",
           "name": "Cut-paper character collage",
-          "styleDirection": "Build the scene from irregular hand-cut paper shapes, painted tissue textures, torn edges and layered shadows. Give the characters simple but highly expressive silhouettes and use overlapping collage planes to create depth without becoming slick vector art."
+          "styleDirection": "Build the scene from irregular hand-cut paper shapes, painted tissue textures, torn edges and layered shadows. Give the characters simple but highly expressive silhouettes and use overlapping collage planes to create depth without becoming slick vector art. Use several saturated painted-paper colours with crisp contrast between layers."
         },
         {
           "id": "bold-screenprint-cartoon",
           "name": "Bold screen-print cartoon",
-          "styleDirection": "Use chunky hand-drawn contours, a restricted four-colour screen-print palette, visible ink overlap and bold comic staging. Favour one exaggerated action, graphic shadows and strong negative space rather than a densely painted storybook scene."
+          "styleDirection": "Use chunky hand-drawn contours, a vivid four-colour screen-print palette, visible ink overlap and bold comic staging. Select high-chroma complementary inks rather than muted heritage tones. Favour one exaggerated action, graphic shadows and strong negative space rather than a densely painted storybook scene."
         },
         {
           "id": "soft-chalk-pastel-story",
           "name": "Soft chalk-and-pastel story",
-          "styleDirection": "Render the event in soft chalk, wax crayon and pastel with grainy paper texture, rounded forms and warm diffuse light. Make the humour gentle and character-led, using colour blocking and expressive poses rather than hard outlines."
+          "styleDirection": "Render the event in soft chalk, wax crayon and pastel with grainy paper texture, rounded forms and warm diffuse light. Use clear turquoise, coral, sunny yellow, violet and fresh green colour blocks rather than dusty beige pastels. Make the humour gentle and character-led, using colour blocking and expressive poses rather than hard outlines."
         },
         {
           "id": "newspaper-ink-caricature",
           "name": "Newspaper ink caricature",
-          "styleDirection": "Use witty editorial-cartoon drawing with energetic brush-and-pen marks, selective flat colour, purposeful white space and sharply observed gestures. Exaggerate props and poses for humour while keeping people affectionate rather than grotesque."
+          "styleDirection": "Use witty editorial-cartoon drawing with energetic brush-and-pen marks, selective vivid flat colour, purposeful white space and sharply observed gestures. Use at least three clean spot colours so the result feels lively rather than sparse or monochrome. Exaggerate props and poses for humour while keeping people affectionate rather than grotesque."
         },
         {
           "id": "folk-gouache-tableau",
           "name": "Folk-art gouache tableau",
-          "styleDirection": "Create a decorative hand-painted folk tableau using opaque gouache, flattened perspective, patterned foliage and rhythmic groups of figures. Let repeated shapes and border-like natural details build charm, but keep all typography separate, spacious and completely legible."
+          "styleDirection": "Create a decorative hand-painted folk tableau using opaque, colour-rich gouache, flattened perspective, patterned foliage and rhythmic groups of figures. Combine emerald, cobalt, vermilion and golden-yellow accents with clean tonal contrast. Let repeated shapes and border-like natural details build charm, but keep all typography separate, spacious and completely legible."
         }
       ]
     },
@@ -248,9 +254,10 @@
       "name": "Serious & Formal",
       "summary": "Elegant, restrained and suitable for premium dinners, presentations and formal occasions.",
       "styleDirection": "Create a refined premium editorial campaign image with understated traditional golf-club character, balanced composition and sophisticated visual restraint.",
+      "colourDirection": "Keep the design elegant but visibly colour-rich: use luminous jewel tones such as sapphire, emerald, burgundy, plum or teal with rich gold and crisp ivory accents. Use bright highlights and deep clean shadows for separation; sophistication must not become beige, grey, brown, dim or desaturated.",
       "visualLanguage": [
         "Controlled, elegant composition with clear hierarchy and purposeful negative space.",
-        "Rich but restrained colour, natural materials and subtle atmospheric lighting.",
+        "Rich jewel-toned colour, natural materials and luminous atmospheric lighting with crisp focal highlights.",
         "Premium editorial finish rather than corporate brochure imagery."
       ],
       "mood": [
@@ -265,12 +272,12 @@
         {
           "id": "candlelit-editorial",
           "name": "Candlelit editorial",
-          "styleDirection": "Use low-key candlelit or lamplit atmosphere, deep natural shadows, restrained warm highlights and an editorial composition inspired by premium hospitality photography. Keep faces and materials believable and the mood intimate rather than theatrical."
+          "styleDirection": "Use candlelit or lamplit atmosphere, deep clean shadows, luminous amber highlights and contrasting sapphire, emerald or burgundy accents in an editorial composition inspired by premium hospitality photography. Keep faces and materials believable, colourful and intimate rather than dim or theatrical."
         },
         {
           "id": "architectural-minimalism",
           "name": "Architectural minimalism",
-          "styleDirection": "Build a calm, symmetrical composition around the clubhouse architecture or course landscape, using precise lines, generous negative space and a limited stone, cream, navy and green palette. Human figures should be small, purposeful accents rather than the dominant subject."
+          "styleDirection": "Build a calm, symmetrical composition around the clubhouse architecture or course landscape, using precise lines and generous negative space. Use crisp ivory and slate as supporting neutrals with saturated navy, emerald and one lively burgundy or gold accent. Human figures should be small, purposeful accents rather than the dominant subject."
         },
         {
           "id": "heritage-still-life",
@@ -279,18 +286,18 @@
         },
         {
           "id": "monochrome-documentary",
-          "name": "Monochrome documentary",
-          "styleDirection": "Use refined black-and-white documentary photography with subtle film grain, controlled contrast and one restrained brand-colour accent. Capture a candid, emotionally credible moment rather than a posed group portrait."
+          "name": "Jewel-tone documentary",
+          "styleDirection": "Use refined full-colour documentary photography with subtle film grain, natural skin tones, deep sapphire or emerald shadows and bright event-specific accents. Capture a candid, emotionally credible moment rather than a posed group portrait; do not convert the scene to black and white or near-monochrome."
         },
         {
           "id": "painterly-evening",
           "name": "Painterly evening",
-          "styleDirection": "Create a sophisticated painterly scene at dusk with broad controlled brushwork, atmospheric depth and a restrained heritage palette. Let pools of warm interior light contrast with cool landscape tones and preserve generous space for the event hierarchy."
+          "styleDirection": "Create a sophisticated painterly scene at dusk with broad controlled brushwork and atmospheric depth. Let luminous amber and coral interior light contrast with saturated cobalt, violet and emerald landscape tones, preserving generous space for the event hierarchy without a muddy brown dusk filter."
         },
         {
           "id": "ceremonial-portrait",
           "name": "Ceremonial portrait",
-          "styleDirection": "Compose a dignified environmental group portrait with formal but natural posture, carefully balanced spacing and subtle references to the event. Use soft directional light and rich, quiet colour; avoid rows of people staring like a corporate team photograph."
+          "styleDirection": "Compose a dignified environmental group portrait with formal but natural posture, carefully balanced spacing and subtle references to the event. Use soft directional light, clean skin tones and rich jewel-colour accents with visible tonal separation; avoid rows of people staring like a corporate team photograph."
         }
       ]
     },
@@ -299,6 +306,7 @@
       "name": "Photorealistic",
       "summary": "Authentic people, clubhouse and course detail with cinematic photography-style lighting.",
       "styleDirection": "Create premium photorealistic campaign photography with believable people, authentic golf-course or clubhouse detail, natural materials and cinematic but credible light. The image should look deliberately art-directed rather than like generic stock photography.",
+      "colourDirection": "Use believable but colour-rich photography: fresh course greens, clear sky or blue-hour blues, accurate skin tones, clean whites and vivid event-specific clothing, props or lighting accents. Keep highlights luminous and blacks clean; avoid grey-brown cinematic grading, muddy shadows, desaturation and beige haze.",
       "visualLanguage": [
         "Naturalistic anatomy, clothing, equipment and course detail.",
         "Cinematic depth, controlled highlights and realistic atmospheric perspective.",
@@ -316,7 +324,7 @@
         {
           "id": "golden-hour-reportage",
           "name": "Golden-hour reportage",
-          "styleDirection": "Photograph the event as candid golden-hour reportage with long natural shadows, backlit atmosphere and unforced human interaction. Use a slightly wider environmental frame so the Club setting contributes strongly to the story."
+          "styleDirection": "Photograph the event as candid golden-hour reportage with long natural shadows, luminous backlight and unforced human interaction. Retain fresh greens, clear blues and vivid clothing or event accents instead of applying an overall amber-brown filter. Use a slightly wider environmental frame so the Club setting contributes strongly to the story."
         },
         {
           "id": "crisp-sports-action",
@@ -326,12 +334,12 @@
         {
           "id": "cinematic-night-event",
           "name": "Cinematic night event",
-          "styleDirection": "Create a credible night-time or blue-hour photograph with practical lights, controlled colour contrast, atmospheric haze and cinematic depth. Protect skin tones and real detail; do not turn the scene into fantasy CGI."
+          "styleDirection": "Create a credible night-time or blue-hour photograph with rich cobalt and indigo ambience, bright warm practical lights, vivid event accents, controlled colour contrast and cinematic depth. Protect skin tones and real detail; do not turn the scene into dim grey imagery or fantasy CGI."
         },
         {
           "id": "intimate-environmental-portrait",
           "name": "Intimate environmental portrait",
-          "styleDirection": "Focus on one or two believable people in an environmental portrait, using shallow depth of field, subtle window or open-shade light and meaningful event details around them. Prioritise expression and quiet narrative over spectacle."
+          "styleDirection": "Focus on one or two believable people in an environmental portrait, using shallow depth of field, luminous window or open-shade light and colourful event details around them. Prioritise expression and quiet narrative over spectacle while retaining clear, fresh colour and separation from the background."
         },
         {
           "id": "elevated-course-spectacle",
@@ -341,7 +349,7 @@
         {
           "id": "clubhouse-lifestyle-documentary",
           "name": "Clubhouse lifestyle documentary",
-          "styleDirection": "Create warm interior lifestyle reportage with authentic candid groups, natural mixed light, tactile clubhouse materials and small event-specific details. The scene should feel observed during a real occasion, never staged as generic hospitality stock photography."
+          "styleDirection": "Create colourful interior lifestyle reportage with authentic candid groups, luminous natural mixed light, tactile clubhouse materials and vivid event-specific details. Balance warm practical light with fresh blues, greens or jewel-toned accents so the room never collapses into a brown or beige cast. The scene should feel observed during a real occasion, never staged as generic hospitality stock photography."
         }
       ]
     },
@@ -350,9 +358,10 @@
       "name": "Modern Graphic",
       "summary": "Bold contemporary campaign artwork with clean shapes and strong visual hierarchy.",
       "styleDirection": "Create a bold contemporary editorial illustration with simplified graphic forms, strong silhouette, confident negative space and a distinctive modern campaign identity.",
+      "colourDirection": "Use a bright contemporary complementary or triadic palette with at least three clearly distinct high-chroma hues, crisp light-dark contrast and clean neutrals. Let the event suggest the palette, but avoid safe corporate blue-grey, beige fields, weak duotones and dusty desaturation.",
       "visualLanguage": [
         "Clean simplified geometry combined with enough texture to prevent a sterile corporate appearance.",
-        "Controlled contemporary colour palette with one or two strong visual accents.",
+        "Confident contemporary colour palette with multiple distinct high-chroma accents and crisp tonal contrast.",
         "Dynamic cropping and strong directional movement where appropriate."
       ],
       "mood": [
@@ -367,12 +376,12 @@
         {
           "id": "geometric-paper-cut",
           "name": "Geometric paper cut",
-          "styleDirection": "Construct the event from bold geometric paper-cut layers with tactile fibres, crisp shadows and a focused palette. Use large intersecting shapes to frame the subject and make the composition feel physical rather than like flat software icons."
+          "styleDirection": "Construct the event from bold geometric paper-cut layers with tactile fibres, crisp shadows and a vivid complementary palette. Use large intersecting shapes in at least three distinct colours to frame the subject and make the composition feel physical rather than like flat software icons."
         },
         {
           "id": "swiss-editorial-grid",
           "name": "Swiss editorial grid",
-          "styleDirection": "Use an asymmetric editorial grid, disciplined negative space, cropped photographic or illustrated fragments and a restrained palette with one vivid accent. Keep the image confident and poster-like without rendering placeholder typography."
+          "styleDirection": "Use an asymmetric editorial grid, disciplined negative space, cropped photographic or illustrated fragments and a crisp triadic palette with several vivid accents. Keep the image confident, colourful and poster-like without rendering placeholder typography."
         },
         {
           "id": "bold-linocut",
@@ -382,17 +391,17 @@
         {
           "id": "duotone-screenprint",
           "name": "Duotone screen print",
-          "styleDirection": "Use a high-contrast duotone screen-print treatment with halftone texture, purposeful misregistration and oversized simplified forms. Let one strong subject dominate while secondary detail appears through pattern and tone."
+          "styleDirection": "Use a high-contrast screen-print treatment built from three vivid complementary inks, halftone texture, purposeful misregistration and oversized simplified forms. Let one strong subject dominate while secondary detail appears through pattern and tone; do not let the reduced ink set feel dull or monochrome."
         },
         {
           "id": "abstract-editorial-collage",
           "name": "Abstract editorial collage",
-          "styleDirection": "Combine torn photographic fragments, painted marks, textured colour fields and simple drawn symbols into a sophisticated editorial collage. Make the event subject unmistakable despite the abstraction and preserve a clean text-safe structure."
+          "styleDirection": "Combine torn photographic fragments, vivid painted marks, saturated textured colour fields and simple drawn symbols into a sophisticated editorial collage. Make the event subject unmistakable despite the abstraction and preserve a clean text-safe structure."
         },
         {
           "id": "dynamic-isometric-scene",
           "name": "Dynamic isometric scene",
-          "styleDirection": "Build a stylised isometric scene with simplified architecture, course features and tiny active figures arranged as one lively system. Use dimensional shading and unusual spatial storytelling while avoiding generic tech-diagram aesthetics."
+          "styleDirection": "Build a stylised isometric scene with simplified architecture, course features and tiny active figures arranged as one lively system. Use a bright varied palette, crisp dimensional shading and unusual spatial storytelling while avoiding generic blue-grey tech-diagram aesthetics."
         }
       ]
     },
@@ -400,11 +409,12 @@
       "id": "vintage-golf",
       "name": "Vintage Golf Poster",
       "summary": "Classic tournament-poster character with a tasteful nostalgic feel.",
-      "styleDirection": "Create a painterly illustration with the visual character of classic mid-century sporting travel and tournament art: restrained print texture, confident shapes, natural period-inspired colour and timeless golf atmosphere. Keep it sophisticated rather than kitsch.",
+      "styleDirection": "Create a painterly illustration with the visual character of classic mid-century sporting travel and tournament art: clean print texture, confident shapes, freshly restored period-inspired colour and timeless golf atmosphere. Keep it sophisticated rather than kitsch.",
+      "colourDirection": "Treat this as a freshly restored colour print, not an aged artefact. Use saturated period inks such as teal, emerald, ultramarine, vermilion, coral, mustard or rich gold, supported by clean warm white. Preserve clear tonal separation and bright focal accents; never use an overall sepia, parchment, beige or faded-brown wash.",
       "visualLanguage": [
         "Painterly shapes and subtle print-like texture without fake damage or excessive ageing.",
         "Traditional sporting composition with strong landscape depth and confident human figures.",
-        "Muted heritage palette balanced by clear focal contrast."
+        "Freshly restored period palette with saturated ink colour, clean warm whites and clear focal contrast."
       ],
       "mood": [
         "Timeless, established and quietly nostalgic.",
@@ -419,22 +429,22 @@
         {
           "id": "railway-travel-lithograph",
           "name": "1930s railway travel lithograph",
-          "styleDirection": "Use monumental landscape shapes, airbrushed gradients, simplified heroic figures and the refined colour economy of a 1930s British railway travel lithograph. Keep surfaces clean and restored rather than artificially damaged."
+          "styleDirection": "Use monumental landscape shapes, luminous airbrushed gradients, simplified heroic figures and the refined but saturated ink colours of a freshly restored 1930s British railway travel lithograph. Combine strong teal, cobalt, vermilion and golden accents; keep surfaces clean rather than artificially aged."
         },
         {
           "id": "fifties-tournament-painting",
           "name": "1950s tournament painting",
-          "styleDirection": "Create a mid-century tournament illustration with confident painted figures, sunlit course depth, broad brush shapes and restrained period colour. Stage the moment like a classic sporting programme cover, without copying any existing poster."
+          "styleDirection": "Create a mid-century tournament illustration with confident painted figures, sunlit course depth, broad brush shapes and vivid restored period colour. Use fresh course greens, clear blue, coral-red and golden accents. Stage the moment like a classic sporting programme cover, without copying any existing poster."
         },
         {
           "id": "public-information-illustration",
           "name": "Public-information illustration",
-          "styleDirection": "Use the direct visual clarity of a 1940s public-information illustration: strong diagonal staging, economical painted realism, purposeful gestures and a limited utilitarian palette. Keep the tone welcoming rather than propagandistic."
+          "styleDirection": "Use the direct visual clarity of a 1940s public-information illustration: strong diagonal staging, economical painted realism, purposeful gestures and three or four bold spot colours with clean contrast. Keep the tone welcoming rather than propagandistic or drab."
         },
         {
           "id": "art-deco-sporting",
           "name": "Art Deco sporting",
-          "styleDirection": "Use elegant Art Deco geometry, streamlined athletic silhouettes, stepped framing and a luxurious but limited palette of cream, deep green, navy and gold. Let repeated angles and arcs create movement without relying on ornamental text."
+          "styleDirection": "Use elegant Art Deco geometry, streamlined athletic silhouettes and stepped framing. Use crisp ivory as a minor neutral with luminous emerald, sapphire, rich gold and a vivid coral or burgundy accent. Let repeated angles and arcs create movement without relying on ornamental text."
         },
         {
           "id": "sixties-offset-colour",
@@ -444,7 +454,7 @@
         {
           "id": "heritage-woodcut",
           "name": "Heritage woodcut",
-          "styleDirection": "Render the event as a sophisticated colour woodcut with visible carved grain, layered ink blocks, strong landscape rhythm and sturdy human silhouettes. Use a natural heritage palette and crisp visual hierarchy rather than fake antique distress."
+          "styleDirection": "Render the event as a sophisticated colour woodcut with visible carved grain, layered saturated ink blocks, strong landscape rhythm and sturdy human silhouettes. Use fresh emerald, cobalt, orange-red and golden inks with crisp visual hierarchy rather than fake antique distress."
         }
       ]
     },
@@ -453,6 +463,7 @@
       "name": "Children's Book",
       "summary": "A well-known historical children's illustrator is selected by name for each new campaign.",
       "styleDirection": "Create an original premium children's picture-book illustration with strong visual storytelling, expressive characters and handcrafted warmth. For each campaign, use the separately supplied named historical illustrator as the explicit style reference and follow that selection consistently across every output.",
+      "colourDirection": "Keep the selected illustration language recognisable while making the event poster luminous, cheerful and colour-rich. Use several clearly distinct hues and a bright focal accent; paper, pencil or ink texture may soften edges but must not turn the complete image beige, brown, grey or faded. Even line-led variations should use purposeful vivid spot colour and strong contrast.",
       "visualLanguage": [
         "Make the event readable as one clear narrative moment with expressive gesture, environmental detail and a strong focal silhouette.",
         "Use convincingly handmade marks, materials and surface texture rather than a generic digital cartoon filter.",
@@ -475,28 +486,28 @@
           "name": "Delicate countryside watercolour",
           "artistName": "Beatrix Potter",
           "referenceWork": "The Tale of Peter Rabbit",
-          "styleDirection": "Use delicate natural-history watercolour, fine restrained outlines, accurately observed animals and plants, pale paper, muted botanical colour and a classic English countryside atmosphere. Keep the scale intimate, elegant and gently humorous."
+          "styleDirection": "Use delicate natural-history watercolour, fine restrained outlines, accurately observed animals and plants, clean light paper and luminous botanical colour. Use fresh leaf green, sky blue, coral and golden flower accents for a classic English countryside atmosphere that feels bright rather than faded. Keep the scale intimate, elegant and gently humorous."
         },
         {
           "id": "classic-pen-and-ink",
           "name": "Classic pen and ink",
           "artistName": "E. H. Shepard",
           "referenceWork": "Winnie-the-Pooh",
-          "styleDirection": "Use traditional expressive pen-and-ink drawing with economical hatching, lyrical countryside observation and selective soft colour washes. Favour believable gesture, quiet humour and spacious page-like composition."
+          "styleDirection": "Use traditional expressive pen-and-ink drawing with economical hatching, lyrical countryside observation and selective but vivid colour washes in fresh green, blue, coral and yellow. Favour believable gesture, quiet humour and spacious page-like composition without allowing the page to feel monochrome."
         },
         {
           "id": "ornate-fairytale",
           "name": "Ornate fairytale",
           "artistName": "Arthur Rackham",
           "referenceWork": "Peter Pan in Kensington Gardens",
-          "styleDirection": "Use intricately drawn trees, roots, foliage and fantastical environmental detail with sinuous ink contours, subdued watercolour and a slightly mysterious fairytale atmosphere. Make the magic richly crafted and atmospheric rather than frightening."
+          "styleDirection": "Use intricately drawn trees, roots, foliage and fantastical environmental detail with sinuous ink contours and luminous jewel-toned watercolour. Contrast deep emerald and violet shadows with bright turquoise, coral and gold accents for a slightly mysterious fairytale atmosphere. Make the magic richly crafted and atmospheric rather than frightening or muddy."
         },
         {
           "id": "victorian-engraving",
           "name": "Victorian engraving",
           "artistName": "John Tenniel",
           "referenceWork": "Alice's Adventures in Wonderland",
-          "styleDirection": "Use crisp black-and-white Victorian engraving language: meticulous cross-hatching, formal line work, eccentric proportions and theatrical staging. Keep the result highly legible and allow optional restrained spot colour only when it strengthens the hierarchy."
+          "styleDirection": "Use crisp Victorian engraving language with meticulous dark cross-hatching, formal line work, eccentric proportions and theatrical staging, then enliven the complete poster with bold flat spot colours in emerald, cobalt, vermilion and gold. Keep the result highly legible and graphic; do not leave it black-and-white or nearly monochrome."
         },
         {
           "id": "warm-simple-line",
@@ -545,7 +556,7 @@
           "name": "Graphic silhouette",
           "artistName": "Jan Pieńkowski",
           "referenceWork": "Meg and Mog",
-          "styleDirection": "Use bold black silhouettes, sharp profile shapes and a very limited palette of striking flat colours. Create theatrical visual clarity through contrast, cut-paper edges and carefully staged negative space."
+          "styleDirection": "Use bold black silhouettes, sharp profile shapes and a compact but vivid palette of at least three striking flat colours. Create theatrical visual clarity through saturated colour contrast, cut-paper edges and carefully staged negative space."
         },
         {
           "id": "jewel-toned-painterly",
@@ -559,7 +570,7 @@
           "name": "Mid-century travel story",
           "artistName": "M. Sasek",
           "referenceWork": "This Is London",
-          "styleDirection": "Use a charming mid-century illustrated travel-book aesthetic with simplified architecture, elongated figures, hand-painted gouache texture, playful perspective and a restrained period palette. Make the venue feel distinctive, stylish and full of local character."
+          "styleDirection": "Use a charming mid-century illustrated travel-book aesthetic with simplified architecture, elongated figures, hand-painted gouache texture, playful perspective and a bright restored period palette of turquoise, coral, leaf green and sunny yellow. Make the venue feel distinctive, stylish and full of local character."
         }
       ]
     }

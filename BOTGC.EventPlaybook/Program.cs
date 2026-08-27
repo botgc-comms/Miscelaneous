@@ -428,6 +428,9 @@ app.MapPost("/api/poster/publish", async (
                 destinationName = published.PlaylistName,
                 startDate = published.StartDate.ToString("yyyy-MM-dd"),
                 endDate = published.EndDate.ToString("yyyy-MM-dd"),
+                operation = published.MediaWasCreated ? "created" : "updated",
+                playlistChanged = published.PlaylistWasChanged,
+                duplicatePlaylistEntriesRemoved = published.DuplicatePlaylistEntriesRemoved,
                 published.Tags
             }
         });

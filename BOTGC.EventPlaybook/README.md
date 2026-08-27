@@ -200,7 +200,7 @@ It retains:
 - derivative formats generated from the primary campaign;
 - each image appearing as soon as it becomes available;
 - regeneration using organiser feedback;
-- real Yodeck media-library upload, tagging, availability dates and Clubhouse-playlist publishing;
+- real Yodeck media-library upload, event-specific tagging, availability dates and idempotent Clubhouse-playlist publishing that updates the same media item on repeat sends;
 - a future membership-email publishing seam.
 
 The Poster Studio now also accepts event name, date and description from the active Event Playbook event. A generic custom-event definition allows newly created Playbook events to use Poster Studio before they have their own permanent event-catalogue scene recipe.
@@ -246,7 +246,7 @@ Every event now has a shared lifecycle status: **Provisional**, **Confirmed**, *
 
 The always-available **Event control** planning module asks about viability triggers, affected teams, minimum attendance and operational commitments. Its Commitment Decision and Final Go/No-Go tasks explicitly gate F&B cover, purchasing, suppliers and outward communications.
 
-Changing an event to Cancelled or Postponed activates the dynamic CX Change Response milestone and a coordinated task set. Depending on the event answers, it assigns immediate actions to Event Coordination, Food & Beverage, Clubhouse, Golf Operations and Communications to notify leads, stand down resources, stop scheduled publicity and screen artwork, issue one authoritative participant update and record the operational impact. The event remains open while those tasks are completed; catalogue closure is a separate archival action.
+Changing an event to Cancelled or Postponed activates the dynamic CX Change Response milestone. One immediate coordination task is owned by the event organiser and identifies the people and teams that the current plan says must be checked. More specific Food & Beverage, Clubhouse, Golf Operations and Communications tasks appear only where completed tasks, task notes, sent briefings or an explicit recorded arrangement show that work may need to be unwound. This avoids creating a blanket checklist for departments that never acted on the event. The event remains open while those tasks are completed; catalogue closure is a separate archival action.
 
 The new-event screen explicitly explains that a detailed event description gives the AI better context for both artwork generation and future planning assistance.
 

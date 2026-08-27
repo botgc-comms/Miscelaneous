@@ -58,6 +58,7 @@ public sealed class OpenAiPromptService(
             {
                 metadataName = style.Name,
                 style.StyleDirection,
+                style.ColourDirection,
                 style.VisualLanguage,
                 style.Mood,
                 style.Avoid,
@@ -70,7 +71,8 @@ public sealed class OpenAiPromptService(
                         namedIllustrator = styleVariation.ArtistName,
                         referenceWork = styleVariation.ReferenceWork,
                         explicitStyleInstruction = BuildExplicitVariationInstruction(styleVariation, isVariant: false),
-                        styleVariation.StyleDirection
+                        styleVariation.StyleDirection,
+                        styleVariation.ColourDirection
                     }
             },
             output = new
@@ -99,6 +101,7 @@ public sealed class OpenAiPromptService(
                     : "This is an internal Club asset. Do not show the Club name, BOTGC initials, a crest, shield, monogram, wordmark or any other Club logo or branding anywhere in the poster.",
                 textSafetyRule = "Every required word must be fully visible. Obey the output-specific safe margins as a hard boundary. No glyph, word, date, price, text box, text badge or text-bearing panel may touch, cross or be clipped by any image edge. Reflow or reduce type size before violating the safe area.",
                 supportingCopyRule = "You may devise a short event-specific subtitle, explanatory line and call to action when they improve the poster. Keep them concise, relevant and consistent with the event description.",
+                colourQualityRule = configuration.Prompting.ColourQualityDirection,
                 stylePresetNameIsMetadataOnly = true
             },
             supportingReferences = DescribeSupportingImages(
@@ -146,7 +149,7 @@ public sealed class OpenAiPromptService(
         var brief = new
         {
             task = "Create the final image-edit prompt for adapting the supplied DIGITAL-SCREEN MASTER poster into another format. The result is another version of the same campaign, with only the compositional differences required by the target dimensions.",
-            sourceImageInstruction = "The first attached image, named primary-campaign-artwork.png, is the authoritative key reference and approved finished campaign master. Preserve its subjects, campaign idea, art direction, palette, visual details, typography character and exact required text. Supporting images are secondary references only. Recompose the complete design for the new frame rather than cropping the master or inventing a new concept.",
+            sourceImageInstruction = "The first attached image, named primary-campaign-artwork.png, is the authoritative key reference and approved finished campaign master. Preserve its subjects, campaign idea, art direction, colour relationships, visual details, typography character and exact required text. Preserve or improve the master's colour richness and tonal separation; never mute, desaturate or wash out its palette. Supporting images are secondary references only. Recompose the complete design for the new frame rather than cropping the master or inventing a new concept.",
             brand = request.IncludeClubBranding ? configuration.Brand.Name : null,
             eventData = new
             {
@@ -160,6 +163,7 @@ public sealed class OpenAiPromptService(
             {
                 metadataName = style.Name,
                 style.StyleDirection,
+                style.ColourDirection,
                 style.VisualLanguage,
                 style.Mood,
                 style.Avoid,
@@ -172,7 +176,8 @@ public sealed class OpenAiPromptService(
                         namedIllustrator = styleVariation.ArtistName,
                         referenceWork = styleVariation.ReferenceWork,
                         explicitStyleInstruction = BuildExplicitVariationInstruction(styleVariation, isVariant: true),
-                        styleVariation.StyleDirection
+                        styleVariation.StyleDirection,
+                        styleVariation.ColourDirection
                     }
             },
             targetOutput = new
@@ -199,6 +204,7 @@ public sealed class OpenAiPromptService(
                     : "Remove and do not reproduce any Club name, BOTGC initials, crest, shield, monogram, wordmark or other Club logo that may be present in the source artwork.",
                 textSafetyRule = "Recompose every text element fully inside the target output safe margins. No glyph, word, date, price, text box, text badge or text-bearing panel may be cropped, clipped or touch an image edge. Reduce or reflow typography as needed.",
                 adaptationContinuityRule = "The target must read as the same campaign at a different dimension: retain the master's recognisable scene and hierarchy, then reposition, reflow or resize elements only as needed. Never solve the aspect-ratio change with a crop.",
+                colourQualityRule = configuration.Prompting.ColourQualityDirection,
                 supportingCopyRule = "Preserve useful supporting campaign copy from the primary poster unless the target format requires a shorter version for legibility.",
                 stylePresetNameIsMetadataOnly = true
             },
@@ -344,6 +350,14 @@ public sealed class OpenAiPromptService(
         }
         AppendList(builder, style.VisualLanguage);
         builder.AppendLine();
+        builder.AppendLine("COLOUR DIRECTION — REQUIRED");
+        builder.AppendLine(configuration.Prompting.ColourQualityDirection);
+        builder.AppendLine(style.ColourDirection);
+        if (!string.IsNullOrWhiteSpace(styleVariation?.ColourDirection))
+        {
+            builder.AppendLine(styleVariation.ColourDirection);
+        }
+        builder.AppendLine();
         builder.AppendLine("MOOD AND CHARACTER");
         AppendList(builder, style.Mood);
         AppendList(builder, eventDefinition.SceneRecipe.MoodAndHumour);
@@ -425,7 +439,7 @@ public sealed class OpenAiPromptService(
         var builder = new StringBuilder();
         builder.AppendLine($"Adapt the supplied approved '{eventDefinition.Name}' campaign artwork for {output.Name}.");
         builder.AppendLine("The first attached image, primary-campaign-artwork.png, is the authoritative digital-screen master and dominant key reference. Any other attached files are supporting references only.");
-        builder.AppendLine("Preserve the same campaign concept, main characters or subjects, visual language, palette, mood and storytelling. The result must obviously belong to the same campaign.");
+        builder.AppendLine("Preserve the same campaign concept, main characters or subjects, visual language, colour relationships, mood and storytelling. Preserve or improve the master's colour richness and tonal separation; never mute, desaturate or wash out its palette. The result must obviously belong to the same campaign.");
         builder.AppendLine("Recompose the scene and typography deliberately for the new frame. Never crop, zoom or clip the source to fill the target. Reposition, reflow or reduce elements so every required word remains complete and comfortably inside the target safe area.");
         builder.AppendLine($"Target composition: {output.Width}:{output.Height}. {output.CompositionGuidance}");
         AppendList(builder, output.ReservedOverlayZones);
@@ -439,6 +453,14 @@ public sealed class OpenAiPromptService(
             builder.AppendLine(BuildExplicitVariationInstruction(styleVariation, isVariant: true));
             builder.AppendLine("Use the same selected art direction consistently for this adapted format:");
             builder.AppendLine(styleVariation.StyleDirection);
+        }
+
+        builder.AppendLine("COLOUR DIRECTION — REQUIRED");
+        builder.AppendLine(configuration.Prompting.ColourQualityDirection);
+        builder.AppendLine(style.ColourDirection);
+        if (!string.IsNullOrWhiteSpace(styleVariation?.ColourDirection))
+        {
+            builder.AppendLine(styleVariation.ColourDirection);
         }
 
         if (!string.IsNullOrWhiteSpace(request.AdditionalInstructions))

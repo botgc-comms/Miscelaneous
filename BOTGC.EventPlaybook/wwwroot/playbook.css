@@ -531,7 +531,6 @@ button{cursor:pointer}
 /* POSTER STUDIO IS A VIEW IN THIS APP */
 .main-content.poster-studio{margin-top:22px!important}
 .poster-studio .workflow-strip{width:100%!important;margin:0 0 15px!important;padding:12px 15px!important;border:1px solid var(--border)!important;border-radius:11px!important;background:#fff!important;box-shadow:var(--shadow)!important}
-.poster-runtime-status{display:inline-flex!important;align-items:center!important;gap:7px!important;margin:0 0 13px!important;padding:6px 9px!important;border:1px solid #cfe0d9!important;border-radius:999px!important;color:var(--green)!important;background:#f2f8f5!important;font-size:.58rem!important}
 .poster-studio .content-grid{display:grid!important;width:100%!important;grid-template-columns:minmax(480px,.85fr) minmax(560px,1.15fr)!important;gap:16px!important;align-items:start!important}
 .poster-studio .panel{border:1px solid var(--border)!important;border-radius:14px!important;background:#fff!important;box-shadow:var(--shadow)!important}
 .poster-studio .brief-panel,.poster-studio .campaign-panel,.poster-studio .generated-artwork-panel,.poster-studio .publish-panel{padding:17px!important}

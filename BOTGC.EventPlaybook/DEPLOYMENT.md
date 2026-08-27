@@ -30,7 +30,7 @@ Render automatically rebuilds and deploys the service whenever a commit reaches 
 | `OPENAI_IMAGE_QUALITY` | No | Defaults to `high`. |
 | `OPENAI_PROMPT_MODEL` | No | Defaults to `gpt-5.6`. |
 | `YODECK_API_TOKEN` | For Yodeck publishing | Server-side token created under Yodeck **Account Settings → Advanced Settings → API Tokens**. |
-| `YODECK_PLAYLIST_ID` | For Yodeck publishing | Numeric ID of the existing Clubhouse playlist to which event artwork is appended. |
+| `YODECK_PLAYLIST_ID` | For Yodeck publishing | Numeric ID of the existing Clubhouse playlist in which each event's artwork is created or updated. |
 | `YODECK_API_TOKEN_LABEL` | No | Label sent in Yodeck's `Token label:value` authorization header. Defaults to `event-playbook`. |
 | `YODECK_PLAYLIST_NAME` | No | Friendly playlist name shown in the publishing dialog. Defaults to `Clubhouse`. |
 | `YODECK_MEDIA_DURATION_SECONDS` | No | Display duration of each poster within the playlist. Defaults to 15 seconds. |
@@ -38,7 +38,7 @@ Render automatically rebuilds and deploys the service whenever a commit reaches 
 
 Secrets belong in Render's Environment settings. Do not commit them to Git, the Dockerfile or `render.yaml`.
 
-The Yodeck token requires permission to view and change both **Media** and **Playlists** in the workspace that contains the Clubhouse playlist. Publishing creates a tagged PNG media item with an availability window from the chosen start date through 23:59:59 on the event date, uploads the file using Yodeck's signed upload URL, and appends the item to the existing playlist. Existing playlist items are preserved.
+The Yodeck token requires permission to view and change both **Media** and **Playlists** in the workspace that contains the Clubhouse playlist. The first send creates a tagged PNG media item with an availability window from the chosen start date through 23:59:59 on the event date and adds it to the existing playlist. Later sends for the same Event Playbook event update that media item's image, metadata and dates in place. Event Playbook also avoids duplicate playlist references and can recognise media created by earlier versions from the event ID stored in its description. Existing unrelated playlist items are preserved.
 
 ## Local password-protected testing
 

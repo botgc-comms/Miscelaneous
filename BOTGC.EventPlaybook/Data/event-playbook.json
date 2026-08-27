@@ -401,8 +401,9 @@
             {
               "id": "notify-operational-leads-of-event-change",
               "type": "task",
-              "title": "Notify every affected operational lead of the cancellation or postponement",
-              "detail": "Use the Playbook status, reason and agreed wording as the single source of truth. Confirm receipt with F&B, Clubhouse, Golf, Communications and any other affected owner.",
+              "title": "Coordinate the cancellation or postponement and confirm every interested party has been told",
+              "detail": "The event organiser owns this action. Use the recorded status, reason and agreed wording as the single source of truth, then confirm receipt with everyone already briefed or committed.",
+              "dynamicDetail": "cancellation-coordination",
               "deadlineCode": "CX",
               "showWhen": { "all": [{ "eventField": "lifecycle.status", "operator": "in", "value": ["cancelled", "postponed"] }] },
               "responsibleArea": "Event Coordination",
@@ -412,12 +413,12 @@
             {
               "id": "stand-down-food-beverage",
               "type": "task",
-              "title": "Stand down Food & Beverage cover and review event-specific orders or preparation",
-              "detail": "Confirm what can be cancelled, reused or returned and record any unavoidable cost.",
+              "title": "Review and, where possible, cancel additional Food & Beverage cover, extended hours and event-specific preparation",
+              "detail": "This task appears because the plan records F&B work or a briefing. Confirm what was actually arranged, what can be cancelled, reused or returned, and any unavoidable cost.",
               "deadlineCode": "CX",
               "showWhen": { "all": [
                 { "eventField": "lifecycle.status", "operator": "in", "value": ["cancelled", "postponed"] },
-                { "questionId": "catering-involved", "operator": "equals", "value": true }
+                { "evidenceArea": "Food & Beverage", "operator": "equals", "value": true }
               ] },
               "responsibleArea": "Food & Beverage",
               "defaultOwnerRoleId": "food-beverage-manager",
@@ -426,11 +427,12 @@
             {
               "id": "release-clubhouse-arrangements",
               "type": "task",
-              "title": "Release or revise clubhouse rooms, service arrangements and event setup",
+              "title": "Review and release or revise clubhouse rooms, service arrangements and event setup",
+              "detail": "This task appears because completed work, notes or a sent briefing indicate that clubhouse arrangements may already exist.",
               "deadlineCode": "CX",
               "showWhen": { "all": [
                 { "eventField": "lifecycle.status", "operator": "in", "value": ["cancelled", "postponed"] },
-                { "questionId": "clubhouse-involved", "operator": "equals", "value": true }
+                { "evidenceArea": "Clubhouse", "operator": "equals", "value": true }
               ] },
               "responsibleArea": "Clubhouse",
               "defaultOwnerRoleId": "clubhouse",
@@ -439,11 +441,15 @@
             {
               "id": "release-golf-arrangements",
               "type": "task",
-              "title": "Release or revise tee times, competition arrangements and course preparation",
+              "title": "Review and release or revise tee times, competition arrangements and course preparation",
+              "detail": "This task appears because a tee-time reservation, completed work, notes or a sent briefing indicates that golf or course arrangements may already exist.",
               "deadlineCode": "CX",
               "showWhen": { "all": [
                 { "eventField": "lifecycle.status", "operator": "in", "value": ["cancelled", "postponed"] },
-                { "questionId": "golf-involved", "operator": "equals", "value": true }
+                { "any": [
+                  { "evidenceArea": "Golf Operations", "operator": "equals", "value": true },
+                  { "evidenceArea": "Course", "operator": "equals", "value": true }
+                ] }
               ] },
               "responsibleArea": "Golf Operations",
               "defaultOwnerRoleId": "golf-manager",
@@ -457,7 +463,7 @@
               "deadlineCode": "CX",
               "showWhen": { "all": [
                 { "eventField": "lifecycle.status", "operator": "in", "value": ["cancelled", "postponed"] },
-                { "questionId": "communications-involved", "operator": "equals", "value": true }
+                { "evidenceArea": "Communications", "operator": "equals", "value": true }
               ] },
               "responsibleArea": "Communications",
               "defaultOwnerRoleId": "communications",
@@ -470,26 +476,11 @@
               "detail": "Use the wording recorded with the event status. It should replace, not compete with, earlier operational or organiser messages.",
               "deadlineCode": "CX",
               "showWhen": { "all": [
-                { "eventField": "lifecycle.status", "operator": "in", "value": ["cancelled", "postponed"] }
+                { "eventField": "lifecycle.status", "operator": "in", "value": ["cancelled", "postponed"] },
+                { "evidenceArea": "Communications", "operator": "equals", "value": true }
               ] },
               "responsibleArea": "Communications",
               "defaultOwnerRoleId": "communications",
-              "source": "refined"
-            },
-            {
-              "id": "stand-down-other-event-commitments",
-              "type": "task",
-              "title": "Stand down other staff, volunteers and suppliers and record unavoidable commitments",
-              "deadlineCode": "CX",
-              "showWhen": { "all": [
-                { "eventField": "lifecycle.status", "operator": "in", "value": ["cancelled", "postponed"] },
-                { "any": [
-                  { "questionId": "additional-operational-commitments", "operator": "equals", "value": true },
-                  { "questionId": "staffing-involved", "operator": "equals", "value": true }
-                ] }
-              ] },
-              "responsibleArea": "Event Coordination",
-              "defaultOwnerRoleId": "event-coordinator",
               "source": "refined"
             },
             {
