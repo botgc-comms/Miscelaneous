@@ -1195,7 +1195,8 @@ async function createFinishedPoster(output, artworkDataUrl, includeClubBranding 
     const context = canvas.getContext('2d');
     const image = await loadImage(artworkDataUrl);
 
-    drawArtworkFitted(context, image, canvas.width, canvas.height);
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    drawImageCover(context, image, canvas.width, canvas.height);
     if (includeClubBranding) {
         await drawClubBranding(context, canvas.width, canvas.height);
     }
@@ -1241,50 +1242,6 @@ async function drawClubBranding(context, width, height) {
     context.shadowColor = 'transparent';
     context.drawImage(mark, x, y, markWidth, markHeight);
     context.restore();
-}
-
-function drawArtworkFitted(context, image, width, height) {
-    context.clearRect(0, 0, width, height);
-
-    // Soft club-brand backdrop so we preserve the entire generated poster
-    // without centre-cropping away the text at the edges.
-    const gradient = context.createLinearGradient(0, 0, width, height);
-    gradient.addColorStop(0, '#f4f7f6');
-    gradient.addColorStop(1, '#e6efed');
-    context.fillStyle = gradient;
-    context.fillRect(0, 0, width, height);
-
-    const fitted = calculateContainRect(image.width, image.height, width, height, 0.94);
-
-    // Optional atmospheric background fill using the same artwork, heavily softened.
-    context.save();
-    if ('filter' in context) {
-        context.filter = 'blur(26px) saturate(88%)';
-    }
-    context.globalAlpha = 0.18;
-    drawImageCover(context, image, width, height);
-    context.restore();
-
-    context.save();
-    context.fillStyle = 'rgba(255,255,255,0.72)';
-    roundRect(context, fitted.x - 10, fitted.y - 10, fitted.width + 20, fitted.height + 20, 18);
-    context.fill();
-    context.shadowColor = 'rgba(13,53,72,0.12)';
-    context.shadowBlur = 30;
-    context.shadowOffsetY = 10;
-    context.drawImage(image, fitted.x, fitted.y, fitted.width, fitted.height);
-    context.restore();
-}
-
-function calculateContainRect(sourceWidth, sourceHeight, targetWidth, targetHeight, scaleLimit = 1) {
-    const widthScale = targetWidth / sourceWidth;
-    const heightScale = targetHeight / sourceHeight;
-    const scale = Math.min(widthScale, heightScale) * scaleLimit;
-    const width = Math.round(sourceWidth * scale);
-    const height = Math.round(sourceHeight * scale);
-    const x = Math.round((targetWidth - width) / 2);
-    const y = Math.round((targetHeight - height) / 2);
-    return { x, y, width, height };
 }
 
 function drawImageCover(context, image, width, height) {

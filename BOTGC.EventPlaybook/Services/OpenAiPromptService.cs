@@ -85,6 +85,7 @@ public sealed class OpenAiPromptService(
             posterContent = new
             {
                 renderAsFinishedPoster = true,
+                fullFrameRule = "The generated image is the finished artwork itself. Fill the complete requested canvas edge to edge; do not show a poster, sheet, border, frame or mockup inside the image.",
                 clubName = request.IncludeClubBranding ? configuration.Brand.Name : null,
                 clubBrandingRequested = request.IncludeClubBranding,
                 eventTitle = eventDefinition.Name,
@@ -186,6 +187,7 @@ public sealed class OpenAiPromptService(
             posterContent = new
             {
                 renderAsFinishedPoster = true,
+                fullFrameRule = "The adapted image is the finished target artwork itself. Recompose it edge to edge for the complete target canvas; never place the source poster inside a frame, border, mat, mockup or blurred duplicate background.",
                 clubName = request.IncludeClubBranding ? configuration.Brand.Name : null,
                 clubBrandingRequested = request.IncludeClubBranding,
                 eventTitle = eventDefinition.Name,
