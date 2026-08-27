@@ -452,17 +452,27 @@ app.MapGet("/api/playbook/config", (IWebHostEnvironment environment) =>
     return Results.Text(File.ReadAllText(path), "application/json");
 });
 
+var notificationOutboxLock = new SemaphoreSlim(1, 1);
+
 app.MapPost("/api/tasks/notifications", async (System.Text.Json.JsonElement payload, IWebHostEnvironment environment, CancellationToken cancellationToken) =>
 {
-    var outboxDirectory = Path.Combine(environment.ContentRootPath, "App_Data");
-    Directory.CreateDirectory(outboxDirectory);
-    var outboxPath = Path.Combine(outboxDirectory, "notification-outbox.jsonl");
-    var entry = System.Text.Json.JsonSerializer.Serialize(new
+    await notificationOutboxLock.WaitAsync(cancellationToken);
+    try
     {
-        recordedAtUtc = DateTimeOffset.UtcNow,
-        payload
-    });
-    await File.AppendAllTextAsync(outboxPath, entry + Environment.NewLine, cancellationToken);
+        var outboxDirectory = Path.Combine(environment.ContentRootPath, "App_Data");
+        Directory.CreateDirectory(outboxDirectory);
+        var outboxPath = Path.Combine(outboxDirectory, "notification-outbox.jsonl");
+        var entry = System.Text.Json.JsonSerializer.Serialize(new
+        {
+            recordedAtUtc = DateTimeOffset.UtcNow,
+            payload
+        });
+        await File.AppendAllTextAsync(outboxPath, entry + Environment.NewLine, cancellationToken);
+    }
+    finally
+    {
+        notificationOutboxLock.Release();
+    }
 
     return Results.Ok(new
     {
