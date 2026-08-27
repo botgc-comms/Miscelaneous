@@ -105,8 +105,8 @@ public sealed class YodeckPublisher(
             ["availability_schedule"] = new JsonObject
             {
                 ["enable"] = true,
-                ["available_after"] = $"{command.StartDate:yyyy-MM-dd}T00:00:00",
-                ["available_before"] = $"{command.EndDate:yyyy-MM-dd}T23:59:59",
+                ["available_after"] = $"{command.StartDate:yyyy-MM-dd}T00:00:00Z",
+                ["available_before"] = $"{command.EndDate:yyyy-MM-dd}T23:59:59Z",
                 ["availability_slots"] = new JsonArray
                 {
                     new JsonObject
