@@ -234,7 +234,8 @@
             {
               "id": "event-decision-owner",
               "type": "question",
-              "answerType": "text",
+              "answerType": "assignment",
+              "assignmentMode": "person",
               "label": "Who has authority to make the final go/no-go decision?",
               "helpText": "Name one person. Department leads should not have to infer whether the event is proceeding from separate conversations.",
               "required": true,
@@ -243,7 +244,8 @@
             {
               "id": "event-communications-owner",
               "type": "question",
-              "answerType": "text",
+              "answerType": "assignment",
+              "assignmentMode": "personOrRole",
               "label": "Who owns the single authoritative message if the event changes?",
               "helpText": "This person coordinates the wording and audience so operational and member messages do not conflict.",
               "required": true,
@@ -3087,6 +3089,7 @@
       "id": "communications",
       "name": "Communications",
       "area": "Communications",
+      "ownerContactId": "person-simon-parsons",
       "fallbackRoleId": "event-coordinator"
     },
     {
@@ -3116,58 +3119,20 @@
   ],
   "defaultContacts": [
     {
-      "id": "contact-event-coordinator",
-      "name": "Event Coordinator",
-      "email": "",
-      "roleIds": [
-        "event-coordinator"
-      ],
-      "active": true
-    },
-    {
-      "id": "contact-fb-manager",
-      "name": "Food & Beverage Manager",
-      "email": "",
-      "roleIds": [
-        "food-beverage-manager",
-        "halfway-house"
-      ],
-      "active": true
-    },
-    {
-      "id": "contact-golf-manager",
-      "name": "Golf Manager / H&C",
-      "email": "",
-      "roleIds": [
-        "golf-manager"
-      ],
-      "active": true
-    },
-    {
-      "id": "contact-pro-shop",
-      "name": "Professional Shop",
-      "email": "",
-      "roleIds": [
-        "professional-shop"
-      ],
-      "active": true
-    },
-    {
-      "id": "contact-communications",
-      "name": "Communications",
-      "email": "",
+      "id": "person-simon-parsons",
+      "type": "person",
+      "name": "Simon Parsons",
+      "email": "simon@maraboustork.co.uk",
+      "phone": "",
       "roleIds": [
         "communications"
       ],
-      "active": true
-    },
-    {
-      "id": "contact-clubhouse",
-      "name": "Clubhouse / House Team",
-      "email": "",
-      "roleIds": [
-        "clubhouse"
+      "platformRoleIds": [
+        "organiser",
+        "admin"
       ],
+      "canLogin": true,
+      "canReceiveTasks": true,
       "active": true
     }
   ],

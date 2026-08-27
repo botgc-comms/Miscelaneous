@@ -89,9 +89,11 @@ Tasks can define:
 }
 ```
 
-The Playbook resolves that role through the responsibility directory. Roles may define fallback roles, so a task can fall back from a specialised responsibility to the Food & Beverage Manager and finally to the Event Coordinator.
+The dedicated **People & Roles** page is the shared operational directory. It records people and shared mailboxes, email and telephone details, the roles each contact can perform, whether they may receive tasks, and their intended platform permissions. It also records assignable roles such as Communications and routes each role to a named contact, role mailbox or fallback role.
 
-Contacts do not need an IG identity. The directory supports employees, volunteers, suppliers or other event contributors using name and email details.
+Task owners, event organisers and ownership questions use one typeahead/dropdown control backed by that directory. For tasks, named people are offered only when their directory record says they can receive tasks and can perform the task's operational role; assignable role records remain available for role-based routing. Assignments retain the stable person or role ID rather than just copying a name. This means a task assigned to **Communications** continues to follow that role if its linked person or mailbox changes later.
+
+Contacts do not need an existing platform identity. The directory supports employees, volunteers, suppliers or other event contributors. Login eligibility and intended Team member/Organiser/Admin permissions are stored now; actual invitations and enforcement remain an explicit production identity-integration boundary.
 
 ### Assignment notifications
 
@@ -147,7 +149,7 @@ The same mechanism can later support sunset, room capacity, supplier access, sta
 
 The Admin view provides:
 
-- responsibility/contact management;
+- a link to the dedicated People & Roles directory;
 - adding questions to a module/section;
 - adding tasks with deadline and default-owner role;
 - simple conditional visibility against another answer;

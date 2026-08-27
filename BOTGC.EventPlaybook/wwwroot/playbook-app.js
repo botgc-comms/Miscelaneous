@@ -370,16 +370,19 @@
         lastSyncedSharedState = remote;
         let initial = remote;
         if (shouldMigrateBrowserData) {
+          const remoteRoleIds = new Set(remote.roles.map(role => role.id));
           const remoteEventIds = new Set(remote.events.map(event => event.id));
           const remoteContactIds = new Set(remote.contacts.map(contact => contact.id));
+          const legacyRoles = browserSnapshot.roles.filter(role => role?.id && !remoteRoleIds.has(role.id));
           const legacyEvents = browserSnapshot.events.filter(event => event?.id && !remoteEventIds.has(event.id));
           const legacyContacts = browserSnapshot.contacts.filter(contact => contact?.id && !remoteContactIds.has(contact.id));
-          needsMigrationSave = legacyEvents.length > 0 || legacyContacts.length > 0;
+          needsMigrationSave = legacyRoles.length > 0 || legacyEvents.length > 0 || legacyContacts.length > 0;
           if (needsMigrationSave) {
             initial = normaliseSharedState({
               deadlineOffsets: Object.keys(remote.deadlineOffsets).length > 0
                 ? remote.deadlineOffsets
                 : browserSnapshot.deadlineOffsets,
+              roles: [...remote.roles, ...legacyRoles],
               contacts: [...remote.contacts, ...legacyContacts],
               events: [...remote.events, ...legacyEvents]
             });
@@ -388,7 +391,7 @@
         applySharedState(initial);
       } else {
         lastSyncedSharedState = emptySharedState();
-        needsMigrationSave = browserSnapshot.events.length > 0 || browserSnapshot.contacts.length > 0;
+        needsMigrationSave = browserSnapshot.roles.length > 0 || browserSnapshot.events.length > 0 || browserSnapshot.contacts.length > 0;
       }
       sharedStateReady = true;
       if (needsMigrationSave) {
@@ -896,6 +899,7 @@
   function initialiseOperationalState() {
     const bundledRoles = playbook.responsibilityRoles ?? [];
     const existingRoles = new Map((Array.isArray(state.roles) ? state.roles : []).filter(role => role?.id).map(role => [role.id, role]));
+    const directoryRolesWereMissing = existingRoles.size === 0;
     state.roles = bundledRoles.map(role => normaliseDirectoryRole({ ...role, ...(existingRoles.get(role.id) ?? {}) }));
     for (const role of existingRoles.values()) {
       if (!state.roles.some(candidate => candidate.id === role.id)) state.roles.push(normaliseDirectoryRole(role));
@@ -920,16 +924,10 @@
         active: true
       });
       state.contacts.push(simon);
-    } else {
-      if (!simon.email) simon.email = 'simon@maraboustork.co.uk';
-      simon.roleIds = [...new Set([...(simon.roleIds ?? []), 'communications'])];
-      simon.platformRoleIds = [...new Set([...(simon.platformRoleIds ?? []), 'organiser', 'admin'])];
-      simon.canLogin = true;
-      simon.canReceiveTasks = true;
     }
 
     const communicationsRole = state.roles.find(role => role.id === 'communications');
-    if (communicationsRole && !communicationsRole.ownerContactId) communicationsRole.ownerContactId = simon.id;
+    if (directoryRolesWereMissing && communicationsRole && !communicationsRole.ownerContactId) communicationsRole.ownerContactId = simon.id;
     saveState();
   }
 
@@ -1055,7 +1053,13 @@
     return assignmentReference(taskState?.assignee ?? '');
   }
 
-  function assignmentOptions(mode = 'person-or-role', event = null) {
+  function contactCanPerformRole(contact, roleId) {
+    if (!roleId) return true;
+    if ((contact.roleIds ?? []).includes(roleId)) return true;
+    return roleById(roleId)?.ownerContactId === contact.id;
+  }
+
+  function assignmentOptions(mode = 'person-or-role', event = null, eligibleRoleId = '') {
     const options = [];
     if (mode !== 'person') {
       for (const role of responsibilityRoles().filter(role => role.active !== false && role.selectableForTasks !== false)) {
@@ -1071,7 +1075,9 @@
         });
       }
     }
-    for (const contact of (state.contacts ?? []).filter(contact => contact.active !== false && (mode === 'person' ? contact.type === 'person' : contact.canReceiveTasks !== false))) {
+    for (const contact of (state.contacts ?? []).filter(contact => contact.active !== false
+      && (mode === 'person' ? contact.type === 'person' : contact.canReceiveTasks !== false)
+      && (mode === 'person' || contactCanPerformRole(contact, eligibleRoleId)))) {
       const roleNames = (contact.roleIds ?? []).map(roleId => roleById(roleId)?.name).filter(Boolean);
       options.push({
         kind: 'person',
@@ -1086,7 +1092,7 @@
     return options.sort((left, right) => left.typeLabel.localeCompare(right.typeLabel) || left.name.localeCompare(right.name));
   }
 
-  function renderAssignmentPicker({ value = null, fallback = '', mode = 'person-or-role', taskId = '', questionId = '', eventField = '', statusField = '', newEventField = '', id = '', required = false, compact = false } = {}) {
+  function renderAssignmentPicker({ value = null, fallback = '', mode = 'person-or-role', eligibleRoleId = '', taskId = '', questionId = '', eventField = '', statusField = '', newEventField = '', id = '', required = false, compact = false } = {}) {
     const reference = assignmentReference(value);
     const display = assignmentDisplay(reference ?? value, fallback);
     const targetAttributes = [
@@ -1096,7 +1102,7 @@
       statusField ? `data-status-assignment-field="${escapeHtml(statusField)}"` : '',
       newEventField ? `data-new-event-assignment-field="${escapeHtml(newEventField)}"` : ''
     ].filter(Boolean).join(' ');
-    const options = assignmentOptions(mode, getActiveEvent());
+    const options = assignmentOptions(mode, getActiveEvent(), eligibleRoleId);
     return `<div class="assignment-picker ${compact ? 'compact' : ''}" data-assignment-picker data-assignment-mode="${escapeHtml(mode)}" ${targetAttributes}>
       <div class="assignment-picker-input-row">
         <input ${id ? `id="${escapeHtml(id)}"` : ''} type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" autocomplete="off" value="${escapeHtml(display)}" placeholder="Start typing a person or role" data-assignment-input data-selected-kind="${escapeHtml(reference?.kind ?? '')}" data-selected-id="${escapeHtml(reference?.id ?? '')}" ${required ? 'required' : ''}>
@@ -1419,7 +1425,7 @@
   }
 
   function cloneEvent(sourceEvent) {
-    const copy = createEvent(`${sourceEvent.name} (Copy)`, sourceEvent.organiser, sourceEvent.eventDate, sourceEvent.description ?? '', structuredClone(sourceEvent.milestoneDates ?? {}));
+    const copy = createEvent(`${sourceEvent.name} (Copy)`, sourceEvent.organiser, sourceEvent.eventDate, sourceEvent.description ?? '', structuredClone(sourceEvent.milestoneDates ?? {}), structuredClone(sourceEvent.organiserRef ?? null));
     copy.answers = structuredClone(sourceEvent.answers ?? {});
     copy.team = structuredClone(sourceEvent.team ?? []);
     copy.sourceEventId = sourceEvent.id;
@@ -1430,7 +1436,9 @@
       status: 'provisional',
       statusChangedAt: new Date().toISOString(),
       decisionOwner: sourceEvent.lifecycle?.decisionOwner ?? sourceEvent.organiser ?? '',
+      decisionOwnerRef: structuredClone(sourceEvent.lifecycle?.decisionOwnerRef ?? sourceEvent.organiserRef ?? null),
       communicationsOwner: sourceEvent.lifecycle?.communicationsOwner ?? '',
+      communicationsOwnerRef: structuredClone(sourceEvent.lifecycle?.communicationsOwnerRef ?? null),
       changedBy: sourceEvent.organiser ?? '',
       reason: '',
       memberUpdate: '',
@@ -1602,7 +1610,7 @@
     }
 
     let event = getActiveEvent();
-    if (!event && !['catalogue', 'references', 'admin'].includes(state.activeView)) {
+    if (!event && !['catalogue', 'references', 'admin', 'directory'].includes(state.activeView)) {
       state.activeView = 'catalogue';
       saveState();
     }
@@ -1756,10 +1764,6 @@
           </main>
         </main>
       </div>
-
-      <datalist id="team-list">
-        ${(event?.team ?? []).map(name => `<option value="${escapeHtml(name)}"></option>`).join('')}
-      </datalist>
 
       ${renderNewEventDialog()}
       <dialog id="event-summary-dialog" class="modal event-summary-dialog"><div id="event-summary-content"></div></dialog>
@@ -2566,7 +2570,7 @@
             ${item.responsibleArea ? `<span class="area-chip">${escapeHtml(item.responsibleArea)}</span>` : ''}
             <div class="assignee-compact">
               <span>Owner</span>
-              ${renderAssignmentPicker({ value: taskAssignmentReference(taskState) ?? taskState.assignee, fallback: taskState.assignee, taskId: item.id, compact: true })}
+              ${renderAssignmentPicker({ value: taskAssignmentReference(taskState) ?? taskState.assignee, fallback: taskState.assignee, eligibleRoleId: item.defaultOwnerRoleId, taskId: item.id, compact: true })}
             </div>
           </div>
         </div>
@@ -2698,7 +2702,7 @@
           <div class="task-fields">
             <div class="task-assignment-field">
               <span>Assigned to</span>
-              ${renderAssignmentPicker({ value: taskAssignmentReference(taskState) ?? taskState.assignee, fallback: taskState.assignee, taskId: item.id })}
+              ${renderAssignmentPicker({ value: taskAssignmentReference(taskState) ?? taskState.assignee, fallback: taskState.assignee, eligibleRoleId: task.item.defaultOwnerRoleId, taskId: item.id })}
             </div>
             <label class="task-notes-field">
               <span>Task notes</span>
@@ -2920,23 +2924,106 @@
     return `<label class="retro-field"><span>${escapeHtml(field.label)}</span><input type="${type}" step="${step}" value="${escapeHtml(value)}" data-retro-field="${escapeHtml(field.id)}"></label>`;
   }
 
+  function roleRouteSummary(role) {
+    const linked = role.ownerContactId ? contactById(role.ownerContactId) : null;
+    if (linked) return `${linked.name}${linked.email ? ` · ${linked.email}` : ' · no email configured'}`;
+    if (role.mailboxEmail) return role.mailboxEmail;
+    const inherited = role.fallbackRoleId ? roleById(role.fallbackRoleId) : null;
+    return inherited ? `Falls back to ${inherited.name}` : 'No contact route configured';
+  }
+
+  function renderDirectory() {
+    const activeContacts = (state.contacts ?? []).filter(contact => contact.active !== false);
+    const activeRoles = responsibilityRoles().filter(role => role.active !== false);
+    const loginContacts = activeContacts.filter(contact => contact.canLogin);
+    const unroutedRoles = activeRoles.filter(role => !assignmentRecipient({ kind: 'role', id: role.id }, getActiveEvent()).email);
+    return `
+      <section class="directory-overview">
+        <div><span class="eyebrow">Shared directory</span><h2>People, contact routes and responsibilities</h2><p>Use stable people and role records everywhere the Playbook asks who owns a decision or task. Changing an email address or the person behind a role updates future notifications without rewriting every event.</p></div>
+        <div class="directory-stats">
+          <div><strong>${activeContacts.length}</strong><span>active contacts</span></div>
+          <div><strong>${activeRoles.length}</strong><span>active roles</span></div>
+          <div><strong>${loginContacts.length}</strong><span>login-enabled</span></div>
+          <div class="${unroutedRoles.length ? 'warning' : ''}"><strong>${unroutedRoles.length}</strong><span>roles without email</span></div>
+        </div>
+      </section>
+      <section class="directory-login-note"><span>Login-ready directory</span><p>Platform permissions and login eligibility are recorded here now. Individual invitations and enforced access will use these records when production identity is connected.</p></section>
+      <div class="directory-layout">
+        <section class="directory-panel directory-people-panel">
+          <div class="directory-panel-heading"><div><span class="eyebrow">Contacts</span><h3>People and mailboxes</h3><p>Only active contacts allowed to receive tasks appear in assignment controls, and only for the operational roles they can perform.</p></div><button class="button button-primary" data-action="add-directory-contact">Add person</button></div>
+          <div class="directory-card-list">${(state.contacts ?? []).map(renderDirectoryContact).join('')}</div>
+        </section>
+        <section class="directory-panel directory-roles-panel">
+          <div class="directory-panel-heading"><div><span class="eyebrow">Responsibilities</span><h3>Assignable roles</h3><p>A role can route to a named person, a shared mailbox, or a fallback role.</p></div><button class="button button-secondary" data-action="add-directory-role">Add role</button></div>
+          <div class="directory-card-list">${responsibilityRoles().map(renderDirectoryRole).join('')}</div>
+        </section>
+      </div>`;
+  }
+
+  function renderDirectoryContact(contact) {
+    const roles = responsibilityRoles();
+    return `<article class="directory-card ${contact.active === false ? 'inactive' : ''}" data-directory-contact-id="${escapeHtml(contact.id)}">
+      <div class="directory-card-heading">
+        <div class="directory-avatar ${contact.type === 'mailbox' ? 'mailbox' : ''}">${contact.type === 'mailbox' ? '@' : escapeHtml((contact.name || '?').trim().charAt(0).toUpperCase())}</div>
+        <div><strong>${escapeHtml(contact.name || 'New person')}</strong><small>${escapeHtml(contact.type === 'mailbox' ? 'Shared mailbox' : 'Person')}${contact.active === false ? ' · Inactive' : ''}</small></div>
+        <label class="directory-active-toggle"><input type="checkbox" data-directory-contact-boolean="active" ${contact.active !== false ? 'checked' : ''}><span>Active</span></label>
+      </div>
+      <div class="directory-form-grid">
+        <label><span>Contact type</span><select data-directory-contact-field="type"><option value="person" ${contact.type !== 'mailbox' ? 'selected' : ''}>Person</option><option value="mailbox" ${contact.type === 'mailbox' ? 'selected' : ''}>Shared mailbox</option></select></label>
+        <label><span>Name</span><input type="text" value="${escapeHtml(contact.name)}" data-directory-contact-field="name" required></label>
+        <label><span>Email address</span><input type="email" value="${escapeHtml(contact.email ?? '')}" data-directory-contact-field="email" placeholder="name@example.com"></label>
+        <label><span>Telephone</span><input type="tel" value="${escapeHtml(contact.phone ?? '')}" data-directory-contact-field="phone" placeholder="Optional"></label>
+      </div>
+      <div class="directory-option-row">
+        <label><input type="checkbox" data-directory-contact-boolean="canReceiveTasks" ${contact.canReceiveTasks !== false ? 'checked' : ''}><span>Can receive tasks</span></label>
+        <label><input type="checkbox" data-directory-contact-boolean="canLogin" ${contact.canLogin ? 'checked' : ''}><span>Login enabled</span></label>
+      </div>
+      <fieldset class="directory-check-group"><legend>Operational roles this contact can perform</legend><div>
+        ${roles.map(role => `<label><input type="checkbox" data-directory-contact-role="${escapeHtml(role.id)}" ${contact.roleIds?.includes(role.id) ? 'checked' : ''}><span>${escapeHtml(role.name)}</span></label>`).join('')}
+      </div></fieldset>
+      <fieldset class="directory-check-group platform"><legend>Platform permissions</legend><div>
+        ${PLATFORM_ROLE_DEFINITIONS.map(role => `<label title="${escapeHtml(role.description)}"><input type="checkbox" data-directory-platform-role="${escapeHtml(role.id)}" ${contact.platformRoleIds?.includes(role.id) ? 'checked' : ''}><span>${escapeHtml(role.name)}</span></label>`).join('')}
+      </div></fieldset>
+      <label class="directory-notes"><span>Notes</span><input type="text" value="${escapeHtml(contact.notes ?? '')}" data-directory-contact-field="notes" placeholder="Optional contact or availability note"></label>
+    </article>`;
+  }
+
+  function renderDirectoryRole(role) {
+    const contacts = (state.contacts ?? []).filter(contact => contact.active !== false);
+    const roles = responsibilityRoles().filter(candidate => candidate.id !== role.id);
+    const usage = [...itemIndex.values()].filter(indexed => indexed.item.defaultOwnerRoleId === role.id).length;
+    return `<article class="directory-card directory-role-card ${role.active === false ? 'inactive' : ''}" data-directory-role-id="${escapeHtml(role.id)}">
+      <div class="directory-card-heading">
+        <div class="directory-avatar role">R</div>
+        <div><strong>${escapeHtml(role.name)}</strong><small>${escapeHtml(role.area || 'No area')} · default for ${usage} task${usage === 1 ? '' : 's'}</small></div>
+        <label class="directory-active-toggle"><input type="checkbox" data-directory-role-boolean="active" ${role.active !== false ? 'checked' : ''}><span>Active</span></label>
+      </div>
+      <div class="directory-route-summary ${assignmentRecipient({ kind: 'role', id: role.id }, getActiveEvent()).email ? '' : 'warning'}"><span>Current route</span><strong>${escapeHtml(roleRouteSummary(role))}</strong></div>
+      <div class="directory-form-grid">
+        <label><span>Role name</span><input type="text" value="${escapeHtml(role.name)}" data-directory-role-field="name" required></label>
+        <label><span>Operational area</span><input type="text" value="${escapeHtml(role.area ?? '')}" data-directory-role-field="area" placeholder="For example Communications"></label>
+        <label><span>Linked person or mailbox</span><select data-directory-role-field="ownerContactId"><option value="">Not linked</option>${contacts.map(contact => `<option value="${escapeHtml(contact.id)}" ${role.ownerContactId === contact.id ? 'selected' : ''}>${escapeHtml(contact.name)}${contact.email ? ` · ${escapeHtml(contact.email)}` : ''}</option>`).join('')}</select></label>
+        <label><span>Role mailbox email</span><input type="email" value="${escapeHtml(role.mailboxEmail ?? '')}" data-directory-role-field="mailboxEmail" placeholder="Used when no contact is linked"></label>
+        <label><span>Fallback role</span><select data-directory-role-field="fallbackRoleId"><option value="">No fallback</option>${roles.map(candidate => `<option value="${escapeHtml(candidate.id)}" ${role.fallbackRoleId === candidate.id ? 'selected' : ''}>${escapeHtml(candidate.name)}</option>`).join('')}</select></label>
+      </div>
+      <div class="directory-option-row"><label><input type="checkbox" data-directory-role-boolean="selectableForTasks" ${role.selectableForTasks !== false ? 'checked' : ''}><span>Available in task assignment controls</span></label></div>
+      <small class="directory-record-id">Stable role ID: ${escapeHtml(role.id)}</small>
+    </article>`;
+  }
+
   function renderAdmin(event) {
     return `
-      <section class="page-header"><div><div class="eyebrow">Configuration</div><h2>Playbook admin</h2><p>Manage responsibility contacts and extend the data-driven Playbook without changing application code.</p></div></section>
+      <section class="page-header"><div><div class="eyebrow">Configuration</div><h2>Playbook admin</h2><p>Extend the data-driven Playbook without changing application code. People and responsibilities are maintained on the dedicated People & Roles page.</p></div><button class="button button-secondary" data-view="directory">Open People & Roles</button></section>
       <section class="admin-grid">
-        <article class="admin-card"><div class="section-heading"><h3>Responsibility directory</h3></div>
-          <div class="contact-list">${state.contacts.map(contact => renderContactEditor(contact)).join('')}</div>
-          <button class="button button-secondary" data-action="add-contact">Add contact</button>
-        </article>
         <article class="admin-card"><div class="section-heading"><h3>Add a question or task</h3></div>
           <div class="admin-form">
             <label><span>Module</span><select id="admin-module">${playbook.modules.map(m => `<option value="${escapeHtml(m.id)}">${escapeHtml(m.title)}</option>`).join('')}</select></label>
             <label><span>Section</span><select id="admin-section">${playbook.modules[0].sections.map(s => `<option value="${escapeHtml(s.id)}">${escapeHtml(s.title)}</option>`).join('')}</select></label>
             <label><span>Type</span><select id="admin-type"><option value="question">Question</option><option value="task">Task</option></select></label>
             <label class="wide"><span>Question / task wording</span><input id="admin-wording" type="text"></label>
-            <label><span>Answer type</span><select id="admin-answer-type"><option value="yesNo">Yes / No</option><option value="text">Text</option><option value="time">Time</option><option value="number">Number</option></select></label>
+            <label><span>Answer type</span><select id="admin-answer-type"><option value="yesNo">Yes / No</option><option value="text">Text</option><option value="time">Time</option><option value="number">Number</option><option value="assignment">Person or role</option></select></label>
             <label><span>Deadline code (tasks)</span><select id="admin-deadline"><option value="">None</option>${playbook.deadlineCodes.map(d => `<option value="${escapeHtml(d.code)}">${escapeHtml(d.code)}</option>`).join('')}</select></label>
-            <label><span>Default owner role</span><select id="admin-role"><option value="">None</option>${(playbook.responsibilityRoles ?? []).map(r => `<option value="${escapeHtml(r.id)}">${escapeHtml(r.name)}</option>`).join('')}</select></label>
+            <label><span>Default owner role</span><select id="admin-role"><option value="">None</option>${responsibilityRoles().map(r => `<option value="${escapeHtml(r.id)}">${escapeHtml(r.name)}</option>`).join('')}</select></label>
             <label><span>Show when question</span><select id="admin-condition-question"><option value="">Always</option>${[...itemIndex.values()].filter(x => x.item.type === 'question').map(x => `<option value="${escapeHtml(x.item.id)}">${escapeHtml(x.item.label)}</option>`).join('')}</select></label>
             <label><span>Condition value</span><input id="admin-condition-value" type="text" placeholder="true, false or exact value"></label>
           </div>
@@ -2961,15 +3048,6 @@
           ${state.adminDraftAdvisories.length ? `<div class="draft-list">${state.adminDraftAdvisories.map(item => `<div class="draft-row"><span>Advisory</span><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(item.targetQuestionId)}</small></div>`).join('')}</div>` : ''}
         </article>
       </section>`;
-  }
-
-  function renderContactEditor(contact) {
-    const roles = playbook.responsibilityRoles ?? [];
-    return `<div class="contact-editor" data-contact-id="${escapeHtml(contact.id)}">
-      <input type="text" value="${escapeHtml(contact.name)}" data-contact-field="name" placeholder="Name">
-      <input type="email" value="${escapeHtml(contact.email ?? '')}" data-contact-field="email" placeholder="Email">
-      <select data-contact-field="roleId"><option value="">Role</option>${roles.map(role => `<option value="${escapeHtml(role.id)}" ${contact.roleIds?.includes(role.id) ? 'selected' : ''}>${escapeHtml(role.name)}</option>`).join('')}</select>
-    </div>`;
   }
 
   function renderNewEventDialog() {
@@ -3045,6 +3123,17 @@
         </form>
       </dialog>
     `;
+  }
+
+  function resetNewEventForm() {
+    const form = document.getElementById('new-event-form');
+    form?.reset();
+    const organiserInput = document.getElementById('new-event-organiser');
+    if (organiserInput) {
+      organiserInput.dataset.selectedKind = '';
+      organiserInput.dataset.selectedId = '';
+      organiserInput.setCustomValidity('');
+    }
   }
 
   function populateNewEventMilestones(eventDate, force = false) {
@@ -3203,14 +3292,30 @@
   function applyEventStatusChange(event) {
     const lifecycle = normaliseEventLifecycle(event);
     const nextStatus = document.getElementById('event-status-value')?.value;
-    const decisionOwner = document.getElementById('event-status-decision-owner')?.value.trim() ?? '';
-    const communicationsOwner = document.getElementById('event-status-communications-owner')?.value.trim() ?? '';
+    const decisionOwnerInput = document.getElementById('event-status-decision-owner');
+    const communicationsOwnerInput = document.getElementById('event-status-communications-owner');
+    const decisionOwnerRef = assignmentReferenceFromInput(decisionOwnerInput, 'person');
+    const communicationsOwnerRef = assignmentReferenceFromInput(communicationsOwnerInput, 'person-or-role');
+    const decisionOwner = assignmentDisplay(decisionOwnerRef, decisionOwnerInput?.value.trim() ?? '');
+    const communicationsOwner = assignmentDisplay(communicationsOwnerRef, communicationsOwnerInput?.value.trim() ?? '');
     const isChangeResponse = CHANGE_RESPONSE_STATUSES.has(nextStatus);
     const requiresCommunicationsOwner = isChangeResponse && hasCancellationEvidence(event, 'Communications');
     const needsReason = isChangeResponse || nextStatus === 'at-risk';
     const reason = needsReason ? document.getElementById('event-status-reason')?.value.trim() ?? '' : '';
     const memberUpdate = isChangeResponse ? document.getElementById('event-status-member-update')?.value.trim() ?? '' : '';
-    if (!EVENT_STATUS_DEFINITIONS[nextStatus] || !decisionOwner || (needsReason && !reason) || (requiresCommunicationsOwner && !communicationsOwner)) return false;
+    if (decisionOwnerInput?.value.trim() && !decisionOwnerRef) {
+      decisionOwnerInput.setCustomValidity('Choose a person from People & Roles.');
+      decisionOwnerInput.reportValidity();
+      return false;
+    }
+    if (communicationsOwnerInput?.value.trim() && !communicationsOwnerRef) {
+      communicationsOwnerInput.setCustomValidity('Choose a person or role from People & Roles.');
+      communicationsOwnerInput.reportValidity();
+      return false;
+    }
+    decisionOwnerInput?.setCustomValidity('');
+    communicationsOwnerInput?.setCustomValidity('');
+    if (!EVENT_STATUS_DEFINITIONS[nextStatus] || !decisionOwnerRef || (needsReason && !reason) || (requiresCommunicationsOwner && !communicationsOwnerRef)) return false;
 
     const now = new Date().toISOString();
     const interestedParties = isChangeResponse ? deriveCancellationStakeholders(event) : [];
@@ -3225,6 +3330,8 @@
         changedAt: now,
         changedBy: decisionOwner,
         communicationsOwner,
+        decisionOwnerRef: structuredClone(decisionOwnerRef),
+        communicationsOwnerRef: structuredClone(communicationsOwnerRef),
         reason,
         memberUpdate,
         interestedParties: structuredClone(interestedParties)
@@ -3234,31 +3341,33 @@
     lifecycle.status = nextStatus;
     if (changed) lifecycle.statusChangedAt = now;
     lifecycle.decisionOwner = decisionOwner;
+    lifecycle.decisionOwnerRef = decisionOwnerRef;
     lifecycle.communicationsOwner = communicationsOwner;
+    lifecycle.communicationsOwnerRef = communicationsOwnerRef;
     lifecycle.changedBy = decisionOwner;
     lifecycle.reason = reason;
     lifecycle.memberUpdate = memberUpdate;
     lifecycle.interestedParties = interestedParties;
-    event.answers['event-decision-owner'] = decisionOwner;
-    event.answers['event-communications-owner'] = communicationsOwner;
-    updateTeam(event, decisionOwner);
-    updateTeam(event, communicationsOwner);
+    event.answers['event-decision-owner'] = decisionOwnerRef;
+    event.answers['event-communications-owner'] = communicationsOwnerRef;
+    updateTeam(event, assignmentRecipient(decisionOwnerRef, event).name || decisionOwner);
+    updateTeam(event, assignmentRecipient(communicationsOwnerRef, event).name || communicationsOwner);
 
     event.milestoneDates ??= {};
     if (isChangeResponse) {
       event.milestoneDates.CX = localDateFromTimestamp(now);
       if (nextStatus === 'cancelled') event.cancelledAt = now;
       if (nextStatus === 'postponed') event.postponedAt = now;
-      const cancellationCoordinator = String(event.organiser ?? '').trim() || decisionOwner;
+      const cancellationCoordinatorRef = event.organiserRef ?? decisionOwnerRef;
       const explicitOwners = [
-        ['notify-operational-leads-of-event-change', cancellationCoordinator],
-        ['issue-authoritative-event-change-message', communicationsOwner],
-        ['stop-scheduled-event-publicity', communicationsOwner]
+        ['notify-operational-leads-of-event-change', cancellationCoordinatorRef],
+        ['issue-authoritative-event-change-message', communicationsOwnerRef],
+        ['stop-scheduled-event-publicity', communicationsOwnerRef]
       ];
-      for (const [taskId, owner] of explicitOwners) {
+      for (const [taskId, ownerRef] of explicitOwners) {
         const indexed = itemIndex.get(taskId);
-        if (indexed?.item && owner && isItemVisible(indexed.item, event)) {
-          assignTask(event, indexed.item, owner, contactEmailByName(owner), 'event-status');
+        if (indexed?.item && ownerRef && isItemVisible(indexed.item, event)) {
+          assignTaskToReference(event, indexed.item, ownerRef, 'event-status');
         }
       }
     } else {
@@ -3287,8 +3396,7 @@
     document.getElementById('event-summary-dialog')?.close();
     render();
     const dialog = document.getElementById('new-event-dialog');
-    const form = document.getElementById('new-event-form');
-    form?.reset();
+    resetNewEventForm();
     populateNewEventMilestones('', true);
     dialog?.showModal();
     requestAnimationFrame(() => document.getElementById('new-event-name')?.focus());
@@ -3349,7 +3457,149 @@
     });
   }
 
+  function assignmentReferenceFromInput(input, mode = 'person-or-role') {
+    if (!input) return null;
+    const selected = input.dataset.selectedKind && input.dataset.selectedId
+      ? assignmentReference({ kind: input.dataset.selectedKind, id: input.dataset.selectedId })
+      : null;
+    if (selected && assignmentDisplay(selected).toLocaleLowerCase() === input.value.trim().toLocaleLowerCase()) return selected;
+    return findAssignmentReference(input.value, mode);
+  }
+
+  function setAssignmentPickerValidation(picker, message = '') {
+    const input = picker?.querySelector('[data-assignment-input]');
+    const error = picker?.querySelector('[data-assignment-error]');
+    if (input) {
+      input.setCustomValidity(message);
+      input.setAttribute('aria-invalid', message ? 'true' : 'false');
+    }
+    if (error) error.textContent = message;
+  }
+
+  function commitAssignmentPicker(picker, reference) {
+    const input = picker.querySelector('[data-assignment-input]');
+    const resolved = assignmentReference(reference);
+    input.value = resolved ? assignmentDisplay(resolved) : '';
+    input.dataset.selectedKind = resolved?.kind ?? '';
+    input.dataset.selectedId = resolved?.id ?? '';
+    setAssignmentPickerValidation(picker);
+
+    const event = getActiveEvent();
+    if (picker.dataset.taskAssignment && event) {
+      const indexed = itemIndex.get(picker.dataset.taskAssignment);
+      if (indexed) assignTaskToReference(event, indexed.item, resolved, 'manual');
+      saveState();
+      render();
+      return;
+    }
+    if (picker.dataset.questionAssignment && event) {
+      setQuestionAnswer(event, picker.dataset.questionAssignment, resolved);
+      return;
+    }
+    if (picker.dataset.eventAssignmentField === 'organiser' && event) {
+      event.organiserRef = resolved;
+      event.organiser = assignmentDisplay(resolved);
+      updateTeam(event, assignmentRecipient(resolved, event).name || event.organiser);
+      saveState();
+      render();
+    }
+  }
+
+  function bindAssignmentPickers() {
+    document.querySelectorAll('[data-assignment-picker]').forEach(picker => {
+      const input = picker.querySelector('[data-assignment-input]');
+      const menu = picker.querySelector('.assignment-picker-menu');
+      const toggle = picker.querySelector('[data-assignment-toggle]');
+      const options = [...picker.querySelectorAll('[data-assignment-option]')];
+      if (!input || !menu) return;
+
+      const showMenu = () => {
+        menu.hidden = false;
+        input.setAttribute('aria-expanded', 'true');
+      };
+      const hideMenu = () => {
+        menu.hidden = true;
+        input.setAttribute('aria-expanded', 'false');
+      };
+      const filter = () => {
+        const search = input.value.trim().toLocaleLowerCase();
+        for (const option of options) option.hidden = Boolean(search) && !option.dataset.search.includes(search);
+      };
+      const commitTypedValue = () => {
+        const typed = input.value.trim();
+        if (!typed) {
+          commitAssignmentPicker(picker, null);
+          return true;
+        }
+        const reference = assignmentReferenceFromInput(input, picker.dataset.assignmentMode);
+        if (!reference) {
+          setAssignmentPickerValidation(picker, 'Choose a person or role from the directory.');
+          return false;
+        }
+        commitAssignmentPicker(picker, reference);
+        return true;
+      };
+
+      input.addEventListener('focus', () => { filter(); showMenu(); });
+      input.addEventListener('input', () => {
+        input.dataset.selectedKind = '';
+        input.dataset.selectedId = '';
+        setAssignmentPickerValidation(picker);
+        filter();
+        showMenu();
+      });
+      input.addEventListener('change', commitTypedValue);
+      input.addEventListener('keydown', eventArgs => {
+        if (eventArgs.key === 'Escape') {
+          hideMenu();
+          return;
+        }
+        if (eventArgs.key === 'ArrowDown') {
+          eventArgs.preventDefault();
+          showMenu();
+          options.find(option => !option.hidden)?.focus();
+          return;
+        }
+        if (eventArgs.key === 'Enter' && !menu.hidden) {
+          const first = options.find(option => !option.hidden);
+          if (first) {
+            eventArgs.preventDefault();
+            first.click();
+          }
+        }
+      });
+      toggle?.addEventListener('click', () => {
+        if (menu.hidden) {
+          filter(); showMenu(); input.focus();
+        } else hideMenu();
+      });
+      for (const option of options) {
+        option.addEventListener('pointerdown', eventArgs => eventArgs.preventDefault());
+        option.addEventListener('click', () => commitAssignmentPicker(picker, { kind: option.dataset.kind, id: option.dataset.id }));
+      }
+      picker.addEventListener('focusout', () => setTimeout(() => {
+        if (!picker.contains(document.activeElement)) hideMenu();
+      }, 0));
+    });
+  }
+
+  function refreshStructuredAssignments() {
+    for (const event of state.events ?? []) {
+      event.organiserRef = assignmentReference(event.organiserRef ?? event.organiser);
+      if (event.organiserRef) event.organiser = assignmentDisplay(event.organiserRef, event.organiser);
+      normaliseEventLifecycle(event);
+      for (const taskState of Object.values(event.taskState ?? {})) {
+        const reference = taskAssignmentReference(taskState);
+        if (!reference) continue;
+        const recipient = assignmentRecipient(reference, event);
+        taskState.assignee = assignmentDisplay(reference, taskState.assignee);
+        taskState.assigneeEmail = recipient.email;
+      }
+    }
+  }
+
   function bindEvents() {
+    bindAssignmentPickers();
     document.querySelectorAll('[data-view]').forEach(element => {
       element.addEventListener('click', () => {
         state.activeView = element.dataset.view;
@@ -3472,17 +3722,6 @@
       });
     });
 
-    document.querySelectorAll('[data-task-assignee]').forEach(element => {
-      element.addEventListener('change', () => {
-        const event = getActiveEvent();
-        if (!event) return;
-        const indexed = itemIndex.get(element.dataset.taskAssignee);
-        if (indexed) assignTask(event, indexed.item, element.value.trim(), contactEmailByName(element.value.trim()), 'manual');
-        saveState();
-        render();
-      });
-    });
-
     document.querySelectorAll('[data-task-notes]').forEach(element => {
       element.addEventListener('change', () => {
         const event = getActiveEvent();
@@ -3562,8 +3801,7 @@
     document.querySelectorAll('[data-action="new-event"]').forEach(element => {
       element.addEventListener('click', () => {
         const dialog = document.getElementById('new-event-dialog');
-        const form = document.getElementById('new-event-form');
-        form?.reset();
+        resetNewEventForm();
         populateNewEventMilestones('', true);
         dialog.showModal();
         requestAnimationFrame(() => document.getElementById('new-event-name')?.focus());
@@ -3759,22 +3997,109 @@
       });
     });
 
-    document.querySelectorAll('[data-contact-field]').forEach(element => {
+    document.querySelectorAll('[data-directory-contact-field]').forEach(element => {
       element.addEventListener('change', () => {
-        const row = element.closest('[data-contact-id]');
-        const contact = state.contacts.find(item => item.id === row?.dataset.contactId);
+        const row = element.closest('[data-directory-contact-id]');
+        const contact = state.contacts.find(item => item.id === row?.dataset.directoryContactId);
         if (!contact) return;
-        const field = element.dataset.contactField;
-        if (field === 'roleId') contact.roleIds = element.value ? [element.value] : [];
-        else contact[field] = element.value.trim();
-        saveState(); render();
+        const field = element.dataset.directoryContactField;
+        const next = element.value.trim();
+        if (field === 'name' && !next) {
+          element.setCustomValidity('Enter a name for this directory record.');
+          element.reportValidity();
+          return;
+        }
+        element.setCustomValidity('');
+        contact[field] = next;
+        refreshStructuredAssignments();
+        saveState();
+        if (field === 'type') render();
       });
     });
 
-    document.querySelectorAll('[data-action="add-contact"]').forEach(element => {
+    document.querySelectorAll('[data-directory-contact-boolean]').forEach(element => {
+      element.addEventListener('change', () => {
+        const contact = state.contacts.find(item => item.id === element.closest('[data-directory-contact-id]')?.dataset.directoryContactId);
+        if (!contact) return;
+        contact[element.dataset.directoryContactBoolean] = element.checked;
+        refreshStructuredAssignments();
+        saveState();
+        render();
+      });
+    });
+
+    document.querySelectorAll('[data-directory-contact-role]').forEach(element => {
+      element.addEventListener('change', () => {
+        const contact = state.contacts.find(item => item.id === element.closest('[data-directory-contact-id]')?.dataset.directoryContactId);
+        if (!contact) return;
+        const roleId = element.dataset.directoryContactRole;
+        contact.roleIds = element.checked
+          ? [...new Set([...(contact.roleIds ?? []), roleId])]
+          : (contact.roleIds ?? []).filter(id => id !== roleId);
+        saveState();
+      });
+    });
+
+    document.querySelectorAll('[data-directory-platform-role]').forEach(element => {
+      element.addEventListener('change', () => {
+        const contact = state.contacts.find(item => item.id === element.closest('[data-directory-contact-id]')?.dataset.directoryContactId);
+        if (!contact) return;
+        const roleId = element.dataset.directoryPlatformRole;
+        contact.platformRoleIds = element.checked
+          ? [...new Set([...(contact.platformRoleIds ?? []), roleId])]
+          : (contact.platformRoleIds ?? []).filter(id => id !== roleId);
+        saveState();
+      });
+    });
+
+    document.querySelectorAll('[data-directory-role-field]').forEach(element => {
+      element.addEventListener('change', () => {
+        const role = state.roles.find(item => item.id === element.closest('[data-directory-role-id]')?.dataset.directoryRoleId);
+        if (!role) return;
+        const field = element.dataset.directoryRoleField;
+        const next = element.value.trim();
+        if (field === 'name' && !next) {
+          element.setCustomValidity('Enter a role name.');
+          element.reportValidity();
+          return;
+        }
+        element.setCustomValidity('');
+        role[field] = field === 'fallbackRoleId' ? (next || null) : next;
+        refreshStructuredAssignments();
+        saveState();
+        if (field === 'ownerContactId' || field === 'fallbackRoleId') render();
+      });
+    });
+
+    document.querySelectorAll('[data-directory-role-boolean]').forEach(element => {
+      element.addEventListener('change', () => {
+        const role = state.roles.find(item => item.id === element.closest('[data-directory-role-id]')?.dataset.directoryRoleId);
+        if (!role) return;
+        role[element.dataset.directoryRoleBoolean] = element.checked;
+        refreshStructuredAssignments();
+        saveState();
+        render();
+      });
+    });
+
+    document.querySelectorAll('[data-action="add-directory-contact"]').forEach(element => {
       element.addEventListener('click', () => {
-        state.contacts.push({ id: crypto.randomUUID(), name: 'New contact', email: '', roleIds: [], active: true });
-        saveState(); render();
+        const contact = normaliseDirectoryContact({ id: crypto.randomUUID(), type: 'person', name: 'New person', email: '', roleIds: [], platformRoleIds: ['team-member'], canLogin: false, canReceiveTasks: true, active: true });
+        state.contacts.push(contact);
+        state.activeView = 'directory';
+        saveState();
+        render();
+        requestAnimationFrame(() => document.querySelector(`[data-directory-contact-id="${CSS.escape(contact.id)}"] input[data-directory-contact-field="name"]`)?.select());
+      });
+    });
+
+    document.querySelectorAll('[data-action="add-directory-role"]').forEach(element => {
+      element.addEventListener('click', () => {
+        const role = normaliseDirectoryRole({ id: `role-${crypto.randomUUID()}`, name: 'New role', area: '', active: true, selectableForTasks: true, source: 'directory' });
+        state.roles.push(role);
+        saveState();
+        render();
+        requestAnimationFrame(() => document.querySelector(`[data-directory-role-id="${CSS.escape(role.id)}"] input[data-directory-role-field="name"]`)?.select());
       });
     });
 
@@ -3834,6 +4159,12 @@
       element.addEventListener('click', () => {
         try {
           const candidate = structuredClone(playbook);
+          candidate.responsibilityRoles = responsibilityRoles().map(role => ({
+            id: role.id,
+            name: role.name,
+            area: role.area,
+            fallbackRoleId: role.fallbackRoleId ?? null
+          }));
           for (const draft of state.adminDraftItems) {
             const module = candidate.modules.find(item => item.id === draft.moduleId);
             const section = module?.sections.find(item => item.id === draft.sectionId);
@@ -3843,7 +4174,7 @@
               const role = (candidate.responsibilityRoles ?? []).find(item => item.id === draft.defaultOwnerRoleId);
               section.items.push({ id: draft.id, type: 'task', title: draft.wording, deadlineCode: draft.deadlineCode, defaultOwnerRoleId: draft.defaultOwnerRoleId, responsibleArea: role?.area, showWhen, source: 'admin' });
             } else {
-              section.items.push({ id: draft.id, type: 'question', label: draft.wording, answerType: draft.answerType, required: true, showWhen, source: 'admin' });
+              section.items.push({ id: draft.id, type: 'question', label: draft.wording, answerType: draft.answerType, assignmentMode: draft.answerType === 'assignment' ? 'personOrRole' : undefined, required: true, showWhen, source: 'admin' });
             }
           }
           candidate.advisoryRules ??= [];
@@ -3936,7 +4267,7 @@
 
     document.querySelectorAll('[data-cancel-new-event]').forEach(button => {
       button.addEventListener('click', () => {
-        newEventForm?.reset();
+        resetNewEventForm();
         populateNewEventMilestones('', true);
         newEventDialog?.close();
       });
@@ -3958,8 +4289,17 @@
 
         const name = nameInput.value.trim();
         const eventDate = eventDateInput.value;
-        const organiser = document.getElementById('new-event-organiser').value.trim();
+        const organiserInput = document.getElementById('new-event-organiser');
+        const organiser = organiserInput.value.trim();
+        const organiserRef = assignmentReferenceFromInput(organiserInput, 'person');
         const description = descriptionInput.value.trim();
+
+        if (organiser && !organiserRef) {
+          organiserInput.setCustomValidity('Choose an organiser from People & Roles.');
+          organiserInput.reportValidity();
+          return;
+        }
+        organiserInput.setCustomValidity('');
 
         // Native required validation catches empty values; these trim checks
         // also reject fields containing only spaces.
@@ -3991,7 +4331,7 @@
         }
 
         milestoneDates.DT = eventDate;
-        createEvent(name, organiser, eventDate, description, milestoneDates);
+        createEvent(name, organiser, eventDate, description, milestoneDates, organiserRef);
         newEventDialog?.close();
         render();
       });
@@ -4001,16 +4341,22 @@
   function exportEventPlan() {
     const event = getActiveEvent();
     if (!event) return;
-    const tasks = getActiveTasks(event).map(task => ({
-      id: task.item.id,
-      module: task.module.title,
-      title: task.item.title,
-      deadlineCode: task.item.deadlineCode ?? null,
-      dueDate: task.dueDate,
-      assignee: task.state.assignee ?? null,
-      completed: Boolean(task.state.completed),
-      notes: task.state.notes ?? null
-    }));
+    const tasks = getActiveTasks(event).map(task => {
+      const assignment = taskAssignmentReference(task.state);
+      const recipient = assignmentRecipient(assignment ?? task.state.assignee, event);
+      return {
+        id: task.item.id,
+        module: task.module.title,
+        title: task.item.title,
+        deadlineCode: task.item.deadlineCode ?? null,
+        dueDate: task.dueDate,
+        assignment,
+        assignee: assignmentDisplay(assignment, task.state.assignee ?? '') || null,
+        recipient: recipient.name || recipient.email ? recipient : null,
+        completed: Boolean(task.state.completed),
+        notes: task.state.notes ?? null
+      };
+    });
 
     const exportData = {
       playbookId: playbook.id,
@@ -4020,6 +4366,7 @@
         id: event.id,
         name: event.name,
         organiser: event.organiser,
+        organiserRef: event.organiserRef ?? null,
         eventDate: event.eventDate,
         description: event.description,
         lifecycle: structuredClone(event.lifecycle),
