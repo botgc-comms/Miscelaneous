@@ -42,6 +42,13 @@
       "Do not make the poster monochrome or nearly monochrome unless the organiser explicitly requests it."
     ]
   },
+  "referenceSelection": {
+    "maximumAutomaticReferences": 3,
+    "minimumConfidence": 65,
+    "profileInstruction": "You compile durable semantic matching profiles for an event-poster image library. Use only the supplied image title, category, description and tags. Describe the specific concepts, named entities, aliases and circumstances that would make this image genuinely relevant to a future event brief. The result will be stored with the image and used repeatedly. Do not infer visual facts that are not in the metadata, and do not treat generic golf-club vocabulary as evidence of a match.",
+    "scoringInstruction": "You are the reference-image relevance gate for an event-poster generator. Compare the complete content intent with every stored image matching profile. Score semantic relevance conservatively: choose an image only when it depicts or identifies something that the event explicitly or clearly implies should influence the artwork. Named causes, charities, trophies, places, rooms, logos and distinctive props are strong evidence. Generic overlap such as golf, club, clubhouse, event or poster is not. Respect explicit exclusions such as a request not to use club branding. Return grounded confidence scores and concise reasons for every image.",
+    "notes": "Style is deliberately excluded from relevance scoring. The selected style direction is chosen only after relevant reference images have been identified."
+  },
   "events": [
     {
       "id": "steeple-chase",

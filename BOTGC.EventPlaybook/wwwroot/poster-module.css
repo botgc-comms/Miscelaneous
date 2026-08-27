@@ -845,6 +845,19 @@
     display: grid;
     gap: 10px;
 }
+.poster-studio .automatic-reference-summary{
+  display:grid;
+  gap:3px;
+  margin-bottom:10px;
+  padding:10px 12px;
+  border:1px solid #bdd8ce;
+  border-radius:10px;
+  background:#f2f8f5;
+  color:var(--navy);
+}
+.poster-studio .automatic-reference-summary.muted{border-color:#d8e1de;background:#f8faf9}
+.poster-studio .automatic-reference-summary strong{font-size:.7rem}
+.poster-studio .automatic-reference-summary small{color:var(--muted);font-size:.61rem;line-height:1.45}
 .poster-studio .supporting-files-empty{
     padding: 12px 14px;
     border: 1px dashed var(--line);

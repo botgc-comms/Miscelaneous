@@ -87,6 +87,7 @@ builder.Services.AddHttpClient("OpenAI", client =>
     client.Timeout = TimeSpan.FromMinutes(5);
 });
 builder.Services.AddSingleton<IImagePromptService, OpenAiPromptService>();
+builder.Services.AddSingleton<IReferenceRelevanceService, OpenAiReferenceRelevanceService>();
 builder.Services.AddSingleton<IOpenAiImageService, OpenAiImageService>();
 builder.Services.AddHttpClient("Yodeck", client =>
 {
@@ -278,6 +279,112 @@ app.MapPut("/api/poster/session", async (
     }
 
     return Results.Ok(await store.SaveAsync(key.Trim(), request.Session, cancellationToken));
+});
+
+app.MapGet("/api/poster/artwork", async (
+    string key,
+    string outputId,
+    string version,
+    HttpContext httpContext,
+    IPosterConfigurationService posterConfiguration,
+    IPosterSessionStore store,
+    CancellationToken cancellationToken) =>
+{
+    if (string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(outputId) || string.IsNullOrWhiteSpace(version))
+    {
+        return Results.BadRequest(new { error = "A session key, output id and artwork version are required." });
+    }
+
+    try
+    {
+        posterConfiguration.GetOutput(outputId.Trim());
+    }
+    catch (KeyNotFoundException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
+
+    var artwork = await store.GetArtworkAsync(key.Trim(), outputId.Trim(), version.Trim(), cancellationToken);
+    if (artwork is null) return Results.NotFound();
+    httpContext.Response.Headers.CacheControl = "private, no-cache, must-revalidate";
+    return Results.File(artwork.Path, artwork.ContentType, enableRangeProcessing: true);
+});
+
+app.MapPut("/api/poster/artwork", async (
+    string key,
+    string outputId,
+    HttpRequest request,
+    IPosterConfigurationService posterConfiguration,
+    IPosterSessionStore store,
+    CancellationToken cancellationToken) =>
+{
+    if (string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(outputId))
+    {
+        return Results.BadRequest(new { error = "A session key and output id are required." });
+    }
+    if (request.ContentLength is > 80L * 1024L * 1024L)
+    {
+        return Results.BadRequest(new { error = "Poster artwork exceeds the 80 MB storage limit." });
+    }
+    if (string.IsNullOrWhiteSpace(request.ContentType) ||
+        !request.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+    {
+        return Results.BadRequest(new { error = "Poster artwork must be supplied as an image." });
+    }
+
+    try
+    {
+        posterConfiguration.GetOutput(outputId.Trim());
+        var artwork = await store.SaveArtworkAsync(
+            key.Trim(),
+            outputId.Trim(),
+            request.Body,
+            request.ContentType,
+            cancellationToken);
+        var url = $"/api/poster/artwork?key={Uri.EscapeDataString(key.Trim())}&outputId={Uri.EscapeDataString(outputId.Trim())}&version={artwork.Version}";
+        return Results.Ok(new { url, artwork.Version });
+    }
+    catch (KeyNotFoundException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
+    catch (InvalidDataException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
+});
+
+app.MapPost("/api/poster/reference-profile", async (
+    CompileReferenceProfileRequest request,
+    IReferenceRelevanceService relevanceService,
+    CancellationToken cancellationToken) =>
+{
+    if (string.IsNullOrWhiteSpace(request.Title) ||
+        string.IsNullOrWhiteSpace(request.Category) ||
+        string.IsNullOrWhiteSpace(request.Description))
+    {
+        return Results.BadRequest(new { error = "Title, category and description are required to compile an image matching profile." });
+    }
+
+    return Results.Ok(await relevanceService.CompileProfileAsync(request, cancellationToken));
+});
+
+app.MapPost("/api/poster/select-references", async (
+    SelectReferenceImagesRequest request,
+    IReferenceRelevanceService relevanceService,
+    CancellationToken cancellationToken) =>
+{
+    if (string.IsNullOrWhiteSpace(request.EventName) || string.IsNullOrWhiteSpace(request.Description))
+    {
+        return Results.BadRequest(new { error = "An event name and description are required to select image references." });
+    }
+
+    if (request.References.Count > 100)
+    {
+        return Results.BadRequest(new { error = "No more than 100 library images can be assessed in one request." });
+    }
+
+    return Results.Ok(await relevanceService.SelectAsync(request, cancellationToken));
 });
 
 app.MapPost("/api/poster/generate-primary", async (

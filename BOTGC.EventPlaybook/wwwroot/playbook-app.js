@@ -83,6 +83,7 @@
           directoryInitialised: false,
           roles: [],
           contacts: [],
+          referenceLibrary: [],
           notificationOutbox: [],
           adminDraftItems: [],
           adminDraftAdvisories: [],
@@ -103,6 +104,7 @@
         directoryInitialised: parsed.directoryInitialised === true,
         roles: Array.isArray(parsed.roles) ? parsed.roles : [],
         contacts: Array.isArray(parsed.contacts) ? parsed.contacts : [],
+        referenceLibrary: Array.isArray(parsed.referenceLibrary) ? parsed.referenceLibrary : loadLegacyReferenceLibrary(),
         notificationOutbox: Array.isArray(parsed.notificationOutbox) ? parsed.notificationOutbox : [],
         adminDraftItems: Array.isArray(parsed.adminDraftItems) ? parsed.adminDraftItems : [],
         adminDraftAdvisories: Array.isArray(parsed.adminDraftAdvisories) ? parsed.adminDraftAdvisories : [],
@@ -121,6 +123,7 @@
         directoryInitialised: false,
         roles: [],
         contacts: [],
+        referenceLibrary: [],
         notificationOutbox: [],
         adminDraftItems: [],
         events: []
@@ -175,17 +178,19 @@
   }
 
   function saveState() {
-    localStorage.setItem(STORAGE_STATE, JSON.stringify(state));
+    const { referenceLibrary: _, ...browserState } = state;
+    localStorage.setItem(STORAGE_STATE, JSON.stringify(browserState));
     if (sharedStateReady && !applyingSharedState) scheduleSharedStateSave();
   }
 
   function emptySharedState() {
     return {
-      schemaVersion: 3,
+      schemaVersion: 4,
       deadlineOffsets: {},
       directoryInitialised: false,
       roles: [],
       contacts: [],
+      referenceLibrary: [],
       events: []
     };
   }
@@ -195,13 +200,14 @@
     const roles = Array.isArray(candidate.roles) ? structuredClone(candidate.roles) : [];
     const contacts = Array.isArray(candidate.contacts) ? structuredClone(candidate.contacts) : [];
     return {
-      schemaVersion: 3,
+      schemaVersion: 4,
       deadlineOffsets: candidate.deadlineOffsets && typeof candidate.deadlineOffsets === 'object'
         ? structuredClone(candidate.deadlineOffsets)
         : {},
       directoryInitialised: candidate.directoryInitialised === true,
       roles,
       contacts,
+      referenceLibrary: Array.isArray(candidate.referenceLibrary) ? structuredClone(candidate.referenceLibrary) : [],
       events: Array.isArray(candidate.events) ? structuredClone(candidate.events) : []
     };
   }
@@ -212,6 +218,7 @@
       directoryInitialised: state.directoryInitialised,
       roles: state.roles,
       contacts: state.contacts,
+      referenceLibrary: state.referenceLibrary,
       events: state.events
     });
   }
@@ -271,11 +278,12 @@
     const local = normaliseSharedState(localValue);
     const remote = normaliseSharedState(remoteValue);
     return {
-      schemaVersion: 3,
+      schemaVersion: 4,
       deadlineOffsets: mergeChangedValue(base.deadlineOffsets, local.deadlineOffsets, remote.deadlineOffsets),
       directoryInitialised: Boolean(mergeChangedValue(base.directoryInitialised, local.directoryInitialised, remote.directoryInitialised)),
       roles: mergeEntitiesById(base.roles, local.roles, remote.roles),
       contacts: mergeEntitiesById(base.contacts, local.contacts, remote.contacts),
+      referenceLibrary: mergeEntitiesById(base.referenceLibrary, local.referenceLibrary, remote.referenceLibrary),
       events: mergeEntitiesById(base.events, local.events, remote.events)
     };
   }
@@ -287,12 +295,19 @@
     state.directoryInitialised = shared.directoryInitialised;
     state.roles = shared.roles;
     state.contacts = shared.contacts;
+    state.referenceLibrary = shared.referenceLibrary;
     state.events = shared.events;
     if (state.activeEventId && !state.events.some(event => event.id === state.activeEventId)) {
       state.activeEventId = null;
       state.activeView = 'catalogue';
     }
-    localStorage.setItem(STORAGE_STATE, JSON.stringify(state));
+    const { referenceLibrary: _, ...browserState } = state;
+    localStorage.setItem(STORAGE_STATE, JSON.stringify(browserState));
+    try {
+      localStorage.setItem(REFERENCE_LIBRARY_STORAGE, JSON.stringify(state.referenceLibrary));
+    } catch (error) {
+      console.warn('The shared Image Library is too large for the browser cache. Server storage remains authoritative.', error);
+    }
     applyingSharedState = false;
   }
 
@@ -395,10 +410,12 @@
           const remoteRoleIds = new Set(remote.roles.map(role => role.id));
           const remoteEventIds = new Set(remote.events.map(event => event.id));
           const remoteContactIds = new Set(remote.contacts.map(contact => contact.id));
+          const remoteReferenceIds = new Set(remote.referenceLibrary.map(reference => reference.id));
           const legacyRoles = browserSnapshot.roles.filter(role => role?.id && !remoteRoleIds.has(role.id));
           const legacyEvents = browserSnapshot.events.filter(event => event?.id && !remoteEventIds.has(event.id));
           const legacyContacts = browserSnapshot.contacts.filter(contact => contact?.id && !remoteContactIds.has(contact.id));
-          needsMigrationSave = legacyRoles.length > 0 || legacyEvents.length > 0 || legacyContacts.length > 0;
+          const legacyReferences = browserSnapshot.referenceLibrary.filter(reference => reference?.id && !remoteReferenceIds.has(reference.id));
+          needsMigrationSave = legacyRoles.length > 0 || legacyEvents.length > 0 || legacyContacts.length > 0 || legacyReferences.length > 0;
           if (needsMigrationSave) {
             initial = normaliseSharedState({
               deadlineOffsets: Object.keys(remote.deadlineOffsets).length > 0
@@ -407,6 +424,7 @@
               directoryInitialised: remote.directoryInitialised || browserSnapshot.directoryInitialised,
               roles: [...remote.roles, ...legacyRoles],
               contacts: [...remote.contacts, ...legacyContacts],
+              referenceLibrary: [...remote.referenceLibrary, ...legacyReferences],
               events: [...remote.events, ...legacyEvents]
             });
           }
@@ -414,7 +432,7 @@
         applySharedState(initial);
       } else {
         lastSyncedSharedState = emptySharedState();
-        needsMigrationSave = browserSnapshot.roles.length > 0 || browserSnapshot.events.length > 0 || browserSnapshot.contacts.length > 0;
+        needsMigrationSave = browserSnapshot.roles.length > 0 || browserSnapshot.events.length > 0 || browserSnapshot.contacts.length > 0 || browserSnapshot.referenceLibrary.length > 0;
       }
       sharedStateReady = true;
       if (needsMigrationSave) {
@@ -1819,12 +1837,13 @@
 
     bindEvents();
     if (state.activeView === 'artwork' && event) {
-      import('./poster-app.js?v=20260827-yodeck-upsert-1')
+      import('./poster-app.js?v=20260827-reference-relevance-1')
         .then(module => module.mountPosterStudio({
           eventId: event.id,
           eventName: event.name,
           eventDate: event.eventDate,
           description: event.description,
+          referenceLibrary: loadReferenceLibrary(),
           onArtworkReady: (thumbnailDataUrl, artworkInfo = {}) => {
             const target = state.events.find(item => item.id === event.id);
             if (!target || !thumbnailDataUrl) return;
@@ -1868,7 +1887,7 @@
     }
   }
 
-  function loadReferenceLibrary() {
+  function loadLegacyReferenceLibrary() {
     try {
       const raw = localStorage.getItem(REFERENCE_LIBRARY_STORAGE);
       const parsed = raw ? JSON.parse(raw) : [];
@@ -1878,12 +1897,58 @@
     }
   }
 
+  function loadReferenceLibrary() {
+    if (Array.isArray(state.referenceLibrary)) return state.referenceLibrary;
+    state.referenceLibrary = loadLegacyReferenceLibrary();
+    return state.referenceLibrary;
+  }
+
   function saveReferenceLibrary(items) {
-    localStorage.setItem(REFERENCE_LIBRARY_STORAGE, JSON.stringify(items));
+    state.referenceLibrary = Array.isArray(items) ? items : [];
+    try {
+      localStorage.setItem(REFERENCE_LIBRARY_STORAGE, JSON.stringify(state.referenceLibrary));
+    } catch (error) {
+      console.warn('The Image Library is too large for the browser cache. Saving it to shared server storage instead.', error);
+    }
+    saveState();
   }
 
   function parseReferenceTags(value) {
     return String(value ?? '').split(',').map(item => item.trim()).filter(Boolean);
+  }
+
+  function buildLocalReferenceProfile(metadata) {
+    const signals = [metadata.title, metadata.category, ...(metadata.tags ?? [])]
+      .map(value => String(value ?? '').trim())
+      .filter(Boolean);
+    return {
+      schemaVersion: 1,
+      matchingInstruction: `Select this image only when the event brief explicitly or semantically calls for ${metadata.title} (${metadata.category}): ${metadata.description}`,
+      positiveSignals: [...new Set(signals)],
+      namedEntities: metadata.title ? [metadata.title] : [],
+      negativeSignals: ['Do not select it solely because the event involves golf, the club, the clubhouse or a poster.'],
+      mode: 'browser-fallback',
+      model: 'browser-fallback',
+      generatedAt: new Date().toISOString()
+    };
+  }
+
+  async function compileReferenceProfile(metadata) {
+    try {
+      const response = await fetch('/api/poster/reference-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(metadata)
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.matchingInstruction) {
+        throw new Error(result?.error ?? `Reference analysis failed (${response.status}).`);
+      }
+      return result;
+    } catch (error) {
+      console.warn('Unable to compile the image matching profile with the server. Using a local profile.', error);
+      return buildLocalReferenceProfile(metadata);
+    }
   }
 
   function referenceCategoryOptions() {
@@ -1932,11 +1997,11 @@
                 <label class="field"><span>Category</span><select id="reference-library-category">${referenceCategoryOptions().map(option => `<option value="${escapeHtml(option)}">${escapeHtml(option)}</option>`).join('')}</select></label>
                 <label class="field"><span>Priority</span><input id="reference-library-priority" type="number" min="0" max="10" step="1" value="5"><small>Higher priority references are more likely to be selected when they match.</small></label>
                 <label class="field field-span-2"><span>Tags</span><input id="reference-library-tags" type="text" placeholder="clubhouse, exterior, patio, presentation"><small>Comma-separated keywords.</small></label>
-                <label class="field field-span-2"><span>Description</span><textarea id="reference-library-description" rows="6" placeholder="For example: Main clubhouse frontage viewed from the 18th green, including the patio and white-trimmed windows. Use when the clubhouse is visible in outdoor scenes."></textarea></label>
+                 <label class="field field-span-2"><span>Description</span><textarea id="reference-library-description" rows="6" placeholder="For example: Main clubhouse frontage viewed from the 18th green, including the patio and white-trimmed windows. Use when the clubhouse is visible in outdoor scenes." required></textarea><small>This metadata is compiled into a reusable AI matching rule whenever the reference is saved.</small></label>
                 <label class="field field-span-2 inline-check"><input id="reference-library-active" type="checkbox" checked><span>Active for automatic selection</span></label>
               </div>
               <div class="reference-form-actions">
-                <button class="button button-primary" type="submit">Save reference</button>
+                <button class="button button-primary" type="submit" data-reference-save>Save and analyse reference</button>
                 <button class="button button-secondary" type="button" data-action="reference-form-reset">Clear form</button>
               </div>
             </form>
@@ -1958,6 +2023,8 @@
 
   function renderReferenceCard(reference) {
     const tags = Array.isArray(reference.tags) ? reference.tags : [];
+    const profile = reference.relevanceProfile;
+    const profileReady = Boolean(profile?.matchingInstruction);
     return `
       <article class="reference-card">
         <div class="reference-card-image">
@@ -1973,6 +2040,10 @@
             <span class="reference-priority">P${escapeHtml(reference.priority ?? 0)}</span>
           </div>
           <p class="reference-card-copy">${escapeHtml(reference.description || 'No description supplied yet.')}</p>
+          <div class="reference-profile-status ${profileReady ? 'ready' : 'missing'}">
+            <strong>${profileReady ? 'Matching profile ready' : 'Matching profile required'}</strong>
+            <small>${profileReady ? escapeHtml(profile.matchingInstruction) : 'Edit and save this image once to compile its semantic relevance rule.'}</small>
+          </div>
           <div class="reference-tag-list">${tags.length === 0 ? '<span class="reference-tag muted">No tags</span>' : tags.map(tag => `<span class="reference-tag">${escapeHtml(tag)}</span>`).join('')}</div>
           <div class="reference-card-actions">
             <button class="button button-secondary" type="button" data-edit-reference="${escapeHtml(reference.id)}">Edit</button>
@@ -4366,6 +4437,11 @@
     const referenceLibraryForm = document.getElementById('reference-library-form');
     referenceLibraryForm?.addEventListener('submit', async eventArgs => {
       eventArgs.preventDefault();
+      const saveButton = referenceLibraryForm.querySelector('[data-reference-save]');
+      if (saveButton) {
+        saveButton.disabled = true;
+        saveButton.textContent = 'Analysing relevance…';
+      }
       const references = loadReferenceLibrary();
       const id = document.getElementById('reference-library-id').value || crypto.randomUUID();
       const imageInput = document.getElementById('reference-library-image');
@@ -4376,15 +4452,27 @@
       }
       if (!dataUrl) {
         alert('Please choose an image.');
+        if (saveButton) {
+          saveButton.disabled = false;
+          saveButton.textContent = 'Save and analyse reference';
+        }
         return;
       }
-      const next = {
-        id,
+      const metadata = {
         title: document.getElementById('reference-library-title').value.trim(),
         category: document.getElementById('reference-library-category').value.trim(),
-        priority: Number(document.getElementById('reference-library-priority').value || 0),
         tags: parseReferenceTags(document.getElementById('reference-library-tags').value),
-        description: document.getElementById('reference-library-description').value.trim(),
+        description: document.getElementById('reference-library-description').value.trim()
+      };
+      const relevanceProfile = await compileReferenceProfile(metadata);
+      const next = {
+        id,
+        title: metadata.title,
+        category: metadata.category,
+        priority: Number(document.getElementById('reference-library-priority').value || 0),
+        tags: metadata.tags,
+        description: metadata.description,
+        relevanceProfile,
         active: document.getElementById('reference-library-active').checked,
         dataUrl,
         updatedAt: new Date().toISOString(),

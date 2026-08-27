@@ -42,27 +42,38 @@ public sealed class OpenAiPromptService(
             };
         }
 
+        // Keep this property order deliberate. Subject matter is settled first,
+        // relevant factual references second, visual treatment third, and the
+        // invariant production rules last.
         var brief = new
         {
-            task = "Create the final image-generation prompt for the PRIMARY finished event poster. The prompt must visibly dramatise the organiser-supplied event description, not merely acknowledge it.",
-            brand = request.IncludeClubBranding ? configuration.Brand.Name : null,
-            eventData = new
+            task = "Create the final image-generation prompt for the PRIMARY finished event poster.",
+            contentIntent = new
             {
-                title = eventDefinition.Name,
-                organiserDescription = request.Description.Trim(),
-                descriptionPriority = "The organiser description is the primary source of truth for the visual concept. Extract every concrete, distinctive visual element from it and make the most memorable ones visible in the scene. Do not collapse a colourful or unusual event into generic golf imagery.",
-                requiredVisualExtraction = "Before writing the final image prompt, identify the event's distinctive nouns, characters, activities, props, entertainment, food, setting and humour. Convert those into explicit must-show visual instructions. If the description contains unusual elements such as animals, costumes, performers, themed food or entertainment, those elements must visibly drive the poster concept rather than becoming background flavour.",
-                eventDefinition.SceneRecipe
+                eventTitle = eventDefinition.Name,
+                eventDescription = request.Description.Trim(),
+                additionalCreativeInstructions = NormaliseOptional(request.AdditionalInstructions),
+                refinementNotes = NormaliseOptional(request.RefinementNotes),
+                authorityRule = "The event description and additional creative instructions exclusively control what is depicted. Extract their concrete people, organisations, causes, characters, activities, props, entertainment, food, setting and humour. Do not add a separate catalogue scene recipe or replace a distinctive brief with generic golf imagery.",
+                requestedContent = new
+                {
+                    eventDate = request.IncludeDate ? FormatEventDate(request.EventDate) : null,
+                    price = request.IncludePrice ? request.Price?.Trim() : null,
+                    clubName = request.IncludeClubBranding ? configuration.Brand.Name : null,
+                    clubLogoRequested = request.IncludeClubBranding,
+                    clubLogoRule = request.IncludeClubBranding
+                        ? "The real Club mark will be applied after generation. Keep the upper-right safe area visually quiet for it, but do not draw, imitate or invent it."
+                        : "Do not show the Club name, BOTGC initials, a crest, shield, monogram, wordmark or any Club logo or branding."
+                }
             },
-            stylePreset = new
+            selectedRelevantReferences = DescribeSupportingImages(
+                request.SupportingImages,
+                "These images have already passed semantic relevance assessment against the complete content intent. Use each one only for the specific real-world subject identified by its matching instruction and relevance reason. Do not let a reference introduce unrelated subject matter."),
+            selectedStyleDirection = new
             {
                 metadataName = style.Name,
-                style.StyleDirection,
-                style.ColourDirection,
-                style.VisualLanguage,
-                style.Mood,
-                style.Avoid,
-                selectedVariation = styleVariation is null
+                baseDirection = style.StyleDirection,
+                selectedInstruction = styleVariation is null
                     ? null
                     : new
                     {
@@ -70,47 +81,36 @@ public sealed class OpenAiPromptService(
                         metadataName = styleVariation.Name,
                         namedIllustrator = styleVariation.ArtistName,
                         referenceWork = styleVariation.ReferenceWork,
-                        explicitStyleInstruction = BuildExplicitVariationInstruction(styleVariation, isVariant: false),
-                        styleVariation.StyleDirection,
+                        explicitInstruction = BuildExplicitVariationInstruction(styleVariation, isVariant: false),
+                        description = styleVariation.StyleDirection,
                         styleVariation.ColourDirection
-                    }
+                    },
+                style.ColourDirection,
+                style.VisualLanguage,
+                style.Mood,
+                style.Avoid,
+                rule = "Style changes treatment only. It must not replace, dilute or invent the content intent. The selected style name is metadata and must not appear as poster copy."
             },
-            output = new
+            finalProductionRules = new
             {
-                output.Name,
-                output.Width,
-                output.Height,
-                output.Purpose,
-                output.CompositionGuidance,
-                output.ReservedOverlayZones
-            },
-            posterContent = new
-            {
-                renderAsFinishedPoster = true,
-                fullFrameRule = "The generated image is the finished artwork itself. Fill the complete requested canvas edge to edge; do not show a poster, sheet, border, frame or mockup inside the image.",
-                clubName = request.IncludeClubBranding ? configuration.Brand.Name : null,
-                clubBrandingRequested = request.IncludeClubBranding,
-                eventTitle = eventDefinition.Name,
-                eventDate = request.IncludeDate ? FormatEventDate(request.EventDate) : null,
-                price = request.IncludePrice ? request.Price?.Trim() : null,
-                exactTextRule = request.IncludeClubBranding
-                    ? "Render the supplied club name, event title, date and price exactly as written. Do not paraphrase, correct, abbreviate or invent alternatives."
-                    : "Render the supplied event title, date and price exactly as written. Do not paraphrase, correct, abbreviate or invent alternatives.",
-                clubBrandingRule = request.IncludeClubBranding
-                    ? "The real Club mark will be applied after generation. Keep the upper-right safe area visually quiet for it, but do not draw, imitate or invent a crest, shield, monogram or logo."
-                    : "This is an internal Club asset. Do not show the Club name, BOTGC initials, a crest, shield, monogram, wordmark or any other Club logo or branding anywhere in the poster.",
-                textSafetyRule = "Every required word must be fully visible. Obey the output-specific safe margins as a hard boundary. No glyph, word, date, price, text box, text badge or text-bearing panel may touch, cross or be clipped by any image edge. Reflow or reduce type size before violating the safe area.",
-                supportingCopyRule = "You may devise a short event-specific subtitle, explanatory line and call to action when they improve the poster. Keep them concise, relevant and consistent with the event description.",
+                output = new
+                {
+                    output.Name,
+                    output.Width,
+                    output.Height,
+                    output.Purpose,
+                    output.CompositionGuidance,
+                    output.ReservedOverlayZones
+                },
+                renderAsFinishedPoster = "Fill the complete requested canvas edge to edge. Do not show a poster, sheet, border, frame or mockup inside the image.",
+                exactTextRule = "Render every supplied title, date and price exactly as written. Do not paraphrase, correct, abbreviate or invent alternatives.",
+                titlePlacementRule = "Place the complete event title in a prominent text-safe area at or near the top of the poster, with generous clear space around every letter.",
+                textSafetyRule = "Every required word must be fully visible. No glyph, word, date, price, text box, text badge or text-bearing panel may touch, cross or be clipped by any image edge. Reflow or reduce type size before violating the safe area.",
+                supportingCopyRule = "Optional supporting copy must be concise, factually grounded in the event description and fully inside the safe area.",
                 colourQualityRule = configuration.Prompting.ColourQualityDirection,
-                stylePresetNameIsMetadataOnly = true
-            },
-            supportingReferences = DescribeSupportingImages(
-                request.SupportingImages,
-                "Supporting images are attached separately. Use them as visual references for real-world details that should appear in the poster, such as a trophy, mascot, prop, logo placement context or venue-specific object. When a supporting image clearly depicts a featured object, incorporate that object's recognisable design rather than inventing a generic substitute."),
-            organiserInstructions = NormaliseOptional(request.AdditionalInstructions),
-            refinementNotes = NormaliseOptional(request.RefinementNotes),
-            globalImageRules = configuration.Prompting.GlobalImageRules,
-            globalExclusions = configuration.Prompting.GlobalExclusions
+                globalImageRules = configuration.Prompting.GlobalImageRules,
+                globalExclusions = configuration.Prompting.GlobalExclusions
+            }
         };
 
         return await CreatePromptAsync(
@@ -329,100 +329,75 @@ public sealed class OpenAiPromptService(
         var builder = new StringBuilder();
         builder.AppendLine($"Create a premium finished event poster for the golf-club event '{eventDefinition.Name}'.");
         builder.AppendLine();
-        builder.AppendLine("OBJECTIVE");
-        builder.AppendLine("Create the complete finished poster, integrating illustration, typography and event information into one coherent professional design. The poster must instantly communicate the event concept and remain readable at distance.");
-        builder.AppendLine();
-        builder.AppendLine("EVENT CONCEPT");
+        builder.AppendLine("1. EVENT CONTENT INTENT — CONTROLS WHAT IS DEPICTED");
+        builder.AppendLine($"Event title: {eventDefinition.Name}");
+        builder.AppendLine("Event description:");
         builder.AppendLine(request.Description.Trim());
-        builder.AppendLine(eventDefinition.SceneRecipe.CentralIdea);
+        builder.AppendLine("Additional creative instructions:");
+        builder.AppendLine(string.IsNullOrWhiteSpace(request.AdditionalInstructions)
+            ? "None supplied."
+            : request.AdditionalInstructions.Trim());
+        if (!string.IsNullOrWhiteSpace(request.RefinementNotes))
+        {
+            builder.AppendLine("Refinement of the supplied previous campaign:");
+            builder.AppendLine(request.RefinementNotes.Trim());
+        }
+        builder.AppendLine("The event description and additional creative instructions exclusively control the depicted subjects and story. Extract their concrete people, organisations, causes, characters, activities, props, entertainment, food, setting and humour. Do not replace them with a generic golf scene.");
         builder.AppendLine();
-        builder.AppendLine("PRIMARY SCENE");
-        builder.AppendLine(eventDefinition.SceneRecipe.PrimaryScene);
-        AppendList(builder, eventDefinition.SceneRecipe.MustShow);
+        builder.AppendLine("Requested poster content:");
+        if (request.IncludeDate)
+        {
+            builder.AppendLine($"- Include event date exactly: {FormatEventDate(request.EventDate)}");
+        }
+        if (request.IncludePrice && !string.IsNullOrWhiteSpace(request.Price))
+        {
+            builder.AppendLine($"- Include price exactly: {request.Price.Trim()}");
+        }
+        if (request.IncludeClubBranding)
+        {
+            builder.AppendLine($"- Include club name exactly: {configuration.Brand.Name}");
+            builder.AppendLine("- The real Club mark is added after generation. Keep the upper-right safe area quiet, but do not draw, imitate or invent a logo.");
+        }
+        else
+        {
+            builder.AppendLine("- Do not include the Club name, BOTGC initials, a crest, shield, monogram, wordmark or other Club branding.");
+        }
+
         builder.AppendLine();
-        builder.AppendLine("VISUAL STYLE");
+        builder.AppendLine("2. SELECTED RELEVANT REFERENCE IMAGES");
+        AppendSupportingImagePrompt(builder, request.SupportingImages,
+            "These images have already passed semantic relevance assessment against the event content intent. Use each only for the specific subject stated in its matching rule and reason. Do not introduce unrelated content from a reference.");
+        if (request.SupportingImages.Count == 0)
+        {
+            builder.AppendLine("No library or event-specific reference image was supplied.");
+        }
+
+        builder.AppendLine();
+        builder.AppendLine("3. RANDOMLY SELECTED STYLE INSTRUCTION — CONTROLS TREATMENT ONLY");
         builder.AppendLine(style.StyleDirection);
         if (styleVariation is not null)
         {
             builder.AppendLine(BuildExplicitVariationInstruction(styleVariation, isVariant: false));
-            builder.AppendLine("Use this selected art direction consistently while creating a new, event-specific composition:");
             builder.AppendLine(styleVariation.StyleDirection);
         }
         AppendList(builder, style.VisualLanguage);
-        builder.AppendLine();
-        builder.AppendLine("COLOUR DIRECTION — REQUIRED");
+        AppendList(builder, style.Mood);
         builder.AppendLine(configuration.Prompting.ColourQualityDirection);
         builder.AppendLine(style.ColourDirection);
-        if (!string.IsNullOrWhiteSpace(styleVariation?.ColourDirection))
-        {
-            builder.AppendLine(styleVariation.ColourDirection);
-        }
+        if (!string.IsNullOrWhiteSpace(styleVariation?.ColourDirection)) builder.AppendLine(styleVariation.ColourDirection);
+        builder.AppendLine("The style changes visual treatment only; it must not replace, dilute or invent the event content.");
+
         builder.AppendLine();
-        builder.AppendLine("MOOD AND CHARACTER");
-        AppendList(builder, style.Mood);
-        AppendList(builder, eventDefinition.SceneRecipe.MoodAndHumour);
-        builder.AppendLine();
-        builder.AppendLine("SUPPORTING DETAIL");
-        AppendList(builder, eventDefinition.SceneRecipe.SupportingDetails);
-        builder.AppendLine();
-        builder.AppendLine("COMPOSITION");
-        builder.AppendLine($"Design for {output.Name}, {output.Width}:{output.Height} portrait ratio. {output.CompositionGuidance}");
+        builder.AppendLine("4. CONSISTENT PRODUCTION RULES");
+        builder.AppendLine("Create the complete finished poster, integrating artwork and typography into one coherent professional design that fills the requested canvas edge to edge.");
+        builder.AppendLine($"Design for {output.Name}, {output.Width}:{output.Height}. {output.CompositionGuidance}");
         AppendList(builder, output.ReservedOverlayZones);
-        builder.AppendLine("Create one clear focal scene and integrate the required typography into the composition rather than reserving empty areas for later application overlays. Every required text element must be fully visible with generous margins. Never crop, clip, truncate or let text touch the poster edge. If necessary, use smaller type or more line breaks.");
+        builder.AppendLine("Place the complete event title prominently at or near the top, fully within the safe area and with generous breathing room around every letter.");
+        builder.AppendLine("Render all required copy exactly as written. Every word, date, price and text-bearing shape must be fully visible. Never crop, clip or truncate typography, and never let a glyph or text container touch an edge. Reflow or reduce type size before violating the safe area.");
+        builder.AppendLine("The selected style name is metadata and must never appear as poster copy.");
         AppendList(builder, configuration.Prompting.GlobalImageRules);
-
-        AppendSupportingImagePrompt(builder, request.SupportingImages,
-            "Use any separately supplied supporting images as factual visual references for distinctive event details. If a supporting image shows a trophy, prop, mascot or other important object, incorporate that recognisable design into the poster rather than inventing a generic substitute.");
-        builder.AppendLine();
-        builder.AppendLine("REQUIRED POSTER TEXT");
-        if (request.IncludeClubBranding)
-        {
-            builder.AppendLine($"Club name: {configuration.Brand.Name}");
-            builder.AppendLine("The real Club mark will be applied after generation. Keep the upper-right safe area visually quiet for it, but do not draw, imitate or invent a crest, shield, monogram or logo.");
-        }
-        else
-        {
-            builder.AppendLine("Do not include the Club name, BOTGC initials, a crest, shield, monogram, wordmark or any other Club logo or branding anywhere in the poster.");
-        }
-        builder.AppendLine($"Event title: {eventDefinition.Name}");
-
-        if (request.IncludeDate)
-        {
-            builder.AppendLine($"Event date: {FormatEventDate(request.EventDate)}");
-        }
-
-        if (request.IncludePrice && !string.IsNullOrWhiteSpace(request.Price))
-        {
-            builder.AppendLine($"Price: {request.Price.Trim()}");
-        }
-
-        builder.AppendLine("Render the required poster text exactly as written. Do not paraphrase, abbreviate, alter spelling, alter dates or invent a different price.");
-        builder.AppendLine("TEXT SAFETY — NON-NEGOTIABLE");
-        builder.AppendLine("Every required word, date, price and text-bearing design element must be fully visible and comfortably inside the output-specific safe margins. Never crop, clip or truncate typography. No glyph may touch or cross any edge. Reflow or reduce type size before violating the safe area.");
-        builder.AppendLine("You may add a concise event-specific subtitle, simple explanatory copy and a short call to action if they improve the campaign, but keep the poster uncluttered.");
-        builder.AppendLine("The selected style name is internal metadata and must never appear as poster copy.");
-
-        if (!string.IsNullOrWhiteSpace(request.AdditionalInstructions))
-        {
-            builder.AppendLine();
-            builder.AppendLine("ORGANISER-SPECIFIC DIRECTION");
-            builder.AppendLine(request.AdditionalInstructions.Trim());
-        }
-
-        if (!string.IsNullOrWhiteSpace(request.RefinementNotes))
-        {
-            builder.AppendLine();
-            builder.AppendLine("REFINEMENT OF THE SUPPLIED PREVIOUS ARTWORK");
-            builder.AppendLine(request.RefinementNotes.Trim());
-            builder.AppendLine("Preserve successful aspects of the previous campaign unless the refinement notes explicitly ask for them to change.");
-        }
-
-        builder.AppendLine();
-        builder.AppendLine("CRITICAL EXCLUSIONS");
         AppendList(builder, configuration.Prompting.GlobalExclusions);
         AppendList(builder, style.Avoid);
-        AppendList(builder, eventDefinition.SceneRecipe.Avoid);
-        builder.AppendLine("Do not write the selected style name anywhere in the image.");
         builder.AppendLine("Do not invent fake dates, prices, sponsor names, competition details or club branding.");
 
         return builder.ToString().Trim();
@@ -567,12 +542,16 @@ public sealed class OpenAiPromptService(
             instruction,
             files = supportingImages.Select(image => new
             {
+                libraryId = image.LibraryId,
                 fileName = image.FileName,
                 title = image.Title,
                 category = image.Category,
                 description = image.Description,
                 tags = image.Tags,
-                source = image.Source
+                source = image.Source,
+                matchingInstruction = image.MatchingInstruction,
+                relevanceConfidence = image.RelevanceConfidence,
+                relevanceReason = image.RelevanceReason
             }).ToArray()
         };
     }
@@ -615,6 +594,21 @@ public sealed class OpenAiPromptService(
             if (!string.IsNullOrWhiteSpace(image.Source))
             {
                 parts.Add($"source {image.Source.Trim()}");
+            }
+
+            if (!string.IsNullOrWhiteSpace(image.MatchingInstruction))
+            {
+                parts.Add($"matching rule {image.MatchingInstruction.Trim()}");
+            }
+
+            if (image.RelevanceConfidence is not null)
+            {
+                parts.Add($"relevance confidence {Math.Clamp(image.RelevanceConfidence.Value, 0, 100)} out of 100");
+            }
+
+            if (!string.IsNullOrWhiteSpace(image.RelevanceReason))
+            {
+                parts.Add($"selection reason {image.RelevanceReason.Trim()}");
             }
 
             builder.AppendLine($"- {string.Join("; ", parts)}");

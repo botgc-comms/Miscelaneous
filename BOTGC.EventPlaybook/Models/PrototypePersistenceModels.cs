@@ -27,3 +27,12 @@ public sealed class SavePosterSessionRequest
 {
     public JsonElement Session { get; set; }
 }
+
+public sealed class PosterArtworkFile
+{
+    public required string Path { get; init; }
+
+    public required string ContentType { get; init; }
+
+    public required string Version { get; init; }
+}

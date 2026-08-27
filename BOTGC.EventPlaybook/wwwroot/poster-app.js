@@ -28,6 +28,7 @@ function createSession(key, context) {
         hydrated: false,
         restoredFromStorage: false,
         generationSnapshot: null,
+        referenceSelection: null,
         persistTimer: null,
         persistenceChain: Promise.resolve(),
         serverRevision: 0,
@@ -155,26 +156,108 @@ async function writeServerSession(key, record) {
     return document;
 }
 
-function serialiseSession(session) {
+function isInlineArtworkSource(value) {
+    return typeof value === 'string' && value.startsWith('data:image/');
+}
+
+function isPersistedArtworkSource(value) {
+    return isInlineArtworkSource(value)
+        || (typeof value === 'string' && value.startsWith('/api/poster/artwork?'));
+}
+
+async function writeServerArtwork(key, outputId, artworkDataUrl) {
+    const sourceResponse = await fetch(artworkDataUrl);
+    if (!sourceResponse.ok) {
+        throw new Error(`The completed ${outputId} artwork could not be prepared for storage.`);
+    }
+    const image = await sourceResponse.blob();
+    const response = await fetch(`/api/poster/artwork?key=${encodeURIComponent(key)}&outputId=${encodeURIComponent(outputId)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': image.type || 'image/png' },
+        body: image
+    });
+    const document = await response.json();
+    if (!response.ok || typeof document?.url !== 'string') {
+        throw new Error(document?.error ?? `Completed ${outputId} artwork could not be saved (${response.status}).`);
+    }
+    return document.url;
+}
+
+async function persistCompletedArtwork(session, outputId, artworkSource) {
+    if (!isInlineArtworkSource(artworkSource)) return artworkSource;
+    try {
+        const storedSource = await writeServerArtwork(session.key, outputId, artworkSource);
+        session.artworkByOutput.set(outputId, storedSource);
+        if (getPrimaryOutput(session)?.id === outputId) {
+            session.primaryArtworkDataUrl = storedSource;
+        }
+        return storedSource;
+    } catch (error) {
+        // Keep the inline image in the browser session. The shared-session writer
+        // deliberately excludes it so one oversized payload cannot erase the
+        // last good server copy.
+        console.warn(`Unable to persist completed artwork for ${outputId}.`, error);
+        return artworkSource;
+    }
+}
+
+async function migrateInlineArtwork(session) {
+    for (const [outputId, artworkSource] of [...session.artworkByOutput]) {
+        if (!isInlineArtworkSource(artworkSource)) continue;
+        await persistCompletedArtwork(session, outputId, artworkSource);
+    }
+}
+
+async function artworkSourceToDataUrl(artworkSource) {
+    if (isInlineArtworkSource(artworkSource)) return artworkSource;
+    if (!isPersistedArtworkSource(artworkSource)) {
+        throw new Error('The saved campaign reference could not be loaded. Generate a new digital-screen master to continue.');
+    }
+    const response = await fetch(artworkSource, { cache: 'no-store' });
+    if (!response.ok) {
+        throw new Error('The saved digital-screen master is unavailable. Generate a new master to continue.');
+    }
+    const blob = await response.blob();
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(reader.error ?? new Error('The saved campaign reference could not be read.'));
+        reader.readAsDataURL(blob);
+    });
+}
+
+function serialiseSession(session, includeInlineArtwork = true) {
     const form = session.generationSnapshot?.form ?? session.form;
     const generationWasInterrupted = session.isGenerating && session.campaignStatus.mode === 'generating';
     const compactGenerationSnapshot = session.generationSnapshot
         ? {
+            id: session.generationSnapshot.id,
             generatedAt: session.generationSnapshot.generatedAt,
             selectedStyleId: session.generationSnapshot.selectedStyleId,
             styleVariationId: session.generationSnapshot.styleVariationId,
-            selectedOutputIds: session.generationSnapshot.selectedOutputIds
+            selectedOutputIds: session.generationSnapshot.selectedOutputIds,
+            referenceSelection: session.generationSnapshot.referenceSelection ?? null
         }
         : null;
 
+    const artworkByOutput = Object.fromEntries(
+        [...session.artworkByOutput].filter(([, value]) => includeInlineArtwork || !isInlineArtworkSource(value))
+    );
+    const primaryArtworkDataUrl = includeInlineArtwork || !isInlineArtworkSource(session.primaryArtworkDataUrl)
+        ? session.primaryArtworkDataUrl
+        : null;
+    const supportingImages = includeInlineArtwork
+        ? form.supportingImages
+        : (form.supportingImages ?? []).filter(image => !isInlineArtworkSource(image?.dataUrl));
+
     return {
         key: session.key,
-        schemaVersion: 3,
+        schemaVersion: 5,
         savedAt: new Date().toISOString(),
         selectedStyleId: session.selectedStyleId,
         selectedOutputIds: [...session.selectedOutputIds],
-        primaryArtworkDataUrl: session.primaryArtworkDataUrl,
-        artworkByOutput: Object.fromEntries(session.artworkByOutput),
+        primaryArtworkDataUrl,
+        artworkByOutput,
         failedOutputs: Object.fromEntries(session.failedOutputs),
         generationSnapshot: compactGenerationSnapshot,
         form: {
@@ -188,7 +271,7 @@ function serialiseSession(session) {
             price: form.price,
             additionalInstructions: form.additionalInstructions,
             refinementNotes: form.refinementNotes,
-            supportingImages: form.supportingImages,
+            supportingImages,
             useLibraryReferences: form.useLibraryReferences,
             publishMediaName: session.form.publishMediaName,
             publishTags: session.form.publishTags,
@@ -229,10 +312,10 @@ function applyStoredSession(session, stored) {
     if (Array.isArray(storedForm.supportingImages)) session.form.supportingImages = storedForm.supportingImages;
     session.form.selectedLibraryReferences = [];
 
-    session.primaryArtworkDataUrl = typeof stored.primaryArtworkDataUrl === 'string' ? stored.primaryArtworkDataUrl : null;
+    session.primaryArtworkDataUrl = isPersistedArtworkSource(stored.primaryArtworkDataUrl) ? stored.primaryArtworkDataUrl : null;
     session.artworkByOutput = new Map(
         stored.artworkByOutput && typeof stored.artworkByOutput === 'object'
-            ? Object.entries(stored.artworkByOutput).filter(([, value]) => typeof value === 'string' && value.startsWith('data:image/'))
+            ? Object.entries(stored.artworkByOutput).filter(([, value]) => isPersistedArtworkSource(value))
             : []
     );
     session.failedOutputs = new Map(
@@ -244,14 +327,17 @@ function applyStoredSession(session, stored) {
     if (session.artworkByOutput.size > 0) {
         applyGenerationSnapshot(session, stored.generationSnapshot);
         session.generationSnapshot = {
+            id: typeof stored.generationSnapshot?.id === 'string' ? stored.generationSnapshot.id : null,
             generatedAt: stored.generationSnapshot?.generatedAt ?? stored.savedAt ?? new Date().toISOString(),
             selectedStyleId: session.selectedStyleId,
             styleVariationId: typeof stored.generationSnapshot?.styleVariationId === 'string'
                 ? stored.generationSnapshot.styleVariationId
                 : null,
             selectedOutputIds: [...session.selectedOutputIds],
+            referenceSelection: stored.generationSnapshot?.referenceSelection ?? null,
             form: cloneGenerationForm(session.form)
         };
+        session.referenceSelection = session.generationSnapshot.referenceSelection;
     }
 
     if (Number.isFinite(stored.workflowStep)) session.workflowStep = stored.workflowStep;
@@ -319,10 +405,12 @@ function applyStoredSession(session, stored) {
 
 function createGenerationSnapshot(session, isRegeneration) {
     return {
+        id: typeof globalThis.crypto?.randomUUID === 'function' ? globalThis.crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
         generatedAt: new Date().toISOString(),
         selectedStyleId: session.selectedStyleId,
         styleVariationId: selectStyleVariationId(session, isRegeneration),
         selectedOutputIds: [...session.selectedOutputIds],
+        referenceSelection: session.referenceSelection,
         form: cloneGenerationForm(session.form)
     };
 }
@@ -357,6 +445,10 @@ function applyGenerationSnapshot(session, snapshot) {
         session.selectedOutputIds = new Set(snapshot.selectedOutputIds.filter(value => typeof value === 'string'));
         applied = true;
     }
+    if (snapshot.referenceSelection && typeof snapshot.referenceSelection === 'object') {
+        session.referenceSelection = snapshot.referenceSelection;
+        applied = true;
+    }
 
     if (!snapshot.form || typeof snapshot.form !== 'object') return applied;
 
@@ -375,9 +467,10 @@ function applyGenerationSnapshot(session, snapshot) {
 }
 
 function createGenerationContext(session, isRegeneration) {
+    const snapshot = createGenerationSnapshot(session, isRegeneration);
     return {
-        snapshot: createGenerationSnapshot(session, isRegeneration),
-        supportingImages: buildSupportingImagesPayload(session),
+        snapshot,
+        supportingImages: buildSupportingImagesPayload(session, snapshot.referenceSelection),
         previousArtworkDataUrl: session.primaryArtworkDataUrl
     };
 }
@@ -385,32 +478,48 @@ function createGenerationContext(session, isRegeneration) {
 async function hydrateSession(session) {
     if (session.hydrated) return session.restoredFromStorage;
 
-    let stored = null;
+    let serverStored = null;
+    let browserStored = null;
     let serverDocument = null;
     try {
         serverDocument = await readServerSession(session.key);
         if (serverDocument?.session) {
-            stored = serverDocument.session;
+            serverStored = serverDocument.session;
             session.serverRevision = Number(serverDocument.revision) || 0;
         }
     } catch (error) {
         console.warn('Unable to restore the shared Poster Studio session. Trying the browser cache.', error);
     }
 
-    if (!stored) {
-        try {
-            stored = await readStoredSession(session.key);
-        } catch (error) {
-            console.warn('Unable to restore the browser-cached Poster Studio session.', error);
-        }
+    try {
+        browserStored = await readStoredSession(session.key);
+    } catch (error) {
+        console.warn('Unable to restore the browser-cached Poster Studio session.', error);
     }
 
+    const stored = chooseNewestStoredSession(serverStored, browserStored);
     session.restoredFromStorage = applyStoredSession(session, stored);
     session.hydrated = true;
-    if (session.restoredFromStorage && !serverDocument) {
+    if (session.restoredFromStorage && stored === browserStored && stored !== serverStored) {
         scheduleSessionPersistence(session);
     }
     return session.restoredFromStorage;
+}
+
+function chooseNewestStoredSession(serverStored, browserStored) {
+    if (!serverStored) return browserStored;
+    if (!browserStored) return serverStored;
+
+    const serverSavedAt = Date.parse(serverStored.savedAt ?? '') || 0;
+    const browserSavedAt = Date.parse(browserStored.savedAt ?? '') || 0;
+    if (serverSavedAt !== browserSavedAt) {
+        return browserSavedAt > serverSavedAt ? browserStored : serverStored;
+    }
+
+    const countArtwork = stored => stored?.artworkByOutput && typeof stored.artworkByOutput === 'object'
+        ? Object.values(stored.artworkByOutput).filter(isPersistedArtworkSource).length
+        : 0;
+    return countArtwork(browserStored) > countArtwork(serverStored) ? browserStored : serverStored;
 }
 
 async function persistSession(session) {
@@ -420,16 +529,18 @@ async function persistSession(session) {
         session.persistTimer = null;
     }
 
-    const record = serialiseSession(session);
+    const savedAt = new Date().toISOString();
+    const browserRecord = { ...serialiseSession(session, true), savedAt };
+    const serverRecord = { ...serialiseSession(session, false), savedAt };
     session.persistenceChain = session.persistenceChain
         .catch(() => undefined)
         .then(async () => {
             try {
-                await writeStoredSession(record);
+                await writeStoredSession(browserRecord);
             } catch (error) {
                 console.warn('Unable to update the browser-cached Poster Studio session.', error);
             }
-            const document = await writeServerSession(session.key, record);
+            const document = await writeServerSession(session.key, serverRecord);
             session.serverRevision = Number(document.revision) || session.serverRevision;
         })
         .catch(error => console.warn('Unable to save the shared Poster Studio session.', error));
@@ -448,6 +559,9 @@ function isSessionVisible(session) {
 }
 
 function loadReferenceLibrary() {
+    if (Array.isArray(currentContext?.referenceLibrary)) {
+        return currentContext.referenceLibrary;
+    }
     try {
         const raw = localStorage.getItem(REFERENCE_LIBRARY_STORAGE_KEY);
         const parsed = raw ? JSON.parse(raw) : [];
@@ -488,14 +602,22 @@ function selectStyleVariationId(session, isRegeneration) {
 }
 
 function scoreReferenceMatch(reference, tokens) {
-    const fields = [reference.title, reference.description, reference.category, ...(Array.isArray(reference.tags) ? reference.tags : [])];
+    const profile = reference.relevanceProfile ?? {};
+    const fields = [
+        reference.title,
+        reference.description,
+        reference.category,
+        ...(Array.isArray(reference.tags) ? reference.tags : []),
+        profile.matchingInstruction,
+        ...(Array.isArray(profile.positiveSignals) ? profile.positiveSignals : []),
+        ...(Array.isArray(profile.namedEntities) ? profile.namedEntities : [])
+    ];
     const haystack = tokenise(fields.join(' '));
-    let score = Number(reference.priority) || 0;
+    let score = 0;
     for (const token of tokens) {
-        if (haystack.has(token)) score += 4;
-        if (String(reference.category ?? '').toLocaleLowerCase().includes(token)) score += 2;
+        if (haystack.has(token)) score += 9;
     }
-    return score;
+    return Math.min(100, score);
 }
 
 function updateAutomaticReferenceSelection(session) {
@@ -506,35 +628,143 @@ function updateAutomaticReferenceSelection(session) {
         return;
     }
 
-    const style = getSelectedStyle(session);
     const tokens = tokenise([
         session.form.eventName,
         session.form.description,
         session.form.additionalInstructions,
-        style?.name,
-        style?.summary
+        session.form.includeDate ? session.form.eventDate : '',
+        session.form.includePrice ? session.form.price : '',
+        session.form.includeClubBranding ? 'Burton-on-Trent Golf Club official logo crest branding BOTGC' : 'no club logo branding'
     ].join(' '));
 
     session.form.selectedLibraryReferences = library
         .map(reference => ({ reference, score: scoreReferenceMatch(reference, tokens) }))
-        .filter(item => item.score > 0)
+        .filter(item => item.score >= 65)
         .sort((left, right) => right.score - left.score || String(left.reference.title ?? '').localeCompare(String(right.reference.title ?? '')))
         .slice(0, MAX_AUTOMATIC_REFERENCES)
-        .map(item => item.reference);
+        .map(item => ({
+            ...item.reference,
+            relevanceConfidence: item.score,
+            relevanceReason: 'Locally matched against the stored semantic profile. Final selection is reassessed when generation begins.'
+        }));
 
     renderSupportingFiles(session);
 }
 
-function buildSupportingImagesPayload(session) {
+function buildReferenceSelectionRequest(session, library) {
+    const form = session.form;
+    return {
+        eventName: form.eventName || session.customEventName || 'Current event',
+        eventDate: form.eventDate,
+        description: form.description,
+        additionalInstructions: form.additionalInstructions,
+        includeDate: form.includeDate,
+        includePrice: form.includePrice,
+        includeClubBranding: form.includeClubBranding,
+        price: form.price,
+        references: library.map(reference => ({
+            id: reference.id,
+            title: reference.title || '',
+            category: reference.category || 'Other',
+            description: reference.description || '',
+            tags: Array.isArray(reference.tags) ? reference.tags : [],
+            priority: Number(reference.priority) || 0,
+            relevanceProfile: reference.relevanceProfile ?? null
+        }))
+    };
+}
+
+async function analyseAutomaticReferenceSelection(session, signal) {
+    const library = loadReferenceLibrary().filter(item => item.active !== false && item.dataUrl);
+    if (!session.form.useLibraryReferences || library.length === 0) {
+        session.form.selectedLibraryReferences = [];
+        session.referenceSelection = {
+            eventIntent: '',
+            mode: library.length === 0 ? 'empty-library' : 'disabled',
+            model: 'none',
+            matches: [],
+            selected: []
+        };
+        renderSupportingFiles(session);
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/poster/select-references', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(buildReferenceSelectionRequest(session, library)),
+            signal
+        });
+        const result = await response.json().catch(() => null);
+        if (!response.ok || !Array.isArray(result?.selected)) {
+            throw new Error(result?.error ?? `Reference selection failed (${response.status}).`);
+        }
+
+        const selectedById = new Map(result.selected.map(match => [match.id, match]));
+        session.form.selectedLibraryReferences = library
+            .filter(reference => selectedById.has(reference.id))
+            .map(reference => {
+                const match = selectedById.get(reference.id);
+                return {
+                    ...reference,
+                    relevanceConfidence: match.confidence,
+                    relevanceReason: match.reason
+                };
+            });
+        session.referenceSelection = result;
+    } catch (error) {
+        if (error?.name === 'AbortError') throw error;
+        console.warn('Unable to complete AI reference selection. Continuing with the local semantic-profile matches.', error);
+        updateAutomaticReferenceSelection(session);
+        session.referenceSelection = {
+            eventIntent: '',
+            mode: 'browser-fallback',
+            model: 'browser-fallback',
+            matches: session.form.selectedLibraryReferences.map(reference => ({
+                id: reference.id,
+                confidence: reference.relevanceConfidence ?? 65,
+                reason: reference.relevanceReason
+            })),
+            selected: session.form.selectedLibraryReferences.map(reference => ({
+                id: reference.id,
+                confidence: reference.relevanceConfidence ?? 65,
+                reason: reference.relevanceReason
+            }))
+        };
+    }
+    renderSupportingFiles(session);
+}
+
+function buildSupportingImagesPayload(session, referenceSelection = session.generationSnapshot?.referenceSelection) {
+    const snapshotMatches = Array.isArray(referenceSelection?.selected)
+        ? referenceSelection.selected
+        : null;
+    const snapshotMatchById = snapshotMatches
+        ? new Map(snapshotMatches.map(match => [match.id, match]))
+        : null;
+    const automaticReferences = snapshotMatchById
+        ? loadReferenceLibrary()
+            .filter(reference => snapshotMatchById.has(reference.id) && reference.active !== false && reference.dataUrl)
+            .map(reference => ({
+                ...reference,
+                relevanceConfidence: snapshotMatchById.get(reference.id)?.confidence,
+                relevanceReason: snapshotMatchById.get(reference.id)?.reason
+            }))
+        : session.form.selectedLibraryReferences ?? [];
     const automatic = session.form.useLibraryReferences !== false
-        ? (session.form.selectedLibraryReferences ?? []).map(reference => ({
+        ? automaticReferences.map(reference => ({
+            libraryId: reference.id,
             fileName: reference.title || 'reference-library-image',
             dataUrl: reference.dataUrl,
             title: reference.title || '',
             description: reference.description || '',
             category: reference.category || '',
             tags: Array.isArray(reference.tags) ? reference.tags : [],
-            source: 'library'
+            source: 'library',
+            relevanceConfidence: reference.relevanceConfidence ?? null,
+            relevanceReason: reference.relevanceReason || '',
+            matchingInstruction: reference.relevanceProfile?.matchingInstruction || ''
         }))
         : [];
 
@@ -642,6 +872,7 @@ async function initialise(session) {
 
     renderStyles(session);
     renderOutputs(session);
+    await migrateInlineArtwork(session);
     await rebuildPersistedCanvases(session);
 
     applyFormToDom(session);
@@ -654,16 +885,19 @@ async function initialise(session) {
 async function rebuildPersistedCanvases(session) {
     if (session.posterCanvases.size > 0 || session.artworkByOutput.size === 0) return;
 
-    await Promise.all(session.config.outputs.map(async output => {
+    // Rebuild one large canvas at a time. Restoring all three 4K/A4 canvases
+    // concurrently can exhaust the browser's image memory and make valid saved
+    // artwork look as though it has disappeared.
+    for (const output of session.config.outputs) {
         const dataUrl = session.artworkByOutput.get(output.id);
-        if (!dataUrl) return;
+        if (!dataUrl) continue;
 
         try {
             session.posterCanvases.set(output.id, await createFinishedPoster(output, dataUrl, session.form.includeClubBranding));
         } catch (error) {
             console.warn(`Unable to restore saved artwork for ${output.name}.`, error);
         }
-    }));
+    }
 
     const primaryOutput = getPrimaryOutput(session);
     session.primaryArtworkDataUrl ??= primaryOutput ? session.artworkByOutput.get(primaryOutput.id) ?? null : null;
@@ -714,7 +948,6 @@ function wireEvents(session) {
         if (!input) return;
         session.selectedStyleId = input.value;
         elements.styleOptions.querySelectorAll('.style-card').forEach(card => card.classList.toggle('selected', card.dataset.styleId === session.selectedStyleId));
-        updateAutomaticReferenceSelection(session);
         scheduleSessionPersistence(session);
     });
 
@@ -731,7 +964,7 @@ function wireEvents(session) {
         scheduleSessionPersistence(session);
     };
     elements.eventDescription.addEventListener('input', () => { capture(); updateAutomaticReferenceSelection(session); });
-    elements.price.addEventListener('input', capture);
+    elements.price.addEventListener('input', () => { capture(); updateAutomaticReferenceSelection(session); });
     elements.additionalInstructions.addEventListener('input', () => { capture(); updateAutomaticReferenceSelection(session); });
     elements.refinementNotes.addEventListener('input', capture);
 
@@ -760,15 +993,18 @@ function wireEvents(session) {
     elements.includeDate.addEventListener('change', () => {
         capture();
         elements.dateCard.classList.toggle('selected', elements.includeDate.checked);
+        updateAutomaticReferenceSelection(session);
     });
     elements.includePrice.addEventListener('change', () => {
         capture();
         elements.priceCard.classList.toggle('selected', elements.includePrice.checked);
         elements.priceField.classList.toggle('hidden', !elements.includePrice.checked);
+        updateAutomaticReferenceSelection(session);
     });
     elements.includeClubBranding.addEventListener('change', async () => {
         capture();
         elements.brandingCard.classList.toggle('selected', elements.includeClubBranding.checked);
+        updateAutomaticReferenceSelection(session);
         await recomposeSavedArtwork(session);
         scheduleSessionPersistence(session);
     });
@@ -889,6 +1125,28 @@ async function generateCampaign(session, isRegeneration) {
     if (session.isGenerating) return session.generationPromise;
 
     captureFormFromDom(session);
+    const referenceController = new AbortController();
+    session.isGenerating = true;
+    session.generationAbortController = referenceController;
+    setBusy(session, true);
+    setCampaignStatus(session, 'Matching relevant references', 'generating');
+    if (elements.generationElapsed) {
+        elements.generationElapsed.textContent = 'Assessing the event brief against the saved Image Library profiles…';
+    }
+    try {
+        await analyseAutomaticReferenceSelection(session, referenceController.signal);
+    } catch (error) {
+        if (error?.name === 'AbortError') {
+            setCampaignStatus(session, 'Generation cancelled', 'neutral');
+            return;
+        }
+        throw error;
+    } finally {
+        session.isGenerating = false;
+        if (session.generationAbortController === referenceController) session.generationAbortController = null;
+        setBusy(session, false);
+    }
+
     const generation = createGenerationContext(session, isRegeneration);
     const generationContext = session.context;
     const generationController = new AbortController();
@@ -920,7 +1178,7 @@ async function generateCampaign(session, isRegeneration) {
             renderCampaignResults(session);
             setProgressState(session, 'primary', 'complete', 'Complete');
             setProgressState(session, 'compose', 'active', 'Primary ready');
-            scheduleSessionPersistence(session);
+            await persistCompletedArtwork(session, primaryOutput.id, masterArtworkDataUrl);
 
             const selectedOutputIds = new Set(generation.snapshot.selectedOutputIds);
             const variants = session.config.outputs.filter(output => selectedOutputIds.has(output.id) && !output.isPrimary);
@@ -928,6 +1186,9 @@ async function generateCampaign(session, isRegeneration) {
             renderCampaignResults(session);
             setWorkflowStep(session, 3);
             setProgressState(session, 'variants', 'active', variants.length === 0 ? 'Not selected' : `0 of ${variants.length} ready`);
+            // Do not begin another paid image request until the master and the
+            // exact list of missing formats are durably recoverable.
+            await persistSession(session);
 
             const failures = await generateVariantBatch(
                 session,
@@ -980,6 +1241,9 @@ async function generateCampaign(session, isRegeneration) {
 
 async function generatePrimary(generation, isRegeneration, signal) {
     const form = generation.snapshot.form;
+    const previousArtworkDataUrl = isRegeneration && generation.previousArtworkDataUrl
+        ? await artworkSourceToDataUrl(generation.previousArtworkDataUrl)
+        : null;
     return postPosterRequest('/api/poster/generate-primary', {
             eventId: form.eventId,
             eventName: form.eventName,
@@ -993,7 +1257,7 @@ async function generatePrimary(generation, isRegeneration, signal) {
             price: form.price,
             additionalInstructions: form.additionalInstructions,
             refinementNotes: isRegeneration ? form.refinementNotes : '',
-            previousArtworkDataUrl: isRegeneration ? generation.previousArtworkDataUrl : null,
+            previousArtworkDataUrl,
             supportingImages: generation.supportingImages
         }, signal);
 }
@@ -1052,6 +1316,7 @@ async function generateVariantBatch(session, generation, outputs, masterArtworkD
             );
             session.artworkByOutput.set(output.id, generatedVariant.dataUrl);
             await composeOutput(session, output, generatedVariant.dataUrl, generationContext);
+            await persistCompletedArtwork(session, output.id, generatedVariant.dataUrl);
             session.failedOutputs.delete(output.id);
             completedVariants += 1;
         } catch (error) {
@@ -1166,11 +1431,12 @@ function finishCampaignWithMissingFormats(session) {
 async function retryMissingFormats(session) {
     if (session.isGenerating) return session.generationPromise;
     const primaryOutput = getPrimaryOutput(session);
-    const masterArtworkDataUrl = session.primaryArtworkDataUrl ?? session.artworkByOutput.get(primaryOutput?.id);
+    const masterArtworkSource = session.primaryArtworkDataUrl ?? session.artworkByOutput.get(primaryOutput?.id);
     const missingFormats = getMissingVariantOutputs(session);
-    if (!masterArtworkDataUrl || missingFormats.length === 0) return;
+    if (!masterArtworkSource || missingFormats.length === 0) return;
 
     session.generationSnapshot ??= {
+        id: typeof globalThis.crypto?.randomUUID === 'function' ? globalThis.crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
         generatedAt: new Date().toISOString(),
         selectedStyleId: session.selectedStyleId,
         styleVariationId: null,
@@ -1180,7 +1446,7 @@ async function retryMissingFormats(session) {
     const generation = {
         snapshot: session.generationSnapshot,
         supportingImages: buildSupportingImagesPayload(session),
-        previousArtworkDataUrl: masterArtworkDataUrl
+        previousArtworkDataUrl: masterArtworkSource
     };
     const generationController = new AbortController();
     session.generationAbortController = generationController;
@@ -1197,6 +1463,7 @@ async function retryMissingFormats(session) {
 
     session.generationPromise = (async () => {
         try {
+            const masterArtworkDataUrl = await artworkSourceToDataUrl(masterArtworkSource);
             const failures = await generateVariantBatch(
                 session,
                 generation,
@@ -1266,11 +1533,16 @@ function removeSupportingFile(session, fileId) {
 function renderSupportingFiles(session) {
     if (!elements.supportingFilesList) return;
     const manualFiles = session.form.supportingImages ?? [];
+    const automaticFiles = session.form.useLibraryReferences !== false
+        ? session.form.selectedLibraryReferences ?? []
+        : [];
+    const hasAssessedSelection = Boolean(session.referenceSelection);
 
-    if (manualFiles.length === 0) {
-        elements.supportingFilesList.innerHTML = '<div class="supporting-files-empty">No event-specific supporting images added.</div>';
-        return;
-    }
+    const automaticMarkup = session.form.useLibraryReferences === false
+        ? '<div class="automatic-reference-summary muted"><strong>Image Library disabled</strong><small>No shared library images will be supplied.</small></div>'
+        : automaticFiles.length > 0
+            ? `<div class="automatic-reference-summary"><strong>${automaticFiles.length} relevant library reference${automaticFiles.length === 1 ? '' : 's'} selected</strong><small>${automaticFiles.map(reference => `${escapeHtml(reference.title || 'Untitled reference')}${Number.isFinite(reference.relevanceConfidence) ? ` (${reference.relevanceConfidence}%)` : ''}`).join(' · ')}</small></div>`
+            : `<div class="automatic-reference-summary muted"><strong>${hasAssessedSelection ? 'No relevant library reference selected' : 'Library relevance checked at generation'}</strong><small>${hasAssessedSelection ? 'No saved image was specific enough to influence this event.' : 'The complete brief, content choices and saved matching profiles will be assessed before the first image is generated.'}</small></div>`;
 
     const manualMarkup = manualFiles.map(file => `
         <article class="supporting-file-card">
@@ -1282,8 +1554,10 @@ function renderSupportingFiles(session) {
           <button class="supporting-file-remove" type="button" data-remove-supporting-file="${escapeHtml(file.id)}" aria-label="Remove ${escapeHtml(file.fileName)}">×</button>
         </article>`).join('');
 
-    elements.supportingFilesList.innerHTML = `
-        <div class="supporting-file-section"><h4>Event-specific uploads</h4><div class="supporting-file-stack">${manualMarkup}</div></div>`;
+    const manualSection = manualFiles.length > 0
+        ? `<div class="supporting-file-section"><h4>Event-specific uploads</h4><div class="supporting-file-stack">${manualMarkup}</div></div>`
+        : '<div class="supporting-files-empty">No event-specific supporting images added.</div>';
+    elements.supportingFilesList.innerHTML = `${automaticMarkup}${manualSection}`;
 }
 
 function fileToDataUrl(file) {
@@ -1431,11 +1705,11 @@ async function recomposeSavedArtwork(session) {
     if (session.artworkByOutput.size === 0) return;
 
     session.posterCanvases.clear();
-    await Promise.all(session.config.outputs.map(async output => {
+    for (const output of session.config.outputs) {
         const dataUrl = session.artworkByOutput.get(output.id);
-        if (!dataUrl) return;
+        if (!dataUrl) continue;
         session.posterCanvases.set(output.id, await createFinishedPoster(output, dataUrl, session.form.includeClubBranding));
-    }));
+    }
 
     if (isSessionVisible(session)) renderCampaignResults(session);
 }

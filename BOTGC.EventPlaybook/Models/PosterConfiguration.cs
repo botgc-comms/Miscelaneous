@@ -6,11 +6,24 @@ public sealed class PosterConfiguration
 
     public required PromptingConfiguration Prompting { get; init; }
 
+    public required ReferenceSelectionConfiguration ReferenceSelection { get; init; }
+
     public required List<EventDefinition> Events { get; init; }
 
     public required List<PosterStyleDefinition> Styles { get; init; }
 
     public required List<PosterOutputDefinition> Outputs { get; init; }
+}
+
+public sealed class ReferenceSelectionConfiguration
+{
+    public int MaximumAutomaticReferences { get; init; } = 3;
+
+    public int MinimumConfidence { get; init; } = 65;
+
+    public required string ProfileInstruction { get; init; }
+
+    public required string ScoringInstruction { get; init; }
 }
 
 public sealed class ClubBrand
