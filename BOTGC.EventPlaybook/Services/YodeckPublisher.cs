@@ -14,6 +14,7 @@ public sealed class YodeckPublisher(
     ILogger<YodeckPublisher> logger) : IYodeckPublisher
 {
     private readonly YodeckOptions _options = options.Value;
+    private readonly SemaphoreSlim _mediaTagGate = new(1, 1);
 
     public bool IsConfigured => _options.IsConfigured;
 
@@ -31,6 +32,7 @@ public sealed class YodeckPublisher(
         var playlistName = ReadString(playlist, "name") ?? _options.PlaylistName;
         var workspaceId = ReadNestedInt64(playlist, "workspace", "id");
 
+        await EnsureMediaTagsAsync(command.Tags, cancellationToken);
         var media = await CreateMediaAsync(command, workspaceId, cancellationToken);
         var mediaId = ReadInt64(media, "id")
             ?? throw new InvalidOperationException("The screen service created the artwork but did not return its ID.");
@@ -71,6 +73,66 @@ public sealed class YodeckPublisher(
             EndDate = command.EndDate,
             Tags = command.Tags
         };
+    }
+
+    private async Task EnsureMediaTagsAsync(
+        IReadOnlyCollection<string> requiredTags,
+        CancellationToken cancellationToken)
+    {
+        if (requiredTags.Count == 0) return;
+
+        await _mediaTagGate.WaitAsync(cancellationToken);
+        try
+        {
+            var existingTags = await GetMediaTagNamesAsync(cancellationToken);
+            foreach (var tag in requiredTags)
+            {
+                if (!existingTags.Add(tag)) continue;
+
+                using var content = JsonContent.Create(new JsonObject { ["name"] = tag });
+                using var response = await SendYodeckAsync(
+                    HttpMethod.Post,
+                    "media/tags",
+                    content,
+                    cancellationToken);
+                await ReadObjectAsync(response, $"create the required artwork tag '{tag}'", cancellationToken);
+                logger.LogInformation("Created Yodeck media tag {TagName}.", tag);
+            }
+        }
+        finally
+        {
+            _mediaTagGate.Release();
+        }
+    }
+
+    private async Task<HashSet<string>> GetMediaTagNamesAsync(CancellationToken cancellationToken)
+    {
+        var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var visitedPages = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        string? pageUrl = "media/tags?limit=100";
+
+        while (!string.IsNullOrWhiteSpace(pageUrl) && visitedPages.Add(pageUrl))
+        {
+            using var response = await SendYodeckAsync(
+                HttpMethod.Get,
+                pageUrl,
+                content: null,
+                cancellationToken);
+            var page = await ReadObjectAsync(response, "retrieve the available artwork tags", cancellationToken);
+
+            if (page["results"] is JsonArray results)
+            {
+                foreach (var tag in results.OfType<JsonObject>())
+                {
+                    var name = ReadString(tag, "name")?.Trim();
+                    if (!string.IsNullOrWhiteSpace(name)) names.Add(name);
+                }
+            }
+
+            pageUrl = ReadString(page, "next");
+        }
+
+        return names;
     }
 
     private async Task<JsonObject> GetPlaylistAsync(CancellationToken cancellationToken)
