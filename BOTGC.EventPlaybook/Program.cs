@@ -301,6 +301,16 @@ app.MapPost("/api/poster/generate-primary", async (
     {
         return Results.BadRequest(new { error = exception.Message });
     }
+    catch (OpenAiImageException exception)
+    {
+        return Results.Json(new
+        {
+            error = exception.Message,
+            retryable = exception.Retryable,
+            requestId = exception.RequestId,
+            code = exception.ErrorCode
+        }, statusCode: StatusCodes.Status502BadGateway);
+    }
     catch (InvalidOperationException exception)
     {
         return Results.Problem(exception.Message, statusCode: StatusCodes.Status502BadGateway);
@@ -325,6 +335,16 @@ app.MapPost("/api/poster/generate-variant", async (
     catch (KeyNotFoundException exception)
     {
         return Results.BadRequest(new { error = exception.Message });
+    }
+    catch (OpenAiImageException exception)
+    {
+        return Results.Json(new
+        {
+            error = exception.Message,
+            retryable = exception.Retryable,
+            requestId = exception.RequestId,
+            code = exception.ErrorCode
+        }, statusCode: StatusCodes.Status502BadGateway);
     }
     catch (InvalidOperationException exception)
     {

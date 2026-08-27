@@ -439,6 +439,17 @@
 }.poster-studio .progress-row.active .progress-icon{
     color: #3d2d12;
     background: var(--gold);
+}.poster-studio .progress-row.error{
+    border-color: #d9b46b;
+    background: #fff9ed;
+}.poster-studio .generation-error-actions{
+    display: grid;
+    justify-items: end;
+    gap: 8px;
+}.poster-studio .generation-error-actions .button{
+    min-height: 34px;
+    padding: 7px 11px;
+    white-space: nowrap;
 }.poster-studio .progress-row.complete{
     border-color: #bed5c8;
     background: #f6faf8;
@@ -908,30 +919,9 @@
   display:block;
   color:var(--muted-foreground);
   margin-top:.25rem;
-}.poster-studio .automatic-reference-list{
-  display:grid;
-  gap:.75rem;
-}.poster-studio .automatic-reference-card{
-  display:grid;
-  grid-template-columns:84px minmax(0,1fr);
-  gap:.9rem;
-  align-items:start;
-  padding:.85rem;
-  border-radius:18px;
-  border:1px solid rgba(15,23,42,.08);
-  background:rgba(248,250,252,.85);
-}.poster-studio .automatic-reference-card img{
-  width:84px;
-  height:84px;
-  object-fit:cover;
-  border-radius:14px;
-}.poster-studio .automatic-reference-copy{
-  display:grid;
-  gap:.2rem;
-}.poster-studio .automatic-reference-copy small,
-.poster-studio .automatic-reference-copy p{
-  color:var(--muted-foreground);
-  margin:0;
+}.poster-studio .automatic-references-link{
+  justify-self:start;
+  padding:0;
 }.poster-studio .supporting-file-section{
   display:grid;
   gap:.65rem;
@@ -944,7 +934,4 @@
 }.poster-studio .supporting-file-stack{
   display:grid;
   gap:.75rem;
-}.poster-studio .supporting-file-card.auto{
-  border-style:solid;
-  background:rgba(255,255,255,.78);
 }

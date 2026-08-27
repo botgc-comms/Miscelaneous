@@ -5,7 +5,7 @@ const STUDIO_DATABASE_NAME = 'botgc-event-playbook-poster-studio';
 const STUDIO_DATABASE_VERSION = 1;
 const STUDIO_SESSION_STORE = 'event-sessions';
 const POSTER_REQUEST_TIMEOUT_MS = 5 * 60 * 1000;
-const INTERRUPTED_GENERATION_MESSAGE = 'The previous generation did not finish. Your settings are safe; generate the campaign again when you are ready.';
+const INTERRUPTED_GENERATION_MESSAGE = 'The previous generation did not finish. Completed artwork and settings have been kept so only the missing formats need to be retried.';
 let activeSession = null;
 let configCache = null;
 let studioDatabasePromise = null;
@@ -22,6 +22,7 @@ function createSession(key, context) {
         primaryArtworkDataUrl: null,
         artworkByOutput: new Map(),
         posterCanvases: new Map(),
+        failedOutputs: new Map(),
         isGenerating: false,
         initialised: false,
         hydrated: false,
@@ -173,6 +174,7 @@ function serialiseSession(session) {
         selectedOutputIds: [...session.selectedOutputIds],
         primaryArtworkDataUrl: session.primaryArtworkDataUrl,
         artworkByOutput: Object.fromEntries(session.artworkByOutput),
+        failedOutputs: Object.fromEntries(session.failedOutputs),
         generationSnapshot: compactGenerationSnapshot,
         form: {
             eventId: form.eventId,
@@ -231,12 +233,18 @@ function applyStoredSession(session, stored) {
             ? Object.entries(stored.artworkByOutput).filter(([, value]) => typeof value === 'string' && value.startsWith('data:image/'))
             : []
     );
+    session.failedOutputs = new Map(
+        stored.failedOutputs && typeof stored.failedOutputs === 'object'
+            ? Object.entries(stored.failedOutputs).filter(([outputId, value]) => typeof outputId === 'string' && value && typeof value === 'object')
+            : []
+    );
 
-    if (session.artworkByOutput.size > 0 && applyGenerationSnapshot(session, stored.generationSnapshot)) {
+    if (session.artworkByOutput.size > 0) {
+        applyGenerationSnapshot(session, stored.generationSnapshot);
         session.generationSnapshot = {
-            generatedAt: stored.generationSnapshot.generatedAt,
+            generatedAt: stored.generationSnapshot?.generatedAt ?? stored.savedAt ?? new Date().toISOString(),
             selectedStyleId: session.selectedStyleId,
-            styleVariationId: typeof stored.generationSnapshot.styleVariationId === 'string'
+            styleVariationId: typeof stored.generationSnapshot?.styleVariationId === 'string'
                 ? stored.generationSnapshot.styleVariationId
                 : null,
             selectedOutputIds: [...session.selectedOutputIds],
@@ -256,15 +264,33 @@ function applyStoredSession(session, stored) {
     if (typeof stored.publishVisible === 'boolean') session.publishVisible = stored.publishVisible;
 
     if (session.artworkByOutput.size > 0) {
+        const selectedVariants = session.config.outputs.filter(output =>
+            session.selectedOutputIds.has(output.id) && !output.isPrimary
+        );
+        const readyVariants = selectedVariants.filter(output => session.artworkByOutput.has(output.id));
+        const missingVariants = selectedVariants.filter(output => !session.artworkByOutput.has(output.id));
+        const hasMissingFormats = missingVariants.length > 0;
         session.progress = {
             primary: { cssClass: 'complete', label: 'Restored' },
-            variants: { cssClass: 'complete', label: 'Restored' },
-            compose: { cssClass: 'complete', label: 'Restored' }
+            variants: {
+                cssClass: hasMissingFormats ? 'error' : 'complete',
+                label: hasMissingFormats ? `${readyVariants.length} of ${selectedVariants.length} ready` : 'Restored'
+            },
+            compose: {
+                cssClass: hasMissingFormats ? 'active' : 'complete',
+                label: `${session.artworkByOutput.size} ready`
+            }
         };
-        session.campaignStatus = { text: 'Saved artwork restored', mode: 'ready' };
+        session.campaignStatus = hasMissingFormats
+            ? { text: 'Some formats need retrying', mode: 'neutral' }
+            : { text: 'Saved artwork restored', mode: 'ready' };
         session.workflowStep = 3;
-        session.workflowComplete = true;
-        session.errorMessage = null;
+        session.workflowComplete = !hasMissingFormats;
+        session.errorMessage = hasMissingFormats
+            ? isGenericGenerationError(session.errorMessage)
+                ? buildMissingFormatsMessage(missingVariants, session.failedOutputs)
+                : session.errorMessage
+            : null;
         session.refinementVisible = true;
         session.publishVisible = true;
     } else if (storedGenerationWasInterrupted) {
@@ -464,7 +490,6 @@ function updateAutomaticReferenceSelection(session) {
     const library = loadReferenceLibrary().filter(item => item.active !== false && item.dataUrl);
     if (!session.form.useLibraryReferences) {
         session.form.selectedLibraryReferences = [];
-        renderAutomaticReferenceSelection(session);
         renderSupportingFiles(session);
         return;
     }
@@ -485,27 +510,7 @@ function updateAutomaticReferenceSelection(session) {
         .slice(0, MAX_AUTOMATIC_REFERENCES)
         .map(item => item.reference);
 
-    renderAutomaticReferenceSelection(session);
     renderSupportingFiles(session);
-}
-
-function renderAutomaticReferenceSelection(session) {
-    if (!elements.automaticReferenceList) return;
-    const references = session.form.selectedLibraryReferences ?? [];
-    if (references.length === 0) {
-        elements.automaticReferenceList.innerHTML = '<div class="supporting-files-empty">No matching library references yet. Add library images or enrich the event brief.</div>';
-        return;
-    }
-
-    elements.automaticReferenceList.innerHTML = references.map(reference => `
-        <article class="automatic-reference-card">
-          <img src="${escapeHtml(reference.dataUrl)}" alt="${escapeHtml(reference.title || 'Library image')}">
-          <div class="automatic-reference-copy">
-            <strong>${escapeHtml(reference.title || 'Library image')}</strong>
-            <small>${escapeHtml(reference.category || 'Library reference')} · priority ${escapeHtml(reference.priority ?? 0)}</small>
-            <p>${escapeHtml(reference.description || 'Used automatically during image generation.')}</p>
-          </div>
-        </article>`).join('');
 }
 
 function buildSupportingImagesPayload(session) {
@@ -552,7 +557,6 @@ export async function mountPosterStudio(context = {}) {
         additionalInstructions: document.querySelector('#additionalInstructions'),
         supportingFilesInput: document.querySelector('#supportingFilesInput'),
         useLibraryReferences: document.querySelector('#useLibraryReferences'),
-        automaticReferenceList: document.querySelector('#automaticReferenceList'),
         supportingFilesList: document.querySelector('#supportingFilesList'),
         outputOptions: document.querySelector('#outputOptions'),
         generateButton: document.querySelector('#generateButton'),
@@ -828,7 +832,6 @@ function applyFormToDom(session) {
     if (elements.supportingFilesInput) {
         elements.supportingFilesInput.value = '';
     }
-    renderAutomaticReferenceSelection(session);
     renderSupportingFiles(session);
     elements.dateCard.classList.toggle('selected', elements.includeDate.checked);
     elements.priceCard.classList.toggle('selected', elements.includePrice.checked);
@@ -873,6 +876,8 @@ async function generateCampaign(session, isRegeneration) {
     const generation = createGenerationContext(session, isRegeneration);
     const generationContext = session.context;
     const generationController = new AbortController();
+    session.generationSnapshot = generation.snapshot;
+    session.failedOutputs.clear();
     session.generationAbortController = generationController;
     session.isGenerating = true;
     session.errorMessage = null;
@@ -903,47 +908,44 @@ async function generateCampaign(session, isRegeneration) {
 
             const selectedOutputIds = new Set(generation.snapshot.selectedOutputIds);
             const variants = session.config.outputs.filter(output => selectedOutputIds.has(output.id) && !output.isPrimary);
+            clearVariantArtwork(session);
+            renderCampaignResults(session);
             setWorkflowStep(session, 3);
             setProgressState(session, 'variants', 'active', variants.length === 0 ? 'Not selected' : `0 of ${variants.length} ready`);
 
-            if (variants.length > 0) {
-                let completedVariants = 0;
-                await Promise.all(variants.map(async output => {
-                    const generatedVariant = await generateVariant(generation, output, masterArtworkDataUrl, generationController.signal);
-                    session.artworkByOutput.set(output.id, generatedVariant.dataUrl);
-                    await composeOutput(session, output, generatedVariant.dataUrl, generationContext);
-                    completedVariants += 1;
-                    setProgressState(session, 'variants', 'active', `${completedVariants} of ${variants.length} ready`);
-                    setProgressState(session, 'compose', 'active', `${session.posterCanvases.size} ready`);
-                    renderCampaignResults(session);
-                    scheduleSessionPersistence(session);
-                }));
-            }
+            const failures = await generateVariantBatch(
+                session,
+                generation,
+                variants,
+                masterArtworkDataUrl,
+                generationContext,
+                generationController.signal
+            );
 
-            setProgressState(session, 'variants', 'complete', variants.length === 0 ? 'Skipped' : 'Complete');
-            setProgressState(session, 'compose', 'complete', 'Complete');
-            setCampaignStatus(session, 'Ready to review', 'ready');
-            setWorkflowStep(session, 3, true);
-            session.refinementVisible = true;
-            session.publishVisible = true;
-            session.generationSnapshot = generation.snapshot;
-            if (isSessionVisible(session)) {
-                elements.refinementPanel.classList.remove('hidden');
-                elements.sharePanel.classList.remove('hidden');
-                elements.shareTopButton.disabled = false;
-            }
+            if (failures.size > 0) finishCampaignWithMissingFormats(session);
+            else finishCampaignReady(session, variants.length);
             await persistSession(session);
         } catch (error) {
             if (!generationController.signal.aborted) generationController.abort();
             if (error?.name !== 'AbortError' && error?.name !== 'TimeoutError') console.error(error);
-            session.errorMessage = error instanceof Error ? error.message : 'The artwork could not be generated.';
-            const statusText = error?.name === 'AbortError'
-                ? 'Generation cancelled'
-                : error?.name === 'TimeoutError'
-                    ? 'Generation timed out'
-                    : 'Generation failed';
-            setCampaignStatus(session, statusText, 'neutral');
-            renderGenerationError(session);
+            const missingFormats = getMissingVariantOutputs(session);
+            if (session.primaryArtworkDataUrl && missingFormats.length > 0) {
+                for (const output of missingFormats) {
+                    if (!session.failedOutputs.has(output.id)) {
+                        session.failedOutputs.set(output.id, serialiseGenerationFailure(error));
+                    }
+                }
+                finishCampaignWithMissingFormats(session);
+            } else {
+                session.errorMessage = error instanceof Error ? error.message : 'The artwork could not be generated.';
+                const statusText = error?.name === 'AbortError'
+                    ? 'Generation cancelled'
+                    : error?.name === 'TimeoutError'
+                        ? 'Generation timed out'
+                        : 'Generation failed';
+                setCampaignStatus(session, statusText, 'neutral');
+                renderGenerationError(session);
+            }
             scheduleSessionPersistence(session);
         } finally {
             stopGenerationClock(session);
@@ -1001,6 +1003,217 @@ async function generateVariant(generation, output, masterArtworkDataUrl, signal)
         }, signal);
 }
 
+function clearVariantArtwork(session) {
+    for (const output of session.config.outputs.filter(output => !output.isPrimary)) {
+        session.artworkByOutput.delete(output.id);
+        session.posterCanvases.delete(output.id);
+    }
+}
+
+function getSelectedVariantOutputs(session) {
+    const selectedIds = new Set(session.generationSnapshot?.selectedOutputIds ?? [...session.selectedOutputIds]);
+    return session.config.outputs.filter(output => selectedIds.has(output.id) && !output.isPrimary);
+}
+
+function getMissingVariantOutputs(session) {
+    return getSelectedVariantOutputs(session).filter(output => !session.artworkByOutput.has(output.id));
+}
+
+async function generateVariantBatch(session, generation, outputs, masterArtworkDataUrl, generationContext, signal) {
+    const failures = new Map();
+    const allVariants = getSelectedVariantOutputs(session);
+    let completedVariants = allVariants.filter(output => session.artworkByOutput.has(output.id)).length;
+
+    for (const output of outputs) {
+        if (signal.aborted) throw createGenerationError('AbortError', 'Generation cancelled. Completed artwork has been kept.');
+        try {
+            const generatedVariant = await generateVariantWithAutomaticRetry(
+                generation,
+                output,
+                masterArtworkDataUrl,
+                signal,
+                session
+            );
+            session.artworkByOutput.set(output.id, generatedVariant.dataUrl);
+            await composeOutput(session, output, generatedVariant.dataUrl, generationContext);
+            session.failedOutputs.delete(output.id);
+            completedVariants += 1;
+        } catch (error) {
+            if (error?.name === 'AbortError') throw error;
+            const failure = serialiseGenerationFailure(error);
+            session.failedOutputs.set(output.id, failure);
+            failures.set(output.id, failure);
+        }
+
+        setProgressState(session, 'variants', 'active', `${completedVariants} of ${allVariants.length} ready`);
+        setProgressState(session, 'compose', 'active', `${session.posterCanvases.size} ready`);
+        renderCampaignResults(session);
+        await persistSession(session);
+    }
+
+    return failures;
+}
+
+async function generateVariantWithAutomaticRetry(generation, output, masterArtworkDataUrl, signal, session) {
+    let attempt = 0;
+    while (true) {
+        try {
+            return await generateVariant(generation, output, masterArtworkDataUrl, signal);
+        } catch (error) {
+            if (signal.aborted || error?.name === 'AbortError') throw error;
+            if (error?.retryable !== true || attempt >= 1) throw error;
+            attempt += 1;
+            setProgressState(session, 'variants', 'active', `Retrying ${output.name}`);
+            await waitForRetry(5000, signal);
+        }
+    }
+}
+
+function waitForRetry(milliseconds, signal) {
+    return new Promise((resolve, reject) => {
+        const onAbort = () => {
+            clearTimeout(timeoutId);
+            reject(createGenerationError('AbortError', 'Generation cancelled. Completed artwork has been kept.'));
+        };
+        const timeoutId = setTimeout(() => {
+            signal.removeEventListener('abort', onAbort);
+            resolve();
+        }, milliseconds);
+        signal.addEventListener('abort', onAbort, { once: true });
+    });
+}
+
+function serialiseGenerationFailure(error) {
+    return {
+        message: error instanceof Error ? error.message : 'The image service returned an error.',
+        retryable: error?.retryable === true,
+        requestId: typeof error?.requestId === 'string' ? error.requestId : null,
+        code: typeof error?.code === 'string' ? error.code : null,
+        recordedAt: new Date().toISOString()
+    };
+}
+
+function isGenericGenerationError(message) {
+    const normalised = String(message ?? '').trim().toLocaleLowerCase();
+    return !normalised || [
+        'the image service returned an error.',
+        'openai image editing failed.',
+        'the artwork could not be generated.'
+    ].includes(normalised);
+}
+
+function buildMissingFormatsMessage(outputs, failures = activeSession?.failedOutputs) {
+    const names = outputs.map(output => output.name);
+    const formatList = names.length > 1
+        ? `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`
+        : names[0] || 'One or more formats';
+    const firstFailure = outputs.map(output => failures?.get(output.id)).find(Boolean);
+    const reason = firstFailure && !isGenericGenerationError(firstFailure.message)
+        ? ` ${firstFailure.message}`
+        : '';
+    const reference = firstFailure?.requestId ? ` Support reference: ${firstFailure.requestId}.` : '';
+    return `${formatList} could not be created.${reason}${reference} The digital-screen master and every completed format have been kept. Use “Retry missing formats” to continue without regenerating them.`;
+}
+
+function revealReviewAndShare(session) {
+    session.refinementVisible = true;
+    session.publishVisible = true;
+    if (!isSessionVisible(session)) return;
+    elements.refinementPanel.classList.remove('hidden');
+    elements.sharePanel.classList.remove('hidden');
+    elements.shareTopButton.disabled = false;
+}
+
+function finishCampaignReady(session, variantCount = getSelectedVariantOutputs(session).length) {
+    session.failedOutputs.clear();
+    session.errorMessage = null;
+    setProgressState(session, 'variants', 'complete', variantCount === 0 ? 'Skipped' : 'Complete');
+    setProgressState(session, 'compose', 'complete', 'Complete');
+    setCampaignStatus(session, 'Ready to review', 'ready');
+    setWorkflowStep(session, 3, true);
+    revealReviewAndShare(session);
+    if (isSessionVisible(session)) elements.generationProgress.querySelector('[data-generation-error]')?.remove();
+}
+
+function finishCampaignWithMissingFormats(session) {
+    const missingFormats = getMissingVariantOutputs(session);
+    const readyVariants = getSelectedVariantOutputs(session).length - missingFormats.length;
+    session.errorMessage = buildMissingFormatsMessage(missingFormats, session.failedOutputs);
+    setProgressState(session, 'variants', 'error', `${readyVariants} of ${getSelectedVariantOutputs(session).length} ready`);
+    setProgressState(session, 'compose', 'active', `${session.posterCanvases.size} ready`);
+    setCampaignStatus(session, 'Some formats need retrying', 'neutral');
+    setWorkflowStep(session, 3, false);
+    revealReviewAndShare(session);
+    renderGenerationError(session);
+}
+
+async function retryMissingFormats(session) {
+    if (session.isGenerating) return session.generationPromise;
+    const primaryOutput = getPrimaryOutput(session);
+    const masterArtworkDataUrl = session.primaryArtworkDataUrl ?? session.artworkByOutput.get(primaryOutput?.id);
+    const missingFormats = getMissingVariantOutputs(session);
+    if (!masterArtworkDataUrl || missingFormats.length === 0) return;
+
+    session.generationSnapshot ??= {
+        generatedAt: new Date().toISOString(),
+        selectedStyleId: session.selectedStyleId,
+        styleVariationId: null,
+        selectedOutputIds: [...session.selectedOutputIds],
+        form: cloneGenerationForm(session.form)
+    };
+    const generation = {
+        snapshot: session.generationSnapshot,
+        supportingImages: buildSupportingImagesPayload(session),
+        previousArtworkDataUrl: masterArtworkDataUrl
+    };
+    const generationController = new AbortController();
+    session.generationAbortController = generationController;
+    session.isGenerating = true;
+    session.errorMessage = null;
+    setBusy(session, true);
+    setWorkflowStep(session, 3);
+    setCampaignStatus(session, 'Retrying missing formats', 'generating');
+    setProgressState(session, 'primary', 'complete', 'Kept');
+    setProgressState(session, 'variants', 'active', `Retrying ${missingFormats.length}`);
+    elements.generationProgress.querySelector('[data-generation-error]')?.remove();
+    startGenerationClock(session);
+    scheduleSessionPersistence(session);
+
+    session.generationPromise = (async () => {
+        try {
+            const failures = await generateVariantBatch(
+                session,
+                generation,
+                missingFormats,
+                masterArtworkDataUrl,
+                session.context,
+                generationController.signal
+            );
+            if (failures.size > 0) finishCampaignWithMissingFormats(session);
+            else finishCampaignReady(session);
+        } catch (error) {
+            if (error?.name !== 'AbortError') console.error(error);
+            for (const output of getMissingVariantOutputs(session)) {
+                if (!session.failedOutputs.has(output.id)) {
+                    session.failedOutputs.set(output.id, serialiseGenerationFailure(error));
+                }
+            }
+            finishCampaignWithMissingFormats(session);
+        } finally {
+            stopGenerationClock(session);
+            session.isGenerating = false;
+            session.generationPromise = null;
+            if (session.generationAbortController === generationController) {
+                session.generationAbortController = null;
+            }
+            setBusy(session, false);
+            await persistSession(session);
+        }
+    })();
+
+    return session.generationPromise;
+}
+
 
 async function addSupportingFiles(session, files) {
     const existing = session.form.supportingImages ?? [];
@@ -1037,21 +1250,11 @@ function removeSupportingFile(session, fileId) {
 function renderSupportingFiles(session) {
     if (!elements.supportingFilesList) return;
     const manualFiles = session.form.supportingImages ?? [];
-    const automaticFiles = session.form.useLibraryReferences !== false ? (session.form.selectedLibraryReferences ?? []) : [];
 
-    if (manualFiles.length === 0 && automaticFiles.length === 0) {
+    if (manualFiles.length === 0) {
         elements.supportingFilesList.innerHTML = '<div class="supporting-files-empty">No event-specific supporting images added.</div>';
         return;
     }
-
-    const automaticMarkup = automaticFiles.map(file => `
-        <article class="supporting-file-card auto">
-          <img src="${escapeHtml(file.dataUrl)}" alt="${escapeHtml(file.title || file.fileName || 'Automatic reference')}">
-          <div class="supporting-file-copy">
-            <strong>${escapeHtml(file.title || file.fileName || 'Automatic reference')}</strong>
-            <small>Auto-selected from the Image Library</small>
-          </div>
-        </article>`).join('');
 
     const manualMarkup = manualFiles.map(file => `
         <article class="supporting-file-card">
@@ -1064,8 +1267,7 @@ function renderSupportingFiles(session) {
         </article>`).join('');
 
     elements.supportingFilesList.innerHTML = `
-        ${automaticFiles.length > 0 ? `<div class="supporting-file-section"><h4>Automatic club references</h4><div class="supporting-file-stack">${automaticMarkup}</div></div>` : ''}
-        ${manualFiles.length > 0 ? `<div class="supporting-file-section"><h4>Event-specific uploads</h4><div class="supporting-file-stack">${manualMarkup}</div></div>` : ''}`;
+        <div class="supporting-file-section"><h4>Event-specific uploads</h4><div class="supporting-file-stack">${manualMarkup}</div></div>`;
 }
 
 function fileToDataUrl(file) {
@@ -1138,7 +1340,12 @@ async function readApiResponse(response) {
     }
 
     if (!response.ok) {
-        throw new Error(body.detail ?? body.error ?? 'The image service returned an error.');
+        const error = new Error(body.detail ?? body.error ?? 'The image service returned an error.');
+        error.retryable = body.retryable === true;
+        error.requestId = typeof body.requestId === 'string' ? body.requestId : null;
+        error.code = typeof body.code === 'string' ? body.code : null;
+        error.httpStatus = response.status;
+        throw error;
     }
 
     return body;
@@ -1513,6 +1720,7 @@ async function sendToClubhouseScreens() {
 
         setWorkflowStep(session, 4, true);
         await persistSession(session);
+        elements.publishDialog?.close();
     } catch (error) {
         const message = error instanceof Error ? error.message : 'The artwork could not be sent to the clubhouse screens.';
         elements.shareMessage.textContent = message;
@@ -1558,7 +1766,7 @@ function setProgressState(session, name, cssClass, label) {
     if (!isSessionVisible(session)) return;
     const row = elements.generationProgress?.querySelector(`[data-progress="${name}"]`);
     if (!row) return;
-    row.classList.remove('active', 'complete');
+    row.classList.remove('active', 'complete', 'error');
     if (cssClass) row.classList.add(cssClass);
     const stateLabel = row.querySelector('.progress-state');
     if (stateLabel) stateLabel.textContent = label;
@@ -1630,6 +1838,9 @@ function setBusy(session, isBusy) {
     if (!isSessionVisible(session)) return;
     elements.generateButton.disabled = isBusy;
     elements.regenerateButton.disabled = isBusy;
+    elements.generationProgress?.querySelectorAll('[data-retry-missing-formats]').forEach(button => {
+        button.disabled = isBusy;
+    });
     if (elements.cancelGenerationButton) {
         elements.cancelGenerationButton.classList.toggle('hidden', !isBusy);
         elements.cancelGenerationButton.disabled = !isBusy;
@@ -1651,9 +1862,11 @@ function setBusy(session, isBusy) {
 
 function renderGenerationError(session) {
     if (!isSessionVisible(session) || !session.errorMessage) return;
+    const canRetryMissingFormats = Boolean(session.primaryArtworkDataUrl) && getMissingVariantOutputs(session).length > 0;
     elements.generationProgress.classList.remove('hidden');
     elements.generationProgress.querySelector('[data-generation-error]')?.remove();
-    elements.generationProgress.insertAdjacentHTML('beforeend', `<div class="progress-row generation-error-row" data-generation-error><span class="progress-icon">!</span><div><strong>Generation stopped</strong><small>${escapeHtml(session.errorMessage)}</small></div><span class="progress-state">Error</span></div>`);
+    elements.generationProgress.insertAdjacentHTML('beforeend', `<div class="progress-row generation-error-row" data-generation-error><span class="progress-icon">!</span><div><strong>${canRetryMissingFormats ? 'Some formats are missing' : 'Generation stopped'}</strong><small>${escapeHtml(session.errorMessage)}</small></div><div class="generation-error-actions"><span class="progress-state">Error</span>${canRetryMissingFormats ? '<button class="button button-secondary" type="button" data-retry-missing-formats>Retry missing formats</button>' : ''}</div></div>`);
+    elements.generationProgress.querySelector('[data-retry-missing-formats]')?.addEventListener('click', () => retryMissingFormats(session));
 }
 
 function getCampaignEventName(session) {

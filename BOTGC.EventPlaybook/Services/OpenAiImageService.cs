@@ -144,7 +144,7 @@ public sealed class OpenAiImageService(
                 "OpenAI image generation failed with {StatusCode}: {Body}",
                 response.StatusCode,
                 body);
-            throw new InvalidOperationException("OpenAI image generation failed.");
+            throw CreateUpstreamException("generate the artwork", response, body);
         }
 
         return ParseImageResponse(body, promptResult);
@@ -192,10 +192,70 @@ public sealed class OpenAiImageService(
                 "OpenAI image edit failed with {StatusCode}: {Body}",
                 response.StatusCode,
                 body);
-            throw new InvalidOperationException("OpenAI image editing failed.");
+            throw CreateUpstreamException("adapt the artwork", response, body);
         }
 
         return ParseImageResponse(body, promptResult);
+    }
+
+    private static OpenAiImageException CreateUpstreamException(
+        string action,
+        HttpResponseMessage response,
+        string body)
+    {
+        var statusCode = response.StatusCode;
+        var retryable = statusCode == System.Net.HttpStatusCode.RequestTimeout ||
+                        statusCode == System.Net.HttpStatusCode.TooManyRequests ||
+                        (int)statusCode >= 500;
+        var requestId = response.Headers.TryGetValues("x-request-id", out var requestIds)
+            ? requestIds.FirstOrDefault()
+            : null;
+        var (providerMessage, errorCode) = ReadProviderError(body);
+
+        var message = statusCode switch
+        {
+            System.Net.HttpStatusCode.TooManyRequests =>
+                "The image service is temporarily rate-limited. The completed artwork has been kept and the missing format can be retried shortly.",
+            System.Net.HttpStatusCode.RequestTimeout =>
+                "The image service timed out while trying to adapt the artwork. The completed artwork has been kept and the missing format can be retried.",
+            System.Net.HttpStatusCode.Unauthorized or System.Net.HttpStatusCode.Forbidden =>
+                "The image service rejected the server credentials or model access. Ask an administrator to check the OpenAI configuration.",
+            _ when (int)statusCode >= 500 =>
+                "The image service is temporarily unavailable. The completed artwork has been kept and the missing format can be retried.",
+            _ when !string.IsNullOrWhiteSpace(providerMessage) =>
+                $"OpenAI could not {action}: {providerMessage}",
+            _ =>
+                $"OpenAI could not {action} (status {(int)statusCode})."
+        };
+
+        return new OpenAiImageException(message, statusCode, retryable, requestId, errorCode);
+    }
+
+    private static (string? Message, string? Code) ReadProviderError(string body)
+    {
+        try
+        {
+            using var document = JsonDocument.Parse(body);
+            if (!document.RootElement.TryGetProperty("error", out var error)) return (null, null);
+            var message = error.TryGetProperty("message", out var messageElement)
+                ? SanitiseProviderValue(messageElement.GetString())
+                : null;
+            var code = error.TryGetProperty("code", out var codeElement)
+                ? SanitiseProviderValue(codeElement.ValueKind == JsonValueKind.String ? codeElement.GetString() : codeElement.ToString(), 100)
+                : null;
+            return (message, code);
+        }
+        catch (JsonException)
+        {
+            return (null, null);
+        }
+    }
+
+    private static string? SanitiseProviderValue(string? value, int maximumLength = 500)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return null;
+        var compact = Regex.Replace(value, "\\s+", " ").Trim();
+        return compact.Length <= maximumLength ? compact : compact[..maximumLength] + "…";
     }
 
 

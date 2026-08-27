@@ -1358,7 +1358,7 @@
 
     bindEvents();
     if (state.activeView === 'artwork' && event) {
-      import('./poster-app.js?v=20260827-native-artwork-1')
+      import('./poster-app.js?v=20260827-recovery-1')
         .then(module => module.mountPosterStudio({
           eventId: event.id,
           eventName: event.name,
@@ -1652,8 +1652,8 @@
               <span><strong>Add supporting image files</strong><small>Up to 4 event-specific images. They are sent with the artwork request and can be incorporated into the poster.</small></span>
             </label>
             <div class="automatic-references-panel">
-              <label class="automatic-references-toggle"><input id="useLibraryReferences" type="checkbox" checked><span><strong>Use Image Library automatically</strong><small>The studio will inspect the brief and pull in the most relevant club references behind the scenes.</small></span></label>
-              <div id="automaticReferenceList" class="automatic-reference-list"></div>
+              <label class="automatic-references-toggle"><input id="useLibraryReferences" type="checkbox" checked><span><strong>Use Image Library automatically</strong><small>The studio will inspect the brief and use the most relevant club images behind the scenes.</small></span></label>
+              <button class="text-button automatic-references-link" type="button" data-view="references">View or manage the Image Library</button>
             </div>
             <div id="supportingFilesList" class="supporting-files-list"></div>
           </div>
