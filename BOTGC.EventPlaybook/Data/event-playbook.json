@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "2.2",
+  "schemaVersion": "2.3",
   "id": "botgc-event-playbook",
   "title": "Event Playbook",
   "description": "A data-driven event planning guide that turns answers into dated, assignable tasks, operational advisories and reusable event knowledge.",
@@ -23,16 +23,34 @@
       "description": "Final arrangements milestone, normally around one week before the event."
     },
     {
+      "code": "CD",
+      "label": "Commitment decision",
+      "offsetDays": -7,
+      "description": "The go-ahead required before additional staffing, purchasing, suppliers or outward communications are firmly committed."
+    },
+    {
       "code": "B1",
       "label": "Final checks",
       "offsetDays": -1,
       "description": "Final checks milestone, normally the day before the event."
     },
     {
+      "code": "GO",
+      "label": "Final go/no-go",
+      "offsetDays": -1,
+      "description": "The final operational confirmation that the event is proceeding, with one decision owner and one communications route."
+    },
+    {
       "code": "DT",
       "label": "Event day",
       "offsetDays": 0,
       "description": "The date of the event."
+    },
+    {
+      "code": "CX",
+      "label": "Change response",
+      "dynamic": true,
+      "description": "Immediate coordinated action when an event is cancelled or postponed."
     },
     {
       "code": "A1",
@@ -195,6 +213,306 @@
               },
               "required": true,
               "source": "expanded"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "event-control",
+      "title": "Event viability and change control",
+      "shortTitle": "Event control",
+      "description": "Set the decision authority, agree when commitments can be made and coordinate any cancellation or postponement through one source of truth.",
+      "activation": {
+        "always": true
+      },
+      "sections": [
+        {
+          "id": "viability-control",
+          "title": "Decision authority and viability",
+          "items": [
+            {
+              "id": "event-decision-owner",
+              "type": "question",
+              "answerType": "text",
+              "label": "Who has authority to make the final go/no-go decision?",
+              "helpText": "Name one person. Department leads should not have to infer whether the event is proceeding from separate conversations.",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "event-communications-owner",
+              "type": "question",
+              "answerType": "text",
+              "label": "Who owns the single authoritative message if the event changes?",
+              "helpText": "This person coordinates the wording and audience so operational and member messages do not conflict.",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "event-viability-triggers",
+              "type": "question",
+              "answerType": "multiChoice",
+              "label": "What could cause the event to be cancelled, postponed or placed at risk?",
+              "options": [
+                { "value": "attendance", "label": "Insufficient bookings or attendance" },
+                { "value": "weather", "label": "Weather or course conditions" },
+                { "value": "staffing", "label": "Staffing or volunteer cover" },
+                { "value": "safety", "label": "Safety or safeguarding concern" },
+                { "value": "supplier", "label": "Supplier, facility or equipment problem" },
+                { "value": "organiser", "label": "Organiser decision or availability" },
+                { "value": "other", "label": "Other event-specific trigger" }
+              ],
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "event-minimum-attendance",
+              "type": "question",
+              "answerType": "number",
+              "label": "What is the minimum viable attendance, if there is one?",
+              "helpText": "Leave blank where attendance does not affect whether the event proceeds.",
+              "min": 0,
+              "unit": "people",
+              "required": false,
+              "source": "refined"
+            },
+            {
+              "id": "event-affected-areas",
+              "type": "question",
+              "answerType": "multiChoice",
+              "label": "Which teams or commitments must be checked before the event status changes?",
+              "options": [
+                { "value": "food-beverage", "label": "Food & Beverage staffing or orders" },
+                { "value": "clubhouse", "label": "Clubhouse rooms or service" },
+                { "value": "golf", "label": "Course, tee times or competitions" },
+                { "value": "communications", "label": "Member or visitor communications" },
+                { "value": "suppliers", "label": "External suppliers or performers" },
+                { "value": "staffing", "label": "Other staff or volunteers" }
+              ],
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "additional-operational-commitments",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will extra staffing, purchasing or supplier commitments be made specifically for this event?",
+              "allowDontKnow": true,
+              "dontKnowTask": {
+                "id": "decide-operational-commitments",
+                "title": "Decide whether the event requires extra staffing, purchasing or supplier commitments",
+                "detail": "Consult the affected department leads and record what will become difficult or costly to reverse.",
+                "deadlineCode": "B3",
+                "responsibleArea": "Event Coordination",
+                "defaultOwnerRoleId": "event-coordinator",
+                "source": "refined"
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "member-communications-sent",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Have members or participants already been told that this event is proceeding?",
+              "allowDontKnow": true,
+              "dontKnowTask": {
+                "id": "check-event-communications-already-sent",
+                "title": "Check whether any event communications have already been sent or scheduled",
+                "detail": "Check member email, organiser messages, clubhouse screens, booking confirmations and social channels.",
+                "deadlineCode": "CD",
+                "responsibleArea": "Communications",
+                "defaultOwnerRoleId": "communications",
+                "source": "refined"
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "agree-event-viability-control",
+              "type": "task",
+              "title": "Agree the event viability criteria, final decision owner and change communication route",
+              "detail": "Record what could stop the event, who decides and who issues the authoritative update to teams and members.",
+              "deadlineCode": "B3",
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator",
+              "source": "refined"
+            },
+            {
+              "id": "confirm-event-before-commitments",
+              "type": "task",
+              "title": "Confirm the event is proceeding before additional staffing, purchasing, suppliers or publicity are firmly committed",
+              "detail": "The decision owner should mark the event Confirmed or At risk and tell affected department leads before irreversible commitments are made.",
+              "deadlineCode": "CD",
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator",
+              "source": "refined"
+            },
+            {
+              "id": "confirm-fb-before-commitment",
+              "type": "task",
+              "title": "Give Food & Beverage an explicit event go-ahead before arranging extra cover, ordering stock or messaging members",
+              "detail": "F&B should work from the current Playbook status rather than a separate organiser conversation.",
+              "deadlineCode": "CD",
+              "showWhen": { "all": [{ "questionId": "catering-involved", "operator": "equals", "value": true }] },
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator",
+              "source": "refined"
+            },
+            {
+              "id": "confirm-communications-before-promotion",
+              "type": "task",
+              "title": "Confirm the event status and agreed wording before sending or scheduling member promotion",
+              "detail": "All departments and the organiser should use the same approved event status and communications owner.",
+              "deadlineCode": "CD",
+              "showWhen": { "all": [{ "questionId": "communications-involved", "operator": "equals", "value": true }] },
+              "responsibleArea": "Communications",
+              "defaultOwnerRoleId": "communications",
+              "source": "refined"
+            },
+            {
+              "id": "final-event-go-no-go",
+              "type": "task",
+              "title": "Record the final go/no-go decision and confirm it with every operational lead",
+              "detail": "Do not rely on silence as confirmation. Mark the event Confirmed, At risk, Postponed or Cancelled in the Playbook.",
+              "deadlineCode": "GO",
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator",
+              "source": "refined"
+            },
+            {
+              "id": "resolve-at-risk-event",
+              "type": "task",
+              "title": "Resolve the at-risk event decision and issue one status update",
+              "detail": "Review the recorded risk with the decision owner and either confirm, postpone or cancel the event.",
+              "deadlineCode": "GO",
+              "showWhen": { "all": [{ "eventField": "lifecycle.status", "operator": "equals", "value": "at-risk" }] },
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator",
+              "source": "refined"
+            }
+          ]
+        },
+        {
+          "id": "event-change-response",
+          "title": "Cancellation or postponement response",
+          "items": [
+            {
+              "id": "notify-operational-leads-of-event-change",
+              "type": "task",
+              "title": "Notify every affected operational lead of the cancellation or postponement",
+              "detail": "Use the Playbook status, reason and agreed wording as the single source of truth. Confirm receipt with F&B, Clubhouse, Golf, Communications and any other affected owner.",
+              "deadlineCode": "CX",
+              "showWhen": { "all": [{ "eventField": "lifecycle.status", "operator": "in", "value": ["cancelled", "postponed"] }] },
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator",
+              "source": "refined"
+            },
+            {
+              "id": "stand-down-food-beverage",
+              "type": "task",
+              "title": "Stand down Food & Beverage cover and review event-specific orders or preparation",
+              "detail": "Confirm what can be cancelled, reused or returned and record any unavoidable cost.",
+              "deadlineCode": "CX",
+              "showWhen": { "all": [
+                { "eventField": "lifecycle.status", "operator": "in", "value": ["cancelled", "postponed"] },
+                { "questionId": "catering-involved", "operator": "equals", "value": true }
+              ] },
+              "responsibleArea": "Food & Beverage",
+              "defaultOwnerRoleId": "food-beverage-manager",
+              "source": "refined"
+            },
+            {
+              "id": "release-clubhouse-arrangements",
+              "type": "task",
+              "title": "Release or revise clubhouse rooms, service arrangements and event setup",
+              "deadlineCode": "CX",
+              "showWhen": { "all": [
+                { "eventField": "lifecycle.status", "operator": "in", "value": ["cancelled", "postponed"] },
+                { "questionId": "clubhouse-involved", "operator": "equals", "value": true }
+              ] },
+              "responsibleArea": "Clubhouse",
+              "defaultOwnerRoleId": "clubhouse",
+              "source": "refined"
+            },
+            {
+              "id": "release-golf-arrangements",
+              "type": "task",
+              "title": "Release or revise tee times, competition arrangements and course preparation",
+              "deadlineCode": "CX",
+              "showWhen": { "all": [
+                { "eventField": "lifecycle.status", "operator": "in", "value": ["cancelled", "postponed"] },
+                { "questionId": "golf-involved", "operator": "equals", "value": true }
+              ] },
+              "responsibleArea": "Golf Operations",
+              "defaultOwnerRoleId": "golf-manager",
+              "source": "refined"
+            },
+            {
+              "id": "stop-scheduled-event-publicity",
+              "type": "task",
+              "title": "Stop or replace scheduled event publicity, clubhouse screen artwork and outstanding messages",
+              "detail": "Check the member email schedule, clubhouse screens, booking confirmations and any organiser-managed channels.",
+              "deadlineCode": "CX",
+              "showWhen": { "all": [
+                { "eventField": "lifecycle.status", "operator": "in", "value": ["cancelled", "postponed"] },
+                { "questionId": "communications-involved", "operator": "equals", "value": true }
+              ] },
+              "responsibleArea": "Communications",
+              "defaultOwnerRoleId": "communications",
+              "source": "refined"
+            },
+            {
+              "id": "issue-authoritative-event-change-message",
+              "type": "task",
+              "title": "Issue one authoritative cancellation or postponement update to members and participants",
+              "detail": "Use the wording recorded with the event status. It should replace, not compete with, earlier operational or organiser messages.",
+              "deadlineCode": "CX",
+              "showWhen": { "all": [
+                { "eventField": "lifecycle.status", "operator": "in", "value": ["cancelled", "postponed"] }
+              ] },
+              "responsibleArea": "Communications",
+              "defaultOwnerRoleId": "communications",
+              "source": "refined"
+            },
+            {
+              "id": "stand-down-other-event-commitments",
+              "type": "task",
+              "title": "Stand down other staff, volunteers and suppliers and record unavoidable commitments",
+              "deadlineCode": "CX",
+              "showWhen": { "all": [
+                { "eventField": "lifecycle.status", "operator": "in", "value": ["cancelled", "postponed"] },
+                { "any": [
+                  { "questionId": "additional-operational-commitments", "operator": "equals", "value": true },
+                  { "questionId": "staffing-involved", "operator": "equals", "value": true }
+                ] }
+              ] },
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator",
+              "source": "refined"
+            },
+            {
+              "id": "agree-postponed-event-next-step",
+              "type": "task",
+              "title": "Agree a replacement date or close the postponed event",
+              "detail": "When a new date is known, update the event date and milestones, then return the status to Provisional or Confirmed.",
+              "deadlineCode": "CX",
+              "showWhen": { "all": [{ "eventField": "lifecycle.status", "operator": "equals", "value": "postponed" }] },
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator",
+              "source": "refined"
+            },
+            {
+              "id": "record-event-change-impact",
+              "type": "task",
+              "title": "Record the operational, financial and communication impact of the late change",
+              "detail": "Capture avoidable cost, member confusion and any process change for the next event.",
+              "deadlineCode": "A2",
+              "showWhen": { "all": [{ "eventField": "lifecycle.status", "operator": "in", "value": ["cancelled", "postponed"] }] },
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator",
+              "source": "refined"
             }
           ]
         }

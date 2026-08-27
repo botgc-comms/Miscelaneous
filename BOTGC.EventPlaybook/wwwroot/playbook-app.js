@@ -10,7 +10,9 @@
     B4: -60,
     B3: -20,
     B2: -7,
+    CD: -7,
     B1: -1,
+    GO: -1,
     DT: 0,
     A1: 1,
     A2: 7
@@ -20,11 +22,25 @@
     B4: 'Initial planning',
     B3: 'Detailed planning',
     B2: 'Final arrangements',
+    CD: 'Commitment decision',
     B1: 'Final checks',
+    GO: 'Final go/no-go',
     DT: 'Event day',
+    CX: 'Change response',
     A1: 'Immediate follow-up',
     A2: 'Post-event review'
   });
+
+  const EVENT_STATUS_DEFINITIONS = Object.freeze({
+    provisional: { label: 'Provisional', summary: 'Planning is under way, but operational commitments do not yet have a firm go-ahead.' },
+    confirmed: { label: 'Confirmed', summary: 'The decision owner has confirmed that the event is proceeding.' },
+    'at-risk': { label: 'At risk', summary: 'The event may change. Avoid new commitments until the recorded risk is resolved.' },
+    postponed: { label: 'Postponed', summary: 'The event will not proceed on the current date. The change-response checklist is active.' },
+    cancelled: { label: 'Cancelled', summary: 'The event has been cancelled. The change-response checklist is active.' },
+    completed: { label: 'Completed', summary: 'The event has finished and can be reviewed or reused.' }
+  });
+
+  const CHANGE_RESPONSE_STATUSES = new Set(['cancelled', 'postponed']);
 
   const app = document.getElementById('app');
   const playbookFileInput = document.getElementById('playbook-file-input');
@@ -530,20 +546,31 @@
 
   function createEvent(name, organiser = '', eventDate = '', description = '', milestoneDates = {}) {
     const id = crypto.randomUUID();
+    const now = new Date().toISOString();
     const event = {
       id,
       name: name || 'Untitled event',
       organiser,
       eventDate,
       description,
-      createdAt: new Date().toISOString(),
+      createdAt: now,
       closedAt: null,
-      answers: {},
+      answers: organiser ? { 'event-decision-owner': organiser } : {},
       taskState: {},
       team: organiser ? [organiser] : [],
       advisoryOverrides: {},
       retrospective: {},
       milestoneDates: { ...milestoneDates, DT: eventDate || milestoneDates.DT || '' },
+      lifecycle: {
+        status: 'provisional',
+        statusChangedAt: now,
+        decisionOwner: organiser,
+        communicationsOwner: '',
+        changedBy: organiser,
+        reason: '',
+        memberUpdate: '',
+        history: []
+      },
       playbookVersion: playbook?.schemaVersion ?? '1.0',
       sourceEventId: null,
       cataloguePosterThumbnail: null
@@ -596,6 +623,34 @@
         if (!event.milestoneDates[code]) event.milestoneDates[code] = defaults[code];
       }
     }
+    if (CHANGE_RESPONSE_STATUSES.has(event.lifecycle?.status) && event.lifecycle?.statusChangedAt) {
+      event.milestoneDates.CX = localDateFromTimestamp(event.lifecycle.statusChangedAt);
+    }
+  }
+
+  function normaliseEventLifecycle(event) {
+    const fallbackStatus = event.closedAt ? 'completed' : 'provisional';
+    event.lifecycle = event.lifecycle && typeof event.lifecycle === 'object' ? event.lifecycle : {};
+    if (!EVENT_STATUS_DEFINITIONS[event.lifecycle.status]) event.lifecycle.status = fallbackStatus;
+    event.lifecycle.statusChangedAt ??= event.closedAt ?? event.createdAt ?? new Date().toISOString();
+    event.lifecycle.decisionOwner ??= event.answers?.['event-decision-owner'] ?? event.organiser ?? '';
+    event.lifecycle.communicationsOwner ??= event.answers?.['event-communications-owner'] ?? '';
+    if (!event.lifecycle.decisionOwner && event.organiser) event.lifecycle.decisionOwner = event.organiser;
+    if (!event.lifecycle.communicationsOwner) {
+      event.lifecycle.communicationsOwner = state.contacts?.find(contact => contact.active !== false && contact.roleIds?.includes('communications'))?.name ?? '';
+    }
+    event.lifecycle.changedBy ??= event.organiser ?? '';
+    event.lifecycle.reason ??= '';
+    event.lifecycle.memberUpdate ??= '';
+    event.lifecycle.history = Array.isArray(event.lifecycle.history) ? event.lifecycle.history : [];
+    event.answers ??= {};
+    if (!event.answers['event-decision-owner'] && event.lifecycle.decisionOwner) {
+      event.answers['event-decision-owner'] = event.lifecycle.decisionOwner;
+    }
+    if (!event.answers['event-communications-owner'] && event.lifecycle.communicationsOwner) {
+      event.answers['event-communications-owner'] = event.lifecycle.communicationsOwner;
+    }
+    return event.lifecycle;
   }
 
   function getActiveEvent() {
@@ -616,6 +671,7 @@
       event.organiser ??= '';
       event.eventDate ??= '';
       event.description ??= '';
+      normaliseEventLifecycle(event);
       saveState();
     }
     return event;
@@ -655,7 +711,9 @@
       return !conditionMatches(condition.not, event);
     }
 
-    const actual = getQuestionValue(condition.questionId, event);
+    const actual = condition.eventField
+      ? condition.eventField.split('.').reduce((value, key) => value?.[key], event)
+      : getQuestionValue(condition.questionId, event);
     switch (condition.operator) {
       case 'equals':
         return actual === condition.value;
@@ -1051,6 +1109,17 @@
     copy.retrospective = {};
     copy.advisoryOverrides = {};
     copy.taskState = {};
+    copy.lifecycle = {
+      status: 'provisional',
+      statusChangedAt: new Date().toISOString(),
+      decisionOwner: sourceEvent.lifecycle?.decisionOwner ?? sourceEvent.organiser ?? '',
+      communicationsOwner: sourceEvent.lifecycle?.communicationsOwner ?? '',
+      changedBy: sourceEvent.organiser ?? '',
+      reason: '',
+      memberUpdate: '',
+      history: []
+    };
+    delete copy.milestoneDates.CX;
     saveState();
     return copy;
   }
@@ -1126,6 +1195,11 @@
 
   function getDueDate(code, event) {
     if (!code) return null;
+    if (code === 'CX') {
+      return CHANGE_RESPONSE_STATUSES.has(event.lifecycle?.status)
+        ? localDateFromTimestamp(event.lifecycle?.statusChangedAt) || toIsoDate(new Date())
+        : null;
+    }
     const milestoneDate = event.milestoneDates?.[code];
     if (milestoneDate) return milestoneDate;
     if (!event.eventDate) return null;
@@ -1148,6 +1222,12 @@
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
+  }
+
+  function localDateFromTimestamp(value) {
+    if (!value) return '';
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? String(value).substring(0, 10) : toIsoDate(date);
   }
 
   function formatDate(value) {
@@ -1245,6 +1325,9 @@
       : 'Plan the event consistently from first decision to final close-down, with every relevant question, responsibility and deadline in one place.';
     const showEventEditor = Boolean(event) && state.activeView === 'module:start';
     const showEventTools = Boolean(event) && (isPlanningView || state.activeView === 'tasks' || state.activeView === 'retrospective');
+    const showLifecycleBanner = Boolean(event) && (isPlanningView || ['tasks', 'artwork', 'retrospective'].includes(state.activeView));
+    const lifecycle = event ? normaliseEventLifecycle(event) : null;
+    const lifecycleDefinition = event ? eventStatusDefinition(event) : null;
 
     app.innerHTML = `
       <div class="app-shell">
@@ -1301,13 +1384,13 @@
               <p>${escapeHtml(shellIntro)}</p>
             </div>
             <div class="app-page-hero-actions">
-              ${event ? `<section class="hero-event-context${event.closedAt ? ' closed' : ''}" aria-label="Current selected event">
+              ${event ? `<section class="hero-event-context status-${escapeHtml(lifecycle.status)}${event.closedAt ? ' closed' : ''}" aria-label="Current selected event">
                   <div class="hero-event-context-copy">
-                    <span><i></i>${event.closedAt ? 'Closed event' : 'Current selected event'}</span>
+                    <span><i></i>Current selected event · ${escapeHtml(lifecycleDefinition.label)}</span>
                     <strong>${escapeHtml(event.name || 'Untitled event')}</strong>
                     <small>${escapeHtml(event.eventDate ? formatDate(event.eventDate) : 'Date not set')} · ${escapeHtml(event.organiser || 'Organiser not assigned')}</small>
                   </div>
-                  <button type="button" data-view="catalogue">Change event</button>
+                  <div class="hero-event-context-actions"><button type="button" data-action="manage-event-status">Manage status</button><button type="button" data-view="catalogue">Change event</button></div>
                 </section>`
                 : `<section class="hero-event-context empty" aria-label="No event selected">
                     <div class="hero-event-context-copy"><span>No event selected</span><strong>Choose an event to begin</strong><small>Planner, tasks, artwork and retrospectives share one selected event.</small></div>
@@ -1343,6 +1426,7 @@
             </section>` : ''}
 
           <main class="main-content ${state.activeView === 'artwork' ? 'poster-studio' : ''}">
+            ${showLifecycleBanner ? renderEventLifecycleBanner(event) : ''}
             ${state.activeView === 'catalogue' ? renderCatalogue() : state.activeView === 'references' ? renderReferenceLibrary() : !event ? renderEmptyState() : state.activeView === 'tasks' ? renderTaskBoard(event, tasks) : state.activeView === 'artwork' ? renderArtworkStudio(event) : state.activeView === 'admin' ? renderAdmin(event) : state.activeView === 'retrospective' ? renderRetrospective(event) : renderModuleView(event)}
           </main>
         </main>
@@ -1354,6 +1438,7 @@
 
       ${renderNewEventDialog()}
       <dialog id="event-summary-dialog" class="modal event-summary-dialog"><div id="event-summary-content"></div></dialog>
+      ${renderEventStatusDialog(event)}
     `;
 
     bindEvents();
@@ -1781,6 +1866,96 @@
     `;
   }
 
+  function eventStatusDefinition(event) {
+    normaliseEventLifecycle(event);
+    return EVENT_STATUS_DEFINITIONS[event.lifecycle.status] ?? EVENT_STATUS_DEFINITIONS.provisional;
+  }
+
+  function renderEventLifecycleBanner(event) {
+    const lifecycle = normaliseEventLifecycle(event);
+    const definition = eventStatusDefinition(event);
+    const commitmentDate = getDueDate('CD', event);
+    const goNoGoDate = getDueDate('GO', event);
+    const changedDate = localDateFromTimestamp(lifecycle.statusChangedAt);
+    const showChangeDetail = CHANGE_RESPONSE_STATUSES.has(lifecycle.status) || lifecycle.status === 'at-risk';
+    return `
+      <section class="event-lifecycle-banner status-${escapeHtml(lifecycle.status)}" aria-label="Event status and decision controls">
+        <div class="event-lifecycle-status">
+          <span class="event-status-pill status-${escapeHtml(lifecycle.status)}">${escapeHtml(definition.label)}</span>
+          <div>
+            <span class="eyebrow">Event status</span>
+            <h2>${escapeHtml(definition.summary)}</h2>
+            ${showChangeDetail && lifecycle.reason ? `<p><strong>Recorded reason:</strong> ${escapeHtml(lifecycle.reason)}</p>` : ''}
+            ${changedDate ? `<small>Last changed ${escapeHtml(formatDate(changedDate))}${lifecycle.changedBy ? ` by ${escapeHtml(lifecycle.changedBy)}` : ''}</small>` : ''}
+          </div>
+        </div>
+        <div class="event-decision-gates">
+          <div><span>Commitment decision</span><strong>${escapeHtml(commitmentDate ? formatDate(commitmentDate) : 'Not set')}</strong></div>
+          <div><span>Final go/no-go</span><strong>${escapeHtml(goNoGoDate ? formatDate(goNoGoDate) : 'Not set')}</strong></div>
+          <div><span>Decision owner</span><strong>${escapeHtml(lifecycle.decisionOwner || 'Not assigned')}</strong></div>
+          <div><span>Communications owner</span><strong>${escapeHtml(lifecycle.communicationsOwner || 'Not assigned')}</strong></div>
+        </div>
+        ${CHANGE_RESPONSE_STATUSES.has(lifecycle.status) && lifecycle.memberUpdate ? `<div class="event-authoritative-message"><span>Authoritative member update</span><p>${escapeHtml(lifecycle.memberUpdate)}</p></div>` : ''}
+        <button class="button button-primary" type="button" data-action="manage-event-status">Manage event status</button>
+      </section>`;
+  }
+
+  function renderEventStatusDialog(event) {
+    if (!event) return '';
+    const lifecycle = normaliseEventLifecycle(event);
+    const changeStatus = CHANGE_RESPONSE_STATUSES.has(lifecycle.status);
+    const reasonRequired = changeStatus || lifecycle.status === 'at-risk';
+    const recentHistory = [...lifecycle.history].slice(-5).reverse();
+    return `
+      <dialog id="event-status-dialog" class="modal event-status-dialog">
+        <form id="event-status-form">
+          <div class="modal-heading">
+            <div>
+              <span class="eyebrow">Event control</span>
+              <h2>Update the event status</h2>
+              <p>This status is the single operational signal used by the planner, task board, artwork and event catalogue.</p>
+            </div>
+            <button class="icon-button" type="button" data-close-event-status aria-label="Close">×</button>
+          </div>
+          <div class="event-status-dialog-body">
+            <section class="event-status-fields">
+              <label class="field">
+                <span>New status</span>
+                <select id="event-status-value">
+                  ${Object.entries(EVENT_STATUS_DEFINITIONS).map(([value, item]) => `<option value="${escapeHtml(value)}" ${lifecycle.status === value ? 'selected' : ''}>${escapeHtml(item.label)}</option>`).join('')}
+                </select>
+                <small id="event-status-guidance">${escapeHtml(eventStatusDefinition(event).summary)}</small>
+              </label>
+              <div class="event-status-owner-grid">
+                <label class="field"><span>Decision made by</span><input id="event-status-decision-owner" type="text" value="${escapeHtml(lifecycle.decisionOwner || event.organiser)}" list="team-list" required></label>
+                <label class="field"><span>Communications owner</span><input id="event-status-communications-owner" type="text" value="${escapeHtml(lifecycle.communicationsOwner)}" list="team-list"><small>Required for cancellation or postponement.</small></label>
+              </div>
+              <div id="event-status-change-fields" class="event-status-change-fields ${reasonRequired ? '' : 'hidden'}">
+                <label class="field"><span>Reason for the change</span><textarea id="event-status-reason" rows="3" ${reasonRequired ? 'required' : ''} placeholder="Record the operational reason, not just ‘organiser decision’.">${escapeHtml(lifecycle.reason)}</textarea></label>
+              </div>
+              <div id="event-status-member-fields" class="event-status-change-fields ${changeStatus ? '' : 'hidden'}">
+                <label class="field"><span>Authoritative member or participant update</span><textarea id="event-status-member-update" rows="5" placeholder="For example: Tonight’s event has been cancelled. Please disregard the earlier message about additional catering support. We apologise for the short notice.">${escapeHtml(lifecycle.memberUpdate)}</textarea><small>Record one agreed message here. The generated Communications task uses this as the source wording.</small></label>
+                <div class="event-change-warning"><strong>A coordinated response checklist will activate immediately.</strong><span>Operational owners will receive tasks to stand down resources, stop scheduled publicity and issue the agreed update.</span></div>
+              </div>
+            </section>
+            <aside class="event-status-history">
+              <span class="eyebrow">Decision record</span>
+              <h3>Recent status changes</h3>
+              ${recentHistory.length ? recentHistory.map(entry => {
+                const definition = EVENT_STATUS_DEFINITIONS[entry.status] ?? { label: entry.status };
+                const date = localDateFromTimestamp(entry.changedAt);
+                return `<div class="event-status-history-item"><span class="event-status-pill status-${escapeHtml(entry.status)}">${escapeHtml(definition.label)}</span><strong>${escapeHtml(date ? formatDate(date) : 'Date not recorded')}</strong><small>${escapeHtml(entry.changedBy || 'Owner not recorded')}${entry.reason ? ` · ${escapeHtml(entry.reason)}` : ''}</small></div>`;
+              }).join('') : '<p>No previous status changes have been recorded.</p>'}
+            </aside>
+          </div>
+          <div class="modal-actions">
+            <button class="button button-secondary" type="button" data-close-event-status>Cancel</button>
+            <button class="button button-primary" type="submit">Apply event status</button>
+          </div>
+        </form>
+      </dialog>`;
+  }
+
   function renderPlanningCalendar(event) {
     normaliseMilestoneDates(event);
     return `
@@ -1797,10 +1972,10 @@
           </div>
         </div>
         <div class="deadline-grid">
-          ${playbook.deadlineCodes.map(code => {
+          ${playbook.deadlineCodes.filter(code => !code.dynamic || CHANGE_RESPONSE_STATUSES.has(event.lifecycle?.status)).map(code => {
             const due = getDueDate(code.code, event);
             return `
-              <div class="deadline-row milestone-row">
+              <div class="deadline-row milestone-row ${['CD', 'GO', 'CX'].includes(code.code) ? 'decision-gate-row' : ''}">
                 <div class="deadline-code">${escapeHtml(code.code)}</div>
                 <div class="deadline-copy">
                   <strong>${escapeHtml(MILESTONE_LABELS[code.code] ?? code.label)}</strong>
@@ -2268,6 +2443,8 @@
   }
 
   function renderCatalogueCard(event) {
+    const lifecycle = normaliseEventLifecycle(event);
+    const statusDefinition = eventStatusDefinition(event);
     const tasks = getEventTaskSnapshot(event);
     const completed = tasks.filter(task => task.state.completed).length;
     const retroCount = Object.values(event.retrospective ?? {}).filter(value => value !== '' && value !== null && value !== undefined).length;
@@ -2288,12 +2465,12 @@
       ? sourceOutputId === 'a4' ? ' legacy-fitted-a4' : ' legacy-fitted-portrait'
       : '';
     return `
-      <article class="catalogue-card${closed ? ' closed' : ''}${current ? ' current' : ''}">
+      <article class="catalogue-card status-${escapeHtml(lifecycle.status)}${closed ? ' closed' : ''}${current ? ' current' : ''}">
         <button class="catalogue-poster" data-event-summary="${escapeHtml(event.id)}" aria-label="View summary for ${escapeHtml(event.name)}">
           ${catalogueArtwork
             ? `<img class="${legacyPortraitClass.trim()}" src="${escapeHtml(catalogueArtwork)}" alt="Campaign artwork for ${escapeHtml(event.name)}">`
             : `<span class="catalogue-poster-placeholder"><img src="./assets/botgc-mark.svg" alt=""><small>Artwork not generated yet</small></span>`}
-          <span class="catalogue-status ${closed ? 'closed' : 'open'}">${closed ? 'Closed' : 'Open'}</span>
+          <span class="catalogue-status status-${escapeHtml(lifecycle.status)}">${escapeHtml(statusDefinition.label)}</span>
           ${current ? '<span class="catalogue-current-badge">Current event</span>' : ''}
         </button>
         <div class="catalogue-card-body">
@@ -2322,12 +2499,14 @@
   }
 
   function renderEventSummaryContent(event) {
+    const lifecycle = normaliseEventLifecycle(event);
+    const statusDefinition = eventStatusDefinition(event);
     const tasks = getEventTaskSnapshot(event);
     const retrospectiveFields = playbook.retrospective?.fields ?? [];
     return `
       <div class="summary-dialog-header">
         <div>
-          <span class="eyebrow">Event summary</span>
+          <span class="eyebrow">Event summary · ${escapeHtml(statusDefinition.label)}</span>
           <h2>${escapeHtml(event.name)}</h2>
           <p>${escapeHtml(event.eventDate ? formatDate(event.eventDate) : 'Date not set')} ${event.organiser ? `· Organiser: ${escapeHtml(event.organiser)}` : ''}</p>
         </div>
@@ -2337,6 +2516,13 @@
         <section class="summary-description">
           <span class="eyebrow">Event</span>
           <p>${escapeHtml(cleanSummaryDescription(event.description || 'No event description was recorded.'))}</p>
+        </section>
+
+        <section class="summary-section summary-event-status status-${escapeHtml(lifecycle.status)}">
+          <div class="summary-section-heading"><h3>Operational status</h3><span class="event-status-pill status-${escapeHtml(lifecycle.status)}">${escapeHtml(statusDefinition.label)}</span></div>
+          <p>${escapeHtml(statusDefinition.summary)}</p>
+          ${lifecycle.reason ? `<p><strong>Reason:</strong> ${escapeHtml(lifecycle.reason)}</p>` : ''}
+          <div class="summary-retro-grid"><div class="summary-retro-item"><span>Decision owner</span><strong>${escapeHtml(lifecycle.decisionOwner || 'Not assigned')}</strong></div><div class="summary-retro-item"><span>Communications owner</span><strong>${escapeHtml(lifecycle.communicationsOwner || 'Not assigned')}</strong></div></div>
         </section>
 
         <section class="summary-section">
@@ -2362,6 +2548,7 @@
       <div class="summary-dialog-footer">
         ${event.closedAt ? `<span class="summary-closed">Closed ${escapeHtml(formatDate(event.closedAt.substring(0,10)))}</span>` : '<span></span>'}
         <div class="button-row">
+          <button class="button button-secondary" data-manage-event-status="${escapeHtml(event.id)}">Manage status</button>
           ${event.closedAt ? `<button class="button button-primary" data-reopen-event="${escapeHtml(event.id)}">Reopen event</button><button class="button button-secondary" data-clone-event="${escapeHtml(event.id)}">Create from this event</button>` : `<button class="button button-secondary" data-open-event="${escapeHtml(event.id)}">Open planner</button><button class="button button-primary" data-close-event="${escapeHtml(event.id)}">Close & create new</button>`}
         </div>
       </div>`;
@@ -2479,7 +2666,7 @@
             <section class="new-event-section milestone-setup-section">
               <div class="new-event-section-heading"><span>02</span><div><h3>Planning milestones</h3><p>Choose the key dates that generated tasks will work back from. Sensible defaults are filled in from the event date and can be changed now.</p></div></div>
               <div class="new-event-milestones">
-                ${playbook.deadlineCodes.map(code => `
+                ${playbook.deadlineCodes.filter(code => !code.dynamic).map(code => `
                   <label class="new-event-milestone">
                     <span class="new-event-milestone-name"><strong>${escapeHtml(code.code)}</strong>${escapeHtml(MILESTONE_LABELS[code.code] ?? code.label)}</span>
                     <span class="new-event-milestone-controls">
@@ -2500,7 +2687,7 @@
               </div>
               <div class="milestone-guidance">
                 <strong>Default planning rhythm</strong>
-                <span>Initial planning 60 days before · detailed planning 20 days before · final arrangements 7 days before · final checks 1 day before · immediate follow-up 1 day after · post-event review 7 days after.</span>
+                <span>Initial and detailed planning lead into a commitment decision and a final go/no-go. These two decision gates should happen before operational teams make difficult-to-reverse commitments.</span>
               </div>
             </section>
           </div>
@@ -2598,6 +2785,9 @@
     } else {
       event.answers[questionId] = value;
     }
+    normaliseEventLifecycle(event);
+    if (questionId === 'event-decision-owner') event.lifecycle.decisionOwner = String(value ?? '').trim();
+    if (questionId === 'event-communications-owner') event.lifecycle.communicationsOwner = String(value ?? '').trim();
     const decisionTask = buildDontKnowTask(indexed.item);
     if (decisionTask && value !== 'dont-know') delete event.taskState[decisionTask.id];
     normaliseAnswers(event);
@@ -2619,10 +2809,119 @@
     }
   }
 
+  function updateEventStatusDialogFields() {
+    const select = document.getElementById('event-status-value');
+    const reasonFields = document.getElementById('event-status-change-fields');
+    const memberFields = document.getElementById('event-status-member-fields');
+    const reason = document.getElementById('event-status-reason');
+    const communicationsOwner = document.getElementById('event-status-communications-owner');
+    const guidance = document.getElementById('event-status-guidance');
+    if (!select) return;
+
+    const status = select.value;
+    const isChangeResponse = CHANGE_RESPONSE_STATUSES.has(status);
+    const needsReason = isChangeResponse || status === 'at-risk';
+    reasonFields?.classList.toggle('hidden', !needsReason);
+    memberFields?.classList.toggle('hidden', !isChangeResponse);
+    if (reason) reason.required = needsReason;
+    if (communicationsOwner) communicationsOwner.required = isChangeResponse;
+    if (guidance) guidance.textContent = EVENT_STATUS_DEFINITIONS[status]?.summary ?? '';
+  }
+
+  function openEventStatusDialog(eventId = state.activeEventId) {
+    if (eventId && eventId !== state.activeEventId && state.events.some(event => event.id === eventId)) {
+      state.activeEventId = eventId;
+      saveState();
+      document.getElementById('event-summary-dialog')?.close();
+      render();
+      requestAnimationFrame(() => openEventStatusDialog(eventId));
+      return;
+    }
+    const dialog = document.getElementById('event-status-dialog');
+    if (!dialog) return;
+    updateEventStatusDialogFields();
+    dialog.showModal();
+    requestAnimationFrame(() => document.getElementById('event-status-value')?.focus());
+  }
+
+  function applyEventStatusChange(event) {
+    const lifecycle = normaliseEventLifecycle(event);
+    const nextStatus = document.getElementById('event-status-value')?.value;
+    const decisionOwner = document.getElementById('event-status-decision-owner')?.value.trim() ?? '';
+    const communicationsOwner = document.getElementById('event-status-communications-owner')?.value.trim() ?? '';
+    const isChangeResponse = CHANGE_RESPONSE_STATUSES.has(nextStatus);
+    const needsReason = isChangeResponse || nextStatus === 'at-risk';
+    const reason = needsReason ? document.getElementById('event-status-reason')?.value.trim() ?? '' : '';
+    const memberUpdate = isChangeResponse ? document.getElementById('event-status-member-update')?.value.trim() ?? '' : '';
+    if (!EVENT_STATUS_DEFINITIONS[nextStatus] || !decisionOwner || (needsReason && !reason) || (isChangeResponse && !communicationsOwner)) return false;
+
+    const now = new Date().toISOString();
+    const changed = nextStatus !== lifecycle.status ||
+      decisionOwner !== lifecycle.decisionOwner ||
+      communicationsOwner !== lifecycle.communicationsOwner ||
+      reason !== lifecycle.reason ||
+      memberUpdate !== lifecycle.memberUpdate;
+    if (changed) {
+      lifecycle.history.push({
+        status: nextStatus,
+        changedAt: now,
+        changedBy: decisionOwner,
+        communicationsOwner,
+        reason,
+        memberUpdate
+      });
+    }
+
+    lifecycle.status = nextStatus;
+    if (changed) lifecycle.statusChangedAt = now;
+    lifecycle.decisionOwner = decisionOwner;
+    lifecycle.communicationsOwner = communicationsOwner;
+    lifecycle.changedBy = decisionOwner;
+    lifecycle.reason = reason;
+    lifecycle.memberUpdate = memberUpdate;
+    event.answers['event-decision-owner'] = decisionOwner;
+    event.answers['event-communications-owner'] = communicationsOwner;
+    updateTeam(event, decisionOwner);
+    updateTeam(event, communicationsOwner);
+
+    event.milestoneDates ??= {};
+    if (isChangeResponse) {
+      event.milestoneDates.CX = localDateFromTimestamp(now);
+      if (nextStatus === 'cancelled') event.cancelledAt = now;
+      if (nextStatus === 'postponed') event.postponedAt = now;
+      const explicitOwners = [
+        ['notify-operational-leads-of-event-change', decisionOwner],
+        ['issue-authoritative-event-change-message', communicationsOwner],
+        ['stop-scheduled-event-publicity', communicationsOwner]
+      ];
+      for (const [taskId, owner] of explicitOwners) {
+        const indexed = itemIndex.get(taskId);
+        if (indexed?.item && owner && isItemVisible(indexed.item, event)) {
+          assignTask(event, indexed.item, owner, contactEmailByName(owner), 'event-status');
+        }
+      }
+    } else {
+      delete event.milestoneDates.CX;
+    }
+    if (nextStatus === 'confirmed') event.confirmedAt = now;
+    if (nextStatus === 'completed') event.closedAt ??= now;
+    else if (event.closedAt) event.closedAt = null;
+
+    saveState();
+    return true;
+  }
+
   function closeEventAndCreateNew(eventId) {
     const target = state.events.find(item => item.id === eventId);
     if (!target) return;
     if (!target.closedAt) target.closedAt = new Date().toISOString();
+    normaliseEventLifecycle(target);
+    if (!CHANGE_RESPONSE_STATUSES.has(target.lifecycle.status)) {
+      target.lifecycle.status = 'completed';
+      target.lifecycle.statusChangedAt = target.closedAt;
+      target.lifecycle.changedBy = target.organiser || target.lifecycle.decisionOwner;
+      target.lifecycle.history.push({ status: 'completed', changedAt: target.closedAt, changedBy: target.lifecycle.changedBy, reason: 'Event closed from the catalogue.' });
+    }
     saveState();
     document.getElementById('event-summary-dialog')?.close();
     render();
@@ -2639,6 +2938,13 @@
     if (!target || !target.closedAt) return;
     target.closedAt = null;
     target.reopenedAt = new Date().toISOString();
+    normaliseEventLifecycle(target);
+    if (target.lifecycle.status === 'completed') {
+      target.lifecycle.status = 'provisional';
+      target.lifecycle.statusChangedAt = target.reopenedAt;
+      target.lifecycle.reason = 'Event reopened for further planning.';
+      target.lifecycle.history.push({ status: 'provisional', changedAt: target.reopenedAt, changedBy: target.organiser || target.lifecycle.decisionOwner, reason: target.lifecycle.reason });
+    }
     state.activeEventId = target.id;
     state.activeView = 'module:start';
     saveState();
@@ -2677,6 +2983,9 @@
         render();
       });
     });
+    document.querySelectorAll('#event-summary-dialog [data-manage-event-status]').forEach(element => {
+      element.addEventListener('click', () => openEventStatusDialog(element.dataset.manageEventStatus));
+    });
   }
 
   function bindEvents() {
@@ -2686,6 +2995,29 @@
         saveState();
         render();
       });
+    });
+
+    document.querySelectorAll('[data-action="manage-event-status"]').forEach(element => {
+      element.addEventListener('click', () => openEventStatusDialog());
+    });
+
+    document.querySelectorAll('[data-close-event-status]').forEach(element => {
+      element.addEventListener('click', () => document.getElementById('event-status-dialog')?.close());
+    });
+
+    document.getElementById('event-status-value')?.addEventListener('change', updateEventStatusDialogFields);
+    document.getElementById('event-status-form')?.addEventListener('submit', eventArgs => {
+      eventArgs.preventDefault();
+      const event = getActiveEvent();
+      const form = eventArgs.currentTarget;
+      updateEventStatusDialogFields();
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      if (!event || !applyEventStatusChange(event)) return;
+      document.getElementById('event-status-dialog')?.close();
+      render();
     });
 
     document.querySelectorAll('[data-event-id]').forEach(element => {
@@ -3329,6 +3661,7 @@
         organiser: event.organiser,
         eventDate: event.eventDate,
         description: event.description,
+        lifecycle: structuredClone(event.lifecycle),
         deadlineOffsets: Object.fromEntries(playbook.deadlineCodes.map(code => [code.code, getDeadlineOffset(code.code, event)])),
         answers: event.answers,
         tasks

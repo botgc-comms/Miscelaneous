@@ -226,16 +226,27 @@ Selecting **View event summary** shows the event description, every task generat
 
 Open events can be closed from the catalogue or summary using **Close & create new**. Closed events remain in the catalogue as history and can be used as the basis for a future event.
 
-Creating an event now captures the event name, organiser, provisional event date, a detailed description and the six planning milestones. Milestones default from the event date to:
+Creating an event now captures the event name, organiser, provisional event date, a detailed description and the planning milestones. Milestones default from the event date to:
 
 - B4 Initial planning: 60 days before;
-- B3 Detailed planning: 60 days before;
-- B2 Final arrangements: 30 days before;
-- B1 Final checks: 7 days before;
+- B3 Detailed planning: 20 days before;
+- B2 Final arrangements: 7 days before;
+- CD Commitment decision: 7 days before;
+- B1 Final checks: 1 day before;
+- GO Final go/no-go: 1 day before;
 - DT Event day: event date;
-- A1 Post-event review: 7 days after.
+- A1 Immediate follow-up: 1 day after;
+- A2 Post-event review: 7 days after.
 
 The organiser can change any of those dates during event creation or later in the planning timeline. Generated task deadlines use the actual milestone dates for that event.
+
+## Event viability and cancellation control (27 August 2026)
+
+Every event now has a shared lifecycle status: **Provisional**, **Confirmed**, **At risk**, **Postponed**, **Cancelled** or **Completed**. The status is visible throughout the selected-event workspace and is changed through a guided decision record containing the decision owner, communications owner, reason and authoritative member update.
+
+The always-available **Event control** planning module asks about viability triggers, affected teams, minimum attendance and operational commitments. Its Commitment Decision and Final Go/No-Go tasks explicitly gate F&B cover, purchasing, suppliers and outward communications.
+
+Changing an event to Cancelled or Postponed activates the dynamic CX Change Response milestone and a coordinated task set. Depending on the event answers, it assigns immediate actions to Event Coordination, Food & Beverage, Clubhouse, Golf Operations and Communications to notify leads, stand down resources, stop scheduled publicity and screen artwork, issue one authoritative participant update and record the operational impact. The event remains open while those tasks are completed; catalogue closure is a separate archival action.
 
 The new-event screen explicitly explains that a detailed event description gives the AI better context for both artwork generation and future planning assistance.
 
