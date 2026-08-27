@@ -42,6 +42,12 @@
 
   const CHANGE_RESPONSE_STATUSES = new Set(['cancelled', 'postponed']);
 
+  const PLATFORM_ROLE_DEFINITIONS = Object.freeze([
+    { id: 'team-member', name: 'Team member', description: 'Can receive and complete assigned tasks.' },
+    { id: 'organiser', name: 'Organiser', description: 'Can create events and manage event planning.' },
+    { id: 'admin', name: 'Admin', description: 'Can manage the directory and Playbook configuration.' }
+  ]);
+
   const app = document.getElementById('app');
   const playbookFileInput = document.getElementById('playbook-file-input');
 
@@ -57,7 +63,7 @@
   let sharedStateSavePending = false;
   let applyingSharedState = false;
   const requestedView = new URLSearchParams(window.location.search).get('view');
-  if (['tasks', 'catalogue', 'artwork', 'retrospective', 'admin', 'references'].includes(requestedView)) {
+  if (['tasks', 'catalogue', 'artwork', 'retrospective', 'admin', 'references', 'directory'].includes(requestedView)) {
     state.activeView = requestedView;
   }
 
@@ -70,6 +76,7 @@
           activeView: 'catalogue',
           taskFilter: 'open',
           deadlineOffsets: {},
+          roles: [],
           contacts: [],
           notificationOutbox: [],
           adminDraftItems: [],
@@ -84,6 +91,7 @@
         activeView: parsed.activeView ?? 'catalogue',
         taskFilter: parsed.taskFilter ?? 'open',
         deadlineOffsets: parsed.deadlineOffsets && typeof parsed.deadlineOffsets === 'object' ? parsed.deadlineOffsets : {},
+        roles: Array.isArray(parsed.roles) ? parsed.roles : [],
         contacts: Array.isArray(parsed.contacts) ? parsed.contacts : [],
         notificationOutbox: Array.isArray(parsed.notificationOutbox) ? parsed.notificationOutbox : [],
         adminDraftItems: Array.isArray(parsed.adminDraftItems) ? parsed.adminDraftItems : [],
@@ -96,6 +104,7 @@
         activeView: 'catalogue',
         taskFilter: 'open',
         deadlineOffsets: {},
+        roles: [],
         contacts: [],
         notificationOutbox: [],
         adminDraftItems: [],
@@ -157,8 +166,9 @@
 
   function emptySharedState() {
     return {
-      schemaVersion: 1,
+      schemaVersion: 2,
       deadlineOffsets: {},
+      roles: [],
       contacts: [],
       events: []
     };
@@ -167,10 +177,11 @@
   function normaliseSharedState(value) {
     const candidate = value && typeof value === 'object' ? value : {};
     return {
-      schemaVersion: 1,
+      schemaVersion: 2,
       deadlineOffsets: candidate.deadlineOffsets && typeof candidate.deadlineOffsets === 'object'
         ? structuredClone(candidate.deadlineOffsets)
         : {},
+      roles: Array.isArray(candidate.roles) ? structuredClone(candidate.roles) : [],
       contacts: Array.isArray(candidate.contacts) ? structuredClone(candidate.contacts) : [],
       events: Array.isArray(candidate.events) ? structuredClone(candidate.events) : []
     };
@@ -179,6 +190,7 @@
   function getSharedStateSnapshot() {
     return normaliseSharedState({
       deadlineOffsets: state.deadlineOffsets,
+      roles: state.roles,
       contacts: state.contacts,
       events: state.events
     });
@@ -239,8 +251,9 @@
     const local = normaliseSharedState(localValue);
     const remote = normaliseSharedState(remoteValue);
     return {
-      schemaVersion: 1,
+      schemaVersion: 2,
       deadlineOffsets: mergeChangedValue(base.deadlineOffsets, local.deadlineOffsets, remote.deadlineOffsets),
+      roles: mergeEntitiesById(base.roles, local.roles, remote.roles),
       contacts: mergeEntitiesById(base.contacts, local.contacts, remote.contacts),
       events: mergeEntitiesById(base.events, local.events, remote.events)
     };
@@ -250,6 +263,7 @@
     const shared = normaliseSharedState(sharedValue);
     applyingSharedState = true;
     state.deadlineOffsets = shared.deadlineOffsets;
+    state.roles = shared.roles;
     state.contacts = shared.contacts;
     state.events = shared.events;
     if (state.activeEventId && !state.events.some(event => event.id === state.activeEventId)) {
@@ -544,29 +558,34 @@
     }
   }
 
-  function createEvent(name, organiser = '', eventDate = '', description = '', milestoneDates = {}) {
+  function createEvent(name, organiser = '', eventDate = '', description = '', milestoneDates = {}, organiserRef = null) {
     const id = crypto.randomUUID();
     const now = new Date().toISOString();
+    const resolvedOrganiserRef = assignmentReference(organiserRef ?? organiser);
+    const organiserName = assignmentDisplay(resolvedOrganiserRef ?? organiser, organiser);
     const event = {
       id,
       name: name || 'Untitled event',
-      organiser,
+      organiser: organiserName,
+      organiserRef: resolvedOrganiserRef,
       eventDate,
       description,
       createdAt: now,
       closedAt: null,
-      answers: organiser ? { 'event-decision-owner': organiser } : {},
+      answers: organiserName ? { 'event-decision-owner': resolvedOrganiserRef ?? organiserName } : {},
       taskState: {},
-      team: organiser ? [organiser] : [],
+      team: organiserName ? [organiserName] : [],
       advisoryOverrides: {},
       retrospective: {},
       milestoneDates: { ...milestoneDates, DT: eventDate || milestoneDates.DT || '' },
       lifecycle: {
         status: 'provisional',
         statusChangedAt: now,
-        decisionOwner: organiser,
+        decisionOwner: organiserName,
+        decisionOwnerRef: resolvedOrganiserRef,
         communicationsOwner: '',
-        changedBy: organiser,
+        communicationsOwnerRef: null,
+        changedBy: organiserName,
         reason: '',
         memberUpdate: '',
         interestedParties: [],
@@ -634,12 +653,17 @@
     event.lifecycle = event.lifecycle && typeof event.lifecycle === 'object' ? event.lifecycle : {};
     if (!EVENT_STATUS_DEFINITIONS[event.lifecycle.status]) event.lifecycle.status = fallbackStatus;
     event.lifecycle.statusChangedAt ??= event.closedAt ?? event.createdAt ?? new Date().toISOString();
-    event.lifecycle.decisionOwner ??= event.answers?.['event-decision-owner'] ?? event.organiser ?? '';
-    event.lifecycle.communicationsOwner ??= event.answers?.['event-communications-owner'] ?? '';
-    if (!event.lifecycle.decisionOwner && event.organiser) event.lifecycle.decisionOwner = event.organiser;
-    if (!event.lifecycle.communicationsOwner) {
-      event.lifecycle.communicationsOwner = state.contacts?.find(contact => contact.active !== false && contact.roleIds?.includes('communications'))?.name ?? '';
-    }
+    event.organiserRef = assignmentReference(event.organiserRef ?? event.organiser);
+    if (event.organiserRef) event.organiser = assignmentDisplay(event.organiserRef, event.organiser);
+
+    const decisionRef = assignmentReference(event.lifecycle.decisionOwnerRef ?? event.answers?.['event-decision-owner'] ?? event.organiserRef ?? event.lifecycle.decisionOwner ?? event.organiser);
+    event.lifecycle.decisionOwnerRef = decisionRef;
+    event.lifecycle.decisionOwner = assignmentDisplay(decisionRef ?? event.lifecycle.decisionOwner ?? event.organiser, event.lifecycle.decisionOwner || event.organiser || '');
+
+    let communicationsRef = assignmentReference(event.lifecycle.communicationsOwnerRef ?? event.answers?.['event-communications-owner'] ?? event.lifecycle.communicationsOwner);
+    if (!communicationsRef && !event.lifecycle.communicationsOwner) communicationsRef = roleById('communications') ? { kind: 'role', id: 'communications' } : null;
+    event.lifecycle.communicationsOwnerRef = communicationsRef;
+    event.lifecycle.communicationsOwner = assignmentDisplay(communicationsRef ?? event.lifecycle.communicationsOwner, event.lifecycle.communicationsOwner || '');
     event.lifecycle.changedBy ??= event.organiser ?? '';
     event.lifecycle.reason ??= '';
     event.lifecycle.memberUpdate ??= '';
@@ -647,10 +671,10 @@
     event.lifecycle.history = Array.isArray(event.lifecycle.history) ? event.lifecycle.history : [];
     event.answers ??= {};
     if (!event.answers['event-decision-owner'] && event.lifecycle.decisionOwner) {
-      event.answers['event-decision-owner'] = event.lifecycle.decisionOwner;
+      event.answers['event-decision-owner'] = event.lifecycle.decisionOwnerRef ?? event.lifecycle.decisionOwner;
     }
     if (!event.answers['event-communications-owner'] && event.lifecycle.communicationsOwner) {
-      event.answers['event-communications-owner'] = event.lifecycle.communicationsOwner;
+      event.answers['event-communications-owner'] = event.lifecycle.communicationsOwnerRef ?? event.lifecycle.communicationsOwner;
     }
     return event.lifecycle;
   }
@@ -671,6 +695,8 @@
       event.sourceEventId ??= null;
       event.name ??= 'Untitled event';
       event.organiser ??= '';
+      event.organiserRef = assignmentReference(event.organiserRef ?? event.organiser);
+      if (event.organiserRef) event.organiser = assignmentDisplay(event.organiserRef, event.organiser);
       event.eventDate ??= '';
       event.description ??= '';
       normaliseEventLifecycle(event);
@@ -868,30 +894,223 @@
   }
 
   function initialiseOperationalState() {
-    if (!Array.isArray(state.contacts) || state.contacts.length === 0) {
-      state.contacts = structuredClone(playbook.defaultContacts ?? []);
+    const bundledRoles = playbook.responsibilityRoles ?? [];
+    const existingRoles = new Map((Array.isArray(state.roles) ? state.roles : []).filter(role => role?.id).map(role => [role.id, role]));
+    state.roles = bundledRoles.map(role => normaliseDirectoryRole({ ...role, ...(existingRoles.get(role.id) ?? {}) }));
+    for (const role of existingRoles.values()) {
+      if (!state.roles.some(candidate => candidate.id === role.id)) state.roles.push(normaliseDirectoryRole(role));
     }
+
+    if (!Array.isArray(state.contacts) || state.contacts.length === 0) state.contacts = structuredClone(playbook.defaultContacts ?? []);
+    state.contacts = state.contacts.map(normaliseDirectoryContact);
+
+    let simon = state.contacts.find(contact => contact.email?.toLocaleLowerCase() === 'simon@maraboustork.co.uk')
+      ?? state.contacts.find(contact => contact.name?.toLocaleLowerCase() === 'simon parsons');
+    if (!simon) {
+      simon = normaliseDirectoryContact({
+        id: 'person-simon-parsons',
+        type: 'person',
+        name: 'Simon Parsons',
+        email: 'simon@maraboustork.co.uk',
+        phone: '',
+        roleIds: ['communications'],
+        platformRoleIds: ['organiser', 'admin'],
+        canLogin: true,
+        canReceiveTasks: true,
+        active: true
+      });
+      state.contacts.push(simon);
+    } else {
+      if (!simon.email) simon.email = 'simon@maraboustork.co.uk';
+      simon.roleIds = [...new Set([...(simon.roleIds ?? []), 'communications'])];
+      simon.platformRoleIds = [...new Set([...(simon.platformRoleIds ?? []), 'organiser', 'admin'])];
+      simon.canLogin = true;
+      simon.canReceiveTasks = true;
+    }
+
+    const communicationsRole = state.roles.find(role => role.id === 'communications');
+    if (communicationsRole && !communicationsRole.ownerContactId) communicationsRole.ownerContactId = simon.id;
     saveState();
   }
 
+  function normaliseDirectoryRole(value) {
+    const role = value && typeof value === 'object' ? value : {};
+    return {
+      id: String(role.id || crypto.randomUUID()),
+      name: String(role.name || 'New role').trim(),
+      area: String(role.area || '').trim(),
+      ownerContactId: String(role.ownerContactId || '').trim(),
+      mailboxEmail: String(role.mailboxEmail || '').trim(),
+      fallbackRoleId: String(role.fallbackRoleId || '').trim() || null,
+      active: role.active !== false,
+      selectableForTasks: role.selectableForTasks !== false,
+      source: role.source || 'directory'
+    };
+  }
+
+  function normaliseDirectoryContact(value) {
+    const contact = value && typeof value === 'object' ? value : {};
+    const matchingRole = (playbook?.responsibilityRoles ?? []).find(role => role.name?.toLocaleLowerCase() === String(contact.name ?? '').toLocaleLowerCase());
+    const inferredType = matchingRole && !contact.email ? 'mailbox' : 'person';
+    return {
+      id: String(contact.id || crypto.randomUUID()),
+      type: contact.type === 'mailbox' ? 'mailbox' : (contact.type === 'person' ? 'person' : inferredType),
+      name: String(contact.name || 'New person').trim(),
+      email: String(contact.email || '').trim(),
+      phone: String(contact.phone || '').trim(),
+      roleIds: Array.isArray(contact.roleIds) ? [...new Set(contact.roleIds.filter(Boolean).map(String))] : [],
+      platformRoleIds: Array.isArray(contact.platformRoleIds) ? [...new Set(contact.platformRoleIds.filter(Boolean).map(String))] : [],
+      canLogin: contact.canLogin === true,
+      canReceiveTasks: contact.canReceiveTasks !== false,
+      active: contact.active !== false,
+      notes: String(contact.notes || '').trim()
+    };
+  }
+
+  function responsibilityRoles() {
+    return Array.isArray(state.roles) ? state.roles : [];
+  }
+
   function roleById(roleId) {
-    return (playbook.responsibilityRoles ?? []).find(role => role.id === roleId) ?? null;
+    return responsibilityRoles().find(role => role.id === roleId) ?? null;
+  }
+
+  function contactById(contactId) {
+    return (state.contacts ?? []).find(contact => contact.id === contactId) ?? null;
   }
 
   function contactForRole(roleId, event, visited = new Set()) {
     if (!roleId || visited.has(roleId)) return null;
     visited.add(roleId);
 
-    if (roleId === 'event-coordinator' && event.organiser) {
-      const organiserContact = state.contacts.find(contact => contact.active !== false && contact.name.toLocaleLowerCase() === event.organiser.toLocaleLowerCase());
+    if (roleId === 'event-coordinator' && event?.organiser) {
+      const organiserContact = event.organiserRef?.kind === 'person'
+        ? contactById(event.organiserRef.id)
+        : state.contacts.find(contact => contact.active !== false && contact.name.toLocaleLowerCase() === event.organiser.toLocaleLowerCase());
       return organiserContact ?? { id: 'event-organiser', name: event.organiser, email: '', roleIds: ['event-coordinator'], active: true };
     }
+
+    const role = roleById(roleId);
+    const linkedContact = role?.ownerContactId ? contactById(role.ownerContactId) : null;
+    if (linkedContact?.active !== false) return linkedContact;
+    if (role?.mailboxEmail) return { id: `role-mailbox-${role.id}`, type: 'mailbox', name: role.name, email: role.mailboxEmail, roleIds: [role.id], active: true };
 
     const contact = state.contacts.find(candidate => candidate.active !== false && Array.isArray(candidate.roleIds) && candidate.roleIds.includes(roleId));
     if (contact) return contact;
 
-    const role = roleById(roleId);
     return role?.fallbackRoleId ? contactForRole(role.fallbackRoleId, event, visited) : null;
+  }
+
+  function assignmentReference(value) {
+    if (value && typeof value === 'object' && ['person', 'role'].includes(value.kind) && value.id) {
+      return { kind: value.kind, id: String(value.id) };
+    }
+    if (typeof value !== 'string' || !value.trim()) return null;
+    return findAssignmentReference(value);
+  }
+
+  function findAssignmentReference(value, mode = 'person-or-role') {
+    const search = String(value ?? '').trim().toLocaleLowerCase();
+    if (!search) return null;
+    const person = (state.contacts ?? []).find(contact => contact.active !== false && (
+      contact.id.toLocaleLowerCase() === search ||
+      contact.name.toLocaleLowerCase() === search ||
+      contact.email?.toLocaleLowerCase() === search
+    ));
+    if (person && (mode !== 'person' || person.type === 'person')) return { kind: 'person', id: person.id };
+    if (mode === 'person') return null;
+    const role = responsibilityRoles().find(item => item.active !== false && (item.id.toLocaleLowerCase() === search || item.name.toLocaleLowerCase() === search));
+    return role ? { kind: 'role', id: role.id } : null;
+  }
+
+  function assignmentDisplay(value, fallback = '') {
+    const reference = assignmentReference(value);
+    if (reference?.kind === 'person') return contactById(reference.id)?.name ?? fallback;
+    if (reference?.kind === 'role') return roleById(reference.id)?.name ?? fallback;
+    return typeof value === 'string' ? value : fallback;
+  }
+
+  function assignmentRecipient(value, event) {
+    const reference = assignmentReference(value);
+    if (reference?.kind === 'person') {
+      const contact = contactById(reference.id);
+      return contact ? { name: contact.name, email: contact.email ?? '' } : { name: '', email: '' };
+    }
+    if (reference?.kind === 'role') {
+      const role = roleById(reference.id);
+      const contact = contactForRole(reference.id, event);
+      return {
+        name: contact?.name || role?.name || '',
+        email: contact?.email || role?.mailboxEmail || ''
+      };
+    }
+    const name = typeof value === 'string' ? value : '';
+    return { name, email: contactEmailByName(name) };
+  }
+
+  function taskAssignmentReference(taskState) {
+    if (taskState?.assignmentKind && taskState?.assignmentId) {
+      return assignmentReference({ kind: taskState.assignmentKind, id: taskState.assignmentId });
+    }
+    return assignmentReference(taskState?.assignee ?? '');
+  }
+
+  function assignmentOptions(mode = 'person-or-role', event = null) {
+    const options = [];
+    if (mode !== 'person') {
+      for (const role of responsibilityRoles().filter(role => role.active !== false && role.selectableForTasks !== false)) {
+        const recipient = assignmentRecipient({ kind: 'role', id: role.id }, event);
+        options.push({
+          kind: 'role',
+          id: role.id,
+          name: role.name,
+          label: role.name,
+          typeLabel: 'Role',
+          detail: recipient.email ? `${recipient.name || 'Shared mailbox'} · ${recipient.email}` : 'Contact route not configured',
+          search: `${role.name} ${role.area} ${recipient.name} ${recipient.email}`.toLocaleLowerCase()
+        });
+      }
+    }
+    for (const contact of (state.contacts ?? []).filter(contact => contact.active !== false && (mode === 'person' ? contact.type === 'person' : contact.canReceiveTasks !== false))) {
+      const roleNames = (contact.roleIds ?? []).map(roleId => roleById(roleId)?.name).filter(Boolean);
+      options.push({
+        kind: 'person',
+        id: contact.id,
+        name: contact.name,
+        label: contact.name,
+        typeLabel: contact.type === 'mailbox' ? 'Mailbox' : 'Person',
+        detail: [contact.email, roleNames.join(', ')].filter(Boolean).join(' · ') || 'No email or role configured',
+        search: `${contact.name} ${contact.email} ${roleNames.join(' ')}`.toLocaleLowerCase()
+      });
+    }
+    return options.sort((left, right) => left.typeLabel.localeCompare(right.typeLabel) || left.name.localeCompare(right.name));
+  }
+
+  function renderAssignmentPicker({ value = null, fallback = '', mode = 'person-or-role', taskId = '', questionId = '', eventField = '', statusField = '', newEventField = '', id = '', required = false, compact = false } = {}) {
+    const reference = assignmentReference(value);
+    const display = assignmentDisplay(reference ?? value, fallback);
+    const targetAttributes = [
+      taskId ? `data-task-assignment="${escapeHtml(taskId)}"` : '',
+      questionId ? `data-question-assignment="${escapeHtml(questionId)}"` : '',
+      eventField ? `data-event-assignment-field="${escapeHtml(eventField)}"` : '',
+      statusField ? `data-status-assignment-field="${escapeHtml(statusField)}"` : '',
+      newEventField ? `data-new-event-assignment-field="${escapeHtml(newEventField)}"` : ''
+    ].filter(Boolean).join(' ');
+    const options = assignmentOptions(mode, getActiveEvent());
+    return `<div class="assignment-picker ${compact ? 'compact' : ''}" data-assignment-picker data-assignment-mode="${escapeHtml(mode)}" ${targetAttributes}>
+      <div class="assignment-picker-input-row">
+        <input ${id ? `id="${escapeHtml(id)}"` : ''} type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" autocomplete="off" value="${escapeHtml(display)}" placeholder="Start typing a person or role" data-assignment-input data-selected-kind="${escapeHtml(reference?.kind ?? '')}" data-selected-id="${escapeHtml(reference?.id ?? '')}" ${required ? 'required' : ''}>
+        <button type="button" class="assignment-picker-toggle" data-assignment-toggle aria-label="Show people and roles">⌄</button>
+      </div>
+      <div class="assignment-picker-menu" role="listbox" hidden>
+        ${options.map(option => `<button type="button" role="option" data-assignment-option data-kind="${escapeHtml(option.kind)}" data-id="${escapeHtml(option.id)}" data-name="${escapeHtml(option.name)}" data-search="${escapeHtml(option.search)}">
+          <span class="assignment-option-kind">${escapeHtml(option.typeLabel)}</span>
+          <span class="assignment-option-copy"><strong>${escapeHtml(option.name)}</strong><small>${escapeHtml(option.detail)}</small></span>
+        </button>`).join('')}
+        <button type="button" class="assignment-manage-link" data-view="directory">Manage people and roles</button>
+      </div>
+      <small class="assignment-picker-error" data-assignment-error></small>
+    </div>`;
   }
 
   function ensureOperationalTaskState(event, task) {
@@ -904,19 +1123,48 @@
     taskState.escalatedAt ??= null;
 
     if (!taskState.assignee && task.item.defaultOwnerRoleId) {
-      const contact = contactForRole(task.item.defaultOwnerRoleId, event);
-      if (contact?.name) {
-        assignTask(event, task.item, contact.name, contact.email ?? '', 'default-role');
-      }
+      assignTaskToReference(event, task.item, { kind: 'role', id: task.item.defaultOwnerRoleId }, 'default-role');
     }
     return taskState;
   }
 
+  function assignTaskToReference(event, item, reference, assignedBy = 'organiser') {
+    const taskState = ensureTaskState(event, item.id);
+    const previousKey = `${taskState.assignmentKind ?? 'legacy'}:${taskState.assignmentId ?? taskState.assignee ?? ''}`;
+    const resolved = assignmentReference(reference);
+    if (!resolved) {
+      taskState.assignmentKind = null;
+      taskState.assignmentId = null;
+      taskState.assignee = '';
+      taskState.assigneeEmail = '';
+      taskState.assignedAt = null;
+      taskState.assignedBy = assignedBy;
+      return taskState;
+    }
+
+    const recipient = assignmentRecipient(resolved, event);
+    taskState.assignmentKind = resolved.kind;
+    taskState.assignmentId = resolved.id;
+    taskState.assignee = assignmentDisplay(resolved);
+    taskState.assigneeEmail = recipient.email;
+    taskState.assignedAt = new Date().toISOString();
+    taskState.assignedBy = assignedBy;
+    updateTeam(event, recipient.name || taskState.assignee);
+
+    const nextKey = `${resolved.kind}:${resolved.id}`;
+    if (taskState.assignee && previousKey.toLocaleLowerCase() !== nextKey.toLocaleLowerCase()) queueNotification(event, item, 'assignment');
+    return taskState;
+  }
+
   function assignTask(event, item, assignee, email = '', assignedBy = 'organiser') {
+    const reference = findAssignmentReference(assignee);
+    if (reference) return assignTaskToReference(event, item, reference, assignedBy);
     const taskState = ensureTaskState(event, item.id);
     const previous = taskState.assignee ?? '';
     taskState.assignee = String(assignee ?? '').trim();
     taskState.assigneeEmail = String(email ?? '').trim();
+    taskState.assignmentKind = null;
+    taskState.assignmentId = null;
     taskState.assignedAt = taskState.assignee ? new Date().toISOString() : null;
     taskState.assignedBy = assignedBy;
     updateTeam(event, taskState.assignee);
@@ -936,8 +1184,10 @@
 
     const token = crypto.randomUUID();
     const isEscalation = type === 'escalation';
-    const recipientName = isEscalation ? (event.organiser || 'Event Coordinator') : (taskState.assignee ?? '');
-    const recipientEmail = isEscalation ? contactEmailByName(event.organiser) : (taskState.assigneeEmail ?? contactEmailByName(taskState.assignee));
+    const taskRecipient = assignmentRecipient(taskAssignmentReference(taskState) ?? taskState.assignee, event);
+    const organiserRecipient = assignmentRecipient(event.organiserRef ?? event.organiser, event);
+    const recipientName = isEscalation ? (organiserRecipient.name || event.organiser || 'Event Coordinator') : (taskRecipient.name || taskState.assignee || '');
+    const recipientEmail = isEscalation ? organiserRecipient.email : (taskRecipient.email || taskState.assigneeEmail || contactEmailByName(taskState.assignee));
     const notification = {
       id: crypto.randomUUID(),
       eventId: event.id,
@@ -979,6 +1229,7 @@
 
   async function registerCompletionLink(event, item, taskState, dueDate) {
     if (!taskState.completionToken) return;
+    const recipient = assignmentRecipient(taskAssignmentReference(taskState) ?? taskState.assignee, event);
     try {
       await fetch('/api/tasks/completion-links', {
         method: 'POST',
@@ -989,8 +1240,8 @@
           eventName: event.name,
           taskId: item.id,
           taskTitle: item.title,
-          assignee: taskState.assignee ?? '',
-          assigneeEmail: taskState.assigneeEmail ?? contactEmailByName(taskState.assignee),
+          assignee: taskState.assignee ?? recipient.name ?? '',
+          assigneeEmail: recipient.email || taskState.assigneeEmail || contactEmailByName(taskState.assignee),
           dueDate
         })
       });
@@ -1379,6 +1630,7 @@
     const shellTitle = state.activeView === 'tasks' ? 'Task Board'
       : state.activeView === 'catalogue' ? 'Event Catalogue'
       : state.activeView === 'artwork' ? 'Event Poster Studio'
+      : state.activeView === 'directory' ? 'People & Roles'
       : state.activeView === 'references' ? 'Image Library'
       : state.activeView === 'admin' ? 'Playbook Administration'
       : state.activeView === 'retrospective' ? 'Event Retrospective'
@@ -1386,6 +1638,7 @@
     const shellIntro = state.activeView === 'tasks' ? 'See every action generated by the playbook, who owns it, when it is due and what needs attention.'
       : state.activeView === 'catalogue' ? 'Review previous events, clone successful plans and reuse the knowledge captured from earlier events.'
       : state.activeView === 'artwork' ? 'Create one campaign concept, refine it until it is right, then produce matching artwork for the clubhouse, member communications and print.'
+      : state.activeView === 'directory' ? 'Maintain the people, shared mailboxes, responsibilities and platform access used throughout every event.'
       : state.activeView === 'references' ? 'Maintain reusable images of the clubhouse, course, trophies and interiors so Poster Studio artwork can look recognisably like Burton-on-Trent Golf Club.'
       : state.activeView === 'admin' ? 'Configure the questions, tasks, ownership rules and advisories that make up the club event planning process.'
       : state.activeView === 'retrospective' ? 'Capture what worked, what did not and what the next organiser should know before this event is run again.'
@@ -1425,7 +1678,11 @@
           </section>` : ''}
 
           <nav class="sidebar-utility-nav" aria-label="Shared resources">
-            <span>Shared resource</span>
+            <span>Shared resources</span>
+            <button class="${state.activeView === 'directory' ? 'active' : ''}" data-view="directory">
+              <span class="nav-icon">♙</span>
+              <span><strong>People & Roles</strong><small>Contacts, responsibilities & access</small></span>
+            </button>
             <button class="${state.activeView === 'references' ? 'active' : ''}" data-view="references">
               <span class="nav-icon">▣</span>
               <span><strong>Image Library</strong><small>Available to every event</small></span>
@@ -1464,6 +1721,7 @@
                     <button type="button" data-view="catalogue">Choose event</button>
                   </section>`}
               ${state.activeView === 'artwork' ? '<button id="shareTopButton" class="button button-gold hero-page-action" type="button" disabled>Share artwork</button>'
+                : state.activeView === 'directory' ? '<button class="button button-gold hero-page-action" data-action="add-directory-contact">Add person</button>'
                 : state.activeView === 'references' ? '<button class="button button-gold hero-page-action" data-action="add-library-image">Add image</button>'
                 : state.activeView === 'catalogue' ? '<button class="button button-gold hero-page-action" data-action="new-event">New event</button>'
                 : state.activeView === 'admin' ? '<button class="button button-gold hero-page-action" data-action="load-playbook">Load playbook JSON</button>'
@@ -1477,7 +1735,7 @@
               <span class="section-kicker">Active event</span>
               <input class="event-title-input" type="text" value="${escapeHtml(event.name)}" data-event-field="name" aria-label="Event name">
               <div class="event-context-meta">
-                <label><span>Organiser</span><input type="text" value="${escapeHtml(event.organiser)}" data-event-field="organiser" list="team-list"></label>
+                <div class="event-organiser-field"><span>Organiser</span>${renderAssignmentPicker({ value: event.organiserRef ?? event.organiser, fallback: event.organiser, mode: 'person', eventField: 'organiser', compact: true })}</div>
                 <div><span>Event date</span><strong>${escapeHtml(formatDate(event.eventDate))}</strong></div>
               </div>
             </div>
@@ -1494,7 +1752,7 @@
 
           <main class="main-content ${state.activeView === 'artwork' ? 'poster-studio' : ''}">
             ${showLifecycleBanner ? renderEventLifecycleBanner(event) : ''}
-            ${state.activeView === 'catalogue' ? renderCatalogue() : state.activeView === 'references' ? renderReferenceLibrary() : !event ? renderEmptyState() : state.activeView === 'tasks' ? renderTaskBoard(event, tasks) : state.activeView === 'artwork' ? renderArtworkStudio(event) : state.activeView === 'admin' ? renderAdmin(event) : state.activeView === 'retrospective' ? renderRetrospective(event) : renderModuleView(event)}
+            ${state.activeView === 'catalogue' ? renderCatalogue() : state.activeView === 'directory' ? renderDirectory() : state.activeView === 'references' ? renderReferenceLibrary() : !event ? renderEmptyState() : state.activeView === 'tasks' ? renderTaskBoard(event, tasks) : state.activeView === 'artwork' ? renderArtworkStudio(event) : state.activeView === 'admin' ? renderAdmin(event) : state.activeView === 'retrospective' ? renderRetrospective(event) : renderModuleView(event)}
           </main>
         </main>
       </div>
@@ -1992,8 +2250,8 @@
                 <small id="event-status-guidance">${escapeHtml(eventStatusDefinition(event).summary)}</small>
               </label>
               <div class="event-status-owner-grid">
-                <label class="field"><span>Decision made by</span><input id="event-status-decision-owner" type="text" value="${escapeHtml(lifecycle.decisionOwner || event.organiser)}" list="team-list" required></label>
-                <label class="field"><span>Communications owner</span><input id="event-status-communications-owner" type="text" value="${escapeHtml(lifecycle.communicationsOwner)}" list="team-list"><small>Required when member or participant communications have already been sent or scheduled.</small></label>
+                <div class="field"><span>Decision made by</span>${renderAssignmentPicker({ value: lifecycle.decisionOwnerRef ?? event.organiserRef ?? lifecycle.decisionOwner ?? event.organiser, fallback: lifecycle.decisionOwner || event.organiser, mode: 'person', statusField: 'decision-owner', id: 'event-status-decision-owner', required: true })}</div>
+                <div class="field"><span>Communications owner</span>${renderAssignmentPicker({ value: lifecycle.communicationsOwnerRef ?? lifecycle.communicationsOwner, fallback: lifecycle.communicationsOwner, statusField: 'communications-owner', id: 'event-status-communications-owner' })}<small>Required when member or participant communications have already been sent or scheduled.</small></div>
               </div>
               <div id="event-status-change-fields" class="event-status-change-fields ${reasonRequired ? '' : 'hidden'}">
                 <label class="field"><span>Reason for the change</span><textarea id="event-status-reason" rows="3" ${reasonRequired ? 'required' : ''} placeholder="Record the operational reason, not just ‘organiser decision’.">${escapeHtml(lifecycle.reason)}</textarea></label>
@@ -2264,6 +2522,13 @@
           <label><span>Last tee time</span><input class="answer-input" type="time" value="${escapeHtml(range.end ?? '')}" data-time-range-question-id="${item.id}" data-time-range-part="end"></label>
         </div>`;
       }
+      case 'assignment':
+        return renderAssignmentPicker({
+          value,
+          mode: item.assignmentMode === 'person' ? 'person' : 'person-or-role',
+          questionId: item.id,
+          required: item.required !== false
+        });
       case 'text':
       default:
         return `<input class="answer-input" type="text" value="${escapeHtml(value ?? '')}" data-question-input="${item.id}">`;
@@ -2299,10 +2564,10 @@
           </div>
           <div class="task-inline-meta">
             ${item.responsibleArea ? `<span class="area-chip">${escapeHtml(item.responsibleArea)}</span>` : ''}
-            <label class="assignee-compact">
+            <div class="assignee-compact">
               <span>Owner</span>
-              <input type="text" value="${escapeHtml(taskState.assignee ?? '')}" placeholder="Assign owner" data-task-assignee="${item.id}" list="team-list">
-            </label>
+              ${renderAssignmentPicker({ value: taskAssignmentReference(taskState) ?? taskState.assignee, fallback: taskState.assignee, taskId: item.id, compact: true })}
+            </div>
           </div>
         </div>
       </article>
@@ -2431,10 +2696,10 @@
           </div>
           ${detail ? `<p class="task-detail">${escapeHtml(detail)}</p>` : ''}
           <div class="task-fields">
-            <label>
+            <div class="task-assignment-field">
               <span>Assigned to</span>
-              <input type="text" value="${escapeHtml(taskState.assignee ?? '')}" placeholder="Enter a name" data-task-assignee="${item.id}" list="team-list">
-            </label>
+              ${renderAssignmentPicker({ value: taskAssignmentReference(taskState) ?? taskState.assignee, fallback: taskState.assignee, taskId: item.id })}
+            </div>
             <label class="task-notes-field">
               <span>Task notes</span>
               <input type="text" value="${escapeHtml(taskState.notes ?? '')}" placeholder="Add any event-specific detail" data-task-notes="${item.id}">
@@ -2442,7 +2707,7 @@
           </div>
           <div class="task-operational-row">
             <span class="notification-chip ${taskState.notificationStatus ?? 'none'}">${taskState.notificationStatus === 'queued' ? 'Assignment notification queued' : taskState.notificationStatus === 'outbox' ? 'Notification written to development outbox' : taskState.assignee ? 'Owner assigned' : 'Awaiting owner'}</span>
-            ${taskState.assignee && !(taskState.assigneeEmail || contactEmailByName(taskState.assignee)) ? `<span class="notification-chip warning">No email configured</span>` : ''}
+            ${taskState.assignee && !assignmentRecipient(taskAssignmentReference(taskState) ?? taskState.assignee, event).email ? `<span class="notification-chip warning">No email configured for this person or role</span>` : ''}
             ${taskState.completionToken ? `<button class="text-button inline" data-copy-completion="${escapeHtml(item.id)}">Copy completion link</button>` : ''}
             ${taskState.completedAt ? `<span class="completed-at">Completed ${escapeHtml(formatDate(taskState.completedAt.substring(0,10)))}</span>` : ''}
           </div>
@@ -2732,10 +2997,10 @@
                   <span>Provisional event date</span>
                   <input id="new-event-date" type="date" required>
                 </label>
-                <label>
+                <div class="new-event-organiser-field">
                   <span>Organiser</span>
-                  <input id="new-event-organiser" type="text" autocomplete="off">
-                </label>
+                  ${renderAssignmentPicker({ mode: 'person', newEventField: 'organiser', id: 'new-event-organiser' })}
+                </div>
                 <label class="wide description-field">
                   <span>Detailed event description</span>
                   <textarea id="new-event-description" rows="7" required placeholder="Describe the format of the event, who it is for, what happens on the day, how golf or clubhouse facilities are used, expected atmosphere, unusual features, catering requirements and anything else that makes the event distinctive."></textarea>
@@ -2866,9 +3131,17 @@
     } else {
       event.answers[questionId] = value;
     }
+    if (questionId === 'event-decision-owner') {
+      event.lifecycle.decisionOwnerRef = assignmentReference(value);
+      event.lifecycle.decisionOwner = assignmentDisplay(value);
+      updateTeam(event, assignmentRecipient(value, event).name || event.lifecycle.decisionOwner);
+    }
+    if (questionId === 'event-communications-owner') {
+      event.lifecycle.communicationsOwnerRef = assignmentReference(value);
+      event.lifecycle.communicationsOwner = assignmentDisplay(value);
+      updateTeam(event, assignmentRecipient(value, event).name || event.lifecycle.communicationsOwner);
+    }
     normaliseEventLifecycle(event);
-    if (questionId === 'event-decision-owner') event.lifecycle.decisionOwner = String(value ?? '').trim();
-    if (questionId === 'event-communications-owner') event.lifecycle.communicationsOwner = String(value ?? '').trim();
     const decisionTask = buildDontKnowTask(indexed.item);
     if (decisionTask && value !== 'dont-know') delete event.taskState[decisionTask.id];
     normaliseAnswers(event);
