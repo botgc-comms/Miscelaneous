@@ -10,7 +10,7 @@ public sealed class PosterConfiguration
 
     public required List<EventDefinition> Events { get; init; }
 
-    public required List<PosterStyleDefinition> Styles { get; init; }
+    public required List<PosterStyleDefinition> Styles { get; set; }
 
     public required List<PosterOutputDefinition> Outputs { get; init; }
 }
@@ -107,9 +107,24 @@ public sealed class PosterStyleVariationDefinition
 
     public string? ReferenceWork { get; init; }
 
+    public List<string> References { get; init; } = [];
+
+    public string? Camera { get; init; }
+
     public required string StyleDirection { get; init; }
 
     public string? ColourDirection { get; init; }
+}
+
+public sealed class VisualStyleLibraryEntry
+{
+    public required string Name { get; init; }
+
+    public List<string> References { get; init; } = [];
+
+    public string? Camera { get; init; }
+
+    public required string Description { get; init; }
 }
 
 public sealed class PosterOutputDefinition

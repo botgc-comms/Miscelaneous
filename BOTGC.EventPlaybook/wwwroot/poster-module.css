@@ -458,6 +458,125 @@
     background: var(--green);
 }.poster-studio .generated-artwork-panel{
     min-width: 0;
+}.poster-studio .concept-selection-panel{
+    display: grid;
+    gap: 18px;
+    min-width: 0;
+    padding: 22px;
+}.poster-studio .concept-grid{
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 13px;
+}.poster-studio .concept-card{
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: #f5f7f6;
+    transition: 160ms ease;
+}.poster-studio .concept-card.selected{
+    border-color: var(--blue);
+    box-shadow: 0 0 0 2px rgba(19,74,99,.12), 0 12px 26px rgba(13,53,72,.12);
+}.poster-studio .concept-image-button{
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 0;
+    overflow: hidden;
+    aspect-ratio: 9 / 16;
+    border: 0;
+    background: #dfe6e4;
+    cursor: pointer;
+}.poster-studio .concept-image-button img{
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}.poster-studio .concept-select-mark{
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
+    display: grid;
+    place-items: center;
+    min-height: 34px;
+    padding: 7px 9px;
+    border-radius: 9px;
+    color: #fff;
+    background: rgba(13,53,72,.9);
+    box-shadow: 0 5px 18px rgba(0,0,0,.2);
+    font-size: .7rem;
+    font-weight: 850;
+}.poster-studio .concept-card.selected .concept-select-mark{
+    color: #173948;
+    background: #f0d69a;
+}.poster-studio .concept-card-copy{
+    display: grid;
+    gap: 3px;
+    padding: 11px 12px 13px;
+    background: #fff;
+}.poster-studio .concept-card-copy strong{
+    color: var(--ink);
+    font-size: .82rem;
+}.poster-studio .concept-card-copy small{
+    overflow: hidden;
+    color: var(--muted);
+    font-size: .68rem;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}.poster-studio .concept-placeholder{
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    min-height: 310px;
+    padding: 22px 16px;
+    text-align: center;
+}.poster-studio .concept-placeholder > span{
+    display: grid;
+    width: 42px;
+    height: 42px;
+    margin-bottom: 12px;
+    place-items: center;
+    border-radius: 50%;
+    color: var(--blue);
+    background: #e5eeeb;
+    font-weight: 900;
+}.poster-studio .concept-card.waiting .concept-placeholder > span{
+    animation: concept-pulse 1.3s ease-in-out infinite;
+}.poster-studio .concept-card.failed .concept-placeholder > span{
+    color: #6f4b12;
+    background: #f7e9c9;
+}.poster-studio .concept-placeholder strong{
+    margin-bottom: 6px;
+    color: var(--ink);
+    font-size: .82rem;
+}.poster-studio .concept-placeholder small{
+    max-width: 220px;
+    margin-bottom: 14px;
+    color: var(--muted);
+    font-size: .68rem;
+    line-height: 1.4;
+}.poster-studio .concept-selection-actions{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding-top: 17px;
+    border-top: 1px solid var(--line);
+}.poster-studio .concept-selection-actions p{
+    max-width: 520px;
+    margin: 0;
+    color: var(--muted);
+    font-size: .78rem;
+    line-height: 1.45;
+}.poster-studio .concept-selection-actions > div{
+    display: flex;
+    gap: 9px;
+    flex: 0 0 auto;
+}@keyframes concept-pulse{
+    0%,100%{transform:scale(1);opacity:.7}
+    50%{transform:scale(1.08);opacity:1}
 }.poster-studio .generated-artwork-panel .panel-copy{
     max-width: 560px;
     margin-top: 5px;
@@ -666,10 +785,15 @@
         overflow-x: auto;
     }.poster-studio .workflow-step{
         min-width: 98px;
-    }.poster-studio .two-column-fields, .poster-studio .style-options, .poster-studio .toggle-grid, .poster-studio .variant-grid, .poster-studio .publish-options, .poster-studio .share-actions{
+    }.poster-studio .two-column-fields, .poster-studio .style-options, .poster-studio .toggle-grid, .poster-studio .variant-grid, .poster-studio .publish-options, .poster-studio .share-actions, .poster-studio .concept-grid{
         grid-template-columns: 1fr;
     }.poster-studio .brief-panel, .poster-studio .campaign-panel, .poster-studio .publish-panel{
         padding: 19px;
+    }.poster-studio .concept-selection-actions{
+        align-items: stretch;
+        flex-direction: column;
+    }.poster-studio .concept-selection-actions > div{
+        flex-direction: column;
     }}.poster-studio{
     --ink: #0d3548;
     --blue: #134a63;

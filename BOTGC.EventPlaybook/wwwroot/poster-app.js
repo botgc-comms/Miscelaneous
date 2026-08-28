@@ -5,6 +5,8 @@ const STUDIO_DATABASE_NAME = 'botgc-event-playbook-poster-studio';
 const STUDIO_DATABASE_VERSION = 1;
 const STUDIO_SESSION_STORE = 'event-sessions';
 const POSTER_REQUEST_TIMEOUT_MS = 5 * 60 * 1000;
+const MAX_SAFETY_PROMPT_RETRIES = 3;
+const CONCEPT_PREVIEW_COUNT = 3;
 const INTERRUPTED_GENERATION_MESSAGE = 'The previous generation did not finish. Completed artwork and settings have been kept so only the missing formats need to be retried.';
 let activeSession = null;
 let configCache = null;
@@ -20,6 +22,8 @@ function createSession(key, context) {
         selectedStyleId: null,
         selectedOutputIds: new Set(),
         primaryArtworkDataUrl: null,
+        concepts: [],
+        selectedConceptId: null,
         artworkByOutput: new Map(),
         posterCanvases: new Map(),
         failedOutputs: new Map(),
@@ -52,6 +56,7 @@ function createSession(key, context) {
             publishStartDate: ''
         },
         progress: {
+            concepts: { cssClass: '', label: 'Waiting' },
             primary: { cssClass: '', label: 'Waiting' },
             variants: { cssClass: '', label: 'Waiting' },
             compose: { cssClass: '', label: 'Waiting' }
@@ -201,10 +206,26 @@ async function persistCompletedArtwork(session, outputId, artworkSource) {
     }
 }
 
+async function persistConceptArtwork(session, concept, artworkSource) {
+    if (!isInlineArtworkSource(artworkSource)) return artworkSource;
+    try {
+        const storedSource = await writeServerArtwork(session.key, concept.id, artworkSource);
+        concept.artworkSource = storedSource;
+        return storedSource;
+    } catch (error) {
+        console.warn(`Unable to persist ${concept.id}.`, error);
+        return artworkSource;
+    }
+}
+
 async function migrateInlineArtwork(session) {
     for (const [outputId, artworkSource] of [...session.artworkByOutput]) {
         if (!isInlineArtworkSource(artworkSource)) continue;
         await persistCompletedArtwork(session, outputId, artworkSource);
+    }
+    for (const concept of session.concepts) {
+        if (!isInlineArtworkSource(concept.artworkSource)) continue;
+        await persistConceptArtwork(session, concept, concept.artworkSource);
     }
 }
 
@@ -235,6 +256,9 @@ function serialiseSession(session, includeInlineArtwork = true) {
             generatedAt: session.generationSnapshot.generatedAt,
             selectedStyleId: session.generationSnapshot.selectedStyleId,
             styleVariationId: session.generationSnapshot.styleVariationId,
+            conceptStyleVariationIds: session.generationSnapshot.conceptStyleVariationIds ?? [],
+            isRegeneration: session.generationSnapshot.isRegeneration === true,
+            safetyRecovery: session.generationSnapshot.safetyRecovery ?? null,
             selectedOutputIds: session.generationSnapshot.selectedOutputIds,
             referenceSelection: session.generationSnapshot.referenceSelection ?? null
         }
@@ -249,16 +273,28 @@ function serialiseSession(session, includeInlineArtwork = true) {
     const supportingImages = includeInlineArtwork
         ? form.supportingImages
         : (form.supportingImages ?? []).filter(image => !isInlineArtworkSource(image?.dataUrl));
+    const concepts = session.concepts.map(concept => ({
+        id: concept.id,
+        index: concept.index,
+        styleVariationId: concept.styleVariationId,
+        artworkSource: includeInlineArtwork || !isInlineArtworkSource(concept.artworkSource)
+            ? concept.artworkSource
+            : null,
+        status: concept.status,
+        failure: concept.failure ?? null
+    }));
 
     return {
         key: session.key,
-        schemaVersion: 5,
+        schemaVersion: 6,
         savedAt: new Date().toISOString(),
         selectedStyleId: session.selectedStyleId,
         selectedOutputIds: [...session.selectedOutputIds],
         primaryArtworkDataUrl,
         artworkByOutput,
         failedOutputs: Object.fromEntries(session.failedOutputs),
+        concepts,
+        selectedConceptId: session.selectedConceptId,
         generationSnapshot: compactGenerationSnapshot,
         form: {
             eventId: form.eventId,
@@ -277,7 +313,7 @@ function serialiseSession(session, includeInlineArtwork = true) {
             publishTags: session.form.publishTags,
             publishStartDate: session.form.publishStartDate
         },
-        workflowStep: generationWasInterrupted ? 1 : session.workflowStep,
+        workflowStep: session.workflowStep,
         workflowComplete: generationWasInterrupted ? false : session.workflowComplete,
         campaignStatus: generationWasInterrupted
             ? { text: 'Generation interrupted', mode: 'neutral' }
@@ -291,7 +327,8 @@ function serialiseSession(session, includeInlineArtwork = true) {
 
 function applyStoredSession(session, stored) {
     if (!stored || typeof stored !== 'object') return false;
-    const storedGenerationWasInterrupted = stored.campaignStatus?.mode === 'generating';
+    const storedGenerationWasInterrupted = stored.campaignStatus?.mode === 'generating'
+        || stored.campaignStatus?.text === 'Generation interrupted';
 
     if (typeof stored.selectedStyleId === 'string') {
         session.selectedStyleId = stored.selectedStyleId;
@@ -323,8 +360,37 @@ function applyStoredSession(session, stored) {
             ? Object.entries(stored.failedOutputs).filter(([outputId, value]) => typeof outputId === 'string' && value && typeof value === 'object')
             : []
     );
+    session.concepts = Array.isArray(stored.concepts)
+        ? stored.concepts
+            .filter(concept => /^concept-[1-3]$/.test(String(concept?.id ?? '')))
+            .map((concept, index) => {
+                const artworkSource = isPersistedArtworkSource(concept.artworkSource) ? concept.artworkSource : null;
+                return {
+                    id: concept.id,
+                    index: Number.isFinite(concept.index) ? concept.index : index,
+                    styleVariationId: typeof concept.styleVariationId === 'string' ? concept.styleVariationId : null,
+                    artworkSource,
+                    status: artworkSource ? 'ready' : concept.status === 'failed' ? 'failed' : 'waiting',
+                    failure: concept.failure && typeof concept.failure === 'object' ? concept.failure : null
+                };
+            })
+            .sort((left, right) => left.index - right.index)
+        : [];
+    if (storedGenerationWasInterrupted) {
+        for (const concept of session.concepts.filter(item => !item.artworkSource && item.status !== 'failed')) {
+            concept.status = 'failed';
+            concept.failure = {
+                message: 'This preview was interrupted before it finished. Retry only this idea or continue with a completed concept.',
+                retryable: true,
+                recordedAt: stored.savedAt ?? new Date().toISOString()
+            };
+        }
+    }
+    session.selectedConceptId = session.concepts.some(concept => concept.id === stored.selectedConceptId && concept.artworkSource)
+        ? stored.selectedConceptId
+        : null;
 
-    if (session.artworkByOutput.size > 0) {
+    if (session.artworkByOutput.size > 0 || session.concepts.length > 0) {
         applyGenerationSnapshot(session, stored.generationSnapshot);
         session.generationSnapshot = {
             id: typeof stored.generationSnapshot?.id === 'string' ? stored.generationSnapshot.id : null,
@@ -332,6 +398,13 @@ function applyStoredSession(session, stored) {
             selectedStyleId: session.selectedStyleId,
             styleVariationId: typeof stored.generationSnapshot?.styleVariationId === 'string'
                 ? stored.generationSnapshot.styleVariationId
+                : null,
+            conceptStyleVariationIds: Array.isArray(stored.generationSnapshot?.conceptStyleVariationIds)
+                ? stored.generationSnapshot.conceptStyleVariationIds.filter(value => typeof value === 'string')
+                : session.concepts.map(concept => concept.styleVariationId).filter(Boolean),
+            isRegeneration: stored.generationSnapshot?.isRegeneration === true,
+            safetyRecovery: stored.generationSnapshot?.safetyRecovery && typeof stored.generationSnapshot.safetyRecovery === 'object'
+                ? stored.generationSnapshot.safetyRecovery
                 : null,
             selectedOutputIds: [...session.selectedOutputIds],
             referenceSelection: stored.generationSnapshot?.referenceSelection ?? null,
@@ -369,6 +442,10 @@ function applyStoredSession(session, stored) {
         const missingVariants = selectedVariants.filter(output => !session.artworkByOutput.has(output.id));
         const hasMissingFormats = missingVariants.length > 0;
         session.progress = {
+            concepts: {
+                cssClass: 'complete',
+                label: session.selectedConceptId ? 'Selected' : 'Complete'
+            },
             primary: { cssClass: 'complete', label: 'Restored' },
             variants: {
                 cssClass: hasMissingFormats ? 'error' : 'complete',
@@ -391,6 +468,28 @@ function applyStoredSession(session, stored) {
             : null;
         session.refinementVisible = true;
         session.publishVisible = true;
+    } else if (session.concepts.length > 0) {
+        const readyConcepts = session.concepts.filter(concept => concept.artworkSource).length;
+        const failedConcepts = session.concepts.filter(concept => concept.status === 'failed').length;
+        session.progress = {
+            concepts: {
+                cssClass: readyConcepts === CONCEPT_PREVIEW_COUNT ? 'complete' : readyConcepts > 0 && failedConcepts === 0 ? 'active' : 'error',
+                label: `${readyConcepts} of ${CONCEPT_PREVIEW_COUNT} ready`
+            },
+            primary: { cssClass: '', label: 'Waiting for selection' },
+            variants: { cssClass: '', label: 'Waiting' },
+            compose: { cssClass: '', label: 'Waiting' }
+        };
+        session.campaignStatus = readyConcepts > 0
+            ? { text: 'Choose a concept', mode: 'ready' }
+            : { text: 'Concept generation interrupted', mode: 'neutral' };
+        session.workflowStep = 2;
+        session.workflowComplete = false;
+        session.errorMessage = readyConcepts === 0 && storedGenerationWasInterrupted
+            ? 'The concept generation was interrupted before an idea finished. Your brief has been kept and the previews can be tried again.'
+            : null;
+        session.refinementVisible = false;
+        session.publishVisible = false;
     } else if (storedGenerationWasInterrupted) {
         session.workflowStep = 1;
         session.workflowComplete = false;
@@ -404,11 +503,14 @@ function applyStoredSession(session, stored) {
 }
 
 function createGenerationSnapshot(session, isRegeneration) {
+    const conceptStyleVariationIds = selectStyleVariationIds(session, CONCEPT_PREVIEW_COUNT);
     return {
         id: typeof globalThis.crypto?.randomUUID === 'function' ? globalThis.crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
         generatedAt: new Date().toISOString(),
         selectedStyleId: session.selectedStyleId,
-        styleVariationId: selectStyleVariationId(session, isRegeneration),
+        styleVariationId: null,
+        conceptStyleVariationIds,
+        isRegeneration: isRegeneration === true,
         selectedOutputIds: [...session.selectedOutputIds],
         referenceSelection: session.referenceSelection,
         form: cloneGenerationForm(session.form)
@@ -518,7 +620,8 @@ function chooseNewestStoredSession(serverStored, browserStored) {
 
     const countArtwork = stored => stored?.artworkByOutput && typeof stored.artworkByOutput === 'object'
         ? Object.values(stored.artworkByOutput).filter(isPersistedArtworkSource).length
-        : 0;
+            + (Array.isArray(stored?.concepts) ? stored.concepts.filter(concept => isPersistedArtworkSource(concept?.artworkSource)).length : 0)
+        : (Array.isArray(stored?.concepts) ? stored.concepts.filter(concept => isPersistedArtworkSource(concept?.artworkSource)).length : 0);
     return countArtwork(browserStored) > countArtwork(serverStored) ? browserStored : serverStored;
 }
 
@@ -584,20 +687,32 @@ function getSelectedStyle(session) {
     return session.config?.styles?.find(style => style.id === session.selectedStyleId) ?? null;
 }
 
-function selectStyleVariationId(session, isRegeneration) {
+function selectStyleVariationIds(session, count) {
     const style = getSelectedStyle(session);
     const variations = Array.isArray(style?.variations) ? style.variations : [];
-    if (variations.length === 0) return null;
+    if (variations.length === 0) return [];
 
-    const previousVariationId = session.generationSnapshot?.styleVariationId;
+    const previousVariationIds = new Set([
+        ...(session.generationSnapshot?.conceptStyleVariationIds ?? []),
+        session.generationSnapshot?.styleVariationId
+    ].filter(Boolean));
     const isSameStyleAsPrevious = session.generationSnapshot?.selectedStyleId === session.selectedStyleId;
-    const candidates = variations.length > 1 && isSameStyleAsPrevious && previousVariationId
-        ? variations.filter(variation => variation.id !== previousVariationId)
+    const freshCandidates = isSameStyleAsPrevious
+        ? variations.filter(variation => !previousVariationIds.has(variation.id))
         : variations;
+    const candidates = freshCandidates.length >= count ? freshCandidates : variations;
+    return [...candidates]
+        .sort(() => Math.random() - 0.5)
+        .slice(0, count)
+        .map(variation => variation.id);
+}
 
-    // One variation is selected for the whole campaign so every derivative
-    // remains visually related to the digital-screen master. A subsequent
-    // generation rotates away from the immediately previous direction.
+function selectAlternativeStyleVariationId(session, selectedStyleId, currentVariationId, excludedVariationIds = []) {
+    const style = session.config?.styles?.find(item => item.id === selectedStyleId);
+    const excluded = new Set([currentVariationId, ...excludedVariationIds].filter(Boolean));
+    const candidates = (Array.isArray(style?.variations) ? style.variations : [])
+        .filter(variation => variation.id && !excluded.has(variation.id));
+    if (candidates.length === 0) return null;
     return candidates[Math.floor(Math.random() * candidates.length)].id;
 }
 
@@ -809,6 +924,12 @@ export async function mountPosterStudio(context = {}) {
         generationProgress: document.querySelector('#generationProgress'),
         generationElapsed: document.querySelector('#generationElapsed'),
         cancelGenerationButton: document.querySelector('#cancelGenerationButton'),
+        conceptSelectionPanel: document.querySelector('#conceptSelectionPanel'),
+        conceptPreviewCount: document.querySelector('#conceptPreviewCount'),
+        conceptResults: document.querySelector('#conceptResults'),
+        conceptSelectionMessage: document.querySelector('#conceptSelectionMessage'),
+        generateMoreConceptsButton: document.querySelector('#generateMoreConceptsButton'),
+        produceSelectedConceptButton: document.querySelector('#produceSelectedConceptButton'),
         generatedArtworkPanel: document.querySelector('#generatedArtworkPanel'),
         generatedArtworkCount: document.querySelector('#generatedArtworkCount'),
         posterResults: document.querySelector('#posterResults'),
@@ -904,7 +1025,10 @@ async function rebuildPersistedCanvases(session) {
 }
 
 function renderStyles(session) {
-    session.selectedStyleId ??= session.config.styles[0]?.id ?? null;
+    const configuredStyleIds = new Set(session.config.styles.map(style => style.id));
+    if (!configuredStyleIds.has(session.selectedStyleId)) {
+        session.selectedStyleId = session.config.styles[0]?.id ?? null;
+    }
     elements.styleOptions.innerHTML = '';
 
     for (const style of session.config.styles) {
@@ -1008,8 +1132,19 @@ function wireEvents(session) {
         await recomposeSavedArtwork(session);
         scheduleSessionPersistence(session);
     });
-    elements.generateButton.addEventListener('click', () => generateCampaign(session, false));
-    elements.regenerateButton.addEventListener('click', () => generateCampaign(session, true));
+    elements.generateButton.addEventListener('click', () => generateConcepts(session, false));
+    elements.regenerateButton.addEventListener('click', () => generateConcepts(session, true));
+    elements.generateMoreConceptsButton?.addEventListener('click', () => generateConcepts(session, false));
+    elements.produceSelectedConceptButton?.addEventListener('click', () => produceSelectedConcept(session));
+    elements.conceptResults?.addEventListener('click', event => {
+        const selectButton = event.target.closest('[data-select-concept]');
+        if (selectButton) {
+            selectConcept(session, selectButton.dataset.selectConcept);
+            return;
+        }
+        const retryButton = event.target.closest('[data-retry-concept]');
+        if (retryButton) retryConcept(session, retryButton.dataset.retryConcept);
+    });
     elements.cancelGenerationButton.addEventListener('click', () => cancelGeneration(session));
     elements.shareScreensButton.addEventListener('click', openScreenShareDialog);
     elements.shareEmailButton.addEventListener('click', showEmailShareStatus);
@@ -1095,10 +1230,11 @@ function restoreSessionToDom(session) {
         setProgressState(session, name, progress.cssClass, progress.label);
     }
 
-    if (session.isGenerating || session.posterCanvases.size > 0 || session.errorMessage) {
+    if (session.isGenerating || session.concepts.length > 0 || session.posterCanvases.size > 0 || session.errorMessage) {
         elements.emptyState.classList.add('hidden');
         elements.generationProgress.classList.remove('hidden');
     }
+    renderConceptChoices(session);
     if (session.posterCanvases.size > 0) renderCampaignResults(session);
     elements.refinementPanel.classList.toggle('hidden', !session.refinementVisible);
     elements.sharePanel.classList.toggle('hidden', !session.publishVisible);
@@ -1112,7 +1248,9 @@ function restoreSessionToDom(session) {
             ? 'The form is unlocked and ready to try again.'
             : session.posterCanvases.size > 0
                 ? 'All saved campaign formats are ready.'
-                : 'High-quality artwork can take several minutes.';
+                : session.concepts.some(concept => concept.artworkSource)
+                    ? 'Choose a concept to produce, or retry an unfinished idea.'
+                    : 'Low-resolution concepts are generated before any high-quality formats.';
     }
     setBusy(session, session.isGenerating);
 
@@ -1121,7 +1259,7 @@ function restoreSessionToDom(session) {
     }
 }
 
-async function generateCampaign(session, isRegeneration) {
+async function generateConcepts(session, isRegeneration) {
     if (session.isGenerating) return session.generationPromise;
 
     captureFormFromDom(session);
@@ -1148,78 +1286,90 @@ async function generateCampaign(session, isRegeneration) {
     }
 
     const generation = createGenerationContext(session, isRegeneration);
-    const generationContext = session.context;
     const generationController = new AbortController();
     session.generationSnapshot = generation.snapshot;
-    session.failedOutputs.clear();
+    session.concepts = generation.snapshot.conceptStyleVariationIds.map((styleVariationId, index) => ({
+        id: `concept-${index + 1}`,
+        index,
+        styleVariationId,
+        artworkSource: null,
+        status: 'waiting',
+        failure: null
+    }));
+    session.selectedConceptId = null;
     session.generationAbortController = generationController;
     session.isGenerating = true;
     session.errorMessage = null;
-    session.refinementVisible = false;
-    session.publishVisible = false;
     setBusy(session, true);
     setWorkflowStep(session, 2);
-    beginGenerationProgress(session, isRegeneration);
-    setCampaignStatus(session, 'Generating', 'generating');
+    beginConceptProgress(session);
+    setCampaignStatus(session, 'Generating concepts', 'generating');
     startGenerationClock(session);
-    scheduleSessionPersistence(session);
+    await persistSession(session);
 
     session.generationPromise = (async () => {
         try {
-            const primaryOutput = getPrimaryOutput(session);
-            setProgressState(session, 'primary', 'active', isRegeneration ? 'Refining' : 'Generating');
-            const primaryResponse = await generatePrimary(generation, isRegeneration, generationController.signal);
-            const masterArtworkDataUrl = primaryResponse.dataUrl;
-            session.primaryArtworkDataUrl = masterArtworkDataUrl;
-            session.artworkByOutput.set(primaryOutput.id, masterArtworkDataUrl);
+            for (const concept of session.concepts) {
+                if (generationController.signal.aborted) {
+                    throw createGenerationError('AbortError', 'Concept generation cancelled. Completed previews have been kept.');
+                }
 
-            setProgressState(session, 'compose', 'active', 'Sizing');
-            await composeOutput(session, primaryOutput, masterArtworkDataUrl, generationContext);
-            renderCampaignResults(session);
-            setProgressState(session, 'primary', 'complete', 'Complete');
-            setProgressState(session, 'compose', 'active', 'Primary ready');
-            await persistCompletedArtwork(session, primaryOutput.id, masterArtworkDataUrl);
+                concept.status = 'generating';
+                renderConceptChoices(session);
+                const readyBefore = session.concepts.filter(item => item.artworkSource).length;
+                setProgressState(session, 'concepts', 'active', `${readyBefore} of ${CONCEPT_PREVIEW_COUNT} ready · creating idea ${concept.index + 1}`);
+                try {
+                    const conceptResponse = await generateConceptWithSafetyRecovery(
+                        session,
+                        generation,
+                        concept,
+                        generationController.signal
+                    );
+                    concept.artworkSource = conceptResponse.dataUrl;
+                    concept.status = 'ready';
+                    concept.failure = null;
+                    await persistConceptArtwork(session, concept, conceptResponse.dataUrl);
+                } catch (error) {
+                    if (error?.name === 'AbortError') throw error;
+                    concept.status = 'failed';
+                    concept.failure = serialiseGenerationFailure(error);
+                }
 
-            const selectedOutputIds = new Set(generation.snapshot.selectedOutputIds);
-            const variants = session.config.outputs.filter(output => selectedOutputIds.has(output.id) && !output.isPrimary);
-            clearVariantArtwork(session);
-            renderCampaignResults(session);
-            setWorkflowStep(session, 3);
-            setProgressState(session, 'variants', 'active', variants.length === 0 ? 'Not selected' : `0 of ${variants.length} ready`);
-            // Do not begin another paid image request until the master and the
-            // exact list of missing formats are durably recoverable.
-            await persistSession(session);
+                renderConceptChoices(session);
+                await persistSession(session);
+            }
 
-            const failures = await generateVariantBatch(
-                session,
-                generation,
-                variants,
-                masterArtworkDataUrl,
-                generationContext,
-                generationController.signal
-            );
+            const readyCount = session.concepts.filter(concept => concept.artworkSource).length;
+            const failedCount = CONCEPT_PREVIEW_COUNT - readyCount;
+            setProgressState(session, 'concepts', failedCount === 0 ? 'complete' : 'error', `${readyCount} of ${CONCEPT_PREVIEW_COUNT} ready`);
+            if (readyCount === 0) {
+                throw new Error('The image service could not create any concept previews. Your brief has been kept so the ideas can be tried again.');
+            }
 
-            if (failures.size > 0) finishCampaignWithMissingFormats(session);
-            else finishCampaignReady(session, variants.length);
+            setCampaignStatus(session, 'Choose a concept', 'ready');
+            setWorkflowStep(session, 2);
+            renderConceptChoices(session);
             await persistSession(session);
         } catch (error) {
             if (!generationController.signal.aborted) generationController.abort();
             if (error?.name !== 'AbortError' && error?.name !== 'TimeoutError') console.error(error);
-            const missingFormats = getMissingVariantOutputs(session);
-            if (session.primaryArtworkDataUrl && missingFormats.length > 0) {
-                for (const output of missingFormats) {
-                    if (!session.failedOutputs.has(output.id)) {
-                        session.failedOutputs.set(output.id, serialiseGenerationFailure(error));
-                    }
+            const readyCount = session.concepts.filter(concept => concept.artworkSource).length;
+            if (readyCount > 0) {
+                for (const concept of session.concepts.filter(item => !item.artworkSource && item.status !== 'failed')) {
+                    concept.status = 'failed';
+                    concept.failure = serialiseGenerationFailure(error);
                 }
-                finishCampaignWithMissingFormats(session);
+                setProgressState(session, 'concepts', 'error', `${readyCount} of ${CONCEPT_PREVIEW_COUNT} ready`);
+                setCampaignStatus(session, 'Choose a completed concept', 'ready');
+                setWorkflowStep(session, 2);
+                renderConceptChoices(session);
             } else {
-                session.errorMessage = error instanceof Error ? error.message : 'The artwork could not be generated.';
+                session.errorMessage = error instanceof Error ? error.message : 'The concept previews could not be generated.';
                 const statusText = error?.name === 'AbortError'
-                    ? 'Generation cancelled'
+                    ? 'Concept generation cancelled'
                     : error?.name === 'TimeoutError'
-                        ? 'Generation timed out'
-                        : 'Generation failed';
+                        ? 'Concept generation timed out'
+                        : 'Concept generation failed';
                 setCampaignStatus(session, statusText, 'neutral');
                 renderGenerationError(session);
             }
@@ -1239,9 +1389,246 @@ async function generateCampaign(session, isRegeneration) {
     return session.generationPromise;
 }
 
-async function generatePrimary(generation, isRegeneration, signal) {
+async function produceSelectedConcept(session) {
+    if (session.isGenerating) return session.generationPromise;
+    const selectedConcept = session.concepts.find(concept => concept.id === session.selectedConceptId && concept.artworkSource);
+    if (!selectedConcept || !session.generationSnapshot) return;
+
+    session.generationSnapshot.styleVariationId = selectedConcept.styleVariationId;
+    session.generationSnapshot.selectedOutputIds = [...session.selectedOutputIds];
+    const selectedConceptDataUrl = await artworkSourceToDataUrl(selectedConcept.artworkSource);
+    const generation = {
+        snapshot: session.generationSnapshot,
+        supportingImages: buildSupportingImagesPayload(session, session.generationSnapshot.referenceSelection),
+        previousArtworkDataUrl: session.primaryArtworkDataUrl,
+        selectedConceptDataUrl
+    };
+    const generationContext = session.context;
+    const generationController = new AbortController();
+    const isRegeneration = session.generationSnapshot.isRegeneration === true;
+    let generatedNewPrimary = false;
+
+    session.failedOutputs.clear();
+    session.generationAbortController = generationController;
+    session.isGenerating = true;
+    session.errorMessage = null;
+    session.refinementVisible = false;
+    session.publishVisible = false;
+    setBusy(session, true);
+    setWorkflowStep(session, 3);
+    beginProductionProgress(session);
+    setCampaignStatus(session, 'Producing selected concept', 'generating');
+    startGenerationClock(session);
+    await persistSession(session);
+
+    session.generationPromise = (async () => {
+        try {
+            const primaryOutput = getPrimaryOutput(session);
+            setProgressState(session, 'primary', 'active', 'Rendering high resolution');
+            const primaryResponse = await generatePrimaryWithSafetyRecovery(
+                session,
+                generation,
+                isRegeneration,
+                generationController.signal
+            );
+            const masterArtworkDataUrl = primaryResponse.dataUrl;
+            generatedNewPrimary = true;
+            session.primaryArtworkDataUrl = masterArtworkDataUrl;
+            session.artworkByOutput.set(primaryOutput.id, masterArtworkDataUrl);
+
+            setProgressState(session, 'compose', 'active', 'Sizing');
+            await composeOutput(session, primaryOutput, masterArtworkDataUrl, generationContext);
+            renderCampaignResults(session);
+            setProgressState(session, 'primary', 'complete', 'Complete');
+            setProgressState(session, 'compose', 'active', 'Master ready');
+            await persistCompletedArtwork(session, primaryOutput.id, masterArtworkDataUrl);
+
+            const selectedOutputIds = new Set(generation.snapshot.selectedOutputIds);
+            const variants = session.config.outputs.filter(output => selectedOutputIds.has(output.id) && !output.isPrimary);
+            clearVariantArtwork(session);
+            renderCampaignResults(session);
+            setProgressState(session, 'variants', 'active', variants.length === 0 ? 'Not selected' : `0 of ${variants.length} ready`);
+            await persistSession(session);
+
+            const failures = await generateVariantBatch(
+                session,
+                generation,
+                variants,
+                masterArtworkDataUrl,
+                generationContext,
+                generationController.signal
+            );
+
+            if (failures.size > 0) finishCampaignWithMissingFormats(session);
+            else finishCampaignReady(session, variants.length);
+            await persistSession(session);
+        } catch (error) {
+            if (!generationController.signal.aborted) generationController.abort();
+            if (error?.name !== 'AbortError' && error?.name !== 'TimeoutError') console.error(error);
+            const missingFormats = generatedNewPrimary ? getMissingVariantOutputs(session) : [];
+            if (generatedNewPrimary && missingFormats.length > 0) {
+                for (const output of missingFormats) {
+                    if (!session.failedOutputs.has(output.id)) session.failedOutputs.set(output.id, serialiseGenerationFailure(error));
+                }
+                finishCampaignWithMissingFormats(session);
+            } else {
+                session.errorMessage = error instanceof Error ? error.message : 'The selected concept could not be produced.';
+                setCampaignStatus(session, error?.name === 'AbortError' ? 'Production cancelled' : 'Production failed', 'neutral');
+                setProgressState(session, 'primary', 'error', 'Not produced');
+                renderGenerationError(session);
+            }
+        } finally {
+            stopGenerationClock(session);
+            session.isGenerating = false;
+            session.generationPromise = null;
+            if (session.generationAbortController === generationController) session.generationAbortController = null;
+            setBusy(session, false);
+            renderConceptChoices(session);
+            await persistSession(session);
+        }
+    })();
+
+    return session.generationPromise;
+}
+
+async function generateConceptWithSafetyRecovery(session, generation, concept, signal) {
+    let safetyRecoveryAttempt = 0;
+    let safetyFallbackStyle = false;
+
+    while (true) {
+        try {
+            return await generateConcept(generation, concept, signal, safetyRecoveryAttempt, safetyFallbackStyle);
+        } catch (error) {
+            if (signal.aborted || error?.name === 'AbortError') throw error;
+            if (error?.safetyRefusal !== true) throw error;
+
+            if (safetyRecoveryAttempt < MAX_SAFETY_PROMPT_RETRIES) {
+                safetyRecoveryAttempt += 1;
+                setProgressState(session, 'concepts', 'active', `Rewording idea ${concept.index + 1} · ${safetyRecoveryAttempt} of ${MAX_SAFETY_PROMPT_RETRIES}`);
+                await persistSession(session);
+                continue;
+            }
+
+            if (!safetyFallbackStyle) {
+                const otherConceptVariations = session.concepts
+                    .filter(item => item.id !== concept.id)
+                    .map(item => item.styleVariationId);
+                const alternativeVariationId = selectAlternativeStyleVariationId(
+                    session,
+                    generation.snapshot.selectedStyleId,
+                    concept.styleVariationId,
+                    otherConceptVariations
+                );
+                if (!alternativeVariationId) throw error;
+
+                concept.styleVariationId = alternativeVariationId;
+                generation.snapshot.conceptStyleVariationIds[concept.index] = alternativeVariationId;
+                safetyFallbackStyle = true;
+                safetyRecoveryAttempt += 1;
+                setProgressState(session, 'concepts', 'active', `Alternative direction for idea ${concept.index + 1}`);
+                await persistSession(session);
+                continue;
+            }
+
+            throw error;
+        }
+    }
+}
+
+async function generateConcept(generation, concept, signal, safetyRecoveryAttempt = 0, safetyFallbackStyle = false) {
     const form = generation.snapshot.form;
-    const previousArtworkDataUrl = isRegeneration && generation.previousArtworkDataUrl
+    const previousArtworkDataUrl = generation.snapshot.isRegeneration && generation.previousArtworkDataUrl
+        ? await artworkSourceToDataUrl(generation.previousArtworkDataUrl)
+        : null;
+    return postPosterRequest('/api/poster/generate-concept', {
+        eventId: form.eventId,
+        eventName: form.eventName,
+        styleId: generation.snapshot.selectedStyleId,
+        styleVariationId: concept.styleVariationId,
+        eventDate: form.eventDate,
+        description: form.description,
+        includeDate: form.includeDate,
+        includePrice: form.includePrice,
+        includeClubBranding: form.includeClubBranding,
+        price: form.price,
+        additionalInstructions: form.additionalInstructions,
+        refinementNotes: generation.snapshot.isRegeneration ? form.refinementNotes : '',
+        previousArtworkDataUrl,
+        isConceptPreview: true,
+        safetyRecoveryAttempt,
+        safetyFallbackStyle,
+        supportingImages: generation.supportingImages
+    }, signal);
+}
+
+async function generatePrimaryWithSafetyRecovery(session, generation, isRegeneration, signal) {
+    let safetyRecoveryAttempt = 0;
+    let safetyFallbackStyle = false;
+
+    while (true) {
+        try {
+            return await generatePrimary(
+                generation,
+                isRegeneration,
+                signal,
+                safetyRecoveryAttempt,
+                safetyFallbackStyle
+            );
+        } catch (error) {
+            if (signal.aborted || error?.name === 'AbortError') throw error;
+            if (error?.safetyRefusal !== true) throw error;
+
+            if (safetyRecoveryAttempt < MAX_SAFETY_PROMPT_RETRIES) {
+                safetyRecoveryAttempt += 1;
+                generation.snapshot.safetyRecovery = {
+                    attempts: safetyRecoveryAttempt,
+                    usedAlternativeStyle: false,
+                    originalStyleVariationId: generation.snapshot.styleVariationId
+                };
+                setProgressState(session, 'primary', 'active', `Rewording ${safetyRecoveryAttempt} of ${MAX_SAFETY_PROMPT_RETRIES}`);
+                setCampaignStatus(session, 'Rewording artwork request', 'generating');
+                if (elements.generationElapsed) {
+                    elements.generationElapsed.textContent = `The image service declined ambiguous wording. Trying a clearer, neutral version (${safetyRecoveryAttempt} of ${MAX_SAFETY_PROMPT_RETRIES})…`;
+                }
+                await persistSession(session);
+                continue;
+            }
+
+            if (!safetyFallbackStyle) {
+                const alternativeVariationId = selectAlternativeStyleVariationId(
+                    session,
+                    generation.snapshot.selectedStyleId,
+                    generation.snapshot.styleVariationId
+                );
+                if (!alternativeVariationId) throw error;
+
+                generation.snapshot.safetyRecovery = {
+                    attempts: safetyRecoveryAttempt,
+                    usedAlternativeStyle: true,
+                    originalStyleVariationId: generation.snapshot.styleVariationId,
+                    fallbackStyleVariationId: alternativeVariationId
+                };
+                generation.snapshot.styleVariationId = alternativeVariationId;
+                safetyFallbackStyle = true;
+                safetyRecoveryAttempt += 1;
+                setProgressState(session, 'primary', 'active', 'Alternative art direction');
+                setCampaignStatus(session, 'Trying another art direction', 'generating');
+                if (elements.generationElapsed) {
+                    elements.generationElapsed.textContent = 'The clearer wording was still declined. Trying one different art direction from the selected poster style…';
+                }
+                await persistSession(session);
+                continue;
+            }
+
+            throw error;
+        }
+    }
+}
+
+async function generatePrimary(generation, isRegeneration, signal, safetyRecoveryAttempt = 0, safetyFallbackStyle = false) {
+    const form = generation.snapshot.form;
+    const selectedConceptDataUrl = generation.selectedConceptDataUrl ?? null;
+    const previousArtworkDataUrl = !selectedConceptDataUrl && isRegeneration && generation.previousArtworkDataUrl
         ? await artworkSourceToDataUrl(generation.previousArtworkDataUrl)
         : null;
     return postPosterRequest('/api/poster/generate-primary', {
@@ -1258,8 +1645,113 @@ async function generatePrimary(generation, isRegeneration, signal) {
             additionalInstructions: form.additionalInstructions,
             refinementNotes: isRegeneration ? form.refinementNotes : '',
             previousArtworkDataUrl,
+            selectedConceptDataUrl,
+            isConceptPreview: false,
+            safetyRecoveryAttempt,
+            safetyFallbackStyle,
             supportingImages: generation.supportingImages
         }, signal);
+}
+
+function selectConcept(session, conceptId) {
+    const concept = session.concepts.find(item => item.id === conceptId && item.artworkSource);
+    if (!concept || session.isGenerating) return;
+    session.selectedConceptId = concept.id;
+    if (session.generationSnapshot) session.generationSnapshot.styleVariationId = concept.styleVariationId;
+    renderConceptChoices(session);
+    scheduleSessionPersistence(session);
+}
+
+function renderConceptChoices(session) {
+    if (!elements.conceptSelectionPanel || !elements.conceptResults) return;
+    const hasConceptBatch = session.concepts.length > 0;
+    elements.conceptSelectionPanel.classList.toggle('hidden', !hasConceptBatch);
+    if (!hasConceptBatch) return;
+
+    const readyCount = session.concepts.filter(concept => concept.artworkSource).length;
+    const failedCount = session.concepts.filter(concept => concept.status === 'failed').length;
+    elements.conceptPreviewCount.textContent = `${readyCount} of ${CONCEPT_PREVIEW_COUNT} ready`;
+    elements.conceptPreviewCount.className = `status-pill ${readyCount === CONCEPT_PREVIEW_COUNT ? 'ready' : failedCount > 0 ? 'neutral' : 'generating'}`;
+    elements.conceptResults.innerHTML = session.concepts.map(concept => {
+        const selected = concept.id === session.selectedConceptId;
+        const variation = session.config?.styles
+            ?.flatMap(style => style.variations ?? [])
+            .find(item => item.id === concept.styleVariationId);
+        if (concept.artworkSource) {
+            return `<article class="concept-card${selected ? ' selected' : ''}">
+                <button class="concept-image-button" type="button" data-select-concept="${escapeHtml(concept.id)}" aria-pressed="${selected}">
+                  <img src="${escapeHtml(concept.artworkSource)}" alt="Concept ${concept.index + 1} for ${escapeHtml(getCampaignEventName(session))}">
+                  <span class="concept-select-mark">${selected ? '✓ Selected' : 'Choose this idea'}</span>
+                </button>
+                <div class="concept-card-copy"><strong>Concept ${concept.index + 1}</strong><small>${escapeHtml(variation?.name || 'Alternative visual direction')} · low-resolution preview</small></div>
+              </article>`;
+        }
+        if (concept.status === 'failed') {
+            return `<article class="concept-card failed"><div class="concept-placeholder"><span>!</span><strong>Concept ${concept.index + 1} did not finish</strong><small>${escapeHtml(concept.failure?.message || 'The image service returned an error.')}</small><button class="button button-secondary" type="button" data-retry-concept="${escapeHtml(concept.id)}">Retry this idea</button></div></article>`;
+        }
+        return `<article class="concept-card waiting"><div class="concept-placeholder"><span>${concept.status === 'generating' ? '✦' : concept.index + 1}</span><strong>${concept.status === 'generating' ? 'Creating this idea…' : 'Waiting'}</strong><small>Low-resolution digital-screen concept</small></div></article>`;
+    }).join('');
+
+    const selected = session.concepts.find(concept => concept.id === session.selectedConceptId && concept.artworkSource);
+    elements.conceptSelectionMessage.textContent = selected
+        ? `Concept ${selected.index + 1} is selected. It will be re-rendered as the high-resolution master before the other formats are created.`
+        : readyCount > 0
+            ? failedCount > 0
+                ? 'Choose any completed concept, or retry an unfinished idea first.'
+                : 'Select the strongest idea to take forward.'
+            : 'The first completed idea will appear here without waiting for the full batch.';
+    elements.produceSelectedConceptButton.disabled = session.isGenerating || !selected;
+    elements.generateMoreConceptsButton.disabled = session.isGenerating;
+}
+
+async function retryConcept(session, conceptId) {
+    if (session.isGenerating || !session.generationSnapshot) return;
+    const concept = session.concepts.find(item => item.id === conceptId);
+    if (!concept) return;
+
+    const generation = {
+        snapshot: session.generationSnapshot,
+        supportingImages: buildSupportingImagesPayload(session, session.generationSnapshot.referenceSelection),
+        previousArtworkDataUrl: session.primaryArtworkDataUrl
+    };
+    const generationController = new AbortController();
+    session.isGenerating = true;
+    session.generationAbortController = generationController;
+    session.errorMessage = null;
+    concept.status = 'generating';
+    concept.failure = null;
+    setBusy(session, true);
+    setCampaignStatus(session, `Retrying concept ${concept.index + 1}`, 'generating');
+    setProgressState(session, 'concepts', 'active', `Retrying idea ${concept.index + 1}`);
+    renderConceptChoices(session);
+    startGenerationClock(session);
+
+    session.generationPromise = (async () => {
+        try {
+            const response = await generateConceptWithSafetyRecovery(session, generation, concept, generationController.signal);
+            concept.artworkSource = response.dataUrl;
+            concept.status = 'ready';
+            await persistConceptArtwork(session, concept, response.dataUrl);
+        } catch (error) {
+            if (error?.name !== 'AbortError') console.error(error);
+            concept.status = 'failed';
+            concept.failure = serialiseGenerationFailure(error);
+        } finally {
+            stopGenerationClock(session);
+            session.isGenerating = false;
+            session.generationPromise = null;
+            if (session.generationAbortController === generationController) session.generationAbortController = null;
+            const readyCount = session.concepts.filter(item => item.artworkSource).length;
+            const failedCount = session.concepts.filter(item => item.status === 'failed').length;
+            setProgressState(session, 'concepts', failedCount === 0 ? 'complete' : 'error', `${readyCount} of ${CONCEPT_PREVIEW_COUNT} ready`);
+            setCampaignStatus(session, readyCount > 0 ? 'Choose a concept' : 'Concept generation failed', readyCount > 0 ? 'ready' : 'neutral');
+            setBusy(session, false);
+            renderConceptChoices(session);
+            await persistSession(session);
+        }
+    })();
+
+    return session.generationPromise;
 }
 
 async function generateVariant(generation, output, masterArtworkDataUrl, signal) {
@@ -1368,6 +1860,7 @@ function serialiseGenerationFailure(error) {
     return {
         message: error instanceof Error ? error.message : 'The image service returned an error.',
         retryable: error?.retryable === true,
+        safetyRefusal: error?.safetyRefusal === true,
         requestId: typeof error?.requestId === 'string' ? error.requestId : null,
         code: typeof error?.code === 'string' ? error.code : null,
         recordedAt: new Date().toISOString()
@@ -1632,6 +2125,7 @@ async function readApiResponse(response) {
     if (!response.ok) {
         const error = new Error(body.detail ?? body.error ?? 'The image service returned an error.');
         error.retryable = body.retryable === true;
+        error.safetyRefusal = body.safetyRefusal === true;
         error.requestId = typeof body.requestId === 'string' ? body.requestId : null;
         error.code = typeof body.code === 'string' ? body.code : null;
         error.httpStatus = response.status;
@@ -2041,32 +2535,38 @@ async function sendToClubhouseScreens() {
     }
 }
 
-function beginGenerationProgress(session, isRegeneration) {
+function beginConceptProgress(session) {
     session.errorMessage = null;
     session.progress = {
+        concepts: { cssClass: 'active', label: `0 of ${CONCEPT_PREVIEW_COUNT} ready` },
         primary: { cssClass: '', label: 'Waiting' },
         variants: { cssClass: '', label: 'Waiting' },
         compose: { cssClass: '', label: 'Waiting' }
     };
-    if (!isRegeneration) {
-        session.artworkByOutput.clear();
-        session.posterCanvases.clear();
-        session.primaryArtworkDataUrl = null;
-    }
 
     if (!isSessionVisible(session)) return;
     elements.generationProgress.querySelector('[data-generation-error]')?.remove();
     elements.emptyState.classList.add('hidden');
-    elements.refinementPanel.classList.add('hidden');
     elements.generationProgress.classList.remove('hidden');
-    if (!isRegeneration) {
-        elements.posterResults.innerHTML = '';
-        elements.generatedArtworkPanel.classList.add('hidden');
-        elements.generatedArtworkCount.textContent = '0 ready';
-        elements.generatedArtworkCount.className = 'status-pill neutral';
-    } else if (session.posterCanvases.size > 0) {
-        elements.generatedArtworkPanel.classList.remove('hidden');
-    }
+    for (const [name, progress] of Object.entries(session.progress)) setProgressState(session, name, progress.cssClass, progress.label);
+    renderConceptChoices(session);
+}
+
+function beginProductionProgress(session) {
+    session.errorMessage = null;
+    session.progress = {
+        concepts: { cssClass: 'complete', label: 'Selected' },
+        primary: { cssClass: 'active', label: 'Waiting' },
+        variants: { cssClass: '', label: 'Waiting' },
+        compose: { cssClass: '', label: 'Waiting' }
+    };
+    if (!isSessionVisible(session)) return;
+    elements.generationProgress.querySelector('[data-generation-error]')?.remove();
+    elements.emptyState.classList.add('hidden');
+    elements.refinementPanel.classList.add('hidden');
+    elements.sharePanel.classList.add('hidden');
+    elements.generationProgress.classList.remove('hidden');
+    for (const [name, progress] of Object.entries(session.progress)) setProgressState(session, name, progress.cssClass, progress.label);
 }
 
 function setProgressState(session, name, cssClass, label) {
@@ -2105,7 +2605,8 @@ function startGenerationClock(session) {
     const updateElapsed = () => {
         if (!isSessionVisible(session) || !elements.generationElapsed || !session.generationStartedAt) return;
         const elapsedSeconds = Math.max(0, Math.floor((Date.now() - session.generationStartedAt) / 1000));
-        elements.generationElapsed.textContent = `Working for ${formatElapsedTime(elapsedSeconds)}. High-quality artwork can take several minutes.`;
+        const phase = session.workflowStep === 2 ? 'Low-resolution concepts are being created' : 'High-quality artwork is being produced';
+        elements.generationElapsed.textContent = `Working for ${formatElapsedTime(elapsedSeconds)}. ${phase}.`;
     };
 
     updateElapsed();
@@ -2146,6 +2647,10 @@ function setBusy(session, isBusy) {
     if (!isSessionVisible(session)) return;
     elements.generateButton.disabled = isBusy;
     elements.regenerateButton.disabled = isBusy;
+    if (elements.generateMoreConceptsButton) elements.generateMoreConceptsButton.disabled = isBusy;
+    if (elements.produceSelectedConceptButton) {
+        elements.produceSelectedConceptButton.disabled = isBusy || !session.selectedConceptId;
+    }
     elements.generationProgress?.querySelectorAll('[data-retry-missing-formats]').forEach(button => {
         button.disabled = isBusy;
     });

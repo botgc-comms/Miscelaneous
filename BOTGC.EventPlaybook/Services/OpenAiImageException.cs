@@ -7,7 +7,8 @@ public sealed class OpenAiImageException(
     HttpStatusCode upstreamStatusCode,
     bool retryable,
     string? requestId = null,
-    string? errorCode = null) : InvalidOperationException(message)
+    string? errorCode = null,
+    bool isSafetyRefusal = false) : InvalidOperationException(message)
 {
     public HttpStatusCode UpstreamStatusCode { get; } = upstreamStatusCode;
 
@@ -16,4 +17,6 @@ public sealed class OpenAiImageException(
     public string? RequestId { get; } = requestId;
 
     public string? ErrorCode { get; } = errorCode;
+
+    public bool IsSafetyRefusal { get; } = isSafetyRefusal;
 }

@@ -28,6 +28,14 @@ public sealed class GeneratePosterRequest
 
     public string? PreviousArtworkDataUrl { get; init; }
 
+    public string? SelectedConceptDataUrl { get; init; }
+
+    public bool IsConceptPreview { get; init; }
+
+    public int SafetyRecoveryAttempt { get; init; }
+
+    public bool SafetyFallbackStyle { get; init; }
+
     public List<SupportingImageReference> SupportingImages { get; init; } = [];
 }
 

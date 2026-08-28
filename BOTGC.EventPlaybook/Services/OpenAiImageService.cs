@@ -16,7 +16,62 @@ public sealed class OpenAiImageService(
     IOptions<OpenAiOptions> options,
     ILogger<OpenAiImageService> logger) : IOpenAiImageService
 {
+    private const string ConceptPreviewSize = "720x1280";
     private readonly OpenAiOptions _options = options.Value;
+
+    public async Task<GeneratedArtworkResponse> GenerateConceptAsync(
+        GeneratePosterRequest request,
+        CancellationToken cancellationToken)
+    {
+        var eventDefinition = ResolveEventDefinition(posterConfiguration.GetEvent(request.EventId), request.EventName, request.Description);
+        var style = posterConfiguration.GetStyle(request.StyleId);
+        var primaryOutput = posterConfiguration.Get().Outputs.Single(x => x.IsPrimary);
+        var promptResult = await promptService.BuildPrimaryPromptAsync(
+            request,
+            eventDefinition,
+            style,
+            primaryOutput,
+            cancellationToken);
+
+        if (string.IsNullOrWhiteSpace(_options.ApiKey))
+        {
+            return CreateMockArtwork(
+                eventDefinition,
+                primaryOutput,
+                request.RefinementNotes,
+                promptResult);
+        }
+
+        var conceptInputs = new List<SupportingImageReference>();
+        if (!string.IsNullOrWhiteSpace(request.PreviousArtworkDataUrl))
+        {
+            conceptInputs.Add(new SupportingImageReference
+            {
+                FileName = "previous-campaign-artwork.png",
+                DataUrl = request.PreviousArtworkDataUrl
+            });
+        }
+        if (request.SupportingImages.Count > 0)
+        {
+            conceptInputs.AddRange(request.SupportingImages);
+        }
+
+        if (conceptInputs.Count > 0)
+        {
+            return await EditImageAsync(
+                conceptInputs,
+                promptResult,
+                ConceptPreviewSize,
+                "low",
+                cancellationToken);
+        }
+
+        return await GenerateImageAsync(
+            promptResult,
+            ConceptPreviewSize,
+            "low",
+            cancellationToken);
+    }
 
     public async Task<GeneratedArtworkResponse> GeneratePrimaryAsync(
         GeneratePosterRequest request,
@@ -43,7 +98,15 @@ public sealed class OpenAiImageService(
 
         var primaryInputs = new List<SupportingImageReference>();
 
-        if (!string.IsNullOrWhiteSpace(request.PreviousArtworkDataUrl))
+        if (!string.IsNullOrWhiteSpace(request.SelectedConceptDataUrl))
+        {
+            primaryInputs.Add(new SupportingImageReference
+            {
+                FileName = "selected-concept-preview.png",
+                DataUrl = request.SelectedConceptDataUrl
+            });
+        }
+        else if (!string.IsNullOrWhiteSpace(request.PreviousArtworkDataUrl))
         {
             primaryInputs.Add(new SupportingImageReference
             {
@@ -63,12 +126,14 @@ public sealed class OpenAiImageService(
                 primaryInputs,
                 promptResult,
                 primaryOutput.OpenAiSize,
+                _options.ImageQuality,
                 cancellationToken);
         }
 
         return await GenerateImageAsync(
             promptResult,
             primaryOutput.OpenAiSize,
+            _options.ImageQuality,
             cancellationToken);
     }
 
@@ -113,12 +178,14 @@ public sealed class OpenAiImageService(
             variantInputs,
             promptResult,
             output.OpenAiSize,
+            _options.ImageQuality,
             cancellationToken);
     }
 
     private async Task<GeneratedArtworkResponse> GenerateImageAsync(
         ImagePromptResult promptResult,
         string size,
+        string quality,
         CancellationToken cancellationToken)
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, "images/generations");
@@ -128,7 +195,7 @@ public sealed class OpenAiImageService(
             model = _options.ImageModel,
             prompt = promptResult.Prompt,
             size,
-            quality = _options.ImageQuality,
+            quality,
             output_format = "png",
             background = "opaque",
             n = 1
@@ -154,13 +221,15 @@ public sealed class OpenAiImageService(
         IReadOnlyCollection<SupportingImageReference> sourceImages,
         ImagePromptResult promptResult,
         string size,
+        string quality,
         CancellationToken cancellationToken)
     {
         using var form = new MultipartFormDataContent();
         form.Add(new StringContent(_options.ImageModel), "model");
         form.Add(new StringContent(promptResult.Prompt), "prompt");
         form.Add(new StringContent(size), "size");
-        form.Add(new StringContent(_options.ImageQuality), "quality");
+        form.Add(new StringContent(quality), "quality");
+        form.Add(new StringContent("high"), "input_fidelity");
         form.Add(new StringContent("png"), "output_format");
 
         var imageIndex = 0;
@@ -211,6 +280,7 @@ public sealed class OpenAiImageService(
             ? requestIds.FirstOrDefault()
             : null;
         var (providerMessage, errorCode) = ReadProviderError(body);
+        var isSafetyRefusal = IsSafetyRefusal(providerMessage, errorCode);
 
         var message = statusCode switch
         {
@@ -220,6 +290,8 @@ public sealed class OpenAiImageService(
                 "The image service timed out while trying to adapt the artwork. The completed artwork has been kept and the missing format can be retried.",
             System.Net.HttpStatusCode.Unauthorized or System.Net.HttpStatusCode.Forbidden =>
                 "The image service rejected the server credentials or model access. Ask an administrator to check the OpenAI configuration.",
+            _ when isSafetyRefusal =>
+                "The image service declined this prompt after safety review. Poster Studio kept the event brief and any completed artwork.",
             _ when (int)statusCode >= 500 =>
                 "The image service is temporarily unavailable. The completed artwork has been kept and the missing format can be retried.",
             _ when !string.IsNullOrWhiteSpace(providerMessage) =>
@@ -228,7 +300,31 @@ public sealed class OpenAiImageService(
                 $"OpenAI could not {action} (status {(int)statusCode})."
         };
 
-        return new OpenAiImageException(message, statusCode, retryable, requestId, errorCode);
+        return new OpenAiImageException(message, statusCode, retryable, requestId, errorCode, isSafetyRefusal);
+    }
+
+    private static bool IsSafetyRefusal(string? providerMessage, string? errorCode)
+    {
+        var normalisedCode = errorCode?.Trim().ToLowerInvariant();
+        if (normalisedCode is
+            "content_policy_violation" or
+            "content_policy_error" or
+            "moderation_blocked" or
+            "safety_violation" or
+            "safety_violations")
+        {
+            return true;
+        }
+
+        if (string.IsNullOrWhiteSpace(providerMessage)) return false;
+
+        var normalisedMessage = providerMessage.ToLowerInvariant();
+        return normalisedMessage.Contains("content policy", StringComparison.Ordinal) ||
+               normalisedMessage.Contains("content_policy", StringComparison.Ordinal) ||
+               normalisedMessage.Contains("safety system", StringComparison.Ordinal) ||
+               normalisedMessage.Contains("safety reasons", StringComparison.Ordinal) ||
+               normalisedMessage.Contains("safety guardrail", StringComparison.Ordinal) ||
+               normalisedMessage.Contains("moderation", StringComparison.Ordinal);
     }
 
     private static (string? Message, string? Code) ReadProviderError(string body)

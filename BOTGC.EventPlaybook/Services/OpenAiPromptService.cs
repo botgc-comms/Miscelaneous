@@ -47,7 +47,25 @@ public sealed class OpenAiPromptService(
         // invariant production rules last.
         var brief = new
         {
-            task = "Create the final image-generation prompt for the PRIMARY finished event poster.",
+            task = request.IsConceptPreview
+                ? "Create an image-generation prompt for ONE low-resolution DIGITAL-SCREEN CONCEPT PREVIEW. It is one of three alternative ideas from which the organiser will choose."
+                : "Create the final image-generation prompt for the PRIMARY high-resolution finished event poster.",
+            conceptWorkflow = request.IsConceptPreview
+                ? new
+                {
+                    role = "Explore one distinctive, complete poster concept at draft quality. Commit to this selected visual direction so it is meaningfully different from the other concepts, while remaining faithful to the event brief.",
+                    output = "A complete 9:16 digital-screen poster preview, not a mood board, contact sheet, framed poster or mockup.",
+                    typography = "Include the required title, date and price clearly enough for concept selection. Keep every text element inside generous safe margins. The selected preview is a composition reference; exact typography will be re-rendered in the final master."
+                }
+                : null,
+            selectedConceptReference = !request.IsConceptPreview && !string.IsNullOrWhiteSpace(request.SelectedConceptDataUrl)
+                ? new
+                {
+                    source = "The first attached image, selected-concept-preview.png, is the organiser's chosen concept and the authoritative reference for composition, subjects, visual hierarchy, palette, mood and art direction.",
+                    continuity = "Produce a polished high-resolution version of that chosen concept. Preserve its recognisable idea and layout relationships; do not substitute a different campaign concept.",
+                    typography = "Treat text visible in the preview as provisional artwork, not authoritative copy. Re-render the exact required event title, date and price from this brief, correcting spelling or legibility problems and keeping every character fully inside the safe area."
+                }
+                : null,
             contentIntent = new
             {
                 eventTitle = eventDefinition.Name,
@@ -66,6 +84,7 @@ public sealed class OpenAiPromptService(
                         : "Do not show the Club name, BOTGC initials, a crest, shield, monogram, wordmark or any Club logo or branding."
                 }
             },
+            safetyRecovery = BuildSafetyRecoveryDirection(request),
             selectedRelevantReferences = DescribeSupportingImages(
                 request.SupportingImages,
                 "These images have already passed semantic relevance assessment against the complete content intent. Use each one only for the specific real-world subject identified by its matching instruction and relevance reason. Do not let a reference introduce unrelated subject matter."),
@@ -81,6 +100,8 @@ public sealed class OpenAiPromptService(
                         metadataName = styleVariation.Name,
                         namedIllustrator = styleVariation.ArtistName,
                         referenceWork = styleVariation.ReferenceWork,
+                        references = styleVariation.References,
+                        camera = styleVariation.Camera,
                         explicitInstruction = BuildExplicitVariationInstruction(styleVariation, isVariant: false),
                         description = styleVariation.StyleDirection,
                         styleVariation.ColourDirection
@@ -175,6 +196,8 @@ public sealed class OpenAiPromptService(
                         metadataName = styleVariation.Name,
                         namedIllustrator = styleVariation.ArtistName,
                         referenceWork = styleVariation.ReferenceWork,
+                        references = styleVariation.References,
+                        camera = styleVariation.Camera,
                         explicitStyleInstruction = BuildExplicitVariationInstruction(styleVariation, isVariant: true),
                         styleVariation.StyleDirection,
                         styleVariation.ColourDirection
@@ -327,7 +350,19 @@ public sealed class OpenAiPromptService(
         PosterOutputDefinition output)
     {
         var builder = new StringBuilder();
-        builder.AppendLine($"Create a premium finished event poster for the golf-club event '{eventDefinition.Name}'.");
+        builder.AppendLine(request.IsConceptPreview
+            ? $"Create one low-resolution 9:16 digital-screen poster concept for the golf-club event '{eventDefinition.Name}'. This is one of three alternative concepts from which the organiser will choose."
+            : $"Create a premium high-resolution finished event poster for the golf-club event '{eventDefinition.Name}'.");
+        if (request.IsConceptPreview)
+        {
+            builder.AppendLine("Commit to one distinctive, complete visual idea using the selected art direction. Produce the finished concept itself edge to edge, not a mood board, contact sheet, framed poster or mockup.");
+            builder.AppendLine("Required text must be legible enough to assess and fully inside generous safe margins. The selected concept will later be re-rendered at high resolution with exact typography.");
+        }
+        else if (!string.IsNullOrWhiteSpace(request.SelectedConceptDataUrl))
+        {
+            builder.AppendLine("The first attached image, selected-concept-preview.png, is the organiser's chosen concept. Preserve its recognisable subjects, composition, hierarchy, palette, mood and art direction while producing a polished high-resolution master.");
+            builder.AppendLine("Text visible in the concept is provisional. Re-render the exact required title, date and price from this brief, correct any preview spelling or legibility problems, and keep every character fully inside the safe area.");
+        }
         builder.AppendLine();
         builder.AppendLine("1. EVENT CONTENT INTENT — CONTROLS WHAT IS DEPICTED");
         builder.AppendLine($"Event title: {eventDefinition.Name}");
@@ -343,6 +378,7 @@ public sealed class OpenAiPromptService(
             builder.AppendLine(request.RefinementNotes.Trim());
         }
         builder.AppendLine("The event description and additional creative instructions exclusively control the depicted subjects and story. Extract their concrete people, organisations, causes, characters, activities, props, entertainment, food, setting and humour. Do not replace them with a generic golf scene.");
+        AppendSafetyRecoveryDirection(builder, request);
         builder.AppendLine();
         builder.AppendLine("Requested poster content:");
         if (request.IncludeDate)
@@ -401,6 +437,31 @@ public sealed class OpenAiPromptService(
         builder.AppendLine("Do not invent fake dates, prices, sponsor names, competition details or club branding.");
 
         return builder.ToString().Trim();
+    }
+
+    private static object? BuildSafetyRecoveryDirection(GeneratePosterRequest request)
+    {
+        if (request.SafetyRecoveryAttempt <= 0) return null;
+
+        return new
+        {
+            attempt = Math.Clamp(request.SafetyRecoveryAttempt, 1, 4),
+            alternativeStyleDirection = request.SafetyFallbackStyle,
+            instruction = "Rewrite the legitimate club-event poster request in plain, neutral, non-graphic language before giving it to the image model. Preserve harmless event facts and the intended celebratory meaning, but omit or soften ambiguous wording or visual framing that could reasonably be read as unsafe. Do not argue with, mention or attempt to override any safety decision. The finished prompt must remain fully policy-compliant."
+        };
+    }
+
+    private static void AppendSafetyRecoveryDirection(StringBuilder builder, GeneratePosterRequest request)
+    {
+        if (request.SafetyRecoveryAttempt <= 0) return;
+
+        builder.AppendLine();
+        builder.AppendLine("SAFETY-COMPLIANT RECOVERY");
+        builder.AppendLine("Express this legitimate club-event poster request in plain, neutral, non-graphic language. Preserve harmless event facts and the intended celebratory meaning, but omit or soften ambiguous wording or visual framing that could reasonably be read as unsafe. Do not argue with, mention or attempt to override a safety decision. Produce only a fully policy-compliant poster request.");
+        if (request.SafetyFallbackStyle)
+        {
+            builder.AppendLine("Use the newly selected alternative art direction below while keeping the same harmless event content and exact required poster copy.");
+        }
     }
 
     private static string BuildVariantFallbackPrompt(
@@ -510,6 +571,20 @@ public sealed class OpenAiPromptService(
         PosterStyleVariationDefinition variation,
         bool isVariant)
     {
+        if (variation.References.Count > 0 || !string.IsNullOrWhiteSpace(variation.Camera))
+        {
+            var referenceDirection = variation.References.Count > 0
+                ? $" Visual references: {string.Join(", ", variation.References)}."
+                : string.Empty;
+            var cameraDirection = string.IsNullOrWhiteSpace(variation.Camera)
+                ? string.Empty
+                : $" Camera and lens direction: {variation.Camera}.";
+
+            return isVariant
+                ? $"Preserve the master campaign's selected '{variation.Name}' art direction.{referenceDirection}{cameraDirection}"
+                : $"Use the selected '{variation.Name}' art direction.{referenceDirection}{cameraDirection}";
+        }
+
         if (string.IsNullOrWhiteSpace(variation.ArtistName))
         {
             return isVariant

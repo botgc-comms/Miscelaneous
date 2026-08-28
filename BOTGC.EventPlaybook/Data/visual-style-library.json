@@ -1,0 +1,523 @@
+{
+  "Childrens book": [
+    {
+      "name": "Tony DiTerlizzi - illustrated fantasy",
+      "references": [
+        "Tony DiTerlizzi",
+        "The Spiderwick Chronicles",
+        "The Search for WondLa"
+      ],
+      "description": "Create an original children's fantasy-book illustration informed by richly detailed traditional fantasy illustration associated with Tony DiTerlizzi and books such as The Spiderwick Chronicles and The Search for WondLa, without reproducing a specific existing illustration. Use delicate hand-drawn contours, finely rendered natural textures, softly layered watercolor and colored-pencil effects, intricate plants and organic shapes, whimsical creature design, subtle atmospheric perspective, muted jewel-like colors, and a slightly antique storybook feeling. The world should feel carefully observed yet fantastical, with abundant tiny details and tactile surfaces. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Tony DiTerlizzi - photoreal background",
+      "references": [
+        "Tony DiTerlizzi",
+        "The Spiderwick Chronicles",
+        "The Search for WondLa"
+      ],
+      "description": "Create a mixed-media image with a genuinely photorealistic natural environment: realistic vegetation, bark, stones, atmospheric light, shallow depth of field, and photographic textures, combined with hand-drawn fantasy characters. The characters should use delicate ink contours, soft watercolor and colored-pencil textures, intricate organic details, whimsical proportions, and muted storybook colors reminiscent of sophisticated traditional fantasy-book illustration. Make the characters clearly illustrated while allowing them to sit convincingly inside the photographic world through believable scale, shadows, contact lighting, and depth. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Maurice Sendak - illustrated",
+      "references": [
+        "Maurice Sendak",
+        "Where the Wild Things Are",
+        "In the Night Kitchen"
+      ],
+      "description": "Create a traditional children's-book illustration drawing on the visual qualities associated with Maurice Sendak and books such as Where the Wild Things Are. Use expressive pen-and-ink drawing, dense cross-hatching, scratchy handmade textures, subdued transparent watercolor washes, slightly eccentric and grotesque-but-charming character proportions, tactile fur and fabric, and an old European storybook sensibility. Keep the imagery imaginative, psychologically expressive, humorous, slightly strange, and visibly handmade rather than polished or digital. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Maurice Sendak - photoreal background",
+      "references": [
+        "Maurice Sendak",
+        "Where the Wild Things Are"
+      ],
+      "description": "Use a photorealistic woodland or domestic environment with natural photographic lighting and highly realistic textures, but place hand-drawn storybook creatures within it. Render the characters with dense pen cross-hatching, slightly irregular ink contours, muted watercolor washes, tactile fur and fabric textures, and unusual but appealing proportions. Preserve the obvious distinction between photographic environment and illustrated character while integrating them with realistic shadows and environmental light. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Dr. Seuss - graphic illustrated",
+      "references": [
+        "Dr. Seuss",
+        "The Cat in the Hat",
+        "Green Eggs and Ham",
+        "The Lorax"
+      ],
+      "description": "Create a playful mid-century children's-book illustration inspired by the graphic qualities associated with Dr. Seuss and books such as The Cat in the Hat and Green Eggs and Ham. Use energetic black ink contours, eccentric curved silhouettes, deliberately stretched and distorted anatomy, improbable shapes, sparse internal detail, whimsical objects, strong negative space, and a restrained palette of flat bright colors. Lines should wobble and curl with an elastic hand-drawn quality. Keep the design surreal, humorous, economical, and highly readable. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Dr. Seuss - photoreal background",
+      "references": [
+        "Dr. Seuss",
+        "The Cat in the Hat",
+        "Green Eggs and Ham"
+      ],
+      "description": "Create a surreal hybrid image in which the environment is completely photorealistic, with natural photographic lighting, realistic surfaces, depth of field, and believable perspective, while the characters remain flat hand-drawn cartoons. Use irregular black ink outlines, exaggerated curved anatomy, sparse detail, limited bright colors, and eccentric silhouettes. Do not make the characters three-dimensional or photorealistic. They should look like ink-and-color illustrations physically inhabiting a real photographed environment. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Dr. Seuss - loose pen and ink",
+      "references": [
+        "Dr. Seuss",
+        "The Cat in the Hat",
+        "One Fish Two Fish Red Fish Blue Fish"
+      ],
+      "description": "Create an economical hand-drawn children's-book image using loose, lively black pen lines, selective bright color, large areas of clean paper, exaggerated silhouettes, scratchy repeated marks, and deliberately imperfect contours. Forms should be constructed from a few confident strokes rather than detailed rendering. Give the characters strongly readable gestures and expressions, with humorous elongated proportions and a spontaneous cartoonist's-sketch quality reminiscent of classic mid-century beginner-reader illustration. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Dr. Seuss - loose pen and ink with photoreal background",
+      "references": [
+        "Dr. Seuss",
+        "The Cat in the Hat"
+      ],
+      "description": "Place very loose pen-and-ink cartoon characters into a highly realistic photographic environment. Keep the characters visually simple: energetic black lines, sparse hatching, selective flat colors, exaggerated anatomy, and substantial unpainted areas. The background should retain genuine camera-like realism, while the cartoon figures should look unapologetically drawn rather than rendered to match it. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Quentin Blake - illustrated",
+      "references": [
+        "Quentin Blake",
+        "Matilda",
+        "The BFG",
+        "The Twits"
+      ],
+      "description": "Create an original children's-book illustration informed by the lively pen-and-watercolor tradition associated with Quentin Blake's illustrations for books such as Matilda, The BFG and The Twits, without copying his distinctive drawings. Use very loose, rapidly drawn-looking ink lines, irregular contours, angular elongated limbs, expressive hands and faces, selective detail, generous white space, and transparent watercolor washes that occasionally drift beyond the outlines. The image should feel spontaneous, witty, energetic, eccentric, and intentionally imperfect. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Quentin Blake - photoreal background",
+      "references": [
+        "Quentin Blake",
+        "Matilda",
+        "The BFG",
+        "The Twits"
+      ],
+      "description": "Create a photorealistic real-world environment with realistic perspective, photographic lighting, detailed surfaces, and natural depth of field. Into this environment place loose hand-drawn characters made from thin, irregular ink lines and transparent watercolor washes. Give them exaggerated proportions, animated gestures, minimal detail, and a spontaneous sketchbook quality. Keep the watercolor visibly translucent and allow occasional pigment to extend beyond the ink contours. Integrate them through natural shadows without making the characters photorealistic. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "E. H. Shepard - illustrated",
+      "references": [
+        "E. H. Shepard",
+        "Winnie-the-Pooh",
+        "The Wind in the Willows"
+      ],
+      "description": "Create a delicate English storybook illustration drawing on the traditional pen-and-ink qualities associated with E. H. Shepard's illustrations for Winnie-the-Pooh and The Wind in the Willows. Use extremely fine broken ink contours, restrained cross-hatching, subtle observational detail, gentle watercolor tinting, modest character proportions, soft natural expressions, and plentiful white space. Avoid bold cartoon outlines or saturated color. The finished image should feel quiet, intimate, pastoral, understated, and like an original drawing from an early twentieth-century illustrated book. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "E. H. Shepard - photoreal background",
+      "references": [
+        "E. H. Shepard",
+        "Winnie-the-Pooh",
+        "The Wind in the Willows"
+      ],
+      "description": "Use a softly lit, photorealistic countryside or woodland environment with genuine photographic texture and depth. Place delicate pen-and-ink illustrated characters within it using fine irregular contours, restrained hatching, very light watercolor tinting, and naturalistic proportions. Keep the drawn figures subtle and understated. Use faint realistic ground shadows and environmental color spill so that they belong spatially in the photograph without losing the appearance of traditional ink drawings. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Ludwig Bemelmans - illustrated",
+      "references": [
+        "Ludwig Bemelmans",
+        "Madeline",
+        "Madeline's Rescue"
+      ],
+      "description": "Create a loose, sophisticated picture-book illustration drawing on the qualities associated with Ludwig Bemelmans and the Madeline books. Combine scratchy ink drawing, crayon-like marks, opaque gouache passages, transparent washes, simplified figures, expressive architectural forms, intentionally imperfect perspective, and broad areas of muted color. Allow lines to remain visibly handmade and occasionally rough. Use restrained gray, ochre, rust, green, blue, and black with occasional strong accents. The result should feel like a spontaneous European travel sketch transformed into a children's-book illustration. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Ludwig Bemelmans - photoreal background",
+      "references": [
+        "Ludwig Bemelmans",
+        "Madeline"
+      ],
+      "description": "Create a real photographic city or architectural environment with authentic perspective, natural weather, realistic masonry, street textures, and atmospheric light. Add simplified hand-drawn figures rendered with loose ink, crayon-like marks, gouache and transparent watercolor. Their proportions and linework should remain visibly illustrated and slightly naive, creating a deliberate contrast between the sophisticated photographic setting and the charming handmade figures. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Axel Scheffler - illustrated",
+      "references": [
+        "Axel Scheffler",
+        "The Gruffalo",
+        "Room on the Broom",
+        "Zog"
+      ],
+      "description": "Create an original contemporary children's-book illustration informed by the warm, richly textured character illustration found in books such as The Gruffalo, Room on the Broom and Zog, without reproducing the distinctive style of Axel Scheffler. Use strong dark hand-drawn contours, rounded exaggerated proportions, highly readable facial expressions, large expressive eyes, patterned surfaces, dense vegetation, warm saturated colors, and visible watercolor, pencil and painted textures. Characters should be humorous, friendly and immediately legible to young children, with carefully controlled silhouettes and abundant tactile detail. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Axel Scheffler - photoreal background",
+      "references": [
+        "Axel Scheffler",
+        "The Gruffalo",
+        "Room on the Broom",
+        "Zog"
+      ],
+      "description": "Create a highly photorealistic woodland or outdoor environment with natural sunlight, realistic leaves, bark, water, stones, and atmospheric depth. Populate it with clearly hand-drawn children's-book characters using strong dark outlines, rounded proportions, large expressive eyes, warm saturated color, pencil texture, and watercolor-like painted surfaces. Keep the characters flat-to-painterly rather than photorealistic. Add accurate contact shadows and subtle reflected environmental light so the illustrated figures appear physically present within the photograph. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    }
+  ],
+  "Fine art": [
+    {
+      "name": "Claude Monet - Impressionist oil painting",
+      "references": [
+        "Claude Monet",
+        "Water Lilies",
+        "Impression, Sunrise",
+        "Haystacks"
+      ],
+      "description": "Create an oil painting in the Impressionist tradition associated with Claude Monet, particularly works such as Water Lilies, Impression, Sunrise, and the Haystacks series. Use visible broken brushstrokes, soft overlapping touches of color, minimal hard outlines, and an emphasis on changing natural light rather than precise detail. Build forms from adjacent colors instead of sharply defined edges. Use luminous blues, greens, violets, pinks, creams, and warm reflected tones, with atmospheric haze and subtle variations of color across shadows. The painting should feel spontaneous when viewed closely but resolve into a convincing scene from a distance, with light and atmosphere taking precedence over photographic realism. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Vincent van Gogh - expressive oil painting",
+      "references": [
+        "Vincent van Gogh",
+        "The Starry Night",
+        "Sunflowers",
+        "Wheatfield with Crows"
+      ],
+      "description": "Create an expressive Post-Impressionist oil painting associated with Vincent van Gogh and works such as The Starry Night, Sunflowers, and Wheatfield with Crows. Use thick impasto paint, highly visible directional brushstrokes, energetic curved marks, and strong rhythmic movement throughout the image. Simplify natural forms and exaggerate color for emotional effect. Use intense complementary colors, particularly deep ultramarine, cobalt, ochre, yellow, green, and orange. Allow outlines and brush marks to remain conspicuous rather than blended. The finished painting should feel tactile, energetic, emotionally charged, and unmistakably handmade. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Pablo Picasso - Cubist painting",
+      "references": [
+        "Pablo Picasso",
+        "Les Demoiselles d'Avignon",
+        "Three Musicians"
+      ],
+      "description": "Create a modernist painting drawing on the Cubist visual language associated with Pablo Picasso and works such as Les Demoiselles d'Avignon, Three Musicians, and his Cubist portraits. Fragment objects and figures into overlapping geometric planes, showing several viewpoints simultaneously rather than obeying conventional perspective. Use angular contours, flattened depth, simplified anatomy, asymmetrical features, and deliberately unconventional proportions. Employ a restrained palette of ochres, muted blues, browns, creams, charcoal, and occasional stronger accents. The result should feel intellectually constructed rather than realistically observed, with recognizable forms reorganized into an abstract geometric composition. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "J. M. W. Turner - atmospheric watercolor and oil",
+      "references": [
+        "J. M. W. Turner",
+        "The Fighting Temeraire",
+        "Rain, Steam and Speed"
+      ],
+      "description": "Create a highly atmospheric Romantic painting associated with J. M. W. Turner and works such as The Fighting Temeraire, Rain, Steam and Speed, and his luminous watercolor studies. Allow light, weather, mist, clouds, water, and atmosphere to dominate over precise drawing. Use translucent washes, soft-edged forms, glowing yellows, creams, warm oranges, smoky grays, pale blues, and deep atmospheric shadows. Let pigment dissolve into neighboring areas and allow forms to partially disappear into haze. Introduce occasional sharper marks for contrast, but keep most of the image fluid and luminous. The overall effect should feel dramatic, radiant, turbulent, and almost abstract while retaining a sense of landscape and space. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "John Singer Sargent - elegant watercolor",
+      "references": [
+        "John Singer Sargent",
+        "Carnation, Lily, Lily, Rose"
+      ],
+      "description": "Create a luminous watercolor painting drawing on the watercolor work of John Singer Sargent, known for works such as Carnation, Lily, Lily, Rose and his numerous travel and landscape watercolors. Use confident, economical brushstrokes rather than laborious detail. Preserve areas of untouched white paper to create brilliant highlights and sunlight. Combine transparent washes with occasional stronger, more opaque strokes, allowing edges to alternate between crisp and freely bleeding. Use sophisticated natural colors, loose gestural drawing, and accurate but effortless-looking observation. The result should feel spontaneous, elegant, sunlit, and technically confident, as though painted rapidly from life. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Paul Cezanne - structured Post-Impressionist oil painting",
+      "references": [
+        "Paul Cezanne",
+        "Mont Sainte-Victoire",
+        "The Card Players"
+      ],
+      "description": "Create a Post-Impressionist oil painting associated with Paul Cezanne and works such as Mont Sainte-Victoire, The Card Players, and his still-life paintings. Construct objects and landscapes from repeated block-like brushstrokes and subtly shifting planes of color. Reduce natural forms toward cylinders, spheres, and geometric masses without becoming fully abstract. Use muted greens, dusty blues, ochres, terracotta, cream, and restrained warm reds. Perspective may feel intentionally unstable, with slightly conflicting viewpoints and tilted planes. The painting should appear carefully constructed through color and shape, bridging traditional observational painting and early modern abstraction. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Gustav Klimt - decorative Symbolist painting",
+      "references": [
+        "Gustav Klimt",
+        "The Kiss",
+        "Portrait of Adele Bloch-Bauer I",
+        "The Tree of Life"
+      ],
+      "description": "Create an ornate Symbolist painting associated with Gustav Klimt and works such as The Kiss, Portrait of Adele Bloch-Bauer I, and The Tree of Life. Combine realistically rendered areas with highly decorative flattened patterns. Use abundant gold, warm ochre, black, cream, emerald, jewel tones, mosaic-like shapes, spirals, circles, geometric ornament, and intricate repeating motifs. Allow backgrounds and clothing to merge into elaborate two-dimensional decorative surfaces while faces or selected natural forms remain comparatively realistic. The composition should feel luxurious, intimate, ornamental, richly patterned, and influenced by mosaics and decorative arts. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Rembrandt van Rijn - dramatic oil portraiture",
+      "references": [
+        "Rembrandt van Rijn",
+        "The Night Watch",
+        "The Jewish Bride"
+      ],
+      "description": "Create a traditional Baroque oil painting associated with Rembrandt and works such as The Night Watch, The Jewish Bride, and his many self-portraits. Use dramatic chiaroscuro, with figures or objects emerging gradually from deep brown-black shadows into concentrated areas of warm light. Employ rich earth pigments, burnt umber, sienna, ochre, muted reds, warm creams, and restrained highlights. Allow brushwork to vary from extremely subtle modeling in shadowed areas to thick, tactile paint in illuminated details. Favor psychological depth, natural imperfections, and subdued surroundings over decorative detail. The result should feel intimate, solemn, richly textured, and illuminated by a warm directional light. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Georgia O'Keeffe - simplified modernist painting",
+      "references": [
+        "Georgia O'Keeffe",
+        "Jimson Weed",
+        "Red Canna"
+      ],
+      "description": "Create a modernist painting associated with Georgia O'Keeffe and works such as Jimson Weed, Red Canna, and her New Mexico landscape paintings. Use enlarged simplified organic forms, smooth flowing contours, carefully controlled gradients, and strong areas of uncluttered color. Reduce visual complexity while emphasizing shape, rhythm, negative space, and subtle tonal transitions. Use saturated but harmonious reds, pinks, creams, blues, greens, desert ochres, and deep shadow tones. Avoid busy surface texture and excessive detail. The finished image should feel calm, monumental, sensual, highly composed, and simultaneously representational and abstract. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    }
+  ],
+  "Graffiti": [
+    {
+      "name": "Jean-Michel Basquiat - neo-expressionist street art",
+      "references": [
+        "Jean-Michel Basquiat",
+        "Untitled (Skull)",
+        "Hollywood Africans",
+        "Boy and Dog in a Johnnypump"
+      ],
+      "description": "Create an original neo-expressionist street-art image drawing on the visual language associated with Jean-Michel Basquiat. Use raw gestural marks, roughly drawn anatomical figures, crowns, heads, arrows, boxes, diagrams, fragmented words, crossed-out writing, numbers and repeated symbols. Layer oil-stick-like lines, acrylic paint, crayon, charcoal and graffiti marks over an imperfect surface. Use black, white, red, yellow and earthy colors with occasional vivid accents. Preserve erasures, corrections, drips and overlapping marks so the image feels spontaneous, urgent, intellectual, primitive and densely layered rather than polished. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Keith Haring - bold graphic street figures",
+      "references": [
+        "Keith Haring",
+        "Crack Down",
+        "Radiant Baby",
+        "Untitled dancing figures"
+      ],
+      "description": "Create an original bold graphic street-art composition associated with the visual language of Keith Haring. Use thick continuous black outlines, simplified human and animal figures, rhythmic repeated shapes, radiating action lines, energetic movement and almost no internal modeling or shading. Work with flat areas of vivid red, yellow, blue, green, black and white. Arrange the figures into an active all-over composition with a strong sense of rhythm and visual communication. Keep everything immediate, playful, socially charged and highly legible, like monumental marker drawings translated onto a public wall. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Banksy - satirical stencil graffiti",
+      "references": [
+        "Banksy",
+        "Girl with Balloon",
+        "Flower Thrower",
+        "Love is in the Bin"
+      ],
+      "description": "Create an original satirical stencil-based street artwork using the visual conventions of politically engaged urban stencil graffiti. Use sharply cut black-and-white stencil forms, limited grayscale modeling, rough spray-paint edges, overspray and occasional isolated areas of strong red or another single accent color. Keep the composition economical and immediately readable, with visual irony, unexpected juxtaposition and understated humor. Place the artwork on a convincing weathered urban surface such as brick, concrete or peeling plaster, preserving cracks, stains, old paint and imperfections around the sprayed image. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Lady Pink - colorful mural graffiti",
+      "references": [
+        "Lady Pink",
+        "Wild Style era murals",
+        "New York subway graffiti"
+      ],
+      "description": "Create a large-scale graffiti mural informed by the colorful New York aerosol-art tradition associated with Lady Pink. Combine elaborate letterforms with surreal imagery, expressive characters, urban symbolism and densely layered backgrounds. Use vivid aerosol gradients, pinks, purples, turquoise, electric blue, orange and deep shadow colors, with crisp highlights and strong black contours. Incorporate overlapping forms, clouds of spray paint, dimensional lettering and imaginative narrative imagery. The result should feel ambitious, rebellious, feminine, urban and unmistakably hand-painted with aerosol on a large wall. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Futura 2000 - abstract aerosol graffiti",
+      "references": [
+        "Futura 2000",
+        "Break",
+        "Abstract graffiti murals"
+      ],
+      "description": "Create an original abstract aerosol painting informed by the early abstract graffiti movement associated with Futura 2000. Avoid conventional character illustration and emphasize sweeping spray-painted lines, fine mist, atmospheric clouds, floating geometric forms, orbital marks, dots, fractured structures and energetic linear gestures. Use layered blacks, silvers, blues, whites and occasional bright accents against a dark or weathered surface. Combine precise thin aerosol lines with diffuse clouds of pigment, producing a futuristic sense of movement, depth and space. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Dondi White - classic New York wildstyle",
+      "references": [
+        "Dondi White",
+        "Children of the Grave",
+        "New York subway whole-car graffiti"
+      ],
+      "description": "Create a classic late-1970s and early-1980s New York graffiti piece drawing on the wildstyle and subway-writing tradition associated with Dondi White. Build the composition around large interlocking letterforms with extensions, arrows, overlaps, outlines, inner highlights and dimensional drop shadows. Use multiple layers of aerosol color, bold contrasts, controlled fades and crisp edging. Allow the lettering to dominate the composition while retaining the handmade imperfections of spray paint. The result should feel technically accomplished, energetic and rooted in the visual language of historic New York subway graffiti. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Os Gemeos - Brazilian character graffiti",
+      "references": [
+        "Os Gemeos",
+        "Brazilian street murals",
+        "Yellow character murals"
+      ],
+      "description": "Create an original large-scale character-based street mural informed by Brazilian graffiti and folk-art traditions. Use whimsical elongated figures, warm yellow skin tones, patterned clothing, dreamlike architecture, playful machinery and surreal narrative details. Combine strong outlines with warm ochres, oranges, reds, blues and patterned areas of saturated color. Give the painting a hand-crafted mural texture with visible aerosol and painted surfaces. The overall mood should be imaginative, folkloric, humorous and dreamlike, blending urban graffiti with visual storytelling. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Shepard Fairey - propaganda-inspired street poster",
+      "references": [
+        "Shepard Fairey",
+        "OBEY",
+        "Hope poster",
+        "Andre the Giant Has a Posse"
+      ],
+      "description": "Create an original propaganda-inspired street-art poster using bold graphic design, screen-print-like textures and a restricted palette. Use strong black outlines, cream paper tones, deep red, muted blue and black, with simplified high-contrast portrait or symbolic imagery, geometric framing, stars, rays, ornamental motifs and distressed printed textures. Build the composition around a strong central graphic with symmetrical or poster-like structure. Make it feel like a weathered hand-pasted political or countercultural print on an urban wall rather than a glossy digital illustration. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Invader - pixel mosaic street art",
+      "references": [
+        "Invader",
+        "Space Invaders mosaics",
+        "Urban mosaic installations"
+      ],
+      "description": "Create an original piece of pixel-based urban street art inspired by the visual language of ceramic mosaic interventions. Construct characters and symbols from a deliberately low-resolution grid of square tiles, using a small palette of contrasting colors and simple blocky silhouettes. Preserve hard geometric edges and avoid painterly gradients. Place the mosaic naturally against brick, concrete, stone or another architectural surface, with realistic grout, tile reflections and small imperfections. The result should feel playful, anonymous, retro-digital and physically embedded into the city. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    }
+  ],
+  "Photo realistic": [
+    {
+      "name": "Cinematic environmental portrait",
+      "camera": "Sony A1 II or comparable full-frame mirrorless camera; 35mm f/1.4 prime lens",
+      "description": "Create a genuinely photorealistic cinematic environmental photograph. Shoot from approximately eye level with a 35mm lens, close enough for the subject to have presence while retaining substantial environmental context. Use a wide aperture around f/1.8-f/2.8 for gentle subject separation without completely destroying background detail. Favor natural window light, late-afternoon light, practical lamps, or another believable motivated light source. Preserve realistic skin texture, pores, fine hairs, fabric fibers, reflections and small environmental imperfections. Use subtle film-like contrast, restrained saturation, natural highlight roll-off and realistic depth of field. Avoid artificial HDR, plastic skin, excessive sharpening and impossible bokeh. The result should resemble a carefully composed frame from a high-end contemporary feature film. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "85mm shallow-depth portrait",
+      "camera": "Canon EOS R5 Mark II or comparable full-frame camera; 85mm f/1.2-f/1.8 portrait lens",
+      "description": "Create a highly realistic portrait photographed with an 85mm prime lens from eye level or fractionally below eye level. Position the camera several meters from the subject to produce flattering perspective compression. Use a very wide aperture around f/1.4-f/2, placing critical focus on the nearest eye while allowing ears and background to fall gradually out of focus. Use a large soft directional light source, natural window light, or open shade with subtle catchlights in the eyes. Preserve pores, eyelashes, tiny facial hairs, natural asymmetry and realistic skin color. Background bokeh should arise naturally from lens optics rather than appearing artificially blurred. Use moderate contrast and restrained retouching for the appearance of a premium full-frame portrait photograph. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Wide-angle documentary photography",
+      "camera": "Leica Q3 or Leica M11; 28mm or 35mm lens",
+      "description": "Create an authentic photorealistic documentary photograph using a moderately wide 28mm-35mm field of view. Place the camera physically close to the action rather than relying on a telephoto perspective. Use eye-level, waist-level, or slightly off-axis framing so the image feels observed rather than staged. Allow foreground objects, partial obstructions, imperfect symmetry and incidental background activity to remain in the frame. Use available light and realistic exposure, with moderate depth of field around f/4-f/8. Preserve natural grain, subtle motion blur where appropriate, imperfect textures, genuine shadows and small visual irregularities. Avoid glamorous lighting or excessive post-production. The photograph should feel candid, immediate and truthful, like high-quality reportage captured at a decisive moment. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Low-angle cinematic wide shot",
+      "camera": "Nikon Z8 or Sony A1 II; 24mm f/1.4-f/2.8 wide-angle lens",
+      "description": "Create a dramatic but photorealistic wide-angle photograph from a low camera position, approximately knee height or lower, looking gently upward. Use a 24mm lens so foreground elements appear large and immediate while the environment expands dramatically behind the subject. Keep vertical perspective and lens distortion physically plausible. Use f/4-f/8 when environmental clarity is important, with a fast shutter for crisp action or a slightly slower shutter when natural movement should register. Use directional natural light, realistic sky exposure and believable reflected light from surrounding surfaces. Retain detailed foreground texture, atmospheric perspective and realistic optical falloff. The result should feel cinematic and monumental without resembling CGI. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Medium-format editorial photography",
+      "camera": "Hasselblad X2D 100C or Fujifilm GFX100 II; 55mm-80mm medium-format lens",
+      "description": "Create an exceptionally detailed photorealistic editorial photograph with the tonal character of a modern medium-format camera. Use a normal-to-short-telephoto perspective, shooting around chest or eye height with careful geometric composition. Render extremely fine textures, smooth tonal transitions and high dynamic range without exaggerated HDR. Use a large but controlled depth of field transition, with the subject sharply resolved and the background gradually softening. Favor large diffused studio light, soft overcast daylight, or broad window light. Preserve subtle color variation in skin, fabric, wood, stone and metal. Highlights should roll off smoothly and shadows should retain fine detail. The image should feel expensive, deliberate and editorial, with exceptional optical clarity but no artificial oversharpening. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "35mm analog film photography",
+      "camera": "Nikon F3, Canon AE-1, or Leica M6; 35mm or 50mm lens; Kodak Portra 400-style color negative film",
+      "description": "Create a photorealistic image with the optical and chemical characteristics of 35mm color-negative film. Use a 35mm or 50mm lens from a natural eye-level or casually handheld camera position. Include subtle fine grain, gentle halation around bright highlights, slightly softened micro-contrast, natural color variation and smooth highlight compression. Exposure should feel photographic rather than mathematically perfect, with occasional slightly lifted shadows or bright highlights. Use available daylight, flash, tungsten practicals, or mixed real-world lighting. Avoid digital-looking clarity, aggressive noise reduction and perfectly clean surfaces. The result should resemble a high-quality scanned frame of Kodak Portra 400 or similar professional color film. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Direct-flash candid photography",
+      "camera": "Contax T2, Leica M6 with flash, or compact full-frame digital camera; 28mm-38mm lens",
+      "description": "Create a spontaneous photorealistic candid photograph using direct on-camera flash. Shoot from close range with a moderately wide 28mm-38mm lens, usually at eye or chest height, allowing slight tilts and imperfect framing. The flash should produce crisp frontal illumination, sharp small shadows behind nearby subjects, bright specular reflections and rapid falloff into a darker background. Preserve ambient lights where visible and allow realistic mixed color temperatures. Use relatively deep focus, modest grain and occasional natural motion or framing imperfections. The image should feel immediate, energetic and unpolished, like an authentic party, backstage, nightlife or street photograph rather than a carefully lit studio image. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Telephoto compressed landscape",
+      "camera": "Canon EOS R5 Mark II, Nikon Z8, or Sony A1 II; 200mm-400mm telephoto lens",
+      "description": "Create a highly photorealistic landscape or environmental photograph using a long telephoto lens from a distant camera position. Use 200mm-400mm focal length to compress apparent distances so successive hills, buildings, trees or environmental layers appear visually stacked. Frame from eye level or an elevated distant viewpoint. Use f/5.6-f/11 for strong detail across the important planes while retaining realistic atmospheric softness in distant objects. Render haze, humidity, dust and changing color temperature across distance. Use natural sunrise, sunset, overcast or directional daylight. Avoid exaggerated wide-angle perspective. The result should emphasize graphic layers, scale and atmospheric compression while remaining optically plausible. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Macro close-up photography",
+      "camera": "Sony A1 II, Canon EOS R5 Mark II, or Nikon Z8; dedicated 90mm-105mm 1:1 macro lens",
+      "description": "Create an extreme photorealistic macro photograph using a dedicated 90mm-105mm macro lens near 1:1 reproduction. Position the camera extremely close to the subject at a low or directly parallel angle depending on its surface. Render microscopic textures, fibers, droplets, dust, tiny hairs, surface scratches and minute reflections with convincing optical detail. Use a narrow aperture around f/8-f/16 while retaining the naturally shallow depth of field characteristic of macro photography. Illuminate with diffused natural light, a large soft source, or carefully diffused macro flash. Focus should be critically sharp on one selected plane and fall away naturally. Avoid impossible all-over sharpness unless the scene clearly suggests photographic focus stacking. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Long-exposure night photography",
+      "camera": "Sony A7R V, Nikon Z8, or Canon EOS R5 Mark II; 24mm-50mm lens on tripod",
+      "description": "Create a photorealistic night photograph using a tripod-mounted full-frame camera and a genuine long-exposure aesthetic. Use a low ISO, an aperture around f/5.6-f/11 and an exposure lasting several seconds where appropriate. Keep stationary architecture and environmental elements sharply resolved while moving lights, vehicles, water, clouds or people produce physically believable trails or motion blur. Preserve realistic pools of artificial light, deep shadows, reflections and mixed color temperatures from LEDs, sodium lamps, tungsten sources and moonlight. Bright lights may produce subtle starbursts at narrow apertures. Avoid excessive HDR and artificial neon saturation. The image should look like a technically accomplished real long-exposure photograph rather than a digitally rendered night scene. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    }
+  ],
+  "Vintage": [
+    {
+      "name": "1940s British public-information print",
+      "references": [
+        "Keep Calm and Carry On visual tradition",
+        "1940s British Ministry of Information design"
+      ],
+      "description": "Use the restrained graphic language of 1940s British public-information printing: extreme simplicity, strong symmetry, generous negative space, a restricted palette, bold flat color fields, cream or off-white graphic elements, and a clear central hierarchy. Reproduce period letterpress or lithographic qualities through slightly uneven ink density, subtle paper fibers, faded pigment, tiny registration imperfections, creases, edge wear, and gentle age discoloration. Keep the visual treatment disciplined, authoritative, economical, and unmistakably period-printed. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "1930s Art Deco travel print",
+      "references": [
+        "Art Deco travel posters",
+        "1930s railway posters",
+        "Golden age of travel advertising"
+      ],
+      "description": "Use a glamorous 1920s-1930s Art Deco visual treatment. Simplify forms into elegant geometric masses with long sweeping curves, strong diagonals, dramatic perspective, streamlined silhouettes, flat blocks of rich color, and smooth airbrushed-looking gradients. Favor deep navy shadows, cream highlights, burnt orange, turquoise, emerald, and warm yellow. Add subtle lithographic grain, slightly faded ink, aged paper texture, and restrained print wear. Preserve the clean sophistication, optimism, geometry, and monumental scale of interwar travel graphics. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "1950s American commercial print",
+      "references": [
+        "1950s American advertising",
+        "Route 66 graphics",
+        "mid-century commercial illustration"
+      ],
+      "description": "Use exuberant 1950s American commercial illustration with idealized hand-painted realism, crisp contours, airbrushed highlights, dynamic diagonal layouts, starburst forms, arrows, boomerang shapes, and cheerful mid-century geometry. Use turquoise, cherry red, butter yellow, cream, mint green, and black in a restricted print palette. Simulate vintage screen printing or offset lithography through halftone dots, slightly misregistered colors, faded edges, paper yellowing, ink wear, and small surface imperfections. The result should feel energetic, optimistic, tactile, and authentically mid-century. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Belle Epoque French lithograph",
+      "references": [
+        "Belle Epoque posters",
+        "Henri de Toulouse-Lautrec",
+        "1890s Paris lithography"
+      ],
+      "description": "Use late-19th-century Parisian lithographic visual language with expressive simplified forms, sweeping silhouettes, flattened areas of color, loose hand-drawn contours, asymmetrical cropping, decorative negative space, and compositions influenced by Japanese woodblock prints. Favor muted ochre, vermilion, black, olive, dusty blue, and warm paper tones. Preserve the tactile appearance of stone lithography through grainy pigment, uneven color coverage, visible paper fibers, faded edges, and restrained surface wear. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Victorian chromolithograph",
+      "references": [
+        "Victorian printed ephemera",
+        "19th-century chromolithography",
+        "fairground visual design"
+      ],
+      "description": "Use richly colored late-19th-century chromolithographic illustration with ornate borders, ribbons, medallion-like framing, elaborate decorative structures, engraved-looking contours, vivid flat printing inks, dimensional shading, and hand-painted highlights. Favor deep crimson, royal blue, golden yellow, forest green, cream, and black. Add aged cream paper, ink speckling, slight color misregistration, fold marks, worn corners, scratches, and surface abrasions. The result should feel elaborate, theatrical, handcrafted, and materially authentic. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "1950s European tourism print",
+      "references": [
+        "mid-century European tourism posters",
+        "Swiss travel posters",
+        "1950s airline advertising"
+      ],
+      "description": "Use elegant 1950s European tourism-graphic aesthetics with simplified forms, carefully controlled perspective, broad uncluttered areas, clean painted shapes, sophisticated geometry, and a balance between stylization and observational realism. Favor Mediterranean blue, warm cream, coral red, sunny yellow, forest green, and muted earth tones. Simulate high-quality lithographic printing through gentle paper grain, slightly softened edges, restrained color separation, and mild fading. Keep the visual treatment spacious, polished, optimistic, and distinctly mid-century. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "1960s psychedelic screen print",
+      "references": [
+        "1960s San Francisco concert posters",
+        "psychedelic poster art",
+        "Fillmore-era graphics"
+      ],
+      "description": "Use a late-1960s psychedelic visual treatment with dense hand-drawn ornament, flowing organic forms, symmetrical or swirling compositions, distorted silhouettes, floral motifs, paisley structures, Art Nouveau-inspired curves, and visually vibrating color relationships. Combine intense magenta, orange, acid green, violet, cyan, and black. Add screen-print texture, imperfect ink coverage, worn paper, slight color misregistration, and analog print irregularity. Let shapes interlock densely and rhythmically while retaining a handmade countercultural print character. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "1970s retro outdoor print",
+      "references": [
+        "1970s travel graphics",
+        "national park posters",
+        "retro outdoor advertising"
+      ],
+      "description": "Use a 1970s graphic-print treatment built from broad simplified silhouettes, layered planes, clean geometric contours, and warm retro colors. Favor burnt orange, mustard, avocado green, dusty teal, dark brown, cream, and faded sky blue. Create depth through overlapping flat shapes rather than photographic modeling. Add screen-printed or offset-print textures, subtle halftone grain, slightly imperfect edges, faded pigments, and lightly aged paper. The result should feel warm, graphic, nostalgic, and distinctly analog. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    }
+  ],
+  "Movie posters": [
+    {
+      "name": "1970s minimalist suspense key art",
+      "references": [
+        "Jaws",
+        "Roger Kastel",
+        "1970s theatrical key art"
+      ],
+      "description": "Use the visual language of 1970s minimalist suspense key art: stark vertical hierarchy, enormous negative space, extreme contrast in scale, a small focal form opposed by a much larger partially revealed form, cool restrained color fields, one powerful warm accent, and realistic hand-painted rendering. Keep edges selectively sharp while allowing surrounding space to remain visually quiet. Build tension entirely through scale, placement, emptiness, and controlled revelation rather than visual clutter. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Classic heroic painted montage",
+      "references": [
+        "Star Wars theatrical art",
+        "Tom Jung",
+        "Drew Struzan",
+        "classic painted adventure key art"
+      ],
+      "description": "Use the classic late-1970s and 1980s hand-painted theatrical montage aesthetic: a pyramidal hierarchy of large central figures and progressively smaller secondary elements, strong diagonals, radiant central illumination, dramatic rim lighting, saturated blues, fiery oranges, reds, luminous whites, smoke, clouds, glow, and expressive painted transitions. Render principal forms with convincing realism while allowing peripheral edges to dissolve into painterly atmosphere. The overall treatment should feel epic, cohesive, luminous, and larger than life. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Saul Bass-inspired mid-century graphic cinema",
+      "references": [
+        "Vertigo",
+        "Saul Bass",
+        "1950s graphic film design"
+      ],
+      "description": "Use bold mid-century graphic-cinema principles associated with Saul Bass: an extremely limited palette, rough simplified silhouettes, cut-paper-like geometry, asymmetrical balance, dominant spirals, arcs, jagged forms or repeated lines, and deliberately imperfect handmade edges. Flatten depth almost completely and make a single geometric visual device control the composition. Preserve coarse screen-print texture, irregular ink coverage, and slight registration imperfections. The result should be conceptual, minimal, psychologically dynamic, and immediately readable. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "1970s prestige minimalist key art",
+      "references": [
+        "The Godfather theatrical design",
+        "1970s prestige film advertising"
+      ],
+      "description": "Use severe 1970s prestige-film graphic economy: a nearly monochrome palette, deep black, warm white, one restrained accent, generous empty space, a small symbolic central graphic, formal symmetry, precise visual hierarchy, and understated premium print texture. Avoid decorative excess. Let contrast, proportion, placement, and a single memorable visual metaphor carry the composition. The result should feel authoritative, ominous, elegant, expensive, and timeless. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "1980s neon-noir painted key art",
+      "references": [
+        "Blade Runner",
+        "John Alvin",
+        "1980s science-fiction theatrical art"
+      ],
+      "description": "Use an early-1980s hand-painted neon-noir theatrical aesthetic with layered montage construction, large dramatically lit foreground forms, smaller environmental elements below, deep black and midnight-blue shadows, cyan and electric-blue highlights, amber and orange illumination, reflected light, haze, rain-like atmosphere, and hard rim lighting. Combine realistic painted rendering with visible illustrative brushwork. Use triangular visual hierarchy and atmospheric transitions to create a mysterious, romantic, nocturnal, futuristic mood. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "1980s luminous adventure illustration",
+      "references": [
+        "Back to the Future theatrical art",
+        "Drew Struzan",
+        "1980s painted cinema advertising"
+      ],
+      "description": "Use a classic 1980s hand-painted adventure aesthetic with one strongly silhouetted focal figure or object, a slightly low viewpoint, theatrical gesture, radiant backlighting, streaks of light, glowing atmosphere, smoke-like transitions, and smaller supporting elements. Favor warm orange, amber, and red highlights against deep blue and violet shadows. Render important details realistically while retaining visible colored-pencil, dry-brush, and painted texture. The treatment should feel energetic, iconic, warm, and cinematic. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Retro pulp paperback cinema print",
+      "references": [
+        "Pulp Fiction theatrical design",
+        "mid-century pulp paperback covers",
+        "vintage exploitation print aesthetics"
+      ],
+      "description": "Use the material and visual character of a worn mid-century pulp paperback: realistically illustrated or photographic-looking central imagery, bold blocks of yellowed cream, deep red, black, and muted natural color, slightly lurid contrast, halftone dots, ink bleed, coarse offset-print texture, scratches, fold wear, faded corners, paper discoloration, and authentic handling damage. The image should feel physically printed, inexpensive, tactile, and aged rather than digitally distressed. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    },
+    {
+      "name": "Classic painted pulp-adventure montage",
+      "references": [
+        "Raiders of the Lost Ark theatrical art",
+        "Richard Amsel",
+        "Drew Struzan",
+        "painted adventure key art"
+      ],
+      "description": "Use a classic hand-painted pulp-adventure montage with one large charismatic focal figure or object anchoring the composition and numerous smaller secondary scenes arranged around it. Employ sweeping diagonals, strong scale hierarchy, golden ochres, burnt orange, deep brown, crimson accents, dramatic blue shadows, luminous highlights, atmospheric dust or haze, strong rim lighting, realistic drawing, and visible brush and colored-pencil texture. Keep the montage dense but carefully controlled, romantic, adventurous, and visually cohesive. Do not introduce any words, letters, numbers, prices, logos, captions, labels, signage, watermarks, mastheads, taglines, or decorative pseudo-text unless text is explicitly requested separately. This instruction defines visual style only and must not determine the subject matter."
+    }
+  ]
+}
+

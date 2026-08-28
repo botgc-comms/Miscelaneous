@@ -217,7 +217,8 @@ app.MapGet("/api/poster/config", (
             x.Summary,
             variations = x.Variations.Select(variation => new
             {
-                variation.Id
+                variation.Id,
+                variation.Name
             })
         }),
         outputs = configurationModel.Outputs,
@@ -297,7 +298,7 @@ app.MapGet("/api/poster/artwork", async (
 
     try
     {
-        posterConfiguration.GetOutput(outputId.Trim());
+        ValidatePosterArtworkId(outputId.Trim(), posterConfiguration);
     }
     catch (KeyNotFoundException exception)
     {
@@ -334,7 +335,7 @@ app.MapPut("/api/poster/artwork", async (
 
     try
     {
-        posterConfiguration.GetOutput(outputId.Trim());
+        ValidatePosterArtworkId(outputId.Trim(), posterConfiguration);
         var artwork = await store.SaveArtworkAsync(
             key.Trim(),
             outputId.Trim(),
@@ -414,6 +415,46 @@ app.MapPost("/api/poster/generate-primary", async (
         {
             error = exception.Message,
             retryable = exception.Retryable,
+            safetyRefusal = exception.IsSafetyRefusal,
+            requestId = exception.RequestId,
+            code = exception.ErrorCode
+        }, statusCode: StatusCodes.Status502BadGateway);
+    }
+    catch (InvalidOperationException exception)
+    {
+        return Results.Problem(exception.Message, statusCode: StatusCodes.Status502BadGateway);
+    }
+});
+
+app.MapPost("/api/poster/generate-concept", async (
+    GeneratePosterRequest request,
+    IOpenAiImageService imageService,
+    CancellationToken cancellationToken) =>
+{
+    if (string.IsNullOrWhiteSpace(request.EventId) ||
+        string.IsNullOrWhiteSpace(request.StyleId) ||
+        string.IsNullOrWhiteSpace(request.Description) ||
+        !request.IsConceptPreview)
+    {
+        return Results.BadRequest(new { error = "Event, style, description and concept-preview mode are required." });
+    }
+
+    try
+    {
+        var result = await imageService.GenerateConceptAsync(request, cancellationToken);
+        return Results.Ok(result);
+    }
+    catch (KeyNotFoundException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
+    catch (OpenAiImageException exception)
+    {
+        return Results.Json(new
+        {
+            error = exception.Message,
+            retryable = exception.Retryable,
+            safetyRefusal = exception.IsSafetyRefusal,
             requestId = exception.RequestId,
             code = exception.ErrorCode
         }, statusCode: StatusCodes.Status502BadGateway);
@@ -449,6 +490,7 @@ app.MapPost("/api/poster/generate-variant", async (
         {
             error = exception.Message,
             retryable = exception.Retryable,
+            safetyRefusal = exception.IsSafetyRefusal,
             requestId = exception.RequestId,
             code = exception.ErrorCode
         }, statusCode: StatusCodes.Status502BadGateway);
@@ -636,6 +678,16 @@ static bool PasswordMatches(string suppliedPassword, string configuredPassword)
     var suppliedHash = SHA256.HashData(Encoding.UTF8.GetBytes(suppliedPassword));
     var configuredHash = SHA256.HashData(Encoding.UTF8.GetBytes(configuredPassword));
     return CryptographicOperations.FixedTimeEquals(suppliedHash, configuredHash);
+}
+
+static void ValidatePosterArtworkId(string outputId, IPosterConfigurationService posterConfiguration)
+{
+    if (System.Text.RegularExpressions.Regex.IsMatch(outputId, "^concept-[1-3]$", System.Text.RegularExpressions.RegexOptions.CultureInvariant))
+    {
+        return;
+    }
+
+    posterConfiguration.GetOutput(outputId);
 }
 
 static bool TryDecodePngDataUrl(string? dataUrl, out byte[] imageBytes, out string error)
