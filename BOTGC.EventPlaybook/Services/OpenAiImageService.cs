@@ -229,7 +229,10 @@ public sealed class OpenAiImageService(
         form.Add(new StringContent(promptResult.Prompt), "prompt");
         form.Add(new StringContent(size), "size");
         form.Add(new StringContent(quality), "quality");
-        form.Add(new StringContent("high"), "input_fidelity");
+        if (SupportsInputFidelity(_options.ImageModel))
+        {
+            form.Add(new StringContent("high"), "input_fidelity");
+        }
         form.Add(new StringContent("png"), "output_format");
 
         var imageIndex = 0;
@@ -265,6 +268,17 @@ public sealed class OpenAiImageService(
         }
 
         return ParseImageResponse(body, promptResult);
+    }
+
+    private static bool SupportsInputFidelity(string? model)
+    {
+        if (string.IsNullOrWhiteSpace(model)) return false;
+
+        var normalisedModel = model.Trim();
+        return normalisedModel.Equals("gpt-image-1", StringComparison.OrdinalIgnoreCase) ||
+               normalisedModel.StartsWith("gpt-image-1-", StringComparison.OrdinalIgnoreCase) ||
+               normalisedModel.Equals("gpt-image-1.5", StringComparison.OrdinalIgnoreCase) ||
+               normalisedModel.StartsWith("gpt-image-1.5-", StringComparison.OrdinalIgnoreCase);
     }
 
     private static OpenAiImageException CreateUpstreamException(

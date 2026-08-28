@@ -82,6 +82,7 @@
           deadlineOffsets: {},
           directoryInitialised: false,
           roles: [],
+          deletedRoleIds: [],
           contacts: [],
           referenceLibrary: [],
           notificationOutbox: [],
@@ -103,6 +104,7 @@
         deadlineOffsets: parsed.deadlineOffsets && typeof parsed.deadlineOffsets === 'object' ? parsed.deadlineOffsets : {},
         directoryInitialised: parsed.directoryInitialised === true,
         roles: Array.isArray(parsed.roles) ? parsed.roles : [],
+        deletedRoleIds: Array.isArray(parsed.deletedRoleIds) ? [...new Set(parsed.deletedRoleIds.filter(Boolean).map(String))] : [],
         contacts: Array.isArray(parsed.contacts) ? parsed.contacts : [],
         referenceLibrary: Array.isArray(parsed.referenceLibrary) ? parsed.referenceLibrary : loadLegacyReferenceLibrary(),
         notificationOutbox: Array.isArray(parsed.notificationOutbox) ? parsed.notificationOutbox : [],
@@ -122,6 +124,7 @@
         deadlineOffsets: {},
         directoryInitialised: false,
         roles: [],
+        deletedRoleIds: [],
         contacts: [],
         referenceLibrary: [],
         notificationOutbox: [],
@@ -185,10 +188,11 @@
 
   function emptySharedState() {
     return {
-      schemaVersion: 4,
+      schemaVersion: 5,
       deadlineOffsets: {},
       directoryInitialised: false,
       roles: [],
+      deletedRoleIds: [],
       contacts: [],
       referenceLibrary: [],
       events: []
@@ -197,15 +201,22 @@
 
   function normaliseSharedState(value) {
     const candidate = value && typeof value === 'object' ? value : {};
-    const roles = Array.isArray(candidate.roles) ? structuredClone(candidate.roles) : [];
+    const deletedRoleIds = Array.isArray(candidate.deletedRoleIds)
+      ? [...new Set(candidate.deletedRoleIds.filter(Boolean).map(String))]
+      : [];
+    const deletedRoleIdSet = new Set(deletedRoleIds);
+    const roles = Array.isArray(candidate.roles)
+      ? structuredClone(candidate.roles).filter(role => role?.id && !deletedRoleIdSet.has(String(role.id)))
+      : [];
     const contacts = Array.isArray(candidate.contacts) ? structuredClone(candidate.contacts) : [];
     return {
-      schemaVersion: 4,
+      schemaVersion: 5,
       deadlineOffsets: candidate.deadlineOffsets && typeof candidate.deadlineOffsets === 'object'
         ? structuredClone(candidate.deadlineOffsets)
         : {},
       directoryInitialised: candidate.directoryInitialised === true,
       roles,
+      deletedRoleIds,
       contacts,
       referenceLibrary: Array.isArray(candidate.referenceLibrary) ? structuredClone(candidate.referenceLibrary) : [],
       events: Array.isArray(candidate.events) ? structuredClone(candidate.events) : []
@@ -217,6 +228,7 @@
       deadlineOffsets: state.deadlineOffsets,
       directoryInitialised: state.directoryInitialised,
       roles: state.roles,
+      deletedRoleIds: state.deletedRoleIds,
       contacts: state.contacts,
       referenceLibrary: state.referenceLibrary,
       events: state.events
@@ -278,10 +290,11 @@
     const local = normaliseSharedState(localValue);
     const remote = normaliseSharedState(remoteValue);
     return {
-      schemaVersion: 4,
+      schemaVersion: 5,
       deadlineOffsets: mergeChangedValue(base.deadlineOffsets, local.deadlineOffsets, remote.deadlineOffsets),
       directoryInitialised: Boolean(mergeChangedValue(base.directoryInitialised, local.directoryInitialised, remote.directoryInitialised)),
       roles: mergeEntitiesById(base.roles, local.roles, remote.roles),
+      deletedRoleIds: [...new Set([...local.deletedRoleIds, ...remote.deletedRoleIds])],
       contacts: mergeEntitiesById(base.contacts, local.contacts, remote.contacts),
       referenceLibrary: mergeEntitiesById(base.referenceLibrary, local.referenceLibrary, remote.referenceLibrary),
       events: mergeEntitiesById(base.events, local.events, remote.events)
@@ -294,6 +307,7 @@
     state.deadlineOffsets = shared.deadlineOffsets;
     state.directoryInitialised = shared.directoryInitialised;
     state.roles = shared.roles;
+    state.deletedRoleIds = shared.deletedRoleIds;
     state.contacts = shared.contacts;
     state.referenceLibrary = shared.referenceLibrary;
     state.events = shared.events;
@@ -415,7 +429,8 @@
           const legacyEvents = browserSnapshot.events.filter(event => event?.id && !remoteEventIds.has(event.id));
           const legacyContacts = browserSnapshot.contacts.filter(contact => contact?.id && !remoteContactIds.has(contact.id));
           const legacyReferences = browserSnapshot.referenceLibrary.filter(reference => reference?.id && !remoteReferenceIds.has(reference.id));
-          needsMigrationSave = legacyRoles.length > 0 || legacyEvents.length > 0 || legacyContacts.length > 0 || legacyReferences.length > 0;
+          const deletedRoleIds = [...new Set([...remote.deletedRoleIds, ...browserSnapshot.deletedRoleIds])];
+          needsMigrationSave = legacyRoles.length > 0 || legacyEvents.length > 0 || legacyContacts.length > 0 || legacyReferences.length > 0 || deletedRoleIds.length !== remote.deletedRoleIds.length;
           if (needsMigrationSave) {
             initial = normaliseSharedState({
               deadlineOffsets: Object.keys(remote.deadlineOffsets).length > 0
@@ -423,6 +438,7 @@
                 : browserSnapshot.deadlineOffsets,
               directoryInitialised: remote.directoryInitialised || browserSnapshot.directoryInitialised,
               roles: [...remote.roles, ...legacyRoles],
+              deletedRoleIds,
               contacts: [...remote.contacts, ...legacyContacts],
               referenceLibrary: [...remote.referenceLibrary, ...legacyReferences],
               events: [...remote.events, ...legacyEvents]
@@ -940,11 +956,15 @@
   function initialiseOperationalState() {
     const shouldSeedDirectory = state.directoryInitialised !== true;
     const bundledRoles = playbook.responsibilityRoles ?? [];
+    const deletedRoleIds = new Set(Array.isArray(state.deletedRoleIds) ? state.deletedRoleIds : []);
+    state.deletedRoleIds = [...deletedRoleIds];
     const existingRoles = new Map((Array.isArray(state.roles) ? state.roles : []).filter(role => role?.id).map(role => [role.id, role]));
     const directoryRolesWereMissing = existingRoles.size === 0;
-    state.roles = bundledRoles.map(role => normaliseDirectoryRole({ ...role, ...(existingRoles.get(role.id) ?? {}) }));
+    state.roles = bundledRoles
+      .filter(role => !deletedRoleIds.has(role.id))
+      .map(role => normaliseDirectoryRole({ ...role, ...(existingRoles.get(role.id) ?? {}) }));
     for (const role of existingRoles.values()) {
-      if (!state.roles.some(candidate => candidate.id === role.id)) state.roles.push(normaliseDirectoryRole(role));
+      if (!deletedRoleIds.has(role.id) && !state.roles.some(candidate => candidate.id === role.id)) state.roles.push(normaliseDirectoryRole(role));
     }
 
     const eventCoordinatorRole = state.roles.find(role => role.id === 'event-coordinator');
@@ -1837,7 +1857,7 @@
 
     bindEvents();
     if (state.activeView === 'artwork' && event) {
-      import('./poster-app.js?v=20260828-low-quality-concepts-1')
+      import('./poster-app.js?v=20260828-directory-role-delete-1')
         .then(module => module.mountPosterStudio({
           eventId: event.id,
           eventName: event.name,
@@ -2819,6 +2839,25 @@
     });
   }
 
+  function dashboardEventTone(event) {
+    const identity = `${event?.id ?? ''}|${event?.name ?? ''}`;
+    let hash = 0;
+    for (let index = 0; index < identity.length; index += 1) {
+      hash = ((hash * 31) + identity.charCodeAt(index)) >>> 0;
+    }
+    return hash % 6;
+  }
+
+  function dashboardEventInitials(event) {
+    const words = String(event?.name ?? '')
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+    return (words.length ? words.slice(0, 2).map(word => word.charAt(0)) : ['?'])
+      .join('')
+      .toUpperCase();
+  }
+
   function dashboardTaskRecords(person) {
     const records = [];
     for (const event of dashboardEvents()) {
@@ -2860,32 +2899,44 @@
     const taskState = task.state;
     const horizon = taskHorizon(task);
     const dueLabel = dueDate ? formatDate(dueDate) : item.deadlineCode ? `Deadline ${item.deadlineCode} is not configured` : 'No due date';
+    const milestoneLabel = item.deadlineCode ? (MILESTONE_LABELS[item.deadlineCode] ?? item.deadlineCode) : 'No milestone';
     const owner = taskState.assignee || (item.defaultOwnerRoleId ? roleById(item.defaultOwnerRoleId)?.name : '') || 'Awaiting owner';
     const detail = getTaskDetail(item, event);
+    const artwork = event.publishedCataloguePosterThumbnail || event.cataloguePosterThumbnail || '';
+    const eventTone = dashboardEventTone(event);
     return `
-      <article class="task-card dashboard-task-card timing-${escapeHtml(horizon)} ${taskState.completed ? 'completed' : ''}">
+      <article class="task-card dashboard-task-card event-tone-${eventTone} timing-${escapeHtml(horizon)} ${taskState.completed ? 'completed' : ''}">
         <label class="task-card-check" title="${taskState.completed ? 'Mark task open' : 'Mark task complete'}">
           <input type="checkbox" data-dashboard-task-complete="${escapeHtml(item.id)}" data-dashboard-event-id="${escapeHtml(event.id)}" ${taskState.completed ? 'checked' : ''}>
           <span></span>
         </label>
         <div class="task-card-content">
-          <div class="dashboard-task-event-row">
-            <button type="button" data-dashboard-open-event="${escapeHtml(event.id)}"><span>${escapeHtml(event.name || 'Untitled event')}</span><small>${escapeHtml(event.eventDate ? formatDate(event.eventDate) : 'Date not set')}</small></button>
-            <span>${escapeHtml(module.title)}${item.responsibleArea ? ` · ${escapeHtml(item.responsibleArea)}` : ''}</span>
-          </div>
-          <div class="task-card-heading">
-            <div>
-              <h3>${escapeHtml(item.title)}</h3>
-              <div class="task-card-summary-meta"><span class="task-owner-chip">${escapeHtml(owner)}</span><span class="task-relative-due">${escapeHtml(taskDueRelativeLabel(task))}</span></div>
+          <div class="dashboard-task-card-body">
+            <button type="button" class="dashboard-event-visual" data-dashboard-open-event="${escapeHtml(event.id)}" aria-label="Open the task board for ${escapeHtml(event.name || 'this event')}">
+              ${artwork
+                ? `<img src="${escapeHtml(artwork)}" alt="" loading="lazy" decoding="async">`
+                : `<span class="dashboard-event-fallback" aria-hidden="true">${escapeHtml(dashboardEventInitials(event))}</span>`}
+            </button>
+            <div class="dashboard-task-main">
+              <div class="dashboard-task-event-row">
+                <button type="button" class="dashboard-event-name" data-dashboard-open-event="${escapeHtml(event.id)}"><span>${escapeHtml(event.name || 'Untitled event')}</span><small>${escapeHtml(event.eventDate ? formatDate(event.eventDate) : 'Date not set')}</small></button>
+                <span>${escapeHtml(module.title)}${item.responsibleArea ? ` · ${escapeHtml(item.responsibleArea)}` : ''}</span>
+              </div>
+              <div class="task-card-heading">
+                <div>
+                  <h3>${escapeHtml(item.title)}</h3>
+                  <div class="task-card-summary-meta"><span class="task-owner-chip">${escapeHtml(owner)}</span><span class="task-relative-due">${escapeHtml(taskDueRelativeLabel(task))}</span></div>
+                </div>
+                <div class="dashboard-deadline ${dueDate ? '' : 'missing'} ${horizon === 'attention' ? 'urgent' : ''}">
+                  <span class="dashboard-deadline-label"><small>${escapeHtml(item.deadlineCode ?? '—')}</small>${escapeHtml(milestoneLabel)}</span>
+                  <strong>${escapeHtml(dueLabel)}</strong>
+                </div>
+              </div>
+              <div class="dashboard-task-actions">
+                ${detail ? `<details><summary>Task detail</summary><p>${escapeHtml(detail)}</p></details>` : '<span></span>'}
+                <button type="button" class="text-button inline" data-dashboard-open-event="${escapeHtml(event.id)}">Open event task board</button>
+              </div>
             </div>
-            <div class="task-due-block ${dueDate ? '' : 'missing'} ${horizon === 'attention' ? 'urgent' : ''}">
-              <span class="task-board-milestone-code">${escapeHtml(item.deadlineCode ?? '—')}</span>
-              <span class="task-board-milestone-copy"><small>${escapeHtml(item.deadlineCode ? (MILESTONE_LABELS[item.deadlineCode] ?? item.deadlineCode) : 'No milestone')}</small><strong>${escapeHtml(dueLabel)}</strong></span>
-            </div>
-          </div>
-          <div class="dashboard-task-actions">
-            ${detail ? `<details><summary>Task detail</summary><p>${escapeHtml(detail)}</p></details>` : '<span></span>'}
-            <button type="button" class="text-button inline" data-dashboard-open-event="${escapeHtml(event.id)}">Open event task board</button>
           </div>
         </div>
       </article>`;
@@ -3360,6 +3411,41 @@
     }));
   }
 
+  function roleEventUsage(role) {
+    const roleId = role.id.toLocaleLowerCase();
+    const roleName = role.name.toLocaleLowerCase();
+    return (state.events ?? []).filter(event => eventDirectoryAssignmentValues(event).some(value => {
+      const reference = explicitDirectoryReference(value);
+      if (reference?.kind === 'role') return reference.id === role.id;
+      if (typeof value !== 'string') return false;
+      const search = value.trim().toLocaleLowerCase();
+      return search === roleId || search === roleName;
+    }));
+  }
+
+  function directoryRoleDeletionUsage(role) {
+    const events = roleEventUsage(role);
+    const taskDefinitions = [...itemIndex.values()].filter(indexed => indexed.item.defaultOwnerRoleId === role.id);
+    const contacts = (state.contacts ?? []).filter(contact => contact.roleIds?.includes(role.id));
+    const fallbackRoles = responsibilityRoles().filter(candidate => candidate.id !== role.id && candidate.fallbackRoleId === role.id);
+    return {
+      events,
+      taskDefinitions,
+      contacts,
+      fallbackRoles,
+      canDelete: events.length === 0 && taskDefinitions.length === 0 && contacts.length === 0 && fallbackRoles.length === 0
+    };
+  }
+
+  function directoryRoleDeletionSummary(usage) {
+    const reasons = [];
+    if (usage.events.length) reasons.push(`${usage.events.length} event${usage.events.length === 1 ? '' : 's'}`);
+    if (usage.taskDefinitions.length) reasons.push(`${usage.taskDefinitions.length} task definition${usage.taskDefinitions.length === 1 ? '' : 's'}`);
+    if (usage.contacts.length) reasons.push(`${usage.contacts.length} contact${usage.contacts.length === 1 ? '' : 's'}`);
+    if (usage.fallbackRoles.length) reasons.push(`the fallback route for ${usage.fallbackRoles.map(role => role.name).join(', ')}`);
+    return reasons.join(', ');
+  }
+
   function renderDirectory() {
     const activeContacts = (state.contacts ?? []).filter(contact => contact.active !== false);
     const activeRoles = responsibilityRoles().filter(role => role.active !== false);
@@ -3432,7 +3518,9 @@
   function renderDirectoryRole(role) {
     const contacts = (state.contacts ?? []).filter(contact => contact.active !== false);
     const roles = responsibilityRoles().filter(candidate => candidate.id !== role.id);
-    const usage = [...itemIndex.values()].filter(indexed => indexed.item.defaultOwnerRoleId === role.id).length;
+    const deletionUsage = directoryRoleDeletionUsage(role);
+    const usage = deletionUsage.taskDefinitions.length;
+    const deletionSummary = directoryRoleDeletionSummary(deletionUsage);
     const dynamicEventCoordinator = role.id === 'event-coordinator';
     return `<article class="directory-card directory-role-card ${role.active === false ? 'inactive' : ''}" data-directory-role-id="${escapeHtml(role.id)}">
       <div class="directory-card-heading">
@@ -3452,6 +3540,12 @@
       </div>
       <div class="directory-option-row"><label><input type="checkbox" data-directory-role-boolean="selectableForTasks" ${role.selectableForTasks !== false ? 'checked' : ''}><span>Available in task assignment controls</span></label></div>
       <small class="directory-record-id">Stable role ID: ${escapeHtml(role.id)}</small>
+      <div class="directory-record-actions ${deletionUsage.canDelete ? '' : 'protected'}">
+        <span>${deletionUsage.canDelete
+          ? 'Not used by an event, task, contact or fallback role and safe to delete.'
+          : `<strong>Cannot delete:</strong> used by ${escapeHtml(deletionSummary)}.`}</span>
+        <button type="button" class="directory-delete-button" data-delete-directory-role="${escapeHtml(role.id)}" ${deletionUsage.canDelete ? '' : `disabled title="Used by ${escapeHtml(deletionSummary)}"`}>Delete role</button>
+      </div>
     </article>`;
   }
 
@@ -3918,6 +4012,19 @@
       input.setAttribute('aria-invalid', message ? 'true' : 'false');
     }
     if (error) error.textContent = message;
+  }
+
+  function revealDirectoryRecord(recordSelector, fieldSelector) {
+    requestAnimationFrame(() => {
+      const record = document.querySelector(recordSelector);
+      if (!record) return;
+      record.classList.add('directory-card-new');
+      record.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const field = record.querySelector(fieldSelector);
+      field?.focus({ preventScroll: true });
+      field?.select();
+      window.setTimeout(() => record.classList.remove('directory-card-new'), 1800);
+    });
   }
 
   function commitAssignmentPicker(picker, reference) {
@@ -4642,6 +4749,26 @@
       });
     });
 
+    document.querySelectorAll('[data-delete-directory-role]').forEach(element => {
+      element.addEventListener('click', () => {
+        const role = state.roles.find(item => item.id === element.dataset.deleteDirectoryRole);
+        if (!role) return;
+        const usage = directoryRoleDeletionUsage(role);
+        if (!usage.canDelete) {
+          alert(`${role.name} cannot be deleted because it is used by ${directoryRoleDeletionSummary(usage)}.`);
+          render();
+          return;
+        }
+        if (!confirm(`Delete the role “${role.name}”? This cannot be undone.`)) return;
+
+        state.roles = state.roles.filter(item => item.id !== role.id);
+        state.deletedRoleIds = [...new Set([...(state.deletedRoleIds ?? []), role.id])];
+        refreshStructuredAssignments();
+        saveState();
+        render();
+      });
+    });
+
     document.querySelectorAll('[data-action="add-directory-contact"]').forEach(element => {
       element.addEventListener('click', () => {
         const contact = normaliseDirectoryContact({ id: crypto.randomUUID(), type: 'person', name: 'New person', email: '', roleIds: [], platformRoleIds: ['team-member'], canLogin: false, canReceiveTasks: true, active: true });
@@ -4649,7 +4776,9 @@
         state.activeView = 'directory';
         saveState();
         render();
-        requestAnimationFrame(() => document.querySelector(`[data-directory-contact-id="${CSS.escape(contact.id)}"] input[data-directory-contact-field="name"]`)?.select());
+        revealDirectoryRecord(
+          `[data-directory-contact-id="${CSS.escape(contact.id)}"]`,
+          'input[data-directory-contact-field="name"]');
       });
     });
 
@@ -4659,7 +4788,9 @@
         state.roles.push(role);
         saveState();
         render();
-        requestAnimationFrame(() => document.querySelector(`[data-directory-role-id="${CSS.escape(role.id)}"] input[data-directory-role-field="name"]`)?.select());
+        revealDirectoryRecord(
+          `[data-directory-role-id="${CSS.escape(role.id)}"]`,
+          'input[data-directory-role-field="name"]');
       });
     });
 
