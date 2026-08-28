@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Complete Event Task | Burton-on-Trent Golf Club</title>
-  <link rel="stylesheet" href="./playbook.css?v=20260824-shared-persistence-1">
-  <link rel="stylesheet" href="./complete.css?v=20260824-completion-layout-1">
+  <link rel="stylesheet" href="./playbook.css?v=20260828-attendee-feedback-1">
+  <link rel="stylesheet" href="./complete.css?v=20260828-attendee-feedback-1">
 </head>
 <body class="completion-body">
   <main class="completion-page">
@@ -59,6 +59,7 @@
           ${task.assignee ? `<div><span>Assigned to</span><strong>${escapeHtml(task.assignee)}</strong></div>` : ''}
           ${task.dueDate ? `<div><span>Due</span><strong>${new Date(task.dueDate + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</strong></div>` : ''}
         </div>
+        ${renderLearning(task.learningInsights)}
         <label class="completion-notes"><span>Completion note <em>optional</em></span><textarea id="completionNotes" rows="4" placeholder="Add anything the event coordinator should know"></textarea></label>
         <button class="button button-primary" id="completeButton">Mark task complete</button>`;
 
@@ -79,6 +80,14 @@
         }
         render(await result.json());
       });
+    }
+
+    function renderLearning(insights) {
+      if (!Array.isArray(insights) || !insights.length) return '';
+      return `<aside class="completion-learning">
+        <div class="completion-learning-heading"><span>↺</span><div><strong>Learning from last time</strong><small>Consider this before completing the task</small></div></div>
+        ${insights.map(insight => `<div class="completion-learning-entry"><p>${escapeHtml(insight.summary)}</p><small>${escapeHtml(insight.sourceEventName || 'Previous event')}${insight.sourceEventDate ? ` · ${new Date(insight.sourceEventDate + 'T12:00:00').toLocaleDateString('en-GB')}` : ''}${insight.evidenceCount ? ` · based on ${escapeHtml(insight.evidenceCount)} response${Number(insight.evidenceCount) === 1 ? '' : 's'}` : ''}</small></div>`).join('')}
+      </aside>`;
     }
 
     function escapeHtml(value) {

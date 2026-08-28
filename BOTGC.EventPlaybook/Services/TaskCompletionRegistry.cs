@@ -37,6 +37,13 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
 
             if (existing is not null)
             {
+                existing.EventName = request.EventName;
+                existing.TaskTitle = request.TaskTitle;
+                existing.Assignee = request.Assignee;
+                existing.AssigneeEmail = request.AssigneeEmail;
+                existing.DueDate = request.DueDate;
+                existing.LearningInsights = request.LearningInsights ?? [];
+                await SaveAsync(records, cancellationToken);
                 return existing;
             }
 
@@ -50,6 +57,7 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
                 Assignee = request.Assignee,
                 AssigneeEmail = request.AssigneeEmail,
                 DueDate = request.DueDate,
+                LearningInsights = request.LearningInsights ?? [],
                 RegisteredAtUtc = DateTimeOffset.UtcNow
             };
 

@@ -7,6 +7,7 @@ using BOTGC.EventPlaybook.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
+using QRCoder;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.ConfigureKestrel(options =>
@@ -98,6 +99,7 @@ builder.Services.AddHttpClient("Yodeck", client =>
 });
 builder.Services.AddSingleton<IYodeckPublisher, YodeckPublisher>();
 builder.Services.AddSingleton<ITaskCompletionRegistry, TaskCompletionRegistry>();
+builder.Services.AddSingleton<IFeedbackStore, FeedbackStore>();
 builder.Services.AddSingleton<PrototypePersistenceStore>();
 builder.Services.AddSingleton<ISharedPlaybookStateStore>(services => services.GetRequiredService<PrototypePersistenceStore>());
 builder.Services.AddSingleton<IPosterSessionStore>(services => services.GetRequiredService<PrototypePersistenceStore>());
@@ -138,6 +140,11 @@ if (!string.IsNullOrWhiteSpace(demoPassword))
         var path = context.Request.Path;
         var isPublicPath = path.StartsWithSegments("/demo-login.html") ||
                            path.StartsWithSegments("/auth/login") ||
+                           path.StartsWithSegments("/feedback.html") ||
+                           path.StartsWithSegments("/feedback.css") ||
+                           path.StartsWithSegments("/feedback.js") ||
+                           path.StartsWithSegments("/assets") ||
+                           path.StartsWithSegments("/api/feedback/public") ||
                            path.StartsWithSegments("/health");
 
         if (isPublicPath || context.User.Identity?.IsAuthenticated == true)
@@ -594,6 +601,94 @@ app.MapPost("/api/poster/publish", async (
     }
 });
 
+
+app.MapGet("/api/feedback/events/{eventId}", async (
+    string eventId,
+    IFeedbackStore feedbackStore,
+    CancellationToken cancellationToken) =>
+{
+    var result = await feedbackStore.GetForEventAsync(eventId, cancellationToken);
+    return Results.Ok(result);
+});
+
+app.MapPut("/api/feedback/events/{eventId}/campaign", async (
+    string eventId,
+    UpsertFeedbackCampaignRequest request,
+    IFeedbackStore feedbackStore,
+    CancellationToken cancellationToken) =>
+{
+    if (string.IsNullOrWhiteSpace(eventId) || string.IsNullOrWhiteSpace(request.EventName))
+    {
+        return Results.BadRequest(new { error = "An event and event name are required." });
+    }
+
+    var campaign = await feedbackStore.UpsertCampaignAsync(eventId, request, cancellationToken);
+    return Results.Ok(campaign);
+});
+
+app.MapGet("/api/feedback/public/{token}", async (
+    string token,
+    IFeedbackStore feedbackStore,
+    CancellationToken cancellationToken) =>
+{
+    var campaign = await feedbackStore.GetPublicCampaignAsync(token, cancellationToken);
+    if (campaign is null)
+    {
+        return Results.NotFound(new { error = "This feedback form could not be found." });
+    }
+
+    if (!FeedbackStore.IsAcceptingResponses(campaign))
+    {
+        return Results.Json(new { error = "This feedback form is not currently accepting responses." }, statusCode: StatusCodes.Status410Gone);
+    }
+
+    return Results.Ok(new
+    {
+        campaign.EventName,
+        campaign.EventDate,
+        campaign.ClosesOn,
+        campaign.Questions
+    });
+});
+
+app.MapPost("/api/feedback/public/{token}/responses", async (
+    string token,
+    SubmitFeedbackRequest request,
+    IFeedbackStore feedbackStore,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var accepted = await feedbackStore.SubmitAsync(token, request, cancellationToken);
+        return accepted
+            ? Results.Ok(new { accepted = true })
+            : Results.Json(new { error = "This feedback form is not currently accepting responses." }, statusCode: StatusCodes.Status410Gone);
+    }
+    catch (InvalidOperationException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
+});
+
+app.MapGet("/api/feedback/public/{token}/qr.svg", async (
+    string token,
+    HttpContext context,
+    IFeedbackStore feedbackStore,
+    CancellationToken cancellationToken) =>
+{
+    var campaign = await feedbackStore.GetPublicCampaignAsync(token, cancellationToken);
+    if (campaign is null)
+    {
+        return Results.NotFound();
+    }
+
+    var publicUrl = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}/feedback.html?token={Uri.EscapeDataString(token)}";
+    using var generator = new QRCodeGenerator();
+    using var data = generator.CreateQrCode(publicUrl, QRCodeGenerator.ECCLevel.Q);
+    var qrCode = new SvgQRCode(data);
+    var svg = qrCode.GetGraphic(8, "#0d3548", "#ffffff", true);
+    return Results.Text(svg, "image/svg+xml", Encoding.UTF8);
+});
 
 app.MapGet("/api/playbook/config", (IWebHostEnvironment environment) =>
 {

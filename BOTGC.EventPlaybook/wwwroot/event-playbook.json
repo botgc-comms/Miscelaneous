@@ -3269,6 +3269,82 @@
               "defaultOwnerRoleId": "golf-manager"
             },
             {
+              "id": "collect-attendee-feedback",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will anonymous attendee feedback be collected for this event?",
+              "helpText": "The retrospective can create a reusable public link and QR code without asking attendees for names or contact details.",
+              "required": true,
+              "allowDontKnow": true,
+              "dontKnowTask": {
+                "id": "decide-attendee-feedback",
+                "title": "Decide whether anonymous attendee feedback will be collected for this event",
+                "detail": "Confirm the intended audience and how the link or QR code could be distributed, then return to this question and replace Don't know with Yes or No.",
+                "deadlineCode": "B1",
+                "responsibleArea": "Event Coordination",
+                "defaultOwnerRoleId": "event-coordinator",
+                "source": "expanded"
+              },
+              "source": "expanded"
+            },
+            {
+              "id": "prepare-attendee-feedback",
+              "type": "task",
+              "title": "Agree the attendee feedback questions and prepare the event feedback link and QR code",
+              "detail": "Open the event retrospective to create the anonymous form and check its closing date before it is shared.",
+              "deadlineCode": "B1",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "collect-attendee-feedback",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "expanded",
+              "responsibleArea": "Communications",
+              "defaultOwnerRoleId": "communications"
+            },
+            {
+              "id": "share-attendee-feedback",
+              "type": "task",
+              "title": "Share the attendee feedback form and display its QR code where guests can use it",
+              "detail": "Use the public link in follow-up communications, on event material or via a future membership or ticketing integration.",
+              "deadlineCode": "A1",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "collect-attendee-feedback",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "expanded",
+              "responsibleArea": "Communications",
+              "defaultOwnerRoleId": "communications"
+            },
+            {
+              "id": "review-attendee-feedback",
+              "type": "task",
+              "title": "Review anonymous attendee feedback and approve the learning to carry into the next event",
+              "detail": "Turn useful evidence into concise organiser-approved notes and map each one to the relevant planner section, question or task.",
+              "deadlineCode": "A2",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "collect-attendee-feedback",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "expanded",
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator"
+            },
+            {
               "id": "post-event-review",
               "type": "question",
               "answerType": "yesNo",

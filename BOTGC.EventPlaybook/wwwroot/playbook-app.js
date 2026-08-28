@@ -62,6 +62,8 @@
   let sharedStateSaveInFlight = false;
   let sharedStateSavePending = false;
   let applyingSharedState = false;
+  const feedbackCache = new Map();
+  const feedbackRequests = new Set();
   const requestedView = new URLSearchParams(window.location.search).get('view');
   if (['dashboard', 'tasks', 'catalogue', 'artwork', 'retrospective', 'admin', 'references', 'directory'].includes(requestedView)) {
     state.activeView = requestedView;
@@ -653,6 +655,8 @@
       },
       playbookVersion: playbook?.schemaVersion ?? '1.0',
       sourceEventId: null,
+      eventSeriesId: id,
+      learningInsights: [],
       cataloguePosterThumbnail: null
     };
 
@@ -753,6 +757,10 @@
       event.retrospective ??= {};
       event.playbookVersion ??= playbook?.schemaVersion ?? '1.0';
       event.sourceEventId ??= null;
+      event.eventSeriesId ??= event.sourceEventId
+        ? (state.events.find(candidate => candidate.id === event.sourceEventId)?.eventSeriesId ?? event.sourceEventId)
+        : event.id;
+      event.learningInsights = Array.isArray(event.learningInsights) ? event.learningInsights : [];
       event.name ??= 'Untitled event';
       event.organiser ??= '';
       event.organiserRef = assignmentReference(event.organiserRef ?? event.organiser);
@@ -1326,7 +1334,13 @@
           taskTitle: item.title,
           assignee: taskState.assignee ?? recipient.name ?? '',
           assigneeEmail: recipient.email || taskState.assigneeEmail || contactEmailByName(taskState.assignee),
-          dueDate
+          dueDate,
+          learningInsights: priorLearningForItem(event, item).map(insight => ({
+            summary: insight.summary,
+            sourceEventName: insight.sourceEventName,
+            sourceEventDate: insight.sourceEventDate,
+            evidenceCount: Number(insight.evidenceCount || 0)
+          }))
         })
       });
     } catch (error) {
@@ -1507,6 +1521,8 @@
     copy.answers = structuredClone(sourceEvent.answers ?? {});
     copy.team = structuredClone(sourceEvent.team ?? []);
     copy.sourceEventId = sourceEvent.id;
+    copy.eventSeriesId = sourceEvent.eventSeriesId ?? sourceEvent.id;
+    copy.learningInsights = [];
     copy.retrospective = {};
     copy.advisoryOverrides = {};
     copy.taskState = {};
@@ -1679,6 +1695,13 @@
       .replace(/__(.*?)__/g, '$1')
       .replace(/^[#>-]+\s*/gm, '')
       .trim();
+  }
+
+  function slugify(value) {
+    return String(value ?? 'event')
+      .toLocaleLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '') || 'event';
   }
 
   function render() {
@@ -1856,8 +1879,9 @@
     `;
 
     bindEvents();
+    if (state.activeView === 'retrospective' && event) ensureFeedbackLoaded(event.id);
     if (state.activeView === 'artwork' && event) {
-      import('./poster-app.js?v=20260828-directory-role-delete-1')
+      import('./poster-app.js?v=20260828-dashboard-artwork-wash-2')
         .then(module => module.mountPosterStudio({
           eventId: event.id,
           eventName: event.name,
@@ -2616,6 +2640,7 @@
           </div>
           ${item.helpText ? `<p class="help-text">${escapeHtml(item.helpText)}</p>` : ''}
           ${renderDerivedContextForQuestion(item.id, event)}
+          ${renderPriorLearning(event, item)}
           ${renderAnswerControl(item, value)}
           ${renderAdvisoriesForQuestion(item.id, event)}
         </div>
@@ -2707,6 +2732,7 @@
             <div>
               <div class="task-title">${escapeHtml(item.title)}</div>
               ${detail ? `<p class="help-text">${escapeHtml(detail)}</p>` : ''}
+              ${renderPriorLearning(event, item)}
             </div>
             <label class="complete-toggle task-complete-control" title="Mark task complete">
               <input type="checkbox" data-task-complete="${item.id}" ${taskState.completed ? 'checked' : ''}>
@@ -2737,6 +2763,48 @@
       return `${item.detail ?? ''} Review completed and assigned work to identify anyone already briefed or committed.`.trim();
     }
     return `${item.detail ?? ''} The current plan identifies: ${parties.join(', ')}.`.trim();
+  }
+
+  function sourceEventsForLearning(event) {
+    const result = [];
+    const visited = new Set([event.id]);
+    let sourceId = event.sourceEventId;
+    while (sourceId && !visited.has(sourceId) && result.length < 30) {
+      visited.add(sourceId);
+      const source = state.events.find(candidate => candidate.id === sourceId);
+      if (!source) break;
+      result.push(source);
+      sourceId = source.sourceEventId;
+    }
+    return result;
+  }
+
+  function priorLearningForItem(event, item) {
+    const indexed = itemIndex.get(item.id);
+    if (!indexed) return [];
+    const results = [];
+    for (const source of sourceEventsForLearning(event)) {
+      for (const insight of source.learningInsights ?? []) {
+        const itemMatch = (insight.targetItemIds ?? []).includes(item.id);
+        const sectionMatch = (insight.targetSectionIds ?? []).includes(indexed.section.id);
+        const moduleMatch = (insight.targetModuleIds ?? []).includes(indexed.module.id);
+        if (!itemMatch && !sectionMatch && !moduleMatch) continue;
+        results.push({ ...insight, sourceEventId: source.id, sourceEventName: insight.sourceEventName ?? source.name, sourceEventDate: insight.sourceEventDate ?? source.eventDate });
+      }
+    }
+    return results.sort((left, right) => String(right.createdAt ?? '').localeCompare(String(left.createdAt ?? '')));
+  }
+
+  function renderPriorLearning(event, item) {
+    const insights = priorLearningForItem(event, item);
+    if (!insights.length) return '';
+    return `<aside class="prior-learning-card" aria-label="Learning from previous events">
+      <div class="prior-learning-heading"><span>↺</span><div><strong>Learning from last time</strong><small>${insights.length} approved insight${insights.length === 1 ? '' : 's'}</small></div></div>
+      ${insights.slice(0, 3).map(insight => `<div class="prior-learning-entry">
+        <p>${escapeHtml(insight.summary)}</p>
+        <small>${escapeHtml(insight.sourceEventName ?? 'Previous event')}${insight.sourceEventDate ? ` · ${escapeHtml(formatDate(insight.sourceEventDate))}` : ''}${Number(insight.evidenceCount) > 0 ? ` · based on ${escapeHtml(insight.evidenceCount)} response${Number(insight.evidenceCount) === 1 ? '' : 's'}` : ''}</small>
+      </div>`).join('')}
+    </aside>`;
   }
 
   function taskBoardPeople() {
@@ -2848,16 +2916,6 @@
     return hash % 6;
   }
 
-  function dashboardEventInitials(event) {
-    const words = String(event?.name ?? '')
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean);
-    return (words.length ? words.slice(0, 2).map(word => word.charAt(0)) : ['?'])
-      .join('')
-      .toUpperCase();
-  }
-
   function dashboardTaskRecords(person) {
     const records = [];
     for (const event of dashboardEvents()) {
@@ -2905,18 +2963,14 @@
     const artwork = event.publishedCataloguePosterThumbnail || event.cataloguePosterThumbnail || '';
     const eventTone = dashboardEventTone(event);
     return `
-      <article class="task-card dashboard-task-card event-tone-${eventTone} timing-${escapeHtml(horizon)} ${taskState.completed ? 'completed' : ''}">
+      <article class="task-card dashboard-task-card event-tone-${eventTone} timing-${escapeHtml(horizon)} ${artwork ? 'has-event-artwork' : ''} ${taskState.completed ? 'completed' : ''}">
         <label class="task-card-check" title="${taskState.completed ? 'Mark task open' : 'Mark task complete'}">
           <input type="checkbox" data-dashboard-task-complete="${escapeHtml(item.id)}" data-dashboard-event-id="${escapeHtml(event.id)}" ${taskState.completed ? 'checked' : ''}>
           <span></span>
         </label>
         <div class="task-card-content">
+          ${artwork ? `<span class="dashboard-event-artwork" aria-hidden="true"><img src="${escapeHtml(artwork)}" alt="" loading="lazy" decoding="async"></span>` : ''}
           <div class="dashboard-task-card-body">
-            <button type="button" class="dashboard-event-visual" data-dashboard-open-event="${escapeHtml(event.id)}" aria-label="Open the task board for ${escapeHtml(event.name || 'this event')}">
-              ${artwork
-                ? `<img src="${escapeHtml(artwork)}" alt="" loading="lazy" decoding="async">`
-                : `<span class="dashboard-event-fallback" aria-hidden="true">${escapeHtml(dashboardEventInitials(event))}</span>`}
-            </button>
             <div class="dashboard-task-main">
               <div class="dashboard-task-event-row">
                 <button type="button" class="dashboard-event-name" data-dashboard-open-event="${escapeHtml(event.id)}"><span>${escapeHtml(event.name || 'Untitled event')}</span><small>${escapeHtml(event.eventDate ? formatDate(event.eventDate) : 'Date not set')}</small></button>
@@ -3087,6 +3141,7 @@
     const horizon = taskHorizon(task);
     const owner = taskState.assignee || (item.defaultOwnerRoleId ? roleById(item.defaultOwnerRoleId)?.name : '') || 'Awaiting owner';
     const relativeDue = taskDueRelativeLabel(task);
+    const priorLearning = priorLearningForItem(event, item);
     return `
       <article class="task-card timing-${escapeHtml(horizon)} ${taskState.completed ? 'completed' : ''}">
         <label class="task-card-check" title="${taskState.completed ? 'Mark task open' : 'Mark task complete'}">
@@ -3098,7 +3153,7 @@
             <div>
               <div class="task-module-label">${escapeHtml(module.title)}${item.responsibleArea ? ` · ${escapeHtml(item.responsibleArea)}` : ''}</div>
               <h3>${escapeHtml(item.title)}</h3>
-              <div class="task-card-summary-meta"><span class="task-owner-chip">${escapeHtml(owner)}</span><span class="task-relative-due">${escapeHtml(relativeDue)}</span></div>
+              <div class="task-card-summary-meta"><span class="task-owner-chip">${escapeHtml(owner)}</span><span class="task-relative-due">${escapeHtml(relativeDue)}</span>${priorLearning.length ? `<span class="task-learning-chip">↺ Learning from last time</span>` : ''}</div>
             </div>
             <div class="task-due-block ${dueDate ? '' : 'missing'} ${horizon === 'attention' ? 'urgent' : ''}">
               <span class="task-board-milestone-code">${escapeHtml(item.deadlineCode ?? '—')}</span>
@@ -3112,6 +3167,7 @@
             <summary><span>Details and assignment</span><span class="task-card-manage-chevron" aria-hidden="true"></span></summary>
             <div class="task-card-manage-body">
               ${detail ? `<p class="task-detail">${escapeHtml(detail)}</p>` : ''}
+              ${renderPriorLearning(event, item)}
               <div class="task-fields">
                 <div class="task-assignment-field">
                   <span>Assigned to</span>
@@ -3324,10 +3380,158 @@
     return `
       <section class="page-header"><div><div class="eyebrow">Post-event review</div><h2>Retrospective</h2><p>Capture what happened, the financial result and the lessons that should be carried into the next running of this event.</p></div></section>
       <section class="playbook-section retrospective-section">
+        <header class="retrospective-section-heading"><div><span class="eyebrow">Organiser review</span><h3>Record the internal outcome</h3></div><p>This is the club team's own review of delivery, finances and lessons learned.</p></header>
         <div class="retrospective-grid">
           ${fields.map(field => renderRetrospectiveField(field, event)).join('')}
         </div>
-      </section>`;
+      </section>
+      ${renderAttendeeFeedback(event)}
+      ${renderCarryForwardLibrary(event)}`;
+  }
+
+  async function ensureFeedbackLoaded(eventId, force = false) {
+    if ((!force && feedbackCache.has(eventId)) || feedbackRequests.has(eventId)) return;
+    feedbackRequests.add(eventId);
+    try {
+      const response = await fetch(`/api/feedback/events/${encodeURIComponent(eventId)}`);
+      if (!response.ok) throw new Error(`Feedback service returned ${response.status}.`);
+      feedbackCache.set(eventId, await response.json());
+    } catch (error) {
+      feedbackCache.set(eventId, { campaign: null, responses: [], error: error.message || 'Feedback could not be loaded.' });
+    } finally {
+      feedbackRequests.delete(eventId);
+      if (state.activeView === 'retrospective' && state.activeEventId === eventId) render();
+    }
+  }
+
+  function renderAttendeeFeedback(event) {
+    const data = feedbackCache.get(event.id);
+    if (!data) {
+      return `<section class="playbook-section attendee-feedback-section"><div class="feedback-loading"><span>…</span><div><strong>Loading attendee feedback</strong><small>Checking for this event's anonymous feedback form and responses.</small></div></div></section>`;
+    }
+    if (data.error) {
+      return `<section class="playbook-section attendee-feedback-section"><div class="feedback-error"><div><strong>Attendee feedback is temporarily unavailable</strong><p>${escapeHtml(data.error)}</p></div><button class="button button-secondary" data-action="retry-feedback">Try again</button></div></section>`;
+    }
+
+    const campaign = data.campaign;
+    const responses = data.responses ?? [];
+    const customQuestion = campaign?.questions?.find(question => question.id === 'custom-question')?.label ?? '';
+    const closesOn = campaign?.closesOn ?? (event.eventDate ? addDaysToIsoDate(event.eventDate, 7) : '');
+    const publicUrl = campaign ? `${location.origin}/feedback.html?token=${encodeURIComponent(campaign.publicToken)}` : '';
+    return `<section class="playbook-section attendee-feedback-section">
+      <header class="retrospective-section-heading">
+        <div><span class="eyebrow">Attendee voice</span><h3>Anonymous event feedback</h3></div>
+        <div class="feedback-response-total"><strong>${responses.length}</strong><span>response${responses.length === 1 ? '' : 's'}</span></div>
+      </header>
+      <div class="feedback-manager-grid ${campaign ? 'has-campaign' : ''}">
+        <form id="feedbackCampaignForm" class="feedback-campaign-form">
+          <div class="feedback-campaign-copy">
+            <h4>${campaign ? 'Manage the public feedback form' : 'Create a public feedback form'}</h4>
+            <p>The reusable link and QR code can be emailed, printed or displayed after the event. Responses do not contain attendee identities.</p>
+          </div>
+          <div class="feedback-campaign-fields">
+            <label><span>Open from</span><input id="feedbackOpensOn" type="date" value="${escapeHtml(campaign?.opensOn ?? event.eventDate ?? '')}"></label>
+            <label><span>Close after</span><input id="feedbackClosesOn" type="date" value="${escapeHtml(closesOn)}"></label>
+            <label class="wide"><span>One optional event-specific question</span><input id="feedbackCustomQuestion" type="text" maxlength="240" value="${escapeHtml(customQuestion)}" placeholder="For example: What did you think of the entertainment?"></label>
+            <label class="feedback-open-toggle"><input id="feedbackIsOpen" type="checkbox" ${campaign?.isOpen !== false ? 'checked' : ''}><span>Accept responses</span></label>
+          </div>
+          <button class="button button-primary" type="submit">${campaign ? 'Save feedback form' : 'Create link and QR code'}</button>
+        </form>
+        ${campaign ? `<aside class="feedback-share-card">
+          <img src="/api/feedback/public/${encodeURIComponent(campaign.publicToken)}/qr.svg" alt="QR code linking to feedback for ${escapeHtml(event.name)}">
+          <div><span class="feedback-status ${campaign.isOpen ? 'open' : 'closed'}">${campaign.isOpen ? 'Accepting responses' : 'Closed'}</span><h4>Share with attendees</h4><p>Use the same link for email, ticketing integrations or a QR code at the event.</p></div>
+          <input id="feedbackPublicUrl" type="text" readonly value="${escapeHtml(publicUrl)}" aria-label="Public feedback link">
+          <div class="button-row"><button class="button button-secondary" type="button" data-action="copy-feedback-link">Copy link</button><a class="button button-secondary" href="${escapeHtml(publicUrl)}" target="_blank" rel="noopener">Open form</a><a class="button button-secondary" href="/api/feedback/public/${encodeURIComponent(campaign.publicToken)}/qr.svg" download="${escapeHtml(slugify(event.name))}-feedback-qr.svg">Download QR</a></div>
+        </aside>` : ''}
+      </div>
+      ${campaign ? renderFeedbackResponses(campaign, responses) : ''}
+    </section>`;
+  }
+
+  function renderFeedbackResponses(campaign, responses) {
+    if (!responses.length) {
+      return `<div class="feedback-empty"><span>◎</span><div><strong>No attendee responses yet</strong><p>Share the link or QR code. Anonymous responses will appear here as soon as they are submitted.</p></div></div>`;
+    }
+    const ratingQuestions = campaign.questions.filter(question => question.type === 'rating');
+    const choiceQuestions = campaign.questions.filter(question => question.type === 'choice');
+    const textQuestions = campaign.questions.filter(question => question.type === 'text');
+    const textEntries = [];
+    for (const response of responses) {
+      for (const question of textQuestions) {
+        const answer = feedbackAnswer(response, question.id);
+        if (answer) textEntries.push({ response, question, answer });
+      }
+    }
+    return `<div class="feedback-results">
+      <header><div><span class="eyebrow">Response summary</span><h4>What attendees said</h4></div><small>Free-text comments remain anonymous and are not automatically added to future plans.</small></header>
+      <div class="feedback-metrics">
+        ${ratingQuestions.map(question => {
+          const values = responses.map(response => Number(feedbackAnswer(response, question.id))).filter(value => value >= 1 && value <= 5);
+          const average = values.length ? (values.reduce((sum, value) => sum + value, 0) / values.length).toFixed(1) : '—';
+          return `<div class="feedback-metric"><span>${escapeHtml(question.label)}</span><strong>${average}<small>${values.length ? ' / 5' : ''}</small></strong><em>${values.length} answer${values.length === 1 ? '' : 's'}</em></div>`;
+        }).join('')}
+        ${choiceQuestions.map(question => {
+          const counts = question.options.map(option => [option, responses.filter(response => feedbackAnswer(response, question.id) === option).length]).filter(([, count]) => count > 0);
+          return `<div class="feedback-metric choice-metric"><span>${escapeHtml(question.label)}</span>${counts.length ? counts.map(([option, count]) => `<div><strong>${escapeHtml(count)}</strong><em>${escapeHtml(option)}</em></div>`).join('') : '<em>No answers yet</em>'}</div>`;
+        }).join('')}
+      </div>
+      <div class="feedback-comments-heading"><h4>Anonymous comments</h4><span>${textEntries.length}</span></div>
+      <div class="feedback-comment-list">
+        ${textEntries.length ? textEntries.map(entry => `<article class="feedback-comment"><span>${escapeHtml(entry.question.label)}</span><p>${escapeHtml(entry.answer)}</p><div><small>Submitted ${escapeHtml(new Date(entry.response.submittedAtUtc).toLocaleDateString('en-GB'))}</small><button class="text-button inline" type="button" data-seed-feedback-insight="${escapeHtml(entry.response.id)}" data-feedback-question="${escapeHtml(entry.question.id)}">Carry this learning forward</button></div></article>`).join('') : '<p class="help-text">No free-text comments have been submitted.</p>'}
+      </div>
+      ${renderInsightBuilder(campaign, responses)}
+    </div>`;
+  }
+
+  function feedbackAnswer(response, questionId) {
+    const value = response?.answers?.[questionId];
+    return typeof value === 'string' ? value.trim() : value == null ? '' : String(value).trim();
+  }
+
+  function renderInsightBuilder(campaign, responses) {
+    return `<form id="carryForwardInsightForm" class="carry-forward-builder">
+      <div class="carry-forward-builder-copy"><span class="eyebrow">Organiser approval</span><h4>Carry useful learning into the next event</h4><p>Review and rewrite the evidence as an operationally useful note. Only approved notes appear beside questions and tasks in a cloned event.</p></div>
+      <div class="carry-forward-builder-fields">
+        <label><span>Short title</span><input id="insightTitle" type="text" maxlength="120" required placeholder="For example: Include a non-spicy meal option"></label>
+        <label><span>Show this learning beside</span><select id="insightTarget" required><option value="">Choose a planner area or task</option>${renderLearningTargetOptions()}</select></label>
+        <label class="wide"><span>Learning for the next organiser</span><textarea id="insightSummary" rows="4" maxlength="1500" required placeholder="State what should be considered next time and why."></textarea></label>
+        <label><span>Evidence</span><input id="insightEvidenceCount" type="number" min="1" max="${responses.length}" value="1"></label>
+        <label><span>Importance</span><select id="insightImportance"><option value="consider">Consider</option><option value="important">Important</option><option value="critical">Critical</option></select></label>
+      </div>
+      <button class="button button-primary" type="submit">Approve and carry forward</button>
+    </form>`;
+  }
+
+  function renderLearningTargetOptions() {
+    return playbook.modules.map(module => `<optgroup label="${escapeHtml(module.title)}">
+      <option value="module:${escapeHtml(module.id)}">Whole module — ${escapeHtml(module.title)}</option>
+      ${module.sections.map(section => `<option value="section:${escapeHtml(module.id)}:${escapeHtml(section.id)}">Section — ${escapeHtml(section.title)}</option>${section.items.filter(item => ['question', 'task'].includes(item.type)).map(item => `<option value="item:${escapeHtml(item.id)}">${item.type === 'task' ? 'Task' : 'Question'} — ${escapeHtml(item.title ?? item.label)}</option>`).join('')}`).join('')}
+    </optgroup>`).join('');
+  }
+
+  function renderCarryForwardLibrary(event) {
+    const insights = event.learningInsights ?? [];
+    return `<section class="playbook-section carry-forward-library">
+      <header class="retrospective-section-heading"><div><span class="eyebrow">Reusable knowledge</span><h3>Approved for the next running</h3></div><p>These notes will be shown in context when this event is cloned.</p></header>
+      ${insights.length ? `<div class="carry-forward-list">${insights.map(insight => `<article><div><span class="insight-importance ${escapeHtml(insight.importance ?? 'consider')}">${escapeHtml(insight.importance ?? 'consider')}</span><h4>${escapeHtml(insight.title)}</h4><p>${escapeHtml(insight.summary)}</p><small>${escapeHtml(learningTargetLabel(insight))}${Number(insight.evidenceCount) > 0 ? ` · ${escapeHtml(insight.evidenceCount)} attendee response${Number(insight.evidenceCount) === 1 ? '' : 's'}` : ''}</small></div><button class="button button-secondary" type="button" data-remove-learning-insight="${escapeHtml(insight.id)}">Remove</button></article>`).join('')}</div>` : `<div class="feedback-empty"><span>↺</span><div><strong>No learning has been approved yet</strong><p>Review attendee comments above, rewrite the useful evidence and choose where it should appear next time.</p></div></div>`}
+    </section>`;
+  }
+
+  function learningTargetLabel(insight) {
+    const itemId = insight.targetItemIds?.[0];
+    if (itemId) {
+      const indexed = itemIndex.get(itemId);
+      return indexed ? `${indexed.item.type === 'task' ? 'Task' : 'Question'}: ${indexed.item.title ?? indexed.item.label}` : 'Specific planner item';
+    }
+    const sectionId = insight.targetSectionIds?.[0];
+    if (sectionId) {
+      for (const module of playbook.modules) {
+        const section = module.sections.find(candidate => candidate.id === sectionId);
+        if (section) return `Section: ${section.title}`;
+      }
+    }
+    const module = moduleIndex.get(insight.targetModuleIds?.[0]);
+    return module ? `Module: ${module.title}` : 'Planner context';
   }
 
   function renderRetrospectiveField(field, event) {
@@ -4507,6 +4711,119 @@
         const event = getActiveEvent(); if (!event) return;
         event.retrospective[element.dataset.retroChoice] = element.dataset.value === 'true';
         saveState(); render();
+      });
+    });
+
+    document.querySelectorAll('[data-action="retry-feedback"]').forEach(element => {
+      element.addEventListener('click', () => {
+        const event = getActiveEvent();
+        if (!event) return;
+        feedbackCache.delete(event.id);
+        ensureFeedbackLoaded(event.id, true);
+        render();
+      });
+    });
+
+    document.getElementById('feedbackCampaignForm')?.addEventListener('submit', async eventArgs => {
+      eventArgs.preventDefault();
+      const event = getActiveEvent();
+      if (!event) return;
+      const button = eventArgs.currentTarget.querySelector('button[type="submit"]');
+      button.disabled = true;
+      button.textContent = 'Saving feedback form…';
+      try {
+        const response = await fetch(`/api/feedback/events/${encodeURIComponent(event.id)}/campaign`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            eventName: event.name,
+            eventDate: event.eventDate,
+            opensOn: document.getElementById('feedbackOpensOn')?.value || null,
+            closesOn: document.getElementById('feedbackClosesOn')?.value || null,
+            customQuestion: document.getElementById('feedbackCustomQuestion')?.value.trim() || null,
+            isOpen: document.getElementById('feedbackIsOpen')?.checked !== false
+          })
+        });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(payload.error || 'The feedback form could not be saved.');
+        feedbackCache.delete(event.id);
+        await ensureFeedbackLoaded(event.id, true);
+      } catch (error) {
+        alert(error.message || 'The feedback form could not be saved.');
+        button.disabled = false;
+        button.textContent = 'Save feedback form';
+      }
+    });
+
+    document.querySelectorAll('[data-action="copy-feedback-link"]').forEach(element => {
+      element.addEventListener('click', async () => {
+        const input = document.getElementById('feedbackPublicUrl');
+        if (!input) return;
+        await navigator.clipboard.writeText(input.value);
+        element.textContent = 'Copied';
+        setTimeout(() => { if (element.isConnected) element.textContent = 'Copy link'; }, 1800);
+      });
+    });
+
+    document.querySelectorAll('[data-seed-feedback-insight]').forEach(element => {
+      element.addEventListener('click', () => {
+        const event = getActiveEvent();
+        const data = event ? feedbackCache.get(event.id) : null;
+        const response = data?.responses?.find(candidate => candidate.id === element.dataset.seedFeedbackInsight);
+        const question = data?.campaign?.questions?.find(candidate => candidate.id === element.dataset.feedbackQuestion);
+        if (!response || !question) return;
+        const answer = feedbackAnswer(response, question.id);
+        document.getElementById('insightTitle').value = question.id === 'dietary-choice-comment' ? 'Review food and dietary choice' : question.label;
+        document.getElementById('insightSummary').value = answer;
+        document.getElementById('insightEvidenceCount').value = '1';
+        const preferredTargetItemId = question.targetItemIds?.find(itemId => itemIndex.get(itemId)?.item?.type === 'task') ?? question.targetItemIds?.[0];
+        const target = preferredTargetItemId
+          ? `item:${preferredTargetItemId}`
+          : question.targetSectionId
+            ? `section:${question.targetModuleId ?? ''}:${question.targetSectionId}`
+            : question.targetModuleId
+              ? `module:${question.targetModuleId}`
+              : '';
+        document.getElementById('insightTarget').value = target;
+        document.getElementById('carryForwardInsightForm')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        requestAnimationFrame(() => document.getElementById('insightSummary')?.focus());
+      });
+    });
+
+    document.getElementById('carryForwardInsightForm')?.addEventListener('submit', eventArgs => {
+      eventArgs.preventDefault();
+      const event = getActiveEvent();
+      if (!event) return;
+      const targetValue = document.getElementById('insightTarget').value;
+      if (!targetValue) return;
+      const [targetType, targetModuleId, targetSectionId] = targetValue.split(':');
+      const insight = {
+        id: crypto.randomUUID(),
+        title: document.getElementById('insightTitle').value.trim(),
+        summary: document.getElementById('insightSummary').value.trim(),
+        importance: document.getElementById('insightImportance').value,
+        evidenceCount: Number(document.getElementById('insightEvidenceCount').value || 0),
+        targetModuleIds: targetType === 'module' ? [targetModuleId] : targetType === 'section' ? [targetModuleId] : [],
+        targetSectionIds: targetType === 'section' ? [targetSectionId] : [],
+        targetItemIds: targetType === 'item' ? [targetModuleId] : [],
+        sourceEventName: event.name,
+        sourceEventDate: event.eventDate,
+        createdAt: new Date().toISOString()
+      };
+      event.learningInsights ??= [];
+      event.learningInsights.push(insight);
+      saveState();
+      render();
+    });
+
+    document.querySelectorAll('[data-remove-learning-insight]').forEach(element => {
+      element.addEventListener('click', () => {
+        const event = getActiveEvent();
+        const insight = event?.learningInsights?.find(candidate => candidate.id === element.dataset.removeLearningInsight);
+        if (!event || !insight || !confirm(`Remove the carry-forward learning “${insight.title}”?`)) return;
+        event.learningInsights = event.learningInsights.filter(candidate => candidate.id !== insight.id);
+        saveState();
+        render();
       });
     });
 
