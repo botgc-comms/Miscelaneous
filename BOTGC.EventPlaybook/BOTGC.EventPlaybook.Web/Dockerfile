@@ -3,11 +3,11 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-COPY BOTGC.EventPlaybook.csproj ./
-RUN dotnet restore
+COPY BOTGC.EventPlaybook.Web/BOTGC.EventPlaybook.Web.csproj BOTGC.EventPlaybook.Web/
+RUN dotnet restore BOTGC.EventPlaybook.Web/BOTGC.EventPlaybook.Web.csproj
 
-COPY . ./
-RUN dotnet publish BOTGC.EventPlaybook.csproj \
+COPY BOTGC.EventPlaybook.Web/ BOTGC.EventPlaybook.Web/
+RUN dotnet publish BOTGC.EventPlaybook.Web/BOTGC.EventPlaybook.Web.csproj \
     --configuration Release \
     --output /app/publish \
     --no-restore \
@@ -25,4 +25,4 @@ COPY --from=build --chown=app:app /app/publish ./
 RUN mkdir -p /app/App_Data && chown -R app:app /app
 
 USER app
-ENTRYPOINT ["dotnet", "BOTGC.EventPlaybook.dll"]
+ENTRYPOINT ["dotnet", "BOTGC.EventPlaybook.Web.dll"]

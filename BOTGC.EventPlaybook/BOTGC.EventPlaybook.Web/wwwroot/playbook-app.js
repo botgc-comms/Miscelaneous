@@ -67,6 +67,13 @@
   let pluginSettingsCache = null;
   let pluginSettingsRequest = null;
   let pluginSettingsNotice = '';
+  const ADMIN_VIEWS = new Set(['admin', 'plugins']);
+  let accessSession = {
+    authenticated: false,
+    isAdmin: false,
+    administratorLoginConfigured: false,
+    displayName: ''
+  };
   const requestedView = new URLSearchParams(window.location.search).get('view');
   if (['dashboard', 'tasks', 'catalogue', 'artwork', 'retrospective', 'admin', 'plugins', 'references', 'directory'].includes(requestedView)) {
     state.activeView = requestedView;
@@ -137,6 +144,27 @@
         events: []
       };
     }
+  }
+
+  async function initialiseAccessSession() {
+    try {
+      const response = await fetch('/api/auth/session', { cache: 'no-store' });
+      if (!response.ok) throw new Error(`Access session could not be loaded (${response.status}).`);
+      const result = await response.json();
+      accessSession = {
+        authenticated: result.authenticated === true,
+        isAdmin: result.isAdmin === true,
+        administratorLoginConfigured: result.administratorLoginConfigured === true,
+        displayName: String(result.displayName ?? '')
+      };
+    } catch (error) {
+      console.error('Unable to determine administrator access', error);
+    }
+  }
+
+  function adminLoginUrl(view = 'admin') {
+    const safeView = ADMIN_VIEWS.has(view) ? view : 'admin';
+    return `/admin-login.html?returnUrl=${encodeURIComponent(`/?view=${safeView}`)}`;
   }
 
   function migrateMilestoneState() {
@@ -1714,6 +1742,11 @@
       return;
     }
 
+    if (ADMIN_VIEWS.has(state.activeView) && !accessSession.isAdmin) {
+      state.activeView = 'dashboard';
+      saveState();
+    }
+
     let event = getActiveEvent();
     if (!event && !['dashboard', 'catalogue', 'references', 'admin', 'plugins', 'directory'].includes(state.activeView)) {
       state.activeView = 'dashboard';
@@ -1805,6 +1838,28 @@
               <span class="nav-icon">▣</span>
               <span><strong>Image Library</strong><small>Available to every event</small></span>
             </button>
+            <small class="sidebar-resource-subheading">Administration</small>
+            ${accessSession.isAdmin ? `
+              <button class="admin-resource-link ${state.activeView === 'admin' ? 'active' : ''}" data-view="admin">
+                <span class="nav-icon">⚙</span>
+                <span><strong>Playbook Administration</strong><small>Questions, tasks & planning rules</small></span>
+              </button>
+              <button class="admin-resource-link ${state.activeView === 'plugins' ? 'active' : ''}" data-view="plugins">
+                <span class="nav-icon">⌘</span>
+                <span><strong>Plugin Administration</strong><small>Connected club services</small></span>
+              </button>
+              <div class="sidebar-admin-session">
+                <span><i></i>Administrator signed in</span>
+                <form action="/auth/logout" method="post"><button type="submit">Sign out</button></form>
+              </div>` : `
+              <a class="admin-resource-link locked" href="${adminLoginUrl('admin')}">
+                <span class="nav-icon">⚙</span>
+                <span><strong>Playbook Administration</strong><small>${accessSession.administratorLoginConfigured ? 'Administrator sign-in required' : 'Administrator login not configured'}</small></span>
+              </a>
+              <a class="admin-resource-link locked" href="${adminLoginUrl('plugins')}">
+                <span class="nav-icon">⌘</span>
+                <span><strong>Plugin Administration</strong><small>${accessSession.administratorLoginConfigured ? 'Administrator sign-in required' : 'Administrator login not configured'}</small></span>
+              </a>`}
           </nav>
 
           <div class="sidebar-footer">
@@ -1814,8 +1869,6 @@
               </div>
               <div class="progress-track"><div class="progress-fill" style="width:${questionProgress.percent}%"></div></div>`
               : '<div class="sidebar-progress-copy"><strong>No event selected</strong><small>Choose one from the catalogue</small></div>'}
-            <button class="sidebar-admin-link ${state.activeView === 'admin' ? 'active' : ''}" data-view="admin">⚙ Playbook administration</button>
-            <button class="sidebar-admin-link ${state.activeView === 'plugins' ? 'active' : ''}" data-view="plugins">⌘ Plugin administration</button>
           </div>
         </aside>
 
@@ -1875,7 +1928,7 @@
 
           <main class="main-content ${state.activeView === 'artwork' ? 'poster-studio' : ''}">
             ${showLifecycleBanner ? renderEventLifecycleBanner(event) : ''}
-            ${state.activeView === 'dashboard' ? renderDashboard() : state.activeView === 'catalogue' ? renderCatalogue() : state.activeView === 'directory' ? renderDirectory() : state.activeView === 'references' ? renderReferenceLibrary() : state.activeView === 'plugins' ? renderPluginAdministration() : !event ? renderEmptyState() : state.activeView === 'tasks' ? renderTaskBoard(event, tasks) : state.activeView === 'artwork' ? renderArtworkStudio(event) : state.activeView === 'admin' ? renderAdmin(event) : state.activeView === 'retrospective' ? renderRetrospective(event) : renderModuleView(event)}
+            ${state.activeView === 'dashboard' ? renderDashboard() : state.activeView === 'catalogue' ? renderCatalogue() : state.activeView === 'directory' ? renderDirectory() : state.activeView === 'references' ? renderReferenceLibrary() : state.activeView === 'plugins' ? renderPluginAdministration() : state.activeView === 'admin' ? renderAdmin() : !event ? renderEmptyState() : state.activeView === 'tasks' ? renderTaskBoard(event, tasks) : state.activeView === 'artwork' ? renderArtworkStudio(event) : state.activeView === 'retrospective' ? renderRetrospective(event) : renderModuleView(event)}
           </main>
         </main>
       </div>
@@ -4280,7 +4333,7 @@
       </dialog>`;
   }
 
-  function renderAdmin(event) {
+  function renderAdmin() {
     return `
       <section class="page-header"><div><div class="eyebrow">Configuration</div><h2>Playbook admin</h2><p>Extend the data-driven Playbook without changing application code. People and responsibilities are maintained on the dedicated People & Roles page.</p></div><button class="button button-secondary" data-view="directory">Open People & Roles</button></section>
       <section class="admin-grid">
@@ -4918,7 +4971,12 @@
     bindAssignmentPickers();
     document.querySelectorAll('[data-view]').forEach(element => {
       element.addEventListener('click', () => {
-        state.activeView = element.dataset.view;
+        const requestedView = element.dataset.view;
+        if (ADMIN_VIEWS.has(requestedView) && !accessSession.isAdmin) {
+          location.assign(adminLoginUrl(requestedView));
+          return;
+        }
+        state.activeView = requestedView;
         if (state.activeView === 'tasks') state.taskBoardHorizon = 'auto';
         saveState();
         render();
@@ -6167,6 +6225,10 @@
   playbookFileInput.addEventListener('change', async () => {
     const file = playbookFileInput.files?.[0];
     playbookFileInput.value = '';
+    if (!accessSession.isAdmin) {
+      location.assign(adminLoginUrl('admin'));
+      return;
+    }
     if (!file) return;
 
     try {
@@ -6193,11 +6255,16 @@
       validatePlaybook(candidate);
       playbook = candidate;
       indexPlaybook();
+      await initialiseAccessSession();
       await initialiseSharedState();
       migrateMilestoneState();
       initialiseOperationalState();
       const params = new URLSearchParams(location.search);
       const requestedView = params.get('view');
+      if (requestedView && ADMIN_VIEWS.has(requestedView) && !accessSession.isAdmin) {
+        location.replace(adminLoginUrl(requestedView));
+        return;
+      }
       if (requestedView) state.activeView = requestedView;
       const completeToken = params.get('complete');
       if (completeToken) {

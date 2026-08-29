@@ -2,7 +2,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BOTGC.EventPlaybook", "BOTGC.EventPlaybook.csproj", "{D6B2AB24-5D77-4A7A-85C2-1631DFE3B83E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BOTGC.EventPlaybook.Web", "BOTGC.EventPlaybook.Web\BOTGC.EventPlaybook.Web.csproj", "{D6B2AB24-5D77-4A7A-85C2-1631DFE3B83E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BOTGC.EventPlaybook.API", "BOTGC.EventPlaybook.API\BOTGC.EventPlaybook.API.csproj", "{3EBF8084-F17A-44AC-BB62-FF14B017E6EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,5 +16,9 @@ Global
 		{D6B2AB24-5D77-4A7A-85C2-1631DFE3B83E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6B2AB24-5D77-4A7A-85C2-1631DFE3B83E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6B2AB24-5D77-4A7A-85C2-1631DFE3B83E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3EBF8084-F17A-44AC-BB62-FF14B017E6EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EBF8084-F17A-44AC-BB62-FF14B017E6EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EBF8084-F17A-44AC-BB62-FF14B017E6EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EBF8084-F17A-44AC-BB62-FF14B017E6EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

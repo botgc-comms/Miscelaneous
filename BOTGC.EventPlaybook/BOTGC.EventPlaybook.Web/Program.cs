@@ -47,6 +47,7 @@ var intelligentGolfApiToken = Environment.GetEnvironmentVariable("INTELLIGENT_GO
 var intelligentGolfClubId = Environment.GetEnvironmentVariable("INTELLIGENT_GOLF_CLUB_ID")?.Trim() ?? string.Empty;
 var intelligentGolfHttpMethod = Environment.GetEnvironmentVariable("INTELLIGENT_GOLF_DIARY_HTTP_METHOD")?.Trim();
 var demoPassword = Environment.GetEnvironmentVariable("DEMO_PASSWORD") ?? string.Empty;
+var adminPassword = Environment.GetEnvironmentVariable("ADMIN_PASSWORD") ?? string.Empty;
 const string demoCookieScheme = "BOTGC.EventPlaybook.Demo";
 var dataProtectionDirectory = Path.Combine(builder.Environment.ContentRootPath, "App_Data", "DataProtection-Keys");
 Directory.CreateDirectory(dataProtectionDirectory);
@@ -141,7 +142,7 @@ builder.Services
 var app = builder.Build();
 
 app.Logger.LogInformation(
-    "Poster Studio configured. API key: {ApiKeyStatus}; image model: {ImageModel}; image quality: {ImageQuality}; prompt model: {PromptModel}; Yodeck: {YodeckStatus}; member diary: {MemberDiaryStatus}; demo access: {DemoAccessStatus}",
+    "Poster Studio configured. API key: {ApiKeyStatus}; image model: {ImageModel}; image quality: {ImageQuality}; prompt model: {PromptModel}; Yodeck: {YodeckStatus}; member diary: {MemberDiaryStatus}; demo access: {DemoAccessStatus}; administrator access: {AdminAccessStatus}",
     string.IsNullOrWhiteSpace(openAiApiKey) ? "not configured - mock mode" : "OPENAI_API_KEY",
     effectiveImageModel,
     effectiveImageQuality,
@@ -154,7 +155,8 @@ app.Logger.LogInformation(
     !string.IsNullOrWhiteSpace(intelligentGolfClubId)
         ? "configured"
         : "not configured",
-    string.IsNullOrWhiteSpace(demoPassword) ? "disabled" : "password protected");
+    string.IsNullOrWhiteSpace(demoPassword) ? "disabled" : "password protected",
+    string.IsNullOrWhiteSpace(adminPassword) ? "not configured" : "password protected");
 
 app.UseAuthentication();
 
@@ -164,7 +166,10 @@ if (!string.IsNullOrWhiteSpace(demoPassword))
     {
         var path = context.Request.Path;
         var isPublicPath = path.StartsWithSegments("/demo-login.html") ||
+                           path.StartsWithSegments("/admin-login.html") ||
                            path.StartsWithSegments("/auth/login") ||
+                           path.StartsWithSegments("/auth/admin-login") ||
+                           path.StartsWithSegments("/api/auth/session") ||
                            path.StartsWithSegments("/feedback.html") ||
                            path.StartsWithSegments("/feedback.css") ||
                            path.StartsWithSegments("/feedback.js") ||
@@ -189,6 +194,33 @@ if (!string.IsNullOrWhiteSpace(demoPassword))
         context.Response.Redirect($"/demo-login.html?returnUrl={Uri.EscapeDataString(requestedUrl)}");
     });
 }
+
+app.Use(async (context, next) =>
+{
+    var path = context.Request.Path;
+    var isAdmin = context.User.IsInRole("Admin");
+    var requestedAdminView = (path == "/" || path.StartsWithSegments("/index.html")) &&
+                             (string.Equals(context.Request.Query["view"], "admin", StringComparison.OrdinalIgnoreCase) ||
+                              string.Equals(context.Request.Query["view"], "plugins", StringComparison.OrdinalIgnoreCase));
+
+    if (path.StartsWithSegments("/api/admin") && !isAdmin)
+    {
+        context.Response.StatusCode = context.User.Identity?.IsAuthenticated == true
+            ? StatusCodes.Status403Forbidden
+            : StatusCodes.Status401Unauthorized;
+        await context.Response.WriteAsJsonAsync(new { error = "Administrator access is required." });
+        return;
+    }
+
+    if (requestedAdminView && !isAdmin)
+    {
+        var requestedUrl = $"{context.Request.PathBase}{context.Request.Path}{context.Request.QueryString}";
+        context.Response.Redirect($"/admin-login.html?returnUrl={Uri.EscapeDataString(requestedUrl)}");
+        return;
+    }
+
+    await next();
+});
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
@@ -225,11 +257,55 @@ app.MapPost("/auth/login", async (HttpContext context, CancellationToken cancell
     return Results.Redirect(returnUrl);
 });
 
+app.MapPost("/auth/admin-login", async (HttpContext context, CancellationToken cancellationToken) =>
+{
+    var form = await context.Request.ReadFormAsync(cancellationToken);
+    var returnUrl = NormaliseAdminReturnUrl(form["returnUrl"].ToString());
+
+    if (string.IsNullOrWhiteSpace(adminPassword))
+    {
+        var unavailableUrl = $"/admin-login.html?error=not-configured&returnUrl={Uri.EscapeDataString(returnUrl)}";
+        return Results.Redirect(unavailableUrl);
+    }
+
+    if (!PasswordMatches(form["password"].ToString(), adminPassword))
+    {
+        var failureUrl = $"/admin-login.html?error=invalid&returnUrl={Uri.EscapeDataString(returnUrl)}";
+        return Results.Redirect(failureUrl);
+    }
+
+    var identity = new ClaimsIdentity(
+        [
+            new Claim(ClaimTypes.Name, "Event Playbook administrator"),
+            new Claim(ClaimTypes.Role, "Admin")
+        ],
+        demoCookieScheme);
+    var principal = new ClaimsPrincipal(identity);
+    await context.SignInAsync(
+        demoCookieScheme,
+        principal,
+        new AuthenticationProperties
+        {
+            IsPersistent = true,
+            ExpiresUtc = DateTimeOffset.UtcNow.AddHours(4)
+        });
+
+    return Results.Redirect(returnUrl);
+});
+
 app.MapPost("/auth/logout", async (HttpContext context) =>
 {
     await context.SignOutAsync(demoCookieScheme);
-    return Results.Redirect("/demo-login.html");
+    return Results.Redirect(string.IsNullOrWhiteSpace(demoPassword) ? "/" : "/demo-login.html");
 });
+
+app.MapGet("/api/auth/session", (HttpContext context) => Results.Ok(new
+{
+    authenticated = context.User.Identity?.IsAuthenticated == true,
+    isAdmin = context.User.IsInRole("Admin"),
+    administratorLoginConfigured = !string.IsNullOrWhiteSpace(adminPassword),
+    displayName = context.User.Identity?.Name
+}));
 
 app.MapGet("/api/poster/config", (
     IPosterConfigurationService configurationService,
@@ -1030,4 +1106,11 @@ static string NormaliseLocalReturnUrl(string? returnUrl)
     }
 
     return returnUrl;
+}
+
+static string NormaliseAdminReturnUrl(string? returnUrl)
+{
+    var normalised = NormaliseLocalReturnUrl(returnUrl);
+    if (normalised == "/") return "/?view=admin";
+    return normalised;
 }

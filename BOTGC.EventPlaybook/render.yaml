@@ -5,7 +5,7 @@ services:
     plan: starter
     region: frankfurt
     rootDir: BOTGC.EventPlaybook
-    dockerfilePath: ./Dockerfile
+    dockerfilePath: ./BOTGC.EventPlaybook.Web/Dockerfile
     dockerContext: .
     healthCheckPath: /health
     autoDeployTrigger: commit
@@ -17,6 +17,8 @@ services:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
       - key: DEMO_PASSWORD
+        sync: false
+      - key: ADMIN_PASSWORD
         sync: false
       - key: OPENAI_API_KEY
         sync: false
@@ -44,3 +46,34 @@ services:
         sync: false
       - key: INTELLIGENT_GOLF_DIARY_HTTP_METHOD
         value: PUT
+
+  - type: pserv
+    name: botgc-event-playbook-api-dev
+    runtime: docker
+    plan: 0.5c-512mb
+    region: frankfurt
+    rootDir: BOTGC.EventPlaybook
+    dockerfilePath: ./BOTGC.EventPlaybook.API/Dockerfile
+    dockerContext: .
+    autoDeployTrigger: commit
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: EventPlaybookApi__ApiKey
+        sync: false
+      - key: IntelligentGolf__BaseUrl
+        value: https://www.botgc.co.uk
+      - key: IntelligentGolf__MemberId
+        sync: false
+      - key: IntelligentGolf__MemberPassword
+        sync: false
+      - key: IntelligentGolf__AdminPassword
+        sync: false
+      - key: IntelligentGolf__EmailSenderMemberNumber
+        sync: false
+      - key: IntelligentGolf__EmailFromName
+        sync: false
+      - key: IntelligentGolf__EmailFromAddress
+        sync: false
+      - key: Cache__Provider
+        value: Memory

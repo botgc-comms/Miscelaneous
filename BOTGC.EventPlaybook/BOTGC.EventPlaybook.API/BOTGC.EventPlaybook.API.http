@@ -1,0 +1,52 @@
+@host = http://localhost:5000
+@apiKey = replace-me
+
+GET {{host}}/health
+
+###
+
+GET {{host}}/health/intelligent-golf
+
+###
+
+GET {{host}}/api/members?refresh=false
+X-Api-Key: {{apiKey}}
+
+###
+
+POST {{host}}/api/members/emails
+Content-Type: application/json
+X-Api-Key: {{apiKey}}
+
+{
+  "recipientEmails": ["member@example.com"],
+  "subject": "Event update",
+  "bodyHtml": "<p>The event details have changed.</p>"
+}
+
+###
+
+GET {{host}}/api/members/12345/diary
+X-Api-Key: {{apiKey}}
+
+###
+
+PUT {{host}}/api/members/12345/diary
+Content-Type: application/json
+X-Api-Key: {{apiKey}}
+
+{
+  "fields": {
+    "example_field": "example value"
+  }
+}
+
+###
+
+GET {{host}}/api/members/12345/planner
+X-Api-Key: {{apiKey}}
+
+###
+
+GET {{host}}/api/competitions/available?includeActive=true&includeUpcoming=true&refresh=false
+X-Api-Key: {{apiKey}}

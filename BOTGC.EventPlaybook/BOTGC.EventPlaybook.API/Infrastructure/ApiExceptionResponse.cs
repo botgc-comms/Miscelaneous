@@ -1,0 +1,30 @@
+using BOTGC.EventPlaybook.API.Infrastructure.IntelligentGolf;
+using Microsoft.AspNetCore.Diagnostics;
+
+namespace BOTGC.EventPlaybook.API.Infrastructure;
+
+public static class ApiExceptionResponse
+{
+    public static async Task WriteAsync(HttpContext context)
+    {
+        var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
+
+        var (status, title) = exception switch
+        {
+            IntelligentGolfFeatureNotConfiguredException feature =>
+                (StatusCodes.Status501NotImplemented, feature.Message),
+            IntelligentGolfAuthenticationException =>
+                (StatusCodes.Status503ServiceUnavailable, "The Intelligent Golf session is unavailable."),
+            HttpRequestException =>
+                (StatusCodes.Status502BadGateway, "Intelligent Golf returned an unsuccessful response."),
+            TimeoutException =>
+                (StatusCodes.Status503ServiceUnavailable, "The Intelligent Golf report is currently busy."),
+            ArgumentException argument =>
+                (StatusCodes.Status400BadRequest, argument.Message),
+            _ =>
+                (StatusCodes.Status500InternalServerError, "An unexpected error occurred.")
+        };
+
+        await Results.Problem(statusCode: status, title: title).ExecuteAsync(context);
+    }
+}

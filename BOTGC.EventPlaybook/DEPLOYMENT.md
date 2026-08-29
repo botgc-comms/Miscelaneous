@@ -1,6 +1,11 @@
 # Development deployment
 
-The simplest hosted development environment for this project is a Render Web Service built from the repository's `Dockerfile`. The included `render.yaml` creates a paid Starter service in Render's Frankfurt region, attaches a 1 GB persistent disk at `/app/App_Data`, enables health checks and deploys each commit to the connected branch.
+The included Render Blueprint deploys two processes from the same repository:
+
+- `botgc-event-playbook-dev`, the existing public Web service. Its URL, paid plan and 1 GB persistent disk at `/app/App_Data` remain unchanged.
+- `botgc-event-playbook-api-dev`, a separate private service for the Intelligent Golf session and integration endpoints. It has no public `onrender.com` address and is reachable only from services on Render's private network.
+
+Keeping the API separate prevents Intelligent Golf credentials and its authenticated session from being exposed to the browser, and lets that integration restart or scale independently. It does create a second billable Render service. The API does not need a persistent disk; its current cache/session is intentionally in memory on one instance.
 
 ## Deploy to Render
 
@@ -8,24 +13,33 @@ The simplest hosted development environment for this project is a Render Web Ser
 2. Sign in to Render and choose **New → Blueprint**.
 3. Connect the `botgc-comms/Miscelaneous` repository.
 4. Set **Blueprint Path** to `BOTGC.EventPlaybook/render.yaml` and select the branch you want to deploy.
-5. Enter the prompted secret values:
+5. Retain or enter the Web service secret values:
    - `DEMO_PASSWORD`: a strong shared password for approved testers;
+   - `ADMIN_PASSWORD`: a different strong password for the people allowed to change Playbook rules and plugin credentials;
    - `OPENAI_API_KEY`: the server-side OpenAI API key, or leave it empty to use mock artwork generation;
    - `YODECK_API_TOKEN`: an API token with Media and Playlists view/change access;
    - `YODECK_PLAYLIST_ID`: the numeric ID of the existing Clubhouse playlist;
-   - leave the Intelligent Golf diary variables empty until the club has been issued its private diary integration endpoint and credentials.
-6. Click **Deploy Blueprint** and wait for `/health` to pass.
-7. Open the generated `onrender.com` URL and sign in with the shared password.
+   - leave the legacy Intelligent Golf diary variables empty until that member-diary contract is connected to the new API.
+6. Deploy or sync the Blueprint. This keeps the existing Web service and creates `botgc-event-playbook-api-dev`.
+7. On `botgc-event-playbook-api-dev`, add these secrets in **Environment** (a brand-new Blueprint may prompt for them during creation):
+   - `EventPlaybookApi__ApiKey`: a long random server-to-server key;
+   - `IntelligentGolf__MemberId`: the IG member identity used for login;
+   - `IntelligentGolf__MemberPassword`: the member login PIN/password;
+   - `IntelligentGolf__AdminPassword`: the administrator password;
+   - `IntelligentGolf__EmailSenderMemberNumber`, `IntelligentGolf__EmailFromName` and `IntelligentGolf__EmailFromAddress`: the identity used for IG member email.
+8. Redeploy the API after saving its secrets, then wait for the Web `/health` endpoint and API port binding to succeed.
+9. Open the existing Web `onrender.com` URL and sign in with the shared tester password. Use the locked administration links under **Shared resources** to enter the separate administrator password when administration is required.
 
-If the web service already exists, use **Blueprints → Sync** after pushing this version. Render will ask you to confirm the Starter-plan and persistent-disk changes. Attaching the disk causes a redeploy and the service is briefly unavailable while it restarts.
+If the Web service already exists, use **Blueprints → Sync** after pushing this version. Render matches it by the unchanged `botgc-event-playbook-dev` name, so it updates the Dockerfile path without replacing the service, URL or disk. Render does not prompt for new `sync: false` secrets when an existing Blueprint is updated, so add the new Web `ADMIN_PASSWORD` and the API secrets manually. The applications can still start without them, but administrator and authenticated API functions remain unavailable until configured.
 
-Render automatically rebuilds and deploys the service whenever a commit reaches the connected branch. Change `autoDeployTrigger` in `render.yaml` to `checksPass` after adding a GitHub Actions build if deployments should wait for CI.
+Render automatically rebuilds and deploys both services whenever a commit reaches the connected branch. Change `autoDeployTrigger` in `render.yaml` to `checksPass` after adding a GitHub Actions build if deployments should wait for CI.
 
-## Environment variables
+## Web service environment variables
 
 | Variable | Required | Purpose |
 | --- | --- | --- |
 | `DEMO_PASSWORD` | Recommended for every hosted development deployment | Enables the shared-password screen. Authentication is disabled when absent. |
+| `ADMIN_PASSWORD` | Required for administration | Enables the separate administrator sign-in. Playbook and Plugin Administration remain locked when absent. Use a different value from `DEMO_PASSWORD`. |
 | `OPENAI_API_KEY` | Only for live generation | Enables OpenAI prompt and image generation. Without it, the server uses mock artwork. |
 | `OPENAI_IMAGE_MODEL` | No | Defaults to `gpt-image-2`. |
 | `OPENAI_IMAGE_QUALITY` | No | Defaults to `high`. |
@@ -43,6 +57,20 @@ Render automatically rebuilds and deploys the service whenever a commit reaches 
 
 Secrets belong in Render's Environment settings. Do not commit them to Git, the Dockerfile or `render.yaml`.
 
+## Private API environment variables
+
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `EventPlaybookApi__ApiKey` | Yes outside Development | Required in the `X-Api-Key` header for every domain endpoint. Health and Swagger are exempt. |
+| `IntelligentGolf__BaseUrl` | No | Defaults to `https://www.botgc.co.uk`. |
+| `IntelligentGolf__MemberId` | Yes for IG access | Member identity used to establish the shared IG session. |
+| `IntelligentGolf__MemberPassword` | Yes for IG access | Member PIN/password used for login. |
+| `IntelligentGolf__AdminPassword` | Yes for administrative IG access | Elevates the member session to the required administration access. |
+| `IntelligentGolf__EmailSenderMemberNumber` | For IG member email | Member record used as the sender. |
+| `IntelligentGolf__EmailFromName` | For IG member email | Friendly sender name. |
+| `IntelligentGolf__EmailFromAddress` | For IG member email | Sender email address. |
+| `Cache__Provider` | No | `Memory` for the current single-instance prototype; use Redis only before scaling the API horizontally. |
+
 The Yodeck token requires permission to view and change both **Media** and **Playlists** in the workspace that contains the Clubhouse playlist. The first send creates a tagged PNG media item with an availability window from the chosen start date through 23:59:59 on the event date and adds it to the existing playlist. Later sends for the same Event Playbook event update that media item's image, metadata and dates in place. Event Playbook also avoids duplicate playlist references and can recognise media created by earlier versions from the event ID stored in its description. Existing unrelated playlist items are preserved.
 
 Intelligent Golf publicly documents the club diary and member-app experience, but not a write API. The member-diary button therefore remains visibly unavailable until the club's private endpoint, token and club identifier have all been supplied. Its server-side request includes a stable `event-playbook-…` external reference, event title/date/times, member-facing description, optional link and approved campaign artwork. Confirm the final endpoint, authentication and field contract with Intelligent Golf before enabling these variables; the browser never receives the token.
@@ -55,10 +83,11 @@ PowerShell:
 
 ```powershell
 $env:DEMO_PASSWORD = 'use-a-long-random-development-password'
-dotnet run
+$env:ADMIN_PASSWORD = 'use-a-different-long-random-admin-password'
+dotnet run --project BOTGC.EventPlaybook.Web/BOTGC.EventPlaybook.Web.csproj
 ```
 
-With `DEMO_PASSWORD` unset, local startup behaves as before and opens without a login screen.
+With `DEMO_PASSWORD` unset, local startup behaves as before and opens without a tester login screen. Administration is still protected by `ADMIN_PASSWORD`; when it is absent the two administration links remain visibly locked and explain that administrator access is not configured.
 
 ## Current persistence behaviour
 

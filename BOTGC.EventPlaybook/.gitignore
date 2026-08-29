@@ -1,8 +1,10 @@
 appsettings.json
 appsettings.*.json
 !appsettings.example.json
+!BOTGC.EventPlaybook.API/appsettings.json
 bin/
 obj/
+.codex-build/
 App_Data/
 .vs/
 *.user

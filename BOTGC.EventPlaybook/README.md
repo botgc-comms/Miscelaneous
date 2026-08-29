@@ -1,6 +1,13 @@
 # BOTGC Event Playbook
 
-> **Baseline project:** this is the consolidated Event Playbook application used as the starting point for ongoing development.
+> **Baseline solution:** this repository contains the Event Playbook web application and its private Intelligent Golf integration API.
+
+## Solution structure
+
+- `BOTGC.EventPlaybook.Web` — the public ASP.NET Core web/BFF application, browser assets, Playbook configuration, prototype file persistence, OpenAI poster generation and Yodeck publishing.
+- `BOTGC.EventPlaybook.API` — the private .NET 9 Intelligent Golf integration service, including the shared authenticated session, member/report endpoints and API-key protection.
+
+The browser talks only to the Web project. Integration credentials and the long-lived Intelligent Golf session belong in the API project; the API should not be exposed directly to browsers or the public internet.
 
 This solution deliberately integrates the two successful prototypes without replacing either of them:
 
@@ -9,7 +16,8 @@ This solution deliberately integrates the two successful prototypes without repl
 
 ## Runtime
 
-- ASP.NET Core / .NET 8
+- Web: ASP.NET Core / .NET 8
+- API: ASP.NET Core / .NET 9
 - Static browser UI for the Playbook, preserving the original prototype interaction
 - ASP.NET Core APIs for OpenAI poster generation, task completion links and notification integration seams
 - JSON-driven Playbook and poster configuration
@@ -17,8 +25,8 @@ This solution deliberately integrates the two successful prototypes without repl
 ## Run
 
 ```powershell
-dotnet restore
-dotnet run
+dotnet restore BOTGC.EventPlaybook.sln
+dotnet run --project BOTGC.EventPlaybook.Web/BOTGC.EventPlaybook.Web.csproj
 ```
 
 The default development profile listens on:
@@ -29,9 +37,15 @@ http://localhost:5098
 
 Open the root URL for the Event Playbook. Use **Poster Studio** from the Playbook to open the digital artwork workflow for the selected event.
 
+Run the private API separately when working on Intelligent Golf integration:
+
+```powershell
+dotnet run --project BOTGC.EventPlaybook.API/BOTGC.EventPlaybook.API.csproj
+```
+
 ## Hosted development preview
 
-The repository includes a Docker image, Render Blueprint, persistent-disk configuration and optional shared-password screen for a protected development deployment. Event workspaces and Poster Studio campaigns are shared through the server while browser storage remains a local cache. See [DEPLOYMENT.md](DEPLOYMENT.md) for setup and prototype-collaboration limits.
+The repository includes separate Docker images plus a Render Blueprint. The existing public Web service retains its persistent disk and optional shared-password screen. The Intelligent Golf API is deployed as a private service on Render's internal network. See [DEPLOYMENT.md](DEPLOYMENT.md) for setup, secrets and prototype-collaboration limits.
 
 ## OpenAI configuration
 
@@ -56,7 +70,7 @@ OPENAI_PROMPT_MODEL=gpt-5.6
 
 ## appsettings.json
 
-`appsettings.json` and environment-specific variants are ignored by Git. `appsettings.example.json` is safe to commit.
+Web `appsettings.json` files and environment-specific variants are ignored by Git. `BOTGC.EventPlaybook.Web/appsettings.example.json` is safe to commit. The API's committed base `appsettings.json` contains only non-secret defaults; its credentials must come from user-secrets or deployment environment variables.
 
 ## Preserved Event Playbook functionality
 
@@ -151,7 +165,9 @@ The same mechanism can later support sunset, room capacity, supplier access, sta
 
 ## Playbook administration
 
-The Admin view provides:
+**Playbook Administration** and **Plugin Administration** appear under **Shared resources** in the main navigation. They use a separate administrator sign-in backed by the server-side `ADMIN_PASSWORD` environment variable; ordinary development testers cannot open either admin view or call the plugin-administration API.
+
+The Playbook Administration view provides:
 
 - a link to the dedicated People & Roles directory;
 - adding questions to a module/section;

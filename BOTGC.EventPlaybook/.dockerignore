@@ -7,10 +7,9 @@ obj
 App_Data
 *.user
 *.suo
-appsettings.json
 appsettings.*.json
+!BOTGC.EventPlaybook.API/appsettings.json
 .env
 .env.*
-Dockerfile*
 README.md
 DEPLOYMENT.md
