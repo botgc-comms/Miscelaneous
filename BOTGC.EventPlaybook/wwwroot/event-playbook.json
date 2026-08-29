@@ -3561,17 +3561,17 @@
       },
       {
         "id": "worked-well",
-        "label": "What worked particularly well?",
+        "label": "What went well?",
         "type": "textarea"
       },
       {
         "id": "did-not-work",
-        "label": "What did not work?",
+        "label": "What did not go well?",
         "type": "textarea"
       },
       {
         "id": "change-next-time",
-        "label": "What should we change next time?",
+        "label": "What can we improve for next time?",
         "type": "textarea"
       },
       {

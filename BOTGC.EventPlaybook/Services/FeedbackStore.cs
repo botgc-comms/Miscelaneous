@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using System.Globalization;
 using System.Text.Json;
 using BOTGC.EventPlaybook.Models;
 using Microsoft.AspNetCore.WebUtilities;
@@ -22,6 +23,7 @@ public sealed class FeedbackStore : IFeedbackStore
     {
         WriteIndented = true
     };
+    private static readonly TimeZoneInfo ClubTimeZone = ResolveClubTimeZone();
 
     public FeedbackStore(IWebHostEnvironment environment)
     {
@@ -40,6 +42,12 @@ public sealed class FeedbackStore : IFeedbackStore
                 string.Equals(candidate.EventId, eventId, StringComparison.OrdinalIgnoreCase));
             var now = DateTimeOffset.UtcNow;
             var questions = CreateDefaultQuestions(request.CustomQuestion);
+            var opensOn = NormaliseDate(request.OpensOn);
+            var closesOn = NormaliseDate(request.ClosesOn);
+            if (TryParseDate(opensOn, out var openingDate) && TryParseDate(closesOn, out var closingDate) && closingDate < openingDate)
+            {
+                throw new InvalidOperationException("The feedback closing date cannot be before its opening date.");
+            }
 
             if (campaign is null)
             {
@@ -51,8 +59,8 @@ public sealed class FeedbackStore : IFeedbackStore
                     PublicToken = WebEncoders.Base64UrlEncode(RandomNumberGenerator.GetBytes(24)),
                     EventDate = NormaliseDate(request.EventDate),
                     IsOpen = request.IsOpen,
-                    OpensOn = NormaliseDate(request.OpensOn),
-                    ClosesOn = NormaliseDate(request.ClosesOn),
+                    OpensOn = opensOn,
+                    ClosesOn = closesOn,
                     Questions = questions,
                     CreatedAtUtc = now,
                     UpdatedAtUtc = now
@@ -64,8 +72,8 @@ public sealed class FeedbackStore : IFeedbackStore
                 campaign.EventName = request.EventName.Trim();
                 campaign.EventDate = NormaliseDate(request.EventDate);
                 campaign.IsOpen = request.IsOpen;
-                campaign.OpensOn = NormaliseDate(request.OpensOn);
-                campaign.ClosesOn = NormaliseDate(request.ClosesOn);
+                campaign.OpensOn = opensOn;
+                campaign.ClosesOn = closesOn;
                 campaign.Questions = questions;
                 campaign.UpdatedAtUtc = now;
             }
@@ -95,6 +103,7 @@ public sealed class FeedbackStore : IFeedbackStore
             return new FeedbackEventData
             {
                 Campaign = campaign,
+                Availability = GetAvailability(campaign),
                 Responses = document.Responses
                     .Where(response => string.Equals(response.CampaignId, campaign.Id, StringComparison.Ordinal))
                     .OrderByDescending(response => response.SubmittedAtUtc)
@@ -130,7 +139,7 @@ public sealed class FeedbackStore : IFeedbackStore
             var document = await LoadAsync(cancellationToken);
             var campaign = document.Campaigns.SingleOrDefault(candidate =>
                 string.Equals(candidate.PublicToken, token, StringComparison.Ordinal));
-            if (campaign is null || !IsAcceptingResponses(campaign))
+            if (campaign is null || !GetAvailability(campaign).IsAcceptingResponses)
             {
                 return false;
             }
@@ -178,21 +187,49 @@ public sealed class FeedbackStore : IFeedbackStore
         }
     }
 
-    public static bool IsAcceptingResponses(FeedbackCampaign campaign)
+    public static bool IsAcceptingResponses(FeedbackCampaign campaign) => GetAvailability(campaign).IsAcceptingResponses;
+
+    public static FeedbackAvailability GetAvailability(FeedbackCampaign campaign, DateTimeOffset? now = null)
     {
+        var clubNow = TimeZoneInfo.ConvertTime(now ?? DateTimeOffset.UtcNow, ClubTimeZone);
+        var today = DateOnly.FromDateTime(clubNow.DateTime);
+        var opensOn = TryParseDate(campaign.OpensOn, out var parsedOpensOn) ? parsedOpensOn : (DateOnly?)null;
+        var closesOn = TryParseDate(campaign.ClosesOn, out var parsedClosesOn) ? parsedClosesOn : (DateOnly?)null;
+
         if (!campaign.IsOpen)
         {
-            return false;
+            return Availability(false, "closed-manually", "The organiser has paused this feedback form.", today, opensOn, closesOn);
         }
 
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
-        if (DateOnly.TryParse(campaign.OpensOn, out var opensOn) && today < opensOn)
+        if (opensOn is not null && closesOn is not null && closesOn < opensOn)
         {
-            return false;
+            return Availability(false, "invalid-date-range", "The feedback form has an invalid opening and closing date. Please ask the organiser to correct it.", today, opensOn, closesOn);
         }
 
-        return !DateOnly.TryParse(campaign.ClosesOn, out var closesOn) || today <= closesOn;
+        if (opensOn is not null && today < opensOn)
+        {
+            return Availability(false, "not-open-yet", $"Feedback opens on {opensOn.Value:dd MMMM yyyy}.", today, opensOn, closesOn);
+        }
+
+        if (closesOn is not null && today > closesOn)
+        {
+            return Availability(false, "closed-by-date", $"Feedback closed on {closesOn.Value:dd MMMM yyyy}.", today, opensOn, closesOn);
+        }
+
+        return Availability(true, "open", closesOn is null
+            ? "The form is accepting responses."
+            : $"The form is accepting responses until {closesOn.Value:dd MMMM yyyy}.", today, opensOn, closesOn);
     }
+
+    private static FeedbackAvailability Availability(bool accepting, string status, string message, DateOnly today, DateOnly? opensOn, DateOnly? closesOn) => new()
+    {
+        IsAcceptingResponses = accepting,
+        Status = status,
+        Message = message,
+        ClubDate = today.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+        OpensOn = opensOn?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+        ClosesOn = closesOn?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
+    };
 
     private static void ValidateAnswer(FeedbackQuestion question, JsonElement answer)
     {
@@ -272,5 +309,30 @@ public sealed class FeedbackStore : IFeedbackStore
     }
 
     private static string? NormaliseDate(string? value) =>
-        DateOnly.TryParse(value, out var date) ? date.ToString("yyyy-MM-dd") : null;
+        TryParseDate(value, out var date) ? date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) : null;
+
+    private static bool TryParseDate(string? value, out DateOnly date) =>
+        DateOnly.TryParseExact(value, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out date) ||
+        DateOnly.TryParse(value, CultureInfo.GetCultureInfo("en-GB"), DateTimeStyles.None, out date);
+
+    private static TimeZoneInfo ResolveClubTimeZone()
+    {
+        foreach (var id in new[] { "Europe/London", "GMT Standard Time" })
+        {
+            try
+            {
+                return TimeZoneInfo.FindSystemTimeZoneById(id);
+            }
+            catch (TimeZoneNotFoundException)
+            {
+                // Try the platform-specific identifier below.
+            }
+            catch (InvalidTimeZoneException)
+            {
+                // Try the platform-specific identifier below.
+            }
+        }
+
+        return TimeZoneInfo.Utc;
+    }
 }

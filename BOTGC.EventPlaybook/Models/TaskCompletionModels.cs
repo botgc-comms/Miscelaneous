@@ -35,6 +35,7 @@ public sealed class TaskLearningInsightSnapshot
     public string? SourceEventName { get; init; }
     public string? SourceEventDate { get; init; }
     public int EvidenceCount { get; init; }
+    public string? SourceType { get; init; }
 }
 
 public sealed class CompleteTaskRequest

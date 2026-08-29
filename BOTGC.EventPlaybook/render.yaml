@@ -36,3 +36,11 @@ services:
         value: Clubhouse
       - key: YODECK_MEDIA_DURATION_SECONDS
         value: 15
+      - key: INTELLIGENT_GOLF_DIARY_ENDPOINT
+        sync: false
+      - key: INTELLIGENT_GOLF_API_TOKEN
+        sync: false
+      - key: INTELLIGENT_GOLF_CLUB_ID
+        sync: false
+      - key: INTELLIGENT_GOLF_DIARY_HTTP_METHOD
+        value: PUT

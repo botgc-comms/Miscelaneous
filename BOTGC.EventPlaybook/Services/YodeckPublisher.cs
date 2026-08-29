@@ -61,16 +61,21 @@ public sealed class YodeckPublisher(
             ?? throw new InvalidOperationException("The screen service did not return an ID for the event artwork.");
 
         PlaylistUpdateResult playlistUpdate;
+        ScreenPushResult screenPush;
+        var failedPhase = "upload the artwork";
         try
         {
             var uploadUrl = await GetUploadUrlAsync(mediaId, cancellationToken);
             await UploadImageAsync(uploadUrl, command.ImageBytes, cancellationToken);
             await CompleteUploadAsync(mediaId, uploadUrl, cancellationToken);
+            failedPhase = "update the Clubhouse screen rotation";
             playlistUpdate = await EnsurePlaylistContainsAsync(
                 playlist,
                 mediaId,
                 matchingMedia.Select(item => ReadInt64(item, "id")).OfType<long>().ToHashSet(),
                 cancellationToken);
+            failedPhase = "push the changes to the screens";
+            screenPush = await PushScreensAsync(workspaceId, cancellationToken);
         }
         catch (Exception exception)
         {
@@ -80,19 +85,21 @@ public sealed class YodeckPublisher(
                 mediaId,
                 command.EventId);
             throw new InvalidOperationException(
-                $"The screen service retained artwork item {mediaId}, but the image upload or screen-rotation update did not finish. " +
-                "Try again: Event Playbook will recover by updating this same item rather than creating another one.",
+                $"The screen service retained artwork item {mediaId}, but it could not {failedPhase}. " +
+                $"{exception.Message} Try again: Event Playbook will recover by updating this same item rather than creating another one.",
                 exception);
         }
 
         logger.LogInformation(
-            "{Operation} Yodeck media {MediaId} for event {EventId}; playlist {PlaylistId} changed: {PlaylistChanged}; duplicate entries removed: {DuplicatesRemoved}.",
+            "{Operation} Yodeck media {MediaId} for event {EventId}; playlist {PlaylistId} changed: {PlaylistChanged}; duplicate entries removed: {DuplicatesRemoved}; screen push: {PushStatus} (confirmed: {PushConfirmed}).",
             mediaWasCreated ? "Created" : "Updated",
             mediaId,
             command.EventId,
             _options.PlaylistId,
             playlistUpdate.Changed,
-            playlistUpdate.DuplicateEntriesRemoved);
+            playlistUpdate.DuplicateEntriesRemoved,
+            screenPush.Status,
+            screenPush.Confirmed);
 
         return new YodeckPublishResult
         {
@@ -105,7 +112,10 @@ public sealed class YodeckPublisher(
             Tags = tags,
             MediaWasCreated = mediaWasCreated,
             PlaylistWasChanged = playlistUpdate.Changed,
-            DuplicatePlaylistEntriesRemoved = playlistUpdate.DuplicateEntriesRemoved
+            DuplicatePlaylistEntriesRemoved = playlistUpdate.DuplicateEntriesRemoved,
+            ScreenPushRequested = true,
+            ScreenPushConfirmed = screenPush.Confirmed,
+            ScreenPushStatus = screenPush.Status
         };
     }
 
@@ -462,6 +472,76 @@ public sealed class YodeckPublisher(
         return new PlaylistUpdateResult(true, duplicateEntriesRemoved);
     }
 
+    private async Task<ScreenPushResult> PushScreensAsync(
+        long? workspaceId,
+        CancellationToken cancellationToken)
+    {
+        var payload = new JsonObject
+        {
+            ["use_download_timeslots"] = false
+        };
+        if (workspaceId is > 0)
+        {
+            payload["filter_workspaces"] = new JsonArray(JsonValue.Create(workspaceId.Value));
+        }
+
+        using var content = JsonContent.Create(payload);
+        using var response = await SendYodeckAsync(
+            HttpMethod.Post,
+            "screens/push",
+            content,
+            cancellationToken);
+        var push = await ReadObjectAsync(response, "push the updated rotation to the screens", cancellationToken);
+        var statusUrl = ReadString(push, "push_status_url");
+        var status = NormalisePushStatus(ReadString(push, "status"));
+
+        if (IsSuccessfulPushStatus(status))
+        {
+            return new ScreenPushResult(true, status);
+        }
+
+        if (string.IsNullOrWhiteSpace(statusUrl))
+        {
+            return new ScreenPushResult(false, string.IsNullOrWhiteSpace(status) ? "accepted" : status);
+        }
+
+        const int maximumStatusChecks = 20;
+        for (var attempt = 0; attempt < maximumStatusChecks; attempt += 1)
+        {
+            if (attempt > 0)
+            {
+                await Task.Delay(TimeSpan.FromMilliseconds(750), cancellationToken);
+            }
+
+            using var statusResponse = await SendYodeckAsync(
+                HttpMethod.Get,
+                statusUrl,
+                content: null,
+                cancellationToken);
+            var statusPayload = await ReadObjectAsync(
+                statusResponse,
+                "confirm that the screen update was pushed",
+                cancellationToken);
+            status = NormalisePushStatus(ReadString(statusPayload, "status"));
+            if (IsSuccessfulPushStatus(status))
+            {
+                return new ScreenPushResult(true, status);
+            }
+
+            if (IsFailedPushStatus(status))
+            {
+                throw new InvalidOperationException(
+                    $"The screen service reported that the push ended with status '{status}'.");
+            }
+        }
+
+        logger.LogWarning(
+            "Yodeck accepted a push for playlist {PlaylistId}, but did not report completion within the confirmation window. Last status: {PushStatus}.",
+            _options.PlaylistId,
+            status);
+        return new ScreenPushResult(false, string.IsNullOrWhiteSpace(status) ? "pending" : status);
+    }
+
     private async Task<HttpResponseMessage> SendYodeckAsync(
         HttpMethod method,
         string relativeUrl,
@@ -567,4 +647,15 @@ public sealed class YodeckPublisher(
     }
 
     private sealed record PlaylistUpdateResult(bool Changed, int DuplicateEntriesRemoved);
+
+    private sealed record ScreenPushResult(bool Confirmed, string Status);
+
+    private static string NormalisePushStatus(string? status) =>
+        (status ?? string.Empty).Trim().ToLowerInvariant().Replace('-', '_').Replace(' ', '_');
+
+    private static bool IsSuccessfulPushStatus(string status) =>
+        status is "success" or "successful" or "complete" or "completed";
+
+    private static bool IsFailedPushStatus(string status) =>
+        status is "error" or "failed" or "failure" or "cancelled" or "canceled";
 }

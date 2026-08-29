@@ -63,4 +63,15 @@ public sealed class FeedbackEventData
 {
     public FeedbackCampaign? Campaign { get; init; }
     public IReadOnlyList<FeedbackResponse> Responses { get; init; } = [];
+    public FeedbackAvailability? Availability { get; init; }
+}
+
+public sealed class FeedbackAvailability
+{
+    public bool IsAcceptingResponses { get; init; }
+    public required string Status { get; init; }
+    public required string Message { get; init; }
+    public required string ClubDate { get; init; }
+    public string? OpensOn { get; init; }
+    public string? ClosesOn { get; init; }
 }

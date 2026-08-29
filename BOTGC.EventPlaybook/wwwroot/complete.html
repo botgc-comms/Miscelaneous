@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Complete Event Task | Burton-on-Trent Golf Club</title>
-  <link rel="stylesheet" href="./playbook.css?v=20260828-attendee-feedback-1">
+  <link rel="stylesheet" href="./playbook.css?v=20260829-retrospective-analysis-1">
   <link rel="stylesheet" href="./complete.css?v=20260828-attendee-feedback-1">
 </head>
 <body class="completion-body">
@@ -86,7 +86,7 @@
       if (!Array.isArray(insights) || !insights.length) return '';
       return `<aside class="completion-learning">
         <div class="completion-learning-heading"><span>↺</span><div><strong>Learning from last time</strong><small>Consider this before completing the task</small></div></div>
-        ${insights.map(insight => `<div class="completion-learning-entry"><p>${escapeHtml(insight.summary)}</p><small>${escapeHtml(insight.sourceEventName || 'Previous event')}${insight.sourceEventDate ? ` · ${new Date(insight.sourceEventDate + 'T12:00:00').toLocaleDateString('en-GB')}` : ''}${insight.evidenceCount ? ` · based on ${escapeHtml(insight.evidenceCount)} response${Number(insight.evidenceCount) === 1 ? '' : 's'}` : ''}</small></div>`).join('')}
+        ${insights.map(insight => `<div class="completion-learning-entry"><p>${escapeHtml(insight.summary)}</p><small>${escapeHtml(insight.sourceEventName || 'Previous event')}${insight.sourceEventDate ? ` · ${new Date(insight.sourceEventDate + 'T12:00:00').toLocaleDateString('en-GB')}` : ''}${insight.sourceType === 'internal-retrospective' ? ' · internal retrospective' : insight.evidenceCount ? ` · based on ${escapeHtml(insight.evidenceCount)} response${Number(insight.evidenceCount) === 1 ? '' : 's'}` : ''}</small></div>`).join('')}
       </aside>`;
     }
 

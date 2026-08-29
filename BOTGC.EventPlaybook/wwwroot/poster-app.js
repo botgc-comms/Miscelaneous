@@ -53,7 +53,12 @@ function createSession(key, context) {
             selectedLibraryReferences: [],
             publishMediaName: '',
             publishTags: '',
-            publishStartDate: ''
+            publishStartDate: '',
+            diaryTitle: (context?.eventName ?? '').trim(),
+            diaryDescription: context?.description ?? '',
+            diaryStartTime: '',
+            diaryEndTime: '',
+            diaryBookingUrl: ''
         },
         progress: {
             concepts: { cssClass: '', label: 'Waiting' },
@@ -67,6 +72,7 @@ function createSession(key, context) {
         refinementVisible: false,
         publishVisible: false,
         screenPublication: null,
+        diaryPublication: null,
         errorMessage: null,
         generationPromise: null,
         generationAbortController: null,
@@ -286,7 +292,7 @@ function serialiseSession(session, includeInlineArtwork = true) {
 
     return {
         key: session.key,
-        schemaVersion: 6,
+        schemaVersion: 7,
         savedAt: new Date().toISOString(),
         selectedStyleId: session.selectedStyleId,
         selectedOutputIds: [...session.selectedOutputIds],
@@ -311,7 +317,12 @@ function serialiseSession(session, includeInlineArtwork = true) {
             useLibraryReferences: form.useLibraryReferences,
             publishMediaName: session.form.publishMediaName,
             publishTags: session.form.publishTags,
-            publishStartDate: session.form.publishStartDate
+            publishStartDate: session.form.publishStartDate,
+            diaryTitle: session.form.diaryTitle,
+            diaryDescription: session.form.diaryDescription,
+            diaryStartTime: session.form.diaryStartTime,
+            diaryEndTime: session.form.diaryEndTime,
+            diaryBookingUrl: session.form.diaryBookingUrl
         },
         workflowStep: session.workflowStep,
         workflowComplete: generationWasInterrupted ? false : session.workflowComplete,
@@ -321,7 +332,8 @@ function serialiseSession(session, includeInlineArtwork = true) {
         errorMessage: generationWasInterrupted ? INTERRUPTED_GENERATION_MESSAGE : session.errorMessage,
         refinementVisible: session.refinementVisible,
         publishVisible: session.publishVisible,
-        screenPublication: session.screenPublication
+        screenPublication: session.screenPublication,
+        diaryPublication: session.diaryPublication
     };
 }
 
@@ -338,7 +350,7 @@ function applyStoredSession(session, stored) {
     }
 
     const storedForm = stored.form && typeof stored.form === 'object' ? stored.form : {};
-    const stringFields = ['eventId', 'eventName', 'eventDate', 'description', 'price', 'additionalInstructions', 'refinementNotes', 'publishMediaName', 'publishTags', 'publishStartDate'];
+    const stringFields = ['eventId', 'eventName', 'eventDate', 'description', 'price', 'additionalInstructions', 'refinementNotes', 'publishMediaName', 'publishTags', 'publishStartDate', 'diaryTitle', 'diaryDescription', 'diaryStartTime', 'diaryEndTime', 'diaryBookingUrl'];
     for (const field of stringFields) {
         if (typeof storedForm[field] === 'string') session.form[field] = storedForm[field];
     }
@@ -430,7 +442,18 @@ function applyStoredSession(session, stored) {
             destinationName: String(stored.screenPublication.destinationName ?? ''),
             startDate: String(stored.screenPublication.startDate ?? ''),
             endDate: String(stored.screenPublication.endDate ?? ''),
+            pushConfirmed: stored.screenPublication.pushConfirmed === true,
+            pushStatus: String(stored.screenPublication.pushStatus ?? ''),
             updatedAt: String(stored.screenPublication.updatedAt ?? '')
+        };
+    }
+    if (stored.diaryPublication && typeof stored.diaryPublication === 'object' && stored.diaryPublication.remoteId) {
+        session.diaryPublication = {
+            remoteId: String(stored.diaryPublication.remoteId),
+            externalId: String(stored.diaryPublication.externalId ?? ''),
+            operation: String(stored.diaryPublication.operation ?? 'saved'),
+            eventDate: String(stored.diaryPublication.eventDate ?? ''),
+            updatedAt: String(stored.diaryPublication.updatedAt ?? '')
         };
     }
 
@@ -939,6 +962,10 @@ export async function mountPosterStudio(context = {}) {
         sharePanel: document.querySelector('#sharePanel'),
         shareScreensButton: document.querySelector('#shareScreensButton'),
         shareEmailButton: document.querySelector('#shareEmailButton'),
+        sharePrintButton: document.querySelector('#sharePrintButton'),
+        shareDiaryButton: document.querySelector('#shareDiaryButton'),
+        shareDiaryCard: document.querySelector('#shareDiaryCard'),
+        shareDiaryStatus: document.querySelector('#shareDiaryStatus'),
         shareTopButton: document.querySelector('#shareTopButton'),
         shareMessage: document.querySelector('#shareMessage'),
         publishDialog: document.querySelector('#posterPublishDialog'),
@@ -953,7 +980,30 @@ export async function mountPosterStudio(context = {}) {
         yodeckTags: document.querySelector('#yodeckTags'),
         yodeckStartDate: document.querySelector('#yodeckStartDate'),
         yodeckEndDate: document.querySelector('#yodeckEndDate'),
-        yodeckPlaylistName: document.querySelector('#yodeckPlaylistName')
+        yodeckPlaylistName: document.querySelector('#yodeckPlaylistName'),
+        printDialog: document.querySelector('#posterPrintDialog'),
+        printForm: document.querySelector('#posterPrintForm'),
+        printPreview: document.querySelector('#posterPrintPreview'),
+        printPreviewSize: document.querySelector('#posterPrintPreviewSize'),
+        printDialogClose: document.querySelector('#closePosterPrintDialog'),
+        printDialogCancel: document.querySelector('#cancelPosterPrint'),
+        printDialogConfirm: document.querySelector('#confirmPosterPrint'),
+        printDialogMessage: document.querySelector('#posterPrintDialogMessage'),
+        printSizeOptions: document.querySelectorAll('input[name="posterPrintSize"]'),
+        diaryDialog: document.querySelector('#memberDiaryDialog'),
+        diaryForm: document.querySelector('#memberDiaryForm'),
+        diaryPreview: document.querySelector('#memberDiaryPreview'),
+        diaryDialogClose: document.querySelector('#closeMemberDiaryDialog'),
+        diaryDialogCancel: document.querySelector('#cancelMemberDiary'),
+        diaryDialogConfirm: document.querySelector('#confirmMemberDiary'),
+        diaryDialogMessage: document.querySelector('#memberDiaryDialogMessage'),
+        diaryConnectionStatus: document.querySelector('#memberDiaryConnectionStatus'),
+        diaryTitle: document.querySelector('#memberDiaryTitle'),
+        diaryDate: document.querySelector('#memberDiaryDate'),
+        diaryStartTime: document.querySelector('#memberDiaryStartTime'),
+        diaryEndTime: document.querySelector('#memberDiaryEndTime'),
+        diaryDescription: document.querySelector('#memberDiaryDescription'),
+        diaryBookingUrl: document.querySelector('#memberDiaryBookingUrl')
     };
 
     if (!elements.generateButton) {
@@ -997,6 +1047,7 @@ async function initialise(session) {
     await rebuildPersistedCanvases(session);
 
     applyFormToDom(session);
+    configureShareConnections(session);
     updateAutomaticReferenceSelection(session);
     wireEvents(session);
     restoreSessionToDom(session);
@@ -1148,6 +1199,8 @@ function wireEvents(session) {
     elements.cancelGenerationButton.addEventListener('click', () => cancelGeneration(session));
     elements.shareScreensButton.addEventListener('click', openScreenShareDialog);
     elements.shareEmailButton.addEventListener('click', showEmailShareStatus);
+    elements.sharePrintButton?.addEventListener('click', openPrintDialog);
+    elements.shareDiaryButton?.addEventListener('click', openMemberDiaryDialog);
     elements.shareTopButton.addEventListener('click', revealShareOptions);
     elements.publishDialogClose?.addEventListener('click', closePublishDialog);
     elements.publishDialogCancel?.addEventListener('click', closePublishDialog);
@@ -1158,6 +1211,23 @@ function wireEvents(session) {
     elements.publishForm?.addEventListener('submit', event => {
         event.preventDefault();
         sendToClubhouseScreens();
+    });
+    elements.printDialogClose?.addEventListener('click', closePrintDialog);
+    elements.printDialogCancel?.addEventListener('click', closePrintDialog);
+    elements.printForm?.addEventListener('submit', event => {
+        event.preventDefault();
+        printApprovedCampaign();
+    });
+    elements.printSizeOptions?.forEach(input => input.addEventListener('change', updatePrintSizeSelection));
+    elements.diaryDialogClose?.addEventListener('click', closeMemberDiaryDialog);
+    elements.diaryDialogCancel?.addEventListener('click', closeMemberDiaryDialog);
+    elements.diaryDialog?.addEventListener('close', () => {
+        captureMemberDiaryDialog(session);
+        scheduleSessionPersistence(session);
+    });
+    elements.diaryForm?.addEventListener('submit', event => {
+        event.preventDefault();
+        addToMemberDiary();
     });
 }
 
@@ -1175,6 +1245,7 @@ function synchroniseSelectedEventContext(session, seedBrief = false) {
     if (contextEventName) {
         session.customEventName = contextEventName;
         session.form.eventName = contextEventName;
+        session.form.diaryTitle ||= contextEventName;
     }
     if (typeof context.eventDate === 'string') {
         session.form.eventDate = context.eventDate;
@@ -1184,6 +1255,7 @@ function synchroniseSelectedEventContext(session, seedBrief = false) {
         session.form.description = typeof context.description === 'string' && context.description.trim()
             ? context.description
             : catalogueEvent?.description ?? session.form.description;
+        session.form.diaryDescription ||= session.form.description;
         session.form.price = catalogueEvent?.defaultPrice ?? session.form.price;
     }
 }
@@ -1239,9 +1311,21 @@ function restoreSessionToDom(session) {
     elements.refinementPanel.classList.toggle('hidden', !session.refinementVisible);
     elements.sharePanel.classList.toggle('hidden', !session.publishVisible);
     elements.shareTopButton.disabled = !session.publishVisible;
-    if (elements.shareMessage && session.screenPublication) {
-        const publication = session.screenPublication;
-        elements.shareMessage.textContent = `“${publication.mediaName}” is scheduled on ${publication.destinationName} from ${publication.startDate} to ${publication.endDate}. Sending again will update the same screen item.`;
+    if (elements.shareMessage) {
+        const shareHistory = [];
+        if (session.screenPublication) {
+            const publication = session.screenPublication;
+            const pushCopy = publication.pushConfirmed
+                ? 'The latest changes were pushed to the screens.'
+                : 'The artwork is scheduled, but a completed screen push has not been confirmed.';
+            shareHistory.push(`“${publication.mediaName}” is scheduled on ${publication.destinationName} from ${publication.startDate} to ${publication.endDate}. ${pushCopy}`);
+        }
+        if (session.diaryPublication) {
+            shareHistory.push(`The event is linked to the member diary for ${session.diaryPublication.eventDate}.`);
+        }
+        if (shareHistory.length > 0) {
+            elements.shareMessage.textContent = `${shareHistory.join(' ')} Sending again will update the existing destination item.`;
+        }
     }
     if (!session.isGenerating && elements.generationElapsed) {
         elements.generationElapsed.textContent = session.errorMessage
@@ -2379,6 +2463,234 @@ function showEmailShareStatus() {
     elements.shareMessage.textContent = 'Email to members is not connected yet. The campaign artwork remains ready here for the future email integration.';
 }
 
+function configureShareConnections(session) {
+    const diaryConnection = session.config?.memberDiary ?? {};
+    elements.shareDiaryCard?.classList.toggle('pending', !diaryConnection.configured);
+    if (!elements.shareDiaryStatus) return;
+
+    if (!diaryConnection.configured) {
+        elements.shareDiaryStatus.textContent = 'Connection setup required';
+        elements.shareDiaryStatus.classList.remove('hidden');
+    } else if (session.diaryPublication) {
+        elements.shareDiaryStatus.textContent = 'Already in the diary · send again to update';
+        elements.shareDiaryStatus.classList.remove('hidden');
+    } else {
+        elements.shareDiaryStatus.classList.add('hidden');
+    }
+}
+
+function getA4PrintArtwork(session) {
+    const output = session.config?.outputs?.find(item => item.id === 'a4');
+    const canvas = output ? session.posterCanvases.get(output.id) : null;
+    return output && canvas ? { output, canvas } : null;
+}
+
+function getSelectedPrintSize() {
+    return Array.from(elements.printSizeOptions ?? []).find(input => input.checked)?.value ?? 'A4';
+}
+
+function updatePrintSizeSelection() {
+    const selectedSize = getSelectedPrintSize();
+    elements.printSizeOptions?.forEach(input => {
+        input.closest('.print-size-option')?.classList.toggle('selected', input.checked);
+    });
+    if (elements.printDialogConfirm) elements.printDialogConfirm.textContent = `Print ${selectedSize}`;
+    if (elements.printPreviewSize) elements.printPreviewSize.textContent = `${selectedSize} portrait · approved A-series layout`;
+}
+
+function openPrintDialog() {
+    const session = activeSession;
+    if (!session || !elements.printDialog) return;
+    const printArtwork = getA4PrintArtwork(session);
+    if (!printArtwork) {
+        elements.shareMessage.textContent = 'The A4 Print artwork is not ready. Generate or retry that format before printing A3, A4 or A5.';
+        return;
+    }
+
+    elements.printPreview.src = printArtwork.canvas.toDataURL('image/png');
+    elements.printDialogMessage.textContent = '';
+    elements.printDialogMessage.className = 'poster-publish-dialog-message';
+    updatePrintSizeSelection();
+    elements.printDialog.showModal();
+}
+
+function closePrintDialog() {
+    elements.printDialog?.close();
+}
+
+function printApprovedCampaign() {
+    const session = activeSession;
+    const printArtwork = session ? getA4PrintArtwork(session) : null;
+    if (!session || !printArtwork) {
+        elements.printDialogMessage.textContent = 'The approved A-series artwork is no longer available. Close this window and regenerate the A4 format.';
+        elements.printDialogMessage.className = 'poster-publish-dialog-message error';
+        return;
+    }
+
+    const printSize = getSelectedPrintSize();
+    const printWindow = window.open('', '_blank', 'popup,width=920,height=1100');
+    if (!printWindow) {
+        elements.printDialogMessage.textContent = 'The browser blocked the print window. Allow pop-ups for Event Playbook and try again.';
+        elements.printDialogMessage.className = 'poster-publish-dialog-message error';
+        return;
+    }
+
+    printWindow.opener = null;
+    const document = printWindow.document;
+    document.title = `${getCampaignEventName(session)} — ${printSize}`;
+    const style = document.createElement('style');
+    style.textContent = `
+        @page { size: ${printSize} portrait; margin: 0; }
+        * { box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; margin: 0; padding: 0; background: #fff; }
+        body { display: grid; place-items: center; overflow: hidden; }
+        img { display: block; width: 100%; height: 100%; object-fit: contain; }
+        @media screen { body { background: #dce5e2; padding: 20px; } img { width: auto; max-width: 100%; box-shadow: 0 12px 38px rgba(0,0,0,.2); } }
+        @media print { html, body, img { width: 100%; height: 100%; } }
+    `;
+    const image = document.createElement('img');
+    image.alt = `${getCampaignEventName(session)} poster`;
+    image.addEventListener('load', () => {
+        window.setTimeout(() => {
+            printWindow.focus();
+            printWindow.print();
+        }, 150);
+    }, { once: true });
+    document.head.append(style);
+    document.body.append(image);
+    image.src = printArtwork.canvas.toDataURL('image/png');
+
+    elements.shareMessage.textContent = `${getCampaignEventName(session)} is ready to print as ${printSize}.`;
+    closePrintDialog();
+}
+
+function getMemberDiaryArtwork(session) {
+    const outputs = session.config?.outputs ?? [];
+    const squareOutput = outputs.find(output => output.width === output.height && session.posterCanvases.has(output.id));
+    const printOutput = outputs.find(output => output.id === 'a4' && session.posterCanvases.has(output.id));
+    const primaryOutput = getPrimaryOutput(session);
+    const output = squareOutput ?? printOutput ?? primaryOutput;
+    const canvas = output ? session.posterCanvases.get(output.id) : null;
+    return output && canvas ? { output, canvas } : null;
+}
+
+function captureMemberDiaryDialog(session) {
+    if (!elements.diaryTitle) return;
+    session.form.diaryTitle = elements.diaryTitle.value.trim();
+    session.form.diaryDescription = elements.diaryDescription.value.trim();
+    session.form.diaryStartTime = elements.diaryStartTime.value;
+    session.form.diaryEndTime = elements.diaryEndTime.value;
+    session.form.diaryBookingUrl = elements.diaryBookingUrl.value.trim();
+}
+
+function openMemberDiaryDialog() {
+    const session = activeSession;
+    if (!session || !elements.diaryDialog) return;
+    const diaryArtwork = getMemberDiaryArtwork(session);
+    if (!diaryArtwork) {
+        elements.shareMessage.textContent = 'Generate at least one finished campaign format before adding this event to the member diary.';
+        return;
+    }
+
+    elements.diaryPreview.src = diaryArtwork.canvas.toDataURL('image/png');
+    elements.diaryPreview.style.aspectRatio = `${diaryArtwork.output.width} / ${diaryArtwork.output.height}`;
+    elements.diaryTitle.value = session.form.diaryTitle || getCampaignEventName(session);
+    elements.diaryDate.value = session.form.eventDate;
+    elements.diaryStartTime.value = session.form.diaryStartTime || '';
+    elements.diaryEndTime.value = session.form.diaryEndTime || '';
+    elements.diaryDescription.value = session.form.diaryDescription || session.form.description;
+    elements.diaryBookingUrl.value = session.form.diaryBookingUrl || '';
+    elements.diaryDialogMessage.textContent = '';
+    elements.diaryDialogMessage.className = 'poster-publish-dialog-message';
+
+    const connection = session.config?.memberDiary ?? {};
+    elements.diaryConnectionStatus.className = `yodeck-connection-status ${connection.configured ? 'ready' : 'unavailable'}`;
+    elements.diaryConnectionStatus.innerHTML = connection.configured
+        ? '<span></span><div><strong>Member diary connection ready</strong><small>The event will be saved securely to the club diary.</small></div>'
+        : '<span></span><div><strong>Member diary connection unavailable</strong><small>An administrator must complete the server-side diary connection before this event can be added.</small></div>';
+    elements.diaryDialogConfirm.disabled = !connection.configured;
+    elements.diaryDialogConfirm.textContent = session.diaryPublication ? 'Update member diary' : 'Add to member diary';
+    if (connection.configured && session.diaryPublication) {
+        elements.diaryDialogMessage.textContent = 'This event is already linked to a diary entry. Saving again will update the existing entry.';
+    }
+
+    elements.diaryDialog.showModal();
+    requestAnimationFrame(() => elements.diaryTitle.focus());
+}
+
+function closeMemberDiaryDialog() {
+    const session = activeSession;
+    if (session) {
+        captureMemberDiaryDialog(session);
+        scheduleSessionPersistence(session);
+    }
+    elements.diaryDialog?.close();
+}
+
+async function addToMemberDiary() {
+    const session = activeSession;
+    const diaryArtwork = session ? getMemberDiaryArtwork(session) : null;
+    if (!session || !diaryArtwork) return;
+
+    captureMemberDiaryDialog(session);
+    if (!elements.diaryForm.reportValidity()) return;
+    if (session.form.diaryStartTime && session.form.diaryEndTime && session.form.diaryEndTime <= session.form.diaryStartTime) {
+        elements.diaryDialogMessage.textContent = 'Choose an end time after the start time.';
+        elements.diaryDialogMessage.className = 'poster-publish-dialog-message error';
+        return;
+    }
+
+    elements.shareDiaryButton.disabled = true;
+    elements.diaryDialogConfirm.disabled = true;
+    elements.diaryDialogConfirm.textContent = session.diaryPublication ? 'Updating member diary…' : 'Adding to member diary…';
+    elements.diaryDialogMessage.textContent = 'Saving the event details and campaign artwork to the member diary…';
+    elements.diaryDialogMessage.className = 'poster-publish-dialog-message working';
+    elements.shareMessage.textContent = 'Saving this event to the member diary…';
+
+    try {
+        const response = await fetch('/api/poster/member-diary', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                eventId: session.context?.eventId || session.key,
+                eventName: session.form.diaryTitle,
+                eventDate: session.form.eventDate,
+                description: session.form.diaryDescription,
+                startTime: session.form.diaryStartTime || null,
+                endTime: session.form.diaryEndTime || null,
+                bookingUrl: session.form.diaryBookingUrl || null,
+                artwork: {
+                    outputId: diaryArtwork.output.id,
+                    name: diaryArtwork.output.name,
+                    dataUrl: diaryArtwork.canvas.toDataURL('image/png')
+                }
+            })
+        });
+        const result = await readApiResponse(response);
+        session.diaryPublication = {
+            remoteId: String(result.diaryEntryId),
+            externalId: String(result.externalId ?? ''),
+            operation: String(result.operation ?? 'saved'),
+            eventDate: String(result.eventDate ?? session.form.eventDate),
+            updatedAt: new Date().toISOString()
+        };
+        elements.shareMessage.textContent = `“${session.form.diaryTitle}” is now advertised in the member diary for ${session.form.eventDate}. Sending it again will update the same entry.`;
+        configureShareConnections(session);
+        setWorkflowStep(session, 4, true);
+        await persistSession(session);
+        elements.diaryDialog.close();
+    } catch (error) {
+        const message = error instanceof Error ? error.message : 'The event could not be added to the member diary.';
+        elements.shareMessage.textContent = message;
+        elements.diaryDialogMessage.textContent = message;
+        elements.diaryDialogMessage.className = 'poster-publish-dialog-message error';
+        elements.diaryDialogConfirm.textContent = 'Try again';
+        elements.diaryDialogConfirm.disabled = false;
+    } finally {
+        elements.shareDiaryButton.disabled = false;
+    }
+}
+
 function openScreenShareDialog() {
     const session = activeSession;
     if (!session || !elements.publishDialog) return;
@@ -2493,14 +2805,19 @@ async function sendToClubhouseScreens() {
             destinationName: screenResult.destinationName,
             startDate: screenResult.startDate,
             endDate: screenResult.endDate,
+            pushConfirmed: screenResult.pushConfirmed === true,
+            pushStatus: String(screenResult.pushStatus ?? ''),
             updatedAt: new Date().toISOString()
         };
+        const pushMessage = screenResult.pushConfirmed
+            ? 'The changes were pushed to the screens.'
+            : `The screen service accepted the push request; confirmation is still pending${screenResult.pushStatus ? ` (${screenResult.pushStatus})` : ''}.`;
         elements.shareMessage.textContent = wasUpdated
-            ? `“${screenResult.artworkName}” was updated on ${screenResult.destinationName}; its schedule now runs from ${screenResult.startDate} to ${screenResult.endDate}.`
-            : `“${screenResult.artworkName}” will appear on ${screenResult.destinationName} from ${screenResult.startDate} to ${screenResult.endDate}.`;
+            ? `“${screenResult.artworkName}” was updated on ${screenResult.destinationName}; its schedule now runs from ${screenResult.startDate} to ${screenResult.endDate}. ${pushMessage}`
+            : `“${screenResult.artworkName}” will appear on ${screenResult.destinationName} from ${screenResult.startDate} to ${screenResult.endDate}. ${pushMessage}`;
         elements.publishDialogMessage.textContent = wasUpdated
-            ? `Updated successfully. No additional screen-library or playlist item was created.`
-            : `Sent successfully. The artwork is now scheduled for ${screenResult.destinationName}.`;
+            ? `Updated successfully. No additional screen-library or playlist item was created. ${pushMessage}`
+            : `Sent successfully. The artwork is now scheduled for ${screenResult.destinationName}. ${pushMessage}`;
         elements.publishDialogMessage.className = 'poster-publish-dialog-message success';
         elements.publishDialogConfirm.textContent = wasUpdated ? 'Clubhouse screens updated' : 'Sent to clubhouse screens';
 

@@ -64,8 +64,11 @@
   let applyingSharedState = false;
   const feedbackCache = new Map();
   const feedbackRequests = new Set();
+  let pluginSettingsCache = null;
+  let pluginSettingsRequest = null;
+  let pluginSettingsNotice = '';
   const requestedView = new URLSearchParams(window.location.search).get('view');
-  if (['dashboard', 'tasks', 'catalogue', 'artwork', 'retrospective', 'admin', 'references', 'directory'].includes(requestedView)) {
+  if (['dashboard', 'tasks', 'catalogue', 'artwork', 'retrospective', 'admin', 'plugins', 'references', 'directory'].includes(requestedView)) {
     state.activeView = requestedView;
   }
 
@@ -1339,7 +1342,8 @@
             summary: insight.summary,
             sourceEventName: insight.sourceEventName,
             sourceEventDate: insight.sourceEventDate,
-            evidenceCount: Number(insight.evidenceCount || 0)
+            evidenceCount: Number(insight.evidenceCount || 0),
+            sourceType: insight.sourceType
           }))
         })
       });
@@ -1711,7 +1715,7 @@
     }
 
     let event = getActiveEvent();
-    if (!event && !['dashboard', 'catalogue', 'references', 'admin', 'directory'].includes(state.activeView)) {
+    if (!event && !['dashboard', 'catalogue', 'references', 'admin', 'plugins', 'directory'].includes(state.activeView)) {
       state.activeView = 'dashboard';
       saveState();
     }
@@ -1743,6 +1747,7 @@
       : state.activeView === 'directory' ? 'People & Roles'
       : state.activeView === 'references' ? 'Image Library'
       : state.activeView === 'admin' ? 'Playbook Administration'
+      : state.activeView === 'plugins' ? 'Plugin Administration'
       : state.activeView === 'retrospective' ? 'Event Retrospective'
       : 'Event Playbook';
     const shellIntro = state.activeView === 'dashboard' ? 'See the work that needs your attention across every active event, in one calm daily view.'
@@ -1752,7 +1757,8 @@
       : state.activeView === 'directory' ? 'Maintain the people, shared mailboxes, responsibilities and platform access used throughout every event.'
       : state.activeView === 'references' ? 'Maintain reusable images of the clubhouse, course, trophies and interiors so Poster Studio artwork can look recognisably like Burton-on-Trent Golf Club.'
       : state.activeView === 'admin' ? 'Configure the questions, tasks, ownership rules and advisories that make up the club event planning process.'
-      : state.activeView === 'retrospective' ? 'Capture what worked, what did not and what the next organiser should know before this event is run again.'
+      : state.activeView === 'plugins' ? 'Securely configure the external services that connect the Event Playbook to the rest of the club’s systems.'
+      : state.activeView === 'retrospective' ? 'Release the member feedback form, review what went well, what did not, and turn the evidence into guidance for next time.'
       : 'Plan the event consistently from first decision to final close-down, with every relevant question, responsibility and deadline in one place.';
     const showEventEditor = Boolean(event) && state.activeView === 'module:start';
     const showEventTools = Boolean(event) && (isPlanningView || state.activeView === 'tasks' || state.activeView === 'retrospective');
@@ -1809,6 +1815,7 @@
               <div class="progress-track"><div class="progress-fill" style="width:${questionProgress.percent}%"></div></div>`
               : '<div class="sidebar-progress-copy"><strong>No event selected</strong><small>Choose one from the catalogue</small></div>'}
             <button class="sidebar-admin-link ${state.activeView === 'admin' ? 'active' : ''}" data-view="admin">⚙ Playbook administration</button>
+            <button class="sidebar-admin-link ${state.activeView === 'plugins' ? 'active' : ''}" data-view="plugins">⌘ Plugin administration</button>
           </div>
         </aside>
 
@@ -1868,7 +1875,7 @@
 
           <main class="main-content ${state.activeView === 'artwork' ? 'poster-studio' : ''}">
             ${showLifecycleBanner ? renderEventLifecycleBanner(event) : ''}
-            ${state.activeView === 'dashboard' ? renderDashboard() : state.activeView === 'catalogue' ? renderCatalogue() : state.activeView === 'directory' ? renderDirectory() : state.activeView === 'references' ? renderReferenceLibrary() : !event ? renderEmptyState() : state.activeView === 'tasks' ? renderTaskBoard(event, tasks) : state.activeView === 'artwork' ? renderArtworkStudio(event) : state.activeView === 'admin' ? renderAdmin(event) : state.activeView === 'retrospective' ? renderRetrospective(event) : renderModuleView(event)}
+            ${state.activeView === 'dashboard' ? renderDashboard() : state.activeView === 'catalogue' ? renderCatalogue() : state.activeView === 'directory' ? renderDirectory() : state.activeView === 'references' ? renderReferenceLibrary() : state.activeView === 'plugins' ? renderPluginAdministration() : !event ? renderEmptyState() : state.activeView === 'tasks' ? renderTaskBoard(event, tasks) : state.activeView === 'artwork' ? renderArtworkStudio(event) : state.activeView === 'admin' ? renderAdmin(event) : state.activeView === 'retrospective' ? renderRetrospective(event) : renderModuleView(event)}
           </main>
         </main>
       </div>
@@ -1876,12 +1883,14 @@
       ${renderNewEventDialog()}
       <dialog id="event-summary-dialog" class="modal event-summary-dialog"><div id="event-summary-content"></div></dialog>
       ${renderEventStatusDialog(event)}
+      ${renderPluginDialogs()}
     `;
 
     bindEvents();
+    if (state.activeView === 'plugins') ensurePluginSettingsLoaded();
     if (state.activeView === 'retrospective' && event) ensureFeedbackLoaded(event.id);
     if (state.activeView === 'artwork' && event) {
-      import('./poster-app.js?v=20260828-dashboard-artwork-wash-2')
+      import('./poster-app.js?v=20260829-share-print-diary-1')
         .then(module => module.mountPosterStudio({
           eventId: event.id,
           eventName: event.name,
@@ -2281,6 +2290,16 @@
             <div><h3>Members</h3><p>Use the campaign artwork in an email to the club membership.</p><span class="share-action-status">Email connection coming next</span></div>
             <button id="shareEmailButton" class="button button-secondary" type="button">Email to members</button>
           </article>
+          <article class="share-action-card">
+            <span class="share-action-icon">▤</span>
+            <div><h3>Print</h3><p>Print the approved campaign as an A3, A4 or A5 portrait poster.</p></div>
+            <button id="sharePrintButton" class="button button-secondary" type="button">Print</button>
+          </article>
+          <article id="shareDiaryCard" class="share-action-card">
+            <span class="share-action-icon">◫</span>
+            <div><h3>Member diary</h3><p>Advertise the event in the club diary used by members and the member app.</p><span id="shareDiaryStatus" class="share-action-status hidden"></span></div>
+            <button id="shareDiaryButton" class="button button-gold" type="button">Add to member diary</button>
+          </article>
         </div>
         <div id="shareMessage" class="publish-message share-message" role="status">This campaign has not been shared yet.</div>
       </section>
@@ -2306,6 +2325,56 @@
             </div>
           </div>
           <div class="poster-publish-actions"><button id="cancelPosterPublish" class="button button-secondary" type="button">Cancel</button><button id="confirmPosterPublish" class="button button-gold button-large" type="submit">Send to clubhouse screens</button></div>
+        </form>
+      </dialog>
+
+      <dialog id="posterPrintDialog" class="poster-publish-dialog poster-print-dialog">
+        <form id="posterPrintForm">
+          <div class="poster-publish-heading">
+            <div><p class="eyebrow">Print artwork</p><h2>Print the approved poster</h2><p>Choose the finished paper size. The same approved A-series layout is printed without cropping.</p></div>
+            <button id="closePosterPrintDialog" class="icon-button" type="button" aria-label="Close print dialog">×</button>
+          </div>
+          <div class="poster-publish-body">
+            <aside class="poster-publish-preview print-preview"><img id="posterPrintPreview" alt="Approved campaign artwork ready to print"><span>Approved print artwork</span><small id="posterPrintPreviewSize">A4 campaign layout</small></aside>
+            <div class="poster-publish-fields">
+              <fieldset class="print-size-fieldset">
+                <legend>Paper size</legend>
+                <div class="print-size-options">
+                  <label class="print-size-option"><input type="radio" name="posterPrintSize" value="A3"><span><strong>A3</strong><small>297 × 420 mm</small></span></label>
+                  <label class="print-size-option selected"><input type="radio" name="posterPrintSize" value="A4" checked><span><strong>A4</strong><small>210 × 297 mm</small></span></label>
+                  <label class="print-size-option"><input type="radio" name="posterPrintSize" value="A5"><span><strong>A5</strong><small>148 × 210 mm</small></span></label>
+                </div>
+              </fieldset>
+              <div class="print-guidance"><strong>Print-ready campaign</strong><p>The browser print window will open with the selected physical page size, no margins and the approved artwork scaled proportionally to fit.</p></div>
+              <div id="posterPrintDialogMessage" class="poster-publish-dialog-message" role="status"></div>
+            </div>
+          </div>
+          <div class="poster-publish-actions"><button id="cancelPosterPrint" class="button button-secondary" type="button">Cancel</button><button id="confirmPosterPrint" class="button button-gold button-large" type="submit">Print A4</button></div>
+        </form>
+      </dialog>
+
+      <dialog id="memberDiaryDialog" class="poster-publish-dialog member-diary-dialog">
+        <form id="memberDiaryForm">
+          <div class="poster-publish-heading">
+            <div><p class="eyebrow">Member communications</p><h2>Add to member diary</h2><p>Review the member-facing details before advertising this event in the club diary.</p></div>
+            <button id="closeMemberDiaryDialog" class="icon-button" type="button" aria-label="Close member diary dialog">×</button>
+          </div>
+          <div class="poster-publish-body">
+            <aside class="poster-publish-preview diary-preview"><img id="memberDiaryPreview" alt="Campaign artwork for the member diary"><span>Member diary artwork</span><small>Square artwork is preferred when available</small></aside>
+            <div class="poster-publish-fields">
+              <div id="memberDiaryConnectionStatus" class="yodeck-connection-status checking"><span></span><div><strong>Checking the member diary connection…</strong><small>The connection is managed securely by Event Playbook.</small></div></div>
+              <label class="field"><span>Diary title</span><input id="memberDiaryTitle" type="text" maxlength="180" required></label>
+              <div class="poster-publish-date-grid diary-date-grid">
+                <label class="field"><span>Event date</span><input id="memberDiaryDate" type="date" readonly required></label>
+                <label class="field"><span>Start time <em>optional</em></span><input id="memberDiaryStartTime" type="time"></label>
+                <label class="field"><span>End time <em>optional</em></span><input id="memberDiaryEndTime" type="time"></label>
+              </div>
+              <label class="field"><span>Member-facing description</span><textarea id="memberDiaryDescription" rows="6" maxlength="5000" required></textarea><small>This is the information members will see in the diary.</small></label>
+              <label class="field"><span>Booking or information link <em>optional</em></span><input id="memberDiaryBookingUrl" type="url" maxlength="1000" placeholder="https://"></label>
+              <div id="memberDiaryDialogMessage" class="poster-publish-dialog-message" role="status"></div>
+            </div>
+          </div>
+          <div class="poster-publish-actions"><button id="cancelMemberDiary" class="button button-secondary" type="button">Cancel</button><button id="confirmMemberDiary" class="button button-gold button-large" type="submit">Add to member diary</button></div>
         </form>
       </dialog>`;
   }
@@ -2799,12 +2868,27 @@
     const insights = priorLearningForItem(event, item);
     if (!insights.length) return '';
     return `<aside class="prior-learning-card" aria-label="Learning from previous events">
-      <div class="prior-learning-heading"><span>↺</span><div><strong>Learning from last time</strong><small>${insights.length} approved insight${insights.length === 1 ? '' : 's'}</small></div></div>
+      <div class="prior-learning-heading"><span>↺</span><div><strong>${item.type === 'question' ? 'Consider what happened last time' : 'Useful context from last time'}</strong><small>${insights.length} linked retrospective note${insights.length === 1 ? '' : 's'}</small></div></div>
       ${insights.slice(0, 3).map(insight => `<div class="prior-learning-entry">
-        <p>${escapeHtml(insight.summary)}</p>
-        <small>${escapeHtml(insight.sourceEventName ?? 'Previous event')}${insight.sourceEventDate ? ` · ${escapeHtml(formatDate(insight.sourceEventDate))}` : ''}${Number(insight.evidenceCount) > 0 ? ` · based on ${escapeHtml(insight.evidenceCount)} response${Number(insight.evidenceCount) === 1 ? '' : 's'}` : ''}</small>
+        <p>${renderLearningSummary(insight)}</p>
+        <small>${escapeHtml(insight.sourceEventName ?? 'Previous event')}${insight.sourceEventDate ? ` · ${escapeHtml(formatDate(insight.sourceEventDate))}` : ''}${insight.sourceType === 'internal-retrospective' ? ' · internal retrospective' : Number(insight.evidenceCount) > 0 ? ` · informed by ${escapeHtml(insight.evidenceCount)} member response${Number(insight.evidenceCount) === 1 ? '' : 's'}` : ' · organiser retrospective'}</small>
       </div>`).join('')}
     </aside>`;
+  }
+
+  function renderLearningSummary(insight) {
+    const title = String(insight.title ?? '').trim().replace(/[.:]+$/, '');
+    const summary = String(insight.summary ?? '').trim();
+    const normalise = value => value.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+    return title && normalise(title) !== normalise(summary)
+      ? `<strong>${escapeHtml(title)}:</strong> ${escapeHtml(summary)}`
+      : escapeHtml(summary || title || 'Review the learning from the previous event.');
+  }
+
+  function renderTaskBoardLearning(event, item) {
+    const insights = priorLearningForItem(event, item);
+    if (!insights.length) return '';
+    return `<aside class="task-card-learning-note"><span>↺</span><p><strong>Last time:</strong> ${renderLearningSummary(insights[0])}${insights.length > 1 ? ` <small>+${insights.length - 1} more linked note${insights.length === 2 ? '' : 's'}</small>` : ''}</p></aside>`;
   }
 
   function taskBoardPeople() {
@@ -3163,11 +3247,11 @@
               </span>
             </div>
           </div>
+          ${renderTaskBoardLearning(event, item)}
           <details class="task-card-manage">
             <summary><span>Details and assignment</span><span class="task-card-manage-chevron" aria-hidden="true"></span></summary>
             <div class="task-card-manage-body">
               ${detail ? `<p class="task-detail">${escapeHtml(detail)}</p>` : ''}
-              ${renderPriorLearning(event, item)}
               <div class="task-fields">
                 <div class="task-assignment-field">
                   <span>Assigned to</span>
@@ -3300,6 +3384,7 @@
               <span class="eyebrow">${escapeHtml(event.eventDate ? formatDate(event.eventDate) : 'Date not set')}</span>
               <h3>${escapeHtml(event.name)}</h3>
             </div>
+            <button class="catalogue-delete-event" type="button" data-delete-event="${escapeHtml(event.id)}" aria-label="Delete ${escapeHtml(event.name)}" title="Delete this event"><span aria-hidden="true">×</span> Delete</button>
           </div>
           <p class="catalogue-description">${escapeHtml(event.description || 'No event description has been recorded yet.')}</p>
           <div class="catalogue-stats">
@@ -3324,6 +3409,8 @@
     const statusDefinition = eventStatusDefinition(event);
     const tasks = getEventTaskSnapshot(event);
     const retrospectiveFields = playbook.retrospective?.fields ?? [];
+    const sentimentLabels = ['', 'Very difficult', 'Difficult', 'Mixed', 'Good', 'Excellent'];
+    const sentiment = Number(event.retrospective?.sentimentRating || 0);
     return `
       <div class="summary-dialog-header">
         <div>
@@ -3358,11 +3445,14 @@
         <section class="summary-section">
           <div class="summary-section-heading"><h3>Retrospective</h3></div>
           <div class="summary-retro-grid">
+            ${sentiment ? `<div class="summary-retro-item"><span>Overall team feeling</span><strong>${escapeHtml(sentimentLabels[sentiment])} · ${sentiment}/5</strong></div>` : ''}
+            ${event.retrospective?.finalisedAt ? `<div class="summary-retro-item"><span>Retrospective status</span><strong>Finalised ${escapeHtml(new Date(event.retrospective.finalisedAt).toLocaleDateString('en-GB'))}</strong></div>` : ''}
             ${retrospectiveFields.map(field => {
               const value = event.retrospective?.[field.id];
               const display = value === true ? 'Yes' : value === false ? 'No' : value === '' || value === null || value === undefined ? 'Not recorded' : String(value);
               return `<div class="summary-retro-item"><span>${escapeHtml(field.label)}</span><strong>${escapeHtml(display)}</strong></div>`;
             }).join('')}
+            ${event.retrospective?.memberFeedbackSummary ? `<div class="summary-retro-item summary-retro-wide"><span>AI member-feedback summary</span><strong>${escapeHtml(event.retrospective.memberFeedbackSummary)}</strong></div>` : ''}
           </div>
         </section>
       </div>
@@ -3377,16 +3467,301 @@
 
   function renderRetrospective(event) {
     const fields = playbook.retrospective?.fields ?? [];
+    const agileFieldIds = new Set(['worked-well', 'did-not-work', 'change-next-time']);
+    const agileFields = fields.filter(field => agileFieldIds.has(field.id));
+    const outcomeFields = fields.filter(field => !agileFieldIds.has(field.id));
     return `
-      <section class="page-header"><div><div class="eyebrow">Post-event review</div><h2>Retrospective</h2><p>Capture what happened, the financial result and the lessons that should be carried into the next running of this event.</p></div></section>
-      <section class="playbook-section retrospective-section">
-        <header class="retrospective-section-heading"><div><span class="eyebrow">Organiser review</span><h3>Record the internal outcome</h3></div><p>This is the club team's own review of delivery, finances and lessons learned.</p></header>
-        <div class="retrospective-grid">
-          ${fields.map(field => renderRetrospectiveField(field, event)).join('')}
-        </div>
-      </section>
+      <section class="page-header retrospective-page-header"><div><div class="eyebrow">Learn and improve</div><h2>Event retrospective</h2><p>Bring the member voice and the delivery team's experience together, then turn the evidence into useful guidance for the next running.</p></div>${event.retrospective?.finalisedAt ? `<div class="retrospective-finalised-badge"><span>✓ Finalised</span><small>${escapeHtml(new Date(event.retrospective.finalisedAt).toLocaleString('en-GB'))}</small></div>` : ''}</section>
       ${renderAttendeeFeedback(event)}
+      ${renderMemberFeedbackSummary(event)}
+      <section class="playbook-section retrospective-section agile-retrospective-section">
+        <header class="retrospective-section-heading"><div><span class="eyebrow">Delivery team retrospective</span><h3>How did the event feel?</h3></div><p>Choose the face that best represents the team's overall feeling, then use the three agile prompts to capture what should be repeated or changed.</p></header>
+        ${renderRetrospectiveSentiment(event)}
+        <div class="agile-retrospective-grid">${agileFields.map((field, index) => renderAgileRetrospectiveField(field, event, index)).join('')}</div>
+        <details class="retrospective-outcome-details" ${outcomeFields.some(field => event.retrospective?.[field.id] !== undefined && event.retrospective?.[field.id] !== '') ? 'open' : ''}>
+          <summary><span>Event outcome and figures</span><small>Attendance, revenue, costs and whether to run it again</small></summary>
+          <div class="retrospective-grid">${outcomeFields.map(field => renderRetrospectiveField(field, event)).join('')}</div>
+        </details>
+      </section>
+      ${renderRetrospectiveAnalysis(event)}
       ${renderCarryForwardLibrary(event)}`;
+  }
+
+  function renderRetrospectiveSentiment(event) {
+    const value = Number(event.retrospective?.sentimentRating || 0);
+    const options = [
+      { value: 1, icon: '😞', label: 'Very difficult' },
+      { value: 2, icon: '🙁', label: 'Difficult' },
+      { value: 3, icon: '😐', label: 'Mixed' },
+      { value: 4, icon: '🙂', label: 'Good' },
+      { value: 5, icon: '😄', label: 'Excellent' }
+    ];
+    return `<div class="retrospective-sentiment" role="group" aria-label="How the event felt">${options.map(option => `<button type="button" class="sentiment-choice ${value === option.value ? 'selected' : ''}" data-retro-sentiment="${option.value}" aria-pressed="${value === option.value}"><span aria-hidden="true">${option.icon}</span><small>${option.label}</small></button>`).join('')}</div>`;
+  }
+
+  function renderAgileRetrospectiveField(field, event, index) {
+    const value = event.retrospective?.[field.id] ?? '';
+    const prompts = [
+      'Successes, strengths and things worth repeating.',
+      'Problems, friction, surprises or outcomes that disappointed.',
+      'Specific changes that would make the next running better.'
+    ];
+    return `<label class="agile-retro-card agile-retro-${index + 1}"><span class="agile-retro-number">${index + 1}</span><strong>${escapeHtml(field.label)}</strong><small>${escapeHtml(prompts[index] ?? '')}</small><textarea rows="7" data-retro-field="${escapeHtml(field.id)}" placeholder="Record the team's observations…">${escapeHtml(value)}</textarea></label>`;
+  }
+
+  function renderMemberFeedbackSummary(event) {
+    const data = feedbackCache.get(event.id);
+    const responseCount = data?.responses?.length ?? 0;
+    const summary = event.retrospective?.memberFeedbackSummary;
+    const summarisedResponseCount = Number(event.retrospective?.memberFeedbackSummaryResponseCount ?? 0);
+    const hasNewResponses = Boolean(summary) && responseCount > summarisedResponseCount;
+    const canSummarise = responseCount > 0 && !data?.error;
+    return `<section class="playbook-section member-feedback-summary-section">
+      <header class="retrospective-section-heading"><div><span class="eyebrow">AI member-feedback summary</span><h3>What members told us</h3></div><p>The summary keeps recurring themes and useful minority views visible without attributing comments to individuals.</p></header>
+      <div class="member-feedback-summary ${summary ? 'has-summary' : ''}">
+        <div class="member-feedback-summary-icon">✦</div>
+        <div><strong>${hasNewResponses ? `${responseCount - summarisedResponseCount} new response${responseCount - summarisedResponseCount === 1 ? '' : 's'} since the summary` : summary ? `${responseCount} response${responseCount === 1 ? '' : 's'} summarised` : canSummarise ? `${responseCount} response${responseCount === 1 ? '' : 's'} ready to summarise` : 'Waiting for member feedback'}</strong><p>${escapeHtml(summary || (canSummarise ? 'Generate a concise AI summary when the feedback window has closed, or refresh it whenever more responses arrive.' : 'Once responses arrive, their ratings and comments can be condensed into a neutral summary here.'))}</p>${event.retrospective?.memberFeedbackSummaryAt ? `<small>Last generated ${escapeHtml(new Date(event.retrospective.memberFeedbackSummaryAt).toLocaleString('en-GB'))}</small>` : ''}</div>
+        ${canSummarise ? `<button class="button button-secondary" type="button" data-action="summarise-member-feedback">${summary ? 'Refresh summary' : 'Summarise member feedback'}</button>` : ''}
+      </div>
+    </section>`;
+  }
+
+  function renderRetrospectiveAnalysis(event) {
+    const analysis = event.retrospective?.taskAnalysis;
+    const proposals = analysis?.proposals ?? [];
+    return `<section class="playbook-section retrospective-analysis-section">
+      <header class="retrospective-section-heading">
+        <div><span class="eyebrow">Finalise and carry forward</span><h3>Turn the retrospective into future guidance</h3></div>
+        <p>AI reviews the member feedback and team retrospective together, then attaches each supported lesson to the most relevant planning question or task.</p>
+      </header>
+      <div class="retrospective-analysis-body">
+        <label class="retrospective-narrative-field"><span>Additional context <small>optional</small></span><textarea id="retrospectiveNarrative" rows="4" maxlength="12000" placeholder="Add any other evidence or context that does not fit the three prompts above.">${escapeHtml(event.retrospective?.aiNarrative ?? '')}</textarea></label>
+        <div class="retrospective-analysis-actions">
+          <p>Finalising replaces the previous AI-generated links for this event, while leaving any manually approved learning intact. Avoid names or unnecessary personal information.</p>
+          <button class="button button-primary retrospective-finalise-button" type="button" data-action="finalise-retrospective">${event.retrospective?.finalisedAt ? 'Re-finalise retrospective' : 'Finalise retrospective with AI'}</button>
+        </div>
+        ${analysis ? `<div class="retrospective-analysis-result">
+          <header><div><span class="analysis-mode ${analysis.mode === 'openai' ? 'ai' : 'fallback'}">${analysis.mode === 'openai' ? 'AI analysed' : 'Local matching'}</span><h4>${escapeHtml(analysis.summary ?? 'Analysis complete')}</h4></div><small>${analysis.generatedAt ? `Finalised ${escapeHtml(new Date(analysis.generatedAt).toLocaleString('en-GB'))}` : ''}</small></header>
+          ${proposals.length ? `<div class="retrospective-proposal-list">${proposals.map(proposal => renderRetrospectiveProposal(proposal, event)).join('')}</div>` : `<div class="feedback-empty"><span>?</span><div><strong>No confident planning links were found</strong><p>Add more specific operational detail, then finalise again. Learning can still be added manually from the member comments above.</p></div></div>`}
+        </div>` : ''}
+      </div>
+    </section>`;
+  }
+
+  function renderRetrospectiveProposal(proposal, event) {
+    const targetValue = proposal.targetItemId
+      ? `item:${proposal.targetItemId}`
+      : proposal.targetSectionId
+        ? `section:${proposal.targetModuleId ?? ''}:${proposal.targetSectionId}`
+        : proposal.targetModuleId
+          ? `module:${proposal.targetModuleId}`
+          : '';
+    const indexed = proposal.targetItemId ? itemIndex.get(proposal.targetItemId) : null;
+    const completed = proposal.targetItemId ? event.taskState?.[proposal.targetItemId]?.completed === true : false;
+    const alreadyApproved = Boolean(event.learningInsights?.some(insight => insight.sourceProposalId === proposal.id));
+    return `<article class="retrospective-proposal ${alreadyApproved ? 'approved' : ''}" data-retrospective-proposal-id="${escapeHtml(proposal.id)}">
+      <header>
+        <div><span class="proposal-confidence">${escapeHtml(proposal.confidence ?? 0)}% match</span>${completed ? '<span class="proposal-completed">Task completed</span>' : ''}</div>
+        <span class="insight-importance ${escapeHtml(proposal.importance ?? 'consider')}">${escapeHtml(proposal.importance ?? 'consider')}</span>
+      </header>
+      <label><span>Reusable learning title</span><input type="text" maxlength="120" value="${escapeHtml(proposal.title ?? '')}" data-retrospective-proposal-field="title"></label>
+      <label><span>Learning for the next organiser</span><textarea rows="4" maxlength="1500" data-retrospective-proposal-field="summary">${escapeHtml(proposal.summary ?? '')}</textarea></label>
+      <label><span>Show this beside</span><select data-retrospective-proposal-target>${renderLearningTargetOptions(targetValue)}</select></label>
+      <div class="proposal-evidence"><span>Source evidence</span><blockquote>${escapeHtml(proposal.sourceExcerpt ?? '')}</blockquote><p>${escapeHtml(proposal.reason ?? '')}</p>${indexed ? `<small>Attached to ${escapeHtml(indexed.item.type)}: ${escapeHtml(indexed.item.title ?? indexed.item.label)}</small>` : ''}</div>
+      <footer>
+        ${alreadyApproved ? '<span class="proposal-approved-mark">✓ Attached for the next running</span>' : `<button class="button button-primary" type="button" data-approve-retrospective-proposal="${escapeHtml(proposal.id)}">Attach and carry forward</button>`}
+        <button class="button button-secondary" type="button" data-dismiss-retrospective-proposal="${escapeHtml(proposal.id)}">${alreadyApproved ? 'Hide suggestion' : 'Dismiss'}</button>
+      </footer>
+    </article>`;
+  }
+
+  function retrospectiveTextForAnalysis(event) {
+    const labels = new Map((playbook.retrospective?.fields ?? []).map(field => [field.id, field.label]));
+    const structured = ['worked-well', 'did-not-work', 'change-next-time']
+      .map(id => {
+        const value = String(event.retrospective?.[id] ?? '').trim();
+        return value ? `${labels.get(id) ?? id}: ${value}` : '';
+      })
+      .filter(Boolean);
+    const sentimentLabels = ['', 'Very difficult', 'Difficult', 'Mixed', 'Good', 'Excellent'];
+    const sentiment = Number(event.retrospective?.sentimentRating || 0);
+    return [sentiment ? `Overall team feeling: ${sentimentLabels[sentiment]} (${sentiment}/5)` : '', ...structured, String(event.retrospective?.aiNarrative ?? '').trim()].filter(Boolean).join('\n\n');
+  }
+
+  function retrospectivePlannerContexts(event) {
+    const contexts = new Map();
+    for (const module of playbook.modules.filter(candidate => isModuleActive(candidate, event))) {
+      for (const section of module.sections) {
+        for (const item of section.items.filter(candidate => candidate.type === 'question' && isItemVisible(candidate, event))) {
+          contexts.set(item.id, {
+            id: item.id,
+            itemType: 'question',
+            title: item.label,
+            detail: item.helpText ?? '',
+            moduleId: module.id,
+            moduleTitle: module.title,
+            sectionId: section.id,
+            sectionTitle: section.title,
+            completed: isAnsweredValue(getQuestionValue(item.id, event))
+          });
+        }
+      }
+    }
+    for (const task of getActiveTasks(event)) {
+      contexts.set(task.item.id, {
+        id: task.item.id,
+        itemType: 'task',
+        title: task.item.title,
+        detail: getTaskDetail(task.item, event),
+        moduleId: task.module.id,
+        moduleTitle: task.module.title,
+        sectionId: task.section.id,
+        sectionTitle: task.section.title,
+        completed: task.state.completed === true
+      });
+    }
+    for (const [itemId, taskState] of Object.entries(event.taskState ?? {})) {
+      if (taskState?.completed !== true || contexts.has(itemId)) continue;
+      const indexed = itemIndex.get(itemId);
+      if (!indexed || indexed.item.type !== 'task') continue;
+      contexts.set(itemId, {
+        id: itemId,
+        itemType: 'task',
+        title: indexed.item.title,
+        detail: getTaskDetail(indexed.item, event),
+        moduleId: indexed.module.id,
+        moduleTitle: indexed.module.title,
+        sectionId: indexed.section.id,
+        sectionTitle: indexed.section.title,
+        completed: true
+      });
+    }
+    return [...contexts.values()];
+  }
+
+  function memberFeedbackTextForAnalysis(event) {
+    const data = feedbackCache.get(event.id);
+    const campaign = data?.campaign;
+    const responses = data?.responses ?? [];
+    if (!campaign || !responses.length) return '';
+    const questionMap = new Map((campaign.questions ?? []).map(question => [question.id, question.label]));
+    const lines = [`Responses received: ${responses.length}`];
+    for (const response of responses) {
+      const answers = Object.entries(response.answers ?? {})
+        .map(([questionId, answer]) => `${questionMap.get(questionId) ?? questionId}: ${String(answer ?? '').trim()}`)
+        .filter(line => !line.endsWith(': '));
+      if (answers.length) lines.push(answers.join(' | '));
+    }
+    return lines.join('\n').slice(0, 16000);
+  }
+
+  function questionIdsFromCondition(condition, result = []) {
+    if (!condition) return result;
+    if (condition.questionId) result.push(condition.questionId);
+    for (const part of condition.all ?? []) questionIdsFromCondition(part, result);
+    for (const part of condition.any ?? []) questionIdsFromCondition(part, result);
+    if (condition.not) questionIdsFromCondition(condition.not, result);
+    return result;
+  }
+
+  function relatedLearningTargetItemIds(itemId) {
+    const indexed = itemIndex.get(itemId);
+    if (!indexed) return [itemId];
+    return [...new Set([
+      itemId,
+      ...questionIdsFromCondition(indexed.item.showWhen),
+      ...questionIdsFromCondition(indexed.module.activation)
+    ].filter(id => itemIndex.get(id)?.item?.type === 'question' || id === itemId))];
+  }
+
+  function captureRetrospectiveInputs(event) {
+    document.querySelectorAll('[data-retro-field]').forEach(element => {
+      const value = element.type === 'number' && element.value !== '' ? Number(element.value) : element.value;
+      event.retrospective[element.dataset.retroField] = value;
+    });
+    const narrative = document.getElementById('retrospectiveNarrative');
+    if (narrative) event.retrospective.aiNarrative = narrative.value;
+  }
+
+  async function runRetrospectiveAnalysis(event, button, { finalise = false } = {}) {
+    captureRetrospectiveInputs(event);
+    const retrospectiveText = retrospectiveTextForAnalysis(event);
+    const customerFeedbackText = memberFeedbackTextForAnalysis(event);
+    if (!retrospectiveText && !customerFeedbackText) {
+      alert(finalise
+        ? 'Record how the event felt, add something to the three retrospective prompts, or collect member feedback before finalising it.'
+        : 'There is no member feedback to summarise yet.');
+      return;
+    }
+
+    const originalText = button?.textContent ?? '';
+    if (button) {
+      button.disabled = true;
+      button.textContent = finalise ? 'Analysing and attaching learning…' : 'Summarising member feedback…';
+    }
+    saveState();
+    try {
+      const data = feedbackCache.get(event.id);
+      const responseCount = data?.responses?.length ?? 0;
+      const response = await fetch('/api/retrospective/analyse', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          eventName: event.name,
+          eventDescription: event.description,
+          retrospectiveText,
+          customerFeedbackText,
+          customerFeedbackResponseCount: responseCount,
+          sentimentRating: Number(event.retrospective?.sentimentRating || 0) || null,
+          tasks: retrospectivePlannerContexts(event)
+        })
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.error || 'The retrospective could not be analysed.');
+
+      event.retrospective.memberFeedbackSummary = payload.customerFeedbackSummary || 'No member feedback has been received yet.';
+      event.retrospective.memberFeedbackSummaryAt = new Date().toISOString();
+      event.retrospective.memberFeedbackSummaryResponseCount = responseCount;
+      if (finalise) {
+        const analysisId = crypto.randomUUID();
+        const generatedAt = new Date().toISOString();
+        const proposals = (payload.proposals ?? []).map(proposal => ({ ...proposal, approved: true }));
+        event.retrospective.taskAnalysis = { ...payload, analysisId, generatedAt, proposals };
+        event.retrospective.finalisedAt = generatedAt;
+        event.learningInsights ??= [];
+        event.learningInsights = event.learningInsights.filter(insight => insight.sourceType !== 'finalised-retrospective');
+        for (const proposal of proposals) {
+          if (!proposal.title || !proposal.summary || !proposal.targetItemId) continue;
+          event.learningInsights.push({
+            id: crypto.randomUUID(),
+            title: proposal.title,
+            summary: proposal.summary,
+            importance: proposal.importance ?? 'consider',
+            evidenceCount: responseCount,
+            targetModuleIds: [],
+            targetSectionIds: [],
+            targetItemIds: relatedLearningTargetItemIds(proposal.targetItemId),
+            sourceEventName: event.name,
+            sourceEventDate: event.eventDate,
+            sourceType: 'finalised-retrospective',
+            sourceProposalId: proposal.id,
+            sourceAnalysisId: analysisId,
+            sourceExcerpt: proposal.sourceExcerpt,
+            confidence: proposal.confidence,
+            createdAt: generatedAt
+          });
+        }
+      }
+      saveState();
+      render();
+      requestAnimationFrame(() => document.querySelector(finalise ? '.retrospective-analysis-result' : '.member-feedback-summary-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+    } catch (error) {
+      alert(error.message || 'The retrospective could not be analysed.');
+      if (button) {
+        button.disabled = false;
+        button.textContent = originalText;
+      }
+    }
   }
 
   async function ensureFeedbackLoaded(eventId, force = false) {
@@ -3415,19 +3790,23 @@
 
     const campaign = data.campaign;
     const responses = data.responses ?? [];
+    const availability = data.availability ?? (campaign ? {
+      isAcceptingResponses: campaign.isOpen === true,
+      message: campaign.isOpen ? 'The form is configured to accept responses.' : 'The organiser has paused this feedback form.'
+    } : null);
     const customQuestion = campaign?.questions?.find(question => question.id === 'custom-question')?.label ?? '';
     const closesOn = campaign?.closesOn ?? (event.eventDate ? addDaysToIsoDate(event.eventDate, 7) : '');
     const publicUrl = campaign ? `${location.origin}/feedback.html?token=${encodeURIComponent(campaign.publicToken)}` : '';
     return `<section class="playbook-section attendee-feedback-section">
       <header class="retrospective-section-heading">
-        <div><span class="eyebrow">Attendee voice</span><h3>Anonymous event feedback</h3></div>
+        <div><span class="eyebrow">1 · Release member feedback</span><h3>Member feedback form</h3></div>
         <div class="feedback-response-total"><strong>${responses.length}</strong><span>response${responses.length === 1 ? '' : 's'}</span></div>
       </header>
       <div class="feedback-manager-grid ${campaign ? 'has-campaign' : ''}">
         <form id="feedbackCampaignForm" class="feedback-campaign-form">
           <div class="feedback-campaign-copy">
             <h4>${campaign ? 'Manage the public feedback form' : 'Create a public feedback form'}</h4>
-            <p>The reusable link and QR code can be emailed, printed or displayed after the event. Responses do not contain attendee identities.</p>
+            <p>The reusable link and QR code can be emailed, printed or displayed at or after the event. Responses do not contain attendee identities.</p>
           </div>
           <div class="feedback-campaign-fields">
             <label><span>Open from</span><input id="feedbackOpensOn" type="date" value="${escapeHtml(campaign?.opensOn ?? event.eventDate ?? '')}"></label>
@@ -3439,7 +3818,7 @@
         </form>
         ${campaign ? `<aside class="feedback-share-card">
           <img src="/api/feedback/public/${encodeURIComponent(campaign.publicToken)}/qr.svg" alt="QR code linking to feedback for ${escapeHtml(event.name)}">
-          <div><span class="feedback-status ${campaign.isOpen ? 'open' : 'closed'}">${campaign.isOpen ? 'Accepting responses' : 'Closed'}</span><h4>Share with attendees</h4><p>Use the same link for email, ticketing integrations or a QR code at the event.</p></div>
+          <div><span class="feedback-status ${availability?.isAcceptingResponses ? 'open' : 'closed'}">${availability?.isAcceptingResponses ? 'Accepting responses' : 'Not accepting responses'}</span><h4>Share with attendees</h4><p>${escapeHtml(availability?.message ?? '')} Use the same link for email, ticketing integrations or a QR code at the event.</p></div>
           <input id="feedbackPublicUrl" type="text" readonly value="${escapeHtml(publicUrl)}" aria-label="Public feedback link">
           <div class="button-row"><button class="button button-secondary" type="button" data-action="copy-feedback-link">Copy link</button><a class="button button-secondary" href="${escapeHtml(publicUrl)}" target="_blank" rel="noopener">Open form</a><a class="button button-secondary" href="/api/feedback/public/${encodeURIComponent(campaign.publicToken)}/qr.svg" download="${escapeHtml(slugify(event.name))}-feedback-qr.svg">Download QR</a></div>
         </aside>` : ''}
@@ -3463,7 +3842,7 @@
       }
     }
     return `<div class="feedback-results">
-      <header><div><span class="eyebrow">Response summary</span><h4>What attendees said</h4></div><small>Free-text comments remain anonymous and are not automatically added to future plans.</small></header>
+      <header><div><span class="eyebrow">Response detail</span><h4>What members said</h4></div><small>Free-text comments remain anonymous. Finalising the retrospective analyses them and links supported learning to future planning.</small></header>
       <div class="feedback-metrics">
         ${ratingQuestions.map(question => {
           const values = responses.map(response => Number(feedbackAnswer(response, question.id))).filter(value => value >= 1 && value <= 5);
@@ -3502,18 +3881,18 @@
     </form>`;
   }
 
-  function renderLearningTargetOptions() {
+  function renderLearningTargetOptions(selectedValue = '') {
     return playbook.modules.map(module => `<optgroup label="${escapeHtml(module.title)}">
-      <option value="module:${escapeHtml(module.id)}">Whole module — ${escapeHtml(module.title)}</option>
-      ${module.sections.map(section => `<option value="section:${escapeHtml(module.id)}:${escapeHtml(section.id)}">Section — ${escapeHtml(section.title)}</option>${section.items.filter(item => ['question', 'task'].includes(item.type)).map(item => `<option value="item:${escapeHtml(item.id)}">${item.type === 'task' ? 'Task' : 'Question'} — ${escapeHtml(item.title ?? item.label)}</option>`).join('')}`).join('')}
+      <option value="module:${escapeHtml(module.id)}" ${selectedValue === `module:${module.id}` ? 'selected' : ''}>Whole module — ${escapeHtml(module.title)}</option>
+      ${module.sections.map(section => `<option value="section:${escapeHtml(module.id)}:${escapeHtml(section.id)}" ${selectedValue === `section:${module.id}:${section.id}` ? 'selected' : ''}>Section — ${escapeHtml(section.title)}</option>${section.items.filter(item => ['question', 'task'].includes(item.type)).map(item => `<option value="item:${escapeHtml(item.id)}" ${selectedValue === `item:${item.id}` ? 'selected' : ''}>${item.type === 'task' ? 'Task' : 'Question'} — ${escapeHtml(item.title ?? item.label)}</option>`).join('')}`).join('')}
     </optgroup>`).join('');
   }
 
   function renderCarryForwardLibrary(event) {
     const insights = event.learningInsights ?? [];
     return `<section class="playbook-section carry-forward-library">
-      <header class="retrospective-section-heading"><div><span class="eyebrow">Reusable knowledge</span><h3>Approved for the next running</h3></div><p>These notes will be shown in context when this event is cloned.</p></header>
-      ${insights.length ? `<div class="carry-forward-list">${insights.map(insight => `<article><div><span class="insight-importance ${escapeHtml(insight.importance ?? 'consider')}">${escapeHtml(insight.importance ?? 'consider')}</span><h4>${escapeHtml(insight.title)}</h4><p>${escapeHtml(insight.summary)}</p><small>${escapeHtml(learningTargetLabel(insight))}${Number(insight.evidenceCount) > 0 ? ` · ${escapeHtml(insight.evidenceCount)} attendee response${Number(insight.evidenceCount) === 1 ? '' : 's'}` : ''}</small></div><button class="button button-secondary" type="button" data-remove-learning-insight="${escapeHtml(insight.id)}">Remove</button></article>`).join('')}</div>` : `<div class="feedback-empty"><span>↺</span><div><strong>No learning has been approved yet</strong><p>Review attendee comments above, rewrite the useful evidence and choose where it should appear next time.</p></div></div>`}
+      <header class="retrospective-section-heading"><div><span class="eyebrow">Reusable knowledge</span><h3>Attached to the next running</h3></div><p>These notes will be shown directly beside the relevant questions and task cards when this event is cloned.</p></header>
+      ${insights.length ? `<div class="carry-forward-list">${insights.map(insight => `<article><div><span class="insight-importance ${escapeHtml(insight.importance ?? 'consider')}">${escapeHtml(insight.importance ?? 'consider')}</span><h4>${escapeHtml(insight.title)}</h4><p>${escapeHtml(insight.summary)}</p><small>${escapeHtml(learningTargetLabel(insight))}${insight.sourceType === 'internal-retrospective' ? ' · internal retrospective' : Number(insight.evidenceCount) > 0 ? ` · ${escapeHtml(insight.evidenceCount)} member response${Number(insight.evidenceCount) === 1 ? '' : 's'}` : ' · organiser retrospective'}</small></div><button class="button button-secondary" type="button" data-remove-learning-insight="${escapeHtml(insight.id)}">Remove</button></article>`).join('')}</div>` : `<div class="feedback-empty"><span>↺</span><div><strong>No learning has been attached yet</strong><p>Complete the agile retrospective and finalise it to attach useful evidence to future planning.</p></div></div>`}
     </section>`;
   }
 
@@ -3532,6 +3911,25 @@
     }
     const module = moduleIndex.get(insight.targetModuleIds?.[0]);
     return module ? `Module: ${module.title}` : 'Planner context';
+  }
+
+  function learningTargetFromValue(value) {
+    const [targetType, firstId, secondId] = String(value ?? '').split(':');
+    if (targetType === 'item' && firstId) {
+      const indexed = itemIndex.get(firstId);
+      return {
+        targetItemId: firstId,
+        targetModuleId: indexed?.module?.id ?? '',
+        targetSectionId: indexed?.section?.id ?? ''
+      };
+    }
+    if (targetType === 'section' && firstId && secondId) {
+      return { targetItemId: '', targetModuleId: firstId, targetSectionId: secondId };
+    }
+    if (targetType === 'module' && firstId) {
+      return { targetItemId: '', targetModuleId: firstId, targetSectionId: '' };
+    }
+    return { targetItemId: '', targetModuleId: '', targetSectionId: '' };
   }
 
   function renderRetrospectiveField(field, event) {
@@ -3751,6 +4149,135 @@
         <button type="button" class="directory-delete-button" data-delete-directory-role="${escapeHtml(role.id)}" ${deletionUsage.canDelete ? '' : `disabled title="Used by ${escapeHtml(deletionSummary)}"`}>Delete role</button>
       </div>
     </article>`;
+  }
+
+  async function ensurePluginSettingsLoaded(force = false) {
+    if (pluginSettingsCache && !force) return pluginSettingsCache;
+    if (pluginSettingsRequest && !force) return pluginSettingsRequest;
+
+    pluginSettingsRequest = (async () => {
+      try {
+        const response = await fetch('/api/admin/plugins', { cache: 'no-store' });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(payload.error || `Plugin settings could not be loaded (${response.status}).`);
+        pluginSettingsCache = payload;
+      } catch (error) {
+        pluginSettingsCache = { error: error.message || 'Plugin settings could not be loaded.' };
+      } finally {
+        pluginSettingsRequest = null;
+      }
+
+      if (state.activeView === 'plugins') render();
+      return pluginSettingsCache;
+    })();
+
+    return pluginSettingsRequest;
+  }
+
+  function pluginStatus(summary) {
+    if (summary?.enabled && summary?.configured) return { label: 'Enabled', className: 'enabled' };
+    if (summary?.configured) return { label: 'Credentials saved', className: 'configured' };
+    return { label: 'Not configured', className: 'unconfigured' };
+  }
+
+  function pluginUpdatedLabel(value) {
+    if (!value) return 'Not configured yet';
+    const date = new Date(value);
+    return Number.isNaN(date.getTime())
+      ? 'Settings saved'
+      : `Updated ${date.toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}`;
+  }
+
+  function renderPluginAdministration() {
+    if (!pluginSettingsCache) {
+      return `<section class="plugin-admin-intro"><div><span class="eyebrow">Application administration</span><h2>Plugins & integrations</h2><p>Connect the Playbook to the systems used by the club without putting passwords or tokens into the browser.</p></div></section>
+        <section class="plugin-admin-grid" aria-busy="true">
+          <article class="plugin-card plugin-card-loading"><div class="plugin-card-icon">IG</div><div><h3>Intelligent Golf</h3><p>Loading secure configuration…</p></div></article>
+          <article class="plugin-card plugin-card-loading"><div class="plugin-card-icon monday">M</div><div><h3>Monday.com</h3><p>Loading secure configuration…</p></div></article>
+        </section>`;
+    }
+
+    if (pluginSettingsCache.error) {
+      return `<section class="plugin-admin-intro"><div><span class="eyebrow">Application administration</span><h2>Plugins & integrations</h2><p>Connect the Playbook to the systems used by the club without putting passwords or tokens into the browser.</p></div></section>
+        <section class="plugin-load-error" role="alert"><strong>Plugin settings could not be loaded</strong><span>${escapeHtml(pluginSettingsCache.error)}</span><button class="button button-secondary" type="button" data-action="reload-plugin-settings">Try again</button></section>`;
+    }
+
+    const intelligentGolf = pluginSettingsCache.intelligentGolf ?? {};
+    const monday = pluginSettingsCache.monday ?? {};
+    const intelligentGolfStatus = pluginStatus(intelligentGolf);
+    const mondayStatus = pluginStatus(monday);
+
+    return `
+      <section class="plugin-admin-intro">
+        <div><span class="eyebrow">Application administration</span><h2>Plugins & integrations</h2><p>Connect the Playbook to the systems used by the club. Credentials are encrypted on the server and are never shown again after they have been saved.</p></div>
+        <div class="plugin-security-note"><span>◆</span><div><strong>Server-side secret storage</strong><small>Passwords, PINs and tokens are excluded from shared event data and browser storage.</small></div></div>
+      </section>
+      ${pluginSettingsNotice ? `<div class="plugin-settings-notice" role="status">${escapeHtml(pluginSettingsNotice)}</div>` : ''}
+      <section class="plugin-admin-grid">
+        <article class="plugin-card">
+          <header class="plugin-card-header"><div class="plugin-card-icon">IG</div><div class="plugin-card-title"><span class="plugin-status ${intelligentGolfStatus.className}">${escapeHtml(intelligentGolfStatus.label)}</span><h3>Intelligent Golf</h3><p>Club diary, member communications and event information.</p></div></header>
+          <div class="plugin-card-body">
+            <p>Keep the club login credentials required by the server-side Intelligent Golf integration in one protected place.</p>
+            <dl class="plugin-facts">
+              <div><dt>Club site</dt><dd>${escapeHtml(intelligentGolf.siteUrl || 'Not set')}</dd></div>
+              <div><dt>PIN</dt><dd>${intelligentGolf.hasPin ? 'Saved securely' : 'Not set'}</dd></div>
+              <div><dt>Password</dt><dd>${intelligentGolf.hasPassword ? 'Saved securely' : 'Not set'}</dd></div>
+              <div><dt>Administrator password</dt><dd>${intelligentGolf.hasAdminPassword ? 'Saved securely' : 'Not set'}</dd></div>
+            </dl>
+          </div>
+          <footer class="plugin-card-actions"><small>${escapeHtml(pluginUpdatedLabel(intelligentGolf.updatedAtUtc))}</small><button class="button button-primary" type="button" data-configure-plugin="intelligent-golf">${intelligentGolf.configured ? 'Update settings' : 'Configure'}</button></footer>
+        </article>
+
+        <article class="plugin-card">
+          <header class="plugin-card-header"><div class="plugin-card-icon monday">M</div><div class="plugin-card-title"><span class="plugin-status ${mondayStatus.className}">${escapeHtml(mondayStatus.label)}</span><h3>Monday.com</h3><p>Workflow and task integration for operational teams.</p></div></header>
+          <div class="plugin-card-body">
+            <p>Use a personal API token for this club-owned prototype. Workspace and board IDs identify the initial destination for future task synchronisation.</p>
+            <dl class="plugin-facts">
+              <div><dt>API token</dt><dd>${monday.hasApiToken ? 'Saved securely' : 'Not set'}</dd></div>
+              <div><dt>Workspace ID</dt><dd>${escapeHtml(monday.workspaceId || 'Not set')}</dd></div>
+              <div><dt>Board ID</dt><dd>${escapeHtml(monday.boardId || 'Not set')}</dd></div>
+              <div><dt>Authentication</dt><dd>Personal API token</dd></div>
+            </dl>
+          </div>
+          <footer class="plugin-card-actions"><small>${escapeHtml(pluginUpdatedLabel(monday.updatedAtUtc))}</small><button class="button button-primary" type="button" data-configure-plugin="monday">${monday.configured ? 'Update settings' : 'Configure'}</button></footer>
+        </article>
+      </section>
+      <section class="plugin-roadmap-note"><strong>Prototype integration model</strong><p>These settings make credentials available securely to server-side adapters. Intelligent Golf still requires the club’s private integration workflow; Monday.com can move to OAuth when this becomes a multi-club product.</p></section>`;
+  }
+
+  function renderPluginDialogs() {
+    if (!pluginSettingsCache || pluginSettingsCache.error) return '';
+    const intelligentGolf = pluginSettingsCache.intelligentGolf ?? {};
+    const monday = pluginSettingsCache.monday ?? {};
+    return `
+      <dialog id="intelligent-golf-plugin-dialog" class="plugin-dialog">
+        <form id="intelligent-golf-plugin-form">
+          <header class="modal-heading"><div><span class="eyebrow">Plugin settings</span><h2>Configure Intelligent Golf</h2><p>Save the credentials used by the club’s Intelligent Golf integration.</p></div><button class="icon-button" type="button" data-close-plugin-dialog aria-label="Close">×</button></header>
+          <div class="plugin-dialog-body">
+            <div class="plugin-dialog-guidance"><strong>Secrets cannot be revealed</strong><p>Saved values are deliberately never returned to this page. Leave a secret field blank to retain the existing value.</p></div>
+            <label class="wide"><span>Intelligent Golf club site</span><input id="ig-plugin-site-url" type="url" inputmode="url" autocomplete="url" placeholder="https://yourclub.intelligentgolf.co.uk" value="${escapeHtml(intelligentGolf.siteUrl || '')}"><small>Use the complete https address for the club’s Intelligent Golf site.</small></label>
+            <label><span>PIN</span><input id="ig-plugin-pin" type="password" inputmode="numeric" autocomplete="new-password" spellcheck="false" placeholder="${intelligentGolf.hasPin ? 'Saved — leave blank to keep' : 'Enter the integration PIN'}"></label>
+            <label><span>Password</span><input id="ig-plugin-password" type="password" autocomplete="new-password" spellcheck="false" placeholder="${intelligentGolf.hasPassword ? 'Saved — leave blank to keep' : 'Enter the Intelligent Golf password'}"></label>
+            <label class="wide"><span>Administrator password</span><input id="ig-plugin-admin-password" type="password" autocomplete="new-password" spellcheck="false" placeholder="${intelligentGolf.hasAdminPassword ? 'Saved — leave blank to keep' : 'Enter the administrator password'}"><small>This is the separate administrator credential used when the integration performs privileged actions.</small></label>
+            <label class="plugin-enabled-control wide"><input id="ig-plugin-enabled" type="checkbox" ${intelligentGolf.enabled ? 'checked' : ''}><span><strong>Enable this plugin</strong><small>Only enable it after all four settings above have been supplied.</small></span></label>
+          </div>
+          <footer class="modal-actions">${intelligentGolf.configured ? '<button class="button button-danger plugin-disconnect-button" type="button" data-disconnect-plugin="intelligent-golf">Remove credentials</button>' : ''}<span></span><button class="button button-secondary" type="button" data-close-plugin-dialog>Cancel</button><button class="button button-primary" type="submit">Save Intelligent Golf</button></footer>
+        </form>
+      </dialog>
+
+      <dialog id="monday-plugin-dialog" class="plugin-dialog">
+        <form id="monday-plugin-form">
+          <header class="modal-heading"><div><span class="eyebrow">Plugin settings</span><h2>Configure Monday.com</h2><p>Connect the prototype using a personal API token held by an appropriate Monday.com user.</p></div><button class="icon-button" type="button" data-close-plugin-dialog aria-label="Close">×</button></header>
+          <div class="plugin-dialog-body">
+            <div class="plugin-dialog-guidance"><strong>Token permissions follow the Monday.com user</strong><p>The integration can only see and change boards that the token owner is allowed to access. Leave the token blank to retain the saved value.</p></div>
+            <label class="wide"><span>Personal API token</span><input id="monday-plugin-token" type="password" autocomplete="new-password" spellcheck="false" placeholder="${monday.hasApiToken ? 'Saved — leave blank to keep' : 'Paste the Monday.com API token'}"></label>
+            <label><span>Workspace ID <em>optional</em></span><input id="monday-plugin-workspace" type="text" inputmode="numeric" autocomplete="off" value="${escapeHtml(monday.workspaceId || '')}" placeholder="Workspace ID"></label>
+            <label><span>Board ID <em>optional</em></span><input id="monday-plugin-board" type="text" inputmode="numeric" autocomplete="off" value="${escapeHtml(monday.boardId || '')}" placeholder="Board ID"></label>
+            <label class="plugin-enabled-control wide"><input id="monday-plugin-enabled" type="checkbox" ${monday.enabled ? 'checked' : ''}><span><strong>Enable this plugin</strong><small>The token must be saved before the plugin can be enabled.</small></span></label>
+          </div>
+          <footer class="modal-actions">${monday.configured ? '<button class="button button-danger plugin-disconnect-button" type="button" data-disconnect-plugin="monday">Remove credentials</button>' : ''}<span></span><button class="button button-secondary" type="button" data-close-plugin-dialog>Cancel</button><button class="button button-primary" type="submit">Save Monday.com</button></footer>
+        </form>
+      </dialog>`;
   }
 
   function renderAdmin(event) {
@@ -4358,6 +4885,35 @@
     }
   }
 
+  async function savePluginConfiguration(dialog, endpoint, payload, successMessage, submitButton) {
+    const originalLabel = submitButton?.textContent ?? 'Save';
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = 'Saving…';
+    }
+
+    try {
+      const response = await fetch(endpoint, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || `Plugin settings could not be saved (${response.status}).`);
+
+      dialog?.close();
+      pluginSettingsCache = null;
+      pluginSettingsNotice = successMessage;
+      render();
+    } catch (error) {
+      alert(error.message || 'Plugin settings could not be saved.');
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = originalLabel;
+      }
+    }
+  }
+
   function bindEvents() {
     bindAssignmentPickers();
     document.querySelectorAll('[data-view]').forEach(element => {
@@ -4366,6 +4922,71 @@
         if (state.activeView === 'tasks') state.taskBoardHorizon = 'auto';
         saveState();
         render();
+      });
+    });
+
+    document.querySelectorAll('[data-configure-plugin]').forEach(element => {
+      element.addEventListener('click', () => {
+        const dialogId = element.dataset.configurePlugin === 'monday'
+          ? 'monday-plugin-dialog'
+          : 'intelligent-golf-plugin-dialog';
+        document.getElementById(dialogId)?.showModal();
+      });
+    });
+
+    document.querySelectorAll('[data-close-plugin-dialog]').forEach(element => {
+      element.addEventListener('click', () => element.closest('dialog')?.close());
+    });
+
+    document.querySelectorAll('[data-action="reload-plugin-settings"]').forEach(element => {
+      element.addEventListener('click', () => {
+        pluginSettingsCache = null;
+        render();
+      });
+    });
+
+    document.getElementById('intelligent-golf-plugin-form')?.addEventListener('submit', eventArgs => {
+      eventArgs.preventDefault();
+      const dialog = eventArgs.currentTarget.closest('dialog');
+      savePluginConfiguration(dialog, '/api/admin/plugins/intelligent-golf', {
+        enabled: document.getElementById('ig-plugin-enabled')?.checked === true,
+        siteUrl: document.getElementById('ig-plugin-site-url')?.value ?? '',
+        pin: document.getElementById('ig-plugin-pin')?.value ?? '',
+        password: document.getElementById('ig-plugin-password')?.value ?? '',
+        adminPassword: document.getElementById('ig-plugin-admin-password')?.value ?? ''
+      }, 'Intelligent Golf settings were saved securely.', eventArgs.submitter);
+    });
+
+    document.getElementById('monday-plugin-form')?.addEventListener('submit', eventArgs => {
+      eventArgs.preventDefault();
+      const dialog = eventArgs.currentTarget.closest('dialog');
+      savePluginConfiguration(dialog, '/api/admin/plugins/monday', {
+        enabled: document.getElementById('monday-plugin-enabled')?.checked === true,
+        apiToken: document.getElementById('monday-plugin-token')?.value ?? '',
+        workspaceId: document.getElementById('monday-plugin-workspace')?.value ?? '',
+        boardId: document.getElementById('monday-plugin-board')?.value ?? ''
+      }, 'Monday.com settings were saved securely.', eventArgs.submitter);
+    });
+
+    document.querySelectorAll('[data-disconnect-plugin]').forEach(element => {
+      element.addEventListener('click', async () => {
+        const pluginId = element.dataset.disconnectPlugin;
+        const name = pluginId === 'monday' ? 'Monday.com' : 'Intelligent Golf';
+        if (!confirm(`Remove all saved ${name} credentials and disable this plugin?`)) return;
+
+        element.disabled = true;
+        try {
+          const response = await fetch(`/api/admin/plugins/${encodeURIComponent(pluginId)}`, { method: 'DELETE' });
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(result.error || `The ${name} credentials could not be removed.`);
+          element.closest('dialog')?.close();
+          pluginSettingsCache = result;
+          pluginSettingsNotice = `${name} was disconnected and its saved credentials were removed.`;
+          render();
+        } catch (error) {
+          alert(error.message || `The ${name} credentials could not be removed.`);
+          element.disabled = false;
+        }
       });
     });
 
@@ -4407,11 +5028,15 @@
         const eventId = element.dataset.deleteEvent;
         const target = state.events.find(item => item.id === eventId);
         if (!target) return;
-        if (!confirm(`Delete the event plan “${target.name}”?`)) return;
+        if (!confirm(`Permanently delete “${target.name}” from the Event Catalogue?\n\nThis removes its plan, answers, task state and retrospective from the Playbook. Generated files and media already sent to external services are not deleted automatically.`)) return;
         state.events = state.events.filter(item => item.id !== eventId);
+        state.notificationOutbox = (state.notificationOutbox ?? []).filter(notification => notification.eventId !== eventId);
+        feedbackCache.delete(eventId);
+        feedbackRequests.delete(eventId);
         if (state.activeEventId === eventId) {
-          state.activeEventId = state.events[0]?.id ?? null;
+          state.activeEventId = state.events.find(candidate => !candidate.closedAt)?.id ?? state.events[0]?.id ?? null;
         }
+        document.getElementById('event-summary-dialog')?.close();
         saveState();
         render();
       });
@@ -4711,6 +5336,106 @@
         const event = getActiveEvent(); if (!event) return;
         event.retrospective[element.dataset.retroChoice] = element.dataset.value === 'true';
         saveState(); render();
+      });
+    });
+
+    document.querySelectorAll('[data-retro-sentiment]').forEach(element => {
+      element.addEventListener('click', () => {
+        const event = getActiveEvent();
+        if (!event) return;
+        event.retrospective.sentimentRating = Number(element.dataset.retroSentiment);
+        saveState();
+        render();
+      });
+    });
+
+    document.getElementById('retrospectiveNarrative')?.addEventListener('change', elementEvent => {
+      const event = getActiveEvent();
+      if (!event) return;
+      event.retrospective.aiNarrative = elementEvent.currentTarget.value;
+      saveState();
+    });
+
+    document.querySelectorAll('[data-action="summarise-member-feedback"]').forEach(element => {
+      element.addEventListener('click', () => {
+        const event = getActiveEvent();
+        if (event) runRetrospectiveAnalysis(event, element, { finalise: false });
+      });
+    });
+
+    document.querySelectorAll('[data-action="finalise-retrospective"]').forEach(element => {
+      element.addEventListener('click', () => {
+        const event = getActiveEvent();
+        if (event) runRetrospectiveAnalysis(event, element, { finalise: true });
+      });
+    });
+
+    document.querySelectorAll('[data-retrospective-proposal-field]').forEach(element => {
+      element.addEventListener('change', () => {
+        const event = getActiveEvent();
+        const proposal = event?.retrospective?.taskAnalysis?.proposals?.find(candidate => candidate.id === element.closest('[data-retrospective-proposal-id]')?.dataset.retrospectiveProposalId);
+        if (!proposal) return;
+        proposal[element.dataset.retrospectiveProposalField] = element.value.trim();
+        saveState();
+      });
+    });
+
+    document.querySelectorAll('[data-retrospective-proposal-target]').forEach(element => {
+      element.addEventListener('change', () => {
+        const event = getActiveEvent();
+        const proposal = event?.retrospective?.taskAnalysis?.proposals?.find(candidate => candidate.id === element.closest('[data-retrospective-proposal-id]')?.dataset.retrospectiveProposalId);
+        if (!proposal) return;
+        Object.assign(proposal, learningTargetFromValue(element.value));
+        saveState();
+      });
+    });
+
+    document.querySelectorAll('[data-approve-retrospective-proposal]').forEach(element => {
+      element.addEventListener('click', () => {
+        const event = getActiveEvent();
+        const proposal = event?.retrospective?.taskAnalysis?.proposals?.find(candidate => candidate.id === element.dataset.approveRetrospectiveProposal);
+        const row = element.closest('[data-retrospective-proposal-id]');
+        if (!event || !proposal || !row) return;
+        proposal.title = row.querySelector('[data-retrospective-proposal-field="title"]')?.value.trim() ?? proposal.title;
+        proposal.summary = row.querySelector('[data-retrospective-proposal-field="summary"]')?.value.trim() ?? proposal.summary;
+        Object.assign(proposal, learningTargetFromValue(row.querySelector('[data-retrospective-proposal-target]')?.value ?? ''));
+        if (!proposal.title || !proposal.summary || (!proposal.targetItemId && !proposal.targetSectionId && !proposal.targetModuleId)) {
+          alert('Give the learning a title, summary and planner target before approving it.');
+          return;
+        }
+        event.learningInsights ??= [];
+        event.learningInsights = event.learningInsights.filter(insight => insight.sourceProposalId !== proposal.id);
+        event.learningInsights.push({
+          id: crypto.randomUUID(),
+          title: proposal.title,
+          summary: proposal.summary,
+          importance: proposal.importance ?? 'consider',
+          evidenceCount: 0,
+          targetModuleIds: proposal.targetModuleId && !proposal.targetItemId ? [proposal.targetModuleId] : [],
+          targetSectionIds: proposal.targetSectionId && !proposal.targetItemId ? [proposal.targetSectionId] : [],
+          targetItemIds: proposal.targetItemId ? relatedLearningTargetItemIds(proposal.targetItemId) : [],
+          sourceEventName: event.name,
+          sourceEventDate: event.eventDate,
+          sourceType: 'internal-retrospective',
+          sourceProposalId: proposal.id,
+          sourceExcerpt: proposal.sourceExcerpt,
+          confidence: proposal.confidence,
+          createdAt: new Date().toISOString()
+        });
+        proposal.approved = true;
+        saveState();
+        render();
+      });
+    });
+
+    document.querySelectorAll('[data-dismiss-retrospective-proposal]').forEach(element => {
+      element.addEventListener('click', () => {
+        const event = getActiveEvent();
+        const analysis = event?.retrospective?.taskAnalysis;
+        if (!event || !analysis) return;
+        analysis.proposals = (analysis.proposals ?? []).filter(proposal => proposal.id !== element.dataset.dismissRetrospectiveProposal);
+        saveState();
+        render();
       });
     });
 

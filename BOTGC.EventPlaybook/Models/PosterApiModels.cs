@@ -158,6 +158,63 @@ public sealed class YodeckPublishResult
     public required bool PlaylistWasChanged { get; init; }
 
     public required int DuplicatePlaylistEntriesRemoved { get; init; }
+
+    public required bool ScreenPushRequested { get; init; }
+
+    public required bool ScreenPushConfirmed { get; init; }
+
+    public required string ScreenPushStatus { get; init; }
+}
+
+public sealed class MemberDiaryPublishRequest
+{
+    public required string EventId { get; init; }
+
+    public required string EventName { get; init; }
+
+    public required string EventDate { get; init; }
+
+    public required string Description { get; init; }
+
+    public string? StartTime { get; init; }
+
+    public string? EndTime { get; init; }
+
+    public string? BookingUrl { get; init; }
+
+    public PublishAsset? Artwork { get; init; }
+}
+
+public sealed class MemberDiaryPublishCommand
+{
+    public required string EventId { get; init; }
+
+    public required string EventName { get; init; }
+
+    public required DateOnly EventDate { get; init; }
+
+    public required string Description { get; init; }
+
+    public string? StartTime { get; init; }
+
+    public string? EndTime { get; init; }
+
+    public string? BookingUrl { get; init; }
+
+    public string? ArtworkFileName { get; init; }
+
+    public byte[]? ArtworkBytes { get; init; }
+}
+
+public sealed class MemberDiaryPublishResult
+{
+    public required string RemoteId { get; init; }
+
+    public required string ExternalId { get; init; }
+
+    public required string Operation { get; init; }
+
+    public required DateOnly EventDate { get; init; }
 }
 
 
