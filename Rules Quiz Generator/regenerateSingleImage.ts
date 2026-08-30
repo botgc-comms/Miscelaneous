@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import { assertSafeFileName, assertSafeFolderName } from "./quizFiles.js";
 
 type RegenerateSingleImageRequest = {
   outputDir: string;
@@ -47,16 +48,6 @@ async function latestPromptFileName(folderPath: string): Promise<string> {
     .sort((a, b) => b.version - a.version);
 
   return promptFiles[0]?.name ?? "final-prompt-v2.txt";
-}
-
-function safeFolderName(folderName: string): string {
-  const normalised = path.normalize(folderName);
-
-  if (normalised.includes("..") || path.isAbsolute(normalised)) {
-    throw new Error("Invalid folderName.");
-  }
-
-  return normalised;
 }
 
 async function nextVersion(folderPath: string): Promise<number> {
@@ -128,14 +119,17 @@ export async function regenerateSingleImage(request: RegenerateSingleImageReques
     throw new Error("instructions is required.");
   }
 
-  const folderName = safeFolderName(request.folderName);
+  const folderName = assertSafeFolderName(request.folderName);
   const folderPath = path.join(request.outputDir, folderName);
 
   if (!await pathExists(folderPath)) {
     throw new Error(`Folder not found: ${folderName}`);
   }
 
-  const sourcePromptFileName = request.promptFileName ?? await latestPromptFileName(folderPath);
+  const sourcePromptFileName = assertSafeFileName(
+    request.promptFileName ?? await latestPromptFileName(folderPath),
+    /^final-prompt(?:-v\d+)?\.txt$/i
+  );
   const sourcePromptPath = path.join(folderPath, sourcePromptFileName);
 
   if (!await pathExists(sourcePromptPath)) {
@@ -174,6 +168,6 @@ export async function regenerateSingleImage(request: RegenerateSingleImageReques
     imageFileName,
     promptFileName,
     resultFileName,
-    imagePath: `/${folderName}/${imageFileName}`,
+    imagePath: `/assets/${encodeURIComponent(folderName)}/${encodeURIComponent(imageFileName)}`,
   };
 }

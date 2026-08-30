@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import { assertSafeFolderName } from "./quizFiles.js";
 
 type Choice = { id: string; text: string };
 
@@ -69,16 +70,6 @@ async function pathExists(filePath: string): Promise<boolean> {
   } catch {
     return false;
   }
-}
-
-function safeFolderName(folderName: string): string {
-  const normalised = path.normalize(folderName);
-
-  if (normalised.includes("..") || path.isAbsolute(normalised)) {
-    throw new Error("Invalid folderName.");
-  }
-
-  return normalised;
 }
 
 async function latestQuestionVersionPath(folderPath: string): Promise<string | null> {
@@ -261,7 +252,7 @@ export async function suggestQuestionEdit(request: SuggestQuestionEditRequest): 
     throw new Error("instructions is required.");
   }
 
-  const folderName = safeFolderName(request.folderName);
+  const folderName = assertSafeFolderName(request.folderName);
   const folderPath = path.join(request.outputDir, folderName);
   const metadataPath = path.join(folderPath, "metadata.json");
 
@@ -332,8 +323,8 @@ export async function suggestQuestionEdit(request: SuggestQuestionEditRequest): 
     folderName,
     questionFileName,
     juniorQuestionFileName,
-    questionPath: `/${folderName}/${questionFileName}`,
-    juniorQuestionPath: `/${folderName}/${juniorQuestionFileName}`,
+    questionPath: `/assets/${encodeURIComponent(folderName)}/${encodeURIComponent(questionFileName)}`,
+    juniorQuestionPath: `/assets/${encodeURIComponent(folderName)}/${encodeURIComponent(juniorQuestionFileName)}`,
     suggestion,
     juniorSuggestion,
   };
