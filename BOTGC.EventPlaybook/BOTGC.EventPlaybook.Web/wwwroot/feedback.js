@@ -24,7 +24,7 @@
   }
 
   function renderForm(campaign) {
-    document.title = `${campaign.eventName} feedback | Burton-on-Trent Golf Club`;
+    document.title = `${campaign.eventName} feedback | ${window.clubBranding?.clubName || 'Burton-on-Trent Golf Club'}`;
     content.innerHTML = `
       <div class="feedback-intro">
         <span class="eyebrow">Event feedback</span>

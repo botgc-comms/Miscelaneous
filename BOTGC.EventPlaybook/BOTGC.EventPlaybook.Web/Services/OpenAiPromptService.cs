@@ -11,6 +11,7 @@ namespace BOTGC.EventPlaybook.Services;
 public sealed class OpenAiPromptService(
     IHttpClientFactory httpClientFactory,
     IPosterConfigurationService posterConfiguration,
+    IClubBrandingStore clubBrandingStore,
     IOptions<OpenAiOptions> options,
     ILogger<OpenAiPromptService> logger) : IImagePromptService
 {
@@ -24,9 +25,11 @@ public sealed class OpenAiPromptService(
         CancellationToken cancellationToken)
     {
         var configuration = posterConfiguration.Get();
+        var clubName = (await clubBrandingStore.GetOverviewAsync(cancellationToken)).ClubName;
         var styleVariation = ResolveStyleVariation(style, request.StyleVariationId);
         var fallbackPrompt = BuildPrimaryFallbackPrompt(
             configuration,
+            clubName,
             request,
             eventDefinition,
             style,
@@ -77,11 +80,11 @@ public sealed class OpenAiPromptService(
                 {
                     eventDate = request.IncludeDate ? FormatEventDate(request.EventDate) : null,
                     price = request.IncludePrice ? request.Price?.Trim() : null,
-                    clubName = request.IncludeClubBranding ? configuration.Brand.Name : null,
+                    clubName = request.IncludeClubBranding ? clubName : null,
                     clubLogoRequested = request.IncludeClubBranding,
                     clubLogoRule = request.IncludeClubBranding
                         ? "The real Club mark will be applied after generation. Keep the upper-right safe area visually quiet for it, but do not draw, imitate or invent it."
-                        : "Do not show the Club name, BOTGC initials, a crest, shield, monogram, wordmark or any Club logo or branding."
+                        : "Do not show the Club name, club initials, a crest, shield, monogram, wordmark or any Club logo or branding."
                 }
             },
             safetyRecovery = BuildSafetyRecoveryDirection(request),
@@ -135,7 +138,7 @@ public sealed class OpenAiPromptService(
         };
 
         return await CreatePromptAsync(
-            configuration.Prompting.CreativeDirectorInstruction,
+            ApplyClubName(configuration.Prompting.CreativeDirectorInstruction, configuration.Brand.Name, clubName),
             brief,
             fallbackPrompt,
             cancellationToken);
@@ -149,9 +152,11 @@ public sealed class OpenAiPromptService(
         CancellationToken cancellationToken)
     {
         var configuration = posterConfiguration.Get();
+        var clubName = (await clubBrandingStore.GetOverviewAsync(cancellationToken)).ClubName;
         var styleVariation = ResolveStyleVariation(style, request.StyleVariationId);
         var fallbackPrompt = BuildVariantFallbackPrompt(
             configuration,
+            clubName,
             request,
             eventDefinition,
             style,
@@ -171,7 +176,7 @@ public sealed class OpenAiPromptService(
         {
             task = "Create the final image-edit prompt for adapting the supplied DIGITAL-SCREEN MASTER poster into another format. The result is another version of the same campaign, with only the compositional differences required by the target dimensions.",
             sourceImageInstruction = "The first attached image, named primary-campaign-artwork.png, is the authoritative key reference and approved finished campaign master. Preserve its subjects, campaign idea, art direction, colour relationships, visual details, typography character and exact required text. Preserve or improve the master's colour richness and tonal separation; never mute, desaturate or wash out its palette. Supporting images are secondary references only. Recompose the complete design for the new frame rather than cropping the master or inventing a new concept.",
-            brand = request.IncludeClubBranding ? configuration.Brand.Name : null,
+            brand = request.IncludeClubBranding ? clubName : null,
             eventData = new
             {
                 title = eventDefinition.Name,
@@ -216,7 +221,7 @@ public sealed class OpenAiPromptService(
             {
                 renderAsFinishedPoster = true,
                 fullFrameRule = "The adapted image is the finished target artwork itself. Recompose it edge to edge for the complete target canvas; never place the source poster inside a frame, border, mat, mockup or blurred duplicate background.",
-                clubName = request.IncludeClubBranding ? configuration.Brand.Name : null,
+                clubName = request.IncludeClubBranding ? clubName : null,
                 clubBrandingRequested = request.IncludeClubBranding,
                 eventTitle = eventDefinition.Name,
                 eventDate = request.IncludeDate ? FormatEventDate(request.EventDate) : null,
@@ -224,7 +229,7 @@ public sealed class OpenAiPromptService(
                 exactTextRule = "Preserve and render all supplied required text exactly. The adapted image must not change spelling, wording, dates, currency or event identity.",
                 clubBrandingRule = request.IncludeClubBranding
                     ? "The real Club mark will be applied after generation. Keep the upper-right safe area visually quiet for it, but do not draw, imitate or invent a crest, shield, monogram or logo."
-                    : "Remove and do not reproduce any Club name, BOTGC initials, crest, shield, monogram, wordmark or other Club logo that may be present in the source artwork.",
+                    : "Remove and do not reproduce any Club name, club initials, crest, shield, monogram, wordmark or other Club logo that may be present in the source artwork.",
                 textSafetyRule = "Recompose every text element fully inside the target output safe margins. No glyph, word, date, price, text box, text badge or text-bearing panel may be cropped, clipped or touch an image edge. Reduce or reflow typography as needed.",
                 adaptationContinuityRule = "The target must read as the same campaign at a different dimension: retain the master's recognisable scene and hierarchy, then reposition, reflow or resize elements only as needed. Never solve the aspect-ratio change with a crop.",
                 colourQualityRule = configuration.Prompting.ColourQualityDirection,
@@ -241,7 +246,7 @@ public sealed class OpenAiPromptService(
         };
 
         return await CreatePromptAsync(
-            configuration.Prompting.CreativeDirectorInstruction,
+            ApplyClubName(configuration.Prompting.CreativeDirectorInstruction, configuration.Brand.Name, clubName),
             brief,
             fallbackPrompt,
             cancellationToken);
@@ -343,6 +348,7 @@ public sealed class OpenAiPromptService(
 
     private static string BuildPrimaryFallbackPrompt(
         PosterConfiguration configuration,
+        string clubName,
         GeneratePosterRequest request,
         EventDefinition eventDefinition,
         PosterStyleDefinition style,
@@ -391,12 +397,12 @@ public sealed class OpenAiPromptService(
         }
         if (request.IncludeClubBranding)
         {
-            builder.AppendLine($"- Include club name exactly: {configuration.Brand.Name}");
+            builder.AppendLine($"- Include club name exactly: {clubName}");
             builder.AppendLine("- The real Club mark is added after generation. Keep the upper-right safe area quiet, but do not draw, imitate or invent a logo.");
         }
         else
         {
-            builder.AppendLine("- Do not include the Club name, BOTGC initials, a crest, shield, monogram, wordmark or other Club branding.");
+            builder.AppendLine("- Do not include the Club name, club initials, a crest, shield, monogram, wordmark or other Club branding.");
         }
 
         builder.AppendLine();
@@ -466,6 +472,7 @@ public sealed class OpenAiPromptService(
 
     private static string BuildVariantFallbackPrompt(
         PosterConfiguration configuration,
+        string clubName,
         GenerateVariantRequest request,
         EventDefinition eventDefinition,
         PosterStyleDefinition style,
@@ -515,12 +522,12 @@ public sealed class OpenAiPromptService(
         builder.AppendLine("REQUIRED TEXT TO PRESERVE");
         if (request.IncludeClubBranding)
         {
-            builder.AppendLine($"Club name: {configuration.Brand.Name}");
+            builder.AppendLine($"Club name: {clubName}");
             builder.AppendLine("The real Club mark will be applied after generation. Keep the upper-right safe area visually quiet for it, but do not draw, imitate or invent a crest, shield, monogram or logo.");
         }
         else
         {
-            builder.AppendLine("Remove and do not reproduce any Club name, BOTGC initials, crest, shield, monogram, wordmark or other Club logo that may be present in the source artwork.");
+            builder.AppendLine("Remove and do not reproduce any Club name, club initials, crest, shield, monogram, wordmark or other Club logo that may be present in the source artwork.");
         }
         builder.AppendLine($"Event title: {eventDefinition.Name}");
 
@@ -710,6 +717,11 @@ public sealed class OpenAiPromptService(
 
     private static string? NormaliseOptional(string? value) =>
         string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+
+    private static string ApplyClubName(string value, string configuredClubName, string clubName) =>
+        string.IsNullOrWhiteSpace(configuredClubName)
+            ? value
+            : value.Replace(configuredClubName, clubName, StringComparison.OrdinalIgnoreCase);
 
     private static string StripCodeFence(string value)
     {

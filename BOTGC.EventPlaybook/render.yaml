@@ -46,6 +46,10 @@ services:
         sync: false
       - key: INTELLIGENT_GOLF_DIARY_HTTP_METHOD
         value: PUT
+      - key: EventPlaybookApi__BaseUrl
+        value: http://botgc-event-playbook-api-dev:10000
+      - key: EventPlaybookApi__ApiKey
+        sync: false
 
   - type: pserv
     name: botgc-event-playbook-api-dev
@@ -63,12 +67,6 @@ services:
         sync: false
       - key: IntelligentGolf__BaseUrl
         value: https://www.botgc.co.uk
-      - key: IntelligentGolf__MemberId
-        sync: false
-      - key: IntelligentGolf__MemberPassword
-        sync: false
-      - key: IntelligentGolf__AdminPassword
-        sync: false
       - key: IntelligentGolf__EmailSenderMemberNumber
         sync: false
       - key: IntelligentGolf__EmailFromName

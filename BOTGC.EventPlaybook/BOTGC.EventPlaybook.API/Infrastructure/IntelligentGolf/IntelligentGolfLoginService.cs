@@ -13,12 +13,30 @@ public sealed partial class IntelligentGolfLoginService(
     public async Task<bool> LoginAsync(CancellationToken cancellationToken = default)
     {
         var settings = options.Value;
+        return await LoginAsync(
+            new IntelligentGolfCredentials(
+                settings.BaseUrl,
+                settings.MemberId,
+                settings.MemberPassword,
+                settings.AdminPassword),
+            cancellationToken);
+    }
 
-        if (string.IsNullOrWhiteSpace(settings.MemberId) ||
-            string.IsNullOrWhiteSpace(settings.MemberPassword) ||
-            string.IsNullOrWhiteSpace(settings.AdminPassword))
+    public async Task<bool> LoginAsync(
+        IntelligentGolfCredentials credentials,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(credentials.MemberId) ||
+            string.IsNullOrWhiteSpace(credentials.MemberPassword) ||
+            string.IsNullOrWhiteSpace(credentials.AdminPassword))
         {
             logger.LogError("Intelligent Golf credentials are not configured.");
+            return false;
+        }
+
+        if (!Uri.TryCreate(credentials.BaseUrl?.TrimEnd('/') + "/", UriKind.Absolute, out var baseUri))
+        {
+            logger.LogError("The Intelligent Golf site URL is invalid.");
             return false;
         }
 
@@ -26,7 +44,7 @@ public sealed partial class IntelligentGolfLoginService(
 
         try
         {
-            var loginPage = await GetPageAsync(client, "login.php", cancellationToken);
+            var loginPage = await GetPageAsync(client, baseUri, "login.php", cancellationToken);
             if (!loginPage.Success)
             {
                 logger.LogError(
@@ -52,12 +70,13 @@ public sealed partial class IntelligentGolfLoginService(
                     {
                         ["task"] = "login",
                         ["topmenu"] = "1",
-                        ["memberid"] = settings.MemberId,
-                        ["pin"] = settings.MemberPassword,
+                        ["memberid"] = credentials.MemberId,
+                        ["pin"] = credentials.MemberPassword,
                         ["cachemid"] = "1",
                         ["_csrf_token"] = csrfToken,
                         ["Submit"] = "Login"
                     },
+                    baseUri,
                     "login.php",
                     cancellationToken);
 
@@ -75,7 +94,7 @@ public sealed partial class IntelligentGolfLoginService(
                 return false;
             }
 
-            var adminPage = await GetPageAsync(client, "membership2.php", cancellationToken);
+            var adminPage = await GetPageAsync(client, baseUri, "membership2.php", cancellationToken);
             if (!adminPage.Success || RequiresMemberLogin(adminPage.Html))
             {
                 logger.LogError("The Intelligent Golf administration page is unavailable to the member session.");
@@ -89,7 +108,7 @@ public sealed partial class IntelligentGolfLoginService(
 
             var adminForm = new Dictionary<string, string>
             {
-                ["leveltwopassword"] = settings.AdminPassword
+                ["leveltwopassword"] = credentials.AdminPassword
             };
 
             var adminCsrf = ExtractInputValue(adminPage.Html, "_csrf_token");
@@ -102,6 +121,7 @@ public sealed partial class IntelligentGolfLoginService(
                 client,
                 "membership2.php",
                 adminForm,
+                baseUri,
                 "membership2.php",
                 cancellationToken);
 
@@ -130,10 +150,12 @@ public sealed partial class IntelligentGolfLoginService(
 
     private static async Task<PageResult> GetPageAsync(
         HttpClient client,
+        Uri baseUri,
         string path,
         CancellationToken cancellationToken)
     {
-        using var response = await client.GetAsync(path, cancellationToken);
+        var requestUri = new Uri(baseUri, path.TrimStart('/'));
+        using var response = await client.GetAsync(requestUri, cancellationToken);
         var html = await response.Content.ReadAsStringAsync(cancellationToken);
         return new PageResult(
             response.IsSuccessStatusCode,
@@ -146,14 +168,16 @@ public sealed partial class IntelligentGolfLoginService(
         HttpClient client,
         string path,
         IReadOnlyDictionary<string, string> fields,
+        Uri baseUri,
         string referrerPath,
         CancellationToken cancellationToken)
     {
-        using var request = new HttpRequestMessage(HttpMethod.Post, path)
+        var requestUri = new Uri(baseUri, path.TrimStart('/'));
+        using var request = new HttpRequestMessage(HttpMethod.Post, requestUri)
         {
             Content = new FormUrlEncodedContent(fields)
         };
-        request.Headers.Referrer = new Uri(client.BaseAddress!, referrerPath);
+        request.Headers.Referrer = new Uri(baseUri, referrerPath.TrimStart('/'));
 
         using var response = await client.SendAsync(request, cancellationToken);
         var html = await response.Content.ReadAsStringAsync(cancellationToken);

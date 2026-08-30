@@ -40,11 +40,28 @@ public interface IIntelligentGolfTransport
 public interface IIntelligentGolfSession
 {
     IntelligentGolfSessionStatus Status { get; }
+    string BaseUrl { get; }
+
+    Task<IntelligentGolfSessionGrant> AuthenticateAsync(
+        IntelligentGolfCredentials credentials,
+        CancellationToken cancellationToken = default);
 
     Task EnsureAuthenticatedAsync(
         bool forceRefresh = false,
         CancellationToken cancellationToken = default);
+
+    bool IsSessionTokenValid(string? token);
 }
+
+public sealed record IntelligentGolfCredentials(
+    string BaseUrl,
+    string MemberId,
+    string MemberPassword,
+    string AdminPassword);
+
+public sealed record IntelligentGolfSessionGrant(
+    string SessionToken,
+    DateTimeOffset ExpiresAtUtc);
 
 public sealed record IntelligentGolfSessionStatus(
     bool IsAuthenticated,

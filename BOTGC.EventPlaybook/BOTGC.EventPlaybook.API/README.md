@@ -12,11 +12,13 @@ This is a standalone .NET 9 API for the event-planner integration with Intellige
 - Memory caching for local development or Redis distributed caching in production.
 - A distributed report lock when Redis is selected, to prevent several service instances refreshing the same report simultaneously.
 - Optional `X-Api-Key` protection for all domain endpoints.
+- A credential-validation endpoint that exchanges the Web service's encrypted plugin configuration for a short-lived API session token.
 
 ## API surface
 
 | Method | Route | Purpose |
 | --- | --- | --- |
+| `POST` | `/v1/auth/intelligent-golf/session` | Validate the club site/member/admin credentials and establish the shared IG session. |
 | `GET` | `/api/members` | List current members. Add `?refresh=true` to bypass the cached report. |
 | `POST` | `/api/members/emails` | Send one email to one or more member email addresses through IG. |
 | `GET` | `/api/members/{memberNumber}/diary` | Read the configured member diary page. |
@@ -59,7 +61,7 @@ To use Redis:
 }
 ```
 
-Callers must provide `EventPlaybookApi:ApiKey` in the `X-Api-Key` header. Health and Swagger routes remain accessible without the key. An empty key is accepted only when `ASPNETCORE_ENVIRONMENT=Development`; in every other environment the domain endpoints return `503` until a key is configured.
+Callers must provide `EventPlaybookApi:ApiKey` in the `X-Api-Key` header. The authentication endpoint accepts the IG credentials only from that trusted server-to-server caller and returns an opaque four-hour token. Domain endpoints also require that token in `X-Intelligent-Golf-Session`. Health and Swagger routes remain accessible without either header. An empty API key is accepted only when `ASPNETCORE_ENVIRONMENT=Development`; in every other environment the authentication and domain endpoints return `503` until a key is configured.
 
 ## Diary and planner integration point
 
@@ -105,4 +107,4 @@ dotnet restore
 dotnet run
 ```
 
-For a production deployment, set the IG credentials, email sender, API key, and Redis connection through the deployment platform's secret/configuration store.
+For the Playbook deployment, save the IG login through the Web application's Plugin administration page. Set the same API key on the Web and private API services; configure the optional email sender and Redis connection through the deployment platform's secret/configuration store. The `IntelligentGolf:MemberId`, `MemberPassword` and `AdminPassword` options remain available only as a legacy/local fallback.

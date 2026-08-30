@@ -42,6 +42,17 @@
 
   const CHANGE_RESPONSE_STATUSES = new Set(['cancelled', 'postponed']);
 
+  const FINANCE_CATEGORIES = Object.freeze({
+    income: ['Ticket sales', 'Bar sales', 'Catering sales', 'Sponsorship', 'Donations', 'Other income'],
+    expense: ['Additional staffing', 'Food and stock', 'Entertainment', 'Prizes and trophies', 'Equipment and hire', 'Marketing', 'Supplier costs', 'Other expense']
+  });
+
+  const FINANCE_CALCULATIONS = Object.freeze({
+    total: { label: 'Single total', quantityLabel: '', unitLabel: '' },
+    tickets: { label: 'Tickets sold × ticket price', quantityLabel: 'Tickets sold', unitLabel: 'Price per ticket' },
+    staffing: { label: 'Staff hours × hourly cost', quantityLabel: 'Additional hours', unitLabel: 'Hourly cost' }
+  });
+
   const PLATFORM_ROLE_DEFINITIONS = Object.freeze([
     { id: 'team-member', name: 'Team member', description: 'Can receive and complete assigned tasks.' },
     { id: 'organiser', name: 'Organiser', description: 'Can create events and manage event planning.' },
@@ -67,6 +78,14 @@
   let pluginSettingsCache = null;
   let pluginSettingsRequest = null;
   let pluginSettingsNotice = '';
+  const DEFAULT_CLUB_BRANDING = Object.freeze({
+    clubName: 'Burton-on-Trent Golf Club',
+    crestUrl: '/assets/botgc-mark.svg',
+    hasCustomCrest: false,
+    updatedAtUtc: null
+  });
+  let clubBranding = { ...DEFAULT_CLUB_BRANDING };
+  let clubBrandingNotice = '';
   const ADMIN_VIEWS = new Set(['admin', 'plugins']);
   let accessSession = {
     authenticated: false,
@@ -75,7 +94,7 @@
     displayName: ''
   };
   const requestedView = new URLSearchParams(window.location.search).get('view');
-  if (['dashboard', 'tasks', 'catalogue', 'artwork', 'retrospective', 'admin', 'plugins', 'references', 'directory'].includes(requestedView)) {
+  if (['dashboard', 'tasks', 'finances', 'catalogue', 'artwork', 'retrospective', 'admin', 'plugins', 'references', 'directory'].includes(requestedView)) {
     state.activeView = requestedView;
   }
 
@@ -160,6 +179,31 @@
     } catch (error) {
       console.error('Unable to determine administrator access', error);
     }
+  }
+
+  async function initialiseClubBranding() {
+    try {
+      const loaded = window.clubBrandingReady
+        ? await window.clubBrandingReady
+        : await fetch('/api/branding', { cache: 'no-store' }).then(response => {
+          if (!response.ok) throw new Error(`Club identity could not be loaded (${response.status}).`);
+          return response.json();
+        });
+      setClubBranding(loaded);
+    } catch (error) {
+      console.error('Unable to load the club identity', error);
+      setClubBranding(DEFAULT_CLUB_BRANDING);
+    }
+  }
+
+  function setClubBranding(value) {
+    clubBranding = {
+      clubName: String(value?.clubName || DEFAULT_CLUB_BRANDING.clubName).trim() || DEFAULT_CLUB_BRANDING.clubName,
+      crestUrl: String(value?.crestUrl || DEFAULT_CLUB_BRANDING.crestUrl),
+      hasCustomCrest: value?.hasCustomCrest === true,
+      updatedAtUtc: value?.updatedAtUtc || null
+    };
+    window.applyClubBranding?.(clubBranding);
   }
 
   function adminLoginUrl(view = 'admin') {
@@ -670,6 +714,7 @@
       team: organiserName ? [organiserName] : [],
       advisoryOverrides: {},
       retrospective: {},
+      finances: { entries: [] },
       milestoneDates: { ...milestoneDates, DT: eventDate || milestoneDates.DT || '' },
       lifecycle: {
         status: 'provisional',
@@ -765,13 +810,40 @@
     event.lifecycle.interestedParties = Array.isArray(event.lifecycle.interestedParties) ? event.lifecycle.interestedParties : [];
     event.lifecycle.history = Array.isArray(event.lifecycle.history) ? event.lifecycle.history : [];
     event.answers ??= {};
-    if (!event.answers['event-decision-owner'] && event.lifecycle.decisionOwner) {
+    const clonedHints = event.clonedAnswerHints && typeof event.clonedAnswerHints === 'object'
+      ? event.clonedAnswerHints
+      : {};
+    if (!event.answers['event-decision-owner'] &&
+        !Object.prototype.hasOwnProperty.call(clonedHints, 'event-decision-owner') &&
+        event.lifecycle.decisionOwner) {
       event.answers['event-decision-owner'] = event.lifecycle.decisionOwnerRef ?? event.lifecycle.decisionOwner;
     }
-    if (!event.answers['event-communications-owner'] && event.lifecycle.communicationsOwner) {
+    if (!event.answers['event-communications-owner'] &&
+        !Object.prototype.hasOwnProperty.call(clonedHints, 'event-communications-owner') &&
+        event.lifecycle.communicationsOwner) {
       event.answers['event-communications-owner'] = event.lifecycle.communicationsOwnerRef ?? event.lifecycle.communicationsOwner;
     }
     return event.lifecycle;
+  }
+
+  function normaliseEventFinances(event) {
+    event.finances = event.finances && typeof event.finances === 'object' ? event.finances : {};
+    event.finances.entries = Array.isArray(event.finances.entries) ? event.finances.entries : [];
+    event.finances.entries = event.finances.entries.map(entry => ({
+      id: String(entry?.id || crypto.randomUUID()),
+      direction: entry?.direction === 'expense' ? 'expense' : 'income',
+      category: String(entry?.category || (entry?.direction === 'expense' ? 'Other expense' : 'Other income')),
+      description: String(entry?.description || ''),
+      calculation: FINANCE_CALCULATIONS[entry?.calculation] ? entry.calculation : 'total',
+      quantity: Math.max(0, Number(entry?.quantity) || 0),
+      unitAmount: Math.max(0, Number(entry?.unitAmount) || 0),
+      totalAmount: Math.max(0, Number(entry?.totalAmount) || 0),
+      status: entry?.status === 'actual' ? 'actual' : 'estimate',
+      notes: String(entry?.notes || ''),
+      createdAt: entry?.createdAt || new Date().toISOString(),
+      updatedAt: entry?.updatedAt || entry?.createdAt || new Date().toISOString()
+    }));
+    return event.finances;
   }
 
   function getActiveEvent() {
@@ -786,6 +858,7 @@
       event.team ??= [];
       event.advisoryOverrides ??= {};
       event.retrospective ??= {};
+      normaliseEventFinances(event);
       event.playbookVersion ??= playbook?.schemaVersion ?? '1.0';
       event.sourceEventId ??= null;
       event.eventSeriesId ??= event.sourceEventId
@@ -1209,9 +1282,15 @@
     return options.sort((left, right) => left.typeLabel.localeCompare(right.typeLabel) || left.name.localeCompare(right.name));
   }
 
-  function renderAssignmentPicker({ value = null, fallback = '', mode = 'person-or-role', eligibleRoleId = '', taskId = '', questionId = '', eventField = '', statusField = '', newEventField = '', id = '', required = false, compact = false } = {}) {
+  function renderAssignmentPicker({ value = null, hint = null, fallback = '', mode = 'person-or-role', eligibleRoleId = '', taskId = '', questionId = '', eventField = '', statusField = '', newEventField = '', id = '', required = false, compact = false } = {}) {
     const reference = assignmentReference(value);
-    const display = assignmentDisplay(reference ?? value, fallback);
+    const hintReference = reference ? null : assignmentReference(hint);
+    const hasHint = !reference && Boolean(hintReference ?? hint);
+    const display = reference
+      ? assignmentDisplay(reference, fallback)
+      : hasHint
+        ? assignmentDisplay(hintReference ?? hint, fallback)
+        : assignmentDisplay(value, fallback);
     const targetAttributes = [
       taskId ? `data-task-assignment="${escapeHtml(taskId)}"` : '',
       questionId ? `data-question-assignment="${escapeHtml(questionId)}"` : '',
@@ -1220,9 +1299,9 @@
       newEventField ? `data-new-event-assignment-field="${escapeHtml(newEventField)}"` : ''
     ].filter(Boolean).join(' ');
     const options = assignmentOptions(mode, getActiveEvent(), eligibleRoleId);
-    return `<div class="assignment-picker ${compact ? 'compact' : ''}" data-assignment-picker data-assignment-mode="${escapeHtml(mode)}" ${targetAttributes}>
+    return `<div class="assignment-picker ${compact ? 'compact' : ''} ${hasHint ? 'prior-answer-hint' : ''}" data-assignment-picker data-assignment-mode="${escapeHtml(mode)}" ${targetAttributes}>
       <div class="assignment-picker-input-row">
-        <input ${id ? `id="${escapeHtml(id)}"` : ''} type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" autocomplete="off" value="${escapeHtml(display)}" placeholder="Start typing a person or role" data-assignment-input data-selected-kind="${escapeHtml(reference?.kind ?? '')}" data-selected-id="${escapeHtml(reference?.id ?? '')}" ${required ? 'required' : ''}>
+        <input ${id ? `id="${escapeHtml(id)}"` : ''} type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" autocomplete="off" value="${escapeHtml(display)}" placeholder="Start typing a person or role" data-assignment-input data-selected-kind="${escapeHtml(reference?.kind ?? '')}" data-selected-id="${escapeHtml(reference?.id ?? '')}" ${hasHint ? 'data-prior-answer-hint="true"' : ''} ${required ? 'required' : ''}>
         <button type="button" class="assignment-picker-toggle" data-assignment-toggle aria-label="Show people and roles" aria-expanded="false"><span class="assignment-picker-chevron" aria-hidden="true"></span></button>
       </div>
       <div class="assignment-picker-menu" role="listbox" hidden>
@@ -1549,8 +1628,9 @@
   }
 
   function cloneEvent(sourceEvent) {
-    const copy = createEvent(`${sourceEvent.name} (Copy)`, sourceEvent.organiser, sourceEvent.eventDate, sourceEvent.description ?? '', structuredClone(sourceEvent.milestoneDates ?? {}), structuredClone(sourceEvent.organiserRef ?? null));
-    copy.answers = structuredClone(sourceEvent.answers ?? {});
+    const copy = createEvent(`${sourceEvent.name} (Copy)`, sourceEvent.organiser, '', sourceEvent.description ?? '', {}, structuredClone(sourceEvent.organiserRef ?? null));
+    copy.clonedAnswerHints = collectCloneAnswerHints(sourceEvent);
+    copy.answers = {};
     copy.team = structuredClone(sourceEvent.team ?? []);
     copy.sourceEventId = sourceEvent.id;
     copy.eventSeriesId = sourceEvent.eventSeriesId ?? sourceEvent.id;
@@ -1558,6 +1638,11 @@
     copy.retrospective = {};
     copy.advisoryOverrides = {};
     copy.taskState = {};
+    const priorFinanceSummary = financeTotals(sourceEvent);
+    copy.finances = {
+      entries: [],
+      priorEventSummary: priorFinanceSummary.count ? structuredClone(priorFinanceSummary) : null
+    };
     copy.lifecycle = {
       status: 'provisional',
       statusChangedAt: new Date().toISOString(),
@@ -1574,6 +1659,24 @@
     delete copy.milestoneDates.CX;
     saveState();
     return copy;
+  }
+
+  function collectCloneAnswerHints(sourceEvent) {
+    const hints = structuredClone(sourceEvent.clonedAnswerHints ?? {});
+    for (const module of playbook.modules ?? []) {
+      for (const section of module.sections ?? []) {
+        for (const item of section.items ?? []) {
+          if (item.type === 'question' && item.bind === 'eventDate' && sourceEvent.eventDate) {
+            hints[item.id] = sourceEvent.eventDate;
+          }
+        }
+      }
+    }
+    for (const [questionId, value] of Object.entries(sourceEvent.answers ?? {})) {
+      if (value === undefined || value === null || value === '') continue;
+      hints[questionId] = structuredClone(value);
+    }
+    return hints;
   }
 
   function getActiveTasks(event) {
@@ -1775,6 +1878,7 @@
     const isPlanningView = state.activeView.startsWith('module:');
     const shellTitle = state.activeView === 'dashboard' ? 'My Dashboard'
       : state.activeView === 'tasks' ? 'Task Board'
+      : state.activeView === 'finances' ? 'Event Finances'
       : state.activeView === 'catalogue' ? 'Event Catalogue'
       : state.activeView === 'artwork' ? 'Event Poster Studio'
       : state.activeView === 'directory' ? 'People & Roles'
@@ -1785,28 +1889,29 @@
       : 'Event Playbook';
     const shellIntro = state.activeView === 'dashboard' ? 'See the work that needs your attention across every active event, in one calm daily view.'
       : state.activeView === 'tasks' ? 'See every action generated by the playbook, who owns it, when it is due and what needs attention.'
+      : state.activeView === 'finances' ? 'Track estimated and actual income and costs so the club can see whether this event is likely to make a profit, break even or make a loss.'
       : state.activeView === 'catalogue' ? 'Review previous events, clone successful plans and reuse the knowledge captured from earlier events.'
       : state.activeView === 'artwork' ? 'Explore three quick campaign concepts, choose the strongest idea, then produce matching high-resolution artwork for screens, member communications and print.'
       : state.activeView === 'directory' ? 'Maintain the people, shared mailboxes, responsibilities and platform access used throughout every event.'
-      : state.activeView === 'references' ? 'Maintain reusable images of the clubhouse, course, trophies and interiors so Poster Studio artwork can look recognisably like Burton-on-Trent Golf Club.'
+      : state.activeView === 'references' ? `Maintain reusable images of the clubhouse, course, trophies and interiors so Poster Studio artwork can look recognisably like ${clubBranding.clubName}.`
       : state.activeView === 'admin' ? 'Configure the questions, tasks, ownership rules and advisories that make up the club event planning process.'
       : state.activeView === 'plugins' ? 'Securely configure the external services that connect the Event Playbook to the rest of the club’s systems.'
       : state.activeView === 'retrospective' ? 'Release the member feedback form, review what went well, what did not, and turn the evidence into guidance for next time.'
       : 'Plan the event consistently from first decision to final close-down, with every relevant question, responsibility and deadline in one place.';
     const showEventEditor = Boolean(event) && state.activeView === 'module:start';
     const showEventTools = Boolean(event) && (isPlanningView || state.activeView === 'tasks' || state.activeView === 'retrospective');
-    const showLifecycleBanner = Boolean(event) && (isPlanningView || ['tasks', 'artwork', 'retrospective'].includes(state.activeView));
+    const showLifecycleBanner = Boolean(event) && (isPlanningView || ['tasks', 'finances', 'artwork', 'retrospective'].includes(state.activeView));
     const lifecycle = event ? normaliseEventLifecycle(event) : null;
     const lifecycleDefinition = event ? eventStatusDefinition(event) : null;
 
     app.innerHTML = `
       <div class="app-shell">
         <aside class="sidebar">
-          <a class="club-brand" href="/" aria-label="Burton-on-Trent Golf Club Event Playbook">
-            <img src="./assets/botgc-mark.svg" alt="">
+          <a class="club-brand" href="/" aria-label="${escapeHtml(clubBranding.clubName)} Event Playbook">
+            <img src="${escapeHtml(clubBranding.crestUrl)}" alt="${escapeHtml(clubBranding.clubName)} crest">
             <span>
-              <strong>Burton-on-Trent</strong>
-              <small>Golf Club</small>
+              <strong>${escapeHtml(clubBranding.clubName)}</strong>
+              <small>Event Playbook</small>
             </span>
           </a>
 
@@ -1816,6 +1921,7 @@
             <span class="side-nav-group-label">Current event workspace</span>
             <button class="${isPlanningView ? 'active' : ''}" data-view="module:start" ${event ? '' : 'disabled'}><span class="nav-icon">◇</span>Event Planner</button>
             <button class="${state.activeView === 'tasks' ? 'active' : ''}" data-view="tasks" ${event ? '' : 'disabled'}><span class="nav-icon">✓</span>Task Board</button>
+            <button class="${state.activeView === 'finances' ? 'active' : ''}" data-view="finances" ${event ? '' : 'disabled'}><span class="nav-icon">£</span>Event Finances</button>
             <button class="${state.activeView === 'artwork' ? 'active' : ''}" data-view="artwork" ${event ? '' : 'disabled'}><span class="nav-icon">✦</span>Digital Artwork</button>
             <button class="${state.activeView === 'retrospective' ? 'active' : ''}" data-view="retrospective" ${event ? '' : 'disabled'}><span class="nav-icon">↺</span>Retrospectives</button>
           </nav>
@@ -1928,7 +2034,7 @@
 
           <main class="main-content ${state.activeView === 'artwork' ? 'poster-studio' : ''}">
             ${showLifecycleBanner ? renderEventLifecycleBanner(event) : ''}
-            ${state.activeView === 'dashboard' ? renderDashboard() : state.activeView === 'catalogue' ? renderCatalogue() : state.activeView === 'directory' ? renderDirectory() : state.activeView === 'references' ? renderReferenceLibrary() : state.activeView === 'plugins' ? renderPluginAdministration() : state.activeView === 'admin' ? renderAdmin() : !event ? renderEmptyState() : state.activeView === 'tasks' ? renderTaskBoard(event, tasks) : state.activeView === 'artwork' ? renderArtworkStudio(event) : state.activeView === 'retrospective' ? renderRetrospective(event) : renderModuleView(event)}
+            ${state.activeView === 'dashboard' ? renderDashboard() : state.activeView === 'catalogue' ? renderCatalogue() : state.activeView === 'directory' ? renderDirectory() : state.activeView === 'references' ? renderReferenceLibrary() : state.activeView === 'plugins' ? renderPluginAdministration() : state.activeView === 'admin' ? renderAdmin() : !event ? renderEmptyState() : state.activeView === 'tasks' ? renderTaskBoard(event, tasks) : state.activeView === 'finances' ? renderEventFinances(event) : state.activeView === 'artwork' ? renderArtworkStudio(event) : state.activeView === 'retrospective' ? renderRetrospective(event) : renderModuleView(event)}
           </main>
         </main>
       </div>
@@ -2302,7 +2408,7 @@
             <div class="panel-heading compact"><div><p class="section-kicker">Campaign preview</p><h2 id="campaignTitle">${escapeHtml(event.name || 'No artwork generated')}</h2></div><span id="campaignStatus" class="status-pill neutral">Not started</span></div>
             <div id="emptyState" class="empty-state">${retainedArtworkThumbnail
               ? `<div class="saved-catalogue-art"><img src="${escapeHtml(retainedArtworkThumbnail)}" alt="Previously generated campaign artwork for ${escapeHtml(event.name)}"></div><span class="status-pill ready">Saved with this event</span><h3>Previously generated campaign</h3><p>This older catalogue preview is connected to the event, but it may have been cropped into a square. Generate the campaign again once to retain uncropped full-size formats and the studio settings here.</p>`
-              : '<div class="empty-art"><img src="/assets/botgc-mark.svg" alt=""><span class="spark spark-one">✦</span><span class="spark spark-two">✦</span></div><h3>Your event campaign will appear here</h3><p>The studio first creates three low-resolution digital-screen concepts. Choose one idea, then it is rebuilt as a high-resolution master and recomposed for the other formats.</p>'}</div>
+              : `<div class="empty-art"><img src="${escapeHtml(clubBranding.crestUrl)}" alt="${escapeHtml(clubBranding.clubName)} crest"><span class="spark spark-one">✦</span><span class="spark spark-two">✦</span></div><h3>Your event campaign will appear here</h3><p>The studio first creates three low-resolution digital-screen concepts. Choose one idea, then it is rebuilt as a high-resolution master and recomposed for the other formats.</p>`}</div>
             <div id="generationProgress" class="generation-progress hidden">
               <div class="progress-row" data-progress="concepts"><span class="progress-icon">1</span><div><strong>Low-resolution concepts</strong><small>Three distinct digital-screen ideas, saved as each one finishes</small></div><span class="progress-state">Waiting</span></div>
               <div class="progress-row" data-progress="primary"><span class="progress-icon">2</span><div><strong>High-resolution master artwork</strong><small>Rebuilding the selected concept with exact copy and polished detail</small></div><span class="progress-state">Waiting</span></div>
@@ -2484,6 +2590,126 @@
         </section>
       ` : ''}
     `;
+  }
+
+  function financeEntryAmount(entry) {
+    if (entry?.calculation === 'tickets' || entry?.calculation === 'staffing') {
+      return Math.max(0, Number(entry.quantity) || 0) * Math.max(0, Number(entry.unitAmount) || 0);
+    }
+    return Math.max(0, Number(entry?.totalAmount) || 0);
+  }
+
+  function financeTotals(event) {
+    const entries = normaliseEventFinances(event).entries;
+    const total = (direction, status = '') => entries
+      .filter(entry => entry.direction === direction && (!status || entry.status === status))
+      .reduce((sum, entry) => sum + financeEntryAmount(entry), 0);
+    const income = total('income');
+    const expenses = total('expense');
+    const actualIncome = total('income', 'actual');
+    const actualExpenses = total('expense', 'actual');
+    return {
+      income,
+      expenses,
+      net: income - expenses,
+      actualIncome,
+      actualExpenses,
+      actualNet: actualIncome - actualExpenses,
+      actualCount: entries.filter(entry => entry.status === 'actual').length,
+      count: entries.length
+    };
+  }
+
+  function formatMoney(value) {
+    return new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(Number(value) || 0);
+  }
+
+  function financeResult(value) {
+    const amount = Number(value) || 0;
+    if (Math.abs(amount) < 0.005) return { label: 'Break even', tone: 'neutral' };
+    return amount > 0
+      ? { label: 'Projected profit', tone: 'profit' }
+      : { label: 'Projected loss', tone: 'loss' };
+  }
+
+  function financeCategoryOptions(direction, selected = '') {
+    return (FINANCE_CATEGORIES[direction] ?? FINANCE_CATEGORIES.income)
+      .map(category => `<option value="${escapeHtml(category)}" ${category === selected ? 'selected' : ''}>${escapeHtml(category)}</option>`)
+      .join('');
+  }
+
+  function renderFinanceEntry(entry) {
+    const amount = financeEntryAmount(entry);
+    const calculation = FINANCE_CALCULATIONS[entry.calculation] ?? FINANCE_CALCULATIONS.total;
+    const isCalculated = entry.calculation !== 'total';
+    return `
+      <article class="finance-ledger-entry ${entry.direction} ${entry.status}" data-finance-entry="${escapeHtml(entry.id)}">
+        <div class="finance-ledger-mark" aria-hidden="true">${entry.direction === 'income' ? '+' : '−'}</div>
+        <div class="finance-ledger-body">
+          <div class="finance-entry-heading">
+            <div><span>${escapeHtml(entry.category)}</span><strong>${escapeHtml(entry.description || 'Untitled entry')}</strong></div>
+            <div class="finance-entry-total"><small>${entry.status === 'actual' ? 'Actual' : 'Estimate'}</small><strong>${escapeHtml(formatMoney(amount))}</strong></div>
+          </div>
+          <div class="finance-entry-fields">
+            <label><span>Type</span><select data-finance-field="direction"><option value="income" ${entry.direction === 'income' ? 'selected' : ''}>Income</option><option value="expense" ${entry.direction === 'expense' ? 'selected' : ''}>Expense</option></select></label>
+            <label><span>Category</span><select data-finance-field="category">${financeCategoryOptions(entry.direction, entry.category)}</select></label>
+            <label class="finance-field-wide"><span>Description</span><input type="text" data-finance-field="description" value="${escapeHtml(entry.description)}" placeholder="What is this figure for?"></label>
+            <label><span>Figure type</span><select data-finance-field="status"><option value="estimate" ${entry.status === 'estimate' ? 'selected' : ''}>Estimate</option><option value="actual" ${entry.status === 'actual' ? 'selected' : ''}>Actual</option></select></label>
+            <label><span>Calculation</span><select data-finance-field="calculation">${Object.entries(FINANCE_CALCULATIONS).map(([id, definition]) => `<option value="${escapeHtml(id)}" ${entry.calculation === id ? 'selected' : ''}>${escapeHtml(definition.label)}</option>`).join('')}</select></label>
+            ${isCalculated ? `
+              <label><span>${escapeHtml(calculation.quantityLabel)}</span><input type="number" min="0" step="0.01" data-finance-field="quantity" value="${escapeHtml(entry.quantity)}"></label>
+              <label><span>${escapeHtml(calculation.unitLabel)}</span><span class="money-input"><i>£</i><input type="number" min="0" step="0.01" data-finance-field="unitAmount" value="${escapeHtml(entry.unitAmount)}"></span></label>`
+              : `<label><span>Total amount</span><span class="money-input"><i>£</i><input type="number" min="0" step="0.01" data-finance-field="totalAmount" value="${escapeHtml(entry.totalAmount)}"></span></label>`}
+            <label class="finance-field-wide"><span>Notes <em>optional</em></span><input type="text" data-finance-field="notes" value="${escapeHtml(entry.notes)}" placeholder="Source, assumptions or anything still to confirm"></label>
+          </div>
+        </div>
+        <button class="finance-delete-entry" type="button" data-delete-finance-entry="${escapeHtml(entry.id)}" aria-label="Delete ${escapeHtml(entry.description || entry.category)}">×</button>
+      </article>`;
+  }
+
+  function renderEventFinances(event) {
+    const finance = normaliseEventFinances(event);
+    const totals = financeTotals(event);
+    const result = financeResult(totals.net);
+    const actualResult = financeResult(totals.actualNet);
+    const previous = finance.priorEventSummary;
+    return `
+      <section class="finance-intro">
+        <div><span class="eyebrow">Event profit and loss</span><h2>Is this event paying its way?</h2><p>Start with sensible estimates, then replace them with actual figures as ticket sales, supplier invoices and takings become known.</p></div>
+        <span class="finance-entry-count">${totals.count}<small>ledger entr${totals.count === 1 ? 'y' : 'ies'}</small></span>
+      </section>
+      ${previous ? `<aside class="finance-prior-summary"><span>Previous event</span><strong>${escapeHtml(formatMoney(previous.net))}</strong><small>${previous.net > 0 ? 'profit' : previous.net < 0 ? 'loss' : 'break even'} from ${previous.count} recorded figure${previous.count === 1 ? '' : 's'} — use this as context, not as a current-event entry.</small></aside>` : ''}
+      <section class="finance-summary-grid" aria-label="Event financial summary">
+        <article><span>Expected income</span><strong>${escapeHtml(formatMoney(totals.income))}</strong><small>Best available estimate or actual</small></article>
+        <article><span>Expected cost</span><strong>${escapeHtml(formatMoney(totals.expenses))}</strong><small>Including additional staffing</small></article>
+        <article class="finance-result ${result.tone}"><span>${escapeHtml(result.label)}</span><strong>${escapeHtml(formatMoney(totals.net))}</strong><small>Income less costs</small></article>
+        <article class="finance-result ${totals.actualCount ? actualResult.tone : 'neutral'}"><span>Actual position</span><strong>${totals.actualCount ? escapeHtml(formatMoney(totals.actualNet)) : '—'}</strong><small>${totals.actualCount ? `${totals.actualCount} actual figure${totals.actualCount === 1 ? '' : 's'} recorded` : 'No actual figures yet'}</small></article>
+      </section>
+      <section class="finance-workspace">
+        <article class="finance-add-panel">
+          <div class="section-heading"><div><span class="eyebrow">Add a figure</span><h3>Income or expense</h3></div></div>
+          <form id="finance-entry-form">
+            <div class="finance-add-grid">
+              <label><span>Type</span><select id="finance-direction"><option value="income">Income</option><option value="expense">Expense</option></select></label>
+              <label><span>Category</span><select id="finance-category">${financeCategoryOptions('income', 'Ticket sales')}</select></label>
+              <label class="finance-field-wide"><span>Description</span><input id="finance-description" type="text" required placeholder="For example, advance ticket sales"></label>
+              <label><span>Figure type</span><select id="finance-status"><option value="estimate">Estimate</option><option value="actual">Actual</option></select></label>
+              <label><span>Calculation</span><select id="finance-calculation">${Object.entries(FINANCE_CALCULATIONS).map(([id, definition]) => `<option value="${escapeHtml(id)}">${escapeHtml(definition.label)}</option>`).join('')}</select></label>
+              <label id="finance-total-field"><span>Total amount</span><span class="money-input"><i>£</i><input id="finance-total-amount" type="number" min="0" step="0.01" value="0"></span></label>
+              <label id="finance-quantity-field" hidden><span id="finance-quantity-label">Quantity</span><input id="finance-quantity" type="number" min="0" step="0.01" value="0"></label>
+              <label id="finance-unit-field" hidden><span id="finance-unit-label">Unit amount</span><span class="money-input"><i>£</i><input id="finance-unit-amount" type="number" min="0" step="0.01" value="0"></span></label>
+              <label class="finance-field-wide"><span>Notes <em>optional</em></span><input id="finance-notes" type="text" placeholder="Source or assumptions behind the figure"></label>
+            </div>
+            <button class="button button-primary" type="submit">Add to event P&amp;L</button>
+          </form>
+        </article>
+        <section class="finance-ledger-panel">
+          <div class="finance-ledger-heading"><div><span class="eyebrow">Working P&amp;L</span><h3>Event ledger</h3></div><small>Change an estimate to actual when the final figure is known.</small></div>
+          <div class="finance-ledger-list">
+            ${finance.entries.length ? finance.entries.map(renderFinanceEntry).join('') : `<div class="finance-empty"><span>£</span><h3>No figures recorded yet</h3><p>Add ticket income, expected bar sales, supplier costs or additional staffing to build the first event forecast.</p></div>`}
+          </div>
+        </section>
+      </section>`;
   }
 
   function eventStatusDefinition(event) {
@@ -2746,6 +2972,10 @@
 
   function renderQuestion(item, event) {
     const value = getQuestionValue(item.id, event);
+    const priorHint = value === undefined &&
+      Object.prototype.hasOwnProperty.call(event.clonedAnswerHints ?? {}, item.id)
+        ? event.clonedAnswerHints[item.id]
+        : undefined;
     const pending = value === 'dont-know';
     const answered = isAnsweredValue(value);
     return `
@@ -2763,28 +2993,35 @@
           ${item.helpText ? `<p class="help-text">${escapeHtml(item.helpText)}</p>` : ''}
           ${renderDerivedContextForQuestion(item.id, event)}
           ${renderPriorLearning(event, item)}
-          ${renderAnswerControl(item, value)}
+          ${renderAnswerControl(item, value, priorHint)}
           ${renderAdvisoriesForQuestion(item.id, event)}
         </div>
       </article>
     `;
   }
 
-  function renderAnswerControl(item, value) {
+  function renderAnswerControl(item, value, priorHint) {
+    const hintMatches = candidate => priorHint !== undefined && (
+      candidate === priorHint ||
+      (Array.isArray(priorHint) && priorHint.includes(candidate))
+    );
+    const hintedValue = value ?? priorHint ?? '';
+    const hintClass = priorHint !== undefined ? ' prior-answer-hint' : '';
+    const hintData = priorHint !== undefined ? ' data-prior-answer-hint="true"' : '';
     switch (item.answerType) {
       case 'yesNo':
         return `
           <div class="choice-group yes-no-group" role="group" aria-label="${escapeHtml(item.label)}">
-            <button class="choice-button ${value === true ? 'selected' : ''}" data-question-id="${item.id}" data-answer-json="true">Yes</button>
-            <button class="choice-button ${value === false ? 'selected' : ''}" data-question-id="${item.id}" data-answer-json="false">No</button>
-            ${item.allowDontKnow ? `<button class="choice-button dont-know-choice ${value === 'dont-know' ? 'selected' : ''}" data-question-id="${item.id}" data-answer-json="${escapeHtml(JSON.stringify('dont-know'))}">Don't know</button>` : ''}
+            <button class="choice-button ${value === true ? 'selected' : ''} ${hintMatches(true) ? 'prior-answer-hint' : ''}" data-question-id="${item.id}" data-answer-json="true">Yes</button>
+            <button class="choice-button ${value === false ? 'selected' : ''} ${hintMatches(false) ? 'prior-answer-hint' : ''}" data-question-id="${item.id}" data-answer-json="false">No</button>
+            ${item.allowDontKnow ? `<button class="choice-button dont-know-choice ${value === 'dont-know' ? 'selected' : ''} ${hintMatches('dont-know') ? 'prior-answer-hint' : ''}" data-question-id="${item.id}" data-answer-json="${escapeHtml(JSON.stringify('dont-know'))}">Don't know</button>` : ''}
           </div>
         `;
       case 'singleChoice':
         return `
           <div class="choice-group wrap" role="group" aria-label="${escapeHtml(item.label)}">
             ${(item.options ?? []).map(option => `
-              <button class="choice-button ${value === option.value ? 'selected' : ''}" data-question-id="${item.id}" data-answer-json="${escapeHtml(JSON.stringify(option.value))}">${escapeHtml(option.label)}</button>
+              <button class="choice-button ${value === option.value ? 'selected' : ''} ${hintMatches(option.value) ? 'prior-answer-hint' : ''}" data-question-id="${item.id}" data-answer-json="${escapeHtml(JSON.stringify(option.value))}">${escapeHtml(option.label)}</button>
             `).join('')}
           </div>
         `;
@@ -2792,7 +3029,7 @@
         return `
           <div class="multi-choice-group">
             ${(item.options ?? []).map(option => `
-              <label class="check-choice">
+              <label class="check-choice ${hintMatches(option.value) ? 'prior-answer-hint' : ''}">
                 <input type="checkbox" data-multi-question-id="${item.id}" value="${escapeHtml(option.value)}" ${Array.isArray(value) && value.includes(option.value) ? 'checked' : ''}>
                 <span>${escapeHtml(option.label)}</span>
               </label>
@@ -2800,36 +3037,41 @@
           </div>
         `;
       case 'date':
-        return `<input class="answer-input" type="date" value="${escapeHtml(value ?? '')}" data-question-input="${item.id}">`;
+        return `<input class="answer-input${hintClass}" type="date" value="${escapeHtml(hintedValue)}" data-question-input="${item.id}"${hintData}>`;
       case 'number': {
         const min = Number.isFinite(Number(item.min)) ? ` min="${escapeHtml(item.min)}"` : '';
         const max = Number.isFinite(Number(item.max)) ? ` max="${escapeHtml(item.max)}"` : '';
         const step = Number.isFinite(Number(item.step)) ? ` step="${escapeHtml(item.step)}"` : '';
         return `<div class="number-answer-control">
-          <input class="answer-input" type="number" value="${escapeHtml(value ?? '')}"${min}${max}${step} data-question-input="${item.id}">
+          <input class="answer-input${hintClass}" type="number" value="${escapeHtml(hintedValue)}"${min}${max}${step} data-question-input="${item.id}"${hintData}>
           ${item.unit ? `<span class="number-input-unit">${escapeHtml(item.unit)}</span>` : ''}
         </div>`;
       }
       case 'time':
-        return `<input class="answer-input" type="time" value="${escapeHtml(value ?? '')}" data-question-input="${item.id}">`;
+        return `<input class="answer-input${hintClass}" type="time" value="${escapeHtml(hintedValue)}" data-question-input="${item.id}"${hintData}>`;
       case 'timeRange': {
-        const range = value && typeof value === 'object' ? value : {};
+        const range = value && typeof value === 'object'
+          ? value
+          : priorHint && typeof priorHint === 'object'
+            ? priorHint
+            : {};
         return `<div class="time-range-control">
-          <label><span>First tee time</span><input class="answer-input" type="time" value="${escapeHtml(range.start ?? '')}" data-time-range-question-id="${item.id}" data-time-range-part="start"></label>
+          <label><span>First tee time</span><input class="answer-input${hintClass}" type="time" value="${escapeHtml(range.start ?? '')}" data-time-range-question-id="${item.id}" data-time-range-part="start"${hintData}></label>
           <span class="time-range-separator">to</span>
-          <label><span>Last tee time</span><input class="answer-input" type="time" value="${escapeHtml(range.end ?? '')}" data-time-range-question-id="${item.id}" data-time-range-part="end"></label>
+          <label><span>Last tee time</span><input class="answer-input${hintClass}" type="time" value="${escapeHtml(range.end ?? '')}" data-time-range-question-id="${item.id}" data-time-range-part="end"${hintData}></label>
         </div>`;
       }
       case 'assignment':
         return renderAssignmentPicker({
           value,
+          hint: priorHint,
           mode: item.assignmentMode === 'person' ? 'person' : 'person-or-role',
           questionId: item.id,
           required: item.required !== false
         });
       case 'text':
       default:
-        return `<input class="answer-input" type="text" value="${escapeHtml(value ?? '')}" data-question-input="${item.id}">`;
+        return `<input class="answer-input${hintClass}" type="text" value="${escapeHtml(hintedValue)}" data-question-input="${item.id}"${hintData}>`;
     }
   }
 
@@ -3427,7 +3669,7 @@
         <button class="catalogue-poster" data-event-summary="${escapeHtml(event.id)}" aria-label="View summary for ${escapeHtml(event.name)}">
           ${catalogueArtwork
             ? `<img class="${legacyPortraitClass.trim()}" src="${escapeHtml(catalogueArtwork)}" alt="Campaign artwork for ${escapeHtml(event.name)}">`
-            : `<span class="catalogue-poster-placeholder"><img src="./assets/botgc-mark.svg" alt=""><small>Artwork not generated yet</small></span>`}
+            : `<span class="catalogue-poster-placeholder"><img src="${escapeHtml(clubBranding.crestUrl)}" alt="${escapeHtml(clubBranding.clubName)} crest"><small>Artwork not generated yet</small></span>`}
           <span class="catalogue-status status-${escapeHtml(lifecycle.status)}">${escapeHtml(statusDefinition.label)}</span>
           ${current ? '<span class="catalogue-current-badge">Current event</span>' : ''}
         </button>
@@ -4228,9 +4470,17 @@
   }
 
   function pluginStatus(summary) {
-    if (summary?.enabled && summary?.configured) return { label: 'Enabled', className: 'enabled' };
-    if (summary?.configured) return { label: 'Credentials saved', className: 'configured' };
-    return { label: 'Not configured', className: 'unconfigured' };
+    if (summary?.enabled && summary?.configured) return { label: 'Active', className: 'enabled' };
+    if (summary?.configured) return { label: 'Ready', className: 'configured' };
+    return { label: 'Setup required', className: 'unconfigured' };
+  }
+
+  function renderPluginModuleSwitch(pluginId, pluginName, summary) {
+    const enabled = summary?.enabled === true;
+    return `<button class="plugin-module-switch ${enabled ? 'on' : 'off'}" type="button" data-toggle-plugin="${escapeHtml(pluginId)}" aria-pressed="${enabled}" aria-label="Turn ${escapeHtml(pluginName)} ${enabled ? 'off' : 'on'}">
+      <span class="plugin-module-switch-copy"><small>Module</small><strong>${enabled ? 'On' : 'Off'}</strong></span>
+      <span class="plugin-module-switch-track" aria-hidden="true"><i></i></span>
+    </button>`;
   }
 
   function pluginUpdatedLabel(value) {
@@ -4263,26 +4513,25 @@
     return `
       <section class="plugin-admin-intro">
         <div><span class="eyebrow">Application administration</span><h2>Plugins & integrations</h2><p>Connect the Playbook to the systems used by the club. Credentials are encrypted on the server and are never shown again after they have been saved.</p></div>
-        <div class="plugin-security-note"><span>◆</span><div><strong>Server-side secret storage</strong><small>Passwords, PINs and tokens are excluded from shared event data and browser storage.</small></div></div>
       </section>
       ${pluginSettingsNotice ? `<div class="plugin-settings-notice" role="status">${escapeHtml(pluginSettingsNotice)}</div>` : ''}
       <section class="plugin-admin-grid">
-        <article class="plugin-card">
-          <header class="plugin-card-header"><div class="plugin-card-icon">IG</div><div class="plugin-card-title"><span class="plugin-status ${intelligentGolfStatus.className}">${escapeHtml(intelligentGolfStatus.label)}</span><h3>Intelligent Golf</h3><p>Club diary, member communications and event information.</p></div></header>
+        <article class="plugin-card ${intelligentGolf.enabled ? 'plugin-on' : 'plugin-off'}">
+          <header class="plugin-card-header"><div class="plugin-card-icon">IG</div><div class="plugin-card-title"><span class="plugin-status ${intelligentGolfStatus.className}">${escapeHtml(intelligentGolfStatus.label)}</span><h3>Intelligent Golf</h3><p>Club diary, member communications and event information.</p></div>${renderPluginModuleSwitch('intelligent-golf', 'Intelligent Golf', intelligentGolf)}</header>
           <div class="plugin-card-body">
             <p>Keep the club login credentials required by the server-side Intelligent Golf integration in one protected place.</p>
             <dl class="plugin-facts">
               <div><dt>Club site</dt><dd>${escapeHtml(intelligentGolf.siteUrl || 'Not set')}</dd></div>
-              <div><dt>PIN</dt><dd>${intelligentGolf.hasPin ? 'Saved securely' : 'Not set'}</dd></div>
-              <div><dt>Password</dt><dd>${intelligentGolf.hasPassword ? 'Saved securely' : 'Not set'}</dd></div>
+              <div><dt>Member ID / username</dt><dd>${intelligentGolf.hasMemberId ? 'Saved securely' : 'Not set'}</dd></div>
+              <div><dt>Member PIN / password</dt><dd>${intelligentGolf.hasMemberPassword ? 'Saved securely' : 'Not set'}</dd></div>
               <div><dt>Administrator password</dt><dd>${intelligentGolf.hasAdminPassword ? 'Saved securely' : 'Not set'}</dd></div>
             </dl>
           </div>
           <footer class="plugin-card-actions"><small>${escapeHtml(pluginUpdatedLabel(intelligentGolf.updatedAtUtc))}</small><button class="button button-primary" type="button" data-configure-plugin="intelligent-golf">${intelligentGolf.configured ? 'Update settings' : 'Configure'}</button></footer>
         </article>
 
-        <article class="plugin-card">
-          <header class="plugin-card-header"><div class="plugin-card-icon monday">M</div><div class="plugin-card-title"><span class="plugin-status ${mondayStatus.className}">${escapeHtml(mondayStatus.label)}</span><h3>Monday.com</h3><p>Workflow and task integration for operational teams.</p></div></header>
+        <article class="plugin-card ${monday.enabled ? 'plugin-on' : 'plugin-off'}">
+          <header class="plugin-card-header"><div class="plugin-card-icon monday">M</div><div class="plugin-card-title"><span class="plugin-status ${mondayStatus.className}">${escapeHtml(mondayStatus.label)}</span><h3>Monday.com</h3><p>Workflow and task integration for operational teams.</p></div>${renderPluginModuleSwitch('monday', 'Monday.com', monday)}</header>
           <div class="plugin-card-body">
             <p>Use a personal API token for this club-owned prototype. Workspace and board IDs identify the initial destination for future task synchronisation.</p>
             <dl class="plugin-facts">
@@ -4294,8 +4543,7 @@
           </div>
           <footer class="plugin-card-actions"><small>${escapeHtml(pluginUpdatedLabel(monday.updatedAtUtc))}</small><button class="button button-primary" type="button" data-configure-plugin="monday">${monday.configured ? 'Update settings' : 'Configure'}</button></footer>
         </article>
-      </section>
-      <section class="plugin-roadmap-note"><strong>Prototype integration model</strong><p>These settings make credentials available securely to server-side adapters. Intelligent Golf still requires the club’s private integration workflow; Monday.com can move to OAuth when this becomes a multi-club product.</p></section>`;
+      </section>`;
   }
 
   function renderPluginDialogs() {
@@ -4305,14 +4553,14 @@
     return `
       <dialog id="intelligent-golf-plugin-dialog" class="plugin-dialog">
         <form id="intelligent-golf-plugin-form">
-          <header class="modal-heading"><div><span class="eyebrow">Plugin settings</span><h2>Configure Intelligent Golf</h2><p>Save the credentials used by the club’s Intelligent Golf integration.</p></div><button class="icon-button" type="button" data-close-plugin-dialog aria-label="Close">×</button></header>
+          <header class="modal-heading"><div><span class="eyebrow">Plugin settings</span><h2>Configure Intelligent Golf</h2><p>Save and validate the credentials used by the club’s Intelligent Golf integration.</p></div><button class="icon-button" type="button" data-close-plugin-dialog aria-label="Close">×</button></header>
           <div class="plugin-dialog-body">
             <div class="plugin-dialog-guidance"><strong>Secrets cannot be revealed</strong><p>Saved values are deliberately never returned to this page. Leave a secret field blank to retain the existing value.</p></div>
             <label class="wide"><span>Intelligent Golf club site</span><input id="ig-plugin-site-url" type="url" inputmode="url" autocomplete="url" placeholder="https://yourclub.intelligentgolf.co.uk" value="${escapeHtml(intelligentGolf.siteUrl || '')}"><small>Use the complete https address for the club’s Intelligent Golf site.</small></label>
-            <label><span>PIN</span><input id="ig-plugin-pin" type="password" inputmode="numeric" autocomplete="new-password" spellcheck="false" placeholder="${intelligentGolf.hasPin ? 'Saved — leave blank to keep' : 'Enter the integration PIN'}"></label>
-            <label><span>Password</span><input id="ig-plugin-password" type="password" autocomplete="new-password" spellcheck="false" placeholder="${intelligentGolf.hasPassword ? 'Saved — leave blank to keep' : 'Enter the Intelligent Golf password'}"></label>
+            <label><span>Member ID / username</span><input id="ig-plugin-member-id" type="password" autocomplete="new-password" spellcheck="false" placeholder="${intelligentGolf.hasMemberId ? 'Saved — leave blank to keep' : 'Enter the member ID'}"></label>
+            <label><span>Member PIN / password</span><input id="ig-plugin-member-password" type="password" autocomplete="new-password" spellcheck="false" placeholder="${intelligentGolf.hasMemberPassword ? 'Saved — leave blank to keep' : 'Enter the member PIN or password'}"></label>
             <label class="wide"><span>Administrator password</span><input id="ig-plugin-admin-password" type="password" autocomplete="new-password" spellcheck="false" placeholder="${intelligentGolf.hasAdminPassword ? 'Saved — leave blank to keep' : 'Enter the administrator password'}"><small>This is the separate administrator credential used when the integration performs privileged actions.</small></label>
-            <label class="plugin-enabled-control wide"><input id="ig-plugin-enabled" type="checkbox" ${intelligentGolf.enabled ? 'checked' : ''}><span><strong>Enable this plugin</strong><small>Only enable it after all four settings above have been supplied.</small></span></label>
+            <label class="plugin-enabled-control wide"><input id="ig-plugin-enabled" type="checkbox" ${intelligentGolf.enabled ? 'checked' : ''}><span><strong>Enable this plugin</strong><small>When enabled, the server validates these credentials and establishes a secure API session.</small></span></label>
           </div>
           <footer class="modal-actions">${intelligentGolf.configured ? '<button class="button button-danger plugin-disconnect-button" type="button" data-disconnect-plugin="intelligent-golf">Remove credentials</button>' : ''}<span></span><button class="button button-secondary" type="button" data-close-plugin-dialog>Cancel</button><button class="button button-primary" type="submit">Save Intelligent Golf</button></footer>
         </form>
@@ -4336,6 +4584,30 @@
   function renderAdmin() {
     return `
       <section class="page-header"><div><div class="eyebrow">Configuration</div><h2>Playbook admin</h2><p>Extend the data-driven Playbook without changing application code. People and responsibilities are maintained on the dedicated People & Roles page.</p></div><button class="button button-secondary" data-view="directory">Open People & Roles</button></section>
+      <section class="admin-branding-card" aria-labelledby="club-identity-heading">
+        <div class="admin-branding-preview">
+          <span class="eyebrow">Club identity</span>
+          <div class="admin-branding-lockup">
+            <span class="admin-branding-crest"><img id="club-branding-preview" src="${escapeHtml(clubBranding.crestUrl)}" alt="${escapeHtml(clubBranding.clubName)} crest"></span>
+            <div><h3 id="club-identity-heading">${escapeHtml(clubBranding.clubName)}</h3><p>Event Playbook</p></div>
+          </div>
+          <small>This is the identity people see in the navigation, login and shared event pages.</small>
+        </div>
+        <form id="club-branding-form" class="admin-branding-form">
+          <div class="admin-branding-heading"><div><span class="eyebrow">Application branding</span><h3>Club name and crest</h3></div><span class="admin-branding-status">${clubBranding.hasCustomCrest ? 'Custom crest in use' : 'Default crest in use'}</span></div>
+          <label class="admin-branding-field"><span>Club name</span><input id="club-branding-name" name="clubName" type="text" maxlength="120" required autocomplete="organization" value="${escapeHtml(clubBranding.clubName)}"><small>Used anywhere the application identifies the club.</small></label>
+          <label class="admin-branding-upload" for="club-branding-crest">
+            <span class="admin-branding-upload-icon" aria-hidden="true">↑</span>
+            <span><strong>Upload a club crest</strong><small>PNG, JPEG or WebP · up to 5 MB. A transparent PNG works best.</small></span>
+            <input id="club-branding-crest" name="crest" type="file" accept="image/png,image/jpeg,image/webp">
+          </label>
+          <div class="admin-branding-actions">
+            <button class="button button-primary" type="submit">Save club identity</button>
+            ${clubBranding.hasCustomCrest ? '<button class="button button-secondary" type="button" data-remove-custom-crest>Use default crest</button>' : ''}
+          </div>
+          ${clubBrandingNotice ? `<div class="admin-branding-notice" role="status">${escapeHtml(clubBrandingNotice)}</div>` : ''}
+        </form>
+      </section>
       <section class="admin-grid">
         <article class="admin-card"><div class="section-heading"><h3>Add a question or task</h3></div>
           <div class="admin-form">
@@ -4535,6 +4807,7 @@
       return;
     }
 
+    if (event.clonedAnswerHints) delete event.clonedAnswerHints[questionId];
     if (indexed.item.bind === 'eventDate') {
       event.eventDate = value;
       event.milestoneDates ??= {};
@@ -4967,8 +5240,202 @@
     }
   }
 
+  async function setPluginEnabledState(trigger) {
+    const pluginId = trigger.dataset.togglePlugin;
+    const isMonday = pluginId === 'monday';
+    const summary = isMonday ? pluginSettingsCache?.monday : pluginSettingsCache?.intelligentGolf;
+    const name = isMonday ? 'Monday.com' : 'Intelligent Golf';
+    const shouldEnable = summary?.enabled !== true;
+
+    if (shouldEnable && summary?.configured !== true) {
+      const dialog = document.getElementById(isMonday ? 'monday-plugin-dialog' : 'intelligent-golf-plugin-dialog');
+      const enabledInput = document.getElementById(isMonday ? 'monday-plugin-enabled' : 'ig-plugin-enabled');
+      if (enabledInput) enabledInput.checked = true;
+      dialog?.showModal();
+      return;
+    }
+
+    trigger.disabled = true;
+    trigger.classList.add('saving');
+    try {
+      const response = await fetch(`/api/admin/plugins/${encodeURIComponent(pluginId)}/enabled`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled: shouldEnable })
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || `${name} could not be turned ${shouldEnable ? 'on' : 'off'}.`);
+      pluginSettingsCache = result;
+      pluginSettingsNotice = '';
+      render();
+    } catch (error) {
+      alert(error.message || `${name} could not be turned ${shouldEnable ? 'on' : 'off'}.`);
+      trigger.disabled = false;
+      trigger.classList.remove('saving');
+    }
+  }
+
+  function resetPluginDialogEnabledState(dialog) {
+    const isMonday = dialog?.id === 'monday-plugin-dialog';
+    const summary = isMonday ? pluginSettingsCache?.monday : pluginSettingsCache?.intelligentGolf;
+    const enabledInput = document.getElementById(isMonday ? 'monday-plugin-enabled' : 'ig-plugin-enabled');
+    if (enabledInput) enabledInput.checked = summary?.enabled === true;
+  }
+
   function bindEvents() {
     bindAssignmentPickers();
+
+    const brandingForm = document.getElementById('club-branding-form');
+    const brandingCrestInput = document.getElementById('club-branding-crest');
+    const brandingPreview = document.getElementById('club-branding-preview');
+    let temporaryBrandingPreviewUrl = '';
+
+    brandingCrestInput?.addEventListener('change', () => {
+      if (temporaryBrandingPreviewUrl) URL.revokeObjectURL(temporaryBrandingPreviewUrl);
+      temporaryBrandingPreviewUrl = '';
+      const file = brandingCrestInput.files?.[0];
+      if (!file || !brandingPreview) {
+        if (brandingPreview) brandingPreview.src = clubBranding.crestUrl;
+        return;
+      }
+      temporaryBrandingPreviewUrl = URL.createObjectURL(file);
+      brandingPreview.src = temporaryBrandingPreviewUrl;
+    });
+
+    brandingForm?.addEventListener('submit', async eventArgs => {
+      eventArgs.preventDefault();
+      const submitButton = eventArgs.submitter;
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = 'Saving identity…';
+      }
+      try {
+        const formData = new FormData();
+        formData.set('clubName', document.getElementById('club-branding-name')?.value.trim() ?? '');
+        const file = brandingCrestInput?.files?.[0];
+        if (file) formData.set('crest', file);
+        const response = await fetch('/api/admin/branding', { method: 'PUT', body: formData });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.error || `The club identity could not be saved (${response.status}).`);
+        if (temporaryBrandingPreviewUrl) URL.revokeObjectURL(temporaryBrandingPreviewUrl);
+        temporaryBrandingPreviewUrl = '';
+        setClubBranding(result);
+        clubBrandingNotice = 'The club identity was saved and is now being used throughout the Event Playbook.';
+        render();
+      } catch (error) {
+        alert(error.message || 'The club identity could not be saved.');
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = 'Save club identity';
+        }
+      }
+    });
+
+    document.querySelector('[data-remove-custom-crest]')?.addEventListener('click', async eventArgs => {
+      if (!confirm('Use the built-in crest instead of the uploaded club crest?')) return;
+      const button = eventArgs.currentTarget;
+      button.disabled = true;
+      button.textContent = 'Restoring…';
+      try {
+        const formData = new FormData();
+        formData.set('clubName', document.getElementById('club-branding-name')?.value.trim() ?? clubBranding.clubName);
+        formData.set('removeCustomCrest', 'true');
+        const response = await fetch('/api/admin/branding', { method: 'PUT', body: formData });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.error || `The default crest could not be restored (${response.status}).`);
+        setClubBranding(result);
+        clubBrandingNotice = 'The built-in crest is now being used throughout the Event Playbook.';
+        render();
+      } catch (error) {
+        alert(error.message || 'The default crest could not be restored.');
+        button.disabled = false;
+        button.textContent = 'Use default crest';
+      }
+    });
+
+    const financeDirection = document.getElementById('finance-direction');
+    const financeCategory = document.getElementById('finance-category');
+    const financeCalculation = document.getElementById('finance-calculation');
+    const updateFinanceAddForm = () => {
+      if (financeCategory && financeDirection) {
+        const previousCategory = financeCategory.value;
+        financeCategory.innerHTML = financeCategoryOptions(financeDirection.value, previousCategory);
+        if (!financeCategory.value) financeCategory.value = FINANCE_CATEGORIES[financeDirection.value]?.[0] ?? '';
+      }
+      const calculation = FINANCE_CALCULATIONS[financeCalculation?.value] ?? FINANCE_CALCULATIONS.total;
+      const calculated = financeCalculation?.value !== 'total';
+      const totalField = document.getElementById('finance-total-field');
+      const quantityField = document.getElementById('finance-quantity-field');
+      const unitField = document.getElementById('finance-unit-field');
+      if (totalField) totalField.hidden = calculated;
+      if (quantityField) quantityField.hidden = !calculated;
+      if (unitField) unitField.hidden = !calculated;
+      const quantityLabel = document.getElementById('finance-quantity-label');
+      const unitLabel = document.getElementById('finance-unit-label');
+      if (quantityLabel) quantityLabel.textContent = calculation.quantityLabel || 'Quantity';
+      if (unitLabel) unitLabel.textContent = calculation.unitLabel || 'Unit amount';
+    };
+    financeDirection?.addEventListener('change', updateFinanceAddForm);
+    financeCalculation?.addEventListener('change', updateFinanceAddForm);
+
+    document.getElementById('finance-entry-form')?.addEventListener('submit', eventArgs => {
+      eventArgs.preventDefault();
+      const activeEvent = getActiveEvent();
+      if (!activeEvent) return;
+      const form = eventArgs.currentTarget;
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      const calculation = financeCalculation?.value || 'total';
+      const entry = {
+        id: crypto.randomUUID(),
+        direction: financeDirection?.value === 'expense' ? 'expense' : 'income',
+        category: financeCategory?.value || 'Other income',
+        description: document.getElementById('finance-description')?.value.trim() || '',
+        calculation,
+        quantity: Math.max(0, Number(document.getElementById('finance-quantity')?.value) || 0),
+        unitAmount: Math.max(0, Number(document.getElementById('finance-unit-amount')?.value) || 0),
+        totalAmount: Math.max(0, Number(document.getElementById('finance-total-amount')?.value) || 0),
+        status: document.getElementById('finance-status')?.value === 'actual' ? 'actual' : 'estimate',
+        notes: document.getElementById('finance-notes')?.value.trim() || '',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      normaliseEventFinances(activeEvent).entries.unshift(entry);
+      saveState();
+      render();
+    });
+
+    document.querySelectorAll('[data-finance-field]').forEach(element => {
+      element.addEventListener('change', () => {
+        const activeEvent = getActiveEvent();
+        const entry = activeEvent?.finances?.entries?.find(candidate => candidate.id === element.closest('[data-finance-entry]')?.dataset.financeEntry);
+        if (!entry) return;
+        const field = element.dataset.financeField;
+        entry[field] = ['quantity', 'unitAmount', 'totalAmount'].includes(field)
+          ? Math.max(0, Number(element.value) || 0)
+          : element.value.trim();
+        if (field === 'direction' && !(FINANCE_CATEGORIES[entry.direction] ?? []).includes(entry.category)) {
+          entry.category = FINANCE_CATEGORIES[entry.direction]?.[0] ?? entry.category;
+        }
+        entry.updatedAt = new Date().toISOString();
+        saveState();
+        render();
+      });
+    });
+
+    document.querySelectorAll('[data-delete-finance-entry]').forEach(element => {
+      element.addEventListener('click', () => {
+        const activeEvent = getActiveEvent();
+        const entry = activeEvent?.finances?.entries?.find(candidate => candidate.id === element.dataset.deleteFinanceEntry);
+        if (!activeEvent || !entry || !confirm(`Delete the ${entry.description || entry.category} figure from this event P&L?`)) return;
+        activeEvent.finances.entries = activeEvent.finances.entries.filter(candidate => candidate.id !== entry.id);
+        saveState();
+        render();
+      });
+    });
+
     document.querySelectorAll('[data-view]').forEach(element => {
       element.addEventListener('click', () => {
         const requestedView = element.dataset.view;
@@ -4992,8 +5459,16 @@
       });
     });
 
+    document.querySelectorAll('[data-toggle-plugin]').forEach(element => {
+      element.addEventListener('click', () => setPluginEnabledState(element));
+    });
+
     document.querySelectorAll('[data-close-plugin-dialog]').forEach(element => {
       element.addEventListener('click', () => element.closest('dialog')?.close());
+    });
+
+    document.querySelectorAll('.plugin-dialog').forEach(dialog => {
+      dialog.addEventListener('close', () => resetPluginDialogEnabledState(dialog));
     });
 
     document.querySelectorAll('[data-action="reload-plugin-settings"]').forEach(element => {
@@ -5009,8 +5484,8 @@
       savePluginConfiguration(dialog, '/api/admin/plugins/intelligent-golf', {
         enabled: document.getElementById('ig-plugin-enabled')?.checked === true,
         siteUrl: document.getElementById('ig-plugin-site-url')?.value ?? '',
-        pin: document.getElementById('ig-plugin-pin')?.value ?? '',
-        password: document.getElementById('ig-plugin-password')?.value ?? '',
+        memberId: document.getElementById('ig-plugin-member-id')?.value ?? '',
+        memberPassword: document.getElementById('ig-plugin-member-password')?.value ?? '',
         adminPassword: document.getElementById('ig-plugin-admin-password')?.value ?? ''
       }, 'Intelligent Golf settings were saved securely.', eventArgs.submitter);
     });
@@ -5115,6 +5590,9 @@
         if (!event) return;
         const indexed = itemIndex.get(element.dataset.questionInput);
         if (!indexed || indexed.item.type !== 'question') return;
+        if (event.clonedAnswerHints) delete event.clonedAnswerHints[element.dataset.questionInput];
+        element.classList.remove('prior-answer-hint');
+        delete element.dataset.priorAnswerHint;
         if (indexed.item.bind === 'eventDate') {
           event.eventDate = element.value;
           event.milestoneDates ??= {};
@@ -6163,6 +6641,9 @@
         lifecycle: structuredClone(event.lifecycle),
         deadlineOffsets: Object.fromEntries(playbook.deadlineCodes.map(code => [code.code, getDeadlineOffset(code.code, event)])),
         answers: event.answers,
+        previousAnswerHints: structuredClone(event.clonedAnswerHints ?? {}),
+        finances: structuredClone(normaliseEventFinances(event)),
+        financeSummary: financeTotals(event),
         tasks
       }
     };
@@ -6255,6 +6736,7 @@
       validatePlaybook(candidate);
       playbook = candidate;
       indexPlaybook();
+      await initialiseClubBranding();
       await initialiseAccessSession();
       await initialiseSharedState();
       migrateMilestoneState();

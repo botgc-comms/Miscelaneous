@@ -66,6 +66,12 @@ public sealed class IntelligentGolfTransport(
     {
         var client = httpClientFactory.CreateClient(IntelligentGolfServiceCollectionExtensions.HttpClientName);
         using var request = requestFactory();
+        if (request.RequestUri is null || !request.RequestUri.IsAbsoluteUri)
+        {
+            request.RequestUri = new Uri(
+                new Uri(session.BaseUrl, UriKind.Absolute),
+                request.RequestUri?.ToString().TrimStart('/') ?? string.Empty);
+        }
         using var response = await client.SendAsync(request, cancellationToken);
         var body = await response.Content.ReadAsStringAsync(cancellationToken);
 

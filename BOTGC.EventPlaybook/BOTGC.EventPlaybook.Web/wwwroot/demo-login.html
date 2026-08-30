@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
-  <title>Development access · BOTGC Event Playbook</title>
+  <title data-club-title-prefix="Development access">Development access · Event Playbook</title>
   <style>
     :root {
       color-scheme: light;
@@ -32,13 +32,17 @@
       box-shadow: 0 28px 70px rgba(2, 40, 51, .2);
     }
     .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
       padding: 28px 32px 26px;
       color: #fff;
       background: linear-gradient(120deg, #073c4c, #145968);
     }
+    .brand img { width: 58px; height: 68px; flex: 0 0 58px; object-fit: contain; }
     .brand small {
       display: block;
-      margin-bottom: 9px;
+      margin-bottom: 7px;
       color: #dfbd70;
       font-size: 12px;
       font-weight: 800;
@@ -113,8 +117,8 @@
 <body>
   <main>
     <div class="brand">
-      <small>Burton-on-Trent Golf Club</small>
-      <strong>Event Playbook</strong>
+      <img src="/assets/botgc-mark.svg" alt="" data-club-branding-crest>
+      <div><small data-club-branding-name>Burton-on-Trent Golf Club</small><strong>Event Playbook</strong></div>
     </div>
     <div class="content">
       <h1>Development access</h1>
@@ -130,6 +134,7 @@
       </form>
     </div>
   </main>
+  <script src="/branding.js?v=20260829-club-branding-1"></script>
   <script>
     const parameters = new URLSearchParams(window.location.search);
     const requestedReturnUrl = parameters.get('returnUrl') || '/';

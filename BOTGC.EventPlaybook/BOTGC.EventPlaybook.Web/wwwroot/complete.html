@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Complete Event Task | Burton-on-Trent Golf Club</title>
+  <title data-club-title-prefix="Complete Event Task">Complete Event Task | Burton-on-Trent Golf Club</title>
   <link rel="stylesheet" href="./playbook.css?v=20260829-retrospective-analysis-1">
   <link rel="stylesheet" href="./complete.css?v=20260828-attendee-feedback-1">
 </head>
@@ -12,16 +12,17 @@
     <section class="completion-card" id="completionCard">
       <header class="completion-brand">
         <span class="completion-mark">
-          <img class="brand-mark brand-mark-image" src="./assets/botgc-mark.svg" width="56" height="64" alt="Burton-on-Trent Golf Club crest">
+          <img class="brand-mark brand-mark-image" src="./assets/botgc-mark.svg" width="56" height="64" alt="Burton-on-Trent Golf Club crest" data-club-branding-crest>
         </span>
         <div>
-          <div class="brand-kicker">Burton-on-Trent Golf Club</div>
+          <div class="brand-kicker" data-club-branding-name>Burton-on-Trent Golf Club</div>
           <h1>Event task</h1>
         </div>
       </header>
       <div id="completionContent" class="completion-content">Loading task…</div>
     </section>
   </main>
+  <script src="./branding.js?v=20260829-club-branding-1"></script>
   <script type="module">
     const content = document.getElementById('completionContent');
     const token = new URLSearchParams(location.search).get('token');

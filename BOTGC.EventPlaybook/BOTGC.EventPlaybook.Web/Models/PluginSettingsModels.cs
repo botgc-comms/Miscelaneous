@@ -13,8 +13,8 @@ public sealed class IntelligentGolfPluginSummary
     public bool Enabled { get; init; }
     public bool Configured { get; init; }
     public string? SiteUrl { get; init; }
-    public bool HasPin { get; init; }
-    public bool HasPassword { get; init; }
+    public bool HasMemberId { get; init; }
+    public bool HasMemberPassword { get; init; }
     public bool HasAdminPassword { get; init; }
     public DateTimeOffset? UpdatedAtUtc { get; init; }
 }
@@ -35,10 +35,22 @@ public sealed class SaveIntelligentGolfPluginRequest
 {
     public bool Enabled { get; init; }
     public string? SiteUrl { get; init; }
+    public string? MemberId { get; init; }
+    public string? MemberPassword { get; init; }
+    // Kept as input aliases so existing saved administration pages remain compatible.
     public string? Pin { get; init; }
     public string? Password { get; init; }
     public string? AdminPassword { get; init; }
+
+    public string? EffectiveMemberId => MemberId ?? Pin;
+    public string? EffectiveMemberPassword => MemberPassword ?? Password;
 }
+
+public sealed record IntelligentGolfPluginCredentials(
+    string SiteUrl,
+    string MemberId,
+    string MemberPassword,
+    string AdminPassword);
 
 public sealed class SaveMondayPluginRequest
 {
@@ -46,4 +58,9 @@ public sealed class SaveMondayPluginRequest
     public string? ApiToken { get; init; }
     public string? WorkspaceId { get; init; }
     public string? BoardId { get; init; }
+}
+
+public sealed class SetPluginEnabledRequest
+{
+    public bool Enabled { get; init; }
 }

@@ -59,6 +59,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseMiddleware<ApiKeyMiddleware>();
+app.UseMiddleware<IntelligentGolfSessionTokenMiddleware>();
 
 app.MapGet("/health", () => Results.Ok(new { status = "healthy" }))
     .AllowAnonymous()
@@ -68,6 +69,29 @@ app.MapGet("/health/intelligent-golf", (IIntelligentGolfSession session) =>
         Results.Ok(session.Status))
     .AllowAnonymous()
     .ExcludeFromDescription();
+
+app.MapPost("/v1/auth/intelligent-golf/session", async (
+    IntelligentGolfCredentials credentials,
+    IIntelligentGolfSession session,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        return Results.Ok(await session.AuthenticateAsync(credentials, cancellationToken));
+    }
+    catch (ArgumentException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
+    catch (IntelligentGolfAuthenticationException exception)
+    {
+        return Results.Json(
+            new { error = exception.Message },
+            statusCode: StatusCodes.Status401Unauthorized);
+    }
+})
+    .WithTags("Authentication")
+    .WithSummary("Validate Intelligent Golf credentials and establish an API session");
 
 app.MapMemberEndpoints();
 app.MapMemberEmailEndpoints();

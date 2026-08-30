@@ -766,13 +766,14 @@ function updateAutomaticReferenceSelection(session) {
         return;
     }
 
+    const clubName = session.config?.brand?.name || 'the club';
     const tokens = tokenise([
         session.form.eventName,
         session.form.description,
         session.form.additionalInstructions,
         session.form.includeDate ? session.form.eventDate : '',
         session.form.includePrice ? session.form.price : '',
-        session.form.includeClubBranding ? 'Burton-on-Trent Golf Club official logo crest branding BOTGC' : 'no club logo branding'
+        session.form.includeClubBranding ? `${clubName} official logo crest branding` : 'no club logo branding'
     ].join(' '));
 
     session.form.selectedLibraryReferences = library
@@ -2293,7 +2294,7 @@ async function recomposeSavedArtwork(session) {
 }
 
 async function drawClubBranding(context, width, height) {
-    const mark = await loadImage('/assets/botgc-mark.svg');
+    const mark = await loadImage(configCache?.brand?.crestUrl || '/assets/botgc-mark.svg');
     const markHeight = Math.round(Math.min(height * 0.11, width * 0.14));
     const markWidth = Math.round(markHeight * (80 / 92));
     const edgeInset = Math.round(Math.min(width, height) * 0.06);

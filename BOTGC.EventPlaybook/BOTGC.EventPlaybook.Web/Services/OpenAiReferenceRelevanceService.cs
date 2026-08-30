@@ -11,6 +11,7 @@ namespace BOTGC.EventPlaybook.Services;
 public sealed class OpenAiReferenceRelevanceService(
     IHttpClientFactory httpClientFactory,
     IPosterConfigurationService posterConfiguration,
+    IClubBrandingStore clubBrandingStore,
     IOptions<OpenAiOptions> options,
     ILogger<OpenAiReferenceRelevanceService> logger) : IReferenceRelevanceService
 {
@@ -94,7 +95,8 @@ public sealed class OpenAiReferenceRelevanceService(
         SelectReferenceImagesRequest request,
         CancellationToken cancellationToken)
     {
-        var eventIntent = BuildEventIntent(request);
+        var clubName = (await clubBrandingStore.GetOverviewAsync(cancellationToken)).ClubName;
+        var eventIntent = BuildEventIntent(request, clubName);
         if (request.References.Count == 0)
         {
             return EmptySelection(eventIntent);
@@ -291,7 +293,7 @@ public sealed class OpenAiReferenceRelevanceService(
         Selected = []
     };
 
-    private static string BuildEventIntent(SelectReferenceImagesRequest request)
+    private static string BuildEventIntent(SelectReferenceImagesRequest request, string clubName)
     {
         var builder = new StringBuilder();
         builder.AppendLine("EVENT POSTER CONTENT INTENT");
@@ -312,8 +314,8 @@ public sealed class OpenAiReferenceRelevanceService(
             ? $"- Include the price: {request.Price.Trim()}."
             : "- Do not include a price.");
         builder.AppendLine(request.IncludeClubBranding
-            ? "- Include the official Burton-on-Trent Golf Club logo as a real post-generation overlay; an official club-logo reference can be relevant, but the image model must not invent or redraw it."
-            : "- Do not include a club logo, crest, wordmark, BOTGC initials or club branding; logo-only library images are not relevant.");
+            ? $"- Include the official {clubName} logo as a real post-generation overlay; an official club-logo reference can be relevant, but the image model must not invent or redraw it."
+            : "- Do not include a club logo, crest, wordmark, initials or club branding; logo-only library images are not relevant.");
         return builder.ToString().Trim();
     }
 

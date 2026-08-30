@@ -95,6 +95,9 @@ builder.Services.Configure<IntelligentGolfOptions>(options =>
         ? "POST"
         : "PUT";
 });
+builder.Services
+    .AddOptions<EventPlaybookApiOptions>()
+    .Bind(builder.Configuration.GetSection(EventPlaybookApiOptions.SectionName));
 builder.Services.AddSingleton<IPosterConfigurationService, PosterConfigurationService>();
 builder.Services.AddHttpClient("OpenAI", client =>
 {
@@ -117,10 +120,16 @@ builder.Services.AddHttpClient("IntelligentGolf", client =>
     client.Timeout = TimeSpan.FromMinutes(2);
 });
 builder.Services.AddSingleton<IIntelligentGolfDiaryPublisher, IntelligentGolfDiaryPublisher>();
+builder.Services.AddHttpClient(IntelligentGolfApiSessionClient.HttpClientName, client =>
+{
+    client.Timeout = TimeSpan.FromMinutes(2);
+});
+builder.Services.AddSingleton<IIntelligentGolfApiSessionClient, IntelligentGolfApiSessionClient>();
 builder.Services.AddSingleton<ITaskCompletionRegistry, TaskCompletionRegistry>();
 builder.Services.AddSingleton<IFeedbackStore, FeedbackStore>();
 builder.Services.AddSingleton<IRetrospectiveAnalysisService, RetrospectiveAnalysisService>();
 builder.Services.AddSingleton<IPluginSettingsStore, PluginSettingsStore>();
+builder.Services.AddSingleton<IClubBrandingStore, ClubBrandingStore>();
 builder.Services.AddSingleton<PrototypePersistenceStore>();
 builder.Services.AddSingleton<ISharedPlaybookStateStore>(services => services.GetRequiredService<PrototypePersistenceStore>());
 builder.Services.AddSingleton<IPosterSessionStore>(services => services.GetRequiredService<PrototypePersistenceStore>());
@@ -170,6 +179,8 @@ if (!string.IsNullOrWhiteSpace(demoPassword))
                            path.StartsWithSegments("/auth/login") ||
                            path.StartsWithSegments("/auth/admin-login") ||
                            path.StartsWithSegments("/api/auth/session") ||
+                           path.StartsWithSegments("/api/branding") ||
+                           path.StartsWithSegments("/branding.js") ||
                            path.StartsWithSegments("/feedback.html") ||
                            path.StartsWithSegments("/feedback.css") ||
                            path.StartsWithSegments("/feedback.js") ||
@@ -307,17 +318,44 @@ app.MapGet("/api/auth/session", (HttpContext context) => Results.Ok(new
     displayName = context.User.Identity?.Name
 }));
 
-app.MapGet("/api/poster/config", (
+app.MapGet("/api/branding", async (
+    IClubBrandingStore brandingStore,
+    CancellationToken cancellationToken) =>
+{
+    return Results.Ok(await brandingStore.GetOverviewAsync(cancellationToken));
+});
+
+app.MapGet("/api/branding/crest", async (
+    HttpContext context,
+    IClubBrandingStore brandingStore,
+    CancellationToken cancellationToken) =>
+{
+    var crest = await brandingStore.GetCrestAsync(cancellationToken);
+    if (crest is null) return Results.Redirect("/assets/botgc-mark.svg");
+    context.Response.Headers.CacheControl = "public,max-age=300";
+    return Results.File(crest.Content, crest.ContentType);
+});
+
+app.MapGet("/api/poster/config", async (
     IPosterConfigurationService configurationService,
+    IClubBrandingStore brandingStore,
     IYodeckPublisher yodeckPublisher,
-    IIntelligentGolfDiaryPublisher diaryPublisher) =>
+    IIntelligentGolfDiaryPublisher diaryPublisher,
+    CancellationToken cancellationToken) =>
 {
     var configurationModel = configurationService.Get();
+    var branding = await brandingStore.GetOverviewAsync(cancellationToken);
     var hasApiKey = !string.IsNullOrWhiteSpace(openAiApiKey);
 
     return Results.Ok(new
     {
-        brand = configurationModel.Brand,
+        brand = new
+        {
+            name = branding.ClubName,
+            configurationModel.Brand.ShortName,
+            configurationModel.Brand.Strapline,
+            crestUrl = branding.CrestUrl
+        },
         events = configurationModel.Events,
         styles = configurationModel.Styles.Select(x => new
         {
@@ -804,16 +842,57 @@ app.MapGet("/api/admin/plugins", async (
     return Results.Ok(await pluginSettingsStore.GetOverviewAsync(cancellationToken));
 });
 
-app.MapPut("/api/admin/plugins/intelligent-golf", async (
-    SaveIntelligentGolfPluginRequest request,
-    IPluginSettingsStore pluginSettingsStore,
+app.MapPut("/api/admin/branding", async (
+    HttpContext context,
+    IClubBrandingStore brandingStore,
     CancellationToken cancellationToken) =>
 {
     try
     {
+        var form = await context.Request.ReadFormAsync(cancellationToken);
+        var removeCustomCrest = bool.TryParse(form["removeCustomCrest"].ToString(), out var remove) && remove;
+        var result = await brandingStore.SaveAsync(
+            form["clubName"].ToString(),
+            form.Files.GetFile("crest"),
+            removeCustomCrest,
+            cancellationToken);
+        return Results.Ok(result);
+    }
+    catch (ArgumentException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
+    catch (InvalidDataException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
+});
+
+app.MapPut("/api/admin/plugins/intelligent-golf", async (
+    SaveIntelligentGolfPluginRequest request,
+    IPluginSettingsStore pluginSettingsStore,
+    IIntelligentGolfApiSessionClient sessionClient,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        if (request.Enabled)
+        {
+            var credentials = await pluginSettingsStore.ResolveIntelligentGolfCredentialsAsync(request, cancellationToken);
+            await sessionClient.ConnectAsync(credentials, cancellationToken);
+        }
+        else
+        {
+            sessionClient.Clear();
+        }
+
         return Results.Ok(await pluginSettingsStore.SaveIntelligentGolfAsync(request, cancellationToken));
     }
     catch (ArgumentException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
+    catch (InvalidOperationException exception)
     {
         return Results.BadRequest(new { error = exception.Message });
     }
@@ -834,13 +913,57 @@ app.MapPut("/api/admin/plugins/monday", async (
     }
 });
 
-app.MapDelete("/api/admin/plugins/{pluginId}", async (
+app.MapPatch("/api/admin/plugins/{pluginId}/enabled", async (
     string pluginId,
+    SetPluginEnabledRequest request,
     IPluginSettingsStore pluginSettingsStore,
+    IIntelligentGolfApiSessionClient sessionClient,
     CancellationToken cancellationToken) =>
 {
     try
     {
+        if (string.Equals(pluginId, "intelligent-golf", StringComparison.OrdinalIgnoreCase))
+        {
+            if (request.Enabled)
+            {
+                var credentials = await pluginSettingsStore.GetIntelligentGolfCredentialsAsync(cancellationToken)
+                    ?? throw new ArgumentException("Configure Intelligent Golf before turning the module on.");
+                await sessionClient.ConnectAsync(credentials, cancellationToken);
+            }
+            else
+            {
+                sessionClient.Clear();
+            }
+        }
+
+        return Results.Ok(await pluginSettingsStore.SetEnabledAsync(pluginId, request.Enabled, cancellationToken));
+    }
+    catch (ArgumentException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
+    catch (KeyNotFoundException exception)
+    {
+        return Results.NotFound(new { error = exception.Message });
+    }
+    catch (InvalidOperationException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
+});
+
+app.MapDelete("/api/admin/plugins/{pluginId}", async (
+    string pluginId,
+    IPluginSettingsStore pluginSettingsStore,
+    IIntelligentGolfApiSessionClient sessionClient,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        if (string.Equals(pluginId, "intelligent-golf", StringComparison.OrdinalIgnoreCase))
+        {
+            sessionClient.Clear();
+        }
         return Results.Ok(await pluginSettingsStore.DisconnectAsync(pluginId, cancellationToken));
     }
     catch (KeyNotFoundException exception)

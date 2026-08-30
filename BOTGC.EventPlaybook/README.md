@@ -7,7 +7,7 @@
 - `BOTGC.EventPlaybook.Web` — the public ASP.NET Core web/BFF application, browser assets, Playbook configuration, prototype file persistence, OpenAI poster generation and Yodeck publishing.
 - `BOTGC.EventPlaybook.API` — the private .NET 9 Intelligent Golf integration service, including the shared authenticated session, member/report endpoints and API-key protection.
 
-The browser talks only to the Web project. Integration credentials and the long-lived Intelligent Golf session belong in the API project; the API should not be exposed directly to browsers or the public internet.
+The browser talks only to the Web project. Intelligent Golf credentials are encrypted on the Web service's persistent disk and sent only server-to-server when the module is enabled; the private API validates them and owns the live IG cookie session. Neither credentials nor session tokens are exposed to the browser, and the API should not be exposed to the public internet.
 
 This solution deliberately integrates the two successful prototypes without replacing either of them:
 

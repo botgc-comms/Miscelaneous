@@ -626,7 +626,9 @@ async function main(): Promise<void> {
   console.log(`Report JSON: ${path.join(OUTPUT_DIR, REPORT_JSON_FILE_NAME)}`);
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+if (import.meta.url === `file://${process.argv[1]?.replace(/\\/g, "/")}`) {
+  main().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+}

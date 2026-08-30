@@ -21,14 +21,11 @@ Keeping the API separate prevents Intelligent Golf credentials and its authentic
    - `YODECK_PLAYLIST_ID`: the numeric ID of the existing Clubhouse playlist;
    - leave the legacy Intelligent Golf diary variables empty until that member-diary contract is connected to the new API.
 6. Deploy or sync the Blueprint. This keeps the existing Web service and creates `botgc-event-playbook-api-dev`.
-7. On `botgc-event-playbook-api-dev`, add these secrets in **Environment** (a brand-new Blueprint may prompt for them during creation):
-   - `EventPlaybookApi__ApiKey`: a long random server-to-server key;
-   - `IntelligentGolf__MemberId`: the IG member identity used for login;
-   - `IntelligentGolf__MemberPassword`: the member login PIN/password;
-   - `IntelligentGolf__AdminPassword`: the administrator password;
+7. Generate one long random server-to-server key. Set that same value as `EventPlaybookApi__ApiKey` on both `botgc-event-playbook-dev` and `botgc-event-playbook-api-dev`. The Web service also receives the private-service URL `http://botgc-event-playbook-api-dev:10000` from the Blueprint.
+8. On `botgc-event-playbook-api-dev`, add the optional sender identity used for IG member email:
    - `IntelligentGolf__EmailSenderMemberNumber`, `IntelligentGolf__EmailFromName` and `IntelligentGolf__EmailFromAddress`: the identity used for IG member email.
-8. Redeploy the API after saving its secrets, then wait for the Web `/health` endpoint and API port binding to succeed.
-9. Open the existing Web `onrender.com` URL and sign in with the shared tester password. Use the locked administration links under **Shared resources** to enter the separate administrator password when administration is required.
+9. Redeploy both services after saving their settings, then wait for the Web `/health` endpoint and API port binding to succeed.
+10. Open the existing Web `onrender.com` URL, sign in, then use **Plugin administration → Intelligent Golf** to enter the club site, member ID, member PIN/password and administrator password. Enabling the module validates those details against IG and establishes the private API session.
 
 If the Web service already exists, use **Blueprints → Sync** after pushing this version. Render matches it by the unchanged `botgc-event-playbook-dev` name, so it updates the Dockerfile path without replacing the service, URL or disk. Render does not prompt for new `sync: false` secrets when an existing Blueprint is updated, so add the new Web `ADMIN_PASSWORD` and the API secrets manually. The applications can still start without them, but administrator and authenticated API functions remain unavailable until configured.
 
@@ -54,6 +51,8 @@ Render automatically rebuilds and deploys both services whenever a commit reache
 | `INTELLIGENT_GOLF_API_TOKEN` | For member-diary publishing | Server-side bearer token for the private diary integration. |
 | `INTELLIGENT_GOLF_CLUB_ID` | For member-diary publishing | Club identifier expected by the diary integration. |
 | `INTELLIGENT_GOLF_DIARY_HTTP_METHOD` | No | `PUT` by default so repeated sends update the same event; set to `POST` only if the supplied integration contract requires it. |
+| `EventPlaybookApi__BaseUrl` | Yes for the IG plugin | Private Render address of the API service. The Blueprint supplies `http://botgc-event-playbook-api-dev:10000`. |
+| `EventPlaybookApi__ApiKey` | Yes for the IG plugin | Must exactly match the private API service's value. Used only for server-to-server requests. |
 
 Secrets belong in Render's Environment settings. Do not commit them to Git, the Dockerfile or `render.yaml`.
 
@@ -63,9 +62,9 @@ Secrets belong in Render's Environment settings. Do not commit them to Git, the 
 | --- | --- | --- |
 | `EventPlaybookApi__ApiKey` | Yes outside Development | Required in the `X-Api-Key` header for every domain endpoint. Health and Swagger are exempt. |
 | `IntelligentGolf__BaseUrl` | No | Defaults to `https://www.botgc.co.uk`. |
-| `IntelligentGolf__MemberId` | Yes for IG access | Member identity used to establish the shared IG session. |
-| `IntelligentGolf__MemberPassword` | Yes for IG access | Member PIN/password used for login. |
-| `IntelligentGolf__AdminPassword` | Yes for administrative IG access | Elevates the member session to the required administration access. |
+| `IntelligentGolf__MemberId` | Legacy fallback only | Normally supplied securely by the Web service from Plugin administration. |
+| `IntelligentGolf__MemberPassword` | Legacy fallback only | Normally supplied securely by the Web service from Plugin administration. |
+| `IntelligentGolf__AdminPassword` | Legacy fallback only | Normally supplied securely by the Web service from Plugin administration. |
 | `IntelligentGolf__EmailSenderMemberNumber` | For IG member email | Member record used as the sender. |
 | `IntelligentGolf__EmailFromName` | For IG member email | Friendly sender name. |
 | `IntelligentGolf__EmailFromAddress` | For IG member email | Sender email address. |
@@ -75,7 +74,7 @@ The Yodeck token requires permission to view and change both **Media** and **Pla
 
 Intelligent Golf publicly documents the club diary and member-app experience, but not a write API. The member-diary button therefore remains visibly unavailable until the club's private endpoint, token and club identifier have all been supplied. Its server-side request includes a stable `event-playbook-…` external reference, event title/date/times, member-facing description, optional link and approved campaign artwork. Confirm the final endpoint, authentication and field contract with Intelligent Golf before enabling these variables; the browser never receives the token.
 
-The in-app **Plugin administration** page separately manages the Intelligent Golf club-site login (site URL, PIN, password and administrator password) and a Monday.com personal API token with optional workspace and board IDs. These values are protected with ASP.NET Core Data Protection and saved to `App_Data/plugin-settings.json`; the API returns only configuration flags, never the original secrets. Leave a secret field blank when updating other settings to retain its existing value. **Remove credentials** deletes all stored settings for that plugin. The current Intelligent Golf member-diary adapter still needs the private endpoint contract above before these login credentials can replace its environment-based token, and Monday.com task synchronisation remains the next adapter to be implemented.
+The in-app **Plugin administration** page manages the Intelligent Golf club-site login (site URL, member ID, member PIN/password and administrator password) and a Monday.com personal API token with optional workspace and board IDs. Each plugin has an administrator-controlled on/off switch. Turning Intelligent Golf on sends the credentials once from the Web server to the private API over Render's internal network, protected by `X-Api-Key`. The API validates them against IG, keeps its authenticated cookie session in memory and returns a four-hour opaque session token to the Web server; neither credentials nor token are returned to the browser. Turning a module off retains its encrypted settings, while turning it on is rejected until configuration and live authentication succeed. The encrypted settings live in `App_Data/plugin-settings.json`; leave a secret field blank when updating other settings to retain it. **Remove credentials** deletes all stored settings for that plugin. Monday.com task synchronisation remains the next adapter to be implemented.
 
 ## Local password-protected testing
 
@@ -98,6 +97,7 @@ This deployment is now suitable for lightweight, shared prototype testing:
 - browser `localStorage` and IndexedDB remain local caches, so a temporary network failure does not immediately discard the tester's work;
 - task completion records, the notification development outbox and development-login cookie encryption keys also live under `App_Data`;
 - encrypted plugin credentials live in `App_Data/plugin-settings.json`, with their Data Protection keys in `App_Data/DataProtection-Keys`;
+- the club name and uploaded crest configured in **Playbook Administration** live under `App_Data/branding` and are reused by the navigation, shared pages and Poster Studio;
 - the Render disk mounted at `/app/App_Data` survives restarts and redeployments.
 
 Two people using different browsers can therefore work with the same events and reopen the same Poster Studio campaigns. Event-state saves use revision checks and field-level merging for edits that overlap. This is deliberately a single-instance prototype: Poster Studio uses last-save-wins, there is no edit-presence indicator, and the JSON/file store is not intended to replace a production database or object store.

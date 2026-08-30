@@ -11,8 +11,17 @@ public interface IPluginSettingsStore
     Task<IntelligentGolfPluginSummary> SaveIntelligentGolfAsync(
         SaveIntelligentGolfPluginRequest request,
         CancellationToken cancellationToken);
+    Task<IntelligentGolfPluginCredentials> ResolveIntelligentGolfCredentialsAsync(
+        SaveIntelligentGolfPluginRequest request,
+        CancellationToken cancellationToken);
+    Task<IntelligentGolfPluginCredentials?> GetIntelligentGolfCredentialsAsync(
+        CancellationToken cancellationToken);
     Task<MondayPluginSummary> SaveMondayAsync(
         SaveMondayPluginRequest request,
+        CancellationToken cancellationToken);
+    Task<PluginSettingsOverview> SetEnabledAsync(
+        string pluginId,
+        bool enabled,
         CancellationToken cancellationToken);
     Task<PluginSettingsOverview> DisconnectAsync(string pluginId, CancellationToken cancellationToken);
 }
@@ -60,8 +69,8 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
             var document = await LoadAsync(cancellationToken);
             var current = document.IntelligentGolf ?? new IntelligentGolfPluginRecord();
             var siteUrl = NormaliseHttpsUrl(request.SiteUrl, "The Intelligent Golf site URL");
-            var encryptedPin = UpdateSecret(current.EncryptedPin, request.Pin, "PIN");
-            var encryptedPassword = UpdateSecret(current.EncryptedPassword, request.Password, "password");
+            var encryptedPin = UpdateSecret(current.EncryptedPin, request.EffectiveMemberId, "member ID");
+            var encryptedPassword = UpdateSecret(current.EncryptedPassword, request.EffectiveMemberPassword, "member PIN/password");
             var encryptedAdminPassword = UpdateSecret(current.EncryptedAdminPassword, request.AdminPassword, "administrator password");
 
             var configured = !string.IsNullOrWhiteSpace(siteUrl) &&
@@ -70,7 +79,7 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
                              HasSecret(encryptedAdminPassword);
             if (request.Enabled && !configured)
             {
-                throw new ArgumentException("Add the site URL, PIN, password and administrator password before enabling Intelligent Golf.");
+                throw new ArgumentException("Add the site URL, member ID, member PIN/password and administrator password before enabling Intelligent Golf.");
             }
 
             document.IntelligentGolf = new IntelligentGolfPluginRecord
@@ -84,6 +93,45 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
             };
             await SaveAsync(document, cancellationToken);
             return CreateIntelligentGolfSummary(document.IntelligentGolf);
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    public async Task<IntelligentGolfPluginCredentials> ResolveIntelligentGolfCredentialsAsync(
+        SaveIntelligentGolfPluginRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _gate.WaitAsync(cancellationToken);
+        try
+        {
+            var current = (await LoadAsync(cancellationToken)).IntelligentGolf ?? new IntelligentGolfPluginRecord();
+            var siteUrl = NormaliseHttpsUrl(request.SiteUrl, "The Intelligent Golf site URL");
+            var memberId = ResolveSecret(current.EncryptedPin, request.EffectiveMemberId);
+            var memberPassword = ResolveSecret(current.EncryptedPassword, request.EffectiveMemberPassword);
+            var adminPassword = ResolveSecret(current.EncryptedAdminPassword, request.AdminPassword);
+            return CreateCredentials(siteUrl, memberId, memberPassword, adminPassword);
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    public async Task<IntelligentGolfPluginCredentials?> GetIntelligentGolfCredentialsAsync(
+        CancellationToken cancellationToken)
+    {
+        await _gate.WaitAsync(cancellationToken);
+        try
+        {
+            var record = (await LoadAsync(cancellationToken)).IntelligentGolf;
+            if (record is null) return null;
+            var memberId = ResolveSecret(record.EncryptedPin, null);
+            var memberPassword = ResolveSecret(record.EncryptedPassword, null);
+            var adminPassword = ResolveSecret(record.EncryptedAdminPassword, null);
+            return CreateCredentials(record.SiteUrl, memberId, memberPassword, adminPassword);
         }
         finally
         {
@@ -153,6 +201,60 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
         }
     }
 
+    public async Task<PluginSettingsOverview> SetEnabledAsync(
+        string pluginId,
+        bool enabled,
+        CancellationToken cancellationToken)
+    {
+        await _gate.WaitAsync(cancellationToken);
+        try
+        {
+            var document = await LoadAsync(cancellationToken);
+            switch (pluginId.Trim().ToLowerInvariant())
+            {
+                case "intelligent-golf":
+                {
+                    var record = document.IntelligentGolf ?? new IntelligentGolfPluginRecord();
+                    var configured = !string.IsNullOrWhiteSpace(record.SiteUrl) &&
+                                     HasSecret(record.EncryptedPin) &&
+                                     HasSecret(record.EncryptedPassword) &&
+                                     HasSecret(record.EncryptedAdminPassword);
+                    if (enabled && !configured)
+                    {
+                        throw new ArgumentException("Configure Intelligent Golf before turning the module on.");
+                    }
+
+                    record.Enabled = enabled;
+                    record.UpdatedAtUtc = DateTimeOffset.UtcNow;
+                    document.IntelligentGolf = record;
+                    break;
+                }
+                case "monday":
+                {
+                    var record = document.Monday ?? new MondayPluginRecord();
+                    if (enabled && !HasSecret(record.EncryptedApiToken))
+                    {
+                        throw new ArgumentException("Configure Monday.com before turning the module on.");
+                    }
+
+                    record.Enabled = enabled;
+                    record.UpdatedAtUtc = DateTimeOffset.UtcNow;
+                    document.Monday = record;
+                    break;
+                }
+                default:
+                    throw new KeyNotFoundException("That plugin does not exist.");
+            }
+
+            await SaveAsync(document, cancellationToken);
+            return CreateOverview(document);
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
     private string? UpdateSecret(string? currentEncryptedValue, string? replacement, string label)
     {
         if (string.IsNullOrEmpty(replacement)) return currentEncryptedValue;
@@ -162,6 +264,32 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
         }
 
         return _protector.Protect(replacement);
+    }
+
+    private string? ResolveSecret(string? currentEncryptedValue, string? replacement)
+    {
+        if (!string.IsNullOrEmpty(replacement)) return replacement;
+        return string.IsNullOrWhiteSpace(currentEncryptedValue)
+            ? null
+            : _protector.Unprotect(currentEncryptedValue);
+    }
+
+    private static IntelligentGolfPluginCredentials CreateCredentials(
+        string? siteUrl,
+        string? memberId,
+        string? memberPassword,
+        string? adminPassword)
+    {
+        if (string.IsNullOrWhiteSpace(siteUrl) ||
+            string.IsNullOrWhiteSpace(memberId) ||
+            string.IsNullOrWhiteSpace(memberPassword) ||
+            string.IsNullOrWhiteSpace(adminPassword))
+        {
+            throw new ArgumentException(
+                "Add the site URL, member ID, member PIN/password and administrator password before enabling Intelligent Golf.");
+        }
+
+        return new IntelligentGolfPluginCredentials(siteUrl, memberId, memberPassword, adminPassword);
     }
 
     private static bool HasSecret(string? encryptedValue) => !string.IsNullOrWhiteSpace(encryptedValue);
@@ -227,8 +355,8 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
                      HasSecret(record?.EncryptedPassword) &&
                      HasSecret(record?.EncryptedAdminPassword),
         SiteUrl = record?.SiteUrl,
-        HasPin = HasSecret(record?.EncryptedPin),
-        HasPassword = HasSecret(record?.EncryptedPassword),
+        HasMemberId = HasSecret(record?.EncryptedPin),
+        HasMemberPassword = HasSecret(record?.EncryptedPassword),
         HasAdminPassword = HasSecret(record?.EncryptedAdminPassword),
         UpdatedAtUtc = record?.UpdatedAtUtc
     };
@@ -252,20 +380,20 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
 
     private sealed class IntelligentGolfPluginRecord
     {
-        public bool Enabled { get; init; }
+        public bool Enabled { get; set; }
         public string? SiteUrl { get; init; }
         public string? EncryptedPin { get; init; }
         public string? EncryptedPassword { get; init; }
         public string? EncryptedAdminPassword { get; init; }
-        public DateTimeOffset? UpdatedAtUtc { get; init; }
+        public DateTimeOffset? UpdatedAtUtc { get; set; }
     }
 
     private sealed class MondayPluginRecord
     {
-        public bool Enabled { get; init; }
+        public bool Enabled { get; set; }
         public string? EncryptedApiToken { get; init; }
         public string? WorkspaceId { get; init; }
         public string? BoardId { get; init; }
-        public DateTimeOffset? UpdatedAtUtc { get; init; }
+        public DateTimeOffset? UpdatedAtUtc { get; set; }
     }
 }
