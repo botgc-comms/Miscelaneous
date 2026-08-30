@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_094_Suspension_of_Play_Due_to_Fog\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "5.7",
+  "ruleName": "Stopping Play; Resuming Play",
+  "title": "Suspension of Play Due to Fog",
+  "question": "During a stroke-play competition, thick fog makes it very difficult to see where shots will land. The Committee has not suspended play. Which statement is correct under the Rules of Golf?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "A player may stop play whenever the fog makes visibility poor."
+    },
+    {
+      "id": "b",
+      "text": "The Committee may suspend play if it considers the conditions warrant doing so."
+    },
+    {
+      "id": "c",
+      "text": "All players must automatically stop once they cannot see the landing area."
+    },
+    {
+      "id": "d",
+      "text": "Each group may decide by majority vote whether to suspend play."
+    }
+  ],
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "Under Rule 5.7, the authority to suspend play belongs to the Committee when it considers conditions warrant doing so, such as dangerous weather or other reasons. Poor visibility due to fog does not, by itself, give a player or group the right to stop play; play should continue unless the Committee announces a suspension.",
+  "juniorVersion": {
+    "title": "What If The Course Gets Really Foggy?",
+    "question": "You are playing in a golf match and thick fog rolls in. You can’t see where your ball will land. The people who run the match (the Committee) have not told everyone to stop. What should happen next?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "A player can stop playing anytime it gets too foggy to see."
+      },
+      {
+        "id": "b",
+        "text": "The Committee can stop the game if they think the weather is too bad."
+      },
+      {
+        "id": "c",
+        "text": "Everyone must stop as soon as they can’t see their ball land."
+      },
+      {
+        "id": "d",
+        "text": "Each group can vote together if they want to stop."
+      }
+    ],
+    "correctAnswers": [
+      "b"
+    ],
+    "explanation": "Only the Committee (the people in charge of the match) can say when to stop playing because of fog or bad weather. Players and groups cannot stop just because it’s hard to see. You must keep playing unless the Committee says to stop.",
+    "vocabulary": [
+      {
+        "term": "Committee",
+        "simpleMeaning": "The people who run the golf match and make the decisions."
+      },
+      {
+        "term": "suspend play",
+        "simpleMeaning": "To stop playing the game for a while, usually because of bad weather or a safety problem."
+      }
+    ],
+    "teachingTip": "Let children know that only the people in charge can say when to stop play. Practice pausing play quickly when you hear an official signal, like a horn or shout.",
+    "likelyMisconceptions": [
+      "Players think they can stop playing whenever fog makes it hard to see.",
+      "Groups believe they can vote to stop playing.",
+      "Everyone must stop as soon as they can’t see well, even if not told by the Committee."
+    ]
+  },
+  "generatedAtUtc": "2026-08-30T08:00:42.649Z",
+  "model": "gpt-4.1"
+}

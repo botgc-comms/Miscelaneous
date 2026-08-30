@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "16.1",
+  "ruleName": "Abnormal Course Conditions (Including Immovable Obstructions)",
+  "group": "Relief Situations",
+  "title": "Relief from Cart Path for a Left-Handed Stance",
+  "question": "A right-handed player's ball comes to rest beside a tree, blocking any reasonable right-handed stroke. The player could reasonably play the ball left-handed. In taking a left-handed stance, their feet are on an artificially surfaced cart path. Is the player entitled to free relief from the cart path?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, provided the left-handed stroke is reasonable in the circumstances."
+    },
+    {
+      "id": "b",
+      "text": "No, free relief is not allowed because the player is right-handed."
+    },
+    {
+      "id": "c",
+      "text": "No, free relief cannot be taken for a stance used only to seek relief."
+    },
+    {
+      "id": "d",
+      "text": "Yes, but only if their clubs are designed for left-handed play."
+    }
+  ],
+  "correctAnswer": "a",
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "Under Rule 16.1, a player is entitled to free relief from an immovable obstruction, such as a cart path, if it interferes with the player’s area of intended stance or swing. If playing left-handed is a reasonable stroke in the circumstances, interference for a left-handed stroke entitles the player to relief, even if the player is usually right-handed. After taking relief for the left-handed stance, the player is not required to play the next stroke left-handed if a right-handed stroke is possible from the new lie.",
+  "imagePrompt": "A modern, semi-realistic (about 75% realistic, 25% stylised) illustration in the junior golf quiz house style. Show a parkland golf course with a large tree beside a smooth, artificially surfaced cart path. A right-handed adult golfer is shown preparing to play a left-handed shot: standing so that both feet are on the cart path, with the ball lying in the grass close to the tree. The golfer’s body language and club position should clearly indicate a left-handed stance. Golf bag or trolley nearby. No text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "A right-handed golfer prepares a left-handed shot beside a large tree, standing with both feet on a cart path. The golf ball is near the tree, making a right-handed stroke impossible.",
+  "sceneSpec": {
+    "setting": "Parkland golf course, edge of fairway near a mature tree and a cart path",
+    "players": "One adult golfer, right-handed, contemplating a left-handed shot",
+    "ballPosition": "Ball on grass close to a large tree, near the edge of a cart path with light rough or fairway grass",
+    "ruleMoment": "Golfer considering their options, preparing to take a left-handed stance with feet on the cart path",
+    "educationalFocus": "Shows that a player can be entitled to relief for a reasonable alternative stance, not just their usual playing style",
+    "mustShow": [
+      "Golfer with club preparing to take a left-handed stance",
+      "Ball beside a large tree, making a right-handed shot unrealistic",
+      "Both of the golfer’s feet on the hard, artificial cart path",
+      "Visible cart path running alongside the scene",
+      "Golf bag or trolley positioned nearby"
+    ],
+    "mustNotShow": [
+      "Any visible text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles"
+    ]
+  }
+}

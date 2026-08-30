@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "5.7",
+  "ruleName": "Stopping Play; Resuming Play",
+  "group": "Rules of Golf",
+  "title": "Suspension of Play Due to Fog",
+  "question": "During a stroke-play competition, thick fog makes it very difficult to see where shots will land. The Committee has not suspended play. Which statement is correct under the Rules of Golf?",
+  "type": "multiple_choice",
+  "choices": [
+    {
+      "id": "a",
+      "text": "A player may stop play whenever the fog makes visibility poor."
+    },
+    {
+      "id": "b",
+      "text": "The Committee may suspend play if it considers the conditions warrant doing so."
+    },
+    {
+      "id": "c",
+      "text": "All players must automatically stop once they cannot see the landing area."
+    },
+    {
+      "id": "d",
+      "text": "Each group may decide by majority vote whether to suspend play."
+    }
+  ],
+  "correctAnswer": "b",
+  "correctAnswers": [
+    "b"
+  ],
+  "explanation": "Under Rule 5.7, the authority to suspend play belongs to the Committee when it considers conditions warrant doing so, such as dangerous weather or other reasons. Poor visibility due to fog does not, by itself, give a player or group the right to stop play; play should continue unless the Committee announces a suspension.",
+  "imagePrompt": "Create a polished, modern semi-realistic (about 75% realistic, 25% stylised) illustration of adult golfers on a foggy golf fairway. The group is standing at their balls, looking ahead with uncertainty. The tee and a fairway are visible, but heavy fog obscures the landing areas and much of the distance ahead. Show the players pausing but with no signal or officials in sight. Do not include text, labels, numbers, arrows, captions, diagrams, badges, logos, watermarks, club crests, scorecards or speech bubbles.",
+  "imageAlt": "Golfers stand on a foggy fairway, hesitant and uncertain about hitting, with the landing area hidden by dense fog.",
+  "sceneSpec": {
+    "setting": "Open golf fairway with heavy fog, early morning or overcast feel",
+    "players": "Group of adult competitors, dressed in modern golf attire, standing at their tee shots and looking uncertain ahead",
+    "ballPosition": "Golf balls in play on the fairway and one on a tee, all visible to the viewer but the landing areas ahead are obscured by fog",
+    "ruleMoment": "Competitors hesitating due to poor visibility from thick fog but no indication that play has been suspended by the Committee",
+    "educationalFocus": "Illustrates a situation where fog affects visibility but play has not been stopped, prompting the decision-making under Rule 5.7",
+    "mustShow": [
+      "Group of golfers in foggy conditions",
+      "Fairway and tee",
+      "Players looking uncertain",
+      "Dense fog obscuring much of the distance ahead"
+    ],
+    "mustNotShow": [
+      "Text",
+      "Labels",
+      "Numbers",
+      "Arrows",
+      "Captions",
+      "Diagrams",
+      "Badges",
+      "Logos",
+      "Watermarks",
+      "Club crests",
+      "Scorecards",
+      "Speech bubbles"
+    ]
+  }
+}
