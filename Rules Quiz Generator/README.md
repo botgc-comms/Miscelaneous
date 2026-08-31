@@ -1,6 +1,6 @@
-# Rules Library Portal
+# RulesReady Content Studio
 
-This project maintains and publishes the BOTGC illustrated Rules of Golf quiz library. The portal reads the working library dynamically, so adding or revising a rule no longer requires rebuilding a fixed HTML page.
+This internal support service maintains and publishes the illustrated Rules of Golf content used by RulesReady.golf. Content Studio reads the working library dynamically, so adding or revising a rule no longer requires rebuilding a fixed HTML page.
 
 ## Library lifecycle
 
@@ -33,7 +33,7 @@ The public library is available without portal credentials at:
 - Generate versioned question revisions and replacement illustrations.
 - Compile or release one rule.
 - Compile and release every unpublished rule as a background job with progress.
-- Protect the maintenance portal and OpenAI-powered routes with HTTP Basic authentication.
+- Protect the maintenance console and OpenAI-powered routes with an HTML sign-in page and a signed, HTTP-only session cookie.
 
 ## Local development
 
@@ -45,7 +45,7 @@ $env:OPENAI_API_KEY = "..."
 npm run dev
 ```
 
-Open `http://localhost:4317`. Authentication is optional outside production. Set `PORTAL_USERNAME` and `PORTAL_PASSWORD` to test it locally.
+Open `http://localhost:4317`. Authentication is optional outside production. Set `PORTAL_USERNAME` and `PORTAL_PASSWORD` to test the HTML sign-in flow locally. Authenticated sessions expire after 12 hours and are invalidated when the portal password changes.
 
 Useful commands:
 

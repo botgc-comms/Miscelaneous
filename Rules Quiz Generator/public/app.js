@@ -11,6 +11,7 @@ const state = {
 const elements = {
   list: document.getElementById("rule-list"),
   detail: document.getElementById("rule-detail"),
+  sidebarTotal: document.getElementById("sidebar-total"),
   search: document.getElementById("rule-search"),
   filters: document.getElementById("rule-filters"),
   releaseButton: document.getElementById("release-button"),
@@ -26,6 +27,10 @@ const elements = {
   actionLabel: document.getElementById("action-label"),
   actionInstructions: document.getElementById("action-instructions"),
   actionSubmit: document.getElementById("action-submit"),
+  releaseDialog: document.getElementById("release-dialog"),
+  releaseForm: document.getElementById("release-form"),
+  releaseConfirmCopy: document.getElementById("release-confirm-copy"),
+  releaseConfirmButton: document.getElementById("release-confirm-button"),
   jobBanner: document.getElementById("job-banner"),
   jobTitle: document.getElementById("job-title"),
   jobMessage: document.getElementById("job-message"),
@@ -52,6 +57,11 @@ async function api(url, options = {}) {
   });
   const contentType = response.headers.get("content-type") ?? "";
   const body = contentType.includes("application/json") ? await response.json() : await response.text();
+
+  if (response.status === 401) {
+    window.location.assign(`/login?next=${encodeURIComponent(`${window.location.pathname}${window.location.search}`)}`);
+    throw new Error("Your session has expired. Redirecting to sign in…");
+  }
 
   if (!response.ok) {
     throw new Error(typeof body === "object" ? body.error ?? `Request failed (${response.status})` : body);
@@ -97,11 +107,12 @@ function filteredRules() {
 }
 
 function renderCounts() {
+  elements.sidebarTotal.textContent = state.library.counts.total ?? 0;
   document.getElementById("count-all").textContent = state.library.counts.total ?? 0;
   document.getElementById("count-unpublished").textContent = state.library.counts.unpublished ?? 0;
   document.getElementById("count-compiled").textContent = state.library.counts.compiled ?? 0;
   document.getElementById("count-deployed").textContent = state.library.counts.deployed ?? 0;
-  elements.releaseButton.textContent = `Release unpublished (${state.library.counts.unpublished ?? 0})`;
+  elements.releaseButton.textContent = `Release ${state.library.counts.unpublished ?? 0} unpublished`;
   elements.releaseButton.disabled = state.busy || !(state.library.counts.unpublished > 0);
 }
 
@@ -151,12 +162,17 @@ function renderChoices(question) {
   `).join("")}</ul>`;
 }
 
-function renderQuestion(question, label) {
+function renderQuestion(question, label, audience) {
   if (!question) return "";
   return `
     <div class="question-block">
-      <p class="question-label">${escapeHtml(label)}</p>
-      <h3>${escapeHtml(question.title)}</h3>
+      <div class="question-heading">
+        <div>
+          <p class="question-label">${escapeHtml(label)}</p>
+          <h3>${escapeHtml(question.title)}</h3>
+        </div>
+        <span class="audience-chip">${escapeHtml(audience)}</span>
+      </div>
       <p class="question-text">${escapeHtml(question.question)}</p>
       ${renderChoices(question)}
       <p class="explanation">${escapeHtml(question.explanation)}</p>
@@ -178,44 +194,41 @@ function renderDetail() {
         <p>${escapeHtml(rule.ruleNumber)} · ${escapeHtml(rule.ruleName || rule.group)}</p>
       </div>
       <div class="detail-actions">
-        <button class="button button-ghost" type="button" data-action="question">Revise question</button>
-        <button class="button button-ghost" type="button" data-action="image">New image</button>
+        <button class="button button-ghost" type="button" data-action="question">Edit questions</button>
+        <button class="button button-ghost" type="button" data-action="image">Replace artwork</button>
         <button class="button button-secondary" type="button" data-action="compile" ${rule.status.compiledCurrent ? "disabled" : ""}>${rule.status.compiledCurrent ? "Compiled" : "Compile"}</button>
         <button class="button button-primary" type="button" data-action="deploy" ${rule.status.deployedCurrent ? "disabled" : ""}>${rule.status.deployedCurrent ? "Live" : releaseLabel}</button>
       </div>
     </div>
 
+    <div class="release-summary" aria-label="Publishing status">
+      <div class="release-summary-item"><span>Working version</span><strong>${rule.status.compiledCurrent ? "Compiled" : "Draft changes"}</strong></div>
+      <div class="release-summary-item"><span>Last compiled</span><strong>${escapeHtml(formatDate(rule.status.compiledAtUtc))}</strong></div>
+      <div class="release-summary-item"><span>Public version</span><strong>${rule.status.deployedCurrent ? "Current" : rule.status.deployed ? "Older version live" : "Not released"}</strong></div>
+      <div class="release-summary-item"><span>Last released</span><strong>${escapeHtml(formatDate(rule.status.deployedAtUtc))}</strong></div>
+    </div>
+
     <div class="detail-grid">
-      <div>
+      <div class="content-stack">
         <article class="panel">
-          <div class="panel-header"><h3>Current illustration</h3><span class="status-badge status-muted">${escapeHtml(rule.files.image ?? "Missing")}</span></div>
+          <div class="panel-header"><h3>Artwork preview</h3><span class="status-badge status-muted">${escapeHtml(rule.files.image ?? "Missing")}</span></div>
           ${rule.imageUrl
             ? `<div class="image-stage"><img src="${escapeHtml(rule.imageUrl)}" alt="${escapeHtml(rule.metadata.imageAlt ?? rule.title)}"></div>`
             : '<div class="image-stage empty-state"><p>No illustration is available.</p></div>'}
-          <div class="image-caption">Working-library image. It becomes public only after release.</div>
+          <div class="image-caption"><span>Working-library asset</span><strong>${rule.status.deployedCurrent ? "Published" : "Not yet public"}</strong></div>
         </article>
 
-        <article class="panel" style="margin-top: 22px">
-          <div class="panel-header"><h3>Release state</h3></div>
-          <div class="panel-body release-facts">
-            <div class="fact"><span>Compiled</span><strong>${rule.status.compiledCurrent ? "Current" : rule.status.compiled ? "Out of date" : "Not yet"}</strong></div>
-            <div class="fact"><span>Last compiled</span><strong>${escapeHtml(formatDate(rule.status.compiledAtUtc))}</strong></div>
-            <div class="fact"><span>Deployed</span><strong>${rule.status.deployedCurrent ? "Current" : rule.status.deployed ? "Older version" : "Not yet"}</strong></div>
-            <div class="fact"><span>Last deployed</span><strong>${escapeHtml(formatDate(rule.status.deployedAtUtc))}</strong></div>
-          </div>
-        </article>
-
-        <article class="panel" style="margin-top: 22px">
-          <div class="panel-header"><h3>Image prompt</h3><span class="status-badge status-muted">${escapeHtml(rule.files.prompt ?? "Missing")}</span></div>
-          <div class="panel-body"><pre class="prompt">${escapeHtml(rule.imagePrompt)}</pre></div>
-        </article>
+        <details class="panel prompt-disclosure">
+          <summary><span>Artwork generation prompt</span><span class="prompt-meta">${escapeHtml(rule.files.prompt ?? "Missing")}</span></summary>
+          <pre class="prompt">${escapeHtml(rule.imagePrompt)}</pre>
+        </details>
       </div>
 
       <article class="panel">
-        <div class="panel-header"><h3>Questions</h3><span class="status-badge status-muted">${rule.juniorQuestion ? "2 audiences" : "Standard only"}</span></div>
+        <div class="panel-header"><h3>Quiz content</h3><span class="status-badge status-muted">${rule.juniorQuestion ? "2 audiences" : "Standard only"}</span></div>
         <div class="panel-body">
-          ${renderQuestion(rule.standardQuestion, "Standard question")}
-          ${renderQuestion(rule.juniorQuestion, "Junior-friendly question")}
+          ${renderQuestion(rule.standardQuestion, "Standard question", "All golfers")}
+          ${renderQuestion(rule.juniorQuestion, "Junior-friendly question", "Junior golfers")}
         </div>
       </article>
     </div>
@@ -408,8 +421,17 @@ elements.actionForm.addEventListener("submit", async (event) => {
   }
 });
 
-elements.releaseButton.addEventListener("click", async () => {
-  if (!confirm(`Compile and release ${state.library.counts.unpublished} unpublished rule(s)?`)) return;
+elements.releaseButton.addEventListener("click", () => {
+  const count = state.library.counts.unpublished ?? 0;
+  elements.releaseConfirmCopy.textContent = `${count} unpublished rule${count === 1 ? "" : "s"} will be compiled and made available to RulesReady.golf.`;
+  elements.releaseDialog.showModal();
+});
+
+elements.releaseForm.addEventListener("submit", async (event) => {
+  if (event.submitter?.value === "cancel") return;
+  event.preventDefault();
+  elements.releaseConfirmButton.disabled = true;
+  elements.releaseDialog.close();
 
   try {
     const job = await api("/api/releases/unpublished", { method: "POST" });
@@ -419,6 +441,7 @@ elements.releaseButton.addEventListener("click", async () => {
   } catch (error) {
     toast(error.message, true);
   } finally {
+    elements.releaseConfirmButton.disabled = false;
     state.busy = false;
     renderCounts();
   }

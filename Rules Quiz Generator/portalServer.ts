@@ -1,4 +1,4 @@
-import { randomUUID, timingSafeEqual } from "node:crypto";
+import { createHmac, randomUUID, timingSafeEqual } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import express, { type NextFunction, type Request, type Response } from "express";
 import path from "node:path";
@@ -20,6 +20,8 @@ import { suggestQuestionEdit } from "./suggestQuestionEdit.js";
 const PORT = Number(process.env.PORT ?? "4317");
 const HOST = process.env.HOST ?? "0.0.0.0";
 const jobs = new PortalJobManager();
+const SESSION_COOKIE = "rulesready_session";
+const SESSION_TTL_SECONDS = 12 * 60 * 60;
 
 function text(value: unknown, field: string, maxLength = 10_000): string {
   if (typeof value !== "string" || !value.trim()) {
@@ -41,31 +43,113 @@ function safeEqual(actual: string, expected: string): boolean {
   return actualBuffer.length === expectedBuffer.length && timingSafeEqual(actualBuffer, expectedBuffer);
 }
 
-function portalAuthentication(req: Request, res: Response, next: NextFunction): void {
+function safeReturnPath(value: unknown): string {
+  if (typeof value !== "string" || !value.startsWith("/") || value.startsWith("//")) {
+    return "/";
+  }
+
+  return /[\r\n]/.test(value) ? "/" : value;
+}
+
+function parseCookie(req: Request, name: string): string | undefined {
+  const cookies = req.header("cookie")?.split(";") ?? [];
+
+  for (const cookie of cookies) {
+    const separator = cookie.indexOf("=");
+    const key = separator >= 0 ? cookie.slice(0, separator).trim() : cookie.trim();
+
+    if (key === name) {
+      return separator >= 0 ? cookie.slice(separator + 1).trim() : "";
+    }
+  }
+
+  return undefined;
+}
+
+function createSessionToken(username: string, password: string): string {
+  const payload = Buffer.from(JSON.stringify({
+    username,
+    expiresAt: Date.now() + SESSION_TTL_SECONDS * 1000,
+  })).toString("base64url");
+  const signature = createHmac("sha256", password).update(payload).digest("base64url");
+  return `${payload}.${signature}`;
+}
+
+function hasValidSession(req: Request): boolean {
   const expectedPassword = process.env.PORTAL_PASSWORD;
 
   if (!expectedPassword) {
+    return true;
+  }
+
+  const token = parseCookie(req, SESSION_COOKIE);
+  const separator = token?.lastIndexOf(".") ?? -1;
+
+  if (!token || separator < 1) {
+    return false;
+  }
+
+  const payload = token.slice(0, separator);
+  const signature = token.slice(separator + 1);
+  const expectedSignature = createHmac("sha256", expectedPassword).update(payload).digest("base64url");
+
+  if (!safeEqual(signature, expectedSignature)) {
+    return false;
+  }
+
+  try {
+    const session = JSON.parse(Buffer.from(payload, "base64url").toString("utf8")) as {
+      username?: unknown;
+      expiresAt?: unknown;
+    };
+    return session.username === (process.env.PORTAL_USERNAME ?? "admin")
+      && typeof session.expiresAt === "number"
+      && session.expiresAt > Date.now();
+  } catch {
+    return false;
+  }
+}
+
+function sessionCookie(req: Request, value: string, maxAge = SESSION_TTL_SECONDS): string {
+  const secure = process.env.NODE_ENV === "production" || req.secure ? "; Secure" : "";
+  return `${SESSION_COOKIE}=${value}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${maxAge}${secure}`;
+}
+
+function portalAuthentication(req: Request, res: Response, next: NextFunction): void {
+  if (hasValidSession(req)) {
     next();
     return;
   }
 
-  const authorization = req.header("authorization");
-
-  if (authorization?.startsWith("Basic ")) {
-    const decoded = Buffer.from(authorization.slice(6), "base64").toString("utf8");
-    const separator = decoded.indexOf(":");
-    const username = separator >= 0 ? decoded.slice(0, separator) : "";
-    const password = separator >= 0 ? decoded.slice(separator + 1) : "";
-    const expectedUsername = process.env.PORTAL_USERNAME ?? "admin";
-
-    if (safeEqual(username, expectedUsername) && safeEqual(password, expectedPassword)) {
-      next();
-      return;
-    }
+  if (req.path.startsWith("/api/")) {
+    res.status(401).json({ error: "Your session has expired. Please sign in again." });
+    return;
   }
 
-  res.setHeader("WWW-Authenticate", 'Basic realm="Rules Library Portal", charset="UTF-8"');
-  res.status(401).send("Authentication required.");
+  res.redirect(303, `/login?next=${encodeURIComponent(safeReturnPath(req.originalUrl))}`);
+}
+
+function sameOriginMutation(req: Request, res: Response, next: NextFunction): void {
+  if (["GET", "HEAD", "OPTIONS"].includes(req.method)) {
+    next();
+    return;
+  }
+
+  const origin = req.header("origin");
+  const fetchSite = req.header("sec-fetch-site");
+
+  try {
+    if ((origin && new URL(origin).host !== req.header("host"))
+      || (fetchSite && !["same-origin", "none"].includes(fetchSite))) {
+      res.status(403).json({ error: "Cross-site changes are not allowed." });
+      return;
+    }
+  } catch {
+    res.status(403).json({ error: "Invalid request origin." });
+    return;
+  }
+
+  next();
 }
 
 function mutationRateLimit(windowMs = 15 * 60_000, limit = 40) {
@@ -132,6 +216,7 @@ export async function createPortalApp(paths = resolveLibraryPaths()): Promise<ex
 
   const app = express();
   const changeLimiter = mutationRateLimit();
+  const loginLimiter = mutationRateLimit(15 * 60_000, 12);
 
   app.disable("x-powered-by");
   app.set("trust proxy", 1);
@@ -141,13 +226,51 @@ export async function createPortalApp(paths = resolveLibraryPaths()): Promise<ex
     res.setHeader("X-Frame-Options", "DENY");
     res.setHeader(
       "Content-Security-Policy",
-      "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; base-uri 'self'; frame-ancestors 'none'"
+      "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
     );
+    res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
     next();
   });
+  app.use(express.json({ limit: "2mb" }));
+  app.use(express.urlencoded({ extended: false, limit: "16kb" }));
 
   app.get("/healthz", (_req, res) => {
-    res.json({ status: "ok", service: "rules-library-portal" });
+    res.json({ status: "ok", service: "rulesready-content-studio" });
+  });
+
+  app.get("/styles.css", (_req, res) => res.sendFile(path.join(paths.publicDir, "styles.css")));
+  app.get("/login.js", (_req, res) => res.sendFile(path.join(paths.publicDir, "login.js")));
+
+  app.get("/login", (req, res) => {
+    if (!process.env.PORTAL_PASSWORD || hasValidSession(req)) {
+      res.redirect(303, safeReturnPath(req.query.next));
+      return;
+    }
+
+    res.setHeader("Cache-Control", "no-store");
+    res.sendFile(path.join(paths.publicDir, "login.html"));
+  });
+
+  app.post("/login", loginLimiter, (req, res) => {
+    const expectedUsername = process.env.PORTAL_USERNAME ?? "admin";
+    const expectedPassword = process.env.PORTAL_PASSWORD;
+    const username = typeof req.body?.username === "string" ? req.body.username.trim() : "";
+    const password = typeof req.body?.password === "string" ? req.body.password : "";
+    const nextPath = safeReturnPath(req.body?.next);
+
+    if (expectedPassword && safeEqual(username, expectedUsername) && safeEqual(password, expectedPassword)) {
+      res.setHeader("Set-Cookie", sessionCookie(req, createSessionToken(username, expectedPassword)));
+      res.redirect(303, nextPath);
+      return;
+    }
+
+    const query = new URLSearchParams({ error: "1", next: nextPath });
+    res.redirect(303, `/login?${query.toString()}`);
+  });
+
+  app.post("/logout", sameOriginMutation, (req, res) => {
+    res.setHeader("Set-Cookie", sessionCookie(req, "", 0));
+    res.redirect(303, "/login");
   });
 
   app.get("/published/manifest.json", async (_req, res, next) => {
@@ -202,9 +325,14 @@ export async function createPortalApp(paths = resolveLibraryPaths()): Promise<ex
   });
 
   app.use(portalAuthentication);
-  app.use(express.json({ limit: "2mb" }));
+  app.use(sameOriginMutation);
   app.use("/assets", express.static(paths.outputDir, { fallthrough: false, index: false }));
   app.use("/input", express.static(paths.inputDir, { fallthrough: false, index: false }));
+
+  app.get("/api/session", (_req, res) => {
+    res.setHeader("Cache-Control", "no-store");
+    res.json({ username: process.env.PORTAL_USERNAME ?? "admin" });
+  });
 
   app.get("/api/library", async (_req, res, next) => {
     try {
@@ -379,7 +507,7 @@ async function main(): Promise<void> {
   const paths = resolveLibraryPaths();
   const app = await createPortalApp(paths);
   const server = app.listen(PORT, HOST, () => {
-    console.log(`Rules Library Portal listening on http://${HOST}:${PORT}`);
+    console.log(`RulesReady Content Studio listening on http://${HOST}:${PORT}`);
   });
 
   const shutdown = () => server.close(() => process.exit(0));

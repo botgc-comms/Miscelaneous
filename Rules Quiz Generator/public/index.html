@@ -3,49 +3,69 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#173f35">
-    <title>Rules Library Portal</title>
+    <meta name="theme-color" content="#102e27">
+    <title>RulesReady Content Studio</title>
     <link rel="stylesheet" href="/styles.css">
     <script src="/app.js" defer></script>
   </head>
   <body>
     <div class="app-shell">
-      <aside class="sidebar" aria-label="Rules library">
+      <aside class="sidebar" aria-label="Rule library navigation">
         <div class="brand">
-          <div class="brand-mark" aria-hidden="true">R</div>
-          <div>
-            <strong>Rules Library</strong>
-            <span>Publishing portal</span>
+          <span class="brand-symbol" aria-hidden="true">R</span>
+          <span class="brand-name">RulesReady<small>.golf</small></span>
+          <span class="brand-product">Content Studio</span>
+        </div>
+
+        <div class="library-tools">
+          <div class="section-heading">
+            <div>
+              <span class="section-kicker">Content library</span>
+              <strong>Golf rules</strong>
+            </div>
+            <span class="library-total" id="sidebar-total">–</span>
+          </div>
+
+          <label class="search-box">
+            <span class="sr-only">Search rules</span>
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m21 21-4.3-4.3m2.3-5.2a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z"/></svg>
+            <input id="rule-search" type="search" placeholder="Search rules…" autocomplete="off">
+          </label>
+
+          <div class="filters" id="rule-filters" aria-label="Filter rules">
+            <button class="filter is-active" type="button" data-filter="all">All <span id="count-all">–</span></button>
+            <button class="filter" type="button" data-filter="unpublished">Needs release <span id="count-unpublished">–</span></button>
+            <button class="filter" type="button" data-filter="compiled">Compiled <span id="count-compiled">–</span></button>
+            <button class="filter" type="button" data-filter="deployed">Live <span id="count-deployed">–</span></button>
           </div>
         </div>
 
-        <label class="search-box">
-          <span class="sr-only">Search rules</span>
-          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m21 21-4.3-4.3m2.3-5.2a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z"/></svg>
-          <input id="rule-search" type="search" placeholder="Search the library…" autocomplete="off">
-        </label>
-
-        <div class="filters" id="rule-filters" aria-label="Filter rules">
-          <button class="filter is-active" type="button" data-filter="all">All <span id="count-all">–</span></button>
-          <button class="filter" type="button" data-filter="unpublished">Unpublished <span id="count-unpublished">–</span></button>
-          <button class="filter" type="button" data-filter="compiled">Compiled <span id="count-compiled">–</span></button>
-          <button class="filter" type="button" data-filter="deployed">Live <span id="count-deployed">–</span></button>
-        </div>
-
         <div class="rule-list" id="rule-list" aria-live="polite">
-          <div class="list-loading">Loading rules…</div>
+          <div class="list-loading">Loading the rule library…</div>
         </div>
+
+        <footer class="sidebar-footer">
+          <span class="environment-dot" aria-hidden="true"></span>
+          <div><strong>Admin workspace</strong><span>Changes require a release</span></div>
+        </footer>
       </aside>
 
       <main class="workspace">
         <header class="topbar">
-          <div>
-            <p class="eyebrow">BOTGC content operations</p>
-            <h1>Rules Library Portal</h1>
+          <div class="topbar-copy">
+            <p class="breadcrumb"><span>RulesReady.golf</span><i>/</i> Content operations</p>
+            <h1>Rule publishing</h1>
+            <p>Maintain the content served to the RulesReady website.</p>
           </div>
           <div class="topbar-actions">
             <button class="button button-secondary" id="release-button" type="button">Release unpublished</button>
-            <button class="button button-primary" id="add-rule-button" type="button">Add new rule</button>
+            <button class="button button-primary" id="add-rule-button" type="button"><span aria-hidden="true">＋</span> Add rule</button>
+            <form action="/logout" method="post">
+              <button class="account-button" type="submit" title="Sign out">
+                <span class="account-avatar" aria-hidden="true">A</span>
+                <span><strong>Admin</strong><small>Sign out</small></span>
+              </button>
+            </form>
           </div>
         </header>
 
@@ -59,9 +79,9 @@
 
         <section class="detail" id="rule-detail">
           <div class="empty-state">
-            <div class="empty-icon" aria-hidden="true">↗</div>
+            <div class="empty-icon" aria-hidden="true">R</div>
             <h2>Select a rule</h2>
-            <p>Choose a rule from the library to review its questions, artwork, and release status.</p>
+            <p>Choose an item from the content library to review its questions, artwork and publishing status.</p>
           </div>
         </section>
       </main>
@@ -71,19 +91,19 @@
       <form method="dialog" class="dialog-card" id="add-rule-form">
         <div class="dialog-heading">
           <div>
-            <p class="eyebrow">New library item</p>
+            <p class="eyebrow">New content</p>
             <h2>Add a golf rule</h2>
           </div>
           <button class="icon-button" value="cancel" type="submit" aria-label="Close dialog">×</button>
         </div>
-        <p class="dialog-copy">Describe the rule and the situation you want to teach. The portal will create standard and junior-friendly questions plus the first illustration.</p>
+        <p class="dialog-copy">Describe the rule and the teaching situation. Content Studio will create standard and junior-friendly questions plus the first illustration.</p>
         <label class="field">
           <span>Rule description</span>
           <textarea id="new-rule-description" rows="8" required maxlength="8000" placeholder="For example: A player's ball moves after they remove a loose impediment beside it on the putting green…"></textarea>
         </label>
         <div class="dialog-actions">
           <button class="button button-ghost" value="cancel" type="submit">Cancel</button>
-          <button class="button button-primary" id="create-rule-button" value="default" type="submit">Create rule</button>
+          <button class="button button-primary" id="create-rule-button" value="default" type="submit">Create draft rule</button>
         </div>
       </form>
     </dialog>
@@ -92,7 +112,7 @@
       <form method="dialog" class="dialog-card" id="action-form">
         <div class="dialog-heading">
           <div>
-            <p class="eyebrow" id="action-eyebrow">Improve rule</p>
+            <p class="eyebrow" id="action-eyebrow">Improve content</p>
             <h2 id="action-title">Request a change</h2>
           </div>
           <button class="icon-button" value="cancel" type="submit" aria-label="Close dialog">×</button>
@@ -105,6 +125,27 @@
         <div class="dialog-actions">
           <button class="button button-ghost" value="cancel" type="submit">Cancel</button>
           <button class="button button-primary" id="action-submit" value="default" type="submit">Generate change</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="release-dialog" class="dialog dialog-compact">
+      <form method="dialog" class="dialog-card" id="release-form">
+        <div class="dialog-heading">
+          <div>
+            <p class="eyebrow">Publish library</p>
+            <h2>Release unpublished rules?</h2>
+          </div>
+          <button class="icon-button" value="cancel" type="submit" aria-label="Close dialog">×</button>
+        </div>
+        <p class="dialog-copy" id="release-confirm-copy">The unpublished rules will be compiled and made available to RulesReady.golf.</p>
+        <div class="release-warning">
+          <span aria-hidden="true">↗</span>
+          <p><strong>This changes the public content feed.</strong> Existing live versions remain available until each replacement is ready.</p>
+        </div>
+        <div class="dialog-actions">
+          <button class="button button-ghost" value="cancel" type="submit">Keep as drafts</button>
+          <button class="button button-primary" id="release-confirm-button" value="default" type="submit">Compile and release</button>
         </div>
       </form>
     </dialog>

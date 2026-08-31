@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#102e27">
+    <title>Sign in · RulesReady Content Studio</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/login.js" defer></script>
+  </head>
+  <body class="login-page">
+    <main class="login-shell">
+      <section class="login-brand-panel" aria-label="RulesReady Content Studio">
+        <div class="login-wordmark">
+          <span class="brand-symbol" aria-hidden="true">R</span>
+          <span>RulesReady<small>.golf</small></span>
+        </div>
+        <div class="login-introduction">
+          <p class="eyebrow eyebrow-on-dark">Private content operations</p>
+          <h1>Build, review and release the rules experience.</h1>
+          <p>One controlled workspace for the questions, illustrations and published library behind RulesReady.golf.</p>
+        </div>
+        <div class="login-environment">
+          <span class="environment-dot" aria-hidden="true"></span>
+          Authorised team members only
+        </div>
+      </section>
+
+      <section class="login-form-panel">
+        <div class="login-card">
+          <div class="login-mobile-brand">
+            <span class="brand-symbol" aria-hidden="true">R</span>
+            <strong>RulesReady<small>.golf</small></strong>
+          </div>
+          <p class="eyebrow">Content Studio</p>
+          <h2>Welcome back</h2>
+          <p class="login-copy">Sign in to maintain and publish the RulesReady rule library.</p>
+
+          <div class="form-alert" id="login-error" role="alert" hidden>
+            The username or password was not recognised. Please try again.
+          </div>
+
+          <form class="login-form" action="/login" method="post">
+            <input id="login-next" name="next" type="hidden" value="/">
+            <div class="field">
+              <label for="login-username">Username</label>
+              <input id="login-username" name="username" type="text" autocomplete="username" required autofocus>
+            </div>
+            <div class="field">
+              <label for="login-password">Password</label>
+              <span class="password-field">
+                <input id="login-password" name="password" type="password" autocomplete="current-password" required>
+                <button id="toggle-password" type="button" aria-label="Show password">Show</button>
+              </span>
+            </div>
+            <button class="button button-primary login-submit" type="submit">Sign in to Content Studio</button>
+          </form>
+
+          <p class="login-security">Your session is protected with a secure, HTTP-only cookie and expires automatically.</p>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
