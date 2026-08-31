@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+published/
+*.log
+
+# Local one-off transpilation and shell artifacts.
+/createJuniorQuizVersions.js
+/createQuizFromRuleDescription.js
+/regenerateSingleImage.js
+/reviewServer.js
+/suggestQuestionEdit.js
+/buildimagereviewpage (2).zip
+/echo
+/npx

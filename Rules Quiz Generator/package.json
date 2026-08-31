@@ -2,15 +2,20 @@
   "name": "rules-quiz-generator",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=24.0.0 <25"
+  },
   "scripts": {
-    "build-review": "tsx buildImageReviewPage.ts ./output ./input",
-    "serve-review": "tsx reviewServer.ts ./output ./input",
-    "start": "npm run build-review && npm run serve-review", 
-    "compile": "tsx compileReviewedQuiz.ts ./output ./compiled"
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx portalServer.ts",
+    "start": "node dist/portalServer.js",
+    "test": "npm run build && node --test dist/tests/*.test.js",
+    "compile": "tsx compilerService.ts ./Output ./compiled",
+    "build-review:legacy": "tsx buildimagereviewpage.ts ./Output ./Input",
+    "serve-review:legacy": "tsx reviewServer.ts ./Output ./Input"
   },
   "dependencies": {
     "express": "^5.2.1",
-    "open": "^11.0.0",
     "openai": "^6.34.0"
   },
   "devDependencies": {

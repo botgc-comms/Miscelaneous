@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "sourceMetadataPath": "output\\ai_095_Relief_from_Cart_Path_for_a_Left_Handed_Stance\\metadata.json",
+  "sourceImageName": "created-from-description",
+  "ruleNumber": "16.1",
+  "ruleName": "Abnormal Course Conditions (Including Immovable Obstructions)",
+  "title": "Relief from Cart Path for a Left-Handed Stance",
+  "question": "A right-handed player's ball comes to rest beside a tree, blocking any reasonable right-handed stroke. The player could reasonably play the ball left-handed. In taking a left-handed stance, their feet are on an artificially surfaced cart path. Is the player entitled to free relief from the cart path?",
+  "choices": [
+    {
+      "id": "a",
+      "text": "Yes, provided the left-handed stroke is reasonable in the circumstances."
+    },
+    {
+      "id": "b",
+      "text": "No, free relief is not allowed because the player is right-handed."
+    },
+    {
+      "id": "c",
+      "text": "No, free relief cannot be taken for a stance used only to seek relief."
+    },
+    {
+      "id": "d",
+      "text": "Yes, but only if their clubs are designed for left-handed play."
+    }
+  ],
+  "correctAnswers": [
+    "a"
+  ],
+  "explanation": "Under Rule 16.1, a player is entitled to free relief from an immovable obstruction, such as a cart path, if it interferes with the player’s area of intended stance or swing. If playing left-handed is a reasonable stroke in the circumstances, interference for a left-handed stroke entitles the player to relief, even if the player is usually right-handed. After taking relief for the left-handed stance, the player is not required to play the next stroke left-handed if a right-handed stroke is possible from the new lie.",
+  "juniorVersion": {
+    "title": "Can I get free relief from a path if I have to hit left-handed?",
+    "question": "Your golf ball stops next to a tree, and you can't hit it right-handed because the tree is in the way. You can try a left-handed shot, but if you stand that way, your feet are on the hard path. Can you take your ball off the path for free?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Yes, if the left-handed shot is a good idea for your ball."
+      },
+      {
+        "id": "b",
+        "text": "No, you can’t because you are a right-handed player."
+      },
+      {
+        "id": "c",
+        "text": "No, you can’t take relief just by changing how you stand."
+      },
+      {
+        "id": "d",
+        "text": "Yes, but only if you have a left-handed club."
+      }
+    ],
+    "correctAnswers": [
+      "a"
+    ],
+    "explanation": "You can get free relief from the hard path if you need to stand on it for a left-handed shot, even if you are usually right-handed. The left-handed shot has to make sense for the place your ball is. After you move your ball, you can still hit it right-handed if you want.",
+    "vocabulary": [
+      {
+        "term": "Free relief",
+        "simpleMeaning": "You can move your ball away from something like a path without any penalty."
+      },
+      {
+        "term": "Obstruction",
+        "simpleMeaning": "Something made by people, like a path or a bench."
+      },
+      {
+        "term": "Stance",
+        "simpleMeaning": "How you stand to hit your ball."
+      }
+    ],
+    "teachingTip": "Show how you can stand left-handed or right-handed and point out when your feet are on the path. Let children try both ways to see when free relief is allowed.",
+    "likelyMisconceptions": [
+      "Kids might think they can only get relief for the way they usually play.",
+      "Some might think they must use a left-handed club to get relief.",
+      "They might believe you always have to hit the next shot the same way you were standing for relief."
+    ]
+  },
+  "generatedAtUtc": "2026-08-30T08:10:43.191Z",
+  "model": "gpt-4.1"
+}

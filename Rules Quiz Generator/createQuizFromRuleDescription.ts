@@ -209,7 +209,7 @@ async function latestGeneratedImagePath(folderPath: string, folderName: string):
 
   return {
     imageFileName: latest.name,
-    imagePath: `/${folderName}/${latest.name}`,
+    imagePath: `/assets/${encodeURIComponent(folderName)}/${encodeURIComponent(latest.name)}`,
   };
 }
 
@@ -277,9 +277,9 @@ export async function createQuizFromRuleDescription(request: {
   return {
     success: true,
     folderName,
-    metadataPath: `/${folderName}/metadata.json`,
-    juniorVersionPath: `/${folderName}/junior-version.json`,
-    promptPath: `/${folderName}/final-prompt-v2.txt`,
+    metadataPath: `/assets/${encodeURIComponent(folderName)}/metadata.json`,
+    juniorVersionPath: `/assets/${encodeURIComponent(folderName)}/junior-version.json`,
+    promptPath: `/assets/${encodeURIComponent(folderName)}/final-prompt-v2.txt`,
     imagePath: generatedImage.imagePath,
     imageFileName: generatedImage.imageFileName,
     image,

@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: botgc-rules-library
+    runtime: node
+    branch: codex/render-maintenance-portal
+    rootDir: Rules Quiz Generator
+    plan: 0.5c-512mb
+    region: frankfurt
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /healthz
+    autoDeployTrigger: commit
+    disk:
+      name: quiz-library-data
+      mountPath: /var/data
+      sizeGB: 5
+    envVars:
+      - key: NODE_VERSION
+        value: 24.14.1
+      - key: NODE_ENV
+        value: production
+      - key: DATA_ROOT
+        value: /var/data
+      - key: PORTAL_USERNAME
+        value: admin
+      - key: PORTAL_PASSWORD
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_QUESTION_MODEL
+        value: gpt-4.1
+      - key: OPENAI_JUNIOR_TEXT_MODEL
+        value: gpt-4.1
+      - key: OPENAI_IMAGE_MODEL
+        value: gpt-image-2
+      - key: OPENAI_IMAGE_SIZE
+        value: 1024x1024
+      - key: OPENAI_IMAGE_QUALITY
+        value: high
