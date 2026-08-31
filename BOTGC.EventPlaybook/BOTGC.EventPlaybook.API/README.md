@@ -19,8 +19,9 @@ This is a standalone .NET 9 API for the event-planner integration with Intellige
 | Method | Route | Purpose |
 | --- | --- | --- |
 | `POST` | `/v1/auth/intelligent-golf/session` | Validate the club site/member/admin credentials and establish the shared IG session. |
-| `GET` | `/api/members` | List current members. Add `?refresh=true` to bypass the cached report. |
-| `POST` | `/api/members/emails` | Send one email to one or more member email addresses through IG. |
+| `GET` | `/api/members` | List active members, enriched with names, email addresses, categories and the IG recipient ID. Add `?refresh=true` to bypass the cached reports. |
+| `POST` | `/api/members/emails/test` | Send one test copy to an email address through IG. |
+| `POST` | `/api/members/emails/campaign` | Send one campaign to selected active members. The request uses club member numbers; the API resolves IG's internal recipient IDs server-side. |
 | `GET` | `/api/members/{memberNumber}/diary` | Read the configured member diary page. |
 | `PUT` | `/api/members/{memberNumber}/diary` | Submit fields to the configured member diary update page. |
 | `GET` | `/api/members/{memberNumber}/planner` | Read the configured member planner page. |
@@ -39,7 +40,7 @@ Never put live IG or Redis credentials in `appsettings.json`. For local developm
 dotnet user-secrets set "IntelligentGolf:MemberId" "<member-number>"
 dotnet user-secrets set "IntelligentGolf:MemberPassword" "<member-pin>"
 dotnet user-secrets set "IntelligentGolf:AdminPassword" "<admin-password>"
-dotnet user-secrets set "IntelligentGolf:EmailSenderMemberNumber" "<sender-member-number>"
+dotnet user-secrets set "IntelligentGolf:EmailSenderMemberNumber" "<sender-member-number>" # optional when the authenticated plugin member ID is numeric
 dotnet user-secrets set "IntelligentGolf:EmailFromName" "Event Planner"
 dotnet user-secrets set "IntelligentGolf:EmailFromAddress" "events@example.com"
 dotnet user-secrets set "EventPlaybookApi:ApiKey" "<long-random-value>"
@@ -107,4 +108,4 @@ dotnet restore
 dotnet run
 ```
 
-For the Playbook deployment, save the IG login through the Web application's Plugin administration page. Set the same API key on the Web and private API services; configure the optional email sender and Redis connection through the deployment platform's secret/configuration store. The `IntelligentGolf:MemberId`, `MemberPassword` and `AdminPassword` options remain available only as a legacy/local fallback.
+For the Playbook deployment, save the IG login through the Web application's Plugin administration page. Set the same API key on the Web and private API services. Member email requires `IntelligentGolf:EmailFromName` and `IntelligentGolf:EmailFromAddress`; `EmailSenderMemberNumber` is needed only when the plugin member ID is not itself the numeric sender member number. Configure these and any Redis connection through the deployment platform's secret/configuration store. The `IntelligentGolf:MemberId`, `MemberPassword` and `AdminPassword` options remain available only as a legacy/local fallback.

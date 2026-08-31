@@ -111,6 +111,7 @@ app.MapPost("/v1/auth/intelligent-golf/session", async (
 
 app.MapMemberEndpoints();
 app.MapMemberEmailEndpoints();
+app.MapMemberCampaignEmailEndpoints();
 app.MapMemberWorkspaceEndpoints();
 app.MapCompetitionEndpoints();
 

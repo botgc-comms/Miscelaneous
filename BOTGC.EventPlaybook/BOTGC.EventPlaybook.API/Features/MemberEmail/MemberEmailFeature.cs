@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using BOTGC.EventPlaybook.API.Infrastructure.IntelligentGolf;
 using BOTGC.EventPlaybook.API.Options;
 using MediatR;
@@ -25,6 +26,7 @@ public sealed record SendMemberEmailsCommand(
 
 public sealed class SendMemberEmailsHandler(
     IOptions<IntelligentGolfOptions> options,
+    IIntelligentGolfSession session,
     IIntelligentGolfTransport transport,
     ILogger<SendMemberEmailsHandler> logger)
     : IRequestHandler<SendMemberEmailsCommand, SendMemberEmailsResult>
@@ -43,13 +45,19 @@ public sealed class SendMemberEmailsHandler(
             throw new ArgumentException("An email subject is required.");
         }
 
-        if (string.IsNullOrWhiteSpace(request.BodyHtml))
+        var bodyHtml = MemberEmailHtmlSanitizer.Sanitise(request.BodyHtml);
+        if (string.IsNullOrWhiteSpace(bodyHtml))
         {
             throw new ArgumentException("An HTML email body is required.");
         }
 
         var settings = options.Value;
-        if (settings.EmailSenderMemberNumber <= 0 ||
+        var senderMemberNumber = settings.EmailSenderMemberNumber > 0
+            ? settings.EmailSenderMemberNumber
+            : int.TryParse(session.MemberId, out var authenticatedMemberNumber)
+                ? authenticatedMemberNumber
+                : 0;
+        if (senderMemberNumber <= 0 ||
             string.IsNullOrWhiteSpace(settings.EmailFromName) ||
             string.IsNullOrWhiteSpace(settings.EmailFromAddress))
         {
@@ -64,7 +72,7 @@ public sealed class SendMemberEmailsHandler(
 
         var path = pathTemplate.Replace(
             "{senderMemberNumber}",
-            settings.EmailSenderMemberNumber.ToString(),
+            senderMemberNumber.ToString(),
             StringComparison.OrdinalIgnoreCase);
 
         var recipients = request.RecipientEmails
@@ -90,7 +98,7 @@ public sealed class SendMemberEmailsHandler(
                         ["email_fromname"] = settings.EmailFromName,
                         ["email_fromaddress"] = settings.EmailFromAddress,
                         ["recipient"] = recipient,
-                        ["email_content"] = request.BodyHtml,
+                        ["email_content"] = bodyHtml,
                         ["email_preview_to"] = recipient
                     },
                     cancellationToken);
@@ -108,6 +116,25 @@ public sealed class SendMemberEmailsHandler(
         }
 
         return new SendMemberEmailsResult(deliveries);
+    }
+}
+
+public static class MemberEmailHtmlSanitizer
+{
+    public static string Sanitise(string? html)
+    {
+        if (string.IsNullOrWhiteSpace(html)) return string.Empty;
+        var value = Regex.Replace(
+            html,
+            @"<(script|iframe|object|embed|form)\b[^>]*>.*?</\1\s*>",
+            string.Empty,
+            RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        value = Regex.Replace(
+            value,
+            @"\s+on[a-z]+\s*=\s*([""']).*?\1",
+            string.Empty,
+            RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        return Regex.Replace(value, @"javascript\s*:", string.Empty, RegexOptions.IgnoreCase).Trim();
     }
 }
 
@@ -137,6 +164,30 @@ public static class MemberEmailEndpoints
             .WithTags("Members")
             .Produces<SendMemberEmailsResult>()
             .Produces<SendMemberEmailsResult>(StatusCodes.Status502BadGateway);
+
+        endpoints.MapPost(
+                "/api/members/emails/test",
+                async (
+                    SendMemberEmailsRequest request,
+                    IMediator mediator,
+                    CancellationToken cancellationToken) =>
+                {
+                    if (request.RecipientEmails?.Count != 1)
+                    {
+                        return Results.BadRequest(new { error = "Supply exactly one address for a test email." });
+                    }
+
+                    var result = await mediator.Send(
+                        new SendMemberEmailsCommand(request.RecipientEmails, request.Subject, request.BodyHtml),
+                        cancellationToken);
+                    return result.Sent == 1
+                        ? Results.Ok(result)
+                        : Results.Json(result, statusCode: StatusCodes.Status502BadGateway);
+                })
+            .WithName("SendMemberEmailTest")
+            .WithTags("Member communications")
+            .WithSummary("Send a test copy of a member campaign email")
+            .Produces<SendMemberEmailsResult>();
 
         return endpoints;
     }

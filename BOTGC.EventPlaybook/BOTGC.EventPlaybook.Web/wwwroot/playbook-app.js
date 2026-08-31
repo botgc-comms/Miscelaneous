@@ -2049,7 +2049,7 @@
     if (state.activeView === 'plugins') ensurePluginSettingsLoaded();
     if (state.activeView === 'retrospective' && event) ensureFeedbackLoaded(event.id);
     if (state.activeView === 'artwork' && event) {
-      import('./poster-app.js?v=20260829-share-print-diary-1')
+      import('./poster-app.js?v=20260831-member-email-1')
         .then(module => module.mountPosterStudio({
           eventId: event.id,
           eventName: event.name,
@@ -2444,10 +2444,10 @@
             <div><h3>Clubhouse screens</h3><p>Choose when the digital-screen artwork should appear around the clubhouse.</p></div>
             <button id="shareScreensButton" class="button button-gold" type="button">Send to clubhouse screens</button>
           </article>
-          <article class="share-action-card pending">
+          <article id="shareEmailCard" class="share-action-card">
             <span class="share-action-icon">✉</span>
-            <div><h3>Members</h3><p>Use the campaign artwork in an email to the club membership.</p><span class="share-action-status">Email connection coming next</span></div>
-            <button id="shareEmailButton" class="button button-secondary" type="button">Email to members</button>
+            <div><h3>Members</h3><p>Draft an email, choose active membership categories and send a test before contacting members.</p><span id="shareEmailStatus" class="share-action-status hidden"></span></div>
+            <button id="shareEmailButton" class="button button-gold" type="button">Email to members</button>
           </article>
           <article class="share-action-card">
             <span class="share-action-icon">▤</span>
@@ -2484,6 +2484,37 @@
             </div>
           </div>
           <div class="poster-publish-actions"><button id="cancelPosterPublish" class="button button-secondary" type="button">Cancel</button><button id="confirmPosterPublish" class="button button-gold button-large" type="submit">Send to clubhouse screens</button></div>
+        </form>
+      </dialog>
+
+      <dialog id="memberEmailDialog" class="poster-publish-dialog member-email-dialog">
+        <form id="memberEmailForm">
+          <div class="poster-publish-heading">
+            <div><p class="eyebrow">Member communications</p><h2>Email this campaign to members</h2><p>Review the AI-assisted message, choose its audience and send yourself a test before delivery.</p></div>
+            <button id="closeMemberEmailDialog" class="icon-button" type="button" aria-label="Close member email dialog">×</button>
+          </div>
+          <div class="poster-publish-body member-email-body">
+            <aside class="poster-publish-preview email-preview"><img id="memberEmailArtworkPreview" alt="Campaign artwork selected for the member email"><span id="memberEmailArtworkName">Campaign artwork</span><small>Square artwork is preferred when available</small></aside>
+            <div class="poster-publish-fields member-email-fields">
+              <div id="memberEmailConnectionStatus" class="yodeck-connection-status checking"><span></span><div><strong>Checking the member email connection…</strong><small>The connection is managed securely by Event Playbook.</small></div></div>
+              <div class="member-email-section-heading"><div><strong>Email message</strong><small>Generated from the selected event and editable before sending.</small></div><button id="generateMemberEmail" class="button button-secondary" type="button">Generate email with AI</button></div>
+              <label class="field"><span>Subject</span><input id="memberEmailSubject" type="text" maxlength="250" required></label>
+              <label class="field"><span>HTML email body</span><textarea id="memberEmailBody" rows="12" maxlength="200000" required spellcheck="true"></textarea><small>You can edit the generated HTML. Use Preview to check the finished message.</small></label>
+              <details class="member-email-preview-panel"><summary>Preview email</summary><iframe id="memberEmailBodyPreview" title="Member email preview" sandbox></iframe></details>
+              <section class="member-email-audience">
+                <div class="member-email-section-heading"><div><strong>Recipients</strong><small>Only active members with an email address are included.</small></div><button id="loadMemberEmailAudience" class="button button-secondary" type="button">Retrieve active members</button></div>
+                <div class="member-email-audience-modes">
+                  <label><input type="radio" name="memberEmailAudienceMode" value="all" checked> <span>All active members</span></label>
+                  <label><input type="radio" name="memberEmailAudienceMode" value="categories"> <span>Selected membership categories</span></label>
+                </div>
+                <div id="memberEmailCategories" class="member-email-categories hidden"></div>
+                <div id="memberEmailAudienceSummary" class="member-email-audience-summary">Retrieve the current member list to choose recipients.</div>
+              </section>
+              <div class="member-email-test-row"><label class="field"><span>Send a test to</span><input id="memberEmailTestAddress" type="email" maxlength="320" placeholder="name@example.com"></label><button id="sendMemberEmailTest" class="button button-secondary" type="button">Send test</button></div>
+              <div id="memberEmailDialogMessage" class="poster-publish-dialog-message" role="status"></div>
+            </div>
+          </div>
+          <div class="poster-publish-actions"><button id="cancelMemberEmail" class="button button-secondary" type="button">Cancel</button><button id="confirmMemberEmail" class="button button-gold button-large" type="submit" disabled>Send email to members</button></div>
         </form>
       </dialog>
 

@@ -58,7 +58,12 @@ function createSession(key, context) {
             diaryDescription: context?.description ?? '',
             diaryStartTime: '',
             diaryEndTime: '',
-            diaryBookingUrl: ''
+            diaryBookingUrl: '',
+            emailSubject: '',
+            emailBodyHtml: '',
+            emailTestAddress: '',
+            emailAudienceMode: 'all',
+            emailMembershipCategories: []
         },
         progress: {
             concepts: { cssClass: '', label: 'Waiting' },
@@ -73,6 +78,8 @@ function createSession(key, context) {
         publishVisible: false,
         screenPublication: null,
         diaryPublication: null,
+        emailPublication: null,
+        memberEmailMembers: [],
         errorMessage: null,
         generationPromise: null,
         generationAbortController: null,
@@ -292,7 +299,7 @@ function serialiseSession(session, includeInlineArtwork = true) {
 
     return {
         key: session.key,
-        schemaVersion: 7,
+        schemaVersion: 8,
         savedAt: new Date().toISOString(),
         selectedStyleId: session.selectedStyleId,
         selectedOutputIds: [...session.selectedOutputIds],
@@ -322,7 +329,12 @@ function serialiseSession(session, includeInlineArtwork = true) {
             diaryDescription: session.form.diaryDescription,
             diaryStartTime: session.form.diaryStartTime,
             diaryEndTime: session.form.diaryEndTime,
-            diaryBookingUrl: session.form.diaryBookingUrl
+            diaryBookingUrl: session.form.diaryBookingUrl,
+            emailSubject: session.form.emailSubject,
+            emailBodyHtml: session.form.emailBodyHtml,
+            emailTestAddress: session.form.emailTestAddress,
+            emailAudienceMode: session.form.emailAudienceMode,
+            emailMembershipCategories: session.form.emailMembershipCategories
         },
         workflowStep: session.workflowStep,
         workflowComplete: generationWasInterrupted ? false : session.workflowComplete,
@@ -333,7 +345,8 @@ function serialiseSession(session, includeInlineArtwork = true) {
         refinementVisible: session.refinementVisible,
         publishVisible: session.publishVisible,
         screenPublication: session.screenPublication,
-        diaryPublication: session.diaryPublication
+        diaryPublication: session.diaryPublication,
+        emailPublication: session.emailPublication
     };
 }
 
@@ -350,7 +363,7 @@ function applyStoredSession(session, stored) {
     }
 
     const storedForm = stored.form && typeof stored.form === 'object' ? stored.form : {};
-    const stringFields = ['eventId', 'eventName', 'eventDate', 'description', 'price', 'additionalInstructions', 'refinementNotes', 'publishMediaName', 'publishTags', 'publishStartDate', 'diaryTitle', 'diaryDescription', 'diaryStartTime', 'diaryEndTime', 'diaryBookingUrl'];
+    const stringFields = ['eventId', 'eventName', 'eventDate', 'description', 'price', 'additionalInstructions', 'refinementNotes', 'publishMediaName', 'publishTags', 'publishStartDate', 'diaryTitle', 'diaryDescription', 'diaryStartTime', 'diaryEndTime', 'diaryBookingUrl', 'emailSubject', 'emailBodyHtml', 'emailTestAddress', 'emailAudienceMode'];
     for (const field of stringFields) {
         if (typeof storedForm[field] === 'string') session.form[field] = storedForm[field];
     }
@@ -359,6 +372,9 @@ function applyStoredSession(session, stored) {
     if (typeof storedForm.includeClubBranding === 'boolean') session.form.includeClubBranding = storedForm.includeClubBranding;
     if (typeof storedForm.useLibraryReferences === 'boolean') session.form.useLibraryReferences = storedForm.useLibraryReferences;
     if (Array.isArray(storedForm.supportingImages)) session.form.supportingImages = storedForm.supportingImages;
+    if (Array.isArray(storedForm.emailMembershipCategories)) {
+        session.form.emailMembershipCategories = storedForm.emailMembershipCategories.filter(value => typeof value === 'string');
+    }
     session.form.selectedLibraryReferences = [];
 
     session.primaryArtworkDataUrl = isPersistedArtworkSource(stored.primaryArtworkDataUrl) ? stored.primaryArtworkDataUrl : null;
@@ -454,6 +470,13 @@ function applyStoredSession(session, stored) {
             operation: String(stored.diaryPublication.operation ?? 'saved'),
             eventDate: String(stored.diaryPublication.eventDate ?? ''),
             updatedAt: String(stored.diaryPublication.updatedAt ?? '')
+        };
+    }
+    if (stored.emailPublication && typeof stored.emailPublication === 'object' && Number(stored.emailPublication.sent) > 0) {
+        session.emailPublication = {
+            sent: Number(stored.emailPublication.sent),
+            sentAt: String(stored.emailPublication.sentAt ?? ''),
+            subject: String(stored.emailPublication.subject ?? '')
         };
     }
 
@@ -963,6 +986,8 @@ export async function mountPosterStudio(context = {}) {
         sharePanel: document.querySelector('#sharePanel'),
         shareScreensButton: document.querySelector('#shareScreensButton'),
         shareEmailButton: document.querySelector('#shareEmailButton'),
+        shareEmailCard: document.querySelector('#shareEmailCard'),
+        shareEmailStatus: document.querySelector('#shareEmailStatus'),
         sharePrintButton: document.querySelector('#sharePrintButton'),
         shareDiaryButton: document.querySelector('#shareDiaryButton'),
         shareDiaryCard: document.querySelector('#shareDiaryCard'),
@@ -982,6 +1007,25 @@ export async function mountPosterStudio(context = {}) {
         yodeckStartDate: document.querySelector('#yodeckStartDate'),
         yodeckEndDate: document.querySelector('#yodeckEndDate'),
         yodeckPlaylistName: document.querySelector('#yodeckPlaylistName'),
+        emailDialog: document.querySelector('#memberEmailDialog'),
+        emailForm: document.querySelector('#memberEmailForm'),
+        emailDialogClose: document.querySelector('#closeMemberEmailDialog'),
+        emailDialogCancel: document.querySelector('#cancelMemberEmail'),
+        emailDialogConfirm: document.querySelector('#confirmMemberEmail'),
+        emailDialogMessage: document.querySelector('#memberEmailDialogMessage'),
+        emailConnectionStatus: document.querySelector('#memberEmailConnectionStatus'),
+        emailArtworkPreview: document.querySelector('#memberEmailArtworkPreview'),
+        emailArtworkName: document.querySelector('#memberEmailArtworkName'),
+        emailGenerateButton: document.querySelector('#generateMemberEmail'),
+        emailSubject: document.querySelector('#memberEmailSubject'),
+        emailBody: document.querySelector('#memberEmailBody'),
+        emailBodyPreview: document.querySelector('#memberEmailBodyPreview'),
+        emailLoadAudienceButton: document.querySelector('#loadMemberEmailAudience'),
+        emailAudienceModes: document.querySelectorAll('input[name="memberEmailAudienceMode"]'),
+        emailCategories: document.querySelector('#memberEmailCategories'),
+        emailAudienceSummary: document.querySelector('#memberEmailAudienceSummary'),
+        emailTestAddress: document.querySelector('#memberEmailTestAddress'),
+        emailTestButton: document.querySelector('#sendMemberEmailTest'),
         printDialog: document.querySelector('#posterPrintDialog'),
         printForm: document.querySelector('#posterPrintForm'),
         printPreview: document.querySelector('#posterPrintPreview'),
@@ -1199,7 +1243,7 @@ function wireEvents(session) {
     });
     elements.cancelGenerationButton.addEventListener('click', () => cancelGeneration(session));
     elements.shareScreensButton.addEventListener('click', openScreenShareDialog);
-    elements.shareEmailButton.addEventListener('click', showEmailShareStatus);
+    elements.shareEmailButton.addEventListener('click', openMemberEmailDialog);
     elements.sharePrintButton?.addEventListener('click', openPrintDialog);
     elements.shareDiaryButton?.addEventListener('click', openMemberDiaryDialog);
     elements.shareTopButton.addEventListener('click', revealShareOptions);
@@ -1213,6 +1257,42 @@ function wireEvents(session) {
         event.preventDefault();
         sendToClubhouseScreens();
     });
+    elements.emailDialogClose?.addEventListener('click', closeMemberEmailDialog);
+    elements.emailDialogCancel?.addEventListener('click', closeMemberEmailDialog);
+    elements.emailDialog?.addEventListener('close', () => {
+        captureMemberEmailDialog(session);
+        scheduleSessionPersistence(session);
+    });
+    elements.emailForm?.addEventListener('submit', event => {
+        event.preventDefault();
+        sendMemberCampaignEmail();
+    });
+    elements.emailGenerateButton?.addEventListener('click', () => generateMemberEmailDraft(session));
+    elements.emailLoadAudienceButton?.addEventListener('click', () => loadMemberEmailAudience(session, true));
+    elements.emailSubject?.addEventListener('input', () => {
+        captureMemberEmailDialog(session);
+        scheduleSessionPersistence(session);
+    });
+    elements.emailBody?.addEventListener('input', () => {
+        captureMemberEmailDialog(session);
+        renderMemberEmailPreview();
+        scheduleSessionPersistence(session);
+    });
+    elements.emailTestAddress?.addEventListener('input', () => {
+        captureMemberEmailDialog(session);
+        scheduleSessionPersistence(session);
+    });
+    elements.emailAudienceModes?.forEach(input => input.addEventListener('change', () => {
+        captureMemberEmailDialog(session);
+        renderMemberEmailAudience(session);
+        scheduleSessionPersistence(session);
+    }));
+    elements.emailCategories?.addEventListener('change', () => {
+        captureMemberEmailDialog(session);
+        updateMemberEmailAudienceSummary(session);
+        scheduleSessionPersistence(session);
+    });
+    elements.emailTestButton?.addEventListener('click', () => sendMemberEmailTest(session));
     elements.printDialogClose?.addEventListener('click', closePrintDialog);
     elements.printDialogCancel?.addEventListener('click', closePrintDialog);
     elements.printForm?.addEventListener('submit', event => {
@@ -2460,23 +2540,323 @@ function revealShareOptions() {
     elements.sharePanel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-function showEmailShareStatus() {
-    elements.shareMessage.textContent = 'Email to members is not connected yet. The campaign artwork remains ready here for the future email integration.';
+function getMemberEmailArtwork(session) {
+    const outputs = session.config?.outputs ?? [];
+    const squareOutput = outputs.find(output => output.width === output.height && session.posterCanvases.has(output.id));
+    const printOutput = outputs.find(output => output.id === 'a4' && session.posterCanvases.has(output.id));
+    const primaryOutput = getPrimaryOutput(session);
+    const output = squareOutput ?? printOutput ?? primaryOutput;
+    const canvas = output ? session.posterCanvases.get(output.id) : null;
+    return output && canvas ? { output, canvas } : null;
+}
+
+function captureMemberEmailDialog(session) {
+    if (!elements.emailSubject) return;
+    session.form.emailSubject = elements.emailSubject.value.trim();
+    session.form.emailBodyHtml = elements.emailBody.value;
+    session.form.emailTestAddress = elements.emailTestAddress.value.trim();
+    session.form.emailAudienceMode = Array.from(elements.emailAudienceModes ?? [])
+        .find(input => input.checked)?.value ?? 'all';
+    session.form.emailMembershipCategories = Array.from(
+        elements.emailCategories?.querySelectorAll('input[type="checkbox"]:checked') ?? []
+    ).map(input => input.value);
+    updateMemberEmailSendState(session);
+}
+
+async function openMemberEmailDialog() {
+    const session = activeSession;
+    if (!session || !elements.emailDialog) return;
+    const artwork = getMemberEmailArtwork(session);
+    if (!artwork) {
+        elements.shareMessage.textContent = 'Generate at least one finished campaign format before emailing members.';
+        return;
+    }
+
+    elements.emailArtworkPreview.src = artwork.canvas.toDataURL('image/png');
+    elements.emailArtworkPreview.style.aspectRatio = `${artwork.output.width} / ${artwork.output.height}`;
+    elements.emailArtworkName.textContent = artwork.output.name;
+    elements.emailSubject.value = session.form.emailSubject || '';
+    elements.emailBody.value = session.form.emailBodyHtml || '';
+    elements.emailTestAddress.value = session.form.emailTestAddress || '';
+    elements.emailAudienceModes?.forEach(input => {
+        input.checked = input.value === (session.form.emailAudienceMode || 'all');
+    });
+    elements.emailDialogMessage.textContent = '';
+    elements.emailDialogMessage.className = 'poster-publish-dialog-message';
+
+    const connection = session.config?.memberEmail ?? {};
+    elements.emailConnectionStatus.className = `yodeck-connection-status ${connection.configured ? 'ready' : 'unavailable'}`;
+    elements.emailConnectionStatus.innerHTML = connection.configured
+        ? '<span></span><div><strong>Member email connection ready</strong><small>Recipients and delivery are handled securely through the club membership system.</small></div>'
+        : '<span></span><div><strong>Member email connection unavailable</strong><small>An administrator must configure and enable the Intelligent Golf connection first.</small></div>';
+    elements.emailGenerateButton.disabled = false;
+    elements.emailLoadAudienceButton.disabled = !connection.configured;
+    elements.emailTestButton.disabled = !connection.configured;
+
+    renderMemberEmailPreview();
+    renderMemberEmailAudience(session);
+    elements.emailDialog.showModal();
+    if (!session.form.emailBodyHtml) {
+        await generateMemberEmailDraft(session);
+    } else {
+        requestAnimationFrame(() => elements.emailSubject.focus());
+    }
+}
+
+function closeMemberEmailDialog() {
+    const session = activeSession;
+    if (session) {
+        captureMemberEmailDialog(session);
+        scheduleSessionPersistence(session);
+    }
+    elements.emailDialog?.close();
+}
+
+async function generateMemberEmailDraft(session) {
+    const artwork = getMemberEmailArtwork(session);
+    if (!artwork) return;
+    captureMemberEmailDialog(session);
+    elements.emailGenerateButton.disabled = true;
+    elements.emailGenerateButton.textContent = 'Generating email…';
+    elements.emailDialogMessage.textContent = 'Preparing an event-specific member email from the approved campaign…';
+    elements.emailDialogMessage.className = 'poster-publish-dialog-message working';
+    try {
+        const response = await fetch('/api/poster/member-email/draft', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                eventId: session.context?.eventId || session.key,
+                eventName: getCampaignEventName(session),
+                eventDate: session.form.eventDate,
+                description: session.form.description,
+                additionalInstructions: session.form.additionalInstructions || null,
+                price: session.form.includePrice ? session.form.price : null,
+                artwork: {
+                    outputId: artwork.output.id,
+                    name: artwork.output.name,
+                    dataUrl: artwork.canvas.toDataURL('image/png')
+                }
+            })
+        });
+        const result = await readApiResponse(response);
+        session.form.emailSubject = String(result.subject ?? '');
+        session.form.emailBodyHtml = String(result.bodyHtml ?? '');
+        elements.emailSubject.value = session.form.emailSubject;
+        elements.emailBody.value = session.form.emailBodyHtml;
+        renderMemberEmailPreview();
+        elements.emailDialogMessage.textContent = result.mode === 'openai'
+            ? 'The AI-assisted draft is ready. Review and edit it before sending a test.'
+            : 'A reliable event-based draft is ready. Review and edit it before sending a test.';
+        elements.emailDialogMessage.className = 'poster-publish-dialog-message success';
+        await persistSession(session);
+    } catch (error) {
+        elements.emailDialogMessage.textContent = error instanceof Error ? error.message : 'The member email draft could not be generated.';
+        elements.emailDialogMessage.className = 'poster-publish-dialog-message error';
+    } finally {
+        elements.emailGenerateButton.disabled = false;
+        elements.emailGenerateButton.textContent = 'Generate email with AI';
+        updateMemberEmailSendState(session);
+    }
+}
+
+function renderMemberEmailPreview() {
+    if (!elements.emailBodyPreview) return;
+    const subject = elements.emailSubject?.value.trim() || 'Member email preview';
+    const body = elements.emailBody?.value || '<p style="font-family:Arial,sans-serif;color:#52666b">Generate or enter an email to preview it here.</p>';
+    elements.emailBodyPreview.srcdoc = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(subject)}</title></head><body style="margin:18px;background:#fff">${body}</body></html>`;
+}
+
+async function loadMemberEmailAudience(session, refresh = false) {
+    elements.emailLoadAudienceButton.disabled = true;
+    elements.emailLoadAudienceButton.textContent = 'Retrieving members…';
+    elements.emailDialogMessage.textContent = 'Retrieving the current active-member directory and contact details…';
+    elements.emailDialogMessage.className = 'poster-publish-dialog-message working';
+    try {
+        const response = await fetch(`/api/poster/member-email/members?refresh=${refresh ? 'true' : 'false'}`, { cache: 'no-store' });
+        const members = await readApiResponse(response);
+        const activeMembers = Array.isArray(members) ? members.filter(member => member?.isActive) : [];
+        session.memberEmailMembers = activeMembers.filter(member =>
+            Number(member.memberNumber) > 0 &&
+            Number(member.intelligentGolfUserId) > 0 &&
+            typeof member.email === 'string' &&
+            member.email.trim());
+        session.memberEmailExcludedCount = Math.max(0, activeMembers.length - session.memberEmailMembers.length);
+        renderMemberEmailAudience(session);
+        elements.emailDialogMessage.textContent = `${session.memberEmailMembers.length} active members with email addresses are available${session.memberEmailExcludedCount ? `; ${session.memberEmailExcludedCount} without usable email details were excluded` : ''}.`;
+        elements.emailDialogMessage.className = 'poster-publish-dialog-message success';
+    } catch (error) {
+        elements.emailDialogMessage.textContent = error instanceof Error ? error.message : 'The active-member directory could not be retrieved.';
+        elements.emailDialogMessage.className = 'poster-publish-dialog-message error';
+    } finally {
+        elements.emailLoadAudienceButton.disabled = !(session.config?.memberEmail?.configured);
+        elements.emailLoadAudienceButton.textContent = 'Refresh active members';
+        updateMemberEmailSendState(session);
+    }
+}
+
+function renderMemberEmailAudience(session) {
+    const mode = session.form.emailAudienceMode || 'all';
+    elements.emailCategories?.classList.toggle('hidden', mode !== 'categories');
+    if (!elements.emailCategories) return;
+
+    const counts = new Map();
+    for (const member of session.memberEmailMembers ?? []) {
+        const category = String(member.membershipCategory || 'Uncategorised').trim() || 'Uncategorised';
+        counts.set(category, (counts.get(category) ?? 0) + 1);
+    }
+    const selected = new Set(session.form.emailMembershipCategories ?? []);
+    elements.emailCategories.innerHTML = [...counts.entries()]
+        .sort(([left], [right]) => left.localeCompare(right, 'en-GB'))
+        .map(([category, count]) => `<label><input type="checkbox" value="${escapeHtml(category)}"${selected.has(category) ? ' checked' : ''}><span><strong>${escapeHtml(category)}</strong><small>${count} member${count === 1 ? '' : 's'}</small></span></label>`)
+        .join('');
+    updateMemberEmailAudienceSummary(session);
+}
+
+function getSelectedMemberEmailRecipients(session) {
+    const members = session.memberEmailMembers ?? [];
+    if (session.form.emailAudienceMode !== 'categories') return members;
+    const selected = new Set(session.form.emailMembershipCategories ?? []);
+    return members.filter(member => selected.has(String(member.membershipCategory || 'Uncategorised').trim() || 'Uncategorised'));
+}
+
+function updateMemberEmailAudienceSummary(session) {
+    captureMemberEmailCategorySelection(session);
+    const recipients = getSelectedMemberEmailRecipients(session);
+    if (elements.emailAudienceSummary) {
+        elements.emailAudienceSummary.textContent = session.memberEmailMembers?.length
+            ? `${recipients.length} active member${recipients.length === 1 ? '' : 's'} will receive this email.`
+            : 'Retrieve the current member list to choose recipients.';
+    }
+    updateMemberEmailSendState(session);
+}
+
+function captureMemberEmailCategorySelection(session) {
+    session.form.emailMembershipCategories = Array.from(
+        elements.emailCategories?.querySelectorAll('input[type="checkbox"]:checked') ?? []
+    ).map(input => input.value);
+}
+
+function updateMemberEmailSendState(session) {
+    if (!elements.emailDialogConfirm) return;
+    const recipients = getSelectedMemberEmailRecipients(session);
+    const ready = session.config?.memberEmail?.configured &&
+        elements.emailSubject?.value.trim() &&
+        elements.emailBody?.value.trim() &&
+        recipients.length > 0;
+    elements.emailDialogConfirm.disabled = !ready;
+    elements.emailDialogConfirm.textContent = recipients.length > 0
+        ? `Send email to ${recipients.length} member${recipients.length === 1 ? '' : 's'}`
+        : 'Send email to members';
+}
+
+async function sendMemberEmailTest(session) {
+    captureMemberEmailDialog(session);
+    if (!elements.emailSubject.value.trim() || !elements.emailBody.value.trim()) {
+        elements.emailDialogMessage.textContent = 'Generate or enter the email subject and body before sending a test.';
+        elements.emailDialogMessage.className = 'poster-publish-dialog-message error';
+        return;
+    }
+    if (!elements.emailTestAddress.value.trim() || !elements.emailTestAddress.checkValidity()) {
+        elements.emailDialogMessage.textContent = 'Enter a valid email address for the test message.';
+        elements.emailDialogMessage.className = 'poster-publish-dialog-message error';
+        elements.emailTestAddress.focus();
+        return;
+    }
+
+    elements.emailTestButton.disabled = true;
+    elements.emailTestButton.textContent = 'Sending test…';
+    elements.emailDialogMessage.textContent = `Sending a test to ${session.form.emailTestAddress}…`;
+    elements.emailDialogMessage.className = 'poster-publish-dialog-message working';
+    try {
+        const response = await fetch('/api/poster/member-email/test', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                recipientEmail: session.form.emailTestAddress,
+                subject: session.form.emailSubject,
+                bodyHtml: session.form.emailBodyHtml
+            })
+        });
+        await readApiResponse(response);
+        elements.emailDialogMessage.textContent = `Test email sent to ${session.form.emailTestAddress}. Check it before sending to members.`;
+        elements.emailDialogMessage.className = 'poster-publish-dialog-message success';
+        await persistSession(session);
+    } catch (error) {
+        elements.emailDialogMessage.textContent = error instanceof Error ? error.message : 'The test email could not be sent.';
+        elements.emailDialogMessage.className = 'poster-publish-dialog-message error';
+    } finally {
+        elements.emailTestButton.disabled = !(session.config?.memberEmail?.configured);
+        elements.emailTestButton.textContent = 'Send test';
+    }
+}
+
+async function sendMemberCampaignEmail() {
+    const session = activeSession;
+    if (!session) return;
+    captureMemberEmailDialog(session);
+    const recipients = getSelectedMemberEmailRecipients(session);
+    if (!recipients.length) return;
+    if (!window.confirm(`Send “${session.form.emailSubject}” to ${recipients.length} active club member${recipients.length === 1 ? '' : 's'} now?`)) return;
+
+    elements.emailDialogConfirm.disabled = true;
+    elements.emailDialogConfirm.textContent = 'Sending member email…';
+    elements.emailDialogMessage.textContent = `Submitting one campaign email for ${recipients.length} selected members…`;
+    elements.emailDialogMessage.className = 'poster-publish-dialog-message working';
+    try {
+        const response = await fetch('/api/poster/member-email/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                memberNumbers: recipients.map(member => Number(member.memberNumber)),
+                subject: session.form.emailSubject,
+                bodyHtml: session.form.emailBodyHtml
+            })
+        });
+        const result = await readApiResponse(response);
+        session.emailPublication = {
+            sent: Number(result.sent ?? recipients.length),
+            sentAt: new Date().toISOString(),
+            subject: session.form.emailSubject
+        };
+        elements.shareMessage.textContent = `“${session.form.emailSubject}” was sent to ${session.emailPublication.sent} active club members.`;
+        configureShareConnections(session);
+        setWorkflowStep(session, 4, true);
+        await persistSession(session);
+        elements.emailDialog.close();
+    } catch (error) {
+        elements.emailDialogMessage.textContent = error instanceof Error ? error.message : 'The member campaign email could not be sent.';
+        elements.emailDialogMessage.className = 'poster-publish-dialog-message error';
+        updateMemberEmailSendState(session);
+    }
 }
 
 function configureShareConnections(session) {
     const diaryConnection = session.config?.memberDiary ?? {};
     elements.shareDiaryCard?.classList.toggle('pending', !diaryConnection.configured);
-    if (!elements.shareDiaryStatus) return;
+    if (elements.shareDiaryStatus) {
+        if (!diaryConnection.configured) {
+            elements.shareDiaryStatus.textContent = 'Connection setup required';
+            elements.shareDiaryStatus.classList.remove('hidden');
+        } else if (session.diaryPublication) {
+            elements.shareDiaryStatus.textContent = 'Already in the diary · send again to update';
+            elements.shareDiaryStatus.classList.remove('hidden');
+        } else {
+            elements.shareDiaryStatus.classList.add('hidden');
+        }
+    }
 
-    if (!diaryConnection.configured) {
-        elements.shareDiaryStatus.textContent = 'Connection setup required';
-        elements.shareDiaryStatus.classList.remove('hidden');
-    } else if (session.diaryPublication) {
-        elements.shareDiaryStatus.textContent = 'Already in the diary · send again to update';
-        elements.shareDiaryStatus.classList.remove('hidden');
-    } else {
-        elements.shareDiaryStatus.classList.add('hidden');
+    const emailConnection = session.config?.memberEmail ?? {};
+    elements.shareEmailCard?.classList.toggle('pending', !emailConnection.configured);
+    if (elements.shareEmailStatus) {
+        if (!emailConnection.configured) {
+            elements.shareEmailStatus.textContent = 'Connection setup required';
+            elements.shareEmailStatus.classList.remove('hidden');
+        } else if (session.emailPublication) {
+            elements.shareEmailStatus.textContent = `Sent to ${session.emailPublication.sent} members`;
+            elements.shareEmailStatus.classList.remove('hidden');
+        } else {
+            elements.shareEmailStatus.classList.add('hidden');
+        }
     }
 }
 

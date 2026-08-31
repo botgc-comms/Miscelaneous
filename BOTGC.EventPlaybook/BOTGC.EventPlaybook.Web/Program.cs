@@ -125,6 +125,9 @@ builder.Services.AddHttpClient(IntelligentGolfApiSessionClient.HttpClientName, c
     client.Timeout = TimeSpan.FromMinutes(2);
 });
 builder.Services.AddSingleton<IIntelligentGolfApiSessionClient, IntelligentGolfApiSessionClient>();
+builder.Services.AddSingleton<IIntelligentGolfMemberCommunicationsClient, IntelligentGolfMemberCommunicationsClient>();
+builder.Services.AddSingleton<IMemberEmailComposer, MemberEmailComposer>();
+builder.Services.AddSingleton<IMemberEmailArtworkStore, MemberEmailArtworkStore>();
 builder.Services.AddSingleton<ITaskCompletionRegistry, TaskCompletionRegistry>();
 builder.Services.AddSingleton<IFeedbackStore, FeedbackStore>();
 builder.Services.AddSingleton<IRetrospectiveAnalysisService, RetrospectiveAnalysisService>();
@@ -186,6 +189,7 @@ if (!string.IsNullOrWhiteSpace(demoPassword))
                            path.StartsWithSegments("/feedback.js") ||
                            path.StartsWithSegments("/assets") ||
                            path.StartsWithSegments("/api/feedback/public") ||
+                           path.StartsWithSegments("/api/poster/member-email/artwork") ||
                            path.StartsWithSegments("/health");
 
         if (isPublicPath || context.User.Identity?.IsAuthenticated == true)
@@ -341,10 +345,13 @@ app.MapGet("/api/poster/config", async (
     IClubBrandingStore brandingStore,
     IYodeckPublisher yodeckPublisher,
     IIntelligentGolfDiaryPublisher diaryPublisher,
+    IPluginSettingsStore pluginSettingsStore,
+    Microsoft.Extensions.Options.IOptions<EventPlaybookApiOptions> eventPlaybookApiOptions,
     CancellationToken cancellationToken) =>
 {
     var configurationModel = configurationService.Get();
     var branding = await brandingStore.GetOverviewAsync(cancellationToken);
+    var plugins = await pluginSettingsStore.GetOverviewAsync(cancellationToken);
     var hasApiKey = !string.IsNullOrWhiteSpace(openAiApiKey);
 
     return Results.Ok(new
@@ -384,8 +391,108 @@ app.MapGet("/api/poster/config", async (
         {
             configured = diaryPublisher.IsConfigured,
             destinationName = "Club member diary"
+        },
+        memberEmail = new
+        {
+            configured = plugins.IntelligentGolf.Enabled &&
+                         plugins.IntelligentGolf.Configured &&
+                         Uri.TryCreate(eventPlaybookApiOptions.Value.BaseUrl, UriKind.Absolute, out _) &&
+                         !string.IsNullOrWhiteSpace(eventPlaybookApiOptions.Value.ApiKey),
+            destinationName = "Active club members"
         }
     });
+});
+
+app.MapGet("/api/poster/member-email/artwork/{token}", (
+    string token,
+    IMemberEmailArtworkStore artworkStore) =>
+{
+    var path = artworkStore.Resolve(token);
+    return path is null
+        ? Results.NotFound()
+        : Results.File(path, "image/png", enableRangeProcessing: true);
+});
+
+app.MapPost("/api/poster/member-email/draft", async (
+    MemberEmailDraftRequest draft,
+    HttpRequest httpRequest,
+    IMemberEmailArtworkStore artworkStore,
+    IMemberEmailComposer composer,
+    CancellationToken cancellationToken) =>
+{
+    if (string.IsNullOrWhiteSpace(draft.EventId) ||
+        string.IsNullOrWhiteSpace(draft.EventName) ||
+        string.IsNullOrWhiteSpace(draft.Description) ||
+        !DateOnly.TryParseExact(draft.EventDate, "yyyy-MM-dd", out _))
+    {
+        return Results.BadRequest(new { error = "Event name, date and description are required to draft the member email." });
+    }
+
+    if (draft.Artwork is null)
+    {
+        return Results.BadRequest(new { error = "Finished campaign artwork is required." });
+    }
+
+    if (!TryDecodePngDataUrl(draft.Artwork.DataUrl, out var artworkBytes, out var artworkError))
+    {
+        return Results.BadRequest(new { error = artworkError });
+    }
+
+    var artworkToken = await artworkStore.SaveAsync(draft.EventId, artworkBytes, cancellationToken);
+    var publicScheme = httpRequest.Headers["X-Forwarded-Proto"].FirstOrDefault() ?? httpRequest.Scheme;
+    var artworkUrl = $"{publicScheme}://{httpRequest.Host}{httpRequest.PathBase}/api/poster/member-email/artwork/{artworkToken}";
+    return Results.Ok(await composer.ComposeAsync(draft, artworkUrl, cancellationToken));
+});
+
+app.MapGet("/api/poster/member-email/members", async (
+    bool? refresh,
+    IIntelligentGolfMemberCommunicationsClient communications,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        return Results.Ok(await communications.GetMembersAsync(refresh ?? false, cancellationToken));
+    }
+    catch (InvalidOperationException exception)
+    {
+        return Results.Problem(exception.Message, statusCode: StatusCodes.Status502BadGateway);
+    }
+});
+
+app.MapPost("/api/poster/member-email/test", async (
+    MemberEmailTestRequest request,
+    IIntelligentGolfMemberCommunicationsClient communications,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        await communications.SendTestAsync(request, cancellationToken);
+        return Results.Ok(new { success = true, recipientEmail = request.RecipientEmail });
+    }
+    catch (InvalidOperationException exception)
+    {
+        return Results.Problem(exception.Message, statusCode: StatusCodes.Status502BadGateway);
+    }
+});
+
+app.MapPost("/api/poster/member-email/send", async (
+    MemberCampaignEmailRequest request,
+    IIntelligentGolfMemberCommunicationsClient communications,
+    CancellationToken cancellationToken) =>
+{
+    if (request.MemberNumbers is null || request.MemberNumbers.Count == 0)
+    {
+        return Results.BadRequest(new { error = "Choose at least one active member to receive the email." });
+    }
+
+    try
+    {
+        return Results.Ok(await communications.SendCampaignAsync(request, cancellationToken));
+    }
+    catch (InvalidOperationException exception)
+    {
+        return Results.Problem(exception.Message, statusCode: StatusCodes.Status502BadGateway);
+    }
 });
 
 app.MapGet("/api/shared-state", async (

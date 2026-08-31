@@ -18,6 +18,15 @@ public interface IIntelligentGolfReportClient
         TimeSpan cacheTtl,
         bool refresh = false,
         CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<T>> PostAsync<T>(
+        string path,
+        IReadOnlyCollection<KeyValuePair<string, string>> fields,
+        IIntelligentGolfReportParser<T> parser,
+        string cacheKey,
+        TimeSpan cacheTtl,
+        bool refresh = false,
+        CancellationToken cancellationToken = default);
 }
 
 public interface IIntelligentGolfTransport
@@ -28,12 +37,12 @@ public interface IIntelligentGolfTransport
 
     Task<HtmlDocument> PostFormDocumentAsync(
         string path,
-        IReadOnlyDictionary<string, string> fields,
+        IReadOnlyCollection<KeyValuePair<string, string>> fields,
         CancellationToken cancellationToken = default);
 
     Task<string> PostFormAsync(
         string path,
-        IReadOnlyDictionary<string, string> fields,
+        IReadOnlyCollection<KeyValuePair<string, string>> fields,
         CancellationToken cancellationToken = default);
 }
 
@@ -41,6 +50,7 @@ public interface IIntelligentGolfSession
 {
     IntelligentGolfSessionStatus Status { get; }
     string BaseUrl { get; }
+    string? MemberId { get; }
 
     Task<IntelligentGolfSessionGrant> AuthenticateAsync(
         IntelligentGolfCredentials credentials,

@@ -32,6 +32,8 @@ public sealed class IntelligentGolfSession(
 
     public string BaseUrl => (_runtimeCredentials?.BaseUrl ?? options.Value.BaseUrl).TrimEnd('/') + "/";
 
+    public string? MemberId => (_runtimeCredentials?.MemberId ?? options.Value.MemberId)?.Trim();
+
     public async Task<IntelligentGolfSessionGrant> AuthenticateAsync(
         IntelligentGolfCredentials credentials,
         CancellationToken cancellationToken = default)

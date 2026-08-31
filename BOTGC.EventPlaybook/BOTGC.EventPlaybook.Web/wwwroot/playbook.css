@@ -373,6 +373,150 @@
   grid-template-columns: 1.15fr .8fr .8fr !important;
 }
 
+.member-email-dialog {
+  width: min(1220px, calc(100vw - 36px)) !important;
+  max-width: 1220px !important;
+}
+
+.member-email-body {
+  grid-template-columns: 270px minmax(0,1fr) !important;
+}
+
+.member-email-fields {
+  gap: 16px !important;
+}
+
+.member-email-section-heading {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
+}
+
+.member-email-section-heading > div {
+  display: grid !important;
+  gap: 3px !important;
+}
+
+.member-email-section-heading strong {
+  color: #0d3548 !important;
+  font: 700 1rem/1.2 Georgia,"Times New Roman",serif !important;
+}
+
+.member-email-section-heading small {
+  color: #738589 !important;
+  font-size: .62rem !important;
+  line-height: 1.4 !important;
+}
+
+.member-email-fields #memberEmailBody {
+  min-height: 220px !important;
+  font-family: Consolas,"Courier New",monospace !important;
+  font-size: .68rem !important;
+}
+
+.member-email-preview-panel {
+  overflow: hidden !important;
+  border: 1px solid #cbd8d5 !important;
+  border-radius: 10px !important;
+  background: #f5f8f7 !important;
+}
+
+.member-email-preview-panel summary {
+  padding: 10px 12px !important;
+  color: #0d3548 !important;
+  cursor: pointer !important;
+  font-size: .68rem !important;
+  font-weight: 850 !important;
+}
+
+.member-email-preview-panel iframe {
+  display: block !important;
+  width: 100% !important;
+  min-height: 500px !important;
+  border: 0 !important;
+  border-top: 1px solid #dce5e2 !important;
+  background: #fff !important;
+}
+
+.member-email-audience {
+  display: grid !important;
+  gap: 12px !important;
+  padding: 15px !important;
+  border: 1px solid #cbd8d5 !important;
+  border-radius: 12px !important;
+  background: #f7faf9 !important;
+}
+
+.member-email-audience-modes {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+}
+
+.member-email-audience-modes label {
+  display: flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  padding: 8px 10px !important;
+  border: 1px solid #c7d4d2 !important;
+  border-radius: 999px !important;
+  background: #fff !important;
+  font-size: .66rem !important;
+  font-weight: 800 !important;
+}
+
+.member-email-categories {
+  display: grid !important;
+  grid-template-columns: repeat(2,minmax(0,1fr)) !important;
+  gap: 7px !important;
+  max-height: 240px !important;
+  overflow-y: auto !important;
+  padding: 3px !important;
+}
+
+.member-email-categories label {
+  display: grid !important;
+  grid-template-columns: 18px minmax(0,1fr) !important;
+  gap: 8px !important;
+  align-items: start !important;
+  padding: 9px !important;
+  border: 1px solid #d4dfdc !important;
+  border-radius: 8px !important;
+  background: #fff !important;
+  cursor: pointer !important;
+}
+
+.member-email-categories label span {
+  display: grid !important;
+  gap: 2px !important;
+}
+
+.member-email-categories strong {
+  color: #173844 !important;
+  font-size: .64rem !important;
+}
+
+.member-email-categories small,
+.member-email-audience-summary {
+  color: #687b80 !important;
+  font-size: .59rem !important;
+  line-height: 1.4 !important;
+}
+
+.member-email-audience-summary {
+  padding-top: 10px !important;
+  border-top: 1px solid #d9e2df !important;
+  font-weight: 800 !important;
+}
+
+.member-email-test-row {
+  display: grid !important;
+  grid-template-columns: minmax(0,1fr) auto !important;
+  gap: 10px !important;
+  align-items: end !important;
+}
+
 .poster-publish-actions {
   display: flex !important;
   flex: 0 0 auto !important;
@@ -396,6 +540,9 @@
   .poster-publish-preview { display: none !important; }
   .poster-publish-date-grid { grid-template-columns: 1fr !important; }
   .print-size-options { grid-template-columns: 1fr !important; }
+  .member-email-section-heading { align-items: stretch !important; flex-direction: column !important; }
+  .member-email-categories { grid-template-columns: 1fr !important; }
+  .member-email-test-row { grid-template-columns: 1fr !important; }
   .poster-publish-actions { padding: 12px 14px 14px !important; }
 }
 *{box-sizing:border-box}

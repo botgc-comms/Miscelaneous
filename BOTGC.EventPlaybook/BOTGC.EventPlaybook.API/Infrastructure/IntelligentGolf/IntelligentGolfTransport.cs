@@ -20,20 +20,34 @@ public sealed class IntelligentGolfTransport(
 
     public async Task<HtmlDocument> PostFormDocumentAsync(
         string path,
-        IReadOnlyDictionary<string, string> fields,
+        IReadOnlyCollection<KeyValuePair<string, string>> fields,
         CancellationToken cancellationToken = default) =>
         ParseDocument(await PostFormAsync(path, fields, cancellationToken));
 
     public Task<string> PostFormAsync(
         string path,
-        IReadOnlyDictionary<string, string> fields,
+        IReadOnlyCollection<KeyValuePair<string, string>> fields,
         CancellationToken cancellationToken = default) =>
         SendAsync(
-            () => new HttpRequestMessage(HttpMethod.Post, path)
-            {
-                Content = new FormUrlEncodedContent(fields)
-            },
+            () => CreateFormRequest(path, fields),
             cancellationToken);
+
+    private static HttpRequestMessage CreateFormRequest(
+        string path,
+        IReadOnlyCollection<KeyValuePair<string, string>> fields)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, path)
+        {
+            Content = new FormUrlEncodedContent(fields)
+        };
+        if (path.Contains("requestType=ajax", StringComparison.OrdinalIgnoreCase) ||
+            path.Contains("ajaxaction=", StringComparison.OrdinalIgnoreCase))
+        {
+            request.Headers.TryAddWithoutValidation("X-Requested-With", "XMLHttpRequest");
+        }
+
+        return request;
+    }
 
     private async Task<string> SendAsync(
         Func<HttpRequestMessage> requestFactory,

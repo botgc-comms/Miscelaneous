@@ -217,6 +217,84 @@ public sealed class MemberDiaryPublishResult
     public required DateOnly EventDate { get; init; }
 }
 
+public sealed class MemberEmailDraftRequest
+{
+    public required string EventId { get; init; }
+
+    public required string EventName { get; init; }
+
+    public required string EventDate { get; init; }
+
+    public required string Description { get; init; }
+
+    public string? AdditionalInstructions { get; init; }
+
+    public string? Price { get; init; }
+
+    public required PublishAsset Artwork { get; init; }
+}
+
+public sealed class MemberEmailDraftResult
+{
+    public required string Subject { get; init; }
+
+    public required string BodyHtml { get; init; }
+
+    public required string ArtworkUrl { get; init; }
+
+    public required string Mode { get; init; }
+
+    public required string Model { get; init; }
+}
+
+public sealed class MemberDirectoryEntry
+{
+    public int MemberNumber { get; init; }
+
+    public int? IntelligentGolfUserId { get; init; }
+
+    public string? Title { get; init; }
+
+    public string? FirstName { get; init; }
+
+    public string? LastName { get; init; }
+
+    public string? FullName { get; init; }
+
+    public string? Email { get; init; }
+
+    public string? MembershipCategory { get; init; }
+
+    public bool IsActive { get; init; }
+}
+
+public sealed class MemberEmailTestRequest
+{
+    public required string RecipientEmail { get; init; }
+
+    public required string Subject { get; init; }
+
+    public required string BodyHtml { get; init; }
+}
+
+public sealed class MemberCampaignEmailRequest
+{
+    public List<int> MemberNumbers { get; init; } = [];
+
+    public required string Subject { get; init; }
+
+    public required string BodyHtml { get; init; }
+}
+
+public sealed class MemberCampaignEmailResult
+{
+    public int Requested { get; init; }
+
+    public int Sent { get; init; }
+
+    public string? DraftId { get; init; }
+}
+
 
 public sealed class SupportingImageReference
 {

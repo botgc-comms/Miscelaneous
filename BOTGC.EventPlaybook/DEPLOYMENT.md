@@ -22,8 +22,9 @@ Keeping the API separate prevents Intelligent Golf credentials and its authentic
    - leave the legacy Intelligent Golf diary variables empty until that member-diary contract is connected to the new API.
 6. Deploy or sync the Blueprint. This keeps the existing Web service and creates `botgc-event-playbook-api-dev`.
 7. Generate one long random server-to-server key. Set that same value as `EventPlaybookApi__ApiKey` on both `botgc-event-playbook-dev` and `botgc-event-playbook-api-dev`. The Web service also receives the private-service URL `http://botgc-event-playbook-api-dev:10000` from the Blueprint.
-8. On `botgc-event-playbook-api-dev`, add the optional sender identity used for IG member email:
-   - `IntelligentGolf__EmailSenderMemberNumber`, `IntelligentGolf__EmailFromName` and `IntelligentGolf__EmailFromAddress`: the identity used for IG member email.
+8. On `botgc-event-playbook-api-dev`, add the sender identity used for IG member email:
+   - `IntelligentGolf__EmailFromName` and `IntelligentGolf__EmailFromAddress` are required;
+   - `IntelligentGolf__EmailSenderMemberNumber` is optional when the numeric member ID saved in Plugin administration is the sender record, but can override it when necessary.
 9. Redeploy both services after saving their settings, then wait for the Web `/health` endpoint and API port binding to succeed.
 10. Open the existing Web `onrender.com` URL, sign in, then use **Plugin administration → Intelligent Golf** to enter the club site, member ID, member PIN/password and administrator password. Enabling the module validates those details against IG and establishes the private API session.
 
@@ -65,7 +66,7 @@ Secrets belong in Render's Environment settings. Do not commit them to Git, the 
 | `IntelligentGolf__MemberId` | Legacy fallback only | Normally supplied securely by the Web service from Plugin administration. |
 | `IntelligentGolf__MemberPassword` | Legacy fallback only | Normally supplied securely by the Web service from Plugin administration. |
 | `IntelligentGolf__AdminPassword` | Legacy fallback only | Normally supplied securely by the Web service from Plugin administration. |
-| `IntelligentGolf__EmailSenderMemberNumber` | For IG member email | Member record used as the sender. |
+| `IntelligentGolf__EmailSenderMemberNumber` | Sometimes for IG test email | Overrides the sender member record. It can be omitted when the numeric Plugin administration member ID identifies the sender. |
 | `IntelligentGolf__EmailFromName` | For IG member email | Friendly sender name. |
 | `IntelligentGolf__EmailFromAddress` | For IG member email | Sender email address. |
 | `Cache__Provider` | No | `Memory` for the current single-instance prototype; use Redis only before scaling the API horizontally. |
@@ -94,6 +95,7 @@ This deployment is now suitable for lightweight, shared prototype testing:
 
 - event plans, answers, task-board state, deadlines and contacts are shared through a revisioned server document at `App_Data/shared-playbook-state.json`;
 - Poster Studio settings and every generated artwork format are saved per event under `App_Data/poster-sessions`;
+- artwork embedded in generated member emails is stored under `App_Data/MemberEmailArtwork`, so links in sent emails survive restarts and redeployments;
 - browser `localStorage` and IndexedDB remain local caches, so a temporary network failure does not immediately discard the tester's work;
 - task completion records, the notification development outbox and development-login cookie encryption keys also live under `App_Data`;
 - encrypted plugin credentials live in `App_Data/plugin-settings.json`, with their Data Protection keys in `App_Data/DataProtection-Keys`;
