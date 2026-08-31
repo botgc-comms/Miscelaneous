@@ -20,12 +20,20 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
+    const string intelligentGolfSessionScheme = "IntelligentGolfSession";
     options.AddSecurityDefinition(ApiKeyMiddleware.HeaderName, new OpenApiSecurityScheme
     {
         Name = ApiKeyMiddleware.HeaderName,
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey,
         Description = "The API key issued to the event-planner service."
+    });
+    options.AddSecurityDefinition(intelligentGolfSessionScheme, new OpenApiSecurityScheme
+    {
+        Name = IntelligentGolfSessionTokenMiddleware.HeaderName,
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Description = "The sessionToken returned by POST /v1/auth/intelligent-golf/session. Not required for health, Swagger or that authentication endpoint."
     });
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
@@ -35,6 +43,14 @@ builder.Services.AddSwaggerGen(options =>
             {
                 Type = ReferenceType.SecurityScheme,
                 Id = ApiKeyMiddleware.HeaderName
+            }
+        }] = [],
+        [new OpenApiSecurityScheme
+        {
+            Reference = new OpenApiReference
+            {
+                Type = ReferenceType.SecurityScheme,
+                Id = intelligentGolfSessionScheme
             }
         }] = []
     });
