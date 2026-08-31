@@ -6,6 +6,9 @@ const state = {
   filter: 'all',
   aiConfigured: false,
   activeEvidenceId: null,
+  analysisStatus: null,
+  analysisPollTimer: null,
+  analysisNoticeShownFor: null,
 };
 
 const elements = {
@@ -37,6 +40,7 @@ async function api(url, options = {}) {
 }
 
 async function initialise() {
+  installBatchUploadControl();
   try {
     const auth = await api('/api/auth/status');
     state.aiConfigured = auth.aiConfigured;
@@ -54,6 +58,32 @@ async function initialise() {
   } catch (error) {
     showLogin(error.message);
   }
+}
+
+function installBatchUploadControl() {
+  if (!document.querySelector('link[href="/async.css"]')) {
+    const stylesheet = document.createElement('link');
+    stylesheet.rel = 'stylesheet';
+    stylesheet.href = '/async.css';
+    document.head.append(stylesheet);
+  }
+
+  const copy = document.querySelector('#detail-view .section-copy');
+  if (copy) {
+    copy.textContent = 'Take several overlapping photos or choose a batch from your phone. They are saved immediately, then read together in the background after you pause.';
+  }
+
+  const captureActions = document.querySelector('.capture-actions');
+  if (!captureActions || document.querySelector('#photo-library-input')) return;
+  captureActions.classList.add('has-batch-upload');
+  const batchControl = document.createElement('label');
+  batchControl.className = 'capture-button secondary-action batch-photo-action';
+  batchControl.innerHTML = `
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4zM7 15l3-3 2 2 2.5-3 3.5 4M8.5 9.5h.01"/></svg>
+    Choose photos
+    <input id="photo-library-input" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden>`;
+  captureActions.children[0]?.after(batchControl);
+  batchControl.querySelector('input').addEventListener('change', event => uploadFiles([...event.target.files], 'photo'));
 }
 
 async function loadCatalogue() {
@@ -79,7 +109,6 @@ function updateCounts() {
 function renderTrophies() {
   const query = elements.search.value.trim().toLowerCase();
   const visible = state.trophies.filter(trophy => {
-    const status = displayStatus(trophy);
     const matchesFilter = state.filter === 'all' ||
       (state.filter === 'review' ? trophy.needsReviewCount > 0 : trophy.status === state.filter);
     const searchText = `${trophy.id} ${trophy.name} ${trophy.secondaryName || ''} ${trophy.category}`.toLowerCase();
@@ -111,6 +140,9 @@ function renderTrophies() {
 }
 
 async function openTrophy(id, pushHistory = true) {
+  stopAnalysisPolling();
+  state.analysisStatus = null;
+  state.analysisNoticeShownFor = null;
   setBusy(true, 'Opening the trophy…', 'Loading its images and working winners list.');
   try {
     const data = await api(`/api/trophies/${encodeURIComponent(id)}`);
@@ -122,6 +154,7 @@ async function openTrophy(id, pushHistory = true) {
     elements.login.hidden = true;
     window.scrollTo({ top: 0, behavior: 'instant' });
     if (pushHistory) history.pushState({ trophy: id }, '', `#trophy/${id}`);
+    startAnalysisPolling();
   } catch (error) {
     showToast(error.message, true);
   } finally {
@@ -130,7 +163,9 @@ async function openTrophy(id, pushHistory = true) {
 }
 
 function closeTrophy(pushHistory = true) {
+  stopAnalysisPolling();
   state.current = null;
+  state.analysisStatus = null;
   elements.detailView.hidden = true;
   elements.catalogueView.hidden = false;
   if (pushHistory) history.pushState({}, '', '#catalogue');
@@ -173,30 +208,59 @@ function renderEvidence() {
       <img src="${escapeHtml(item.url)}" alt="${escapeHtml(item.originalName)}">
       ${item.processingState === 'failed' ? '<b class="evidence-alert" title="Reading failed">!</b>' : ''}
     </button>`).join('') + `
-    <label class="add-more" aria-label="Add another photograph">+
-      <input type="file" accept="image/jpeg,image/png,image/webp" capture="environment" hidden>
+    <label class="add-more" aria-label="Add more photographs">+
+      <input type="file" accept="image/jpeg,image/png,image/webp" capture="environment" multiple hidden>
     </label>`;
   elements.photoStrip.querySelectorAll('img').forEach(addImageFallback);
   const extraInput = elements.photoStrip.querySelector('.add-more input');
   extraInput?.addEventListener('change', event => uploadFiles([...event.target.files], 'photo'));
 }
 
-function renderReaderNote(observations = []) {
+function renderReaderNote() {
   const note = document.querySelector('#reader-note');
   const evidence = state.current?.evidence || [];
+  const analysis = state.analysisStatus;
+
   if (!evidence.length) {
     note.className = 'reader-note is-neutral';
-    note.innerHTML = '<span class="reader-spark" aria-hidden="true">✦</span><span><strong>Add the first engraving photo</strong><small>Names and years will appear in the list for you to check.</small></span>';
+    note.innerHTML = '<span class="reader-spark" aria-hidden="true">✦</span><span><strong>Add the first engraving photo</strong><small>Take several angles if needed; they will be read together after you pause.</small></span>';
+    return;
+  }
+  if (analysis?.status === 'queued') {
+    note.className = 'reader-note is-neutral is-queued';
+    note.innerHTML = `<span class="reader-spark" aria-hidden="true">✦</span><span><strong>Photos saved — gathering the set</strong><small>${escapeHtml(analysis.message)}</small></span>`;
+    return;
+  }
+  if (analysis?.status === 'processing') {
+    note.className = 'reader-note is-processing';
+    note.innerHTML = `<span class="reader-spark" aria-hidden="true">✦</span><span><strong>Reading all ${analysis.evidenceCount || evidence.length} images in the background</strong><small>${escapeHtml(analysis.message)}</small></span>`;
+    return;
+  }
+  if (analysis?.status === 'failed') {
+    note.className = 'reader-note is-warning';
+    note.innerHTML = `<span class="reader-spark" aria-hidden="true">!</span><span><strong>Images saved; reading needs another try</strong><small>${escapeHtml(analysis.message || 'Use “Read all images again” when ready.')}</small></span>`;
+    return;
+  }
+  if (analysis?.status === 'complete') {
+    note.className = 'reader-note';
+    note.innerHTML = `<span class="reader-spark" aria-hidden="true">✓</span><span><strong>Background reading complete</strong><small>${escapeHtml(analysis.message)}</small></span>`;
+    return;
+  }
+
+  const pendingCount = evidence.filter(item => ['pending', 'queued', 'processing'].includes(item.processingState)).length;
+  if (pendingCount) {
+    note.className = 'reader-note is-neutral is-queued';
+    note.innerHTML = `<span class="reader-spark" aria-hidden="true">✦</span><span><strong>${plural(pendingCount, 'image')} waiting for the background reader</strong><small>You can add more photos while they wait.</small></span>`;
     return;
   }
   const latest = evidence[evidence.length - 1];
   if (latest.processingState === 'failed') {
     note.className = 'reader-note is-warning';
-    note.innerHTML = `<span class="reader-spark" aria-hidden="true">!</span><span><strong>Image saved; reading needs another try</strong><small>${escapeHtml(latest.processingMessage || 'Use “Read all images” when ready.')}</small></span>`;
+    note.innerHTML = `<span class="reader-spark" aria-hidden="true">!</span><span><strong>Images saved; reading needs another try</strong><small>${escapeHtml(latest.processingMessage || 'Use “Read all images again” when ready.')}</small></span>`;
     return;
   }
   const reviewCount = state.current.winners.filter(winner => winner.reviewState !== 'confirmed').length;
-  const observation = observations[0] || latest.processingMessage || `${plural(reviewCount, 'reading')} waiting for your check.`;
+  const observation = latest.processingMessage || `${plural(reviewCount, 'reading')} waiting for your check.`;
   note.className = 'reader-note';
   note.innerHTML = `<span class="reader-spark" aria-hidden="true">✦</span><span><strong>The reader has compared ${plural(evidence.length, 'image')}</strong><small>${escapeHtml(observation)}</small></span>`;
 }
@@ -297,30 +361,41 @@ async function saveTimeline() {
 
 async function uploadFiles(files, kind) {
   if (!files.length || !state.current) return;
-  for (let index = 0; index < files.length; index += 1) {
-    setBusy(true, index === 0 ? 'Preparing the image…' : `Preparing image ${index + 1} of ${files.length}…`, 'Optimising it for clear mobile upload.');
-    try {
-      const prepared = await optimiseImage(files[index]);
-      const form = new FormData();
-      form.append('file', prepared, prepared.name);
-      form.append('kind', kind);
-      setBusy(true, 'Reading the engraving…', `Comparing ${plural((state.current.evidence?.length || 0) + 1, 'image')} for names and years.`);
-      const data = await api(`/api/trophies/${encodeURIComponent(state.current.id)}/images`, { method: 'POST', body: form });
-      state.current = data.trophy;
-      state.missingYears = data.missingYears || [];
-      renderDetail();
-      renderReaderNote(data.observations || []);
-      if (data.analysisError) showToast(data.analysisError, true, 6500);
-      else showToast('Image saved and winners list updated.');
-    } catch (error) {
-      showToast(error.message, true, 6500);
-    } finally {
-      setBusy(false);
+  const trophyId = state.current.id;
+  setBusy(true, `Preparing ${plural(files.length, 'image')}…`, 'Optimising the batch for a clear, quick mobile upload.');
+  try {
+    const preparedFiles = [];
+    for (let index = 0; index < files.length; index += 1) {
+      setBusy(true, `Preparing image ${index + 1} of ${files.length}…`, 'Optimising the batch for a clear, quick mobile upload.');
+      preparedFiles.push(await optimiseImage(files[index]));
     }
+
+    const form = new FormData();
+    preparedFiles.forEach(file => form.append('files', file, file.name));
+    form.append('kind', kind);
+    setBusy(true, `Saving ${plural(preparedFiles.length, 'image')}…`, 'You can keep working as soon as the upload finishes.');
+    const data = await api(`/api/trophies/${encodeURIComponent(trophyId)}/images`, { method: 'POST', body: form });
+    if (state.current?.id !== trophyId) return;
+    state.current = data.trophy;
+    state.missingYears = data.missingYears || [];
+    state.analysisStatus = data.analysis;
+    renderDetail();
+    startAnalysisPolling();
+    showToast(`${plural(preparedFiles.length, 'image')} saved. The reader will process the full set in the background.`);
+    await loadCatalogue();
+  } catch (error) {
+    showToast(error.message, true, 6500);
+  } finally {
+    setBusy(false);
+    clearUploadInputs();
   }
-  document.querySelector('#photo-input').value = '';
-  document.querySelector('#rubbing-input').value = '';
-  await loadCatalogue();
+}
+
+function clearUploadInputs() {
+  ['#photo-input', '#photo-library-input', '#rubbing-input'].forEach(selector => {
+    const input = document.querySelector(selector);
+    if (input) input.value = '';
+  });
 }
 
 async function optimiseImage(file) {
@@ -349,19 +424,57 @@ async function optimiseImage(file) {
 
 async function analyseAll() {
   if (!state.current) return;
-  setBusy(true, 'Reading every image again…', 'Looking for agreements, corrections and missing bands.');
   try {
     const data = await api(`/api/trophies/${encodeURIComponent(state.current.id)}/analyse`, { method: 'POST', body: '{}' });
-    state.current = data.trophy;
-    state.missingYears = data.missingYears || [];
-    renderDetail();
-    renderReaderNote(data.observations || []);
-    await loadCatalogue();
-    showToast('The working winners list has been refreshed.');
+    state.analysisStatus = data.analysis;
+    renderReaderNote();
+    startAnalysisPolling();
+    showToast('A fresh background reading has been queued.');
   } catch (error) {
     showToast(error.message, true, 6500);
-  } finally {
-    setBusy(false);
+  }
+}
+
+function startAnalysisPolling() {
+  stopAnalysisPolling();
+  if (!state.current) return;
+  pollAnalysisStatus();
+}
+
+function stopAnalysisPolling() {
+  if (state.analysisPollTimer) clearTimeout(state.analysisPollTimer);
+  state.analysisPollTimer = null;
+}
+
+async function pollAnalysisStatus() {
+  const trophyId = state.current?.id;
+  if (!trophyId) return;
+  try {
+    const data = await api(`/api/trophies/${encodeURIComponent(trophyId)}/analysis-status`);
+    if (state.current?.id !== trophyId) return;
+    state.analysisStatus = data.analysis;
+    renderReaderNote();
+
+    if (['queued', 'processing'].includes(data.analysis.status)) {
+      state.analysisPollTimer = setTimeout(pollAnalysisStatus, 1800);
+      return;
+    }
+
+    if (['complete', 'failed'].includes(data.analysis.status)) {
+      await refreshCurrent();
+      await loadCatalogue();
+      const noticeKey = `${data.analysis.status}:${data.analysis.updatedAt}`;
+      if (state.analysisNoticeShownFor !== noticeKey) {
+        state.analysisNoticeShownFor = noticeKey;
+        showToast(
+          data.analysis.status === 'complete' ? 'Background reading finished. Check the proposed winners below.' : data.analysis.message,
+          data.analysis.status === 'failed',
+          data.analysis.status === 'failed' ? 6500 : 4500,
+        );
+      }
+    }
+  } catch {
+    if (state.current?.id === trophyId) state.analysisPollTimer = setTimeout(pollAnalysisStatus, 3500);
   }
 }
 

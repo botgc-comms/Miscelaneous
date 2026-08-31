@@ -15,11 +15,13 @@ public static class EntryPoint
     public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-        builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = 15 * 1024 * 1024);
-        builder.Services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 15 * 1024 * 1024);
+        builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = 60 * 1024 * 1024);
+        builder.Services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 60 * 1024 * 1024);
         builder.Services.AddSingleton<CatalogueStore>();
         builder.Services.AddSingleton<PasswordGate>();
         builder.Services.AddSingleton<OpenAiEngravingReader>();
+        builder.Services.AddSingleton<BackgroundAnalysisQueue>();
+        builder.Services.AddHostedService(provider => provider.GetRequiredService<BackgroundAnalysisQueue>());
         builder.Services.AddHttpClient(nameof(OpenAiEngravingReader), client => client.Timeout = TimeSpan.FromMinutes(4));
 
         var app = builder.Build();
@@ -40,7 +42,7 @@ public static class EntryPoint
         {
             OnPrepareResponse = context =>
             {
-                context.Context.Response.Headers.CacheControl = context.File.Name is "index.html" or "app.js" or "styles.css"
+                context.Context.Response.Headers.CacheControl = context.File.Name is "index.html" or "app.js" or "styles.css" or "async.css"
                     ? "no-cache"
                     : "public,max-age=604800";
             }
@@ -172,46 +174,58 @@ public static class EntryPoint
             HttpRequest request,
             CatalogueStore store,
             OpenAiEngravingReader reader,
+            BackgroundAnalysisQueue analysisQueue,
             CancellationToken cancellationToken) =>
         {
             if (!request.HasFormContentType) return Results.BadRequest(new { error = "An image upload is required." });
+            var trophy = await store.GetTrophyAsync(id, cancellationToken);
+            if (trophy is null) return Results.NotFound();
+
             var form = await request.ReadFormAsync(cancellationToken);
-            var file = form.Files.GetFile("file");
+            var files = form.Files.ToList();
             var kind = form["kind"].ToString() == EvidenceKinds.Rubbing ? EvidenceKinds.Rubbing : EvidenceKinds.Photo;
-            if (file is null || file.Length == 0) return Results.BadRequest(new { error = "Choose a photo or rubbing first." });
-            if (file.Length > 12 * 1024 * 1024) return Results.BadRequest(new { error = "That image is larger than 12 MB. Try a smaller photo." });
-            if (!AcceptedImageTypes.Contains(file.ContentType))
-                return Results.BadRequest(new { error = "Use a JPEG, PNG or WebP image." });
+            if (files.Count == 0) return Results.BadRequest(new { error = "Choose one or more photos or rubbings first." });
+            if (files.Count > 30) return Results.BadRequest(new { error = "Upload no more than 30 images at once." });
+            if (files.Any(file => file.Length == 0)) return Results.BadRequest(new { error = "One of those images is empty. Remove it and try again." });
+            if (files.Any(file => file.Length > 12 * 1024 * 1024))
+                return Results.BadRequest(new { error = "Each image must be no larger than 12 MB. Try a smaller photo." });
+            if (files.Sum(file => file.Length) > 55 * 1024 * 1024)
+                return Results.BadRequest(new { error = "That batch is larger than 55 MB. Upload it in two groups." });
+            if (files.Any(file => !AcceptedImageTypes.Contains(file.ContentType)))
+                return Results.BadRequest(new { error = "Use JPEG, PNG or WebP images." });
 
-            await using var stream = file.OpenReadStream();
-            var evidence = await store.AddEvidenceAsync(id, file.FileName, file.ContentType, kind, stream, cancellationToken);
-            if (evidence is null) return Results.NotFound();
-
-            string? analysisError = null;
-            List<string> observations = [];
-            try
+            var addedEvidence = new List<EvidenceImage>();
+            foreach (var file in files)
             {
-                var trophy = await store.GetTrophyAsync(id, cancellationToken) ?? throw new InvalidOperationException("Trophy disappeared during analysis.");
-                var evidenceFiles = await store.GetEvidenceFilesAsync(id, cancellationToken);
-                var extraction = await reader.ReadAsync(trophy, evidenceFiles, cancellationToken);
-                observations = extraction.Observations;
-                await store.MergeAiExtractionAsync(id, extraction, evidenceFiles.Select(item => item.Evidence.Id).ToList(), cancellationToken);
-                await store.SetEvidenceProcessingAsync(id, evidence.Id, ProcessingStates.Complete,
-                    extraction.Entries.Count == 1 ? "1 winner reading found" : $"{extraction.Entries.Count} winner readings found", cancellationToken);
-            }
-            catch (OpenAiUnavailableException exception)
-            {
-                analysisError = exception.Message;
-                await store.SetEvidenceProcessingAsync(id, evidence.Id, ProcessingStates.Failed, exception.Message, cancellationToken);
+                await using var stream = file.OpenReadStream();
+                var evidence = await store.AddEvidenceAsync(id, file.FileName, file.ContentType, kind, stream, cancellationToken);
+                if (evidence is null) return Results.NotFound();
+                addedEvidence.Add(evidence);
             }
 
-            var updated = await store.GetTrophyAsync(id, cancellationToken);
-            return Results.Ok(new
+            trophy = await store.GetTrophyAsync(id, cancellationToken);
+            if (trophy is null) return Results.NotFound();
+
+            AnalysisJobSnapshot analysis;
+            if (reader.IsAvailable)
             {
-                trophy = updated,
-                missingYears = updated is null ? [] : CatalogueStore.MissingYears(updated),
-                observations,
-                analysisError
+                analysis = analysisQueue.Enqueue(id, trophy.Evidence.Count);
+            }
+            else
+            {
+                const string message = "Add OPENAI_API_KEY to enable the engraving reader.";
+                foreach (var evidence in addedEvidence)
+                    await store.SetEvidenceProcessingAsync(id, evidence.Id, ProcessingStates.Failed, message, cancellationToken);
+                trophy = await store.GetTrophyAsync(id, cancellationToken) ?? trophy;
+                analysis = new AnalysisJobSnapshot("failed", message, DateTimeOffset.UtcNow, trophy.Evidence.Count);
+            }
+
+            return Results.Accepted($"/api/trophies/{id}/analysis-status", new
+            {
+                trophy,
+                missingYears = CatalogueStore.MissingYears(trophy),
+                addedEvidence,
+                analysis
             });
         }).DisableAntiforgery();
 
@@ -219,27 +233,31 @@ public static class EntryPoint
             string id,
             CatalogueStore store,
             OpenAiEngravingReader reader,
+            BackgroundAnalysisQueue analysisQueue,
             CancellationToken cancellationToken) =>
         {
             var trophy = await store.GetTrophyAsync(id, cancellationToken);
             if (trophy is null) return Results.NotFound();
-            var evidenceFiles = await store.GetEvidenceFilesAsync(id, cancellationToken);
-            if (evidenceFiles.Count == 0) return Results.BadRequest(new { error = "Add at least one image first." });
-            try
+            if (trophy.Evidence.Count == 0) return Results.BadRequest(new { error = "Add at least one image first." });
+            if (!reader.IsAvailable)
             {
-                var extraction = await reader.ReadAsync(trophy, evidenceFiles, cancellationToken);
-                var updated = await store.MergeAiExtractionAsync(id, extraction, evidenceFiles.Select(item => item.Evidence.Id).ToList(), cancellationToken);
-                return Results.Ok(new
-                {
-                    trophy = updated,
-                    missingYears = updated is null ? [] : CatalogueStore.MissingYears(updated),
-                    observations = extraction.Observations
-                });
+                return Results.Json(
+                    new { error = "analysis_failed", message = "Add OPENAI_API_KEY to enable the engraving reader." },
+                    statusCode: StatusCodes.Status503ServiceUnavailable);
             }
-            catch (OpenAiUnavailableException exception)
-            {
-                return Results.Json(new { error = "analysis_failed", message = exception.Message }, statusCode: 503);
-            }
+
+            var analysis = analysisQueue.EnqueueNow(id, trophy.Evidence.Count);
+            return Results.Accepted($"/api/trophies/{id}/analysis-status", new { analysis });
+        });
+
+        app.MapGet("/api/trophies/{id}/analysis-status", async (
+            string id,
+            CatalogueStore store,
+            BackgroundAnalysisQueue analysisQueue,
+            CancellationToken cancellationToken) =>
+        {
+            var trophy = await store.GetTrophyAsync(id, cancellationToken);
+            return trophy is null ? Results.NotFound() : Results.Ok(new { analysis = analysisQueue.GetStatus(id) });
         });
 
         app.MapGet("/api/trophies/{id}/images/{imageId}", async (
