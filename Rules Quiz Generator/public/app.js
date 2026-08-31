@@ -1,5 +1,5 @@
 const state = {
-  library: { rules: [], counts: {} },
+  library: { rules: [], counts: {}, publishing: {} },
   filter: "all",
   search: "",
   selectedFolder: null,
@@ -15,6 +15,7 @@ const elements = {
   sidebarTotal: document.getElementById("sidebar-total"),
   search: document.getElementById("rule-search"),
   filters: document.getElementById("rule-filters"),
+  compileAllButton: document.getElementById("compile-all-button"),
   releaseButton: document.getElementById("release-button"),
   addRuleButton: document.getElementById("add-rule-button"),
   addRuleDialog: document.getElementById("add-rule-dialog"),
@@ -28,6 +29,10 @@ const elements = {
   actionLabel: document.getElementById("action-label"),
   actionInstructions: document.getElementById("action-instructions"),
   actionSubmit: document.getElementById("action-submit"),
+  compileDialog: document.getElementById("compile-dialog"),
+  compileForm: document.getElementById("compile-form"),
+  compileConfirmCopy: document.getElementById("compile-confirm-copy"),
+  compileConfirmButton: document.getElementById("compile-confirm-button"),
   releaseDialog: document.getElementById("release-dialog"),
   releaseForm: document.getElementById("release-form"),
   releaseConfirmCopy: document.getElementById("release-confirm-copy"),
@@ -81,14 +86,25 @@ function toast(message, error = false) {
 
 function statusClass(status) {
   if (status.deployedCurrent) return "is-live";
+  if (status.publishedCurrent) return "is-published";
   if (status.compiledCurrent) return "is-compiled";
   return "";
 }
 
+function safeGitHubUrl(value) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" && url.hostname === "github.com" ? url.toString() : null;
+  } catch {
+    return null;
+  }
+}
+
 function statusLabel(status) {
   if (status.deployedCurrent) return "Live";
-  if (status.compiledCurrent) return "Ready to release";
-  if (status.deployed) return "Changed";
+  if (status.publishedCurrent) return "Published to PR";
+  if (status.compiledCurrent) return "Ready to publish";
+  if (status.deployed || status.published) return "Changed";
   if (status.compiled) return "Needs recompile";
   return "Draft";
 }
@@ -100,8 +116,9 @@ function filteredRules() {
     const matchesSearch = !search || [rule.title, rule.question, rule.ruleNumber, rule.ruleName, rule.group]
       .some((value) => String(value ?? "").toLowerCase().includes(search));
     const matchesFilter = state.filter === "all"
-      || (state.filter === "unpublished" && rule.status.unpublished)
-      || (state.filter === "compiled" && rule.status.compiledCurrent)
+      || (state.filter === "drafts" && !rule.status.compiledCurrent)
+      || (state.filter === "ready" && rule.status.compiledCurrent && !rule.status.publishedCurrent)
+      || (state.filter === "published" && rule.status.publishedCurrent && !rule.status.deployedCurrent)
       || (state.filter === "deployed" && rule.status.deployedCurrent);
     return matchesSearch && matchesFilter;
   });
@@ -110,11 +127,18 @@ function filteredRules() {
 function renderCounts() {
   elements.sidebarTotal.textContent = state.library.counts.total ?? 0;
   document.getElementById("count-all").textContent = state.library.counts.total ?? 0;
-  document.getElementById("count-unpublished").textContent = state.library.counts.unpublished ?? 0;
-  document.getElementById("count-compiled").textContent = state.library.counts.compiled ?? 0;
+  document.getElementById("count-drafts").textContent = state.library.counts.drafts ?? 0;
+  document.getElementById("count-ready").textContent = state.library.counts.ready ?? 0;
+  document.getElementById("count-published").textContent = state.library.counts.published ?? 0;
   document.getElementById("count-deployed").textContent = state.library.counts.deployed ?? 0;
-  elements.releaseButton.textContent = `Release ${state.library.counts.unpublished ?? 0} unpublished`;
-  elements.releaseButton.disabled = state.busy || !(state.library.counts.unpublished > 0);
+  const ready = state.library.counts.ready ?? 0;
+  const drafts = state.library.counts.drafts ?? 0;
+  const configured = Boolean(state.library.publishing?.configured);
+  elements.compileAllButton.textContent = `Compile ${drafts} draft${drafts === 1 ? "" : "s"}`;
+  elements.compileAllButton.disabled = state.busy || drafts === 0;
+  elements.releaseButton.textContent = configured ? `Publish ${ready} ready` : "Publishing not configured";
+  elements.releaseButton.title = configured ? "Create a RulesReady content pull request" : "Configure the RulesReady GitHub repository and token on Render first.";
+  elements.releaseButton.disabled = state.busy || !configured || ready === 0;
 }
 
 function renderList() {
@@ -139,11 +163,15 @@ function renderList() {
 function statusBadges(status) {
   const current = status.deployedCurrent
     ? '<span class="status-badge status-live">Live</span>'
+    : status.publishedCurrent
+      ? '<span class="status-badge status-published">Published to PR · awaiting deployment</span>'
     : status.compiledCurrent
-      ? '<span class="status-badge status-ready">Compiled · ready to release</span>'
+      ? '<span class="status-badge status-ready">Compiled · ready to publish</span>'
       : '<span class="status-badge status-draft">Unpublished changes</span>';
   const history = status.deployed && !status.deployedCurrent
     ? '<span class="status-badge status-muted">Previous version is live</span>'
+    : status.published && !status.publishedCurrent
+      ? '<span class="status-badge status-muted">Previous version was published</span>'
     : "";
   return current + history;
 }
@@ -186,7 +214,33 @@ function renderDetail() {
 
   if (!rule) return;
 
-  const releaseLabel = rule.status.compiledCurrent ? "Release this rule" : "Compile & release";
+  const publishingConfigured = Boolean(state.library.publishing?.configured);
+  const publishDisabled = !publishingConfigured || !rule.status.compiledCurrent || rule.status.publishedCurrent;
+  const publishLabel = rule.status.publishedCurrent
+    ? "Published"
+    : rule.status.compiledCurrent
+      ? "Publish to RulesReady"
+      : "Compile first";
+  const pullRequestUrl = safeGitHubUrl(rule.status.pullRequestUrl);
+  const repositoryState = rule.status.publishedCurrent
+    ? pullRequestUrl
+      ? `<a href="${escapeHtml(pullRequestUrl)}" target="_blank" rel="noopener">PR #${escapeHtml(rule.status.pullRequestNumber)}</a>`
+      : `PR #${escapeHtml(rule.status.pullRequestNumber)}`
+    : rule.status.published
+      ? "Older revision published"
+      : "Not published";
+  const liveState = rule.status.deployedCurrent
+    ? "Current revision"
+    : rule.status.deployed
+      ? "Older revision live"
+      : rule.status.publishedCurrent
+        ? "Awaiting merge and deployment"
+        : "Not live";
+  const verificationState = !rule.status.deploymentVerificationConfigured
+    ? "Not configured"
+    : rule.status.deploymentVerificationAvailable
+      ? formatDate(rule.status.deployedAtUtc)
+      : `Unavailable${rule.status.deploymentVerificationError ? ` · ${rule.status.deploymentVerificationError}` : ""}`;
   elements.detail.innerHTML = `
     <div class="detail-header">
       <div class="detail-title">
@@ -198,15 +252,15 @@ function renderDetail() {
         <button class="button button-ghost" type="button" data-action="question">Edit questions</button>
         <button class="button button-ghost" type="button" data-action="image">Replace artwork</button>
         <button class="button button-secondary" type="button" data-action="compile" ${rule.status.compiledCurrent ? "disabled" : ""}>${rule.status.compiledCurrent ? "Compiled" : "Compile"}</button>
-        <button class="button button-primary" type="button" data-action="deploy" ${rule.status.deployedCurrent ? "disabled" : ""}>${rule.status.deployedCurrent ? "Live" : releaseLabel}</button>
+        <button class="button button-primary" type="button" data-action="publish" ${publishDisabled ? "disabled" : ""}>${publishLabel}</button>
       </div>
     </div>
 
     <div class="release-summary" aria-label="Publishing status">
       <div class="release-summary-item"><span>Working version</span><strong>${rule.status.compiledCurrent ? "Compiled" : "Draft changes"}</strong></div>
       <div class="release-summary-item"><span>Last compiled</span><strong>${escapeHtml(formatDate(rule.status.compiledAtUtc))}</strong></div>
-      <div class="release-summary-item"><span>Public version</span><strong>${rule.status.deployedCurrent ? "Current" : rule.status.deployed ? "Older version live" : "Not released"}</strong></div>
-      <div class="release-summary-item"><span>Last released</span><strong>${escapeHtml(formatDate(rule.status.deployedAtUtc))}</strong></div>
+      <div class="release-summary-item"><span>RulesReady repository</span><strong>${repositoryState}</strong></div>
+      <div class="release-summary-item"><span>Live site</span><strong>${escapeHtml(liveState)}</strong><small>Checked: ${escapeHtml(verificationState)}</small></div>
     </div>
 
     <div class="detail-grid">
@@ -216,7 +270,7 @@ function renderDetail() {
           ${rule.imageUrl
             ? `<div class="image-stage"><img src="${escapeHtml(rule.imageUrl)}" alt="${escapeHtml(rule.metadata.imageAlt ?? rule.title)}"></div>`
             : '<div class="image-stage empty-state"><p>No illustration is available.</p></div>'}
-          <div class="image-caption"><span>Working-library asset</span><strong>${rule.status.deployedCurrent ? "Published" : "Not yet public"}</strong></div>
+          <div class="image-caption"><span>Working-library asset</span><strong>${rule.status.deployedCurrent ? "Live" : rule.status.publishedCurrent ? "Published to PR" : "Not public"}</strong></div>
         </article>
 
         <details class="panel prompt-disclosure">
@@ -290,13 +344,13 @@ function openActionDialog(type) {
 
   if (type === "question") {
     elements.actionTitle.textContent = "Revise this question";
-    elements.actionCopy.textContent = "Describe what should change. New versioned standard and junior-friendly question files will be created; the live rule will not change until you release it.";
+    elements.actionCopy.textContent = "Describe what should change. New versioned standard and junior-friendly question files will be created; the live rule will not change until a release PR is merged and deployed.";
     elements.actionLabel.textContent = "Revision instructions";
     elements.actionSubmit.textContent = "Generate revisions";
     elements.actionInstructions.placeholder = "Make the situation less ambiguous and simplify answer B…";
   } else {
     elements.actionTitle.textContent = "Generate a new image";
-    elements.actionCopy.textContent = "Describe the correction or replacement. A new versioned illustration and prompt will be created without changing the live rule.";
+    elements.actionCopy.textContent = "Describe the correction or replacement. A new versioned illustration and prompt will be created without changing the live rule until it is compiled, published, and deployed.";
     elements.actionLabel.textContent = "Image instructions";
     elements.actionSubmit.textContent = "Generate image";
     elements.actionInstructions.placeholder = "Move the ball closer to the bunker edge and remove the second flag…";
@@ -330,10 +384,13 @@ function renderActivity() {
         ? Math.max(5, Math.round((job.processed / job.total) * 100))
         : 8;
     const folderName = job.result?.folderName;
+    const pullRequestUrl = safeGitHubUrl(job.result?.pullRequestUrl);
+    const pullRequestNumber = job.result?.pullRequestNumber;
     const details = job.error ?? job.errors?.[0] ?? job.message ?? "Working…";
     const actions = isFinishedJob(job) ? `
       <div class="activity-actions">
         ${folderName ? `<button type="button" data-open-job="${escapeHtml(folderName)}">Open draft</button>` : ""}
+        ${pullRequestUrl ? `<a href="${escapeHtml(pullRequestUrl)}" target="_blank" rel="noopener">Open PR${pullRequestNumber ? ` #${escapeHtml(pullRequestNumber)}` : ""}</a>` : ""}
         <button type="button" data-dismiss-job="${escapeHtml(job.id)}">Dismiss</button>
       </div>
     ` : "";
@@ -382,6 +439,25 @@ async function watchJob(job, title) {
   return current;
 }
 
+async function runPublication(endpoint, title) {
+  if (state.busy) return;
+  state.busy = true;
+  renderCounts();
+
+  try {
+    const job = await api(endpoint, { method: "POST" });
+    const completed = await watchJob(job, title);
+    await loadLibrary(state.selectedFolder);
+    const number = completed.result?.pullRequestNumber;
+    toast(number ? `RulesReady pull request #${number} is ready for review.` : "The RulesReady release pull request is ready for review.");
+  } catch (error) {
+    toast(error.message, true);
+  } finally {
+    state.busy = false;
+    renderCounts();
+  }
+}
+
 elements.list.addEventListener("click", (event) => {
   const button = event.target.closest("[data-folder]");
   if (button) void selectRule(button.dataset.folder);
@@ -409,8 +485,11 @@ elements.detail.addEventListener("click", (event) => {
     openActionDialog(button.dataset.action);
   } else if (button.dataset.action === "compile") {
     void runRuleAction("Compile", () => api(`/api/rules/${encodeURIComponent(folder)}/compile`, { method: "POST" }));
-  } else if (button.dataset.action === "deploy") {
-    void runRuleAction("Release", () => api(`/api/rules/${encodeURIComponent(folder)}/deploy`, { method: "POST" }));
+  } else if (button.dataset.action === "publish") {
+    void runPublication(
+      `/api/rules/${encodeURIComponent(folder)}/publish`,
+      `Publishing · ${state.detail.title}`
+    );
   }
 });
 
@@ -489,9 +568,39 @@ elements.actionForm.addEventListener("submit", async (event) => {
   }
 });
 
+elements.compileAllButton.addEventListener("click", () => {
+  const count = state.library.counts.drafts ?? 0;
+  elements.compileConfirmCopy.textContent = `${count} draft rule${count === 1 ? "" : "s"} will be validated and their selected artwork converted into optimized WebP release assets.`;
+  elements.compileDialog.showModal();
+});
+
+elements.compileForm.addEventListener("submit", async (event) => {
+  if (event.submitter?.value === "cancel") return;
+  event.preventDefault();
+  elements.compileConfirmButton.disabled = true;
+  elements.compileDialog.close();
+  state.busy = true;
+  renderCounts();
+
+  try {
+    const job = await api("/api/compilations/drafts", { method: "POST" });
+    await watchJob(job, "Compiling draft rules");
+    toast("Draft compilation complete. The successful rules are ready to publish.");
+  } catch (error) {
+    toast(error.message, true);
+  } finally {
+    await loadLibrary(state.selectedFolder).catch((error) => toast(error.message, true));
+    elements.compileConfirmButton.disabled = false;
+    state.busy = false;
+    renderCounts();
+  }
+});
+
 elements.releaseButton.addEventListener("click", () => {
-  const count = state.library.counts.unpublished ?? 0;
-  elements.releaseConfirmCopy.textContent = `${count} unpublished rule${count === 1 ? "" : "s"} will be compiled and made available to RulesReady.golf.`;
+  const count = state.library.counts.ready ?? 0;
+  const repository = state.library.publishing?.repository ?? "the configured RulesReady repository";
+  const branch = state.library.publishing?.targetBranch ?? "main";
+  elements.releaseConfirmCopy.textContent = `${count} compiled rule${count === 1 ? "" : "s"} will be committed to a new branch in ${repository} and proposed against ${branch}.`;
   elements.releaseDialog.showModal();
 });
 
@@ -500,20 +609,10 @@ elements.releaseForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   elements.releaseConfirmButton.disabled = true;
   elements.releaseDialog.close();
-  state.busy = true;
-  renderCounts();
-
   try {
-    const job = await api("/api/releases/unpublished", { method: "POST" });
-    await watchJob(job, "Releasing unpublished rules");
-    await loadLibrary(state.selectedFolder);
-    toast("The library release is live.");
-  } catch (error) {
-    toast(error.message, true);
+    await runPublication("/api/publications/ready", "Publishing compiled rules to RulesReady");
   } finally {
     elements.releaseConfirmButton.disabled = false;
-    state.busy = false;
-    renderCounts();
   }
 });
 

@@ -4,35 +4,45 @@ This internal support service maintains and publishes the illustrated Rules of G
 
 ## Library lifecycle
 
-Each rule has three versions:
+Each rule has four lifecycle stages:
 
 1. **Working** (`Output/<rule>`): editable metadata, versioned questions, prompts, and illustrations.
-2. **Compiled** (`compiled/<rule>`): the current standard and junior questions packaged with the selected image and prompt.
-3. **Published** (`published/rules/<rule>/<revision>`): an immutable copy of the released compiled rule.
+2. **Compiled** (`compiled/<rule>`): a validated canonical rule package containing the selected questions, prompt, and an optimized WebP illustration.
+3. **Published**: the compiled revision has been committed to a release branch in the RulesReady GitHub repository and included in a pull request.
+4. **Live**: the public RulesReady manifest reports the same source revision after that pull request has been merged and deployed.
 
 The portal fingerprints the files selected for a rule. A rule is:
 
-- **Draft / unpublished** when its current fingerprint has never been released.
-- **Compiled** when the staged package matches the current fingerprint.
-- **Live** when the public release manifest points to the current fingerprint.
-- **Changed** when an older version is live but the working files have changed.
+- **Draft** when its working fingerprint does not match a current compiler package.
+- **Ready** when the validated compiler package matches the working fingerprint.
+- **Published** when that fingerprint has been pushed to the configured RulesReady release pull request.
+- **Live** only when the configured public manifest reports that fingerprint.
+- **Changed** when an older revision was published or deployed but the working files have changed.
 
-The public library is available without portal credentials at:
+Compilation never publishes content. Publishing never marks content live. These are deliberately separate operations.
 
-- `/published/library.json`
-- `/published/manifest.json`
-- `/published/<rule-folder>/metadata.json`
-- `/published/<rule-folder>/illustration.png`
-- `/published/<rule-folder>/final-prompt.txt`
+The publisher adds or updates this structure in the RulesReady repository (the root is configurable):
+
+```text
+public/content/rules/
+  library.json
+  <rule-folder>/
+    rule.json
+    image-<revision>.webp
+```
+
+Original PNG files, prompts, and superseded working versions remain on the Content Studio disk and are not copied into the website repository.
+The local `compiled/` directory is a disposable build cache and is ignored by Git.
 
 ## Portal features
 
-- Search and filter all, unpublished, compiled, or live rules.
+- Search and filter drafts, compiled rules ready to publish, rules in a release PR, or verified live rules.
 - Review standard and junior-friendly questions and the current illustration.
 - Queue multiple rules from the **Add rule** dialog; each draft is generated independently and remains visible in the background-activity stack.
 - Generate versioned question revisions and replacement illustrations.
-- Compile or release one rule.
-- Compile and release every unpublished rule as a background job with progress.
+- Compile one rule or compile every draft as a background job. Compilation validates the quiz data and creates the optimized website image.
+- Publish one compiled rule or combine every ready rule into one GitHub release branch and pull request.
+- Show the pull request link and distinguish it from a revision verified on the live RulesReady website.
 - Protect the maintenance console and OpenAI-powered routes with an HTML sign-in page and a signed, HTTP-only session cookie.
 
 ## Local development
@@ -66,6 +76,11 @@ Copy `.env.example` values into your environment. Do not commit secrets.
 | `PORTAL_USERNAME` | Optional; defaults to `admin`. |
 | `DATA_ROOT` | Root of mutable data. Render uses `/var/data`. |
 | `OUTPUT_DIR`, `INPUT_DIR`, `COMPILED_DIR`, `PUBLISHED_DIR` | Optional data-directory overrides. |
+| `RULESREADY_GITHUB_REPOSITORY` | Destination repository in `owner/repository` format. |
+| `RULESREADY_GITHUB_TOKEN` | Fine-grained token scoped to the destination repository with Contents and Pull requests write access. |
+| `RULESREADY_GITHUB_BRANCH` | Pull-request target branch; defaults to `main`. |
+| `RULESREADY_CONTENT_PATH` | Repository-relative library root; defaults to `public/content/rules`. |
+| `RULESREADY_LIVE_MANIFEST_URL` | Public URL of the deployed `library.json`, used to verify that revisions are genuinely live. |
 | `PORT` | HTTP port; supplied automatically by Render. |
 | `OPENAI_QUESTION_MODEL`, `OPENAI_JUNIOR_TEXT_MODEL`, `OPENAI_IMAGE_MODEL` | Optional model overrides. |
 
@@ -77,17 +92,19 @@ The repository is a monorepo. The included `render.yaml` defines:
 - Node `24.14.1`;
 - the `/healthz` health check;
 - a 5 GB persistent disk mounted at `/var/data`;
-- prompted secrets for `OPENAI_API_KEY` and `PORTAL_PASSWORD`.
+- prompted secrets for `OPENAI_API_KEY`, `PORTAL_PASSWORD`, and `RULESREADY_GITHUB_TOKEN`;
+- prompted RulesReady repository and live-manifest settings.
 
-In Render, create a Blueprint from `botgc-comms/Miscelaneous` and set the Blueprint path to `Rules Quiz Generator/render.yaml`. Render prompts for both secrets during initial setup.
+In Render, create a Blueprint from `botgc-comms/Miscelaneous` and set the Blueprint path to `Rules Quiz Generator/render.yaml`. Render prompts for the secrets and destination-specific repository values during initial setup.
 
-On the first start, the app copies the committed `Output` and `Input` seed libraries to the persistent disk. Subsequent edits are made only on that disk and survive restarts and deploys. Render persistent disks require a paid web service and restrict the service to one instance.
+On the first start, the app copies the committed `Output` and `Input` seed libraries to the persistent disk. Subsequent drafts and compiled packages are made only on that disk and survive restarts and deploys. Render persistent disks require a paid web service and restrict the service to one instance.
 
-The Blueprint currently deploys the `codex/render-maintenance-portal` feature branch. Change `branch` to `main` after the feature is merged.
+Create a fine-grained GitHub token for the RulesReady repository with **Contents: Read and write** and **Pull requests: Read and write**. The Content Studio never merges its own pull request or pushes directly to `main`.
 
 ## Operational notes
 
-- Portal changes do not alter Git. Back up the Render disk periodically using Render snapshots or a file transfer.
-- A release job continues after the initiating HTTP request returns, but an app restart interrupts an in-progress job. Successfully released rules remain live and can be resumed by running **Release unpublished** again.
-- The initial release recompiles the legacy library because older compiled metadata has no source fingerprint.
+- Drafts are intentionally not committed to Git. Back up the Render disk periodically using Render snapshots or a file transfer.
+- Compilation and publication jobs continue after the initiating HTTP request returns, but an app restart interrupts an in-progress job. Completed compiler packages and recorded pull requests remain intact.
+- The initial publication requires recompilation because older packages contain PNG files and predate the validating WebP compiler.
+- Publication status is stored in `/var/data/published/publication-manifest.json`. Live status is never inferred from that local record; it is checked against `RULESREADY_LIVE_MANIFEST_URL`.
 - The legacy generated review page and scripts remain available for historical use but are no longer part of production startup.

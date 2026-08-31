@@ -34,8 +34,9 @@
 
           <div class="filters" id="rule-filters" aria-label="Filter rules">
             <button class="filter is-active" type="button" data-filter="all">All <span id="count-all">–</span></button>
-            <button class="filter" type="button" data-filter="unpublished">Needs release <span id="count-unpublished">–</span></button>
-            <button class="filter" type="button" data-filter="compiled">Compiled <span id="count-compiled">–</span></button>
+            <button class="filter" type="button" data-filter="drafts">Drafts <span id="count-drafts">–</span></button>
+            <button class="filter" type="button" data-filter="ready">Ready <span id="count-ready">–</span></button>
+            <button class="filter" type="button" data-filter="published">Published <span id="count-published">–</span></button>
             <button class="filter" type="button" data-filter="deployed">Live <span id="count-deployed">–</span></button>
           </div>
         </div>
@@ -46,7 +47,7 @@
 
         <footer class="sidebar-footer">
           <span class="environment-dot" aria-hidden="true"></span>
-          <div><strong>Admin workspace</strong><span>Changes require a release</span></div>
+          <div><strong>Admin workspace</strong><span>Published through reviewed pull requests</span></div>
         </footer>
       </aside>
 
@@ -58,7 +59,8 @@
             <p>Maintain the content served to the RulesReady website.</p>
           </div>
           <div class="topbar-actions">
-            <button class="button button-secondary" id="release-button" type="button">Release unpublished</button>
+            <button class="button button-ghost" id="compile-all-button" type="button">Compile drafts</button>
+            <button class="button button-secondary" id="release-button" type="button">Publish ready</button>
             <button class="button button-primary" id="add-rule-button" type="button"><span aria-hidden="true">＋</span> Add rule</button>
             <form action="/logout" method="post">
               <button class="account-button" type="submit" title="Sign out">
@@ -132,23 +134,44 @@
       </form>
     </dialog>
 
+    <dialog id="compile-dialog" class="dialog dialog-compact">
+      <form method="dialog" class="dialog-card" id="compile-form">
+        <div class="dialog-heading">
+          <div>
+            <p class="eyebrow">Prepare library</p>
+            <h2>Compile draft rules?</h2>
+          </div>
+          <button class="icon-button" value="cancel" type="submit" aria-label="Close dialog">×</button>
+        </div>
+        <p class="dialog-copy" id="compile-confirm-copy">Draft rules will be validated and their selected artwork optimized for the website.</p>
+        <div class="release-warning">
+          <span aria-hidden="true">✓</span>
+          <p><strong>This does not publish anything.</strong> Compilation only prepares deterministic release packages on the Content Studio disk.</p>
+        </div>
+        <div class="dialog-actions">
+          <button class="button button-ghost" value="cancel" type="submit">Not yet</button>
+          <button class="button button-primary" id="compile-confirm-button" value="default" type="submit">Compile drafts</button>
+        </div>
+      </form>
+    </dialog>
+
     <dialog id="release-dialog" class="dialog dialog-compact">
       <form method="dialog" class="dialog-card" id="release-form">
         <div class="dialog-heading">
           <div>
             <p class="eyebrow">Publish library</p>
-            <h2>Release unpublished rules?</h2>
+            <h2>Publish compiled rules?</h2>
           </div>
           <button class="icon-button" value="cancel" type="submit" aria-label="Close dialog">×</button>
         </div>
-        <p class="dialog-copy" id="release-confirm-copy">The unpublished rules will be compiled and made available to RulesReady.golf.</p>
+        <p class="dialog-copy" id="release-confirm-copy">The compiled rules will be committed to a RulesReady release branch.</p>
         <div class="release-warning">
           <span aria-hidden="true">↗</span>
-          <p><strong>This changes the public content feed.</strong> Existing live versions remain available until each replacement is ready.</p>
+          <p><strong>This creates a GitHub pull request.</strong> Nothing is marked Live until that change is merged, deployed, and confirmed by the RulesReady manifest.</p>
         </div>
         <div class="dialog-actions">
-          <button class="button button-ghost" value="cancel" type="submit">Keep as drafts</button>
-          <button class="button button-primary" id="release-confirm-button" value="default" type="submit">Compile and release</button>
+          <button class="button button-ghost" value="cancel" type="submit">Not yet</button>
+          <button class="button button-primary" id="release-confirm-button" value="default" type="submit">Create release PR</button>
         </div>
       </form>
     </dialog>

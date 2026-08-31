@@ -1,4 +1,4 @@
-import { createHmac, randomUUID, timingSafeEqual } from "node:crypto";
+import { createHmac, timingSafeEqual } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import express, { type NextFunction, type Request, type Response } from "express";
 import path from "node:path";
@@ -7,14 +7,9 @@ import { createQuizFromRuleDescription } from "./createQuizFromRuleDescription.j
 import { getRule, listRules } from "./libraryStore.js";
 import { ensureLibraryData, resolveLibraryPaths, type LibraryPaths } from "./libraryPaths.js";
 import { PortalJobManager, type JobReporter } from "./portalJobs.js";
-import { assertSafeFolderName, assertSafeFileName } from "./quizFiles.js";
+import { publishCompiledRules, repositoryPublishingConfiguration } from "./githubPublisher.js";
+import { assertSafeFolderName } from "./quizFiles.js";
 import { regenerateSingleImage } from "./regenerateSingleImage.js";
-import {
-  deployCompiledRule,
-  publishedRuleFilePath,
-  readReleaseManifest,
-  type ReleasedRule,
-} from "./releaseStore.js";
 import { suggestQuestionEdit } from "./suggestQuestionEdit.js";
 
 const PORT = Number(process.env.PORT ?? "4317");
@@ -171,44 +166,34 @@ function mutationRateLimit(windowMs = 15 * 60_000, limit = 40) {
   };
 }
 
-function publicManifestEntry(entry: ReleasedRule) {
-  const base = `/published/${encodeURIComponent(entry.folderName)}`;
-  return {
-    ...entry,
-    urls: {
-      metadata: `${base}/metadata.json`,
-      illustration: `${base}/illustration.png`,
-      prompt: `${base}/final-prompt.txt`,
-    },
-  };
+async function runReadyPublication(paths: LibraryPaths, reporter: JobReporter): Promise<unknown> {
+  const library = await listRules(paths);
+  const ready = library.rules.filter((rule) => rule.status.compiledCurrent && !rule.status.publishedCurrent);
+  return publishCompiledRules(paths, ready.map((rule) => rule.folderName), {
+    progress: (values) => reporter.update(values),
+  });
 }
 
-async function runLibraryRelease(paths: LibraryPaths, reporter: JobReporter): Promise<unknown> {
+async function runDraftCompilation(paths: LibraryPaths, reporter: JobReporter): Promise<unknown> {
   const library = await listRules(paths);
-  const unpublished = library.rules.filter((rule) => rule.status.unpublished);
-  const releaseId = randomUUID();
-  let released = 0;
+  const drafts = library.rules.filter((rule) => !rule.status.compiledCurrent);
+  let compiled = 0;
   let processed = 0;
+  reporter.update({ total: drafts.length, message: `Preparing to compile ${drafts.length} draft rule${drafts.length === 1 ? "" : "s"}...` });
 
-  reporter.update({ total: unpublished.length, message: `Preparing ${unpublished.length} unpublished rules...` });
-
-  for (const rule of unpublished) {
-    reporter.update({ message: `Compiling ${rule.title}...` });
-
+  for (const rule of drafts) {
+    reporter.update({ message: `Validating and optimizing ${rule.title}...` });
     try {
       await compileFolder(path.join(paths.outputDir, rule.folderName), paths.compiledDir);
-      reporter.update({ message: `Releasing ${rule.title}...` });
-      await deployCompiledRule(paths, rule.folderName, releaseId);
-      released += 1;
+      compiled += 1;
     } catch (error) {
       reporter.addError(`${rule.title}: ${error instanceof Error ? error.message : String(error)}`);
     }
-
     processed += 1;
     reporter.update({ processed });
   }
 
-  return { releaseId, released, requested: unpublished.length };
+  return { compiled, requested: drafts.length };
 }
 
 export async function createPortalApp(paths = resolveLibraryPaths()): Promise<express.Express> {
@@ -273,57 +258,6 @@ export async function createPortalApp(paths = resolveLibraryPaths()): Promise<ex
     res.redirect(303, "/login");
   });
 
-  app.get("/published/manifest.json", async (_req, res, next) => {
-    try {
-      const manifest = await readReleaseManifest(paths);
-      res.json({
-        ...manifest,
-        rules: Object.fromEntries(Object.entries(manifest.rules).map(([key, entry]) => [key, publicManifestEntry(entry)])),
-      });
-    } catch (error) {
-      next(error);
-    }
-  });
-
-  app.get("/published/library.json", async (_req, res, next) => {
-    try {
-      const manifest = await readReleaseManifest(paths);
-      res.json({
-        releaseId: manifest.releaseId,
-        releasedAtUtc: manifest.releasedAtUtc,
-        rules: Object.values(manifest.rules).map(publicManifestEntry),
-      });
-    } catch (error) {
-      next(error);
-    }
-  });
-
-  app.get("/published/:folderName/:fileName", async (req, res, next) => {
-    try {
-      const folderName = assertSafeFolderName(req.params.folderName);
-      const fileName = assertSafeFileName(
-        req.params.fileName,
-        /^(metadata\.json|illustration\.png|final-prompt\.txt)$/
-      );
-      const manifest = await readReleaseManifest(paths);
-      const entry = manifest.rules[folderName];
-
-      if (!entry) {
-        res.status(404).send("Rule has not been released.");
-        return;
-      }
-
-      const key = fileName === "metadata.json" ? "metadata" : fileName === "illustration.png" ? "illustration" : "prompt";
-      res.sendFile(publishedRuleFilePath(paths, entry, key), (error) => {
-        if (error) {
-          next(error);
-        }
-      });
-    } catch (error) {
-      next(error);
-    }
-  });
-
   app.use(portalAuthentication);
   app.use(sameOriginMutation);
   app.use("/assets", express.static(paths.outputDir, { fallthrough: false, index: false }));
@@ -337,7 +271,10 @@ export async function createPortalApp(paths = resolveLibraryPaths()): Promise<ex
   app.get("/api/library", async (_req, res, next) => {
     try {
       res.setHeader("Cache-Control", "no-store");
-      res.json(await listRules(paths));
+      res.json({
+        ...await listRules(paths),
+        publishing: repositoryPublishingConfiguration(),
+      });
     } catch (error) {
       next(error);
     }
@@ -396,6 +333,10 @@ export async function createPortalApp(paths = resolveLibraryPaths()): Promise<ex
 
   app.post("/api/rules/:folderName/compile", changeLimiter, async (req, res, next) => {
     try {
+      if (jobs.findRunning("compile-drafts")) {
+        res.status(409).json({ error: "The draft library is already being compiled." });
+        return;
+      }
       const folderName = assertSafeFolderName(req.params.folderName);
       const result = await compileFolder(path.join(paths.outputDir, folderName), paths.compiledDir);
       res.json({ success: true, ...result });
@@ -404,32 +345,57 @@ export async function createPortalApp(paths = resolveLibraryPaths()): Promise<ex
     }
   });
 
-  app.post("/api/rules/:folderName/deploy", changeLimiter, async (req, res, next) => {
+  app.post("/api/rules/:folderName/publish", changeLimiter, async (req, res, next) => {
     try {
       const folderName = assertSafeFolderName(req.params.folderName);
       const rule = await getRule(paths, folderName);
-
       if (!rule.status.compiledCurrent) {
-        await compileFolder(path.join(paths.outputDir, folderName), paths.compiledDir);
+        throw new Error(`${rule.title} has draft changes and must be compiled before it can be published.`);
+      }
+      if (rule.status.publishedCurrent) {
+        throw new Error(`${rule.title} has already been published.`);
       }
 
-      const released = await deployCompiledRule(paths, folderName);
-      res.json({ success: true, released });
+      const running = jobs.findRunning("publish-rules");
+      if (running) {
+        res.status(409).json({ error: "Another RulesReady publication is already in progress." });
+        return;
+      }
+
+      const job = jobs.start("publish-rules", `Publishing ${rule.title}...`, (reporter) =>
+        publishCompiledRules(paths, [folderName], {
+          progress: (values) => reporter.update(values),
+        })
+      );
+      res.status(202).json(job);
     } catch (error) {
       next(error);
     }
   });
 
-  app.post("/api/releases/unpublished", changeLimiter, (_req, res) => {
-    const running = jobs.findRunning("release-unpublished");
-
+  app.post("/api/compilations/drafts", changeLimiter, (_req, res) => {
+    const running = jobs.findRunning("compile-drafts");
     if (running) {
       res.status(202).json(running);
       return;
     }
 
-    const job = jobs.start("release-unpublished", "Finding unpublished rules...", (reporter) =>
-      runLibraryRelease(paths, reporter)
+    const job = jobs.start("compile-drafts", "Finding draft rules...", (reporter) =>
+      runDraftCompilation(paths, reporter)
+    );
+    res.status(202).json(job);
+  });
+
+  app.post("/api/publications/ready", changeLimiter, (_req, res) => {
+    const running = jobs.findRunning("publish-rules");
+
+    if (running) {
+      res.status(409).json({ error: "Another RulesReady publication is already in progress." });
+      return;
+    }
+
+    const job = jobs.start("publish-rules", "Finding compiled rules ready to publish...", (reporter) =>
+      runReadyPublication(paths, reporter)
     );
     res.status(202).json(job);
   });

@@ -11,16 +11,25 @@ import {
   type AudienceQuestion,
   type SourceSelection,
 } from "./quizFiles.js";
-import { readReleaseManifest, type ReleaseManifest } from "./releaseStore.js";
+import { readLiveDeployment, type LiveDeploymentState } from "./liveDeployment.js";
+import { readPublicationManifest, type PublicationManifest } from "./publicationStore.js";
 
 export type RuleReleaseStatus = {
   sourceRevision: string;
   compiled: boolean;
   compiledCurrent: boolean;
   compiledAtUtc: string | null;
+  published: boolean;
+  publishedCurrent: boolean;
+  publishedAtUtc: string | null;
+  pullRequestNumber: number | null;
+  pullRequestUrl: string | null;
   deployed: boolean;
   deployedCurrent: boolean;
   deployedAtUtc: string | null;
+  deploymentVerificationConfigured: boolean;
+  deploymentVerificationAvailable: boolean;
+  deploymentVerificationError: string | null;
   unpublished: boolean;
 };
 
@@ -52,6 +61,7 @@ export type RuleDetail = RuleSummary & {
 
 type CompiledState = {
   exists: boolean;
+  currentCompiler: boolean;
   revision: string | null;
   compiledAtUtc: string | null;
 };
@@ -68,30 +78,34 @@ async function getCompiledState(paths: LibraryPaths, folderName: string): Promis
   const metadataPath = path.join(paths.compiledDir, folderName, "metadata.json");
 
   if (!await pathExists(metadataPath)) {
-    return { exists: false, revision: null, compiledAtUtc: null };
+    return { exists: false, currentCompiler: false, revision: null, compiledAtUtc: null };
   }
 
   try {
     const metadata = await readJson<any>(metadataPath);
     return {
       exists: true,
+      currentCompiler: metadata?.schemaVersion === 4 && metadata?.imageFileName === "illustration.webp",
       revision: metadata?.compiledFrom?.sourceRevision ?? null,
       compiledAtUtc: metadata?.compiledFrom?.compiledAtUtc ?? null,
     };
   } catch {
-    return { exists: true, revision: null, compiledAtUtc: null };
+    return { exists: true, currentCompiler: false, revision: null, compiledAtUtc: null };
   }
 }
 
 async function getStatus(
   paths: LibraryPaths,
   selection: SourceSelection,
-  manifest: ReleaseManifest
+  publicationManifest: PublicationManifest,
+  liveDeployment: LiveDeploymentState
 ): Promise<RuleReleaseStatus> {
   const sourceRevision = await computeSourceRevision(selection);
   const compiled = await getCompiledState(paths, selection.folderName);
-  const deployed = manifest.rules[selection.folderName];
-  const compiledCurrent = compiled.revision === sourceRevision;
+  const published = publicationManifest.rules[selection.folderName];
+  const deployed = liveDeployment.rules[selection.folderName];
+  const compiledCurrent = compiled.currentCompiler && compiled.revision === sourceRevision;
+  const publishedCurrent = published?.sourceRevision === sourceRevision;
   const deployedCurrent = deployed?.sourceRevision === sourceRevision;
 
   return {
@@ -99,20 +113,29 @@ async function getStatus(
     compiled: compiled.exists,
     compiledCurrent,
     compiledAtUtc: compiled.compiledAtUtc,
+    published: Boolean(published),
+    publishedCurrent,
+    publishedAtUtc: published?.publishedAtUtc ?? null,
+    pullRequestNumber: published?.pullRequestNumber ?? null,
+    pullRequestUrl: published?.pullRequestUrl ?? null,
     deployed: Boolean(deployed),
     deployedCurrent,
-    deployedAtUtc: deployed?.deployedAtUtc ?? null,
-    unpublished: !deployedCurrent,
+    deployedAtUtc: deployedCurrent ? liveDeployment.verifiedAtUtc : null,
+    deploymentVerificationConfigured: liveDeployment.configured,
+    deploymentVerificationAvailable: liveDeployment.available,
+    deploymentVerificationError: liveDeployment.error,
+    unpublished: !publishedCurrent,
   };
 }
 
 async function buildSummary(
   paths: LibraryPaths,
   folder: string,
-  manifest: ReleaseManifest
+  publicationManifest: PublicationManifest,
+  liveDeployment: LiveDeploymentState
 ): Promise<{ summary: RuleSummary; selection: SourceSelection }> {
   const selection = await resolveSourceSelection(folder);
-  const status = await getStatus(paths, selection, manifest);
+  const status = await getStatus(paths, selection, publicationManifest, liveDeployment);
 
   return {
     selection,
@@ -151,22 +174,24 @@ async function mapWithConcurrency<T, R>(
 
 export async function listRules(paths: LibraryPaths): Promise<{
   rules: RuleSummary[];
-  counts: { total: number; unpublished: number; compiled: number; deployed: number };
+  counts: { total: number; drafts: number; ready: number; published: number; deployed: number };
 }> {
-  const [folders, manifest] = await Promise.all([
+  const [folders, publicationManifest, liveDeployment] = await Promise.all([
     findQuestionFolders(paths.outputDir),
-    readReleaseManifest(paths),
+    readPublicationManifest(paths),
+    readLiveDeployment(),
   ]);
   const items = await mapWithConcurrency(folders, 6, async (folder) =>
-    (await buildSummary(paths, folder, manifest)).summary
+    (await buildSummary(paths, folder, publicationManifest, liveDeployment)).summary
   );
 
   return {
     rules: items,
     counts: {
       total: items.length,
-      unpublished: items.filter((item) => item.status.unpublished).length,
-      compiled: items.filter((item) => item.status.compiledCurrent).length,
+      drafts: items.filter((item) => !item.status.compiledCurrent).length,
+      ready: items.filter((item) => item.status.compiledCurrent && !item.status.publishedCurrent).length,
+      published: items.filter((item) => item.status.publishedCurrent && !item.status.deployedCurrent).length,
       deployed: items.filter((item) => item.status.deployedCurrent).length,
     },
   };
@@ -175,8 +200,11 @@ export async function listRules(paths: LibraryPaths): Promise<{
 export async function getRule(paths: LibraryPaths, rawFolderName: string): Promise<RuleDetail> {
   const folderName = assertSafeFolderName(rawFolderName);
   const folder = path.join(paths.outputDir, folderName);
-  const manifest = await readReleaseManifest(paths);
-  const { summary, selection } = await buildSummary(paths, folder, manifest);
+  const [publicationManifest, liveDeployment] = await Promise.all([
+    readPublicationManifest(paths),
+    readLiveDeployment(),
+  ]);
+  const { summary, selection } = await buildSummary(paths, folder, publicationManifest, liveDeployment);
   const imagePrompt = selection.promptPath ? await fs.readFile(selection.promptPath, "utf8") : "";
   const sourceImageName = selection.metadata.sourceImageName;
   const safeSourceImageName = typeof sourceImageName === "string" && path.basename(sourceImageName) === sourceImageName
