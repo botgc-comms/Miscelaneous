@@ -69,14 +69,6 @@
           </div>
         </header>
 
-        <section class="job-banner" id="job-banner" hidden aria-live="polite">
-          <div>
-            <strong id="job-title">Working…</strong>
-            <span id="job-message"></span>
-          </div>
-          <div class="progress-track"><div class="progress-value" id="job-progress"></div></div>
-        </section>
-
         <section class="detail" id="rule-detail">
           <div class="empty-state">
             <div class="empty-icon" aria-hidden="true">R</div>
@@ -87,6 +79,17 @@
       </main>
     </div>
 
+    <aside class="activity-panel" id="activity-panel" hidden aria-label="Background activity">
+      <div class="activity-heading">
+        <div>
+          <span class="section-kicker">Background activity</span>
+          <strong>Rule jobs <span id="activity-count">0</span></strong>
+        </div>
+        <button id="clear-completed-jobs" type="button">Clear finished</button>
+      </div>
+      <div class="activity-list" id="activity-list" aria-live="polite"></div>
+    </aside>
+
     <dialog id="add-rule-dialog" class="dialog">
       <form method="dialog" class="dialog-card" id="add-rule-form">
         <div class="dialog-heading">
@@ -96,7 +99,7 @@
           </div>
           <button class="icon-button" value="cancel" type="submit" aria-label="Close dialog">×</button>
         </div>
-        <p class="dialog-copy">Describe the rule and the teaching situation. Content Studio will create standard and junior-friendly questions plus the first illustration.</p>
+        <p class="dialog-copy">Describe one rule and teaching situation. It will be added to Background activity and processed independently, so you can reopen this dialog and queue more rules while it runs.</p>
         <label class="field">
           <span>Rule description</span>
           <textarea id="new-rule-description" rows="8" required maxlength="8000" placeholder="For example: A player's ball moves after they remove a loose impediment beside it on the putting green…"></textarea>

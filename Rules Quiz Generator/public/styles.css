@@ -203,11 +203,32 @@ button { cursor: pointer; }
 .account-button strong { font-size: 10px; }
 .account-button small { margin-top: 1px; color: var(--muted); font-size: 8px; }
 
-.job-banner { max-width: 1600px; margin: 16px auto 0; padding: 12px 14px; color: var(--forest); border: 1px solid #bad7cd; border-radius: 10px; background: var(--green-soft); }
-.job-banner > div:first-child { display: flex; justify-content: space-between; gap: 16px; font-size: 11px; }
-.job-banner span { color: var(--muted); }
 .progress-track { height: 4px; margin-top: 9px; overflow: hidden; border-radius: 999px; background: rgba(25, 115, 90, .15); }
 .progress-value { width: 8%; height: 100%; border-radius: inherit; background: var(--green); transition: width .3s ease; }
+.progress-track.is-indeterminate .progress-value { width: 34% !important; animation: indeterminate 1.2s ease-in-out infinite; }
+@keyframes indeterminate { 0% { transform: translateX(-110%); } 100% { transform: translateX(310%); } }
+
+.activity-panel { position: fixed; z-index: 25; top: 104px; right: 18px; width: min(370px, calc(100vw - 36px)); max-height: calc(100vh - 122px); overflow: hidden; border: 1px solid var(--line-strong); border-radius: 12px; background: rgba(255, 255, 255, .97); box-shadow: var(--shadow-md); backdrop-filter: blur(14px); }
+.activity-heading { display: flex; justify-content: space-between; gap: 14px; align-items: center; padding: 12px 13px; border-bottom: 1px solid var(--line); background: var(--surface-subtle); }
+.activity-heading strong, .activity-heading .section-kicker { display: block; }
+.activity-heading strong { margin-top: 2px; color: var(--ink-strong); font-size: 12px; }
+.activity-heading strong span { display: inline-grid; place-items: center; min-width: 20px; height: 20px; margin-left: 4px; color: var(--forest); font-size: 9px; border-radius: 999px; background: var(--green-soft); }
+.activity-heading button { padding: 5px 7px; color: var(--green); font-size: 8px; font-weight: 800; border: 0; border-radius: 6px; background: transparent; }
+.activity-heading button:hover:not(:disabled) { background: var(--green-soft); }
+.activity-heading button:disabled { cursor: default; opacity: .4; }
+.activity-list { display: grid; gap: 8px; max-height: calc(100vh - 182px); overflow-x: hidden; overflow-y: auto; padding: 9px; }
+.activity-card { min-width: 0; padding: 11px; border: 1px solid var(--line); border-radius: 9px; background: white; box-shadow: var(--shadow-sm); }
+.activity-card-heading { display: flex; min-width: 0; justify-content: space-between; gap: 10px; align-items: flex-start; }
+.activity-card-heading strong { flex: 1 1 auto; min-width: 0; overflow: hidden; color: var(--ink-strong); font-size: 10px; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+.activity-card-heading span { flex: 0 0 auto; padding: 3px 6px; color: var(--blue); font-size: 7px; font-weight: 850; border-radius: 999px; background: var(--blue-soft); text-transform: uppercase; }
+.activity-card.is-completed .activity-card-heading span { color: var(--green); background: var(--green-soft); }
+.activity-card.is-failed { border-color: #e3c0bc; background: #fffafa; }
+.activity-card.is-failed .activity-card-heading span { color: var(--red); background: var(--red-soft); }
+.activity-card > p { margin: 7px 0 0; color: var(--muted); font-size: 9px; line-height: 1.45; }
+.activity-card.is-failed .progress-value { background: var(--red); }
+.activity-actions { display: flex; justify-content: flex-end; gap: 6px; margin-top: 9px; }
+.activity-actions button { padding: 5px 7px; color: var(--green); font-size: 8px; font-weight: 800; border: 1px solid var(--line); border-radius: 6px; background: white; }
+.activity-actions button:hover { border-color: #b9d2c9; background: var(--green-soft); }
 
 .detail { width: min(100%, 1650px); margin: 0 auto; padding: 22px 26px 50px; }
 .empty-state { max-width: 390px; margin: 18vh auto 0; text-align: center; }
@@ -356,9 +377,8 @@ button { cursor: pointer; }
   .release-summary-item:nth-child(2) { border-right: 0; }
   .release-summary-item:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
   .content-stack:first-child { display: grid; grid-template-columns: 1fr; }
-  .job-banner { margin: 12px 14px 0; }
-  .job-banner > div:first-child { display: block; }
-  .job-banner span { display: block; margin-top: 3px; }
+  .activity-panel { top: auto; right: 10px; bottom: 10px; width: calc(100vw - 20px); max-height: 58vh; }
+  .activity-list { max-height: calc(58vh - 58px); }
   .login-form-panel { padding: 16px; }
   .login-card { padding: 27px 22px; }
 }

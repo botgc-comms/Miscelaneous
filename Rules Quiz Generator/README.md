@@ -29,7 +29,7 @@ The public library is available without portal credentials at:
 
 - Search and filter all, unpublished, compiled, or live rules.
 - Review standard and junior-friendly questions and the current illustration.
-- Add a rule from the **Add new rule** dialog.
+- Queue multiple rules from the **Add rule** dialog; each draft is generated independently and remains visible in the background-activity stack.
 - Generate versioned question revisions and replacement illustrations.
 - Compile or release one rule.
 - Compile and release every unpublished rule as a background job with progress.

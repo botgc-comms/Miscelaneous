@@ -44,41 +44,52 @@ function slugify(value: string): string {
     .replace(/^_+|_+$/g, "");
 }
 
-async function pathExists(filePath: string): Promise<boolean> {
+let folderReservationTail = Promise.resolve();
+
+export async function reserveNextFolderPath(outputDir: string, title: string): Promise<string> {
+  const previousReservation = folderReservationTail;
+  let releaseReservation: () => void = () => {};
+  const reservation = new Promise<void>((resolve) => {
+    releaseReservation = resolve;
+  });
+  folderReservationTail = previousReservation.then(() => reservation);
+
+  await previousReservation;
+
   try {
-    await fs.access(filePath);
-    return true;
-  } catch {
-    return false;
-  }
-}
+    const entries = await fs.readdir(outputDir, { withFileTypes: true });
 
-async function nextFolderPath(outputDir: string, title: string): Promise<string> {
-  const entries = await fs.readdir(outputDir, { withFileTypes: true });
+    const existingNumbers = entries
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => /^ai_(\d{3})_/i.exec(entry.name))
+      .filter((match): match is RegExpExecArray => match !== null)
+      .map((match) => Number(match[1]));
 
-  const existingNumbers = entries
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => /^ai_(\d{3})_/i.exec(entry.name))
-    .filter((match): match is RegExpExecArray => match !== null)
-    .map((match) => Number(match[1]));
+    const nextNumber = existingNumbers.length === 0
+      ? 1
+      : Math.max(...existingNumbers) + 1;
 
-  const nextNumber = existingNumbers.length === 0
-    ? 1
-    : Math.max(...existingNumbers) + 1;
+    const titlePart = slugify(title || "Created_quiz_question");
+    const base = `ai_${String(nextNumber).padStart(3, "0")}_${titlePart}`;
 
-  const titlePart = slugify(title || "Created_quiz_question");
-  const base = `ai_${String(nextNumber).padStart(3, "0")}_${titlePart}`;
+    for (let index = 1; index < 1000; index += 1) {
+      const folderName = index === 1 ? base : `${base}_${index}`;
+      const folderPath = path.join(outputDir, folderName);
 
-  for (let index = 1; index < 1000; index += 1) {
-    const folderName = index === 1 ? base : `${base}_${index}`;
-    const folderPath = path.join(outputDir, folderName);
-
-    if (!await pathExists(folderPath)) {
-      return folderPath;
+      try {
+        await fs.mkdir(folderPath);
+        return folderPath;
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code !== "EEXIST") {
+          throw error;
+        }
+      }
     }
-  }
 
-  throw new Error("Could not create a unique output folder.");
+    throw new Error("Could not create a unique output folder.");
+  } finally {
+    releaseReservation();
+  }
 }
 
 function extractJson<T>(text: string): T {
@@ -226,10 +237,8 @@ export async function createQuizFromRuleDescription(request: {
   }
 
   const metadata = await createStandardMetadata(request.description);
-  const folderPath = await nextFolderPath(request.outputDir, metadata.title);
+  const folderPath = await reserveNextFolderPath(request.outputDir, metadata.title);
   const folderName = path.basename(folderPath);
-
-  await fs.mkdir(folderPath, { recursive: true });
 
   await fs.writeFile(
     path.join(folderPath, "metadata.json"),

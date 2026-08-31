@@ -6,6 +6,7 @@ const state = {
   detail: null,
   action: null,
   busy: false,
+  jobs: new Map(),
 };
 
 const elements = {
@@ -31,10 +32,10 @@ const elements = {
   releaseForm: document.getElementById("release-form"),
   releaseConfirmCopy: document.getElementById("release-confirm-copy"),
   releaseConfirmButton: document.getElementById("release-confirm-button"),
-  jobBanner: document.getElementById("job-banner"),
-  jobTitle: document.getElementById("job-title"),
-  jobMessage: document.getElementById("job-message"),
-  jobProgress: document.getElementById("job-progress"),
+  activityPanel: document.getElementById("activity-panel"),
+  activityList: document.getElementById("activity-list"),
+  activityCount: document.getElementById("activity-count"),
+  clearCompletedJobs: document.getElementById("clear-completed-jobs"),
   toasts: document.getElementById("toast-region"),
 };
 
@@ -305,35 +306,79 @@ function openActionDialog(type) {
   elements.actionInstructions.focus();
 }
 
-function showJob(job, title) {
-  elements.jobBanner.hidden = false;
-  elements.jobTitle.textContent = title;
-  elements.jobMessage.textContent = job.message ?? "Working…";
-  const percent = job.total > 0 ? Math.max(5, Math.round((job.processed / job.total) * 100)) : 8;
-  elements.jobProgress.style.width = `${Math.min(100, percent)}%`;
+function isFinishedJob(job) {
+  return ["completed", "failed"].includes(job.status);
+}
+
+function jobStatusLabel(status) {
+  if (status === "completed") return "Complete";
+  if (status === "failed") return "Needs attention";
+  if (status === "running") return "In progress";
+  return "Queued";
+}
+
+function renderActivity() {
+  const jobs = [...state.jobs.values()].sort((a, b) => b.createdAtUtc.localeCompare(a.createdAtUtc));
+  elements.activityPanel.hidden = jobs.length === 0;
+  elements.activityCount.textContent = jobs.length;
+  elements.clearCompletedJobs.disabled = !jobs.some(isFinishedJob);
+
+  elements.activityList.innerHTML = jobs.map((job) => {
+    const percent = job.status === "completed"
+      ? 100
+      : job.total > 0
+        ? Math.max(5, Math.round((job.processed / job.total) * 100))
+        : 8;
+    const folderName = job.result?.folderName;
+    const details = job.error ?? job.errors?.[0] ?? job.message ?? "Working…";
+    const actions = isFinishedJob(job) ? `
+      <div class="activity-actions">
+        ${folderName ? `<button type="button" data-open-job="${escapeHtml(folderName)}">Open draft</button>` : ""}
+        <button type="button" data-dismiss-job="${escapeHtml(job.id)}">Dismiss</button>
+      </div>
+    ` : "";
+
+    return `
+      <article class="activity-card is-${escapeHtml(job.status)}">
+        <div class="activity-card-heading">
+          <strong>${escapeHtml(job.uiTitle)}</strong>
+          <span>${escapeHtml(jobStatusLabel(job.status))}</span>
+        </div>
+        <p>${escapeHtml(details)}</p>
+        <div class="progress-track${job.total === 0 && !isFinishedJob(job) ? " is-indeterminate" : ""}">
+          <div class="progress-value" style="width:${Math.min(100, percent)}%"></div>
+        </div>
+        ${actions}
+      </article>
+    `;
+  }).join("");
+}
+
+function trackJob(job, title) {
+  const previous = state.jobs.get(job.id);
+  state.jobs.set(job.id, { ...previous, ...job, uiTitle: title ?? previous?.uiTitle ?? "Background job" });
+  renderActivity();
 }
 
 async function watchJob(job, title) {
-  state.busy = true;
-  renderCounts();
   let current = job;
+  trackJob(current, title);
 
-  while (["queued", "running"].includes(current.status)) {
-    showJob(current, title);
-    await new Promise((resolve) => setTimeout(resolve, 1400));
-    current = await api(`/api/jobs/${encodeURIComponent(current.id)}`);
+  try {
+    while (["queued", "running"].includes(current.status)) {
+      await new Promise((resolve) => setTimeout(resolve, 1400));
+      current = await api(`/api/jobs/${encodeURIComponent(current.id)}`);
+      trackJob(current, title);
+    }
+  } catch (error) {
+    trackJob({ ...current, status: "failed", error: error.message, message: error.message }, title);
+    throw error;
   }
-
-  showJob(current, title);
-  state.busy = false;
-  renderCounts();
 
   if (current.status === "failed") {
     throw new Error(current.error ?? current.errors?.[0] ?? "The job did not complete.");
   }
 
-  elements.jobProgress.style.width = "100%";
-  setTimeout(() => { elements.jobBanner.hidden = true; }, 3500);
   return current;
 }
 
@@ -369,6 +414,25 @@ elements.detail.addEventListener("click", (event) => {
   }
 });
 
+elements.activityList.addEventListener("click", (event) => {
+  const openButton = event.target.closest("[data-open-job]");
+  const dismissButton = event.target.closest("[data-dismiss-job]");
+
+  if (openButton) {
+    void selectRule(openButton.dataset.openJob);
+  } else if (dismissButton) {
+    state.jobs.delete(dismissButton.dataset.dismissJob);
+    renderActivity();
+  }
+});
+
+elements.clearCompletedJobs.addEventListener("click", () => {
+  for (const [jobId, job] of state.jobs) {
+    if (isFinishedJob(job)) state.jobs.delete(jobId);
+  }
+  renderActivity();
+});
+
 elements.addRuleButton.addEventListener("click", () => {
   elements.newRuleDescription.value = "";
   elements.addRuleDialog.showModal();
@@ -379,23 +443,27 @@ elements.addRuleForm.addEventListener("submit", async (event) => {
   if (event.submitter?.value === "cancel") return;
   event.preventDefault();
   elements.createRuleButton.disabled = true;
+  const description = elements.newRuleDescription.value.trim();
 
   try {
     const job = await api("/api/rules", {
       method: "POST",
-      body: JSON.stringify({ description: elements.newRuleDescription.value }),
+      body: JSON.stringify({ description }),
     });
     elements.addRuleDialog.close();
-    const completed = await watchJob(job, "Creating new rule");
-    const folderName = completed.result?.folderName;
-    await loadLibrary(folderName);
-    toast("New rule created. It is unpublished until you release it.");
+    elements.newRuleDescription.value = "";
+    const summary = description.length > 52 ? `${description.slice(0, 49)}…` : description;
+    void watchJob(job, `New rule · ${summary}`)
+      .then(async () => {
+        await loadLibrary(state.selectedFolder);
+        toast("A new draft rule is ready. Open it from Background activity.");
+      })
+      .catch((error) => toast(error.message, true));
+    toast("Rule creation queued. You can add another now.");
   } catch (error) {
     toast(error.message, true);
   } finally {
     elements.createRuleButton.disabled = false;
-    state.busy = false;
-    renderCounts();
   }
 });
 
@@ -432,6 +500,8 @@ elements.releaseForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   elements.releaseConfirmButton.disabled = true;
   elements.releaseDialog.close();
+  state.busy = true;
+  renderCounts();
 
   try {
     const job = await api("/api/releases/unpublished", { method: "POST" });
