@@ -396,6 +396,7 @@ app.MapGet("/api/poster/config", async (
         {
             configured = plugins.IntelligentGolf.Enabled &&
                          plugins.IntelligentGolf.Configured &&
+                         plugins.IntelligentGolf.EmailConfigured &&
                          Uri.TryCreate(eventPlaybookApiOptions.Value.BaseUrl, UriKind.Absolute, out _) &&
                          !string.IsNullOrWhiteSpace(eventPlaybookApiOptions.Value.ApiKey),
             destinationName = "Active club members"

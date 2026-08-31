@@ -11,6 +11,8 @@ public static class ApiExceptionResponse
 
         var (status, title) = exception switch
         {
+            IntelligentGolfEmailSenderNotConfiguredException sender =>
+                (StatusCodes.Status501NotImplemented, sender.Message),
             IntelligentGolfFeatureNotConfiguredException feature =>
                 (StatusCodes.Status501NotImplemented, feature.Message),
             IntelligentGolfAuthenticationException =>

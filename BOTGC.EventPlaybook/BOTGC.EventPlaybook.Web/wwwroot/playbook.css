@@ -4507,8 +4507,11 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(198,161,91,.22)!i
 .plugin-dialog-body label.wide,.plugin-dialog-guidance { grid-column: 1/-1; }
 .plugin-dialog-body label>span { color: #52666b; font-size: .56rem; font-weight: 900; letter-spacing: .055em; text-transform: uppercase; }
 .plugin-dialog-body label>span em { color: #87928f; font-style: normal; font-weight: 700; text-transform: none; }
-.plugin-dialog-body input[type="text"],.plugin-dialog-body input[type="url"],.plugin-dialog-body input[type="password"] { width: 100%; min-height: 42px; padding: 8px 10px; border: 1px solid #bacbc7; border-radius: 8px; color: #20363d; background: #fbfcfc; font: inherit; font-size: .72rem; }
+.plugin-dialog-body input[type="text"],.plugin-dialog-body input[type="url"],.plugin-dialog-body input[type="password"],.plugin-dialog-body input[type="email"],.plugin-dialog-body input[type="number"] { width: 100%; min-height: 42px; padding: 8px 10px; border: 1px solid #bacbc7; border-radius: 8px; color: #20363d; background: #fbfcfc; font: inherit; font-size: .72rem; }
 .plugin-dialog-body label>small { color: #778582; font-size: .57rem; line-height: 1.4; }
+.plugin-dialog-subheading { display: grid; grid-column: 1/-1; gap: 3px; margin-top: 3px; padding: 11px 13px; border-left: 3px solid var(--gold); color: #25484f; background: #edf4f2; }
+.plugin-dialog-subheading strong { font: 700 .86rem/1.2 Georgia,"Times New Roman",serif; }
+.plugin-dialog-subheading p { margin: 0; color: #6b7b79; font-size: .59rem; line-height: 1.45; }
 .plugin-dialog-guidance { padding: 10px 12px; border: 1px solid #d7c58d; border-radius: 9px; color: #6c572a; background: #fff9eb; }
 .plugin-dialog-guidance strong { font-size: .65rem; }
 .plugin-dialog-guidance p { margin: 3px 0 0; font-size: .59rem; line-height: 1.45; }
@@ -4530,7 +4533,7 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(198,161,91,.22)!i
 @media (max-width: 620px) {
   .plugin-dialog { width: calc(100vw - 20px); max-height: calc(100vh - 20px); }
   .plugin-dialog-body { grid-template-columns: 1fr; padding: 14px; }
-  .plugin-dialog-body label.wide,.plugin-dialog-guidance { grid-column: auto; }
+  .plugin-dialog-body label.wide,.plugin-dialog-guidance,.plugin-dialog-subheading { grid-column: auto; }
   .plugin-dialog .modal-actions { grid-template-columns: 1fr; padding: 12px 14px 14px; }
   .plugin-dialog .modal-actions>span { display: none; }
   .plugin-dialog .modal-actions .button { width: 100%; }

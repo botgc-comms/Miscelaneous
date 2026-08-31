@@ -40,7 +40,7 @@ Never put live IG or Redis credentials in `appsettings.json`. For local developm
 dotnet user-secrets set "IntelligentGolf:MemberId" "<member-number>"
 dotnet user-secrets set "IntelligentGolf:MemberPassword" "<member-pin>"
 dotnet user-secrets set "IntelligentGolf:AdminPassword" "<admin-password>"
-dotnet user-secrets set "IntelligentGolf:EmailSenderMemberNumber" "<sender-member-number>" # optional when the authenticated plugin member ID is numeric
+dotnet user-secrets set "IntelligentGolf:EmailSenderMemberNumber" "<sender-member-number>"
 dotnet user-secrets set "IntelligentGolf:EmailFromName" "Event Planner"
 dotnet user-secrets set "IntelligentGolf:EmailFromAddress" "events@example.com"
 dotnet user-secrets set "EventPlaybookApi:ApiKey" "<long-random-value>"
@@ -108,4 +108,4 @@ dotnet restore
 dotnet run
 ```
 
-For the Playbook deployment, save the IG login through the Web application's Plugin administration page. Set the same API key on the Web and private API services. Member email requires `IntelligentGolf:EmailFromName` and `IntelligentGolf:EmailFromAddress`; `EmailSenderMemberNumber` is needed only when the plugin member ID is not itself the numeric sender member number. Configure these and any Redis connection through the deployment platform's secret/configuration store. The `IntelligentGolf:MemberId`, `MemberPassword` and `AdminPassword` options remain available only as a legacy/local fallback.
+For the Playbook deployment, save the IG login and member-email sender identity through the Web application's Plugin administration page. Set the same API key on the Web and private API services. The `IntelligentGolf:MemberId`, `MemberPassword`, `AdminPassword`, `EmailSenderMemberNumber`, `EmailFromName` and `EmailFromAddress` options remain available only as legacy/local fallbacks; configure any Redis connection through the deployment platform's secret/configuration store.

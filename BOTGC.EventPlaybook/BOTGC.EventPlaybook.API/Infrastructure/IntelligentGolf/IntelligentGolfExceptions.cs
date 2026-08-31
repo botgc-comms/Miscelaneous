@@ -4,3 +4,6 @@ public sealed class IntelligentGolfAuthenticationException(string message) : Exc
 
 public sealed class IntelligentGolfFeatureNotConfiguredException(string feature)
     : Exception($"The Intelligent Golf {feature} endpoint has not been configured.");
+
+public sealed class IntelligentGolfEmailSenderNotConfiguredException()
+    : Exception("The Intelligent Golf member email sender identity has not been configured in Plugin administration.");

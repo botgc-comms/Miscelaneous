@@ -67,11 +67,5 @@ services:
         sync: false
       - key: IntelligentGolf__BaseUrl
         value: https://www.botgc.co.uk
-      - key: IntelligentGolf__EmailSenderMemberNumber
-        sync: false
-      - key: IntelligentGolf__EmailFromName
-        sync: false
-      - key: IntelligentGolf__EmailFromAddress
-        sync: false
       - key: Cache__Provider
         value: Memory

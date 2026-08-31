@@ -16,6 +16,10 @@ public sealed class IntelligentGolfPluginSummary
     public bool HasMemberId { get; init; }
     public bool HasMemberPassword { get; init; }
     public bool HasAdminPassword { get; init; }
+    public bool EmailConfigured { get; init; }
+    public int? EmailSenderMemberNumber { get; init; }
+    public string? EmailFromName { get; init; }
+    public string? EmailFromAddress { get; init; }
     public DateTimeOffset? UpdatedAtUtc { get; init; }
 }
 
@@ -41,6 +45,9 @@ public sealed class SaveIntelligentGolfPluginRequest
     public string? Pin { get; init; }
     public string? Password { get; init; }
     public string? AdminPassword { get; init; }
+    public string? EmailSenderMemberNumber { get; init; }
+    public string? EmailFromName { get; init; }
+    public string? EmailFromAddress { get; init; }
 
     public string? EffectiveMemberId => MemberId ?? Pin;
     public string? EffectiveMemberPassword => MemberPassword ?? Password;
@@ -50,7 +57,10 @@ public sealed record IntelligentGolfPluginCredentials(
     string SiteUrl,
     string MemberId,
     string MemberPassword,
-    string AdminPassword);
+    string AdminPassword,
+    int? EmailSenderMemberNumber,
+    string? EmailFromName,
+    string? EmailFromAddress);
 
 public sealed class SaveMondayPluginRequest
 {

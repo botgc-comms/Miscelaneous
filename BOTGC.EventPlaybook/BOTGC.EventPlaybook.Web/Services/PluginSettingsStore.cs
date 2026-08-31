@@ -1,3 +1,4 @@
+using System.Net.Mail;
 using System.Text;
 using System.Text.Json;
 using BOTGC.EventPlaybook.Models;
@@ -72,6 +73,9 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
             var encryptedPin = UpdateSecret(current.EncryptedPin, request.EffectiveMemberId, "member ID");
             var encryptedPassword = UpdateSecret(current.EncryptedPassword, request.EffectiveMemberPassword, "member PIN/password");
             var encryptedAdminPassword = UpdateSecret(current.EncryptedAdminPassword, request.AdminPassword, "administrator password");
+            var emailSenderMemberNumber = ResolveMemberNumber(current.EmailSenderMemberNumber, request.EmailSenderMemberNumber);
+            var emailFromName = ResolveSetting(current.EmailFromName, request.EmailFromName, "member email sender name");
+            var emailFromAddress = ResolveEmailAddress(current.EmailFromAddress, request.EmailFromAddress);
 
             var configured = !string.IsNullOrWhiteSpace(siteUrl) &&
                              HasSecret(encryptedPin) &&
@@ -89,6 +93,9 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
                 EncryptedPin = encryptedPin,
                 EncryptedPassword = encryptedPassword,
                 EncryptedAdminPassword = encryptedAdminPassword,
+                EmailSenderMemberNumber = emailSenderMemberNumber,
+                EmailFromName = emailFromName,
+                EmailFromAddress = emailFromAddress,
                 UpdatedAtUtc = DateTimeOffset.UtcNow
             };
             await SaveAsync(document, cancellationToken);
@@ -112,7 +119,17 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
             var memberId = ResolveSecret(current.EncryptedPin, request.EffectiveMemberId);
             var memberPassword = ResolveSecret(current.EncryptedPassword, request.EffectiveMemberPassword);
             var adminPassword = ResolveSecret(current.EncryptedAdminPassword, request.AdminPassword);
-            return CreateCredentials(siteUrl, memberId, memberPassword, adminPassword);
+            var emailSenderMemberNumber = ResolveMemberNumber(current.EmailSenderMemberNumber, request.EmailSenderMemberNumber);
+            var emailFromName = ResolveSetting(current.EmailFromName, request.EmailFromName, "member email sender name");
+            var emailFromAddress = ResolveEmailAddress(current.EmailFromAddress, request.EmailFromAddress);
+            return CreateCredentials(
+                siteUrl,
+                memberId,
+                memberPassword,
+                adminPassword,
+                emailSenderMemberNumber,
+                emailFromName,
+                emailFromAddress);
         }
         finally
         {
@@ -131,7 +148,14 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
             var memberId = ResolveSecret(record.EncryptedPin, null);
             var memberPassword = ResolveSecret(record.EncryptedPassword, null);
             var adminPassword = ResolveSecret(record.EncryptedAdminPassword, null);
-            return CreateCredentials(record.SiteUrl, memberId, memberPassword, adminPassword);
+            return CreateCredentials(
+                record.SiteUrl,
+                memberId,
+                memberPassword,
+                adminPassword,
+                record.EmailSenderMemberNumber,
+                record.EmailFromName,
+                record.EmailFromAddress);
         }
         finally
         {
@@ -278,7 +302,10 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
         string? siteUrl,
         string? memberId,
         string? memberPassword,
-        string? adminPassword)
+        string? adminPassword,
+        int? emailSenderMemberNumber,
+        string? emailFromName,
+        string? emailFromAddress)
     {
         if (string.IsNullOrWhiteSpace(siteUrl) ||
             string.IsNullOrWhiteSpace(memberId) ||
@@ -289,7 +316,14 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
                 "Add the site URL, member ID, member PIN/password and administrator password before enabling Intelligent Golf.");
         }
 
-        return new IntelligentGolfPluginCredentials(siteUrl, memberId, memberPassword, adminPassword);
+        return new IntelligentGolfPluginCredentials(
+            siteUrl,
+            memberId,
+            memberPassword,
+            adminPassword,
+            emailSenderMemberNumber,
+            emailFromName,
+            emailFromAddress);
     }
 
     private static bool HasSecret(string? encryptedValue) => !string.IsNullOrWhiteSpace(encryptedValue);
@@ -316,6 +350,33 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
         }
 
         return normalised;
+    }
+
+    private static string? ResolveSetting(string? currentValue, string? replacement, string label) =>
+        replacement is null ? currentValue : NormaliseSetting(replacement, label);
+
+    private static int? ResolveMemberNumber(int? currentValue, string? replacement)
+    {
+        if (replacement is null) return currentValue;
+        if (string.IsNullOrWhiteSpace(replacement)) return null;
+        return int.TryParse(replacement.Trim(), out var memberNumber) && memberNumber > 0
+            ? memberNumber
+            : throw new ArgumentException("The member email sender member number must be a positive whole number.");
+    }
+
+    private static string? ResolveEmailAddress(string? currentValue, string? replacement)
+    {
+        if (replacement is null) return currentValue;
+        var normalised = NormaliseSetting(replacement, "member email sender address");
+        if (normalised is null) return null;
+        try
+        {
+            return new MailAddress(normalised).Address;
+        }
+        catch (FormatException)
+        {
+            throw new ArgumentException("Enter a valid member email sender address.");
+        }
     }
 
     private async Task<PluginSettingsDocument> LoadAsync(CancellationToken cancellationToken)
@@ -358,6 +419,13 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
         HasMemberId = HasSecret(record?.EncryptedPin),
         HasMemberPassword = HasSecret(record?.EncryptedPassword),
         HasAdminPassword = HasSecret(record?.EncryptedAdminPassword),
+        EmailConfigured = record is not null &&
+                          record.EmailSenderMemberNumber > 0 &&
+                          !string.IsNullOrWhiteSpace(record.EmailFromName) &&
+                          !string.IsNullOrWhiteSpace(record.EmailFromAddress),
+        EmailSenderMemberNumber = record?.EmailSenderMemberNumber,
+        EmailFromName = record?.EmailFromName,
+        EmailFromAddress = record?.EmailFromAddress,
         UpdatedAtUtc = record?.UpdatedAtUtc
     };
 
@@ -373,7 +441,7 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
 
     private sealed class PluginSettingsDocument
     {
-        public int Version { get; init; } = 1;
+        public int Version { get; init; } = 2;
         public IntelligentGolfPluginRecord? IntelligentGolf { get; set; }
         public MondayPluginRecord? Monday { get; set; }
     }
@@ -385,6 +453,9 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
         public string? EncryptedPin { get; init; }
         public string? EncryptedPassword { get; init; }
         public string? EncryptedAdminPassword { get; init; }
+        public int? EmailSenderMemberNumber { get; init; }
+        public string? EmailFromName { get; init; }
+        public string? EmailFromAddress { get; init; }
         public DateTimeOffset? UpdatedAtUtc { get; set; }
     }
 

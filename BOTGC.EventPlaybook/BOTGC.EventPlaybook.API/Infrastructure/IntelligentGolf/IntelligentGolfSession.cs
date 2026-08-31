@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using System.Net.Mail;
 using BOTGC.EventPlaybook.API.Options;
 using Microsoft.Extensions.Options;
 
@@ -33,6 +34,26 @@ public sealed class IntelligentGolfSession(
     public string BaseUrl => (_runtimeCredentials?.BaseUrl ?? options.Value.BaseUrl).TrimEnd('/') + "/";
 
     public string? MemberId => (_runtimeCredentials?.MemberId ?? options.Value.MemberId)?.Trim();
+
+    public IntelligentGolfEmailSenderIdentity EmailSender
+    {
+        get
+        {
+            var runtime = _runtimeCredentials;
+            var settings = options.Value;
+            var memberNumber = runtime?.EmailSenderMemberNumber is > 0
+                ? runtime.EmailSenderMemberNumber
+                : settings.EmailSenderMemberNumber > 0
+                    ? settings.EmailSenderMemberNumber
+                    : int.TryParse(runtime?.MemberId ?? settings.MemberId, out var authenticatedMemberNumber)
+                        ? authenticatedMemberNumber
+                        : null;
+            return new IntelligentGolfEmailSenderIdentity(
+                memberNumber,
+                FirstValue(runtime?.EmailFromName, settings.EmailFromName),
+                FirstValue(runtime?.EmailFromAddress, settings.EmailFromAddress));
+        }
+    }
 
     public async Task<IntelligentGolfSessionGrant> AuthenticateAsync(
         IntelligentGolfCredentials credentials,
@@ -182,7 +203,10 @@ public sealed class IntelligentGolfSession(
                 settings.BaseUrl,
                 settings.MemberId,
                 settings.MemberPassword,
-                settings.AdminPassword);
+                settings.AdminPassword,
+                settings.EmailSenderMemberNumber > 0 ? settings.EmailSenderMemberNumber : null,
+                settings.EmailFromName,
+                settings.EmailFromAddress);
     }
 
     private static IntelligentGolfCredentials NormaliseCredentials(IntelligentGolfCredentials credentials)
@@ -201,10 +225,29 @@ public sealed class IntelligentGolfSession(
             throw new ArgumentException("Member ID, member PIN/password and administrator password are required.");
         }
 
+        var emailFromAddress = credentials.EmailFromAddress?.Trim();
+        if (!string.IsNullOrWhiteSpace(emailFromAddress))
+        {
+            try
+            {
+                emailFromAddress = new MailAddress(emailFromAddress).Address;
+            }
+            catch (FormatException)
+            {
+                throw new ArgumentException("The member email sender address is invalid.");
+            }
+        }
+
         return new IntelligentGolfCredentials(
             baseUrl,
             memberId,
             credentials.MemberPassword,
-            credentials.AdminPassword);
+            credentials.AdminPassword,
+            credentials.EmailSenderMemberNumber is > 0 ? credentials.EmailSenderMemberNumber : null,
+            credentials.EmailFromName?.Trim(),
+            emailFromAddress);
     }
+
+    private static string? FirstValue(params string?[] values) =>
+        values.FirstOrDefault(value => !string.IsNullOrWhiteSpace(value))?.Trim();
 }

@@ -87,7 +87,10 @@ public sealed class IntelligentGolfApiSessionClient(
             baseUrl = credentials.SiteUrl,
             memberId = credentials.MemberId,
             memberPassword = credentials.MemberPassword,
-            adminPassword = credentials.AdminPassword
+            adminPassword = credentials.AdminPassword,
+            emailSenderMemberNumber = credentials.EmailSenderMemberNumber,
+            emailFromName = credentials.EmailFromName,
+            emailFromAddress = credentials.EmailFromAddress
         });
 
         HttpResponseMessage response;

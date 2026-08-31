@@ -51,6 +51,7 @@ public interface IIntelligentGolfSession
     IntelligentGolfSessionStatus Status { get; }
     string BaseUrl { get; }
     string? MemberId { get; }
+    IntelligentGolfEmailSenderIdentity EmailSender { get; }
 
     Task<IntelligentGolfSessionGrant> AuthenticateAsync(
         IntelligentGolfCredentials credentials,
@@ -67,7 +68,15 @@ public sealed record IntelligentGolfCredentials(
     string BaseUrl,
     string MemberId,
     string MemberPassword,
-    string AdminPassword);
+    string AdminPassword,
+    int? EmailSenderMemberNumber = null,
+    string? EmailFromName = null,
+    string? EmailFromAddress = null);
+
+public sealed record IntelligentGolfEmailSenderIdentity(
+    int? MemberNumber,
+    string? FromName,
+    string? FromAddress);
 
 public sealed record IntelligentGolfSessionGrant(
     string SessionToken,

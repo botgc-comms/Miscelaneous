@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: botgc-trophy-archive
+    runtime: docker
+    region: frankfurt
+    plan: 0.5c-512mb
+    rootDir: Trophy.Catalogue
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    numInstances: 1
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: DATA_PATH
+        value: /var/data
+      - key: APP_PASSWORD
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-5.6-terra
+    disk:
+      name: trophy-archive-data
+      mountPath: /var/data
+      sizeGB: 5

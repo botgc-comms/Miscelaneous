@@ -1,0 +1,12 @@
+{
+  "name": "BOTGC Trophy Archive",
+  "short_name": "Trophies",
+  "description": "Capture and verify the winners engraved on Burton-on-Trent Golf Club trophies.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f2e9",
+  "theme_color": "#0a2a21",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

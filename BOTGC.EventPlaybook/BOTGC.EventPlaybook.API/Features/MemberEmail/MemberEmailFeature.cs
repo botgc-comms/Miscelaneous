@@ -52,16 +52,12 @@ public sealed class SendMemberEmailsHandler(
         }
 
         var settings = options.Value;
-        var senderMemberNumber = settings.EmailSenderMemberNumber > 0
-            ? settings.EmailSenderMemberNumber
-            : int.TryParse(session.MemberId, out var authenticatedMemberNumber)
-                ? authenticatedMemberNumber
-                : 0;
-        if (senderMemberNumber <= 0 ||
-            string.IsNullOrWhiteSpace(settings.EmailFromName) ||
-            string.IsNullOrWhiteSpace(settings.EmailFromAddress))
+        var sender = session.EmailSender;
+        if (sender.MemberNumber is null or <= 0 ||
+            string.IsNullOrWhiteSpace(sender.FromName) ||
+            string.IsNullOrWhiteSpace(sender.FromAddress))
         {
-            throw new IntelligentGolfFeatureNotConfiguredException("email sender");
+            throw new IntelligentGolfEmailSenderNotConfiguredException();
         }
 
         var pathTemplate = settings.Endpoints.SendEmailPathTemplate;
@@ -72,7 +68,7 @@ public sealed class SendMemberEmailsHandler(
 
         var path = pathTemplate.Replace(
             "{senderMemberNumber}",
-            senderMemberNumber.ToString(),
+            sender.MemberNumber.Value.ToString(),
             StringComparison.OrdinalIgnoreCase);
 
         var recipients = request.RecipientEmails
@@ -95,8 +91,8 @@ public sealed class SendMemberEmailsHandler(
                     new Dictionary<string, string>
                     {
                         ["email_subject"] = request.Subject,
-                        ["email_fromname"] = settings.EmailFromName,
-                        ["email_fromaddress"] = settings.EmailFromAddress,
+                        ["email_fromname"] = sender.FromName,
+                        ["email_fromaddress"] = sender.FromAddress,
                         ["recipient"] = recipient,
                         ["email_content"] = bodyHtml,
                         ["email_preview_to"] = recipient

@@ -18,7 +18,10 @@ public sealed partial class IntelligentGolfLoginService(
                 settings.BaseUrl,
                 settings.MemberId,
                 settings.MemberPassword,
-                settings.AdminPassword),
+                settings.AdminPassword,
+                settings.EmailSenderMemberNumber > 0 ? settings.EmailSenderMemberNumber : null,
+                settings.EmailFromName,
+                settings.EmailFromAddress),
             cancellationToken);
     }
 

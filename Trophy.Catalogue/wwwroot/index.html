@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a2a21">
+  <meta name="description" content="Build and verify the winners archive for Burton-on-Trent Golf Club's historic trophies.">
+  <meta property="og:title" content="Trophy Archive · Burton-on-Trent Golf Club">
+  <meta property="og:description" content="Preserving every name. Every year.">
+  <meta property="og:image" content="/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Trophy Archive · Burton-on-Trent Golf Club">
+  <meta name="twitter:description" content="Preserving every name. Every year.">
+  <meta name="twitter:image" content="/og.png">
+  <title>Trophy Archive · Burton-on-Trent Golf Club</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="club-mark" href="#catalogue" aria-label="Go to trophy catalogue">
+        <span class="club-monogram">B</span>
+        <span><strong>Burton-on-Trent</strong><small>Golf Club · Trophy Archive</small></span>
+      </a>
+      <div class="header-actions">
+        <a class="export-link" href="/api/export.csv" download>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M5 21h14"/></svg>
+          <span>Export</span>
+        </a>
+        <button id="logout-button" class="icon-button" aria-label="Sign out" title="Sign out">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5M15 12H3M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <main id="catalogue-view" class="view catalogue-view">
+      <section class="catalogue-heading">
+        <div>
+          <p class="eyebrow">Club collection</p>
+          <h1>Choose a trophy</h1>
+          <p class="intro">Photograph its engraving and build a verified list of winners.</p>
+        </div>
+        <div class="collection-progress" aria-label="Archive progress">
+          <strong id="complete-count">—</strong><span>of <b id="total-count">—</b><br>catalogued</span>
+        </div>
+      </section>
+
+      <section class="catalogue-tools" aria-label="Catalogue filters">
+        <label class="search-box">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+          <span class="sr-only">Search trophies</span>
+          <input id="search-input" type="search" placeholder="Search by name or number" autocomplete="off">
+        </label>
+        <div class="filter-row" role="group" aria-label="Filter trophies">
+          <button class="filter-chip is-active" data-filter="all">All <span id="filter-all-count">—</span></button>
+          <button class="filter-chip" data-filter="not-started">To do <span id="filter-todo-count">—</span></button>
+          <button class="filter-chip" data-filter="review">Review <span id="filter-review-count">—</span></button>
+          <button class="filter-chip" data-filter="in-progress">In progress <span id="filter-progress-count">—</span></button>
+          <button class="filter-chip" data-filter="complete">Complete <span id="filter-complete-count">—</span></button>
+        </div>
+      </section>
+
+      <section id="trophy-grid" class="trophy-grid" aria-live="polite">
+        <div class="catalogue-loading"><span></span><p>Opening the trophy cabinet…</p></div>
+      </section>
+    </main>
+
+    <main id="detail-view" class="view detail-view" hidden>
+      <nav class="detail-nav" aria-label="Trophy navigation">
+        <button id="back-button" class="back-button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+          All trophies
+        </button>
+        <span id="detail-status" class="status-pill">To do</span>
+      </nav>
+
+      <section class="detail-heading">
+        <div class="detail-photo-wrap"><img id="detail-photo" class="detail-photo" src="/catalogue/fallback.svg" alt=""></div>
+        <div>
+          <p id="detail-code" class="eyebrow"></p>
+          <h1 id="detail-title"></h1>
+          <p id="detail-secondary" class="secondary-name" hidden></p>
+          <p id="detail-summary" class="detail-summary"></p>
+        </div>
+      </section>
+
+      <div class="workspace-grid">
+        <section class="capture-panel panel">
+          <div class="section-heading">
+            <div><p class="step-label">Step 1</p><h2>Add the evidence</h2></div>
+            <span id="evidence-count" class="count-badge">0 images</span>
+          </div>
+          <p class="section-copy">Take overlapping photos from different angles. The reader combines every image to handle reflections and faint lettering.</p>
+          <div class="capture-actions">
+            <label class="capture-button primary-action">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5 13 3h-2L9.5 5H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4.5Z"/><circle cx="12" cy="13" r="4"/></svg>
+              Take a photo
+              <input id="photo-input" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" hidden>
+            </label>
+            <label class="capture-button secondary-action">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M5 21h14"/></svg>
+              Upload rubbing
+              <input id="rubbing-input" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden>
+            </label>
+          </div>
+          <div id="photo-strip" class="photo-strip" aria-label="Uploaded evidence"></div>
+          <div id="reader-note" class="reader-note is-neutral">
+            <span class="reader-spark" aria-hidden="true">✦</span>
+            <span><strong>Add the first engraving photo</strong><small>Names and years will appear in the list for you to check.</small></span>
+          </div>
+          <div id="ai-setup-note" class="ai-setup-note" hidden>
+            <strong>AI reader not connected</strong>
+            <p>Photos will still be saved. Add the OpenAI key in Render, then use “Read all images”.</p>
+          </div>
+          <button id="analyse-button" class="outline-button" type="button" disabled>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6L12 3ZM18.5 15l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8.8-2.2Z"/></svg>
+            Read all images again
+          </button>
+        </section>
+
+        <section class="winners-panel panel">
+          <div class="section-heading">
+            <div><p class="step-label">Step 2</p><h2>Check the winners</h2></div>
+            <button id="add-winner-button" class="text-button" type="button">+ Add winner</button>
+          </div>
+
+          <div class="timeline-range">
+            <div><strong>Expected span</strong><small>Optional — use records from elsewhere to expose gaps.</small></div>
+            <label><span>From</span><input id="timeline-start" type="number" min="1800" max="2200" inputmode="numeric" placeholder="First"></label>
+            <label><span>To</span><input id="timeline-end" type="number" min="1800" max="2200" inputmode="numeric" placeholder="Latest"></label>
+            <button id="save-range-button" type="button">Set</button>
+          </div>
+
+          <div id="missing-years" class="missing-years" hidden></div>
+          <div id="empty-winners" class="empty-winners">
+            <span>✦</span><strong>No winners recorded yet</strong><p>Add a photograph or enter a winner manually.</p>
+          </div>
+          <div id="winner-list" class="winner-list"></div>
+          <button id="complete-button" class="save-button" type="button">
+            <span>Save confirmed list</span><small id="save-summary">0 winners</small>
+          </button>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <section id="login-screen" class="login-screen" hidden aria-labelledby="login-title">
+    <form id="login-form" class="login-card">
+      <span class="login-monogram">B</span>
+      <p class="eyebrow">Burton-on-Trent Golf Club</p>
+      <h1 id="login-title">Trophy Archive</h1>
+      <p>Enter the club archive password to continue.</p>
+      <label><span>Password</span><input id="password-input" type="password" autocomplete="current-password" required autofocus></label>
+      <p id="login-error" class="form-error" role="alert" hidden></p>
+      <button type="submit">Open the archive</button>
+      <small>Historic names, safely preserved.</small>
+    </form>
+  </section>
+
+  <dialog id="image-dialog" class="image-dialog">
+    <button id="close-image-button" class="dialog-close" aria-label="Close image">×</button>
+    <img id="dialog-image" src="" alt="Uploaded engraving evidence">
+    <footer><span id="dialog-image-label"></span><button id="delete-image-button" type="button">Delete image</button></footer>
+  </dialog>
+
+  <div id="busy-overlay" class="busy-overlay" hidden aria-live="polite">
+    <div class="busy-card"><span class="reader-loader">✦</span><strong id="busy-title">Reading the engraving…</strong><p id="busy-copy">Comparing the available images for names and years.</p></div>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/app.js" defer></script>
+</body>
+</html>

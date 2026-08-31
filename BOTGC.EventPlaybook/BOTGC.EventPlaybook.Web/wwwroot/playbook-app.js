@@ -2049,7 +2049,7 @@
     if (state.activeView === 'plugins') ensurePluginSettingsLoaded();
     if (state.activeView === 'retrospective' && event) ensureFeedbackLoaded(event.id);
     if (state.activeView === 'artwork' && event) {
-      import('./poster-app.js?v=20260831-member-email-1')
+      import('./poster-app.js?v=20260831-member-email-plugin-2')
         .then(module => module.mountPosterStudio({
           eventId: event.id,
           eventName: event.name,
@@ -4550,12 +4550,13 @@
         <article class="plugin-card ${intelligentGolf.enabled ? 'plugin-on' : 'plugin-off'}">
           <header class="plugin-card-header"><div class="plugin-card-icon">IG</div><div class="plugin-card-title"><span class="plugin-status ${intelligentGolfStatus.className}">${escapeHtml(intelligentGolfStatus.label)}</span><h3>Intelligent Golf</h3><p>Club diary, member communications and event information.</p></div>${renderPluginModuleSwitch('intelligent-golf', 'Intelligent Golf', intelligentGolf)}</header>
           <div class="plugin-card-body">
-            <p>Keep the club login credentials required by the server-side Intelligent Golf integration in one protected place.</p>
+            <p>Keep the club login credentials and member-communication sender details together in one protected integration.</p>
             <dl class="plugin-facts">
               <div><dt>Club site</dt><dd>${escapeHtml(intelligentGolf.siteUrl || 'Not set')}</dd></div>
               <div><dt>Member ID / username</dt><dd>${intelligentGolf.hasMemberId ? 'Saved securely' : 'Not set'}</dd></div>
               <div><dt>Member PIN / password</dt><dd>${intelligentGolf.hasMemberPassword ? 'Saved securely' : 'Not set'}</dd></div>
               <div><dt>Administrator password</dt><dd>${intelligentGolf.hasAdminPassword ? 'Saved securely' : 'Not set'}</dd></div>
+              <div><dt>Member email sender</dt><dd>${intelligentGolf.emailConfigured ? escapeHtml(`${intelligentGolf.emailFromName} · ${intelligentGolf.emailFromAddress} · member ${intelligentGolf.emailSenderMemberNumber}`) : 'Not configured'}</dd></div>
             </dl>
           </div>
           <footer class="plugin-card-actions"><small>${escapeHtml(pluginUpdatedLabel(intelligentGolf.updatedAtUtc))}</small><button class="button button-primary" type="button" data-configure-plugin="intelligent-golf">${intelligentGolf.configured ? 'Update settings' : 'Configure'}</button></footer>
@@ -4584,13 +4585,17 @@
     return `
       <dialog id="intelligent-golf-plugin-dialog" class="plugin-dialog">
         <form id="intelligent-golf-plugin-form">
-          <header class="modal-heading"><div><span class="eyebrow">Plugin settings</span><h2>Configure Intelligent Golf</h2><p>Save and validate the credentials used by the club’s Intelligent Golf integration.</p></div><button class="icon-button" type="button" data-close-plugin-dialog aria-label="Close">×</button></header>
+          <header class="modal-heading"><div><span class="eyebrow">Plugin settings</span><h2>Configure Intelligent Golf</h2><p>Save the club login and the identity used for member communications.</p></div><button class="icon-button" type="button" data-close-plugin-dialog aria-label="Close">×</button></header>
           <div class="plugin-dialog-body">
-            <div class="plugin-dialog-guidance"><strong>Secrets cannot be revealed</strong><p>Saved values are deliberately never returned to this page. Leave a secret field blank to retain the existing value.</p></div>
+            <div class="plugin-dialog-guidance"><strong>Login secrets cannot be revealed</strong><p>Saved passwords are never returned to this page. Leave a login secret blank to retain it; the non-secret email sender details remain visible and editable below.</p></div>
             <label class="wide"><span>Intelligent Golf club site</span><input id="ig-plugin-site-url" type="url" inputmode="url" autocomplete="url" placeholder="https://yourclub.intelligentgolf.co.uk" value="${escapeHtml(intelligentGolf.siteUrl || '')}"><small>Use the complete https address for the club’s Intelligent Golf site.</small></label>
             <label><span>Member ID / username</span><input id="ig-plugin-member-id" type="password" autocomplete="new-password" spellcheck="false" placeholder="${intelligentGolf.hasMemberId ? 'Saved — leave blank to keep' : 'Enter the member ID'}"></label>
             <label><span>Member PIN / password</span><input id="ig-plugin-member-password" type="password" autocomplete="new-password" spellcheck="false" placeholder="${intelligentGolf.hasMemberPassword ? 'Saved — leave blank to keep' : 'Enter the member PIN or password'}"></label>
             <label class="wide"><span>Administrator password</span><input id="ig-plugin-admin-password" type="password" autocomplete="new-password" spellcheck="false" placeholder="${intelligentGolf.hasAdminPassword ? 'Saved — leave blank to keep' : 'Enter the administrator password'}"><small>This is the separate administrator credential used when the integration performs privileged actions.</small></label>
+            <div class="plugin-dialog-subheading"><strong>Member email sender</strong><p>These details identify the club account used for tests and campaigns sent through Intelligent Golf.</p></div>
+            <label><span>Sender member number</span><input id="ig-plugin-email-sender-member-number" type="number" min="1" step="1" inputmode="numeric" value="${escapeHtml(intelligentGolf.emailSenderMemberNumber || '')}" placeholder="3104"><small>The Intelligent Golf member record used to send the message.</small></label>
+            <label><span>Sender name</span><input id="ig-plugin-email-from-name" type="text" maxlength="500" value="${escapeHtml(intelligentGolf.emailFromName || '')}" placeholder="Simon Parsons"></label>
+            <label class="wide"><span>Sender email address</span><input id="ig-plugin-email-from-address" type="email" maxlength="500" value="${escapeHtml(intelligentGolf.emailFromAddress || '')}" placeholder="comms@botgc.co.uk"><small>This appears in the From field of test and member campaign emails.</small></label>
             <label class="plugin-enabled-control wide"><input id="ig-plugin-enabled" type="checkbox" ${intelligentGolf.enabled ? 'checked' : ''}><span><strong>Enable this plugin</strong><small>When enabled, the server validates these credentials and establishes a secure API session.</small></span></label>
           </div>
           <footer class="modal-actions">${intelligentGolf.configured ? '<button class="button button-danger plugin-disconnect-button" type="button" data-disconnect-plugin="intelligent-golf">Remove credentials</button>' : ''}<span></span><button class="button button-secondary" type="button" data-close-plugin-dialog>Cancel</button><button class="button button-primary" type="submit">Save Intelligent Golf</button></footer>
@@ -5517,7 +5522,10 @@
         siteUrl: document.getElementById('ig-plugin-site-url')?.value ?? '',
         memberId: document.getElementById('ig-plugin-member-id')?.value ?? '',
         memberPassword: document.getElementById('ig-plugin-member-password')?.value ?? '',
-        adminPassword: document.getElementById('ig-plugin-admin-password')?.value ?? ''
+        adminPassword: document.getElementById('ig-plugin-admin-password')?.value ?? '',
+        emailSenderMemberNumber: document.getElementById('ig-plugin-email-sender-member-number')?.value ?? '',
+        emailFromName: document.getElementById('ig-plugin-email-from-name')?.value ?? '',
+        emailFromAddress: document.getElementById('ig-plugin-email-from-address')?.value ?? ''
       }, 'Intelligent Golf settings were saved securely.', eventArgs.submitter);
     });
 

@@ -26,6 +26,7 @@ public sealed record SendMemberCampaignEmailCommand(
 
 public sealed class SendMemberCampaignEmailHandler(
     IOptions<IntelligentGolfOptions> options,
+    IIntelligentGolfSession session,
     IIntelligentGolfTransport transport,
     IMediator mediator,
     ILogger<SendMemberCampaignEmailHandler> logger)
@@ -47,12 +48,14 @@ public sealed class SendMemberCampaignEmailHandler(
         }
 
         var settings = options.Value;
-        if (string.IsNullOrWhiteSpace(settings.EmailFromName) ||
-            string.IsNullOrWhiteSpace(settings.EmailFromAddress) ||
+        var sender = session.EmailSender;
+        if (sender.MemberNumber is null or <= 0 ||
+            string.IsNullOrWhiteSpace(sender.FromName) ||
+            string.IsNullOrWhiteSpace(sender.FromAddress) ||
             string.IsNullOrWhiteSpace(settings.Endpoints.BulkEmailComposerPath) ||
             string.IsNullOrWhiteSpace(settings.Endpoints.BulkEmailSendPath))
         {
-            throw new IntelligentGolfFeatureNotConfiguredException("bulk member email");
+            throw new IntelligentGolfEmailSenderNotConfiguredException();
         }
 
         var activeMembers = await mediator.Send(new GetMembersQuery(false), cancellationToken);
@@ -92,8 +95,8 @@ public sealed class SendMemberCampaignEmailHandler(
             new("searchemails", string.Empty),
             new("id", draftId),
             new("email_subject", request.Subject.Trim()),
-            new("email_fromname", settings.EmailFromName.Trim()),
-            new("email_fromaddress", settings.EmailFromAddress.Trim()),
+            new("email_fromname", sender.FromName.Trim()),
+            new("email_fromaddress", sender.FromAddress.Trim()),
             new("template", "0"),
             new("headerandfooter", "useemail"),
             new("email_content", bodyHtml)

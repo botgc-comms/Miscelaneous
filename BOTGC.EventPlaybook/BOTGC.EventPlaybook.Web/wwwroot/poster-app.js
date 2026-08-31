@@ -1059,13 +1059,11 @@ export async function mountPosterStudio(context = {}) {
 }
 
 async function initialise(session) {
-    if (!configCache) {
-        const response = await fetch('/api/poster/config');
-        if (!response.ok) {
-            throw new Error('Unable to load poster configuration.');
-        }
-        configCache = await response.json();
+    const response = await fetch('/api/poster/config', { cache: 'no-store' });
+    if (!response.ok) {
+        throw new Error('Unable to load poster configuration.');
     }
+    configCache = await response.json();
 
     session.config = configCache;
     const restored = await hydrateSession(session);
