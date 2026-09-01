@@ -3,7 +3,6 @@
   const signupForm = document.querySelector('#signup-form');
   const clubForm = document.querySelector('#club-setup-form');
   const loginPassword = document.querySelector('#login-password');
-  if (loginPassword) loginPassword.id = 'password-input';
 
   loginForm?.addEventListener('submit', event => {
     event.preventDefault();
@@ -31,8 +30,9 @@
   document.querySelector('#club-logo-input')?.addEventListener('change', previewClubLogo);
 
   const coreScript = document.createElement('script');
-  coreScript.src = '/app-core.js';
+  coreScript.src = '/app-core.js?v=20260901-auth-fix';
   coreScript.onload = () => {
+    installBatchUploadControl();
     accountInitialise();
     window.dispatchEvent(new CustomEvent('trophy-app-ready'));
   };
@@ -53,9 +53,7 @@
         showClubSetup(auth);
         return;
       }
-      applyClubBranding(auth.club);
-      document.querySelector('#login-screen').hidden = true;
-      document.querySelector('#club-setup-screen').hidden = true;
+      await enterArchive(auth);
     } catch (exception) {
       showAccountError('#login-error', exception.message);
     }

@@ -102,7 +102,8 @@ public static class EntryPoint
         {
             OnPrepareResponse = context =>
             {
-                context.Context.Response.Headers.CacheControl = context.File.Name is "index.html" or "archive.html" or "app.js" or "styles.css" or "async.css" or "commercial.js" or "commercial.css"
+                var extension = Path.GetExtension(context.File.Name);
+                context.Context.Response.Headers.CacheControl = extension is ".html" or ".js" or ".css"
                     ? "no-cache"
                     : "public,max-age=604800";
             }

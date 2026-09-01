@@ -12,8 +12,8 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="manifest" href="/manifest.webmanifest">
-  <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/accounts.css">
+  <link rel="stylesheet" href="/styles.css?v=20260901-auth-fix">
+  <link rel="stylesheet" href="/accounts.css?v=20260901-auth-fix">
 </head>
 <body>
   <div class="app-shell">
@@ -174,7 +174,6 @@
         <p id="signup-error" class="form-error" role="alert" hidden></p>
         <button type="submit">Create my archive</button>
       </form>
-      <small class="auth-assurance">Your club’s collection stays separate from every other archive.</small>
       <a class="auth-home-link" href="/">Back to the home page</a>
     </div>
   </section>
@@ -211,7 +210,7 @@
     <div class="busy-card"><span class="reader-loader">✦</span><strong id="busy-title">Reading the engraving…</strong><p id="busy-copy">Comparing the available images for names and years.</p></div>
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="/app.js" defer></script>
-  <script src="/missing-years.js" defer></script>
+  <script src="/app.js?v=20260901-auth-fix" defer></script>
+  <script src="/missing-years.js?v=20260901-auth-fix" defer></script>
 </body>
 </html>

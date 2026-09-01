@@ -29,35 +29,14 @@ async function api(url, options = {}) {
     headers: options.body instanceof FormData ? options.headers : { 'Content-Type': 'application/json', ...options.headers },
     ...options,
   });
-  if (response.status === 401) {
-    showLogin();
-    throw new Error('Please sign in again.');
-  }
   const text = await response.text();
   const data = text ? JSON.parse(text) : null;
+  if (response.status === 401) {
+    if (!url.startsWith('/api/auth/')) showLogin();
+    throw new Error(data?.message || 'Please sign in again.');
+  }
   if (!response.ok) throw new Error(data?.message || data?.error || 'Something went wrong.');
   return data;
-}
-
-async function initialise() {
-  installBatchUploadControl();
-  try {
-    const auth = await api('/api/auth/status');
-    state.aiConfigured = auth.aiConfigured;
-    if (auth.requiresSetup) {
-      showLogin('Set APP_PASSWORD in Render before opening the archive.');
-      return;
-    }
-    if (!auth.authenticated) {
-      showLogin();
-      return;
-    }
-    await loadCatalogue();
-    const routeId = trophyIdFromHash();
-    if (routeId) await openTrophy(routeId, false);
-  } catch (error) {
-    showLogin(error.message);
-  }
 }
 
 function installBatchUploadControl() {
@@ -534,32 +513,7 @@ function showLogin(message = '') {
   elements.login.hidden = false;
   document.querySelector('#login-error').hidden = !message;
   document.querySelector('#login-error').textContent = message;
-  setTimeout(() => document.querySelector('#password-input').focus(), 50);
-}
-
-async function signIn(event) {
-  event.preventDefault();
-  const button = event.currentTarget.querySelector('button');
-  const error = document.querySelector('#login-error');
-  button.disabled = true;
-  error.hidden = true;
-  try {
-    await api('/api/auth/login', { method: 'POST', body: JSON.stringify({ password: document.querySelector('#password-input').value }) });
-    elements.login.hidden = true;
-    document.querySelector('#password-input').value = '';
-    await loadCatalogue();
-  } catch (exception) {
-    error.textContent = exception.message === 'incorrect_password' ? 'That password was not recognised.' : exception.message;
-    error.hidden = false;
-  } finally {
-    button.disabled = false;
-  }
-}
-
-async function signOut() {
-  await api('/api/auth/logout', { method: 'POST', body: '{}' });
-  closeTrophy(false);
-  showLogin();
+  setTimeout(() => document.querySelector('#login-password')?.focus(), 50);
 }
 
 function displayStatus(trophy) {
@@ -635,8 +589,6 @@ document.querySelector('#analyse-button').addEventListener('click', analyseAll);
 document.querySelector('#add-winner-button').addEventListener('click', () => renderWinners(true));
 document.querySelector('#save-range-button').addEventListener('click', saveTimeline);
 document.querySelector('#complete-button').addEventListener('click', markComplete);
-document.querySelector('#login-form').addEventListener('submit', signIn);
-document.querySelector('#logout-button').addEventListener('click', signOut);
 document.querySelector('#close-image-button').addEventListener('click', () => document.querySelector('#image-dialog').close());
 document.querySelector('#delete-image-button').addEventListener('click', deleteEvidence);
 document.querySelector('#image-dialog').addEventListener('click', event => {
@@ -646,5 +598,3 @@ window.addEventListener('popstate', () => {
   const id = trophyIdFromHash();
   if (id) openTrophy(id, false); else closeTrophy(false);
 });
-
-initialise();
