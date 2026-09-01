@@ -2,6 +2,38 @@ using System.Text.Json.Serialization;
 
 namespace Trophy.Catalogue.Domain;
 
+public sealed class IdentityState
+{
+    public int Version { get; set; } = 1;
+    public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
+    public List<AccountRecord> Accounts { get; set; } = [];
+    public List<ClubRecord> Clubs { get; set; } = [];
+}
+
+public sealed class AccountRecord
+{
+    public required string Id { get; set; }
+    public required string DisplayName { get; set; }
+    public required string Email { get; set; }
+    public required string NormalizedEmail { get; set; }
+    public string PasswordHash { get; set; } = string.Empty;
+    public string? ClubId { get; set; }
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+}
+
+public sealed class ClubRecord
+{
+    public required string Id { get; set; }
+    public required string Name { get; set; }
+    public required string Sport { get; set; }
+    public required string Country { get; set; }
+    public string? Website { get; set; }
+    public string? LogoStoredName { get; set; }
+    public string? LogoContentType { get; set; }
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
+}
+
 public sealed class CatalogueState
 {
     public int Version { get; set; } = 2;
@@ -131,7 +163,9 @@ public sealed record MemberDirectorySummary(
 public sealed record MemberImportResult(int ImportedCount, int SkippedCount, string SourceName, DateTimeOffset ImportedAt);
 public sealed record WinnerInput(int Year, string Name, string ReviewState, string? Notes);
 public sealed record TimelineInput(int? StartYear, int? EndYear);
-public sealed record LoginInput(string Password);
+public sealed record SignupInput(string DisplayName, string Email, string Password);
+public sealed record LoginInput(string Email, string Password);
+public sealed record ClubInput(string Name, string Sport, string Country, string? Website);
 public sealed record TrophyCreateInput(string Name, string? SecondaryName, string Category, string? Code);
 
 public static class TrophyStatuses

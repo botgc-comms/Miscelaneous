@@ -1,256 +1,173 @@
 (() => {
-  const commercial = {
-    illustrationConfigured: false,
-    memberDirectory: null,
-  };
+  const stylesheet = document.createElement('link');
+  stylesheet.rel = 'stylesheet';
+  stylesheet.href = '/wizard.css';
+  document.head.append(stylesheet);
 
-  installHeaderLink();
-  installNewTrophyFlow();
-  installMemberDirectory();
-  installIllustrationControl();
-  installMatchEnhancer();
-  refreshCapabilities();
+  const core = document.createElement('script');
+  core.src = '/commercial-core.js';
+  core.onload = installPhotoFirstWizard;
+  document.head.append(core);
 
-  function installHeaderLink() {
-    const actions = document.querySelector('.header-actions');
-    if (!actions || actions.querySelector('.plans-link')) return;
-    const link = document.createElement('a');
-    link.className = 'plans-link';
-    link.href = '/';
-    link.textContent = 'Plans';
-    actions.prepend(link);
-  }
+  function installPhotoFirstWizard() {
+    const oldButton = document.querySelector('#new-trophy-button');
+    const oldDialog = document.querySelector('#new-trophy-dialog');
+    if (!oldButton || !oldDialog) return;
+    oldDialog.remove();
 
-  function installNewTrophyFlow() {
-    const heading = document.querySelector('.catalogue-heading');
-    if (!heading || document.querySelector('#new-trophy-button')) return;
-    const button = document.createElement('button');
-    button.id = 'new-trophy-button';
-    button.className = 'new-trophy-button';
-    button.type = 'button';
-    button.innerHTML = '<span aria-hidden="true">+</span><span><strong>Add trophy</strong><small>Photograph a new piece</small></span>';
-    heading.append(button);
+    const button = oldButton.cloneNode(false);
+    button.innerHTML = '<span aria-hidden="true">+</span><span><strong>Add trophy</strong><small>Photos become its illustration</small></span>';
+    oldButton.replaceWith(button);
 
     const dialog = document.createElement('dialog');
     dialog.id = 'new-trophy-dialog';
-    dialog.className = 'commercial-dialog';
+    dialog.className = 'commercial-dialog trophy-wizard-dialog';
     dialog.innerHTML = `
       <form id="new-trophy-form">
         <button class="commercial-dialog-close" type="button" aria-label="Close">×</button>
-        <p class="step-label">New archive record</p>
+        <div class="wizard-step"><span>1</span><i></i><span>2</span><i></i><span>3</span></div>
+        <p class="step-label">New trophy · details, photographs, illustration</p>
         <h2>Add a trophy</h2>
-        <p>Create the record first, then upload several photographs for inscription reading and a generated catalogue illustration.</p>
+        <p>Give it a name, then take or choose one or more photographs. The photographs are saved as evidence and used automatically to create the catalogue illustration.</p>
         <label><span>Trophy name</span><input name="name" maxlength="160" required placeholder="e.g. Ladies Challenge Cup"></label>
         <div class="commercial-form-grid">
           <label><span>Category</span><input name="category" maxlength="80" required placeholder="e.g. Golf, Rugby, Cricket"></label>
           <label><span>Reference code <em>optional</em></span><input name="code" maxlength="24" placeholder="Auto-generated"></label>
         </div>
         <label><span>Alternative name <em>optional</em></span><input name="secondaryName" maxlength="160" placeholder="Name engraved on the base"></label>
-        <button class="commercial-submit" type="submit">Create trophy record</button>
+        <fieldset class="wizard-photos">
+          <legend>Trophy photographs <b>required</b></legend>
+          <p>Use a clear full-trophy view first. Extra angles help reproduce handles, lids, bases and fine details.</p>
+          <div class="wizard-photo-actions">
+            <label class="wizard-camera"><span>Take a photo</span><input id="wizard-camera-input" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" hidden></label>
+            <label class="wizard-library"><span>Choose photos</span><input id="wizard-library-input" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden></label>
+          </div>
+          <div id="wizard-photo-list" class="wizard-photo-list"><span class="wizard-photo-empty">No photographs added yet</span></div>
+        </fieldset>
+        <div class="wizard-outcome"><span>✦</span><p><strong>What happens next</strong><small>We create the trophy, upload the full set, start inscription reading in the background and generate its transparent catalogue illustration.</small></p></div>
+        <button class="commercial-submit" type="submit" disabled>Create trophy &amp; illustration</button>
         <p class="commercial-form-error" role="alert" hidden></p>
       </form>`;
     document.body.append(dialog);
 
-    button.addEventListener('click', () => dialog.showModal());
-    dialog.querySelector('.commercial-dialog-close').addEventListener('click', () => dialog.close());
-    dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
-    dialog.querySelector('form').addEventListener('submit', createTrophy);
-  }
-
-  async function createTrophy(event) {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const error = form.querySelector('.commercial-form-error');
+    let photographs = [];
+    const form = dialog.querySelector('form');
+    const camera = dialog.querySelector('#wizard-camera-input');
+    const library = dialog.querySelector('#wizard-library-input');
+    const list = dialog.querySelector('#wizard-photo-list');
     const submit = form.querySelector('[type="submit"]');
-    error.hidden = true;
-    submit.disabled = true;
-    try {
-      const values = new FormData(form);
-      const data = await api('/api/trophies', {
-        method: 'POST',
-        body: JSON.stringify({
-          name: values.get('name'),
-          secondaryName: values.get('secondaryName') || null,
-          category: values.get('category'),
-          code: values.get('code') || null,
-        }),
-      });
-      document.querySelector('#new-trophy-dialog').close();
-      form.reset();
-      await loadCatalogue();
-      await openTrophy(data.trophy.id);
-      showToast('Trophy created. Add photographs from several angles next.');
-    } catch (exception) {
-      error.textContent = exception.message;
-      error.hidden = false;
-    } finally {
-      submit.disabled = false;
+
+    button.addEventListener('click', () => dialog.showModal());
+    dialog.querySelector('.commercial-dialog-close').addEventListener('click', closeWizard);
+    dialog.addEventListener('click', event => { if (event.target === dialog) closeWizard(); });
+    camera.addEventListener('change', event => addPhotographs([...event.target.files]));
+    library.addEventListener('change', event => addPhotographs([...event.target.files]));
+    list.addEventListener('click', event => {
+      const remove = event.target.closest('[data-photo-index]');
+      if (!remove) return;
+      photographs.splice(Number(remove.dataset.photoIndex), 1);
+      renderPhotographs();
+    });
+    form.addEventListener('input', updateSubmit);
+    form.addEventListener('submit', createTrophyFromPhotos);
+
+    function addPhotographs(files) {
+      const accepted = files.filter(file => ['image/jpeg', 'image/png', 'image/webp'].includes(file.type));
+      photographs = [...photographs, ...accepted].slice(0, 12);
+      camera.value = '';
+      library.value = '';
+      renderPhotographs();
     }
-  }
 
-  function installMemberDirectory() {
-    const tools = document.querySelector('.catalogue-tools');
-    if (!tools || document.querySelector('#member-directory-card')) return;
-    const card = document.createElement('section');
-    card.id = 'member-directory-card';
-    card.className = 'member-directory-card';
-    card.innerHTML = `
-      <div class="member-directory-copy">
-        <span class="member-directory-icon" aria-hidden="true">↔</span>
-        <span><strong>Member matching</strong><small id="member-directory-summary">Upload a club member export to suggest likely identities.</small></span>
-      </div>
-      <div class="member-directory-actions">
-        <label class="member-upload-button">Upload CSV / XLSX<input id="member-file-input" type="file" accept=".csv,.tsv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden></label>
-        <button id="clear-member-directory" type="button" hidden>Remove</button>
-      </div>
-      <p class="member-privacy">Privacy by design: complete dates of birth are reduced to birth year during import; the original file is not retained.</p>`;
-    tools.after(card);
-    card.querySelector('#member-file-input').addEventListener('change', importMembers);
-    card.querySelector('#clear-member-directory').addEventListener('click', clearMembers);
-  }
-
-  async function refreshCapabilities() {
-    try {
-      const auth = await api('/api/auth/status');
-      commercial.illustrationConfigured = Boolean(auth.illustrationConfigured);
-      if (auth.authenticated) await refreshMemberSummary();
-      updateIllustrationControl();
-    } catch { }
-  }
-
-  async function refreshMemberSummary() {
-    try {
-      const data = await api('/api/members');
-      commercial.memberDirectory = data.directory;
-      const summary = document.querySelector('#member-directory-summary');
-      const clear = document.querySelector('#clear-member-directory');
-      if (!summary || !clear) return;
-      if (data.directory.memberCount) {
-        summary.textContent = `${data.directory.memberCount} members loaded · ${data.directory.withBirthYearCount} with a birth year`;
-        clear.hidden = false;
-      } else {
-        summary.textContent = 'Upload a club member export to suggest likely identities.';
-        clear.hidden = true;
+    function renderPhotographs() {
+      if (!photographs.length) {
+        list.innerHTML = '<span class="wizard-photo-empty">No photographs added yet</span>';
+        updateSubmit();
+        return;
       }
-    } catch { }
-  }
-
-  async function importMembers(event) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    const form = new FormData();
-    form.append('file', file, file.name);
-    setBusy(true, 'Importing member directory…', 'Normalising names and reducing dates of birth to birth year.');
-    try {
-      const data = await api('/api/members/import', { method: 'POST', body: form });
-      commercial.memberDirectory = data.directory;
-      await refreshMemberSummary();
-      if (state.current) await refreshCurrent();
-      showToast(`${data.result.importedCount} members imported and compared with the winners archive.`);
-    } catch (exception) {
-      showToast(exception.message, true, 6500);
-    } finally {
-      event.target.value = '';
-      setBusy(false);
+      list.innerHTML = photographs.map((file, index) => {
+        const objectUrl = URL.createObjectURL(file);
+        return `<span class="wizard-photo"><img src="${objectUrl}" alt="Trophy photograph ${index + 1}"><button type="button" data-photo-index="${index}" aria-label="Remove photograph ${index + 1}">×</button><small>${index === 0 ? 'Main view' : `Angle ${index + 1}`}</small></span>`;
+      }).join('');
+      list.querySelectorAll('img').forEach(image => image.addEventListener('load', () => URL.revokeObjectURL(image.src), { once: true }));
+      updateSubmit();
     }
-  }
 
-  async function clearMembers() {
-    if (!confirm('Remove the imported member directory and all suggested matches? Trophy winners will not be changed.')) return;
-    try {
-      await api('/api/members', { method: 'DELETE', body: '{}' });
-      await refreshMemberSummary();
-      if (state.current) await refreshCurrent();
-      showToast('Member directory removed.');
-    } catch (exception) {
-      showToast(exception.message, true);
+    function updateSubmit() {
+      submit.disabled = photographs.length === 0 || !form.querySelector('[name="name"]').value.trim() || !form.querySelector('[name="category"]').value.trim();
     }
-  }
 
-  function installIllustrationControl() {
-    const heading = document.querySelector('.detail-heading');
-    if (!heading || document.querySelector('#generate-illustration-button')) return;
-    const button = document.createElement('button');
-    button.id = 'generate-illustration-button';
-    button.className = 'generate-illustration-button';
-    button.type = 'button';
-    button.innerHTML = '<span aria-hidden="true">✦</span><span><strong>Create illustration</strong><small>Use up to four trophy angles</small></span>';
-    heading.append(button);
-    button.addEventListener('click', generateIllustration);
-
-    const observer = new MutationObserver(updateIllustrationControl);
-    observer.observe(document.querySelector('#detail-title'), { childList: true, subtree: true });
-    observer.observe(document.querySelector('#photo-strip'), { childList: true, subtree: true });
-    updateIllustrationControl();
-  }
-
-  function updateIllustrationControl() {
-    const button = document.querySelector('#generate-illustration-button');
-    if (!button) return;
-    const trophy = state.current;
-    const photoCount = trophy?.evidence?.filter(item => item.kind === 'photo').length ?? 0;
-    button.disabled = !trophy || photoCount === 0 || !commercial.illustrationConfigured;
-    const title = button.querySelector('strong');
-    const copy = button.querySelector('small');
-    if (!commercial.illustrationConfigured) {
-      title.textContent = 'Illustration unavailable';
-      copy.textContent = 'Connect the image model';
-    } else if (photoCount === 0) {
-      title.textContent = 'Create illustration';
-      copy.textContent = 'Add trophy photographs first';
-    } else if (trophy.illustrationGenerationCount > 0) {
-      title.textContent = 'Regenerate illustration';
-      copy.textContent = `Use ${plural(Math.min(photoCount, 4), 'saved angle')}`;
-    } else {
-      title.textContent = 'Create illustration';
-      copy.textContent = `Use ${plural(Math.min(photoCount, 4), 'saved angle')}`;
+    function closeWizard() {
+      dialog.close();
+      form.reset();
+      photographs = [];
+      renderPhotographs();
+      form.querySelector('.commercial-form-error').hidden = true;
     }
-  }
 
-  async function generateIllustration() {
-    if (!state.current) return;
-    const id = state.current.id;
-    setBusy(true, 'Creating the trophy illustration…', 'Reconciling up to four photographed angles into one faithful catalogue portrait. This may take a minute.');
-    try {
-      const data = await api(`/api/trophies/${encodeURIComponent(id)}/illustration`, { method: 'POST', body: '{}' });
-      if (state.current?.id !== id) return;
-      state.current = data.trophy;
-      renderDetail();
-      updateIllustrationControl();
-      await loadCatalogue();
-      showToast('Catalogue illustration created.');
-    } catch (exception) {
-      showToast(exception.message, true, 7000);
-    } finally {
-      setBusy(false);
+    async function createTrophyFromPhotos(event) {
+      event.preventDefault();
+      const error = form.querySelector('.commercial-form-error');
+      const values = new FormData(form);
+      const sourcePhotos = [...photographs];
+      let createdId = null;
+      error.hidden = true;
+      submit.disabled = true;
+      try {
+        setBusy(true, 'Preparing the trophy photographs…', `Optimising ${plural(sourcePhotos.length, 'angle')} for a reliable mobile upload.`);
+        const prepared = [];
+        for (let index = 0; index < sourcePhotos.length; index += 1) {
+          setBusy(true, `Preparing photograph ${index + 1} of ${sourcePhotos.length}…`, 'Keeping enough detail for both engraving reading and illustration generation.');
+          prepared.push(await optimiseImage(sourcePhotos[index]));
+        }
+
+        const created = await api('/api/trophies', {
+          method: 'POST',
+          body: JSON.stringify({
+            name: values.get('name'),
+            secondaryName: values.get('secondaryName') || null,
+            category: values.get('category'),
+            code: values.get('code') || null,
+          }),
+        });
+        createdId = created.trophy.id;
+
+        setBusy(true, `Uploading ${plural(prepared.length, 'photograph')}…`, 'Saving every angle to the club archive.');
+        const upload = new FormData();
+        prepared.forEach(file => upload.append('files', file, file.name));
+        upload.append('kind', 'photo');
+        await api(`/api/trophies/${encodeURIComponent(createdId)}/images`, { method: 'POST', body: upload });
+
+        const auth = state.auth || await api('/api/auth/status');
+        let illustrationCreated = false;
+        if (auth.illustrationConfigured) {
+          setBusy(true, 'Creating the trophy illustration…', 'Reconciling the photographed angles into one faithful, transparent catalogue portrait. This may take a minute.');
+          await api(`/api/trophies/${encodeURIComponent(createdId)}/illustration`, { method: 'POST', body: '{}' });
+          illustrationCreated = true;
+        }
+
+        closeWizard();
+        await loadCatalogue();
+        await openTrophy(createdId);
+        showToast(illustrationCreated
+          ? 'Trophy added and its catalogue illustration is ready.'
+          : 'Trophy and photographs saved. Connect the image model to create its illustration.',
+          false,
+          6000);
+      } catch (exception) {
+        if (createdId) {
+          closeWizard();
+          await loadCatalogue();
+          await openTrophy(createdId);
+          showToast(`The trophy was saved, but the next step needs attention: ${exception.message}`, true, 7500);
+        } else {
+          error.textContent = exception.message;
+          error.hidden = false;
+        }
+      } finally {
+        setBusy(false);
+        updateSubmit();
+      }
     }
-  }
-
-  function installMatchEnhancer() {
-    const list = document.querySelector('#winner-list');
-    if (!list) return;
-    const observer = new MutationObserver(enhanceMatches);
-    observer.observe(list, { childList: true, subtree: true });
-    enhanceMatches();
-  }
-
-  function enhanceMatches() {
-    const winners = state.current?.winners || [];
-    for (const winner of winners) {
-      if (!winner.memberMatch) continue;
-      const row = document.querySelector(`#winner-list [data-winner-id="${cssEscape(winner.id)}"]`);
-      const nameLabel = row?.querySelector('.winner-name');
-      if (!nameLabel || nameLabel.querySelector('.member-match')) continue;
-      const match = winner.memberMatch;
-      const badge = document.createElement('span');
-      badge.className = `member-match is-${match.state}`;
-      badge.title = match.explanation;
-      badge.innerHTML = `<b>${match.state === 'strong' ? 'Likely member' : 'Possible member'}</b><span>${escapeHtml(match.memberName)}${match.membershipNumber ? ` · #${escapeHtml(match.membershipNumber)}` : ''}${match.birthYear ? ` · born ${match.birthYear}` : ''}</span><em>${Math.round(match.confidence * 100)}%</em>`;
-      nameLabel.append(badge);
-    }
-  }
-
-  function cssEscape(value) {
-    return window.CSS?.escape ? window.CSS.escape(value) : String(value).replace(/[^a-zA-Z0-9_-]/g, '\\$&');
   }
 })();

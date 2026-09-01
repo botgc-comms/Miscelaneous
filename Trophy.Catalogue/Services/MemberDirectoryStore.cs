@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Globalization;
 using System.IO.Compression;
 using System.Text;
@@ -7,58 +8,37 @@ using Trophy.Catalogue.Domain;
 
 namespace Trophy.Catalogue.Services;
 
-public sealed class MemberDirectoryStore(IWebHostEnvironment environment, IConfiguration configuration)
+public sealed class MemberDirectoryStore(
+    IWebHostEnvironment environment,
+    IConfiguration configuration,
+    ClubContextAccessor clubContext)
 {
-    private readonly SemaphoreSlim gate = new(1, 1);
+    private readonly ConcurrentDictionary<string, TenantDirectory> tenants = new(StringComparer.OrdinalIgnoreCase);
     private readonly JsonSerializerOptions jsonOptions = new(JsonSerializerDefaults.Web) { WriteIndented = true };
-    private readonly string statePath = Path.Combine(ResolveDataRoot(environment, configuration), "member-directory.json");
-    private MemberDirectoryState state = new();
-
-    public async Task InitializeAsync(CancellationToken cancellationToken = default)
-    {
-        Directory.CreateDirectory(Path.GetDirectoryName(statePath)!);
-        await gate.WaitAsync(cancellationToken);
-        try
-        {
-            if (!File.Exists(statePath)) return;
-            await using var stream = File.OpenRead(statePath);
-            state = await JsonSerializer.DeserializeAsync<MemberDirectoryState>(stream, jsonOptions, cancellationToken) ?? new();
-        }
-        finally
-        {
-            gate.Release();
-        }
-    }
+    private readonly string dataRoot = AppDataPath.Resolve(environment, configuration);
 
     public async Task<MemberDirectorySummary> GetSummaryAsync(CancellationToken cancellationToken = default)
     {
-        await gate.WaitAsync(cancellationToken);
+        var tenant = await GetTenantAsync(cancellationToken);
+        await tenant.Gate.WaitAsync(cancellationToken);
         try
         {
             return new MemberDirectorySummary(
-                state.Members.Count,
-                state.Members.Count(member => member.BirthYear.HasValue),
-                state.Members.Count(member => !string.IsNullOrWhiteSpace(member.MembershipNumber)),
-                state.SourceName,
-                state.ImportedAt);
+                tenant.State.Members.Count,
+                tenant.State.Members.Count(member => member.BirthYear.HasValue),
+                tenant.State.Members.Count(member => !string.IsNullOrWhiteSpace(member.MembershipNumber)),
+                tenant.State.SourceName,
+                tenant.State.ImportedAt);
         }
-        finally
-        {
-            gate.Release();
-        }
+        finally { tenant.Gate.Release(); }
     }
 
     public async Task<IReadOnlyList<MemberRecord>> GetMembersAsync(CancellationToken cancellationToken = default)
     {
-        await gate.WaitAsync(cancellationToken);
-        try
-        {
-            return state.Members.Select(Clone).ToList();
-        }
-        finally
-        {
-            gate.Release();
-        }
+        var tenant = await GetTenantAsync(cancellationToken);
+        await tenant.Gate.WaitAsync(cancellationToken);
+        try { return tenant.State.Members.Select(Clone).ToList(); }
+        finally { tenant.Gate.Release(); }
     }
 
     public async Task<MemberImportResult> ImportAsync(
@@ -67,9 +47,7 @@ public sealed class MemberDirectoryStore(IWebHostEnvironment environment, IConfi
         CancellationToken cancellationToken = default)
     {
         var extension = Path.GetExtension(fileName).ToLowerInvariant();
-        var rows = extension == ".xlsx"
-            ? ReadXlsx(content)
-            : await ReadDelimitedAsync(content, cancellationToken);
+        var rows = extension == ".xlsx" ? ReadXlsx(content) : await ReadDelimitedAsync(content, cancellationToken);
         if (rows.Count < 2) throw new MemberImportException("The member file does not contain any data rows.");
 
         var headers = rows[0].Select(NormalizeHeader).ToList();
@@ -115,53 +93,69 @@ public sealed class MemberDirectoryStore(IWebHostEnvironment environment, IConfi
             .ToList();
         if (members.Count == 0) throw new MemberImportException("No usable member names were found in that file.");
 
-        await gate.WaitAsync(cancellationToken);
+        var tenant = await GetTenantAsync(cancellationToken);
+        await tenant.Gate.WaitAsync(cancellationToken);
         try
         {
-            state = new MemberDirectoryState
+            tenant.State = new MemberDirectoryState
             {
                 Members = members,
                 SourceName = Path.GetFileName(fileName),
                 ImportedAt = DateTimeOffset.UtcNow
             };
-            await SaveUnsafeAsync(cancellationToken);
+            await SaveUnsafeAsync(tenant, cancellationToken);
+            return new MemberImportResult(members.Count, skipped, tenant.State.SourceName!, tenant.State.ImportedAt!.Value);
         }
-        finally
-        {
-            gate.Release();
-        }
-
-        return new MemberImportResult(members.Count, skipped, state.SourceName!, state.ImportedAt!.Value);
+        finally { tenant.Gate.Release(); }
     }
 
     public async Task ClearAsync(CancellationToken cancellationToken = default)
     {
-        await gate.WaitAsync(cancellationToken);
+        var tenant = await GetTenantAsync(cancellationToken);
+        await tenant.Gate.WaitAsync(cancellationToken);
         try
         {
-            state = new MemberDirectoryState();
-            if (File.Exists(statePath)) File.Delete(statePath);
+            tenant.State = new MemberDirectoryState();
+            if (File.Exists(tenant.StatePath)) File.Delete(tenant.StatePath);
         }
-        finally
-        {
-            gate.Release();
-        }
+        finally { tenant.Gate.Release(); }
     }
 
-    private async Task SaveUnsafeAsync(CancellationToken cancellationToken)
+    private async Task<TenantDirectory> GetTenantAsync(CancellationToken cancellationToken)
     {
-        var tempPath = $"{statePath}.{Guid.NewGuid():N}.tmp";
-        await using (var stream = new FileStream(tempPath, FileMode.CreateNew, FileAccess.Write, FileShare.None, 81920, true))
-            await JsonSerializer.SerializeAsync(stream, state, jsonOptions, cancellationToken);
-        File.Move(tempPath, statePath, true);
+        var clubId = clubContext.RequireClubId();
+        var root = AppDataPath.ClubRoot(dataRoot, clubId);
+        var tenant = tenants.GetOrAdd(clubId, _ => new TenantDirectory(Path.Combine(root, "member-directory.json")));
+        if (tenant.Initialized) return tenant;
+        await tenant.Gate.WaitAsync(cancellationToken);
+        try
+        {
+            if (tenant.Initialized) return tenant;
+            Directory.CreateDirectory(Path.GetDirectoryName(tenant.StatePath)!);
+            if (File.Exists(tenant.StatePath))
+            {
+                await using var stream = File.OpenRead(tenant.StatePath);
+                tenant.State = await JsonSerializer.DeserializeAsync<MemberDirectoryState>(stream, jsonOptions, cancellationToken) ?? new();
+            }
+            tenant.Initialized = true;
+            return tenant;
+        }
+        finally { tenant.Gate.Release(); }
+    }
+
+    private async Task SaveUnsafeAsync(TenantDirectory tenant, CancellationToken cancellationToken)
+    {
+        var temporaryPath = $"{tenant.StatePath}.{Guid.NewGuid():N}.tmp";
+        await using (var stream = new FileStream(temporaryPath, FileMode.CreateNew, FileAccess.Write, FileShare.None, 81920, true))
+            await JsonSerializer.SerializeAsync(stream, tenant.State, jsonOptions, cancellationToken);
+        File.Move(temporaryPath, tenant.StatePath, true);
     }
 
     private async Task<List<List<string>>> ReadDelimitedAsync(Stream content, CancellationToken cancellationToken)
     {
         using var reader = new StreamReader(content, Encoding.UTF8, true, 81920, leaveOpen: true);
         var text = await reader.ReadToEndAsync(cancellationToken);
-        var separator = DetectSeparator(text);
-        return ParseDelimited(text, separator);
+        return ParseDelimited(text, DetectSeparator(text));
     }
 
     private static char DetectSeparator(string text)
@@ -237,8 +231,7 @@ public sealed class MemberDirectoryStore(IWebHostEnvironment environment, IConfi
                 var columnIndex = ColumnIndex(reference);
                 var type = cell.Attribute("t")?.Value;
                 string value;
-                if (type == "inlineStr")
-                    value = string.Concat(cell.Descendants(main + "t").Select(node => node.Value));
+                if (type == "inlineStr") value = string.Concat(cell.Descendants(main + "t").Select(node => node.Value));
                 else
                 {
                     value = cell.Element(main + "v")?.Value ?? string.Empty;
@@ -307,8 +300,7 @@ public sealed class MemberDirectoryStore(IWebHostEnvironment environment, IConfi
     private static int? ParseBirthYear(string value)
     {
         if (string.IsNullOrWhiteSpace(value)) return null;
-        if (int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var year) && year is >= 1850 and <= 2200)
-            return year;
+        if (int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var year) && year is >= 1850 and <= 2200) return year;
         if (double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var serial) && serial is > 1 and < 200000)
         {
             try
@@ -326,22 +318,21 @@ public sealed class MemberDirectoryStore(IWebHostEnvironment environment, IConfi
             "M/d/yyyy", "MM/dd/yyyy", "d MMM yyyy", "dd MMM yyyy"
         ];
         if (DateTime.TryParseExact(value.Trim(), formats, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces, out var exactDate)
-            && exactDate.Year is >= 1850 and <= 2200)
-            return exactDate.Year;
+            && exactDate.Year is >= 1850 and <= 2200) return exactDate.Year;
         if (DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces, out var invariantDate)
-            && invariantDate.Year is >= 1850 and <= 2200)
-            return invariantDate.Year;
+            && invariantDate.Year is >= 1850 and <= 2200) return invariantDate.Year;
         return null;
     }
 
     private T Clone<T>(T value) => JsonSerializer.Deserialize<T>(JsonSerializer.Serialize(value, jsonOptions), jsonOptions)!;
-    private static string ResolveDataRoot(IWebHostEnvironment environment, IConfiguration configuration)
-    {
-        var configured = configuration["DATA_PATH"];
-        return string.IsNullOrWhiteSpace(configured) ? Path.Combine(environment.ContentRootPath, "data-store") : Path.GetFullPath(configured);
-    }
-
     private sealed record MemberColumns(int FullName, int FirstName, int Initial, int Surname, int DateOfBirth, int MembershipNumber);
+    private sealed class TenantDirectory(string statePath)
+    {
+        public string StatePath { get; } = statePath;
+        public SemaphoreSlim Gate { get; } = new(1, 1);
+        public MemberDirectoryState State { get; set; } = new();
+        public bool Initialized { get; set; }
+    }
 }
 
 public sealed class MemberImportException(string message) : Exception(message);

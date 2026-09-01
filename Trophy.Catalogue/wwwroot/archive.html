@@ -4,28 +4,26 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0a2a21">
-  <meta name="description" content="Build and verify the winners archive for Burton-on-Trent Golf Club's historic trophies.">
-  <meta property="og:title" content="Trophy Archive · Burton-on-Trent Golf Club">
-  <meta property="og:description" content="Preserving every name. Every year.">
-  <meta property="og:image" content="/og.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Trophy Archive · Burton-on-Trent Golf Club">
-  <meta name="twitter:description" content="Preserving every name. Every year.">
-  <meta name="twitter:image" content="/og.png">
-  <title>Trophy Archive · Burton-on-Trent Golf Club</title>
+  <meta name="description" content="Build and verify a searchable archive of the names and years engraved on your club's historic trophies.">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Your Trophy Archive</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/accounts.css">
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar">
       <a class="club-mark" href="#catalogue" aria-label="Go to trophy catalogue">
-        <span class="club-monogram">B</span>
-        <span><strong>Burton-on-Trent</strong><small>Golf Club · Trophy Archive</small></span>
+        <span class="club-brand-symbol">
+          <img id="club-logo" class="club-logo" src="" alt="" hidden>
+          <span id="club-monogram" class="club-monogram">T</span>
+        </span>
+        <span><strong id="club-name">Your club</strong><small id="club-subtitle">Trophy Archive</small></span>
       </a>
       <div class="header-actions">
         <a class="export-link" href="/api/export.csv" download>
@@ -128,37 +126,68 @@
             <div><p class="step-label">Step 2</p><h2>Check the winners</h2></div>
             <button id="add-winner-button" class="text-button" type="button">+ Add winner</button>
           </div>
-
           <div class="timeline-range">
             <div><strong>Expected span</strong><small>Optional — use records from elsewhere to expose gaps.</small></div>
             <label><span>From</span><input id="timeline-start" type="number" min="1800" max="2200" inputmode="numeric" placeholder="First"></label>
             <label><span>To</span><input id="timeline-end" type="number" min="1800" max="2200" inputmode="numeric" placeholder="Latest"></label>
             <button id="save-range-button" type="button">Set</button>
           </div>
-
           <div id="missing-years" class="missing-years" hidden></div>
-          <div id="empty-winners" class="empty-winners">
-            <span>✦</span><strong>No winners recorded yet</strong><p>Add a photograph or enter a winner manually.</p>
-          </div>
+          <div id="empty-winners" class="empty-winners"><span>✦</span><strong>No winners recorded yet</strong><p>Add a photograph or enter a winner manually.</p></div>
           <div id="winner-list" class="winner-list"></div>
-          <button id="complete-button" class="save-button" type="button">
-            <span>Save confirmed list</span><small id="save-summary">0 winners</small>
-          </button>
+          <button id="complete-button" class="save-button" type="button"><span>Save confirmed list</span><small id="save-summary">0 winners</small></button>
         </section>
       </div>
     </main>
   </div>
 
-  <section id="login-screen" class="login-screen" hidden aria-labelledby="login-title">
-    <form id="login-form" class="login-card">
-      <span class="login-monogram">B</span>
-      <p class="eyebrow">Burton-on-Trent Golf Club</p>
-      <h1 id="login-title">Trophy Archive</h1>
-      <p>Enter the club archive password to continue.</p>
-      <label><span>Password</span><input id="password-input" type="password" autocomplete="current-password" required autofocus></label>
-      <p id="login-error" class="form-error" role="alert" hidden></p>
-      <button type="submit">Open the archive</button>
-      <small>Historic names, safely preserved.</small>
+  <section id="login-screen" class="login-screen" hidden aria-labelledby="auth-title">
+    <div class="login-card auth-card">
+      <span class="login-monogram">T</span>
+      <p class="eyebrow">Trophy Archive</p>
+      <h1 id="auth-title">Preserve your club history</h1>
+      <p>Create your club archive, or sign in to continue an existing collection.</p>
+      <div class="auth-tabs" role="tablist" aria-label="Account access">
+        <button id="show-login-button" class="is-active" type="button" role="tab" aria-selected="true">Sign in</button>
+        <button id="show-signup-button" type="button" role="tab" aria-selected="false">Create account</button>
+      </div>
+      <form id="login-form" class="auth-form">
+        <label><span>Email address</span><input id="login-email" type="email" autocomplete="email" required></label>
+        <label><span>Password</span><input id="login-password" type="password" autocomplete="current-password" required></label>
+        <p id="login-error" class="form-error" role="alert" hidden></p>
+        <button type="submit">Sign in</button>
+      </form>
+      <form id="signup-form" class="auth-form" hidden>
+        <label><span>Your name</span><input id="signup-name" type="text" maxlength="100" autocomplete="name" required></label>
+        <label><span>Email address</span><input id="signup-email" type="email" autocomplete="email" required></label>
+        <label><span>Password</span><input id="signup-password" type="password" minlength="10" maxlength="128" autocomplete="new-password" aria-describedby="password-help" required></label>
+        <small id="password-help" class="field-help">At least 10 characters, including a letter and a number.</small>
+        <p id="signup-error" class="form-error" role="alert" hidden></p>
+        <button type="submit">Create my archive</button>
+      </form>
+      <small class="auth-assurance">Your club’s collection stays separate from every other archive.</small>
+    </div>
+  </section>
+
+  <section id="club-setup-screen" class="club-setup-screen" hidden aria-labelledby="club-setup-title">
+    <form id="club-setup-form" class="club-setup-card">
+      <div class="setup-progress"><span class="is-complete">1</span><i></i><span class="is-active">2</span></div>
+      <p class="eyebrow">Account created · One last step</p>
+      <h1 id="club-setup-title">Set up your club</h1>
+      <p>These details and your logo personalise the archive your team will use.</p>
+      <label class="logo-picker">
+        <span id="club-logo-preview" class="logo-preview"><b>+</b><small>Add club logo</small></span>
+        <input id="club-logo-input" name="logo" type="file" accept="image/jpeg,image/png,image/webp" required hidden>
+      </label>
+      <label><span>Club or organisation name</span><input id="club-name-input" name="name" maxlength="160" autocomplete="organization" required placeholder="e.g. Northfield Golf Club"></label>
+      <div class="setup-form-grid">
+        <label><span>Sport or activity</span><input id="club-sport-input" name="sport" maxlength="80" required placeholder="e.g. Golf"></label>
+        <label><span>Country</span><input id="club-country-input" name="country" maxlength="100" autocomplete="country-name" required placeholder="e.g. United Kingdom"></label>
+      </div>
+      <label><span>Club website <em>optional</em></span><input id="club-website-input" name="website" type="url" autocomplete="url" placeholder="https://www.yourclub.org"></label>
+      <p id="club-setup-error" class="form-error" role="alert" hidden></p>
+      <button class="setup-submit" type="submit">Create club archive <span>→</span></button>
+      <button id="setup-signout-button" class="setup-signout" type="button">Use a different account</button>
     </form>
   </section>
 

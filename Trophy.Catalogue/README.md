@@ -1,19 +1,20 @@
 # Trophy Archive AI
 
-A mobile-first working archive for recovering the names and years engraved on historic trophies.
+A mobile-first archive for recovering the names and years engraved on historic trophies.
 
-The current repository contains the proven Burton-on-Trent Golf Club archive plus a commercial product preview. It can:
+The application now provides a complete customer entry journey:
 
-- create new trophy records from the mobile catalogue;
-- take repeated photographs or upload a batch of photographs and rubbings;
-- consolidate the complete image set with an OpenAI vision model after the user pauses;
-- generate a catalogue illustration from up to four real trophy angles;
-- edit, confirm and manually add winners, including highlighted missing years;
-- import CSV, TSV or XLSX member exports without retaining the original spreadsheet or full date of birth;
-- suggest age-plausible probabilistic member matches and explain their confidence; and
-- export trophy, winner and optional member-match data as CSV.
+- individual account signup and sign-in using protected, persistent ASP.NET Core sessions;
+- required club onboarding with club name, sport, country, optional website and club logo;
+- a private catalogue, member directory, uploads and illustrations for each club;
+- a photo-first new-trophy wizard that creates the record, uploads one or more angles, starts inscription reading in the background and automatically generates the catalogue illustration;
+- repeated photographs, batch uploads and complementary rubbings;
+- editable winners, manual missing-year entry and confirmed human review;
+- CSV, TSV or XLSX member import with full dates of birth reduced to birth year;
+- age-aware fuzzy member matching; and
+- CSV archive export.
 
-The public home page is intentionally marked as a commercial preview. The current persistence and password gate are still single-club architecture; they are not a safe substitute for multi-tenant accounts and billing. See [COMMERCIAL-LAUNCH.md](COMMERCIAL-LAUNCH.md) for the recommended pricing, Stripe model, privacy boundaries, launch architecture and release gates.
+If an upgraded deployment already contains the original single-club `catalogue-state.json`, the first account to complete club setup claims that archive. New clubs receive empty, isolated collections.
 
 ## Run locally
 
@@ -24,43 +25,36 @@ $env:OPENAI_API_KEY = "your-project-key"
 dotnet run
 ```
 
-Open `http://127.0.0.1:5173` for the product page, or `http://127.0.0.1:5173/archive.html#catalogue` for the working archive. A password is optional in local Development. Without an OpenAI key, uploads, imports and manual editing still work; AI reading and illustration generation remain disabled.
+Open `http://127.0.0.1:5173` for the product page, or `http://127.0.0.1:5173/archive.html#signup` to create an account. Without an OpenAI key, accounts, club setup, uploads, imports and manual editing still work; AI reading and illustration generation remain disabled.
 
-Local records, member matches, uploads and generated illustrations are stored in `data-store/`, which is deliberately ignored by Git. Fictional CSV and XLSX member-import examples are available in `Data/member-import-template.csv` and `outputs/commercial-member-import/member-import-template.xlsx`.
+Local account records, protected session keys, club logos, catalogues, member matches, uploads and generated illustrations are stored under `data-store/`, which is deliberately ignored by Git.
 
 ## AI configuration
 
 - `OPENAI_MODEL` selects the engraving reader model.
-- `OPENAI_IMAGE_MODEL` selects the image edit model and defaults to `gpt-image-2`.
+- `OPENAI_IMAGE_MODEL` selects the image model and defaults to `gpt-image-2`.
+- `OPENAI_IMAGE_SIZE` and `OPENAI_IMAGE_QUALITY` control generated illustration output.
 - `TROPHY_ILLUSTRATION_PROMPT` replaces the built-in museum-catalogue prompt. Include `{{trophy_name}}` if the name should be inserted.
-- `ANALYSIS_DEBOUNCE_SECONDS` controls how long the background reader waits after the most recent upload so that a phone user can add several photographs first.
+- `ANALYSIS_DEBOUNCE_SECONDS` controls how long the background reader waits after the most recent upload so a phone user can add several photographs first.
 
-Evidence uploads are sent to OpenAI only when an analysis or illustration is requested. The engraving reader sets `store: false`. Human-confirmed winner records are not silently replaced by later automatic readings.
+Evidence uploads are sent to OpenAI only for engraving analysis or illustration generation. The engraving reader sets `store: false`. Human-confirmed winner records are not silently replaced by later automatic readings.
 
-## Release the current single-club archive to Render
+## Release to Render
 
-This repository is a monorepo. Create a Render Blueprint for the repository and set the Blueprint file path to:
+This repository is a monorepo. Create a Render Blueprint and set the Blueprint file path to:
 
 ```text
 Trophy.Catalogue/render.yaml
 ```
 
-During Blueprint creation, Render asks for two secrets:
+Render asks for one secret: `OPENAI_API_KEY`. The Blueprint builds the Docker image, deploys in Frankfurt, checks `/health`, and mounts a 5 GB persistent disk at `/var/data`. The persistent disk is essential: it stores account data, the ASP.NET Core data-protection key ring, club identities, evidence and generated output.
 
-1. `APP_PASSWORD` — the shared password protecting the current archive and its billable AI actions.
-2. `OPENAI_API_KEY` — an OpenAI project API key with billing enabled.
+The current topology intentionally uses one Render instance and its attached disk. It is suitable for product validation and small-scale launch, but billing should remain disabled until the database/object-storage, email verification, password recovery, subscription entitlements, backups and account-deletion gates in [COMMERCIAL-LAUNCH.md](COMMERCIAL-LAUNCH.md) are complete.
 
-The included Blueprint builds the Docker image, deploys in Frankfurt, checks `/health`, and mounts a 5 GB persistent disk at `/var/data`. This topology remains suitable for the existing single-club archive only. Do not expose it as a paid multi-customer service; complete the production gates in `COMMERCIAL-LAUNCH.md` first.
+## Security and privacy boundaries
 
-Useful official references:
-
-- [Render Blueprints](https://render.com/docs/infrastructure-as-code)
-- [Render persistent disks](https://render.com/docs/disks)
-- [OpenAI image generation](https://developers.openai.com/api/docs/guides/image-generation)
-
-## Data and privacy
-
-- The current Render service stores catalogue JSON, generated illustrations, member birth years/membership numbers and original evidence images on its attached disk.
-- The member importer persists only normalised matching fields. Full dates of birth are reduced to birth year in memory, and the uploaded spreadsheet is not retained.
-- Member matches are suggestions with a confidence and explanation; a human remains responsible for verification.
-- Keep Render backups and periodically download the CSV. The CSV is the simplest portable copy of the reconstructed archive.
+- Passwords are hashed with ASP.NET Core's password hasher; plaintext passwords are never stored.
+- Account cookies are HTTP-only, same-site and secure in production. Their data-protection keys persist on the Render disk so restarts do not invalidate every session.
+- Catalogue, member and image paths are resolved from the authenticated club on the server; a trophy identifier alone cannot cross into another club.
+- Full dates of birth are reduced to birth year during import, and the uploaded member spreadsheet is not retained.
+- Keep Render disk snapshots and periodically download archive CSV exports.

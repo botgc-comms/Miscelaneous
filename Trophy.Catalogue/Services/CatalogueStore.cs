@@ -1,98 +1,56 @@
+using System.Collections.Concurrent;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Trophy.Catalogue.Domain;
 
 namespace Trophy.Catalogue.Services;
 
-public sealed class CatalogueStore(IWebHostEnvironment environment, IConfiguration configuration)
+public sealed class CatalogueStore(
+    IWebHostEnvironment environment,
+    IConfiguration configuration,
+    ClubContextAccessor clubContext)
 {
-    private readonly SemaphoreSlim gate = new(1, 1);
+    private readonly ConcurrentDictionary<string, TenantCatalogue> tenants = new(StringComparer.OrdinalIgnoreCase);
     private readonly JsonSerializerOptions jsonOptions = new(JsonSerializerDefaults.Web)
     {
         PropertyNameCaseInsensitive = true,
         WriteIndented = true,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
-    private readonly string dataRoot = ResolveDataRoot(environment, configuration);
+    private readonly string dataRoot = AppDataPath.Resolve(environment, configuration);
     private readonly string seedPath = Path.Combine(environment.ContentRootPath, "Data", "trophies.json");
     private readonly bool skipSeedCatalogue = configuration.GetValue("SKIP_SEED_CATALOGUE", false);
-    private CatalogueState state = new();
-
-    private string StatePath => Path.Combine(dataRoot, "catalogue-state.json");
-    private string UploadRoot => Path.Combine(dataRoot, "uploads");
-    private string IllustrationRoot => Path.Combine(dataRoot, "illustrations");
-
-    public async Task InitializeAsync(CancellationToken cancellationToken = default)
-    {
-        Directory.CreateDirectory(dataRoot);
-        Directory.CreateDirectory(UploadRoot);
-        Directory.CreateDirectory(IllustrationRoot);
-
-        await gate.WaitAsync(cancellationToken);
-        try
-        {
-            var seeds = await ReadSeedsAsync(cancellationToken);
-            if (File.Exists(StatePath))
-            {
-                await using var stream = File.OpenRead(StatePath);
-                state = await JsonSerializer.DeserializeAsync<CatalogueState>(stream, jsonOptions, cancellationToken) ?? new CatalogueState();
-            }
-
-            var existingIds = state.Trophies.Select(trophy => trophy.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
-            foreach (var seed in seeds.Where(seed => !existingIds.Contains(seed.Id))) state.Trophies.Add(FromSeed(seed));
-
-            foreach (var trophy in state.Trophies)
-            {
-                var seed = seeds.FirstOrDefault(item => item.Id.Equals(trophy.Id, StringComparison.OrdinalIgnoreCase));
-                if (seed is not null)
-                {
-                    trophy.Name = seed.Name;
-                    trophy.SecondaryName = seed.SecondaryName;
-                    trophy.Category = seed.Category;
-                    if (trophy.IllustrationState != IllustrationStates.Complete) trophy.ReferenceImage = seed.ReferenceImage;
-                }
-                NormalizeEvidenceUrls(trophy);
-                if (trophy.IllustrationState == IllustrationStates.Complete)
-                    trophy.ReferenceImage = $"/api/trophies/{Uri.EscapeDataString(trophy.Id)}/illustration";
-            }
-
-            state.Version = 2;
-            state.Trophies = state.Trophies.OrderBy(trophy => trophy.Id, StringComparer.OrdinalIgnoreCase).ToList();
-            await SaveUnsafeAsync(cancellationToken);
-        }
-        finally
-        {
-            gate.Release();
-        }
-    }
 
     public async Task<IReadOnlyList<TrophySummary>> GetSummariesAsync(CancellationToken cancellationToken = default)
     {
-        await gate.WaitAsync(cancellationToken);
-        try { return state.Trophies.Select(ToSummary).ToList(); }
-        finally { gate.Release(); }
+        var tenant = await GetTenantAsync(cancellationToken);
+        await tenant.Gate.WaitAsync(cancellationToken);
+        try { return tenant.State.Trophies.Select(ToSummary).ToList(); }
+        finally { tenant.Gate.Release(); }
     }
 
     public async Task<TrophyRecord?> GetTrophyAsync(string id, CancellationToken cancellationToken = default)
     {
-        await gate.WaitAsync(cancellationToken);
+        var tenant = await GetTenantAsync(cancellationToken);
+        await tenant.Gate.WaitAsync(cancellationToken);
         try
         {
-            var trophy = Find(id);
+            var trophy = Find(tenant, id);
             return trophy is null ? null : Clone(trophy);
         }
-        finally { gate.Release(); }
+        finally { tenant.Gate.Release(); }
     }
 
     public async Task<TrophyRecord> CreateTrophyAsync(TrophyCreateInput input, CancellationToken cancellationToken = default)
     {
-        await gate.WaitAsync(cancellationToken);
+        var tenant = await GetTenantAsync(cancellationToken);
+        await tenant.Gate.WaitAsync(cancellationToken);
         try
         {
-            var requestedCode = SafeSegment(input.Code ?? string.Empty).ToUpperInvariant();
-            var id = string.IsNullOrWhiteSpace(requestedCode) ? NextTrophyId() : requestedCode;
+            var requestedCode = AppDataPath.SafeSegment(input.Code ?? string.Empty).ToUpperInvariant();
+            var id = string.IsNullOrWhiteSpace(requestedCode) ? NextTrophyId(tenant) : requestedCode;
             if (id.Length > 24) id = id[..24];
-            if (Find(id) is not null) throw new InvalidOperationException("That trophy code is already in use.");
+            if (Find(tenant, id) is not null) throw new InvalidOperationException("That trophy code is already in use.");
             var trophy = new TrophyRecord
             {
                 Id = id,
@@ -101,12 +59,12 @@ public sealed class CatalogueStore(IWebHostEnvironment environment, IConfigurati
                 Category = string.IsNullOrWhiteSpace(input.Category) ? "Other" : input.Category.Trim(),
                 ReferenceImage = "/catalogue/fallback.svg"
             };
-            state.Trophies.Add(trophy);
-            state.Trophies = state.Trophies.OrderBy(item => item.Id, StringComparer.OrdinalIgnoreCase).ToList();
-            await SaveUnsafeAsync(cancellationToken);
+            tenant.State.Trophies.Add(trophy);
+            tenant.State.Trophies = tenant.State.Trophies.OrderBy(item => item.Id, StringComparer.OrdinalIgnoreCase).ToList();
+            await SaveUnsafeAsync(tenant, cancellationToken);
             return Clone(trophy);
         }
-        finally { gate.Release(); }
+        finally { tenant.Gate.Release(); }
     }
 
     public async Task<EvidenceImage?> AddEvidenceAsync(
@@ -117,10 +75,11 @@ public sealed class CatalogueStore(IWebHostEnvironment environment, IConfigurati
         Stream content,
         CancellationToken cancellationToken = default)
     {
-        await gate.WaitAsync(cancellationToken);
+        var tenant = await GetTenantAsync(cancellationToken);
+        await tenant.Gate.WaitAsync(cancellationToken);
         try
         {
-            var trophy = Find(trophyId);
+            var trophy = Find(tenant, trophyId);
             if (trophy is null) return null;
             var evidence = new EvidenceImage
             {
@@ -131,43 +90,45 @@ public sealed class CatalogueStore(IWebHostEnvironment environment, IConfigurati
             };
             evidence.StoredName = $"{evidence.Id}{ExtensionFor(contentType)}";
             evidence.Url = $"/api/trophies/{Uri.EscapeDataString(trophy.Id)}/images/{evidence.Id}";
-            var directory = Path.Combine(UploadRoot, SafeSegment(trophy.Id));
+            var directory = Path.Combine(UploadRoot(tenant), AppDataPath.SafeSegment(trophy.Id));
             Directory.CreateDirectory(directory);
             var path = Path.Combine(directory, evidence.StoredName);
             await using (var output = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.None, 81920, true))
                 await content.CopyToAsync(output, cancellationToken);
             trophy.Evidence.Add(evidence);
             trophy.Status = TrophyStatuses.InProgress;
-            await SaveUnsafeAsync(cancellationToken);
+            await SaveUnsafeAsync(tenant, cancellationToken);
             return Clone(evidence);
         }
-        finally { gate.Release(); }
+        finally { tenant.Gate.Release(); }
     }
 
     public async Task<string?> GetEvidencePathAsync(string trophyId, string evidenceId, CancellationToken cancellationToken = default)
     {
-        await gate.WaitAsync(cancellationToken);
+        var tenant = await GetTenantAsync(cancellationToken);
+        await tenant.Gate.WaitAsync(cancellationToken);
         try
         {
-            var trophy = Find(trophyId);
+            var trophy = Find(tenant, trophyId);
             var evidence = trophy?.Evidence.FirstOrDefault(item => item.Id == evidenceId);
             if (evidence is null) return null;
-            var directory = Path.Combine(UploadRoot, SafeSegment(trophy!.Id));
+            var directory = Path.Combine(UploadRoot(tenant), AppDataPath.SafeSegment(trophy!.Id));
             var exact = string.IsNullOrWhiteSpace(evidence.StoredName) ? null : Path.Combine(directory, evidence.StoredName);
             if (exact is not null && File.Exists(exact)) return exact;
             return Directory.Exists(directory) ? Directory.EnumerateFiles(directory, $"{evidence.Id}.*").FirstOrDefault() : null;
         }
-        finally { gate.Release(); }
+        finally { tenant.Gate.Release(); }
     }
 
     public async Task<IReadOnlyList<(EvidenceImage Evidence, string Path)>> GetEvidenceFilesAsync(string trophyId, CancellationToken cancellationToken = default)
     {
-        await gate.WaitAsync(cancellationToken);
+        var tenant = await GetTenantAsync(cancellationToken);
+        await tenant.Gate.WaitAsync(cancellationToken);
         try
         {
-            var trophy = Find(trophyId);
+            var trophy = Find(tenant, trophyId);
             if (trophy is null) return [];
-            var directory = Path.Combine(UploadRoot, SafeSegment(trophy.Id));
+            var directory = Path.Combine(UploadRoot(tenant), AppDataPath.SafeSegment(trophy.Id));
             var files = new List<(EvidenceImage, string)>();
             foreach (var evidence in trophy.Evidence.OrderBy(item => item.UploadedAt))
             {
@@ -179,27 +140,28 @@ public sealed class CatalogueStore(IWebHostEnvironment environment, IConfigurati
             }
             return files;
         }
-        finally { gate.Release(); }
+        finally { tenant.Gate.Release(); }
     }
 
     public async Task<bool> DeleteEvidenceAsync(string trophyId, string evidenceId, CancellationToken cancellationToken = default)
     {
-        await gate.WaitAsync(cancellationToken);
+        var tenant = await GetTenantAsync(cancellationToken);
+        await tenant.Gate.WaitAsync(cancellationToken);
         try
         {
-            var trophy = Find(trophyId);
+            var trophy = Find(tenant, trophyId);
             var evidence = trophy?.Evidence.FirstOrDefault(item => item.Id == evidenceId);
             if (trophy is null || evidence is null) return false;
             trophy.Evidence.Remove(evidence);
             foreach (var winner in trophy.Winners) winner.EvidenceImageIds.Remove(evidenceId);
-            var directory = Path.Combine(UploadRoot, SafeSegment(trophy.Id));
+            var directory = Path.Combine(UploadRoot(tenant), AppDataPath.SafeSegment(trophy.Id));
             if (Directory.Exists(directory))
                 foreach (var path in Directory.EnumerateFiles(directory, $"{evidence.Id}.*")) File.Delete(path);
             trophy.Status = TrophyStatuses.InProgress;
-            await SaveUnsafeAsync(cancellationToken);
+            await SaveUnsafeAsync(tenant, cancellationToken);
             return true;
         }
-        finally { gate.Release(); }
+        finally { tenant.Gate.Release(); }
     }
 
     public async Task SetEvidenceProcessingAsync(
@@ -209,16 +171,17 @@ public sealed class CatalogueStore(IWebHostEnvironment environment, IConfigurati
         string? message,
         CancellationToken cancellationToken = default)
     {
-        await gate.WaitAsync(cancellationToken);
+        var tenant = await GetTenantAsync(cancellationToken);
+        await tenant.Gate.WaitAsync(cancellationToken);
         try
         {
-            var evidence = Find(trophyId)?.Evidence.FirstOrDefault(item => item.Id == evidenceId);
+            var evidence = Find(tenant, trophyId)?.Evidence.FirstOrDefault(item => item.Id == evidenceId);
             if (evidence is null) return;
             evidence.ProcessingState = processingState;
             evidence.ProcessingMessage = message;
-            await SaveUnsafeAsync(cancellationToken);
+            await SaveUnsafeAsync(tenant, cancellationToken);
         }
-        finally { gate.Release(); }
+        finally { tenant.Gate.Release(); }
     }
 
     public async Task<TrophyRecord?> MergeAiExtractionAsync(
@@ -227,10 +190,11 @@ public sealed class CatalogueStore(IWebHostEnvironment environment, IConfigurati
         IReadOnlyCollection<string> evidenceIds,
         CancellationToken cancellationToken = default)
     {
-        await gate.WaitAsync(cancellationToken);
+        var tenant = await GetTenantAsync(cancellationToken);
+        await tenant.Gate.WaitAsync(cancellationToken);
         try
         {
-            var trophy = Find(trophyId);
+            var trophy = Find(tenant, trophyId);
             if (trophy is null) return null;
             trophy.Winners.RemoveAll(winner => winner.Source == WinnerSources.Ai && winner.ReviewState != ReviewStates.Confirmed);
             var protectedYears = trophy.Winners.Select(winner => winner.Year).ToHashSet();
@@ -253,18 +217,19 @@ public sealed class CatalogueStore(IWebHostEnvironment environment, IConfigurati
             }
             trophy.Winners = trophy.Winners.OrderBy(winner => winner.Year).ThenBy(winner => winner.Name).ToList();
             trophy.Status = TrophyStatuses.InProgress;
-            await SaveUnsafeAsync(cancellationToken);
+            await SaveUnsafeAsync(tenant, cancellationToken);
             return Clone(trophy);
         }
-        finally { gate.Release(); }
+        finally { tenant.Gate.Release(); }
     }
 
     public async Task<WinnerRecord?> AddWinnerAsync(string trophyId, WinnerInput input, CancellationToken cancellationToken = default)
     {
-        await gate.WaitAsync(cancellationToken);
+        var tenant = await GetTenantAsync(cancellationToken);
+        await tenant.Gate.WaitAsync(cancellationToken);
         try
         {
-            var trophy = Find(trophyId);
+            var trophy = Find(tenant, trophyId);
             if (trophy is null) return null;
             var winner = new WinnerRecord
             {
@@ -278,18 +243,19 @@ public sealed class CatalogueStore(IWebHostEnvironment environment, IConfigurati
             trophy.Winners.Add(winner);
             trophy.Winners = trophy.Winners.OrderBy(item => item.Year).ThenBy(item => item.Name).ToList();
             trophy.Status = TrophyStatuses.InProgress;
-            await SaveUnsafeAsync(cancellationToken);
+            await SaveUnsafeAsync(tenant, cancellationToken);
             return Clone(winner);
         }
-        finally { gate.Release(); }
+        finally { tenant.Gate.Release(); }
     }
 
     public async Task<WinnerRecord?> UpdateWinnerAsync(string trophyId, string winnerId, WinnerInput input, CancellationToken cancellationToken = default)
     {
-        await gate.WaitAsync(cancellationToken);
+        var tenant = await GetTenantAsync(cancellationToken);
+        await tenant.Gate.WaitAsync(cancellationToken);
         try
         {
-            var trophy = Find(trophyId);
+            var trophy = Find(tenant, trophyId);
             var winner = trophy?.Winners.FirstOrDefault(item => item.Id == winnerId);
             if (trophy is null || winner is null) return null;
             winner.Year = input.Year;
@@ -302,106 +268,112 @@ public sealed class CatalogueStore(IWebHostEnvironment environment, IConfigurati
             winner.UpdatedAt = DateTimeOffset.UtcNow;
             trophy.Winners = trophy.Winners.OrderBy(item => item.Year).ThenBy(item => item.Name).ToList();
             trophy.Status = TrophyStatuses.InProgress;
-            await SaveUnsafeAsync(cancellationToken);
+            await SaveUnsafeAsync(tenant, cancellationToken);
             return Clone(winner);
         }
-        finally { gate.Release(); }
+        finally { tenant.Gate.Release(); }
     }
 
     public async Task<bool> DeleteWinnerAsync(string trophyId, string winnerId, CancellationToken cancellationToken = default)
     {
-        await gate.WaitAsync(cancellationToken);
+        var tenant = await GetTenantAsync(cancellationToken);
+        await tenant.Gate.WaitAsync(cancellationToken);
         try
         {
-            var trophy = Find(trophyId);
+            var trophy = Find(tenant, trophyId);
             var winner = trophy?.Winners.FirstOrDefault(item => item.Id == winnerId);
             if (trophy is null || winner is null) return false;
             trophy.Winners.Remove(winner);
             trophy.Status = TrophyStatuses.InProgress;
-            await SaveUnsafeAsync(cancellationToken);
+            await SaveUnsafeAsync(tenant, cancellationToken);
             return true;
         }
-        finally { gate.Release(); }
+        finally { tenant.Gate.Release(); }
     }
 
     public async Task<TrophyRecord?> UpdateTimelineAsync(string trophyId, TimelineInput input, CancellationToken cancellationToken = default)
     {
-        await gate.WaitAsync(cancellationToken);
+        var tenant = await GetTenantAsync(cancellationToken);
+        await tenant.Gate.WaitAsync(cancellationToken);
         try
         {
-            var trophy = Find(trophyId);
+            var trophy = Find(tenant, trophyId);
             if (trophy is null) return null;
             trophy.TimelineStartYear = input.StartYear;
             trophy.TimelineEndYear = input.EndYear;
             trophy.Status = TrophyStatuses.InProgress;
-            await SaveUnsafeAsync(cancellationToken);
+            await SaveUnsafeAsync(tenant, cancellationToken);
             return Clone(trophy);
         }
-        finally { gate.Release(); }
+        finally { tenant.Gate.Release(); }
     }
 
     public async Task<TrophyRecord?> MarkCompleteAsync(string trophyId, CancellationToken cancellationToken = default)
     {
-        await gate.WaitAsync(cancellationToken);
+        var tenant = await GetTenantAsync(cancellationToken);
+        await tenant.Gate.WaitAsync(cancellationToken);
         try
         {
-            var trophy = Find(trophyId);
+            var trophy = Find(tenant, trophyId);
             if (trophy is null) return null;
             trophy.Status = TrophyStatuses.Complete;
             trophy.LastSavedAt = DateTimeOffset.UtcNow;
-            await SaveUnsafeAsync(cancellationToken);
+            await SaveUnsafeAsync(tenant, cancellationToken);
             return Clone(trophy);
         }
-        finally { gate.Release(); }
+        finally { tenant.Gate.Release(); }
     }
 
     public async Task SetIllustrationStatusAsync(string trophyId, string status, string? message, CancellationToken cancellationToken = default)
     {
-        await gate.WaitAsync(cancellationToken);
+        var tenant = await GetTenantAsync(cancellationToken);
+        await tenant.Gate.WaitAsync(cancellationToken);
         try
         {
-            var trophy = Find(trophyId);
+            var trophy = Find(tenant, trophyId);
             if (trophy is null) return;
             trophy.IllustrationState = status;
             trophy.IllustrationMessage = message;
-            await SaveUnsafeAsync(cancellationToken);
+            await SaveUnsafeAsync(tenant, cancellationToken);
         }
-        finally { gate.Release(); }
+        finally { tenant.Gate.Release(); }
     }
 
     public async Task<TrophyRecord?> SaveIllustrationAsync(string trophyId, byte[] image, CancellationToken cancellationToken = default)
     {
-        await gate.WaitAsync(cancellationToken);
+        var tenant = await GetTenantAsync(cancellationToken);
+        await tenant.Gate.WaitAsync(cancellationToken);
         try
         {
-            var trophy = Find(trophyId);
+            var trophy = Find(tenant, trophyId);
             if (trophy is null) return null;
-            var path = Path.Combine(IllustrationRoot, $"{SafeSegment(trophy.Id)}.png");
-            var tempPath = $"{path}.{Guid.NewGuid():N}.tmp";
-            await File.WriteAllBytesAsync(tempPath, image, cancellationToken);
-            File.Move(tempPath, path, true);
+            var path = Path.Combine(IllustrationRoot(tenant), $"{AppDataPath.SafeSegment(trophy.Id)}.png");
+            var temporaryPath = $"{path}.{Guid.NewGuid():N}.tmp";
+            await File.WriteAllBytesAsync(temporaryPath, image, cancellationToken);
+            File.Move(temporaryPath, path, true);
             trophy.ReferenceImage = $"/api/trophies/{Uri.EscapeDataString(trophy.Id)}/illustration";
             trophy.IllustrationState = IllustrationStates.Complete;
             trophy.IllustrationMessage = "Illustration generated from the saved trophy photographs.";
             trophy.IllustrationGenerationCount++;
             trophy.IllustrationGeneratedAt = DateTimeOffset.UtcNow;
-            await SaveUnsafeAsync(cancellationToken);
+            await SaveUnsafeAsync(tenant, cancellationToken);
             return Clone(trophy);
         }
-        finally { gate.Release(); }
+        finally { tenant.Gate.Release(); }
     }
 
     public async Task<string?> GetIllustrationPathAsync(string trophyId, CancellationToken cancellationToken = default)
     {
-        await gate.WaitAsync(cancellationToken);
+        var tenant = await GetTenantAsync(cancellationToken);
+        await tenant.Gate.WaitAsync(cancellationToken);
         try
         {
-            var trophy = Find(trophyId);
+            var trophy = Find(tenant, trophyId);
             if (trophy?.IllustrationState != IllustrationStates.Complete) return null;
-            var path = Path.Combine(IllustrationRoot, $"{SafeSegment(trophy.Id)}.png");
+            var path = Path.Combine(IllustrationRoot(tenant), $"{AppDataPath.SafeSegment(trophy.Id)}.png");
             return File.Exists(path) ? path : null;
         }
-        finally { gate.Release(); }
+        finally { tenant.Gate.Release(); }
     }
 
     public async Task<TrophyRecord?> ApplyMemberMatchesAsync(
@@ -409,28 +381,30 @@ public sealed class CatalogueStore(IWebHostEnvironment environment, IConfigurati
         IReadOnlyDictionary<string, MemberMatchRecord?> matches,
         CancellationToken cancellationToken = default)
     {
-        await gate.WaitAsync(cancellationToken);
+        var tenant = await GetTenantAsync(cancellationToken);
+        await tenant.Gate.WaitAsync(cancellationToken);
         try
         {
-            var trophy = Find(trophyId);
+            var trophy = Find(tenant, trophyId);
             if (trophy is null) return null;
             foreach (var winner in trophy.Winners)
                 if (matches.TryGetValue(winner.Id, out var match)) winner.MemberMatch = match;
-            await SaveUnsafeAsync(cancellationToken);
+            await SaveUnsafeAsync(tenant, cancellationToken);
             return Clone(trophy);
         }
-        finally { gate.Release(); }
+        finally { tenant.Gate.Release(); }
     }
 
     public async Task ClearMemberMatchesAsync(CancellationToken cancellationToken = default)
     {
-        await gate.WaitAsync(cancellationToken);
+        var tenant = await GetTenantAsync(cancellationToken);
+        await tenant.Gate.WaitAsync(cancellationToken);
         try
         {
-            foreach (var winner in state.Trophies.SelectMany(trophy => trophy.Winners)) winner.MemberMatch = null;
-            await SaveUnsafeAsync(cancellationToken);
+            foreach (var winner in tenant.State.Trophies.SelectMany(trophy => trophy.Winners)) winner.MemberMatch = null;
+            await SaveUnsafeAsync(tenant, cancellationToken);
         }
-        finally { gate.Release(); }
+        finally { tenant.Gate.Release(); }
     }
 
     public static IReadOnlyList<int> MissingYears(TrophyRecord trophy)
@@ -443,14 +417,70 @@ public sealed class CatalogueStore(IWebHostEnvironment environment, IConfigurati
         return Enumerable.Range(start, end - start + 1).Where(year => !years.Contains(year)).ToList();
     }
 
-    private async Task<List<TrophySeed>> ReadSeedsAsync(CancellationToken cancellationToken)
+    private async Task<TenantCatalogue> GetTenantAsync(CancellationToken cancellationToken)
     {
-        if (skipSeedCatalogue) return [];
+        var clubId = clubContext.RequireClubId();
+        var tenant = tenants.GetOrAdd(clubId, id => new TenantCatalogue(id, AppDataPath.ClubRoot(dataRoot, id)));
+        if (tenant.Initialized) return tenant;
+        await tenant.Gate.WaitAsync(cancellationToken);
+        try
+        {
+            if (tenant.Initialized) return tenant;
+            Directory.CreateDirectory(tenant.Root);
+            Directory.CreateDirectory(UploadRoot(tenant));
+            Directory.CreateDirectory(IllustrationRoot(tenant));
+
+            var seeds = await ReadSeedsAsync(tenant, cancellationToken);
+            if (File.Exists(StatePath(tenant)))
+            {
+                await using var stream = File.OpenRead(StatePath(tenant));
+                tenant.State = await JsonSerializer.DeserializeAsync<CatalogueState>(stream, jsonOptions, cancellationToken) ?? new();
+            }
+            var existingIds = tenant.State.Trophies.Select(trophy => trophy.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            foreach (var seed in seeds.Where(seed => !existingIds.Contains(seed.Id))) tenant.State.Trophies.Add(FromSeed(seed));
+            foreach (var trophy in tenant.State.Trophies)
+            {
+                var seed = seeds.FirstOrDefault(item => item.Id.Equals(trophy.Id, StringComparison.OrdinalIgnoreCase));
+                if (seed is not null)
+                {
+                    trophy.Name = seed.Name;
+                    trophy.SecondaryName = seed.SecondaryName;
+                    trophy.Category = seed.Category;
+                    if (trophy.IllustrationState != IllustrationStates.Complete) trophy.ReferenceImage = seed.ReferenceImage;
+                }
+                NormalizeEvidenceUrls(trophy);
+                if (trophy.IllustrationState == IllustrationStates.Complete)
+                    trophy.ReferenceImage = $"/api/trophies/{Uri.EscapeDataString(trophy.Id)}/illustration";
+            }
+            tenant.State.Version = 2;
+            tenant.State.Trophies = tenant.State.Trophies.OrderBy(trophy => trophy.Id, StringComparer.OrdinalIgnoreCase).ToList();
+            await SaveUnsafeAsync(tenant, cancellationToken);
+            tenant.Initialized = true;
+            return tenant;
+        }
+        finally { tenant.Gate.Release(); }
+    }
+
+    private async Task<List<TrophySeed>> ReadSeedsAsync(TenantCatalogue tenant, CancellationToken cancellationToken)
+    {
+        if (skipSeedCatalogue || !tenant.ClubId.Equals("legacy", StringComparison.OrdinalIgnoreCase)) return [];
         if (!File.Exists(seedPath)) throw new FileNotFoundException("The trophy seed catalogue is missing.", seedPath);
         await using var stream = File.OpenRead(seedPath);
         return await JsonSerializer.DeserializeAsync<List<TrophySeed>>(stream, jsonOptions, cancellationToken) ?? [];
     }
 
+    private async Task SaveUnsafeAsync(TenantCatalogue tenant, CancellationToken cancellationToken)
+    {
+        tenant.State.UpdatedAt = DateTimeOffset.UtcNow;
+        var temporaryPath = $"{StatePath(tenant)}.{Guid.NewGuid():N}.tmp";
+        await using (var stream = new FileStream(temporaryPath, FileMode.CreateNew, FileAccess.Write, FileShare.None, 81920, true))
+            await JsonSerializer.SerializeAsync(stream, tenant.State, jsonOptions, cancellationToken);
+        File.Move(temporaryPath, StatePath(tenant), true);
+    }
+
+    private static string StatePath(TenantCatalogue tenant) => Path.Combine(tenant.Root, "catalogue-state.json");
+    private static string UploadRoot(TenantCatalogue tenant) => Path.Combine(tenant.Root, "uploads");
+    private static string IllustrationRoot(TenantCatalogue tenant) => Path.Combine(tenant.Root, "illustrations");
     private static TrophyRecord FromSeed(TrophySeed seed) => new()
     {
         Id = seed.Id,
@@ -460,18 +490,20 @@ public sealed class CatalogueStore(IWebHostEnvironment environment, IConfigurati
         ReferenceImage = seed.ReferenceImage
     };
 
-    private TrophyRecord? Find(string id) => state.Trophies.FirstOrDefault(trophy => trophy.Id.Equals(id, StringComparison.OrdinalIgnoreCase));
-    private string NextTrophyId()
+    private static TrophyRecord? Find(TenantCatalogue tenant, string id) =>
+        tenant.State.Trophies.FirstOrDefault(trophy => trophy.Id.Equals(id, StringComparison.OrdinalIgnoreCase));
+
+    private static string NextTrophyId(TenantCatalogue tenant)
     {
         for (var number = 1; number <= 99999; number++)
         {
             var candidate = $"T{number:000}";
-            if (Find(candidate) is null) return candidate;
+            if (Find(tenant, candidate) is null) return candidate;
         }
         return $"T{Guid.NewGuid():N}"[..12].ToUpperInvariant();
     }
 
-    private TrophySummary ToSummary(TrophyRecord trophy) => new(
+    private static TrophySummary ToSummary(TrophyRecord trophy) => new(
         trophy.Id,
         trophy.Name,
         trophy.SecondaryName,
@@ -484,35 +516,27 @@ public sealed class CatalogueStore(IWebHostEnvironment environment, IConfigurati
         MissingYears(trophy).Count,
         trophy.LastSavedAt);
 
-    private async Task SaveUnsafeAsync(CancellationToken cancellationToken)
-    {
-        state.UpdatedAt = DateTimeOffset.UtcNow;
-        var tempPath = $"{StatePath}.{Guid.NewGuid():N}.tmp";
-        await using (var stream = new FileStream(tempPath, FileMode.CreateNew, FileAccess.Write, FileShare.None, 81920, true))
-            await JsonSerializer.SerializeAsync(stream, state, jsonOptions, cancellationToken);
-        File.Move(tempPath, StatePath, true);
-    }
-
     private T Clone<T>(T value) => JsonSerializer.Deserialize<T>(JsonSerializer.Serialize(value, jsonOptions), jsonOptions)!;
-    private static string ResolveDataRoot(IWebHostEnvironment environment, IConfiguration configuration)
-    {
-        var configured = configuration["DATA_PATH"];
-        return string.IsNullOrWhiteSpace(configured) ? Path.Combine(environment.ContentRootPath, "data-store") : Path.GetFullPath(configured);
-    }
-
     private static string ExtensionFor(string contentType) => contentType.ToLowerInvariant() switch
     {
         "image/png" => ".png",
         "image/webp" => ".webp",
         _ => ".jpg"
     };
-
-    private static string SafeSegment(string value) => string.Concat(value.Where(character => char.IsLetterOrDigit(character) || character is '-' or '_'));
     private static string NormalizeReviewState(string value) => value == ReviewStates.Confirmed ? ReviewStates.Confirmed : ReviewStates.NeedsReview;
     private static string? NullIfEmpty(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
     private static void NormalizeEvidenceUrls(TrophyRecord trophy)
     {
         foreach (var evidence in trophy.Evidence)
             evidence.Url = $"/api/trophies/{Uri.EscapeDataString(trophy.Id)}/images/{evidence.Id}";
+    }
+
+    private sealed class TenantCatalogue(string clubId, string root)
+    {
+        public string ClubId { get; } = clubId;
+        public string Root { get; } = root;
+        public SemaphoreSlim Gate { get; } = new(1, 1);
+        public CatalogueState State { get; set; } = new();
+        public bool Initialized { get; set; }
     }
 }

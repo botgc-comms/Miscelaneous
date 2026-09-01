@@ -1,5 +1,12 @@
-using Microsoft.AspNetCore.Http.Features;
+using System.Security.Claims;
 using System.Text;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Trophy.Catalogue.Domain;
 using Trophy.Catalogue.Services;
 
@@ -7,6 +14,7 @@ namespace Trophy.Catalogue;
 
 public static class EntryPoint
 {
+    private const string AuthenticationScheme = "TrophyArchiveAccount";
     private static readonly HashSet<string> AcceptedImageTypes = new(StringComparer.OrdinalIgnoreCase)
     {
         "image/jpeg", "image/png", "image/webp"
@@ -15,13 +23,57 @@ public static class EntryPoint
     public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        var dataRoot = AppDataPath.Resolve(builder.Environment, builder.Configuration);
+        Directory.CreateDirectory(dataRoot);
+        var keyRing = Path.Combine(dataRoot, "key-ring");
+        Directory.CreateDirectory(keyRing);
+
         builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = 60 * 1024 * 1024);
         builder.Services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 60 * 1024 * 1024);
+        builder.Services.AddDataProtection()
+            .PersistKeysToFileSystem(new DirectoryInfo(keyRing))
+            .SetApplicationName("TrophyArchive");
+        builder.Services.AddAuthentication(AuthenticationScheme)
+            .AddCookie(AuthenticationScheme, options =>
+            {
+                options.Cookie.Name = builder.Environment.IsDevelopment() ? "trophy_archive_session" : "__Host-trophy_archive_session";
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+                options.Cookie.SameSite = SameSiteMode.Strict;
+                options.Cookie.SecurePolicy = builder.Environment.IsDevelopment()
+                    ? CookieSecurePolicy.SameAsRequest
+                    : CookieSecurePolicy.Always;
+                options.ExpireTimeSpan = TimeSpan.FromDays(30);
+                options.SlidingExpiration = true;
+                options.Events.OnRedirectToLogin = context =>
+                {
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    return context.Response.WriteAsJsonAsync(new { error = "unauthorized" });
+                };
+                options.Events.OnRedirectToAccessDenied = context =>
+                {
+                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                    return context.Response.WriteAsJsonAsync(new { error = "forbidden" });
+                };
+            });
+        builder.Services.AddRateLimiter(options =>
+        {
+            options.AddFixedWindowLimiter("authentication", limiter =>
+            {
+                limiter.PermitLimit = 12;
+                limiter.Window = TimeSpan.FromMinutes(1);
+                limiter.QueueLimit = 0;
+                limiter.AutoReplenishment = true;
+            });
+            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+        });
+        builder.Services.AddSingleton<IPasswordHasher<AccountRecord>, PasswordHasher<AccountRecord>>();
+        builder.Services.AddSingleton<ClubContextAccessor>();
+        builder.Services.AddSingleton<AccountStore>();
         builder.Services.AddSingleton<CatalogueStore>();
         builder.Services.AddSingleton<MemberDirectoryStore>();
         builder.Services.AddSingleton<FuzzyMemberMatcher>();
         builder.Services.AddSingleton<MemberMatchingCoordinator>();
-        builder.Services.AddSingleton<PasswordGate>();
         builder.Services.AddSingleton<OpenAiEngravingReader>();
         builder.Services.AddSingleton<OpenAiTrophyIllustrator>();
         builder.Services.AddSingleton<BackgroundAnalysisQueue>();
@@ -30,8 +82,7 @@ public static class EntryPoint
         builder.Services.AddHttpClient(nameof(OpenAiTrophyIllustrator), client => client.Timeout = TimeSpan.FromMinutes(5));
 
         var app = builder.Build();
-        await app.Services.GetRequiredService<CatalogueStore>().InitializeAsync();
-        await app.Services.GetRequiredService<MemberDirectoryStore>().InitializeAsync();
+        await app.Services.GetRequiredService<AccountStore>().InitializeAsync();
 
         app.Use(async (context, next) =>
         {
@@ -48,11 +99,13 @@ public static class EntryPoint
         {
             OnPrepareResponse = context =>
             {
-                context.Context.Response.Headers.CacheControl = context.File.Name is "index.html" or "app.js" or "styles.css" or "async.css" or "commercial.js" or "commercial.css"
+                context.Context.Response.Headers.CacheControl = context.File.Name is "index.html" or "archive.html" or "app.js" or "styles.css" or "async.css" or "commercial.js" or "commercial.css"
                     ? "no-cache"
                     : "public,max-age=604800";
             }
         });
+        app.UseRateLimiter();
+        app.UseAuthentication();
 
         app.Use(async (context, next) =>
         {
@@ -64,24 +117,48 @@ public static class EntryPoint
                 return;
             }
 
-            var gate = context.RequestServices.GetRequiredService<PasswordGate>();
-            if (gate.RequiresSetup)
-            {
-                context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
-                await context.Response.WriteAsJsonAsync(new { error = "setup_required", message = "Set APP_PASSWORD before using the archive." });
-                return;
-            }
-            if (!gate.IsAuthenticated(context))
+            var accountId = CurrentAccountId(context);
+            if (accountId is null)
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 await context.Response.WriteAsJsonAsync(new { error = "unauthorized" });
                 return;
             }
+
+            var accounts = context.RequestServices.GetRequiredService<AccountStore>();
+            var account = await accounts.GetAccountAsync(accountId, context.RequestAborted);
+            if (account is null)
+            {
+                await context.SignOutAsync(AuthenticationScheme);
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                await context.Response.WriteAsJsonAsync(new { error = "unauthorized" });
+                return;
+            }
+            context.Items["account"] = account;
+            var club = await accounts.GetClubForAccountAsync(accountId, context.RequestAborted);
+            context.Items["club"] = club;
+
+            var isClubRoute = context.Request.Path.StartsWithSegments("/api/club");
+            if (!isClubRoute && !accounts.IsClubComplete(club))
+            {
+                context.Response.StatusCode = StatusCodes.Status409Conflict;
+                await context.Response.WriteAsJsonAsync(new { error = "onboarding_required", message = "Complete your club details and add its logo first." });
+                return;
+            }
+
+            if (club is null)
+            {
+                await next();
+                return;
+            }
+            var clubContext = context.RequestServices.GetRequiredService<ClubContextAccessor>();
+            using var clubScope = clubContext.Push(club.Id);
             await next();
         });
 
         MapHealth(app);
         MapAuthentication(app);
+        MapClub(app);
         MapCatalogue(app);
         MapEvidence(app);
         MapIllustrations(app);
@@ -104,34 +181,110 @@ public static class EntryPoint
 
     private static void MapAuthentication(WebApplication app)
     {
-        app.MapGet("/api/auth/status", (HttpContext context, PasswordGate gate, OpenAiEngravingReader reader, OpenAiTrophyIllustrator illustrator) => Results.Ok(new
+        app.MapGet("/api/auth/status", async (
+            HttpContext context,
+            AccountStore accounts,
+            OpenAiEngravingReader reader,
+            OpenAiTrophyIllustrator illustrator,
+            CancellationToken cancellationToken) =>
         {
-            authenticated = gate.IsAuthenticated(context),
-            requiresSetup = gate.RequiresSetup,
-            passwordRequired = gate.IsConfigured,
-            aiConfigured = reader.IsAvailable,
-            illustrationConfigured = illustrator.IsAvailable,
-            model = reader.Model,
-            illustrationModel = illustrator.Model
-        }));
-
-        app.MapPost("/api/auth/login", async (HttpContext context, LoginInput input, PasswordGate gate) =>
-        {
-            if (gate.RequiresSetup)
-                return Results.Json(new { error = "setup_required", message = "Set APP_PASSWORD in Render first." }, statusCode: 503);
-            if (gate.IsOpenForLocalDevelopment || gate.PasswordMatches(input.Password))
-            {
-                if (gate.IsConfigured) gate.SignIn(context);
-                return Results.Ok(new { authenticated = true });
-            }
-            await Task.Delay(Random.Shared.Next(350, 750));
-            return Results.Json(new { error = "incorrect_password" }, statusCode: 401);
+            var accountId = CurrentAccountId(context);
+            var account = accountId is null ? null : await accounts.GetAccountAsync(accountId, cancellationToken);
+            var club = account is null ? null : await accounts.GetClubForAccountAsync(account.Id, cancellationToken);
+            return Results.Ok(AuthPayload(account, club, accounts, reader, illustrator));
         });
 
-        app.MapPost("/api/auth/logout", (HttpContext context) =>
+        app.MapPost("/api/auth/signup", async (
+            HttpContext context,
+            SignupInput input,
+            AccountStore accounts,
+            OpenAiEngravingReader reader,
+            OpenAiTrophyIllustrator illustrator,
+            CancellationToken cancellationToken) =>
         {
-            PasswordGate.SignOut(context);
+            try
+            {
+                var account = await accounts.CreateAccountAsync(input, cancellationToken);
+                await SignInAccountAsync(context, account);
+                return Results.Ok(AuthPayload(account, null, accounts, reader, illustrator));
+            }
+            catch (AccountStoreException exception)
+            {
+                return Results.Json(new { error = exception.Code, message = exception.Message }, statusCode: exception.Code == "email_in_use" ? 409 : 400);
+            }
+        }).RequireRateLimiting("authentication");
+
+        app.MapPost("/api/auth/login", async (
+            HttpContext context,
+            LoginInput input,
+            AccountStore accounts,
+            OpenAiEngravingReader reader,
+            OpenAiTrophyIllustrator illustrator,
+            CancellationToken cancellationToken) =>
+        {
+            var account = await accounts.AuthenticateAsync(input, cancellationToken);
+            if (account is null)
+            {
+                await Task.Delay(Random.Shared.Next(350, 750), cancellationToken);
+                return Results.Json(new { error = "incorrect_credentials", message = "That email and password combination was not recognised." }, statusCode: 401);
+            }
+            await SignInAccountAsync(context, account);
+            var club = await accounts.GetClubForAccountAsync(account.Id, cancellationToken);
+            return Results.Ok(AuthPayload(account, club, accounts, reader, illustrator));
+        }).RequireRateLimiting("authentication");
+
+        app.MapPost("/api/auth/logout", async (HttpContext context) =>
+        {
+            await context.SignOutAsync(AuthenticationScheme);
             return Results.Ok(new { authenticated = false });
+        });
+    }
+
+    private static void MapClub(WebApplication app)
+    {
+        app.MapGet("/api/club", async (HttpContext context, AccountStore accounts, CancellationToken cancellationToken) =>
+        {
+            var club = await accounts.GetClubForAccountAsync(CurrentAccountId(context)!, cancellationToken);
+            return club is null ? Results.NotFound() : Results.Ok(new { club = ClubPayload(club, accounts), complete = accounts.IsClubComplete(club) });
+        });
+
+        app.MapPut("/api/club", async (HttpContext context, ClubInput input, AccountStore accounts, CancellationToken cancellationToken) =>
+        {
+            try
+            {
+                var club = await accounts.UpsertClubAsync(CurrentAccountId(context)!, input, cancellationToken);
+                return Results.Ok(new { club = ClubPayload(club, accounts), complete = accounts.IsClubComplete(club) });
+            }
+            catch (AccountStoreException exception)
+            {
+                return Results.BadRequest(new { error = exception.Code, message = exception.Message });
+            }
+        });
+
+        app.MapPost("/api/club/logo", async (HttpContext context, HttpRequest request, AccountStore accounts, CancellationToken cancellationToken) =>
+        {
+            if (!request.HasFormContentType) return Results.BadRequest(new { error = "Choose a club logo first." });
+            var form = await request.ReadFormAsync(cancellationToken);
+            var file = form.Files.GetFile("logo") ?? form.Files.FirstOrDefault();
+            if (file is null || file.Length == 0) return Results.BadRequest(new { error = "Choose a club logo first." });
+            if (file.Length > 5 * 1024 * 1024) return Results.BadRequest(new { error = "Keep the club logo below 5 MB." });
+            if (!AcceptedImageTypes.Contains(file.ContentType)) return Results.BadRequest(new { error = "Use a JPEG, PNG or WebP club logo." });
+            try
+            {
+                await using var stream = file.OpenReadStream();
+                var club = await accounts.SaveClubLogoAsync(CurrentAccountId(context)!, file.ContentType, stream, cancellationToken);
+                return Results.Ok(new { club = ClubPayload(club, accounts), complete = accounts.IsClubComplete(club) });
+            }
+            catch (AccountStoreException exception)
+            {
+                return Results.BadRequest(new { error = exception.Code, message = exception.Message });
+            }
+        }).DisableAntiforgery();
+
+        app.MapGet("/api/club/logo", async (HttpContext context, AccountStore accounts, CancellationToken cancellationToken) =>
+        {
+            var logo = await accounts.GetLogoAsync(CurrentAccountId(context)!, cancellationToken);
+            return logo is null ? Results.NotFound() : Results.File(logo.Value.Path, logo.Value.ContentType, enableRangeProcessing: true);
         });
     }
 
@@ -165,10 +318,7 @@ public static class EntryPoint
                 var trophy = await store.CreateTrophyAsync(input, cancellationToken);
                 return Results.Created($"/api/trophies/{trophy.Id}", new { trophy, missingYears = Array.Empty<int>() });
             }
-            catch (InvalidOperationException exception)
-            {
-                return Results.Conflict(new { error = exception.Message });
-            }
+            catch (InvalidOperationException exception) { return Results.Conflict(new { error = exception.Message }); }
         });
 
         app.MapGet("/api/trophies/{id}", async (string id, CatalogueStore store, CancellationToken cancellationToken) =>
@@ -308,11 +458,7 @@ public static class EntryPoint
         app.MapGet("/api/members", async (MemberDirectoryStore directory, CancellationToken cancellationToken) =>
             Results.Ok(new { directory = await directory.GetSummaryAsync(cancellationToken) }));
 
-        app.MapPost("/api/members/import", async (
-            HttpRequest request,
-            MemberDirectoryStore directory,
-            MemberMatchingCoordinator matching,
-            CancellationToken cancellationToken) =>
+        app.MapPost("/api/members/import", async (HttpRequest request, MemberDirectoryStore directory, MemberMatchingCoordinator matching, CancellationToken cancellationToken) =>
         {
             if (!request.HasFormContentType) return Results.BadRequest(new { error = "Choose a CSV or XLSX member export." });
             var form = await request.ReadFormAsync(cancellationToken);
@@ -320,8 +466,7 @@ public static class EntryPoint
             if (file is null || file.Length == 0) return Results.BadRequest(new { error = "Choose a CSV or XLSX member export." });
             if (file.Length > 15 * 1024 * 1024) return Results.BadRequest(new { error = "Keep the member export below 15 MB." });
             var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
-            if (extension is not ".csv" and not ".tsv" and not ".xlsx")
-                return Results.BadRequest(new { error = "Use a CSV, TSV or XLSX file." });
+            if (extension is not ".csv" and not ".tsv" and not ".xlsx") return Results.BadRequest(new { error = "Use a CSV, TSV or XLSX file." });
             try
             {
                 await using var stream = file.OpenReadStream();
@@ -329,10 +474,7 @@ public static class EntryPoint
                 await matching.RefreshAllAsync(cancellationToken);
                 return Results.Ok(new { result, directory = await directory.GetSummaryAsync(cancellationToken) });
             }
-            catch (MemberImportException exception)
-            {
-                return Results.BadRequest(new { error = exception.Message });
-            }
+            catch (MemberImportException exception) { return Results.BadRequest(new { error = exception.Message }); }
         }).DisableAntiforgery();
 
         app.MapPost("/api/members/rematch/{trophyId}", async (string trophyId, MemberMatchingCoordinator matching, CancellationToken cancellationToken) =>
@@ -402,6 +544,52 @@ public static class EntryPoint
             return Results.File(Encoding.UTF8.GetBytes(csv.ToString()), "text/csv; charset=utf-8", $"trophy-archive-{DateTime.UtcNow:yyyy-MM-dd}.csv");
         });
     }
+
+    private static async Task SignInAccountAsync(HttpContext context, AccountRecord account)
+    {
+        var identity = new ClaimsIdentity(new[]
+        {
+            new Claim(ClaimTypes.NameIdentifier, account.Id),
+            new Claim(ClaimTypes.Name, account.DisplayName),
+            new Claim(ClaimTypes.Email, account.Email)
+        }, AuthenticationScheme);
+        await context.SignInAsync(AuthenticationScheme, new ClaimsPrincipal(identity), new AuthenticationProperties
+        {
+            IsPersistent = true,
+            AllowRefresh = true,
+            ExpiresUtc = DateTimeOffset.UtcNow.AddDays(30)
+        });
+    }
+
+    private static object AuthPayload(
+        AccountRecord? account,
+        ClubRecord? club,
+        AccountStore accounts,
+        OpenAiEngravingReader reader,
+        OpenAiTrophyIllustrator illustrator) => new
+    {
+        authenticated = account is not null,
+        onboardingRequired = account is not null && !accounts.IsClubComplete(club),
+        user = account is null ? null : new { account.Id, account.DisplayName, account.Email },
+        club = ClubPayload(club, accounts),
+        aiConfigured = reader.IsAvailable,
+        illustrationConfigured = illustrator.IsAvailable,
+        model = reader.Model,
+        illustrationModel = illustrator.Model
+    };
+
+    private static object? ClubPayload(ClubRecord? club, AccountStore accounts) => club is null ? null : new
+    {
+        club.Id,
+        club.Name,
+        club.Sport,
+        club.Country,
+        club.Website,
+        logoUrl = AccountStore.LogoUrl(club),
+        complete = accounts.IsClubComplete(club)
+    };
+
+    private static string? CurrentAccountId(HttpContext context) => context.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
     private static string? ValidateTrophy(TrophyCreateInput input)
     {
