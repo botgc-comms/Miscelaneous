@@ -3,17 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0a2a21">
-  <title>Trophy Archive AI | Digitise Engraved Trophy Winners</title>
-  <meta name="description" content="Photograph an engraved sports trophy and turn decades of names into a checked, searchable winners archive. AI transcription, member matching, trophy illustrations and CSV export.">
-  <meta name="robots" content="noindex,nofollow,max-image-preview:large">
+  <meta name="theme-color" content="#0b3025">
+  <title>AI Trophy Engraving Reader &amp; Digital Archive | Trophy Archive AI</title>
+  <meta name="description" content="Photograph engraved trophies, recover historic winner names and years with AI, verify missing records and export a searchable digital trophy archive for your club.">
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Trophy Archive AI — preserve every name, every year">
-  <meta property="og:description" content="Digitise historic trophy inscriptions from photographs, verify the winners and export a clean archive.">
+  <meta property="og:site_name" content="Trophy Archive AI">
+  <meta property="og:title" content="Turn engraved trophies into a searchable club archive">
+  <meta property="og:description" content="Photograph each trophy, recover engraved winners with AI, check every name and export the completed record.">
   <meta property="og:image" content="/og.png">
+  <meta property="og:image:alt" content="Trophy Archive AI — preserve every name, every year">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Trophy Archive AI — preserve every name, every year">
-  <meta name="twitter:description" content="Turn engraved sports trophies into searchable, exportable winners archives.">
+  <meta name="twitter:title" content="Turn engraved trophies into a searchable club archive">
+  <meta name="twitter:description" content="AI-assisted trophy engraving transcription, human verification and clean archive export.">
   <meta name="twitter:image" content="/og.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,19 +23,31 @@
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="manifest" href="/manifest.webmanifest">
   <link rel="stylesheet" href="/marketing.css">
-  <script src="/marketing.js"></script>
+  <script src="/marketing.js" defer></script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "Trophy Archive AI",
-    "applicationCategory": "BusinessApplication",
-    "operatingSystem": "Web",
-    "description": "AI-assisted trophy inscription transcription, winner verification, member matching and archive export for sports clubs and heritage organisations.",
-    "offers": [
-      { "@type": "Offer", "name": "Free first trophy", "price": "0", "priceCurrency": "GBP" },
-      { "@type": "Offer", "name": "Single trophy credit", "price": "7.50", "priceCurrency": "GBP" },
-      { "@type": "Offer", "name": "Ten trophy credits", "price": "60", "priceCurrency": "GBP" }
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "name": "Trophy Archive AI",
+        "description": "AI-assisted trophy engraving transcription and digital winners archives for sports clubs and heritage organisations."
+      },
+      {
+        "@type": "SoftwareApplication",
+        "name": "Trophy Archive AI",
+        "applicationCategory": "BusinessApplication",
+        "applicationSubCategory": "Digital archive software",
+        "operatingSystem": "Web",
+        "description": "Photograph engraved trophies, recover winner names and years with AI, verify the results and export a searchable club archive.",
+        "image": "/og.png",
+        "offers": [
+          { "@type": "Offer", "name": "First trophy", "price": "0", "priceCurrency": "GBP" },
+          { "@type": "Offer", "name": "Single trophy credit", "price": "7.50", "priceCurrency": "GBP" },
+          { "@type": "Offer", "name": "Ten trophy credits", "price": "60", "priceCurrency": "GBP" },
+          { "@type": "Offer", "name": "One hundred trophy credits", "price": "399", "priceCurrency": "GBP" }
+        ]
+      }
     ]
   }
   </script>
@@ -42,150 +56,166 @@
     "@context": "https://schema.org",
     "@type": "FAQPage",
     "mainEntity": [
-      { "@type": "Question", "name": "Can AI read faint or reflective trophy engraving?", "acceptedAnswer": { "@type": "Answer", "text": "You can provide several overlapping photographs or rubbings. Trophy Archive AI compares the full set, highlights uncertain readings and keeps every result editable before confirmation." } },
-      { "@type": "Question", "name": "Which sports can use Trophy Archive AI?", "acceptedAnswer": { "@type": "Answer", "text": "The workflow suits golf, rugby, cricket, tennis, bowls, football, schools, associations, museums and any organisation with engraved trophies, shields, cups or honours boards." } },
-      { "@type": "Question", "name": "Can we export our trophy records?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Confirmed and working records can be exported as CSV, including years, winner names, review status and optional member-match information." } }
+      { "@type": "Question", "name": "Can AI read faint or reflective trophy engraving?", "acceptedAnswer": { "@type": "Answer", "text": "Upload several overlapping photographs or a rubbing. Trophy Archive AI compares the complete set, highlights uncertain readings and keeps every result editable before confirmation." } },
+      { "@type": "Question", "name": "Which clubs can use Trophy Archive AI?", "acceptedAnswer": { "@type": "Answer", "text": "The workflow suits golf, rugby, cricket, tennis, bowls and football clubs, schools, associations, museums and any organisation with engraved cups, shields, trophies or honours boards." } },
+      { "@type": "Question", "name": "Can a club export its trophy records?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Working and confirmed records can be exported as CSV with trophy details, years, winners, review states and optional member-match information." } }
     ]
   }
   </script>
 </head>
 <body>
-  <header class="marketing-header">
-    <a class="marketing-brand" href="/" aria-label="Trophy Archive AI home"><span>TA</span><strong>Trophy Archive <em>AI</em></strong></a>
-    <nav aria-label="Main navigation">
-      <a href="#how-it-works">How it works</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#questions">Questions</a>
-      <a class="header-login" href="/archive.html#catalogue">Open prototype</a>
-    </nav>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="/" aria-label="Trophy Archive AI home">
+        <span class="brand-seal" aria-hidden="true">TA</span>
+        <span><strong>Trophy Archive</strong><small>AI</small></span>
+      </a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="#how-it-works">How it works</a>
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#questions">Questions</a>
+      </nav>
+      <div class="account-actions">
+        <a class="login-link" href="/archive.html#login">Log in</a>
+        <a class="signup-link" href="/archive.html#signup">Sign up free <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
   </header>
 
   <main>
-    <section class="marketing-hero">
-      <div class="hero-copy">
-        <p class="marketing-eyebrow">Commercial preview · accounts and billing come next</p>
-        <h1>Turn engraved trophies into a searchable winners archive.</h1>
-        <p class="hero-intro">Photograph the cup. Let AI compare every angle. Check the names and years, match likely members and export a clean electronic record your club can keep.</p>
-        <div class="hero-actions">
-          <a class="primary-cta" href="/archive.html#catalogue">Open the working prototype <span>→</span></a>
-          <a class="secondary-cta" href="#how-it-works">See the workflow</a>
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <p class="eyebrow"><span></span> AI trophy engraving reader</p>
+          <h1>Digitise every name engraved on your club’s trophies.</h1>
+          <p class="hero-intro">Photograph a trophy from several angles. AI reconstructs the winners and years, your club checks the result, and a lost paper history becomes a clean, searchable archive.</p>
+          <div class="hero-actions">
+            <a class="primary-button" href="/archive.html#signup">Add your first trophy <span aria-hidden="true">→</span></a>
+            <a class="text-link" href="/archive.html#login">Already have an account? <strong>Log in</strong></a>
+          </div>
+          <ul class="hero-points" aria-label="Account benefits">
+            <li><b>First trophy free</b><span>No card required</span></li>
+            <li><b>Built for mobile</b><span>Photograph at the cabinet</span></li>
+            <li><b>Always editable</b><span>Your club confirms the truth</span></li>
+          </ul>
         </div>
-        <ul class="hero-assurances" aria-label="Planned trial benefits">
-          <li>Planned: no card for the first trophy</li>
-          <li>Two inscription photographs included</li>
-          <li>Export your results</li>
-        </ul>
-      </div>
-      <div class="hero-visual" aria-label="An engraved trophy becoming a verified digital archive">
-        <div class="hero-photo"><img src="/catalogue/D05.jpg" alt="Historic silver golf trophy ready to be catalogued"></div>
-        <article class="recognition-card card-one"><span>1912</span><strong>H. Cartwright</strong><small>92% reading confidence</small></article>
-        <article class="recognition-card card-two"><span>Member match</span><strong>Arthur J. Smith</strong><small>Birth year makes the date plausible</small></article>
-        <div class="scan-line"></div>
+
+        <figure class="product-preview">
+          <div class="preview-topbar">
+            <span class="preview-logo">N</span>
+            <span><strong>Northfield Golf Club</strong><small>Trophy Archive</small></span>
+            <em>Working record</em>
+          </div>
+          <div class="preview-stage">
+            <img src="/catalogue/D05.jpg" alt="Historic silver trophy being catalogued from photographs">
+            <div class="reading-card reading-one"><small>Engraving found</small><strong>1928 · E. Thompson</strong><span>91% confidence</span></div>
+            <div class="reading-card reading-two"><small>Missing year</small><strong>1931</strong><span>Add manually or photograph again</span></div>
+          </div>
+          <figcaption>
+            <span class="ai-spark" aria-hidden="true">✦</span>
+            <span><strong>Comparing 4 trophy photographs</strong><small>Reading the complete image set in the background</small></span>
+            <b>68%</b>
+          </figcaption>
+        </figure>
       </div>
     </section>
 
-    <section class="trust-strip" aria-label="Designed for heritage collections">
-      <p>Built for the trophy cabinets of</p>
-      <div><span>Golf clubs</span><span>Rugby clubs</span><span>Cricket clubs</span><span>Tennis clubs</span><span>Schools</span><span>Museums</span></div>
+    <section class="club-strip" aria-label="Suitable organisations">
+      <p>Built for historic collections in</p>
+      <div><span>Golf</span><span>Rugby</span><span>Cricket</span><span>Tennis</span><span>Bowls</span><span>Schools</span><span>Museums</span></div>
     </section>
 
-    <section id="how-it-works" class="marketing-section workflow-section">
-      <div class="section-intro">
-        <p class="marketing-eyebrow">A phone, a trophy and a few minutes</p>
-        <h2>From reflected engraving to reliable history.</h2>
-        <p>Nothing is silently treated as fact. The system proposes; your club confirms.</p>
+    <section id="how-it-works" class="content-section workflow-section">
+      <div class="section-heading">
+        <p class="eyebrow">From cabinet to catalogue</p>
+        <h2>One trophy. A few photographs. A record your club can keep.</h2>
+        <p>Reflective metal, curved bands and worn lettering defeat ordinary document scanners. This workflow is designed around the trophy itself.</p>
       </div>
-      <ol class="workflow-grid">
-        <li><span>01</span><div><h3>Photograph every angle</h3><p>Take overlapping mobile photos, upload a batch, or add a paper rubbing when the metal is difficult to read.</p></div></li>
-        <li><span>02</span><div><h3>Read the complete set</h3><p>AI compares every saved image together, consolidating repeated bands and marking uncertain letters or years for review.</p></div></li>
-        <li><span>03</span><div><h3>Verify people and gaps</h3><p>Edit any reading, expose missing years and optionally compare names with a privacy-minimised member export.</p></div></li>
-        <li><span>04</span><div><h3>Keep and reuse the record</h3><p>Create a consistent trophy illustration and export structured records for your website, archive or back-office system.</p></div></li>
+      <ol class="workflow-list">
+        <li><span>01</span><div><h3>Add the trophy</h3><p>Name it and take one or more photographs straight from your phone.</p></div></li>
+        <li><span>02</span><div><h3>Read every angle together</h3><p>The AI waits while you add images, then compares the complete set for names and years.</p></div></li>
+        <li><span>03</span><div><h3>Check uncertain records</h3><p>Correct spelling, fill known gaps and confirm each proposed winner before saving.</p></div></li>
+        <li><span>04</span><div><h3>Export the archive</h3><p>Download clean trophy and winner data for your records, website or anniversary project.</p></div></li>
       </ol>
     </section>
 
-    <section class="feature-band">
-      <div class="feature-copy">
-        <p class="marketing-eyebrow">More than OCR</p>
-        <h2>Designed for inscriptions that ordinary scanners cannot handle.</h2>
-        <p>Curved silver, glare, patina, overlapping photographs and abbreviated names all need context. Trophy Archive AI keeps the evidence beside the proposed record so a human can always make the final decision.</p>
-        <ul>
-          <li><strong>Multi-image reading</strong><span>One combined analysis after you finish taking photographs.</span></li>
-          <li><strong>Age-aware member matching</strong><span>A current member born in 2005 cannot be suggested for a 1934 inscription.</span></li>
-          <li><strong>Consistent catalogue portraits</strong><span>Generate a refined illustration from several real views of the trophy.</span></li>
-          <li><strong>Portable data</strong><span>CSV export keeps the archive useful beyond this service.</span></li>
-        </ul>
+    <section id="features" class="feature-section">
+      <div class="feature-lead">
+        <p class="eyebrow">Purpose-built, not generic OCR</p>
+        <h2>Preserve the evidence as well as the answer.</h2>
+        <p>Every proposed winner remains connected to the photographs that produced it. When the engraving is ambiguous, people stay in control.</p>
+        <a href="/archive.html#signup">Create your club archive <span>→</span></a>
       </div>
-      <aside class="privacy-card">
-        <span class="privacy-mark">Private by design</span>
-        <h3>Your member export is for matching, not marketing.</h3>
-        <p>The importer keeps only the fields needed for the task. Full dates of birth are immediately reduced to birth year, and the original spreadsheet is not retained.</p>
-        <a href="#questions">Read the data answers →</a>
-      </aside>
+      <div class="feature-grid">
+        <article class="feature-card wide"><span class="feature-number">01</span><h3>Multi-image engraving analysis</h3><p>Add close-ups, wider views and paper rubbings. They are processed together after you finish uploading—not one expensive guess at a time.</p></article>
+        <article class="feature-card"><span class="feature-number">02</span><h3>Generated trophy portraits</h3><p>Turn real trophy photographs into a consistent, transparent catalogue illustration.</p></article>
+        <article class="feature-card"><span class="feature-number">03</span><h3>Missing-year checks</h3><p>Set the expected date range, reveal gaps and add winners manually when another record supplies the answer.</p></article>
+        <article class="feature-card"><span class="feature-number">04</span><h3>Age-aware member matching</h3><p>Compare abbreviated inscriptions with a club export while rejecting historically impossible matches.</p></article>
+        <article class="feature-card dark"><span class="feature-number">05</span><h3>Your club, your archive</h3><p>Each account begins with an empty, private collection branded with the club’s own name and logo.</p></article>
+      </div>
     </section>
 
-    <section id="pricing" class="marketing-section pricing-section">
-      <div class="section-intro pricing-intro">
-        <div><p class="marketing-eyebrow">Proposed trophy credits</p><h2>Pay for the cabinet you have, not seats you do not need.</h2></div>
-        <p>Digitising a collection is usually a finite project, so credits are better value than forcing every club into a permanent subscription. Prices exclude VAT where applicable.</p>
+    <section id="pricing" class="content-section pricing-section">
+      <div class="section-heading split-heading">
+        <div><p class="eyebrow">Simple trophy credits</p><h2>Pay for trophies, not software seats.</h2></div>
+        <p>Most clubs digitise a cabinet as a finite project. Credits let you pay for the collection you have instead of carrying another permanent per-user subscription.</p>
       </div>
       <div class="pricing-grid">
         <article class="price-card free-card">
-          <p>Free trial</p><h3>First trophy</h3><strong>£0</strong><small>No card required</small>
-          <ul><li>Up to two inscription photos</li><li>One AI illustration</li><li>Human review and CSV export</li></ul>
-          <a href="/archive.html#catalogue">Preview the workflow</a>
+          <p>Try it properly</p><h3>First trophy</h3><strong>Free</strong><small>No card required</small>
+          <ul><li>Two inscription photographs</li><li>One AI trophy illustration</li><li>Review and CSV export</li></ul>
+          <a href="/archive.html#signup">Start free <span>→</span></a>
         </article>
         <article class="price-card">
-          <p>Pay as you go</p><h3>One trophy</h3><strong>£7.50</strong><small>One complete trophy credit</small>
-          <ul><li>Unlimited evidence photos</li><li>AI reading and illustration</li><li>Member matching and export</li></ul>
-          <a href="/archive.html#catalogue">Preview the workflow</a>
+          <p>Pay as you go</p><h3>1 trophy</h3><strong>£7.50</strong><small>One complete trophy credit</small>
+          <ul><li>Full evidence workflow</li><li>AI reading and illustration</li><li>Member matching and export</li></ul>
+          <a href="/archive.html#signup">Create account <span>→</span></a>
         </article>
         <article class="price-card featured-price">
-          <span class="price-flag">Most clubs start here</span>
-          <p>Club pack</p><h3>10 trophies</h3><strong>£60</strong><small>£6 per trophy · save 20%</small>
-          <ul><li>Everything in a single credit</li><li>Shared member directory</li><li>Credits do not expire</li></ul>
-          <a href="/archive.html#catalogue">Preview the workflow</a>
+          <span class="popular-label">Most popular</span><p>Club collection</p><h3>10 trophies</h3><strong>£60</strong><small>£6 per trophy · save 20%</small>
+          <ul><li>Everything in a single credit</li><li>Shared club member directory</li><li>Credits do not expire</li></ul>
+          <a href="/archive.html#signup">Start your archive <span>→</span></a>
         </article>
         <article class="price-card">
-          <p>Heritage pack</p><h3>50 trophies</h3><strong>£225</strong><small>£4.50 per trophy · save 40%</small>
-          <ul><li>Built for full cabinets</li><li>Priority batch support</li><li>Board-ready consolidated export</li></ul>
-          <a href="/archive.html#catalogue">Preview the workflow</a>
+          <p>Complete cabinet</p><h3>100 trophies</h3><strong>£399</strong><small>£3.99 per trophy</small>
+          <ul><li>Best rate for full collections</li><li>Assisted onboarding</li><li>Consolidated export</li></ul>
+          <a href="/archive.html#signup">Create account <span>→</span></a>
         </article>
       </div>
-      <p class="large-collection">More than 100 trophies or several sites? The proposed £399 century pack includes assisted onboarding.</p>
     </section>
 
-    <section class="value-section">
-      <p class="marketing-eyebrow">Why clubs act now</p>
-      <blockquote>“The names are already there. The risk is that the knowledge of what they mean disappears.”</blockquote>
-      <div class="value-grid">
-        <article><strong>Preserve</strong><p>Create a durable record before wear, loss or cabinet moves make inscriptions harder to recover.</p></article>
-        <article><strong>Recognise</strong><p>Reconnect current members and families with generations of sporting achievement.</p></article>
-        <article><strong>Publish</strong><p>Prepare clean data for a club website, anniversary book, museum display or honours archive.</p></article>
+    <section class="privacy-section">
+      <div><p class="eyebrow">Responsible by design</p><h2>A suggestion is never silently turned into a fact.</h2></div>
+      <div class="privacy-points">
+        <article><strong>Human confirmation</strong><p>AI readings remain editable and visibly uncertain until someone at the club confirms them.</p></article>
+        <article><strong>Minimised member data</strong><p>Imported dates of birth are reduced to birth year; the original spreadsheet is not retained.</p></article>
+        <article><strong>Portable results</strong><p>Export the reconstructed archive as CSV whenever your club needs to use it elsewhere.</p></article>
       </div>
     </section>
 
-    <section id="questions" class="marketing-section faq-section">
-      <div class="section-intro"><p class="marketing-eyebrow">Questions clubs ask first</p><h2>Clear answers before you open the cabinet.</h2></div>
+    <section id="questions" class="content-section faq-section">
+      <div class="section-heading"><p class="eyebrow">Frequently asked questions</p><h2>Before you open the trophy cabinet.</h2></div>
       <div class="faq-grid">
-        <details open><summary>Will every engraving be read perfectly?</summary><p>No. Reflections, damage and handwriting-style engraving can remain ambiguous. The service uses several views, confidence scores and a required human review rather than pretending uncertainty does not exist.</p></details>
-        <details><summary>Can we add winners from other records?</summary><p>Yes. Add a winner manually, choose a known missing year, or correct an AI suggestion. Confirmed human records are protected from later automated replacement.</p></details>
-        <details><summary>What happens to member dates of birth?</summary><p>The import uses the date only to derive a birth year, then discards the day and month. Birth year helps reject impossible matches without keeping more personal data than the workflow needs.</p></details>
-        <details><summary>Does it work outside golf?</summary><p>Yes. Cups, shields, medals and plaques from rugby, cricket, tennis, bowls, football, schools, military associations, charities and museums use the same evidence-and-review workflow.</p></details>
-        <details><summary>Do we own the results?</summary><p>Your organisation can export the reconstructed winners list as CSV at any time. A production account should also include deletion and retention controls for uploaded evidence and member data.</p></details>
-        <details><summary>Can this publish directly to our club website?</summary><p>Not yet. Website and Intelligent Golf publishing are planned as separately priced modules after the core archive service is established.</p></details>
+        <details open><summary>Will it read every engraving perfectly?</summary><p>No. Reflections, damage and unusual lettering can remain ambiguous. The service combines several views, shows confidence and requires human review rather than pretending uncertainty does not exist.</p></details>
+        <details><summary>Can we add a trophy that is not already listed?</summary><p>Yes. Every new club begins with no trophies. Select “Add trophy”, enter its details, take or upload photographs, and the app creates both its archive record and catalogue illustration.</p></details>
+        <details><summary>Can we add missing winners ourselves?</summary><p>Yes. Set an expected year range to expose gaps, then add or correct any winner manually using information from minutes, honours boards or other club records.</p></details>
+        <details><summary>Does it work outside golf?</summary><p>Yes. The same workflow suits rugby, cricket, tennis, bowls and football clubs, schools, military associations, charities and museums.</p></details>
+        <details><summary>What happens to member dates of birth?</summary><p>The importer derives only a birth year, then discards the day and month. This helps reject impossible historical matches without retaining unnecessary personal data.</p></details>
+        <details><summary>Can we export the finished archive?</summary><p>Yes. Trophy details, winners, review status and optional member matches can be downloaded as CSV for use in another system.</p></details>
       </div>
     </section>
 
     <section class="final-cta">
-      <div><p class="marketing-eyebrow">Commercial product preview</p><h2>Try the archive workflow with your existing club login.</h2><p>Public trial accounts, free-tier enforcement and Stripe billing are deliberately held behind the production launch gates.</p></div>
-      <a href="/archive.html#catalogue">Open the prototype <span>→</span></a>
+      <div><p class="eyebrow">Preserve the names before they disappear</p><h2>Start with the first trophy in your cabinet.</h2><p>Create your club account, add its logo and begin with an empty archive that belongs only to you.</p></div>
+      <a href="/archive.html#signup">Sign up free <span aria-hidden="true">→</span></a>
     </section>
   </main>
 
-  <footer class="marketing-footer">
-    <a class="marketing-brand" href="/"><span>TA</span><strong>Trophy Archive <em>AI</em></strong></a>
-    <p>AI-assisted heritage transcription for sports clubs and collections.</p>
-    <nav><a href="#pricing">Pricing</a><a href="#questions">Privacy</a><a href="/archive.html#catalogue">Archive login</a></nav>
+  <footer class="site-footer">
+    <a class="brand footer-brand" href="/"><span class="brand-seal">TA</span><span><strong>Trophy Archive</strong><small>AI</small></span></a>
+    <p>AI-assisted trophy engraving transcription for sports clubs and heritage collections.</p>
+    <nav aria-label="Footer navigation"><a href="#how-it-works">How it works</a><a href="#pricing">Pricing</a><a href="#questions">Privacy</a><a href="/archive.html#login">Log in</a></nav>
     <small>© 2026 Trophy Archive AI. AI readings require human verification.</small>
   </footer>
 </body>

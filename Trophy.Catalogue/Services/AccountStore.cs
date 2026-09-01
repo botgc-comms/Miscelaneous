@@ -29,13 +29,11 @@ public sealed class AccountStore(
         try
         {
             if (!File.Exists(StatePath)) return;
-            await using var stream = File.OpenRead(StatePath);
-            state = await JsonSerializer.DeserializeAsync<IdentityState>(stream, jsonOptions, cancellationToken) ?? new();
+            await using (var stream = File.OpenRead(StatePath))
+                state = await JsonSerializer.DeserializeAsync<IdentityState>(stream, jsonOptions, cancellationToken) ?? new();
+            if (MigrateAccidentallyClaimedLegacyClubUnsafe()) await SaveUnsafeAsync(cancellationToken);
         }
-        finally
-        {
-            gate.Release();
-        }
+        finally { gate.Release(); }
     }
 
     public async Task<AccountRecord> CreateAccountAsync(SignupInput input, CancellationToken cancellationToken = default)
@@ -63,10 +61,7 @@ public sealed class AccountStore(
             await SaveUnsafeAsync(cancellationToken);
             return Clone(account);
         }
-        finally
-        {
-            gate.Release();
-        }
+        finally { gate.Release(); }
     }
 
     public async Task<AccountRecord?> AuthenticateAsync(LoginInput input, CancellationToken cancellationToken = default)
@@ -89,10 +84,7 @@ public sealed class AccountStore(
             }
             return Clone(account);
         }
-        finally
-        {
-            gate.Release();
-        }
+        finally { gate.Release(); }
     }
 
     public async Task<AccountRecord?> GetAccountAsync(string accountId, CancellationToken cancellationToken = default)
@@ -136,8 +128,13 @@ public sealed class AccountStore(
             var club = account.ClubId is null ? null : state.Clubs.FirstOrDefault(item => item.Id == account.ClubId);
             if (club is null)
             {
-                var id = CanClaimLegacyArchiveUnsafe() ? "legacy" : Guid.NewGuid().ToString("N");
-                club = new ClubRecord { Id = id, Name = name, Sport = sport, Country = country };
+                club = new ClubRecord
+                {
+                    Id = Guid.NewGuid().ToString("N"),
+                    Name = name,
+                    Sport = sport,
+                    Country = country
+                };
                 state.Clubs.Add(club);
                 account.ClubId = club.Id;
             }
@@ -227,10 +224,35 @@ public sealed class AccountStore(
         ? null
         : $"/api/club/logo?v={club.UpdatedAt.ToUnixTimeSeconds()}";
 
-    private bool CanClaimLegacyArchiveUnsafe() =>
-        File.Exists(Path.Combine(dataRoot, "catalogue-state.json")) &&
-        state.Clubs.All(item => !item.Id.Equals("legacy", StringComparison.OrdinalIgnoreCase)) &&
-        state.Accounts.All(item => !string.Equals(item.ClubId, "legacy", StringComparison.OrdinalIgnoreCase));
+    private bool MigrateAccidentallyClaimedLegacyClubUnsafe()
+    {
+        var legacy = state.Clubs.FirstOrDefault(item => item.Id.Equals("legacy", StringComparison.OrdinalIgnoreCase));
+        if (legacy is null) return false;
+
+        var newId = Guid.NewGuid().ToString("N");
+        if (!string.IsNullOrWhiteSpace(legacy.LogoStoredName))
+        {
+            var fileName = Path.GetFileName(legacy.LogoStoredName);
+            var possibleSources = new[]
+            {
+                Path.Combine(dataRoot, "brand", fileName),
+                Path.Combine(dataRoot, "clubs", "legacy", "brand", fileName)
+            };
+            var source = possibleSources.FirstOrDefault(File.Exists);
+            if (source is not null)
+            {
+                var brandRoot = Path.Combine(AppDataPath.ClubRoot(dataRoot, newId), "brand");
+                Directory.CreateDirectory(brandRoot);
+                File.Copy(source, Path.Combine(brandRoot, fileName), overwrite: true);
+            }
+        }
+
+        legacy.Id = newId;
+        legacy.UpdatedAt = DateTimeOffset.UtcNow;
+        foreach (var account in state.Accounts.Where(item => string.Equals(item.ClubId, "legacy", StringComparison.OrdinalIgnoreCase)))
+            account.ClubId = newId;
+        return true;
+    }
 
     private async Task SaveUnsafeAsync(CancellationToken cancellationToken)
     {
@@ -246,14 +268,10 @@ public sealed class AccountStore(
         try
         {
             var address = new MailAddress(value.Trim());
-            if (!address.Address.Equals(value.Trim(), StringComparison.OrdinalIgnoreCase))
-                throw new FormatException();
+            if (!address.Address.Equals(value.Trim(), StringComparison.OrdinalIgnoreCase)) throw new FormatException();
             return address.Address.ToUpperInvariant();
         }
-        catch
-        {
-            throw new AccountStoreException("invalid_email", "Enter a valid email address.");
-        }
+        catch { throw new AccountStoreException("invalid_email", "Enter a valid email address."); }
     }
 
     private static void ValidatePassword(string password)

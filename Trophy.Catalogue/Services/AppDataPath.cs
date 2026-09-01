@@ -11,9 +11,7 @@ public static class AppDataPath
     }
 
     public static string ClubRoot(string dataRoot, string clubId) =>
-        clubId.Equals("legacy", StringComparison.OrdinalIgnoreCase)
-            ? dataRoot
-            : Path.Combine(dataRoot, "clubs", SafeSegment(clubId));
+        Path.Combine(dataRoot, "clubs", SafeSegment(clubId));
 
     public static string SafeSegment(string value) =>
         string.Concat(value.Where(character => char.IsLetterOrDigit(character) || character is '-' or '_'));

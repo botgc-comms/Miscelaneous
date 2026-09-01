@@ -14,7 +14,7 @@ The application now provides a complete customer entry journey:
 - age-aware fuzzy member matching; and
 - CSV archive export.
 
-If an upgraded deployment already contains the original single-club `catalogue-state.json`, the first account to complete club setup claims that archive. New clubs receive empty, isolated collections.
+Every new club starts with an empty, isolated collection. Legacy single-club data is preserved on disk during an upgrade but is never assigned to a newly registered customer; any deliberate legacy import must be performed separately.
 
 ## Run locally
 
