@@ -26,12 +26,12 @@
           </div>
           <p class="eyebrow">Your collection is empty</p>
           <h2>Add your first trophy</h2>
-          <p class="empty-intro">Enter the trophy details and take one or more photographs. We’ll create the record, save every angle and generate its catalogue illustration.</p>
+          <p class="empty-intro">Enter the trophy details and add one or more whole-trophy reference photographs. Engraving close-ups are added separately afterwards.</p>
           <button id="empty-add-trophy-button" type="button"><span aria-hidden="true">+</span>Add your first trophy</button>
           <ol aria-label="What happens when you add a trophy">
             <li><span>1</span><p><strong>Name the trophy</strong><small>Add its category and reference code</small></p></li>
-            <li><span>2</span><p><strong>Take photographs</strong><small>Use several angles if you can</small></p></li>
-            <li><span>3</span><p><strong>Build the archive</strong><small>AI creates the illustration and reads the engraving</small></p></li>
+            <li><span>2</span><p><strong>Take reference photos</strong><small>Whole-trophy angles for the illustration</small></p></li>
+            <li><span>3</span><p><strong>Add engraving evidence</strong><small>Upload close-ups separately for the reader</small></p></li>
           </ol>
         </section>`;
 

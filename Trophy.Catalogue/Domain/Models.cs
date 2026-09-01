@@ -36,7 +36,7 @@ public sealed class ClubRecord
 
 public sealed class CatalogueState
 {
-    public int Version { get; set; } = 2;
+    public int Version { get; set; } = 3;
     public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
     public List<TrophyRecord> Trophies { get; set; } = [];
 }
@@ -66,6 +66,7 @@ public sealed class TrophyRecord
     public int? TimelineEndYear { get; set; }
     public DateTimeOffset? LastSavedAt { get; set; }
     public List<WinnerRecord> Winners { get; set; } = [];
+    public List<EvidenceImage> TrophyPhotos { get; set; } = [];
     public List<EvidenceImage> Evidence { get; set; } = [];
 }
 
@@ -79,6 +80,7 @@ public sealed class WinnerRecord
     public string Source { get; set; } = WinnerSources.Manual;
     public string? Notes { get; set; }
     public MemberMatchRecord? MemberMatch { get; set; }
+    public List<string> RejectedMemberIds { get; set; } = [];
     public List<string> EvidenceImageIds { get; set; } = [];
     public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
 }

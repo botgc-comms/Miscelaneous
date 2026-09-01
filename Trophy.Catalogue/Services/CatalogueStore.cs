@@ -164,6 +164,100 @@ public sealed class CatalogueStore(
         finally { tenant.Gate.Release(); }
     }
 
+    public async Task<EvidenceImage?> AddTrophyPhotoAsync(
+        string trophyId,
+        string originalName,
+        string contentType,
+        Stream content,
+        CancellationToken cancellationToken = default)
+    {
+        var tenant = await GetTenantAsync(cancellationToken);
+        await tenant.Gate.WaitAsync(cancellationToken);
+        try
+        {
+            var trophy = Find(tenant, trophyId);
+            if (trophy is null) return null;
+            var photo = new EvidenceImage
+            {
+                OriginalName = Path.GetFileName(originalName),
+                ContentType = contentType,
+                Kind = EvidenceKinds.Photo,
+                ProcessingState = ProcessingStates.Complete
+            };
+            photo.StoredName = $"{photo.Id}{ExtensionFor(contentType)}";
+            photo.Url = $"/api/trophies/{Uri.EscapeDataString(trophy.Id)}/trophy-photos/{photo.Id}";
+            var directory = Path.Combine(TrophyPhotoRoot(tenant), AppDataPath.SafeSegment(trophy.Id));
+            Directory.CreateDirectory(directory);
+            var path = Path.Combine(directory, photo.StoredName);
+            await using (var output = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.None, 81920, true))
+                await content.CopyToAsync(output, cancellationToken);
+            trophy.TrophyPhotos.Add(photo);
+            trophy.Status = TrophyStatuses.InProgress;
+            await SaveUnsafeAsync(tenant, cancellationToken);
+            return Clone(photo);
+        }
+        finally { tenant.Gate.Release(); }
+    }
+
+    public async Task<string?> GetTrophyPhotoPathAsync(string trophyId, string photoId, CancellationToken cancellationToken = default)
+    {
+        var tenant = await GetTenantAsync(cancellationToken);
+        await tenant.Gate.WaitAsync(cancellationToken);
+        try
+        {
+            var trophy = Find(tenant, trophyId);
+            var photo = trophy?.TrophyPhotos.FirstOrDefault(item => item.Id == photoId);
+            if (photo is null) return null;
+            var directory = Path.Combine(TrophyPhotoRoot(tenant), AppDataPath.SafeSegment(trophy!.Id));
+            var exact = string.IsNullOrWhiteSpace(photo.StoredName) ? null : Path.Combine(directory, photo.StoredName);
+            if (exact is not null && File.Exists(exact)) return exact;
+            return Directory.Exists(directory) ? Directory.EnumerateFiles(directory, $"{photo.Id}.*").FirstOrDefault() : null;
+        }
+        finally { tenant.Gate.Release(); }
+    }
+
+    public async Task<IReadOnlyList<(EvidenceImage Evidence, string Path)>> GetTrophyPhotoFilesAsync(string trophyId, CancellationToken cancellationToken = default)
+    {
+        var tenant = await GetTenantAsync(cancellationToken);
+        await tenant.Gate.WaitAsync(cancellationToken);
+        try
+        {
+            var trophy = Find(tenant, trophyId);
+            if (trophy is null) return [];
+            var directory = Path.Combine(TrophyPhotoRoot(tenant), AppDataPath.SafeSegment(trophy.Id));
+            var files = new List<(EvidenceImage, string)>();
+            foreach (var photo in trophy.TrophyPhotos.OrderBy(item => item.UploadedAt))
+            {
+                var exact = string.IsNullOrWhiteSpace(photo.StoredName) ? null : Path.Combine(directory, photo.StoredName);
+                var path = exact is not null && File.Exists(exact)
+                    ? exact
+                    : Directory.Exists(directory) ? Directory.EnumerateFiles(directory, $"{photo.Id}.*").FirstOrDefault() : null;
+                if (path is not null) files.Add((Clone(photo), path));
+            }
+            return files;
+        }
+        finally { tenant.Gate.Release(); }
+    }
+
+    public async Task<bool> DeleteTrophyPhotoAsync(string trophyId, string photoId, CancellationToken cancellationToken = default)
+    {
+        var tenant = await GetTenantAsync(cancellationToken);
+        await tenant.Gate.WaitAsync(cancellationToken);
+        try
+        {
+            var trophy = Find(tenant, trophyId);
+            var photo = trophy?.TrophyPhotos.FirstOrDefault(item => item.Id == photoId);
+            if (trophy is null || photo is null) return false;
+            trophy.TrophyPhotos.Remove(photo);
+            var directory = Path.Combine(TrophyPhotoRoot(tenant), AppDataPath.SafeSegment(trophy.Id));
+            if (Directory.Exists(directory))
+                foreach (var path in Directory.EnumerateFiles(directory, $"{photo.Id}.*")) File.Delete(path);
+            trophy.Status = TrophyStatuses.InProgress;
+            await SaveUnsafeAsync(tenant, cancellationToken);
+            return true;
+        }
+        finally { tenant.Gate.Release(); }
+    }
     public async Task SetEvidenceProcessingAsync(
         string trophyId,
         string evidenceId,
@@ -264,6 +358,7 @@ public sealed class CatalogueStore(
             winner.ReviewState = NormalizeReviewState(input.ReviewState);
             winner.Source = WinnerSources.Manual;
             winner.MemberMatch = null;
+            winner.RejectedMemberIds.Clear();
             if (winner.ReviewState == ReviewStates.Confirmed) winner.Confidence = 1;
             winner.UpdatedAt = DateTimeOffset.UtcNow;
             trophy.Winners = trophy.Winners.OrderBy(item => item.Year).ThenBy(item => item.Name).ToList();
@@ -376,6 +471,28 @@ public sealed class CatalogueStore(
         finally { tenant.Gate.Release(); }
     }
 
+    public async Task<TrophyRecord?> RejectMemberMatchAsync(
+        string trophyId,
+        string winnerId,
+        CancellationToken cancellationToken = default)
+    {
+        var tenant = await GetTenantAsync(cancellationToken);
+        await tenant.Gate.WaitAsync(cancellationToken);
+        try
+        {
+            var trophy = Find(tenant, trophyId);
+            var winner = trophy?.Winners.FirstOrDefault(item => item.Id == winnerId);
+            if (trophy is null || winner is null) return null;
+            var memberId = winner.MemberMatch?.MemberId;
+            if (!string.IsNullOrWhiteSpace(memberId) && !winner.RejectedMemberIds.Contains(memberId, StringComparer.OrdinalIgnoreCase))
+                winner.RejectedMemberIds.Add(memberId);
+            winner.MemberMatch = null;
+            winner.UpdatedAt = DateTimeOffset.UtcNow;
+            await SaveUnsafeAsync(tenant, cancellationToken);
+            return Clone(trophy);
+        }
+        finally { tenant.Gate.Release(); }
+    }
     public async Task<TrophyRecord?> ApplyMemberMatchesAsync(
         string trophyId,
         IReadOnlyDictionary<string, MemberMatchRecord?> matches,
@@ -449,10 +566,11 @@ public sealed class CatalogueStore(
                     if (trophy.IllustrationState != IllustrationStates.Complete) trophy.ReferenceImage = seed.ReferenceImage;
                 }
                 NormalizeEvidenceUrls(trophy);
+                NormalizeTrophyPhotoUrls(trophy);
                 if (trophy.IllustrationState == IllustrationStates.Complete)
                     trophy.ReferenceImage = $"/api/trophies/{Uri.EscapeDataString(trophy.Id)}/illustration";
             }
-            tenant.State.Version = 2;
+            tenant.State.Version = 3;
             tenant.State.Trophies = tenant.State.Trophies.OrderBy(trophy => trophy.Id, StringComparer.OrdinalIgnoreCase).ToList();
             await SaveUnsafeAsync(tenant, cancellationToken);
             tenant.Initialized = true;
@@ -480,6 +598,7 @@ public sealed class CatalogueStore(
 
     private static string StatePath(TenantCatalogue tenant) => Path.Combine(tenant.Root, "catalogue-state.json");
     private static string UploadRoot(TenantCatalogue tenant) => Path.Combine(tenant.Root, "uploads");
+    private static string TrophyPhotoRoot(TenantCatalogue tenant) => Path.Combine(tenant.Root, "trophy-photos");
     private static string IllustrationRoot(TenantCatalogue tenant) => Path.Combine(tenant.Root, "illustrations");
     private static TrophyRecord FromSeed(TrophySeed seed) => new()
     {
@@ -525,6 +644,12 @@ public sealed class CatalogueStore(
     };
     private static string NormalizeReviewState(string value) => value == ReviewStates.Confirmed ? ReviewStates.Confirmed : ReviewStates.NeedsReview;
     private static string? NullIfEmpty(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+    private static void NormalizeTrophyPhotoUrls(TrophyRecord trophy)
+    {
+        foreach (var photo in trophy.TrophyPhotos)
+            photo.Url = $"/api/trophies/{Uri.EscapeDataString(trophy.Id)}/trophy-photos/{photo.Id}";
+    }
+
     private static void NormalizeEvidenceUrls(TrophyRecord trophy)
     {
         foreach (var evidence in trophy.Evidence)

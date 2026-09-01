@@ -165,6 +165,7 @@ public static class EntryPoint
         MapClub(app);
         MapCatalogue(app);
         MapEvidence(app);
+        MapTrophyPhotos(app);
         MapIllustrations(app);
         MapMembers(app);
         MapWinners(app);
@@ -449,6 +450,54 @@ public static class EntryPoint
             await store.DeleteEvidenceAsync(id, imageId, cancellationToken) ? Results.NoContent() : Results.NotFound());
     }
 
+    private static void MapTrophyPhotos(WebApplication app)
+    {
+        app.MapPost("/api/trophies/{id}/trophy-photos", async (
+            string id,
+            HttpRequest request,
+            CatalogueStore store,
+            CancellationToken cancellationToken) =>
+        {
+            if (!request.HasFormContentType) return Results.BadRequest(new { error = "A trophy photograph upload is required." });
+            var trophy = await store.GetTrophyAsync(id, cancellationToken);
+            if (trophy is null) return Results.NotFound();
+            var form = await request.ReadFormAsync(cancellationToken);
+            var files = form.Files.ToList();
+            if (files.Count == 0) return Results.BadRequest(new { error = "Choose one or more clear photographs of the whole trophy." });
+            if (files.Count > 12) return Results.BadRequest(new { error = "Upload no more than 12 trophy photographs at once." });
+            if (files.Any(file => file.Length == 0)) return Results.BadRequest(new { error = "One of those photographs is empty. Remove it and try again." });
+            if (files.Any(file => file.Length > 12 * 1024 * 1024)) return Results.BadRequest(new { error = "Each photograph must be no larger than 12 MB." });
+            if (files.Sum(file => file.Length) > 55 * 1024 * 1024) return Results.BadRequest(new { error = "That batch is larger than 55 MB. Upload it in two groups." });
+            if (files.Any(file => !AcceptedImageTypes.Contains(file.ContentType))) return Results.BadRequest(new { error = "Use JPEG, PNG or WebP photographs." });
+
+            var addedPhotos = new List<EvidenceImage>();
+            foreach (var file in files)
+            {
+                await using var stream = file.OpenReadStream();
+                var photo = await store.AddTrophyPhotoAsync(id, file.FileName, file.ContentType, stream, cancellationToken);
+                if (photo is null) return Results.NotFound();
+                addedPhotos.Add(photo);
+            }
+
+            trophy = await store.GetTrophyAsync(id, cancellationToken);
+            return Results.Ok(new { trophy, addedPhotos });
+        }).DisableAntiforgery();
+
+        app.MapGet("/api/trophies/{id}/trophy-photos/{photoId}", async (string id, string photoId, CatalogueStore store, CancellationToken cancellationToken) =>
+        {
+            var trophy = await store.GetTrophyAsync(id, cancellationToken);
+            var photo = trophy?.TrophyPhotos.FirstOrDefault(item => item.Id == photoId);
+            var path = await store.GetTrophyPhotoPathAsync(id, photoId, cancellationToken);
+            return photo is null || path is null ? Results.NotFound() : Results.File(path, photo.ContentType, enableRangeProcessing: true);
+        });
+
+        app.MapDelete("/api/trophies/{id}/trophy-photos/{photoId}", async (string id, string photoId, CatalogueStore store, CancellationToken cancellationToken) =>
+        {
+            if (!await store.DeleteTrophyPhotoAsync(id, photoId, cancellationToken)) return Results.NotFound();
+            var trophy = await store.GetTrophyAsync(id, cancellationToken);
+            return Results.Ok(new { trophy });
+        });
+    }
     private static void MapIllustrations(WebApplication app)
     {
         app.MapPost("/api/trophies/{id}/illustration/background", async (
@@ -460,8 +509,8 @@ public static class EntryPoint
         {
             var trophy = await store.GetTrophyAsync(id, cancellationToken);
             if (trophy is null) return Results.NotFound();
-            var references = await store.GetEvidenceFilesAsync(id, cancellationToken);
-            if (references.All(item => item.Evidence.Kind != EvidenceKinds.Photo))
+            var references = await store.GetTrophyPhotoFilesAsync(id, cancellationToken);
+            if (references.Count == 0)
                 return Results.BadRequest(new { error = "Add at least one clear photograph of the trophy first." });
             if (!illustrator.IsAvailable)
                 return Results.Json(new { error = "illustration_unavailable", message = "Add OPENAI_API_KEY to enable trophy illustrations." }, statusCode: 503);
@@ -490,7 +539,7 @@ public static class EntryPoint
         {
             var trophy = await store.GetTrophyAsync(id, cancellationToken);
             if (trophy is null) return Results.NotFound();
-            var references = await store.GetEvidenceFilesAsync(id, cancellationToken);
+            var references = await store.GetTrophyPhotoFilesAsync(id, cancellationToken);
             if (references.Count == 0) return Results.BadRequest(new { error = "Add at least one clear photograph of the trophy first." });
             if (!illustrator.IsAvailable) return Results.Json(new { error = "illustration_unavailable", message = "Add OPENAI_API_KEY to enable trophy illustrations." }, statusCode: 503);
             await store.SetIllustrationStatusAsync(id, IllustrationStates.Processing, "Creating a faithful catalogue illustration from the saved angles…", cancellationToken);
@@ -544,6 +593,17 @@ public static class EntryPoint
             return trophy is null ? Results.NotFound() : Results.Ok(new { trophy, missingYears = CatalogueStore.MissingYears(trophy) });
         });
 
+        app.MapDelete("/api/trophies/{trophyId}/winners/{winnerId}/member-match", async (
+            string trophyId,
+            string winnerId,
+            CatalogueStore catalogue,
+            CancellationToken cancellationToken) =>
+        {
+            var trophy = await catalogue.RejectMemberMatchAsync(trophyId, winnerId, cancellationToken);
+            return trophy is null
+                ? Results.NotFound()
+                : Results.Ok(new { trophy, missingYears = CatalogueStore.MissingYears(trophy) });
+        });
         app.MapDelete("/api/members", async (MemberDirectoryStore directory, CatalogueStore catalogue, CancellationToken cancellationToken) =>
         {
             await directory.ClearAsync(cancellationToken);

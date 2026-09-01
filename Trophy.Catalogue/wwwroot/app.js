@@ -3,6 +3,7 @@
   const signupForm = document.querySelector('#signup-form');
   const clubForm = document.querySelector('#club-setup-form');
   const loginPassword = document.querySelector('#login-password');
+  const passwordToggle = document.querySelector('#toggle-login-password');
 
   loginForm?.addEventListener('submit', event => {
     event.preventDefault();
@@ -27,10 +28,17 @@
   document.querySelector('#setup-signout-button')?.addEventListener('click', accountSignOut);
   document.querySelector('#show-login-button')?.addEventListener('click', () => showAuthTab('login'));
   document.querySelector('#show-signup-button')?.addEventListener('click', () => showAuthTab('signup'));
+  passwordToggle?.addEventListener('click', () => {
+    const isVisible = loginPassword.type === 'text';
+    loginPassword.type = isVisible ? 'password' : 'text';
+    passwordToggle.textContent = isVisible ? 'Show' : 'Hide';
+    passwordToggle.setAttribute('aria-pressed', String(!isVisible));
+    loginPassword.focus();
+  });
   document.querySelector('#club-logo-input')?.addEventListener('change', previewClubLogo);
 
   const coreScript = document.createElement('script');
-  coreScript.src = '/app-core.js?v=20260901-auth-fix';
+  coreScript.src = '/app-core.js?v=20260901-login-2';
   coreScript.onload = () => {
     installBatchUploadControl();
     accountInitialise();
@@ -69,7 +77,7 @@
         method: 'POST',
         body: JSON.stringify({
           email: document.querySelector('#login-email').value.trim(),
-          password: loginPassword.value,
+          password: loginPassword.value.trim(),
         }),
       });
       state.auth = auth;

@@ -60,10 +60,10 @@ public sealed class BackgroundIllustrationQueue(
             return;
         }
 
-        var references = await store.GetEvidenceFilesAsync(request.TrophyId, cancellationToken);
-        if (references.All(item => item.Evidence.Kind != EvidenceKinds.Photo))
+        var references = await store.GetTrophyPhotoFilesAsync(request.TrophyId, cancellationToken);
+        if (references.Count == 0)
         {
-            const string message = "Add at least one trophy photograph before creating an illustration.";
+            const string message = "Add at least one trophy reference photograph before creating an illustration.";
             await store.SetIllustrationStatusAsync(request.TrophyId, IllustrationStates.Failed, message, cancellationToken);
             jobs[key] = new IllustrationJobSnapshot("failed", message, DateTimeOffset.UtcNow);
             return;

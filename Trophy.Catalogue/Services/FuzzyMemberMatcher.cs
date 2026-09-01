@@ -12,6 +12,7 @@ public sealed class FuzzyMemberMatcher
         if (inscription.Surname.Length == 0) return null;
 
         var candidates = members
+            .Where(member => !winner.RejectedMemberIds.Contains(member.Id, StringComparer.OrdinalIgnoreCase))
             .Select(member => Score(winner, inscription, member))
             .Where(candidate => candidate is not null)
             .Cast<ScoredMember>()

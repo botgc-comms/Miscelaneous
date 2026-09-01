@@ -28,7 +28,7 @@
         <div class="wizard-step"><span>1</span><i></i><span>2</span><i></i><span>3</span></div>
         <p class="step-label">New trophy · details, photographs, illustration</p>
         <h2>Add a trophy</h2>
-        <p>Give it a name, then take or choose one or more photographs. The photographs are saved as evidence and used automatically to create the catalogue illustration.</p>
+        <p>Give it a name, then take or choose one or more photographs. These reference photographs are stored separately from engraving evidence and are used only to create the catalogue illustration.</p>
         <label><span>Trophy name</span><input name="name" maxlength="160" required placeholder="e.g. Ladies Challenge Cup"></label>
         <div class="commercial-form-grid">
           <label><span>Category</span><input name="category" maxlength="80" required placeholder="e.g. Golf, Rugby, Cricket"></label>
@@ -36,7 +36,7 @@
         </div>
         <label><span>Alternative name <em>optional</em></span><input name="secondaryName" maxlength="160" placeholder="Name engraved on the base"></label>
         <fieldset class="wizard-photos">
-          <legend>Trophy photographs <b>required</b></legend>
+          <legend>Trophy reference photographs <b>required</b></legend>
           <p>Use a clear full-trophy view first. Extra angles help reproduce handles, lids, bases and fine details.</p>
           <div class="wizard-photo-actions">
             <label class="wizard-camera"><span>Take a photo</span><input id="wizard-camera-input" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" hidden></label>
@@ -44,7 +44,7 @@
           </div>
           <div id="wizard-photo-list" class="wizard-photo-list"><span class="wizard-photo-empty">No photographs added yet</span></div>
         </fieldset>
-        <div class="wizard-outcome"><span>✦</span><p><strong>What happens next</strong><small>We create the trophy, upload the full set, start inscription reading in the background and generate its transparent catalogue illustration.</small></p></div>
+        <div class="wizard-outcome"><span>✦</span><p><strong>What happens next</strong><small>We create the trophy, save these reference angles separately and generate its transparent catalogue illustration. Add close-up engraving evidence afterwards.</small></p></div>
         <button class="commercial-submit" type="submit" disabled>Create trophy</button>
         <p class="commercial-form-error" role="alert" hidden></p>
       </form>`;
@@ -117,7 +117,7 @@
         setBusy(true, 'Preparing the trophy photographs…', `Optimising ${plural(sourcePhotos.length, 'angle')} for a reliable mobile upload.`);
         const prepared = [];
         for (let index = 0; index < sourcePhotos.length; index += 1) {
-          setBusy(true, `Preparing photograph ${index + 1} of ${sourcePhotos.length}…`, 'Keeping enough detail for both engraving reading and illustration generation.');
+          setBusy(true, `Preparing photograph ${index + 1} of ${sourcePhotos.length}…`, 'Keeping enough detail to reproduce the trophy faithfully.');
           prepared.push(await optimiseImage(sourcePhotos[index]));
         }
 
@@ -135,8 +135,7 @@
         setBusy(true, `Uploading ${plural(prepared.length, 'photograph')}…`, 'Saving every angle to the club archive.');
         const upload = new FormData();
         prepared.forEach(file => upload.append('files', file, file.name));
-        upload.append('kind', 'photo');
-        await api(`/api/trophies/${encodeURIComponent(createdId)}/images`, { method: 'POST', body: upload });
+       await api(`/api/trophies/${encodeURIComponent(createdId)}/trophy-photos`, { method: 'POST', body: upload });
 
         const auth = state.auth || await api('/api/auth/status');
         let illustrationQueued = false;
@@ -151,7 +150,7 @@
         await openTrophy(createdId);
         showToast(illustrationQueued
           ? 'Trophy saved. Its illustration is generating in the background.'
-          : 'Trophy and photographs saved. Connect the image model to create its illustration.',
+          : 'Trophy and reference photographs saved. Connect the image model to create its illustration.',
           false,
           6000);
         if (illustrationQueued) watchIllustration(createdId);
