@@ -76,9 +76,20 @@
         <a href="#pricing">Pricing</a>
         <a href="#questions">Questions</a>
       </nav>
-      <div class="account-actions">
+      <div id="signed-out-actions" class="account-actions">
         <a class="login-link" href="/archive.html#login">Log in</a>
-        <a class="signup-link" href="/archive.html#signup">Sign up free <span aria-hidden="true">→</span></a>
+        <a class="signup-link" href="/archive.html#signup">Sign up free</a>
+      </div>
+      <div id="signed-in-actions" class="signed-in-actions" hidden>
+        <a class="archive-link" href="/archive.html#catalogue">My archive</a>
+        <details class="public-account-menu">
+          <summary aria-label="Open account menu"><span id="public-account-initial">A</span><strong id="public-account-name">Account</strong></summary>
+          <div>
+            <p><strong id="public-menu-name">Account</strong><small id="public-menu-email"></small></p>
+            <a href="/archive.html#catalogue">Open my archive</a>
+            <button id="public-logout-button" type="button">Log out</button>
+          </div>
+        </details>
       </div>
     </div>
   </header>
@@ -88,11 +99,11 @@
       <div class="hero-inner">
         <div class="hero-copy">
           <p class="eyebrow"><span></span> AI trophy engraving reader</p>
-          <h1>Digitise every name engraved on your club’s trophies.</h1>
-          <p class="hero-intro">Photograph a trophy from several angles. AI reconstructs the winners and years, your club checks the result, and a lost paper history becomes a clean, searchable archive.</p>
+          <h1>Preserve every name on every trophy.</h1>
+          <p class="hero-intro">Turn decades of engraved winners into an accurate digital archive. Photograph each trophy, let AI compare every angle, then review and export the result.</p>
           <div class="hero-actions">
-            <a class="primary-button" href="/archive.html#signup">Sign up free <span aria-hidden="true">→</span></a>
-            <a class="text-link" href="/archive.html#login">Already have an account? <strong>Log in</strong></a>
+            <a class="primary-button" href="/archive.html#signup">Sign up free</a>
+            <a class="secondary-button" href="/archive.html#login">Log in</a>
           </div>
           <ul class="hero-points" aria-label="Account benefits">
             <li><b>First trophy free</b><span>No card required</span></li>
@@ -145,7 +156,7 @@
         <p class="eyebrow">Purpose-built, not generic OCR</p>
         <h2>Preserve the evidence as well as the answer.</h2>
         <p>Every proposed winner remains connected to the photographs that produced it. When the engraving is ambiguous, people stay in control.</p>
-        <a href="/archive.html#signup">Create your club archive <span>→</span></a>
+        <a href="/archive.html#signup">Create a free account</a>
       </div>
       <div class="feature-grid">
         <article class="feature-card wide"><span class="feature-number">01</span><h3>Multi-image engraving analysis</h3><p>Add close-ups, wider views and paper rubbings. They are processed together after you finish uploading—not one expensive guess at a time.</p></article>
@@ -165,22 +176,22 @@
         <article class="price-card free-card">
           <p>Try it properly</p><h3>First trophy</h3><strong>Free</strong><small>No card required</small>
           <ul><li>Two inscription photographs</li><li>One AI trophy illustration</li><li>Review and CSV export</li></ul>
-          <a href="/archive.html#signup">Start free <span>→</span></a>
+          <a href="/archive.html#signup">Sign up free</a>
         </article>
         <article class="price-card">
           <p>Pay as you go</p><h3>1 trophy</h3><strong>£7.50</strong><small>One complete trophy credit</small>
           <ul><li>Full evidence workflow</li><li>AI reading and illustration</li><li>Member matching and export</li></ul>
-          <a href="/archive.html#signup">Create account <span>→</span></a>
+          <a href="/archive.html#signup">Create account</a>
         </article>
         <article class="price-card featured-price">
           <span class="popular-label">Most popular</span><p>Club collection</p><h3>10 trophies</h3><strong>£60</strong><small>£6 per trophy · save 20%</small>
           <ul><li>Everything in a single credit</li><li>Shared club member directory</li><li>Credits do not expire</li></ul>
-          <a href="/archive.html#signup">Start your archive <span>→</span></a>
+          <a href="/archive.html#signup">Sign up</a>
         </article>
         <article class="price-card">
           <p>Complete cabinet</p><h3>100 trophies</h3><strong>£399</strong><small>£3.99 per trophy</small>
           <ul><li>Best rate for full collections</li><li>Assisted onboarding</li><li>Consolidated export</li></ul>
-          <a href="/archive.html#signup">Create account <span>→</span></a>
+          <a href="/archive.html#signup">Create account</a>
         </article>
       </div>
     </section>
@@ -208,7 +219,7 @@
 
     <section class="final-cta">
       <div><p class="eyebrow">Preserve the names before they disappear</p><h2>Start with the first trophy in your cabinet.</h2><p>Create your club account, add its logo and begin with an empty archive that belongs only to you.</p></div>
-      <a href="/archive.html#signup">Sign up free <span aria-hidden="true">→</span></a>
+      <a href="/archive.html#signup">Sign up free</a>
     </section>
   </main>
 

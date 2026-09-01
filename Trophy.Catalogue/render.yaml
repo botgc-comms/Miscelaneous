@@ -16,6 +16,10 @@ services:
         value: /var/data
       - key: APP_PASSWORD
         sync: false
+      - key: LEGACY_ARCHIVE_EMAIL
+        value: archive@botgc.test
+      - key: LEGACY_ARCHIVE_DISPLAY_NAME
+        value: BOTGC archive administrator
       - key: LEGACY_CLUB_NAME
         value: Burton-on-Trent Golf Club
       - key: LEGACY_CLUB_SPORT

@@ -27,7 +27,7 @@
           <p class="eyebrow">Your collection is empty</p>
           <h2>Add your first trophy</h2>
           <p class="empty-intro">Enter the trophy details and take one or more photographs. We’ll create the record, save every angle and generate its catalogue illustration.</p>
-          <button id="empty-add-trophy-button" type="button"><span aria-hidden="true">+</span>Add your first trophy <b aria-hidden="true">→</b></button>
+          <button id="empty-add-trophy-button" type="button"><span aria-hidden="true">+</span>Add your first trophy</button>
           <ol aria-label="What happens when you add a trophy">
             <li><span>1</span><p><strong>Name the trophy</strong><small>Add its category and reference code</small></p></li>
             <li><span>2</span><p><strong>Take photographs</strong><small>Use several angles if you can</small></p></li>

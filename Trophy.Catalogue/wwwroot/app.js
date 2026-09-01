@@ -2,7 +2,6 @@
   const loginForm = document.querySelector('#login-form');
   const signupForm = document.querySelector('#signup-form');
   const clubForm = document.querySelector('#club-setup-form');
-  const originalArchiveForm = document.querySelector('#original-archive-form');
   const loginPassword = document.querySelector('#login-password');
   if (loginPassword) loginPassword.id = 'password-input';
 
@@ -20,11 +19,6 @@
     event.preventDefault();
     event.stopImmediatePropagation();
     saveClub(event.currentTarget);
-  }, true);
-  originalArchiveForm?.addEventListener('submit', event => {
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    accountOriginalArchiveSignIn(event.currentTarget);
   }, true);
   document.querySelector('#logout-button')?.addEventListener('click', event => {
     event.preventDefault();
@@ -54,6 +48,7 @@
         document.querySelector('#login-screen').hidden = false;
         return;
       }
+      applyAccountIdentity(auth.user);
       if (auth.onboardingRequired) {
         showClubSetup(auth);
         return;
@@ -89,27 +84,6 @@
       await enterArchive(auth);
     } catch (exception) {
       showAccountError('#login-error', exception.message);
-    } finally {
-      submit.disabled = false;
-    }
-  }
-
-  async function accountOriginalArchiveSignIn(form) {
-    const submit = form.querySelector('[type="submit"]');
-    const error = document.querySelector('#original-archive-error');
-    submit.disabled = true;
-    error.hidden = true;
-    try {
-      const auth = await api('/api/auth/original-archive', {
-        method: 'POST',
-        body: JSON.stringify({ password: document.querySelector('#original-password').value || null }),
-      });
-      state.auth = auth;
-      document.querySelector('#original-password').value = '';
-      await enterArchive(auth);
-      showToast('Original 102-trophy archive restored.');
-    } catch (exception) {
-      showAccountError('#original-archive-error', exception.message);
     } finally {
       submit.disabled = false;
     }
@@ -179,6 +153,7 @@
   }
 
   async function enterArchive(auth) {
+    applyAccountIdentity(auth.user);
     applyClubBranding(auth.club);
     document.querySelector('#login-screen').hidden = true;
     document.querySelector('#club-setup-screen').hidden = true;
@@ -214,12 +189,6 @@
     signupButton.setAttribute('aria-selected', String(signup));
     document.querySelector('#login-error').hidden = true;
     document.querySelector('#signup-error').hidden = true;
-    const originalAccess = document.querySelector('#original-archive-access');
-    const originalAvailable = Boolean(state.auth?.originalArchiveAvailable);
-    const originalPasswordRequired = Boolean(state.auth?.originalArchivePasswordRequired);
-    originalAccess.hidden = signup || !originalAvailable;
-    document.querySelector('#original-password-label').hidden = !originalPasswordRequired;
-    document.querySelector('#original-password').required = originalPasswordRequired;
     setTimeout(() => document.querySelector(signup ? '#signup-name' : '#login-email').focus(), 30);
   }
 
@@ -230,6 +199,15 @@
     const objectUrl = URL.createObjectURL(file);
     preview.innerHTML = `<img src="${objectUrl}" alt="Selected club logo"><small>Tap to choose a different logo</small>`;
     preview.querySelector('img').addEventListener('load', () => URL.revokeObjectURL(objectUrl), { once: true });
+  }
+
+  function applyAccountIdentity(user) {
+    if (!user) return;
+    const displayName = user.displayName || 'Account';
+    document.querySelector('#archive-account-initial').textContent = displayName.trim().charAt(0).toUpperCase() || 'A';
+    document.querySelector('#archive-account-name').textContent = displayName;
+    document.querySelector('#archive-menu-name').textContent = displayName;
+    document.querySelector('#archive-menu-email').textContent = user.email || '';
   }
 
   function applyClubBranding(club) {
@@ -254,20 +232,7 @@
 
   async function accountSignOut() {
     try { await api('/api/auth/logout', { method: 'POST', body: '{}' }); } catch { }
-    stopAnalysisPolling();
-    state.auth = null;
-    state.current = null;
-    state.trophies = [];
-    document.querySelector('#club-setup-screen').hidden = true;
-    document.querySelector('#login-screen').hidden = false;
-    document.querySelector('#club-logo').hidden = true;
-    document.querySelector('#club-monogram').hidden = false;
-    document.querySelector('#club-monogram').textContent = 'T';
-    document.querySelector('#club-name').textContent = 'Your club';
-    document.querySelector('#club-subtitle').textContent = 'Trophy Archive';
-    try { state.auth = await api('/api/auth/status'); } catch { state.auth = null; }
-    showAuthTab('login');
-    history.replaceState({}, '', '#login');
+    location.href = '/';
   }
 
   function showAccountError(selector, message) {

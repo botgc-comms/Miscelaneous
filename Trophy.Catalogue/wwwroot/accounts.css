@@ -2,22 +2,26 @@
 .club-brand-symbol .club-monogram { position: absolute; inset: 0; }
 .club-logo { width: 42px; height: 42px; padding: 3px; border-radius: 50%; background: #fff; object-fit: contain; }
 
-.auth-card { align-content: start; }
-.auth-card h1 { max-width: 340px; font-size: clamp(34px, 8vw, 44px); line-height: .98; }
-.auth-tabs { width: 100%; margin-bottom: 16px; padding: 4px; display: grid; grid-template-columns: 1fr 1fr; border-radius: 11px; background: #eeece5; }
-.auth-tabs button { height: 38px; margin: 0; border-radius: 8px; background: transparent; color: var(--muted); font-size: 11px; }
-.auth-tabs button.is-active { background: #fff; color: var(--green-900); box-shadow: 0 2px 9px rgba(18,44,34,.09); }
-.auth-form { width: 100%; display: grid; gap: 11px; }
-.auth-form button { margin-top: 3px; }
-.field-help { width: 100%; margin: -4px 0 0; color: var(--muted); font-size: 9px; text-align: left; }
-.auth-assurance { max-width: 300px; margin-top: 17px !important; line-height: 1.45; }
+.auth-card { width: min(100%, 510px); padding: 44px; align-content: start; }
+.auth-card h1 { max-width: 430px; font-size: clamp(40px, 7vw, 52px); line-height: 1; }
+.auth-card > p:not(.eyebrow):not(.form-error) { max-width: 410px; font-size: 16px; line-height: 1.6; }
+.auth-tabs { width: 100%; margin-bottom: 20px; padding: 5px; display: grid; grid-template-columns: 1fr 1fr; border-radius: 12px; background: #e9ece9; }
+.auth-tabs button { height: 48px; margin: 0; border-radius: 9px; background: transparent; color: var(--muted); font-size: 15px; font-weight: 700; }
+.auth-tabs button.is-active { background: #fff; color: var(--green-900); box-shadow: 0 3px 12px rgba(18,44,34,.1); }
+.auth-form { width: 100%; display: grid; gap: 16px; }
+.auth-card label span { color: var(--ink); font-size: 14px; font-weight: 700; letter-spacing: 0; text-transform: none; }
+.auth-card input { height: 56px; font-size: 17px; }
+.auth-form button { height: 56px; margin-top: 3px; font-size: 16px; }
+.field-help { width: 100%; margin: -8px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; text-align: left; }
+.auth-assurance { max-width: 380px; margin-top: 20px !important; font-family: var(--font-sans) !important; font-size: 13px; font-style: normal !important; line-height: 1.5; }
+.auth-home-link { margin-top: 14px; color: var(--green-800); font-size: 14px; font-weight: 700; }
 
 .club-setup-screen { position: fixed; z-index: 55; inset: 0; min-height: 100dvh; padding: 24px; overflow-y: auto; display: grid; place-items: center; background: radial-gradient(circle at 50% 12%, #255d4b, var(--green-950) 56%); }
 .club-setup-card { width: min(100%, 620px); padding: 34px; display: grid; gap: 14px; border-radius: 24px; background: var(--surface); box-shadow: 0 28px 90px rgba(0,0,0,.35); }
 .club-setup-card h1 { margin: 0; font-family: var(--font-serif); font-size: clamp(36px, 7vw, 50px); line-height: 1; }
 .club-setup-card > p:not(.eyebrow):not(.form-error) { margin: -4px 0 2px; color: var(--muted); font-size: 12px; line-height: 1.5; }
 .club-setup-card label:not(.logo-picker) { display: grid; gap: 5px; }
-.club-setup-card label > span { color: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
+.club-setup-card label > span { color: var(--muted); font-size: 13px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
 .club-setup-card label em { font-style: normal; font-weight: 400; }
 .club-setup-card input:not([type="file"]) { width: 100%; height: 47px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
 .setup-progress { display: flex; align-items: center; justify-content: center; }
@@ -33,14 +37,7 @@
 .setup-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .setup-submit { min-height: 50px; padding: 0 17px; display: flex; justify-content: space-between; align-items: center; border: 0; border-radius: 11px; background: var(--green-900); color: #fff; font-weight: 700; cursor: pointer; }
 .setup-submit:disabled { opacity: .58; }
-.setup-signout { border: 0; background: transparent; color: var(--muted); font-size: 10px; cursor: pointer; }
-
-.original-archive-access { width: 100%; margin-top: 13px; padding-top: 14px; display: grid; gap: 10px; border-top: 1px solid var(--line); text-align: left; }
-.original-archive-access > div { display: grid; gap: 3px; }
-.original-archive-access > div strong { color: var(--green-900); font-family: var(--font-serif); font-size: 17px; }
-.original-archive-access > div small { color: var(--muted); font-size: 9px; line-height: 1.45; }
-.original-archive-access .auth-form { gap: 8px; }
-.original-archive-access .auth-form button { min-height: 44px; border: 1px solid var(--green-800); background: transparent; color: var(--green-900); }
+.setup-signout { border: 0; background: transparent; color: var(--muted); font-size: 14px; cursor: pointer; }
 
 @media (max-width: 680px) {
   .club-brand-symbol, .club-logo { width: 38px; height: 38px; }

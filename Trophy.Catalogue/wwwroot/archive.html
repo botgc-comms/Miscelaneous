@@ -18,7 +18,7 @@
 <body>
   <div class="app-shell">
     <header class="topbar">
-      <a class="club-mark" href="#catalogue" aria-label="Go to trophy catalogue">
+      <a class="club-mark" href="#catalogue" aria-label="Open my trophy catalogue">
         <span class="club-brand-symbol">
           <img id="club-logo" class="club-logo" src="" alt="" hidden>
           <span id="club-monogram" class="club-monogram">T</span>
@@ -26,13 +26,22 @@
         <span><strong id="club-name">Your club</strong><small id="club-subtitle">Trophy Archive</small></span>
       </a>
       <div class="header-actions">
+        <a class="home-link" href="/">Home</a>
         <a class="export-link" href="/api/export.csv" download>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M5 21h14"/></svg>
           <span>Export</span>
         </a>
-        <button id="logout-button" class="icon-button" aria-label="Sign out" title="Sign out">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5M15 12H3M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5"/></svg>
-        </button>
+        <details class="archive-account-menu">
+          <summary aria-label="Open account menu">
+            <span id="archive-account-initial">A</span>
+            <span><strong id="archive-account-name">Account</strong><small>Account</small></span>
+          </summary>
+          <div>
+            <p><strong id="archive-menu-name">Account</strong><small id="archive-menu-email"></small></p>
+            <a href="/">Home page</a>
+            <button id="logout-button" type="button">Log out</button>
+          </div>
+        </details>
       </div>
     </header>
 
@@ -145,8 +154,8 @@
     <div class="login-card auth-card">
       <span class="login-monogram">T</span>
       <p class="eyebrow">Trophy Archive</p>
-      <h1 id="auth-title">Preserve your club history</h1>
-      <p>Create your club archive, or sign in to continue an existing collection.</p>
+      <h1 id="auth-title">Log in to your trophy archive</h1>
+      <p>Enter your email address and password to open your club’s trophies.</p>
       <div class="auth-tabs" role="tablist" aria-label="Account access">
         <button id="show-login-button" class="is-active" type="button" role="tab" aria-selected="true">Sign in</button>
         <button id="show-signup-button" type="button" role="tab" aria-selected="false">Create account</button>
@@ -157,14 +166,6 @@
         <p id="login-error" class="form-error" role="alert" hidden></p>
         <button type="submit">Sign in</button>
       </form>
-      <section id="original-archive-access" class="original-archive-access" hidden>
-        <div><strong>Original club archive</strong><small>Open the 102-trophy collection that used the previous single-club login.</small></div>
-        <form id="original-archive-form" class="auth-form">
-          <label id="original-password-label"><span>Previous archive password</span><input id="original-password" type="password" autocomplete="current-password"></label>
-          <p id="original-archive-error" class="form-error" role="alert" hidden></p>
-          <button type="submit">Open original archive</button>
-        </form>
-      </section>
       <form id="signup-form" class="auth-form" hidden>
         <label><span>Your name</span><input id="signup-name" type="text" maxlength="100" autocomplete="name" required></label>
         <label><span>Email address</span><input id="signup-email" type="email" autocomplete="email" required></label>
@@ -174,6 +175,7 @@
         <button type="submit">Create my archive</button>
       </form>
       <small class="auth-assurance">Your club’s collection stays separate from every other archive.</small>
+      <a class="auth-home-link" href="/">Back to the home page</a>
     </div>
   </section>
 
@@ -194,7 +196,7 @@
       </div>
       <label><span>Club website <em>optional</em></span><input id="club-website-input" name="website" type="url" autocomplete="url" placeholder="https://www.yourclub.org"></label>
       <p id="club-setup-error" class="form-error" role="alert" hidden></p>
-      <button class="setup-submit" type="submit">Create club archive <span>→</span></button>
+      <button class="setup-submit" type="submit">Create club archive</button>
       <button id="setup-signout-button" class="setup-signout" type="button">Use a different account</button>
     </form>
   </section>

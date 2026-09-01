@@ -29,11 +29,17 @@ public sealed class AccountStore(
         await gate.WaitAsync(cancellationToken);
         try
         {
-            if (!File.Exists(StatePath)) return;
-            await using (var stream = File.OpenRead(StatePath))
+            if (File.Exists(StatePath))
+            {
+                await using var stream = File.OpenRead(StatePath);
                 state = await JsonSerializer.DeserializeAsync<IdentityState>(stream, jsonOptions, cancellationToken) ?? new();
+            }
         }
         finally { gate.Release(); }
+
+        var legacyPassword = configuration["APP_PASSWORD"];
+        if (LegacyArchiveExists && !string.IsNullOrWhiteSpace(legacyPassword))
+            await OpenLegacyArchiveAsync(legacyPassword, cancellationToken);
     }
 
     public async Task<AccountRecord> CreateAccountAsync(SignupInput input, CancellationToken cancellationToken = default)
@@ -105,15 +111,18 @@ public sealed class AccountStore(
                 state.Clubs.Add(club);
             }
 
-            var account = state.Accounts.FirstOrDefault(item => string.Equals(item.ClubId, "legacy", StringComparison.OrdinalIgnoreCase));
+            var configuredEmail = configuration["LEGACY_ARCHIVE_EMAIL"] ?? "archive@botgc.test";
+            var normalizedEmail = NormalizeEmail(configuredEmail);
+            var account = state.Accounts.FirstOrDefault(item => string.Equals(item.ClubId, "legacy", StringComparison.OrdinalIgnoreCase))
+                ?? state.Accounts.FirstOrDefault(item => item.NormalizedEmail == normalizedEmail);
             if (account is null)
             {
                 account = new AccountRecord
                 {
                     Id = Guid.NewGuid().ToString("N"),
-                    DisplayName = "Original archive owner",
-                    Email = "original-archive@local.invalid",
-                    NormalizedEmail = "ORIGINAL-ARCHIVE@LOCAL.INVALID",
+                    DisplayName = configuration["LEGACY_ARCHIVE_DISPLAY_NAME"] ?? "Trophy archive administrator",
+                    Email = configuredEmail,
+                    NormalizedEmail = normalizedEmail,
                     ClubId = "legacy"
                 };
                 var passwordMaterial = string.IsNullOrEmpty(credential) ? Guid.NewGuid().ToString("N") : credential;
@@ -122,7 +131,12 @@ public sealed class AccountStore(
             }
             else
             {
+                account.DisplayName = configuration["LEGACY_ARCHIVE_DISPLAY_NAME"] ?? "Trophy archive administrator";
+                account.Email = configuredEmail;
+                account.NormalizedEmail = normalizedEmail;
                 account.ClubId = "legacy";
+                if (!string.IsNullOrEmpty(credential))
+                    account.PasswordHash = passwordHasher.HashPassword(account, credential);
             }
 
             club.UpdatedAt = DateTimeOffset.UtcNow;
