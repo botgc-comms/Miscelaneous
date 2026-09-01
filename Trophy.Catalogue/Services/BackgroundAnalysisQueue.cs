@@ -4,20 +4,13 @@ using Trophy.Catalogue.Domain;
 
 namespace Trophy.Catalogue.Services;
 
-public sealed record AnalysisJobSnapshot(
-    string Status,
-    string Message,
-    DateTimeOffset UpdatedAt,
-    int EvidenceCount);
-
-internal sealed record AnalysisQueueRequest(
-    string TrophyId,
-    DateTimeOffset DueAt,
-    long Generation);
+public sealed record AnalysisJobSnapshot(string Status, string Message, DateTimeOffset UpdatedAt, int EvidenceCount);
+internal sealed record AnalysisQueueRequest(string TrophyId, DateTimeOffset DueAt, long Generation);
 
 public sealed class BackgroundAnalysisQueue(
     CatalogueStore store,
     OpenAiEngravingReader reader,
+    MemberMatchingCoordinator matching,
     IConfiguration configuration,
     ILogger<BackgroundAnalysisQueue> logger) : BackgroundService
 {
@@ -28,20 +21,14 @@ public sealed class BackgroundAnalysisQueue(
     });
     private readonly ConcurrentDictionary<string, AnalysisJobSnapshot> jobs = new(StringComparer.OrdinalIgnoreCase);
     private readonly ConcurrentDictionary<string, long> generations = new(StringComparer.OrdinalIgnoreCase);
-    private readonly TimeSpan debounce = TimeSpan.FromSeconds(
-        Math.Clamp(configuration.GetValue("ANALYSIS_DEBOUNCE_SECONDS", 20), 2, 60));
+    private readonly TimeSpan debounce = TimeSpan.FromSeconds(Math.Clamp(configuration.GetValue("ANALYSIS_DEBOUNCE_SECONDS", 20), 2, 60));
 
     public AnalysisJobSnapshot Enqueue(string trophyId, int evidenceCount) => Schedule(
-        trophyId,
-        evidenceCount,
-        DateTimeOffset.UtcNow.Add(debounce),
+        trophyId, evidenceCount, DateTimeOffset.UtcNow.Add(debounce),
         "Photos saved. Waiting briefly for any more before reading the full set…");
 
     public AnalysisJobSnapshot EnqueueNow(string trophyId, int evidenceCount) => Schedule(
-        trophyId,
-        evidenceCount,
-        DateTimeOffset.UtcNow,
-        "Reading has been queued…");
+        trophyId, evidenceCount, DateTimeOffset.UtcNow, "Reading has been queued…");
 
     public AnalysisJobSnapshot GetStatus(string trophyId) => jobs.TryGetValue(trophyId, out var status)
         ? status
@@ -51,20 +38,13 @@ public sealed class BackgroundAnalysisQueue(
     {
         await RequeueInterruptedWorkAsync(stoppingToken);
         var pending = new Dictionary<string, AnalysisQueueRequest>(StringComparer.OrdinalIgnoreCase);
-
         while (!stoppingToken.IsCancellationRequested)
         {
             while (queue.Reader.TryRead(out var request))
-            {
                 if (!pending.TryGetValue(request.TrophyId, out var existing) || request.Generation >= existing.Generation)
                     pending[request.TrophyId] = request;
-            }
 
-            var due = pending.Values
-                .Where(item => item.DueAt <= DateTimeOffset.UtcNow)
-                .OrderBy(item => item.DueAt)
-                .ToList();
-
+            var due = pending.Values.Where(item => item.DueAt <= DateTimeOffset.UtcNow).OrderBy(item => item.DueAt).ToList();
             foreach (var request in due)
             {
                 pending.Remove(request.TrophyId);
@@ -77,20 +57,13 @@ public sealed class BackgroundAnalysisQueue(
                 continue;
             }
 
-            var nextDue = pending.Values.Min(item => item.DueAt);
-            var delay = nextDue - DateTimeOffset.UtcNow;
+            var delay = pending.Values.Min(item => item.DueAt) - DateTimeOffset.UtcNow;
             if (delay < TimeSpan.Zero) delay = TimeSpan.Zero;
-            var readTask = queue.Reader.WaitToReadAsync(stoppingToken).AsTask();
-            var delayTask = Task.Delay(delay, stoppingToken);
-            await Task.WhenAny(readTask, delayTask);
+            await Task.WhenAny(queue.Reader.WaitToReadAsync(stoppingToken).AsTask(), Task.Delay(delay, stoppingToken));
         }
     }
 
-    private AnalysisJobSnapshot Schedule(
-        string trophyId,
-        int evidenceCount,
-        DateTimeOffset dueAt,
-        string message)
+    private AnalysisJobSnapshot Schedule(string trophyId, int evidenceCount, DateTimeOffset dueAt, string message)
     {
         var generation = generations.AddOrUpdate(trophyId, 1, (_, current) => current + 1);
         var snapshot = new AnalysisJobSnapshot("queued", message, DateTimeOffset.UtcNow, evidenceCount);
@@ -102,16 +75,11 @@ public sealed class BackgroundAnalysisQueue(
     private async Task ProcessAsync(AnalysisQueueRequest request, CancellationToken cancellationToken)
     {
         if (HasNewerRequest(request)) return;
-
         var trophy = await store.GetTrophyAsync(request.TrophyId, cancellationToken);
         var evidenceFiles = await store.GetEvidenceFilesAsync(request.TrophyId, cancellationToken);
         if (trophy is null || evidenceFiles.Count == 0)
         {
-            jobs[request.TrophyId] = new AnalysisJobSnapshot(
-                "idle",
-                "No images are available to read.",
-                DateTimeOffset.UtcNow,
-                0);
+            jobs[request.TrophyId] = new AnalysisJobSnapshot("idle", "No images are available to read.", DateTimeOffset.UtcNow, 0);
             return;
         }
 
@@ -119,21 +87,9 @@ public sealed class BackgroundAnalysisQueue(
             .Where(item => item.Evidence.ProcessingState is ProcessingStates.Pending or "queued" or "processing" or ProcessingStates.Failed)
             .Select(item => item.Evidence.Id)
             .ToList();
-        jobs[request.TrophyId] = new AnalysisJobSnapshot(
-            "processing",
-            $"Comparing all {evidenceFiles.Count} images…",
-            DateTimeOffset.UtcNow,
-            evidenceFiles.Count);
-
+        jobs[request.TrophyId] = new AnalysisJobSnapshot("processing", $"Comparing all {evidenceFiles.Count} images…", DateTimeOffset.UtcNow, evidenceFiles.Count);
         foreach (var evidenceId in pendingEvidenceIds)
-        {
-            await store.SetEvidenceProcessingAsync(
-                request.TrophyId,
-                evidenceId,
-                "processing",
-                "Comparing this with all saved images",
-                cancellationToken);
-        }
+            await store.SetEvidenceProcessingAsync(request.TrophyId, evidenceId, "processing", "Comparing this with all saved images", cancellationToken);
 
         try
         {
@@ -143,28 +99,15 @@ public sealed class BackgroundAnalysisQueue(
                 extraction,
                 evidenceFiles.Select(item => item.Evidence.Id).ToList(),
                 cancellationToken);
+            await matching.RefreshTrophyAsync(request.TrophyId, cancellationToken);
 
             var readingMessage = extraction.Entries.Count == 1
                 ? $"1 winner reading found across {evidenceFiles.Count} images"
                 : $"{extraction.Entries.Count} winner readings found across {evidenceFiles.Count} images";
             foreach (var evidenceId in pendingEvidenceIds)
-            {
-                await store.SetEvidenceProcessingAsync(
-                    request.TrophyId,
-                    evidenceId,
-                    ProcessingStates.Complete,
-                    readingMessage,
-                    cancellationToken);
-            }
-
+                await store.SetEvidenceProcessingAsync(request.TrophyId, evidenceId, ProcessingStates.Complete, readingMessage, cancellationToken);
             if (!HasNewerRequest(request))
-            {
-                jobs[request.TrophyId] = new AnalysisJobSnapshot(
-                    "complete",
-                    readingMessage,
-                    DateTimeOffset.UtcNow,
-                    evidenceFiles.Count);
-            }
+                jobs[request.TrophyId] = new AnalysisJobSnapshot("complete", readingMessage, DateTimeOffset.UtcNow, evidenceFiles.Count);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -174,46 +117,18 @@ public sealed class BackgroundAnalysisQueue(
         {
             logger.LogWarning(exception, "Background engraving analysis failed for trophy {TrophyId}", request.TrophyId);
             foreach (var evidenceId in pendingEvidenceIds)
-            {
-                await store.SetEvidenceProcessingAsync(
-                    request.TrophyId,
-                    evidenceId,
-                    ProcessingStates.Failed,
-                    exception.Message,
-                    cancellationToken);
-            }
-
+                await store.SetEvidenceProcessingAsync(request.TrophyId, evidenceId, ProcessingStates.Failed, exception.Message, cancellationToken);
             if (!HasNewerRequest(request))
-            {
-                jobs[request.TrophyId] = new AnalysisJobSnapshot(
-                    "failed",
-                    exception.Message,
-                    DateTimeOffset.UtcNow,
-                    evidenceFiles.Count);
-            }
+                jobs[request.TrophyId] = new AnalysisJobSnapshot("failed", exception.Message, DateTimeOffset.UtcNow, evidenceFiles.Count);
         }
         catch (Exception exception)
         {
             logger.LogError(exception, "Unexpected background engraving analysis failure for trophy {TrophyId}", request.TrophyId);
             const string message = "The background reader failed unexpectedly. Try again.";
             foreach (var evidenceId in pendingEvidenceIds)
-            {
-                await store.SetEvidenceProcessingAsync(
-                    request.TrophyId,
-                    evidenceId,
-                    ProcessingStates.Failed,
-                    message,
-                    cancellationToken);
-            }
-
+                await store.SetEvidenceProcessingAsync(request.TrophyId, evidenceId, ProcessingStates.Failed, message, cancellationToken);
             if (!HasNewerRequest(request))
-            {
-                jobs[request.TrophyId] = new AnalysisJobSnapshot(
-                    "failed",
-                    message,
-                    DateTimeOffset.UtcNow,
-                    evidenceFiles.Count);
-            }
+                jobs[request.TrophyId] = new AnalysisJobSnapshot("failed", message, DateTimeOffset.UtcNow, evidenceFiles.Count);
         }
     }
 

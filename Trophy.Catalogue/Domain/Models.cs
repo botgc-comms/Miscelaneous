@@ -4,7 +4,7 @@ namespace Trophy.Catalogue.Domain;
 
 public sealed class CatalogueState
 {
-    public int Version { get; set; } = 1;
+    public int Version { get; set; } = 2;
     public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
     public List<TrophyRecord> Trophies { get; set; } = [];
 }
@@ -25,6 +25,10 @@ public sealed class TrophyRecord
     public string? SecondaryName { get; set; }
     public required string Category { get; set; }
     public string? ReferenceImage { get; set; }
+    public string IllustrationState { get; set; } = IllustrationStates.None;
+    public string? IllustrationMessage { get; set; }
+    public int IllustrationGenerationCount { get; set; }
+    public DateTimeOffset? IllustrationGeneratedAt { get; set; }
     public string Status { get; set; } = TrophyStatuses.NotStarted;
     public int? TimelineStartYear { get; set; }
     public int? TimelineEndYear { get; set; }
@@ -42,8 +46,20 @@ public sealed class WinnerRecord
     public string ReviewState { get; set; } = ReviewStates.NeedsReview;
     public string Source { get; set; } = WinnerSources.Manual;
     public string? Notes { get; set; }
+    public MemberMatchRecord? MemberMatch { get; set; }
     public List<string> EvidenceImageIds { get; set; } = [];
     public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
+}
+
+public sealed class MemberMatchRecord
+{
+    public required string MemberId { get; set; }
+    public required string MemberName { get; set; }
+    public string? MembershipNumber { get; set; }
+    public int? BirthYear { get; set; }
+    public double Confidence { get; set; }
+    public string State { get; set; } = MemberMatchStates.Possible;
+    public required string Explanation { get; set; }
 }
 
 public sealed class EvidenceImage
@@ -74,6 +90,24 @@ public sealed class AiWinner
     public string Notes { get; set; } = string.Empty;
 }
 
+public sealed class MemberDirectoryState
+{
+    public List<MemberRecord> Members { get; set; } = [];
+    public string? SourceName { get; set; }
+    public DateTimeOffset? ImportedAt { get; set; }
+}
+
+public sealed class MemberRecord
+{
+    public string Id { get; set; } = Guid.NewGuid().ToString("N");
+    public required string FullName { get; set; }
+    public string FirstName { get; set; } = string.Empty;
+    public string Initial { get; set; } = string.Empty;
+    public string Surname { get; set; } = string.Empty;
+    public int? BirthYear { get; set; }
+    public string? MembershipNumber { get; set; }
+}
+
 public sealed record TrophySummary(
     string Id,
     string Name,
@@ -87,9 +121,18 @@ public sealed record TrophySummary(
     int MissingYearCount,
     DateTimeOffset? LastSavedAt);
 
+public sealed record MemberDirectorySummary(
+    int MemberCount,
+    int WithBirthYearCount,
+    int WithMembershipNumberCount,
+    string? SourceName,
+    DateTimeOffset? ImportedAt);
+
+public sealed record MemberImportResult(int ImportedCount, int SkippedCount, string SourceName, DateTimeOffset ImportedAt);
 public sealed record WinnerInput(int Year, string Name, string ReviewState, string? Notes);
 public sealed record TimelineInput(int? StartYear, int? EndYear);
 public sealed record LoginInput(string Password);
+public sealed record TrophyCreateInput(string Name, string? SecondaryName, string Category, string? Code);
 
 public static class TrophyStatuses
 {
@@ -121,4 +164,18 @@ public static class ProcessingStates
     public const string Pending = "pending";
     public const string Complete = "complete";
     public const string Failed = "failed";
+}
+
+public static class IllustrationStates
+{
+    public const string None = "none";
+    public const string Processing = "processing";
+    public const string Complete = "complete";
+    public const string Failed = "failed";
+}
+
+public static class MemberMatchStates
+{
+    public const string Strong = "strong";
+    public const string Possible = "possible";
 }

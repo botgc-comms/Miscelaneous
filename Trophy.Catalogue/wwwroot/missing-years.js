@@ -1,4 +1,16 @@
 (() => {
+  if (!document.querySelector('link[href="/commercial.css"]')) {
+    const stylesheet = document.createElement('link');
+    stylesheet.rel = 'stylesheet';
+    stylesheet.href = '/commercial.css';
+    document.head.append(stylesheet);
+  }
+  if (!document.querySelector('script[src="/commercial.js"]')) {
+    const commercialScript = document.createElement('script');
+    commercialScript.src = '/commercial.js';
+    document.head.append(commercialScript);
+  }
+
   const box = document.querySelector('#missing-years');
   if (!box) return;
 
@@ -12,7 +24,6 @@
   function addManualControl() {
     const years = Array.isArray(state.missingYears) ? state.missingYears : [];
     if (box.hidden || !years.length) return;
-
     const signature = years.join(',');
     const existing = box.querySelector('.missing-year-actions');
     if (existing?.dataset.signature === signature) return;
@@ -37,7 +48,6 @@
     if (!button) return;
     const year = box.querySelector('.missing-year-actions select')?.value;
     if (!year) return;
-
     renderWinners(true);
     const row = document.querySelector('#winner-list [data-winner-id="new"]');
     const yearInput = row?.querySelector('input[name="year"]');

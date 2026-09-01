@@ -18,22 +18,28 @@ public static class EntryPoint
         builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = 60 * 1024 * 1024);
         builder.Services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 60 * 1024 * 1024);
         builder.Services.AddSingleton<CatalogueStore>();
+        builder.Services.AddSingleton<MemberDirectoryStore>();
+        builder.Services.AddSingleton<FuzzyMemberMatcher>();
+        builder.Services.AddSingleton<MemberMatchingCoordinator>();
         builder.Services.AddSingleton<PasswordGate>();
         builder.Services.AddSingleton<OpenAiEngravingReader>();
+        builder.Services.AddSingleton<OpenAiTrophyIllustrator>();
         builder.Services.AddSingleton<BackgroundAnalysisQueue>();
         builder.Services.AddHostedService(provider => provider.GetRequiredService<BackgroundAnalysisQueue>());
         builder.Services.AddHttpClient(nameof(OpenAiEngravingReader), client => client.Timeout = TimeSpan.FromMinutes(4));
+        builder.Services.AddHttpClient(nameof(OpenAiTrophyIllustrator), client => client.Timeout = TimeSpan.FromMinutes(5));
 
         var app = builder.Build();
         await app.Services.GetRequiredService<CatalogueStore>().InitializeAsync();
+        await app.Services.GetRequiredService<MemberDirectoryStore>().InitializeAsync();
 
         app.Use(async (context, next) =>
         {
             context.Response.Headers["X-Content-Type-Options"] = "nosniff";
             context.Response.Headers["Referrer-Policy"] = "same-origin";
-            context.Response.Headers["Permissions-Policy"] = "camera=(self), microphone=()";
+            context.Response.Headers["Permissions-Policy"] = "camera=(self), microphone=(), geolocation=()";
             context.Response.Headers["Content-Security-Policy"] =
-                "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'";
+                "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'";
             await next();
         });
 
@@ -42,7 +48,7 @@ public static class EntryPoint
         {
             OnPrepareResponse = context =>
             {
-                context.Context.Response.Headers.CacheControl = context.File.Name is "index.html" or "app.js" or "styles.css" or "async.css"
+                context.Context.Response.Headers.CacheControl = context.File.Name is "index.html" or "app.js" or "styles.css" or "async.css" or "commercial.js" or "commercial.css"
                     ? "no-cache"
                     : "public,max-age=604800";
             }
@@ -78,31 +84,35 @@ public static class EntryPoint
         MapAuthentication(app);
         MapCatalogue(app);
         MapEvidence(app);
+        MapIllustrations(app);
+        MapMembers(app);
         MapWinners(app);
         MapExports(app);
-
         app.MapFallbackToFile("index.html");
         await app.RunAsync();
     }
 
     private static void MapHealth(WebApplication app)
     {
-        app.MapGet("/health", (OpenAiEngravingReader reader) => Results.Ok(new
+        app.MapGet("/health", (OpenAiEngravingReader reader, OpenAiTrophyIllustrator illustrator) => Results.Ok(new
         {
             status = "healthy",
-            aiConfigured = reader.IsAvailable
+            aiConfigured = reader.IsAvailable,
+            illustrationConfigured = illustrator.IsAvailable
         }));
     }
 
     private static void MapAuthentication(WebApplication app)
     {
-        app.MapGet("/api/auth/status", (HttpContext context, PasswordGate gate, OpenAiEngravingReader reader) => Results.Ok(new
+        app.MapGet("/api/auth/status", (HttpContext context, PasswordGate gate, OpenAiEngravingReader reader, OpenAiTrophyIllustrator illustrator) => Results.Ok(new
         {
             authenticated = gate.IsAuthenticated(context),
             requiresSetup = gate.RequiresSetup,
             passwordRequired = gate.IsConfigured,
             aiConfigured = reader.IsAvailable,
-            model = reader.Model
+            illustrationConfigured = illustrator.IsAvailable,
+            model = reader.Model,
+            illustrationModel = illustrator.Model
         }));
 
         app.MapPost("/api/auth/login", async (HttpContext context, LoginInput input, PasswordGate gate) =>
@@ -127,7 +137,7 @@ public static class EntryPoint
 
     private static void MapCatalogue(WebApplication app)
     {
-        app.MapGet("/api/trophies", async (CatalogueStore store, OpenAiEngravingReader reader, CancellationToken cancellationToken) =>
+        app.MapGet("/api/trophies", async (CatalogueStore store, OpenAiEngravingReader reader, OpenAiTrophyIllustrator illustrator, CancellationToken cancellationToken) =>
         {
             var items = await store.GetSummariesAsync(cancellationToken);
             return Results.Ok(new
@@ -141,16 +151,30 @@ public static class EntryPoint
                     complete = items.Count(item => item.Status == TrophyStatuses.Complete),
                     needsReview = items.Count(item => item.NeedsReviewCount > 0)
                 },
-                aiConfigured = reader.IsAvailable
+                aiConfigured = reader.IsAvailable,
+                illustrationConfigured = illustrator.IsAvailable
             });
+        });
+
+        app.MapPost("/api/trophies", async (TrophyCreateInput input, CatalogueStore store, CancellationToken cancellationToken) =>
+        {
+            var error = ValidateTrophy(input);
+            if (error is not null) return Results.BadRequest(new { error });
+            try
+            {
+                var trophy = await store.CreateTrophyAsync(input, cancellationToken);
+                return Results.Created($"/api/trophies/{trophy.Id}", new { trophy, missingYears = Array.Empty<int>() });
+            }
+            catch (InvalidOperationException exception)
+            {
+                return Results.Conflict(new { error = exception.Message });
+            }
         });
 
         app.MapGet("/api/trophies/{id}", async (string id, CatalogueStore store, CancellationToken cancellationToken) =>
         {
             var trophy = await store.GetTrophyAsync(id, cancellationToken);
-            return trophy is null
-                ? Results.NotFound()
-                : Results.Ok(new { trophy, missingYears = CatalogueStore.MissingYears(trophy) });
+            return trophy is null ? Results.NotFound() : Results.Ok(new { trophy, missingYears = CatalogueStore.MissingYears(trophy) });
         });
 
         app.MapPut("/api/trophies/{id}/timeline", async (string id, TimelineInput input, CatalogueStore store, CancellationToken cancellationToken) =>
@@ -180,19 +204,15 @@ public static class EntryPoint
             if (!request.HasFormContentType) return Results.BadRequest(new { error = "An image upload is required." });
             var trophy = await store.GetTrophyAsync(id, cancellationToken);
             if (trophy is null) return Results.NotFound();
-
             var form = await request.ReadFormAsync(cancellationToken);
             var files = form.Files.ToList();
             var kind = form["kind"].ToString() == EvidenceKinds.Rubbing ? EvidenceKinds.Rubbing : EvidenceKinds.Photo;
             if (files.Count == 0) return Results.BadRequest(new { error = "Choose one or more photos or rubbings first." });
             if (files.Count > 30) return Results.BadRequest(new { error = "Upload no more than 30 images at once." });
             if (files.Any(file => file.Length == 0)) return Results.BadRequest(new { error = "One of those images is empty. Remove it and try again." });
-            if (files.Any(file => file.Length > 12 * 1024 * 1024))
-                return Results.BadRequest(new { error = "Each image must be no larger than 12 MB. Try a smaller photo." });
-            if (files.Sum(file => file.Length) > 55 * 1024 * 1024)
-                return Results.BadRequest(new { error = "That batch is larger than 55 MB. Upload it in two groups." });
-            if (files.Any(file => !AcceptedImageTypes.Contains(file.ContentType)))
-                return Results.BadRequest(new { error = "Use JPEG, PNG or WebP images." });
+            if (files.Any(file => file.Length > 12 * 1024 * 1024)) return Results.BadRequest(new { error = "Each image must be no larger than 12 MB." });
+            if (files.Sum(file => file.Length) > 55 * 1024 * 1024) return Results.BadRequest(new { error = "That batch is larger than 55 MB. Upload it in two groups." });
+            if (files.Any(file => !AcceptedImageTypes.Contains(file.ContentType))) return Results.BadRequest(new { error = "Use JPEG, PNG or WebP images." });
 
             var addedEvidence = new List<EvidenceImage>();
             foreach (var file in files)
@@ -205,12 +225,8 @@ public static class EntryPoint
 
             trophy = await store.GetTrophyAsync(id, cancellationToken);
             if (trophy is null) return Results.NotFound();
-
             AnalysisJobSnapshot analysis;
-            if (reader.IsAvailable)
-            {
-                analysis = analysisQueue.Enqueue(id, trophy.Evidence.Count);
-            }
+            if (reader.IsAvailable) analysis = analysisQueue.Enqueue(id, trophy.Evidence.Count);
             else
             {
                 const string message = "Add OPENAI_API_KEY to enable the engraving reader.";
@@ -229,42 +245,19 @@ public static class EntryPoint
             });
         }).DisableAntiforgery();
 
-        app.MapPost("/api/trophies/{id}/analyse", async (
-            string id,
-            CatalogueStore store,
-            OpenAiEngravingReader reader,
-            BackgroundAnalysisQueue analysisQueue,
-            CancellationToken cancellationToken) =>
+        app.MapPost("/api/trophies/{id}/analyse", async (string id, CatalogueStore store, OpenAiEngravingReader reader, BackgroundAnalysisQueue queue, CancellationToken cancellationToken) =>
         {
             var trophy = await store.GetTrophyAsync(id, cancellationToken);
             if (trophy is null) return Results.NotFound();
             if (trophy.Evidence.Count == 0) return Results.BadRequest(new { error = "Add at least one image first." });
-            if (!reader.IsAvailable)
-            {
-                return Results.Json(
-                    new { error = "analysis_failed", message = "Add OPENAI_API_KEY to enable the engraving reader." },
-                    statusCode: StatusCodes.Status503ServiceUnavailable);
-            }
-
-            var analysis = analysisQueue.EnqueueNow(id, trophy.Evidence.Count);
-            return Results.Accepted($"/api/trophies/{id}/analysis-status", new { analysis });
+            if (!reader.IsAvailable) return Results.Json(new { error = "analysis_failed", message = "Add OPENAI_API_KEY to enable the engraving reader." }, statusCode: 503);
+            return Results.Accepted($"/api/trophies/{id}/analysis-status", new { analysis = queue.EnqueueNow(id, trophy.Evidence.Count) });
         });
 
-        app.MapGet("/api/trophies/{id}/analysis-status", async (
-            string id,
-            CatalogueStore store,
-            BackgroundAnalysisQueue analysisQueue,
-            CancellationToken cancellationToken) =>
-        {
-            var trophy = await store.GetTrophyAsync(id, cancellationToken);
-            return trophy is null ? Results.NotFound() : Results.Ok(new { analysis = analysisQueue.GetStatus(id) });
-        });
+        app.MapGet("/api/trophies/{id}/analysis-status", async (string id, CatalogueStore store, BackgroundAnalysisQueue queue, CancellationToken cancellationToken) =>
+            await store.GetTrophyAsync(id, cancellationToken) is null ? Results.NotFound() : Results.Ok(new { analysis = queue.GetStatus(id) }));
 
-        app.MapGet("/api/trophies/{id}/images/{imageId}", async (
-            string id,
-            string imageId,
-            CatalogueStore store,
-            CancellationToken cancellationToken) =>
+        app.MapGet("/api/trophies/{id}/images/{imageId}", async (string id, string imageId, CatalogueStore store, CancellationToken cancellationToken) =>
         {
             var trophy = await store.GetTrophyAsync(id, cancellationToken);
             var evidence = trophy?.Evidence.FirstOrDefault(item => item.Id == imageId);
@@ -272,42 +265,114 @@ public static class EntryPoint
             return evidence is null || path is null ? Results.NotFound() : Results.File(path, evidence.ContentType, enableRangeProcessing: true);
         });
 
-        app.MapDelete("/api/trophies/{id}/images/{imageId}", async (
-            string id,
-            string imageId,
-            CatalogueStore store,
-            CancellationToken cancellationToken) =>
+        app.MapDelete("/api/trophies/{id}/images/{imageId}", async (string id, string imageId, CatalogueStore store, CancellationToken cancellationToken) =>
             await store.DeleteEvidenceAsync(id, imageId, cancellationToken) ? Results.NoContent() : Results.NotFound());
+    }
+
+    private static void MapIllustrations(WebApplication app)
+    {
+        app.MapPost("/api/trophies/{id}/illustration", async (
+            string id,
+            CatalogueStore store,
+            OpenAiTrophyIllustrator illustrator,
+            CancellationToken cancellationToken) =>
+        {
+            var trophy = await store.GetTrophyAsync(id, cancellationToken);
+            if (trophy is null) return Results.NotFound();
+            var references = await store.GetEvidenceFilesAsync(id, cancellationToken);
+            if (references.Count == 0) return Results.BadRequest(new { error = "Add at least one clear photograph of the trophy first." });
+            if (!illustrator.IsAvailable) return Results.Json(new { error = "illustration_unavailable", message = "Add OPENAI_API_KEY to enable trophy illustrations." }, statusCode: 503);
+            await store.SetIllustrationStatusAsync(id, IllustrationStates.Processing, "Creating a faithful catalogue illustration from the saved angles…", cancellationToken);
+            try
+            {
+                var image = await illustrator.GenerateAsync(trophy.Name, references, cancellationToken);
+                var updated = await store.SaveIllustrationAsync(id, image, cancellationToken);
+                return Results.Ok(new { trophy = updated, illustrationUrl = updated?.ReferenceImage });
+            }
+            catch (Exception exception) when (exception is OpenAiUnavailableException or HttpRequestException or TaskCanceledException)
+            {
+                await store.SetIllustrationStatusAsync(id, IllustrationStates.Failed, exception.Message, cancellationToken);
+                return Results.Json(new { error = "illustration_failed", message = exception.Message }, statusCode: 503);
+            }
+        });
+
+        app.MapGet("/api/trophies/{id}/illustration", async (string id, CatalogueStore store, CancellationToken cancellationToken) =>
+        {
+            var path = await store.GetIllustrationPathAsync(id, cancellationToken);
+            return path is null ? Results.NotFound() : Results.File(path, "image/png", enableRangeProcessing: true);
+        });
+    }
+
+    private static void MapMembers(WebApplication app)
+    {
+        app.MapGet("/api/members", async (MemberDirectoryStore directory, CancellationToken cancellationToken) =>
+            Results.Ok(new { directory = await directory.GetSummaryAsync(cancellationToken) }));
+
+        app.MapPost("/api/members/import", async (
+            HttpRequest request,
+            MemberDirectoryStore directory,
+            MemberMatchingCoordinator matching,
+            CancellationToken cancellationToken) =>
+        {
+            if (!request.HasFormContentType) return Results.BadRequest(new { error = "Choose a CSV or XLSX member export." });
+            var form = await request.ReadFormAsync(cancellationToken);
+            var file = form.Files.GetFile("file") ?? form.Files.FirstOrDefault();
+            if (file is null || file.Length == 0) return Results.BadRequest(new { error = "Choose a CSV or XLSX member export." });
+            if (file.Length > 15 * 1024 * 1024) return Results.BadRequest(new { error = "Keep the member export below 15 MB." });
+            var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+            if (extension is not ".csv" and not ".tsv" and not ".xlsx")
+                return Results.BadRequest(new { error = "Use a CSV, TSV or XLSX file." });
+            try
+            {
+                await using var stream = file.OpenReadStream();
+                var result = await directory.ImportAsync(file.FileName, stream, cancellationToken);
+                await matching.RefreshAllAsync(cancellationToken);
+                return Results.Ok(new { result, directory = await directory.GetSummaryAsync(cancellationToken) });
+            }
+            catch (MemberImportException exception)
+            {
+                return Results.BadRequest(new { error = exception.Message });
+            }
+        }).DisableAntiforgery();
+
+        app.MapPost("/api/members/rematch/{trophyId}", async (string trophyId, MemberMatchingCoordinator matching, CancellationToken cancellationToken) =>
+        {
+            var trophy = await matching.RefreshTrophyAsync(trophyId, cancellationToken);
+            return trophy is null ? Results.NotFound() : Results.Ok(new { trophy, missingYears = CatalogueStore.MissingYears(trophy) });
+        });
+
+        app.MapDelete("/api/members", async (MemberDirectoryStore directory, CatalogueStore catalogue, CancellationToken cancellationToken) =>
+        {
+            await directory.ClearAsync(cancellationToken);
+            await catalogue.ClearMemberMatchesAsync(cancellationToken);
+            return Results.NoContent();
+        });
     }
 
     private static void MapWinners(WebApplication app)
     {
-        app.MapPost("/api/trophies/{id}/winners", async (string id, WinnerInput input, CatalogueStore store, CancellationToken cancellationToken) =>
+        app.MapPost("/api/trophies/{id}/winners", async (string id, WinnerInput input, CatalogueStore store, MemberMatchingCoordinator matching, CancellationToken cancellationToken) =>
         {
             var error = ValidateWinner(input);
             if (error is not null) return Results.BadRequest(new { error });
             var winner = await store.AddWinnerAsync(id, input, cancellationToken);
-            return winner is null ? Results.NotFound() : Results.Created($"/api/trophies/{id}/winners/{winner.Id}", winner);
+            if (winner is null) return Results.NotFound();
+            var trophy = await matching.RefreshTrophyAsync(id, cancellationToken);
+            var matched = trophy?.Winners.FirstOrDefault(item => item.Id == winner.Id) ?? winner;
+            return Results.Created($"/api/trophies/{id}/winners/{winner.Id}", matched);
         });
 
-        app.MapPut("/api/trophies/{id}/winners/{winnerId}", async (
-            string id,
-            string winnerId,
-            WinnerInput input,
-            CatalogueStore store,
-            CancellationToken cancellationToken) =>
+        app.MapPut("/api/trophies/{id}/winners/{winnerId}", async (string id, string winnerId, WinnerInput input, CatalogueStore store, MemberMatchingCoordinator matching, CancellationToken cancellationToken) =>
         {
             var error = ValidateWinner(input);
             if (error is not null) return Results.BadRequest(new { error });
             var winner = await store.UpdateWinnerAsync(id, winnerId, input, cancellationToken);
-            return winner is null ? Results.NotFound() : Results.Ok(winner);
+            if (winner is null) return Results.NotFound();
+            var trophy = await matching.RefreshTrophyAsync(id, cancellationToken);
+            return Results.Ok(trophy?.Winners.FirstOrDefault(item => item.Id == winnerId) ?? winner);
         });
 
-        app.MapDelete("/api/trophies/{id}/winners/{winnerId}", async (
-            string id,
-            string winnerId,
-            CatalogueStore store,
-            CancellationToken cancellationToken) =>
+        app.MapDelete("/api/trophies/{id}/winners/{winnerId}", async (string id, string winnerId, CatalogueStore store, CancellationToken cancellationToken) =>
             await store.DeleteWinnerAsync(id, winnerId, cancellationToken) ? Results.NoContent() : Results.NotFound());
     }
 
@@ -316,7 +381,7 @@ public static class EntryPoint
         app.MapGet("/api/export.csv", async (CatalogueStore store, CancellationToken cancellationToken) =>
         {
             var summaries = await store.GetSummariesAsync(cancellationToken);
-            var csv = new StringBuilder("Trophy code,Trophy name,Year,Winner,Review status,Source,Notes\r\n");
+            var csv = new StringBuilder("Trophy code,Trophy name,Year,Winner,Review status,Source,Notes,Matched member,Membership number,Birth year,Match confidence,Match reason\r\n");
             foreach (var summary in summaries)
             {
                 var trophy = await store.GetTrophyAsync(summary.Id, cancellationToken);
@@ -326,12 +391,25 @@ public static class EntryPoint
                     csv.AppendLine(string.Join(',', new[]
                     {
                         Csv(trophy.Id), Csv(trophy.Name), winner.Year.ToString(), Csv(winner.Name),
-                        Csv(winner.ReviewState), Csv(winner.Source), Csv(winner.Notes ?? string.Empty)
+                        Csv(winner.ReviewState), Csv(winner.Source), Csv(winner.Notes ?? string.Empty),
+                        Csv(winner.MemberMatch?.MemberName ?? string.Empty), Csv(winner.MemberMatch?.MembershipNumber ?? string.Empty),
+                        winner.MemberMatch?.BirthYear?.ToString() ?? string.Empty,
+                        winner.MemberMatch is null ? string.Empty : Math.Round(winner.MemberMatch.Confidence * 100).ToString(),
+                        Csv(winner.MemberMatch?.Explanation ?? string.Empty)
                     }));
                 }
             }
-            return Results.File(Encoding.UTF8.GetBytes(csv.ToString()), "text/csv; charset=utf-8", $"botgc-trophy-winners-{DateTime.UtcNow:yyyy-MM-dd}.csv");
+            return Results.File(Encoding.UTF8.GetBytes(csv.ToString()), "text/csv; charset=utf-8", $"trophy-archive-{DateTime.UtcNow:yyyy-MM-dd}.csv");
         });
+    }
+
+    private static string? ValidateTrophy(TrophyCreateInput input)
+    {
+        if (string.IsNullOrWhiteSpace(input.Name) || input.Name.Trim().Length < 2) return "Enter the trophy name.";
+        if (input.Name.Trim().Length > 160) return "Keep the trophy name under 160 characters.";
+        if (!string.IsNullOrWhiteSpace(input.Code) && input.Code.Trim().Length > 24) return "Keep the trophy code under 24 characters.";
+        if (!string.IsNullOrWhiteSpace(input.Category) && input.Category.Trim().Length > 80) return "Keep the category under 80 characters.";
+        return null;
     }
 
     private static string? ValidateWinner(WinnerInput input)
@@ -345,8 +423,7 @@ public static class EntryPoint
     private static bool ValidTimeline(TimelineInput input)
     {
         if (input.StartYear is < 1800 or > 2200 || input.EndYear is < 1800 or > 2200) return false;
-        return !input.StartYear.HasValue || !input.EndYear.HasValue ||
-               (input.StartYear <= input.EndYear && input.EndYear - input.StartYear <= 250);
+        return !input.StartYear.HasValue || !input.EndYear.HasValue || (input.StartYear <= input.EndYear && input.EndYear - input.StartYear <= 250);
     }
 
     private static string Csv(string value) => $"\"{value.Replace("\"", "\"\"")}\"";

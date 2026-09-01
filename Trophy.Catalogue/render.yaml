@@ -20,6 +20,10 @@ services:
         sync: false
       - key: OPENAI_MODEL
         value: gpt-5.6-terra
+      - key: OPENAI_IMAGE_MODEL
+        value: gpt-image-2
+      - key: ANALYSIS_DEBOUNCE_SECONDS
+        value: 20
     disk:
       name: trophy-archive-data
       mountPath: /var/data
