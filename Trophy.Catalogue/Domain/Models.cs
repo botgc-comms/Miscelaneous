@@ -165,6 +165,7 @@ public sealed record WinnerInput(int Year, string Name, string ReviewState, stri
 public sealed record TimelineInput(int? StartYear, int? EndYear);
 public sealed record SignupInput(string DisplayName, string Email, string Password);
 public sealed record LoginInput(string Email, string Password);
+public sealed record LegacyLoginInput(string? Password);
 public sealed record ClubInput(string Name, string Sport, string Country, string? Website);
 public sealed record TrophyCreateInput(string Name, string? SecondaryName, string Category, string? Code);
 

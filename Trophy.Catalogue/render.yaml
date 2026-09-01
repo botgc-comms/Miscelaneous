@@ -14,6 +14,14 @@ services:
         value: Production
       - key: DATA_PATH
         value: /var/data
+      - key: APP_PASSWORD
+        sync: false
+      - key: LEGACY_CLUB_NAME
+        value: Burton-on-Trent Golf Club
+      - key: LEGACY_CLUB_SPORT
+        value: Golf
+      - key: LEGACY_CLUB_COUNTRY
+        value: United Kingdom
       - key: OPENAI_API_KEY
         sync: false
       - key: OPENAI_MODEL

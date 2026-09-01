@@ -77,7 +77,10 @@ public static class EntryPoint
         builder.Services.AddSingleton<OpenAiEngravingReader>();
         builder.Services.AddSingleton<OpenAiTrophyIllustrator>();
         builder.Services.AddSingleton<BackgroundAnalysisQueue>();
+        builder.Services.AddSingleton<BackgroundIllustrationQueue>();
+        builder.Services.AddSingleton<LegacyArchiveAccess>();
         builder.Services.AddHostedService(provider => provider.GetRequiredService<BackgroundAnalysisQueue>());
+        builder.Services.AddHostedService(provider => provider.GetRequiredService<BackgroundIllustrationQueue>());
         builder.Services.AddHttpClient(nameof(OpenAiEngravingReader), client => client.Timeout = TimeSpan.FromMinutes(4));
         builder.Services.AddHttpClient(nameof(OpenAiTrophyIllustrator), client => client.Timeout = TimeSpan.FromMinutes(5));
 
@@ -184,6 +187,7 @@ public static class EntryPoint
         app.MapGet("/api/auth/status", async (
             HttpContext context,
             AccountStore accounts,
+            LegacyArchiveAccess legacyAccess,
             OpenAiEngravingReader reader,
             OpenAiTrophyIllustrator illustrator,
             CancellationToken cancellationToken) =>
@@ -191,13 +195,14 @@ public static class EntryPoint
             var accountId = CurrentAccountId(context);
             var account = accountId is null ? null : await accounts.GetAccountAsync(accountId, cancellationToken);
             var club = account is null ? null : await accounts.GetClubForAccountAsync(account.Id, cancellationToken);
-            return Results.Ok(AuthPayload(account, club, accounts, reader, illustrator));
+            return Results.Ok(AuthPayload(account, club, accounts, reader, illustrator, legacyAccess));
         });
 
         app.MapPost("/api/auth/signup", async (
             HttpContext context,
             SignupInput input,
             AccountStore accounts,
+            LegacyArchiveAccess legacyAccess,
             OpenAiEngravingReader reader,
             OpenAiTrophyIllustrator illustrator,
             CancellationToken cancellationToken) =>
@@ -206,7 +211,7 @@ public static class EntryPoint
             {
                 var account = await accounts.CreateAccountAsync(input, cancellationToken);
                 await SignInAccountAsync(context, account);
-                return Results.Ok(AuthPayload(account, null, accounts, reader, illustrator));
+                return Results.Ok(AuthPayload(account, null, accounts, reader, illustrator, legacyAccess));
             }
             catch (AccountStoreException exception)
             {
@@ -218,6 +223,7 @@ public static class EntryPoint
             HttpContext context,
             LoginInput input,
             AccountStore accounts,
+            LegacyArchiveAccess legacyAccess,
             OpenAiEngravingReader reader,
             OpenAiTrophyIllustrator illustrator,
             CancellationToken cancellationToken) =>
@@ -230,7 +236,30 @@ public static class EntryPoint
             }
             await SignInAccountAsync(context, account);
             var club = await accounts.GetClubForAccountAsync(account.Id, cancellationToken);
-            return Results.Ok(AuthPayload(account, club, accounts, reader, illustrator));
+            return Results.Ok(AuthPayload(account, club, accounts, reader, illustrator, legacyAccess));
+        }).RequireRateLimiting("authentication");
+
+        app.MapPost("/api/auth/original-archive", async (
+            HttpContext context,
+            LegacyLoginInput input,
+            AccountStore accounts,
+            LegacyArchiveAccess legacyAccess,
+            OpenAiEngravingReader reader,
+            OpenAiTrophyIllustrator illustrator,
+            CancellationToken cancellationToken) =>
+        {
+            if (!legacyAccess.IsAvailable)
+                return Results.NotFound(new { error = "original_archive_unavailable", message = "No original archive is available on this installation." });
+            if (!legacyAccess.PasswordMatches(input.Password))
+            {
+                await Task.Delay(Random.Shared.Next(350, 750), cancellationToken);
+                return Results.Json(new { error = "incorrect_password", message = "That is not the original archive password." }, statusCode: 401);
+            }
+
+            var account = await accounts.OpenLegacyArchiveAsync(input.Password ?? string.Empty, cancellationToken);
+            var club = await accounts.GetClubForAccountAsync(account.Id, cancellationToken);
+            await SignInAccountAsync(context, account);
+            return Results.Ok(AuthPayload(account, club, accounts, reader, illustrator, legacyAccess));
         }).RequireRateLimiting("authentication");
 
         app.MapPost("/api/auth/logout", async (HttpContext context) =>
@@ -421,6 +450,37 @@ public static class EntryPoint
 
     private static void MapIllustrations(WebApplication app)
     {
+        app.MapPost("/api/trophies/{id}/illustration/background", async (
+            string id,
+            CatalogueStore store,
+            OpenAiTrophyIllustrator illustrator,
+            BackgroundIllustrationQueue queue,
+            CancellationToken cancellationToken) =>
+        {
+            var trophy = await store.GetTrophyAsync(id, cancellationToken);
+            if (trophy is null) return Results.NotFound();
+            var references = await store.GetEvidenceFilesAsync(id, cancellationToken);
+            if (references.All(item => item.Evidence.Kind != EvidenceKinds.Photo))
+                return Results.BadRequest(new { error = "Add at least one clear photograph of the trophy first." });
+            if (!illustrator.IsAvailable)
+                return Results.Json(new { error = "illustration_unavailable", message = "Add OPENAI_API_KEY to enable trophy illustrations." }, statusCode: 503);
+
+            await store.SetIllustrationStatusAsync(id, IllustrationStates.Processing, "Illustration queued. The trophy is ready to use while it is generated.", cancellationToken);
+            var job = queue.Enqueue(id);
+            trophy = await store.GetTrophyAsync(id, cancellationToken);
+            return Results.Accepted($"/api/trophies/{id}/illustration/status", new { trophy, illustration = job });
+        });
+
+        app.MapGet("/api/trophies/{id}/illustration/status", async (
+            string id,
+            CatalogueStore store,
+            BackgroundIllustrationQueue queue,
+            CancellationToken cancellationToken) =>
+        {
+            var trophy = await store.GetTrophyAsync(id, cancellationToken);
+            return trophy is null ? Results.NotFound() : Results.Ok(new { trophy, illustration = queue.GetStatus(id) });
+        });
+
         app.MapPost("/api/trophies/{id}/illustration", async (
             string id,
             CatalogueStore store,
@@ -566,7 +626,8 @@ public static class EntryPoint
         ClubRecord? club,
         AccountStore accounts,
         OpenAiEngravingReader reader,
-        OpenAiTrophyIllustrator illustrator) => new
+        OpenAiTrophyIllustrator illustrator,
+        LegacyArchiveAccess legacyAccess) => new
     {
         authenticated = account is not null,
         onboardingRequired = account is not null && !accounts.IsClubComplete(club),
@@ -574,6 +635,8 @@ public static class EntryPoint
         club = ClubPayload(club, accounts),
         aiConfigured = reader.IsAvailable,
         illustrationConfigured = illustrator.IsAvailable,
+        originalArchiveAvailable = legacyAccess.IsAvailable,
+        originalArchivePasswordRequired = legacyAccess.PasswordRequired,
         model = reader.Model,
         illustrationModel = illustrator.Model
     };

@@ -45,7 +45,7 @@
           <div id="wizard-photo-list" class="wizard-photo-list"><span class="wizard-photo-empty">No photographs added yet</span></div>
         </fieldset>
         <div class="wizard-outcome"><span>✦</span><p><strong>What happens next</strong><small>We create the trophy, upload the full set, start inscription reading in the background and generate its transparent catalogue illustration.</small></p></div>
-        <button class="commercial-submit" type="submit" disabled>Create trophy &amp; illustration</button>
+        <button class="commercial-submit" type="submit" disabled>Create trophy</button>
         <p class="commercial-form-error" role="alert" hidden></p>
       </form>`;
     document.body.append(dialog);
@@ -139,21 +139,22 @@
         await api(`/api/trophies/${encodeURIComponent(createdId)}/images`, { method: 'POST', body: upload });
 
         const auth = state.auth || await api('/api/auth/status');
-        let illustrationCreated = false;
+        let illustrationQueued = false;
         if (auth.illustrationConfigured) {
-          setBusy(true, 'Creating the trophy illustration…', 'Reconciling the photographed angles into one faithful, transparent catalogue portrait. This may take a minute.');
-          await api(`/api/trophies/${encodeURIComponent(createdId)}/illustration`, { method: 'POST', body: '{}' });
-          illustrationCreated = true;
+          await api(`/api/trophies/${encodeURIComponent(createdId)}/illustration/background`, { method: 'POST', body: '{}' });
+          illustrationQueued = true;
         }
 
         closeWizard();
+        setBusy(false);
         await loadCatalogue();
         await openTrophy(createdId);
-        showToast(illustrationCreated
-          ? 'Trophy added and its catalogue illustration is ready.'
+        showToast(illustrationQueued
+          ? 'Trophy saved. Its illustration is generating in the background.'
           : 'Trophy and photographs saved. Connect the image model to create its illustration.',
           false,
           6000);
+        if (illustrationQueued) watchIllustration(createdId);
       } catch (exception) {
         if (createdId) {
           closeWizard();
@@ -167,6 +168,30 @@
       } finally {
         setBusy(false);
         updateSubmit();
+      }
+    }
+
+    async function watchIllustration(id) {
+      for (let attempt = 0; attempt < 100; attempt += 1) {
+        await new Promise(resolve => window.setTimeout(resolve, 3000));
+        try {
+          const data = await api(`/api/trophies/${encodeURIComponent(id)}/illustration/status`);
+          if (state.current?.id === id) {
+            state.current = data.trophy;
+            renderDetail();
+          }
+          if (data.trophy.illustrationState === 'complete') {
+            await loadCatalogue();
+            showToast('The catalogue illustration is ready.');
+            return;
+          }
+          if (data.trophy.illustrationState === 'failed') {
+            showToast(data.trophy.illustrationMessage || 'The illustration could not be completed. Your photographs are safe.', true, 7000);
+            return;
+          }
+        } catch {
+          return;
+        }
       }
     }
   }

@@ -14,7 +14,7 @@ The application now provides a complete customer entry journey:
 - age-aware fuzzy member matching; and
 - CSV archive export.
 
-Every new club starts with an empty, isolated collection. Legacy single-club data is preserved on disk during an upgrade but is never assigned to a newly registered customer; any deliberate legacy import must be performed separately.
+Every new club starts with an empty, isolated collection. Legacy single-club data is preserved on disk and is never assigned to an ordinary signup. The separate “Original club archive” login uses the former APP_PASSWORD to reconnect the original owner to that preserved catalogue.
 
 ## Run locally
 

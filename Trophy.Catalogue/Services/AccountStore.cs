@@ -21,6 +21,7 @@ public sealed class AccountStore(
     private IdentityState state = new();
 
     private string StatePath => Path.Combine(dataRoot, "identity.json");
+    public bool LegacyArchiveExists => File.Exists(Path.Combine(dataRoot, "catalogue-state.json"));
 
     public async Task InitializeAsync(CancellationToken cancellationToken = default)
     {
@@ -31,7 +32,6 @@ public sealed class AccountStore(
             if (!File.Exists(StatePath)) return;
             await using (var stream = File.OpenRead(StatePath))
                 state = await JsonSerializer.DeserializeAsync<IdentityState>(stream, jsonOptions, cancellationToken) ?? new();
-            if (MigrateAccidentallyClaimedLegacyClubUnsafe()) await SaveUnsafeAsync(cancellationToken);
         }
         finally { gate.Release(); }
     }
@@ -82,6 +82,51 @@ public sealed class AccountStore(
                 account.PasswordHash = passwordHasher.HashPassword(account, input.Password);
                 await SaveUnsafeAsync(cancellationToken);
             }
+            return Clone(account);
+        }
+        finally { gate.Release(); }
+    }
+
+    public async Task<AccountRecord> OpenLegacyArchiveAsync(string credential, CancellationToken cancellationToken = default)
+    {
+        await gate.WaitAsync(cancellationToken);
+        try
+        {
+            var club = state.Clubs.FirstOrDefault(item => item.Id.Equals("legacy", StringComparison.OrdinalIgnoreCase));
+            if (club is null)
+            {
+                club = new ClubRecord
+                {
+                    Id = "legacy",
+                    Name = configuration["LEGACY_CLUB_NAME"] ?? "Burton-on-Trent Golf Club",
+                    Sport = configuration["LEGACY_CLUB_SPORT"] ?? "Golf",
+                    Country = configuration["LEGACY_CLUB_COUNTRY"] ?? "United Kingdom"
+                };
+                state.Clubs.Add(club);
+            }
+
+            var account = state.Accounts.FirstOrDefault(item => string.Equals(item.ClubId, "legacy", StringComparison.OrdinalIgnoreCase));
+            if (account is null)
+            {
+                account = new AccountRecord
+                {
+                    Id = Guid.NewGuid().ToString("N"),
+                    DisplayName = "Original archive owner",
+                    Email = "original-archive@local.invalid",
+                    NormalizedEmail = "ORIGINAL-ARCHIVE@LOCAL.INVALID",
+                    ClubId = "legacy"
+                };
+                var passwordMaterial = string.IsNullOrEmpty(credential) ? Guid.NewGuid().ToString("N") : credential;
+                account.PasswordHash = passwordHasher.HashPassword(account, passwordMaterial);
+                state.Accounts.Add(account);
+            }
+            else
+            {
+                account.ClubId = "legacy";
+            }
+
+            club.UpdatedAt = DateTimeOffset.UtcNow;
+            await SaveUnsafeAsync(cancellationToken);
             return Clone(account);
         }
         finally { gate.Release(); }
@@ -214,6 +259,7 @@ public sealed class AccountStore(
 
     public bool IsClubComplete(ClubRecord? club)
     {
+        if (club?.Id.Equals("legacy", StringComparison.OrdinalIgnoreCase) == true && LegacyArchiveExists) return true;
         if (club is null || string.IsNullOrWhiteSpace(club.Name) || string.IsNullOrWhiteSpace(club.Sport) ||
             string.IsNullOrWhiteSpace(club.Country) || string.IsNullOrWhiteSpace(club.LogoStoredName)) return false;
         var path = Path.Combine(AppDataPath.ClubRoot(dataRoot, club.Id), "brand", Path.GetFileName(club.LogoStoredName));
@@ -223,36 +269,6 @@ public sealed class AccountStore(
     public static string? LogoUrl(ClubRecord? club) => club?.LogoStoredName is null
         ? null
         : $"/api/club/logo?v={club.UpdatedAt.ToUnixTimeSeconds()}";
-
-    private bool MigrateAccidentallyClaimedLegacyClubUnsafe()
-    {
-        var legacy = state.Clubs.FirstOrDefault(item => item.Id.Equals("legacy", StringComparison.OrdinalIgnoreCase));
-        if (legacy is null) return false;
-
-        var newId = Guid.NewGuid().ToString("N");
-        if (!string.IsNullOrWhiteSpace(legacy.LogoStoredName))
-        {
-            var fileName = Path.GetFileName(legacy.LogoStoredName);
-            var possibleSources = new[]
-            {
-                Path.Combine(dataRoot, "brand", fileName),
-                Path.Combine(dataRoot, "clubs", "legacy", "brand", fileName)
-            };
-            var source = possibleSources.FirstOrDefault(File.Exists);
-            if (source is not null)
-            {
-                var brandRoot = Path.Combine(AppDataPath.ClubRoot(dataRoot, newId), "brand");
-                Directory.CreateDirectory(brandRoot);
-                File.Copy(source, Path.Combine(brandRoot, fileName), overwrite: true);
-            }
-        }
-
-        legacy.Id = newId;
-        legacy.UpdatedAt = DateTimeOffset.UtcNow;
-        foreach (var account in state.Accounts.Where(item => string.Equals(item.ClubId, "legacy", StringComparison.OrdinalIgnoreCase)))
-            account.ClubId = newId;
-        return true;
-    }
 
     private async Task SaveUnsafeAsync(CancellationToken cancellationToken)
     {

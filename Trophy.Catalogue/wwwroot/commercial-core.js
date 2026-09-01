@@ -189,10 +189,13 @@
     if (!button) return;
     const trophy = state.current;
     const photoCount = trophy?.evidence?.filter(item => item.kind === 'photo').length ?? 0;
-    button.disabled = !trophy || photoCount === 0 || !commercial.illustrationConfigured;
+    button.disabled = !trophy || photoCount === 0 || !commercial.illustrationConfigured || trophy?.illustrationState === 'processing';
     const title = button.querySelector('strong');
     const copy = button.querySelector('small');
-    if (!commercial.illustrationConfigured) {
+    if (trophy?.illustrationState === 'processing') {
+      title.textContent = 'Illustration generating';
+      copy.textContent = 'You can keep working';
+    } else if (!commercial.illustrationConfigured) {
       title.textContent = 'Illustration unavailable';
       copy.textContent = 'Connect the image model';
     } else if (photoCount === 0) {
