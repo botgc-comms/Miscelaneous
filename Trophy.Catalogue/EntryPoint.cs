@@ -30,6 +30,7 @@ public static class EntryPoint
 
         builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = 60 * 1024 * 1024);
         builder.Services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 60 * 1024 * 1024);
+        builder.Services.AddResponseCompression(options => options.EnableForHttps = true);
         builder.Services.AddDataProtection()
             .PersistKeysToFileSystem(new DirectoryInfo(keyRing))
             .SetApplicationName("TrophyArchive");
@@ -86,6 +87,24 @@ public static class EntryPoint
 
         var app = builder.Build();
         await app.Services.GetRequiredService<AccountStore>().InitializeAsync();
+        var configuredPublicSiteUrl = ResolveConfiguredPublicSiteUrl(builder.Configuration);
+        var webRootPath = app.Environment.WebRootPath;
+        var marketingDocuments = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["/"] = Path.Combine(webRootPath, "index.html"),
+            ["/uk/how-to-catalogue-trophy-winners/"] = Path.Combine(webRootPath, "uk", "how-to-catalogue-trophy-winners", "index.html"),
+            ["/us/how-to-catalog-trophy-winners/"] = Path.Combine(webRootPath, "us", "how-to-catalog-trophy-winners", "index.html")
+        };
+        var marketingRedirects = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["/index.html"] = "/",
+            ["/uk/how-to-catalogue-trophy-winners"] = "/uk/how-to-catalogue-trophy-winners/",
+            ["/uk/how-to-catalogue-trophy-winners/index.html"] = "/uk/how-to-catalogue-trophy-winners/",
+            ["/us/how-to-catalog-trophy-winners"] = "/us/how-to-catalog-trophy-winners/",
+            ["/us/how-to-catalog-trophy-winners/index.html"] = "/us/how-to-catalog-trophy-winners/"
+        };
+
+        app.UseResponseCompression();
 
         app.Use(async (context, next) =>
         {
@@ -94,6 +113,76 @@ public static class EntryPoint
             context.Response.Headers["Permissions-Policy"] = "camera=(self), microphone=(), geolocation=()";
             context.Response.Headers["Content-Security-Policy"] =
                 "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'";
+            if (context.Request.Path.Equals("/archive.html", StringComparison.OrdinalIgnoreCase))
+            {
+                context.Response.Headers["X-Robots-Tag"] = "noindex,nofollow,noarchive";
+            }
+            await next();
+        });
+
+        app.Use(async (context, next) =>
+        {
+            if (!HttpMethods.IsGet(context.Request.Method) && !HttpMethods.IsHead(context.Request.Method))
+            {
+                await next();
+                return;
+            }
+
+            var path = context.Request.Path.Value ?? "/";
+            if (marketingRedirects.TryGetValue(path, out var cleanPath))
+            {
+                context.Response.Redirect(cleanPath, permanent: true);
+                return;
+            }
+
+            var publicSiteUrl = configuredPublicSiteUrl ?? ResolveRequestSiteUrl(context);
+            if (marketingDocuments.TryGetValue(path, out var marketingDocumentPath))
+            {
+                var document = (await File.ReadAllTextAsync(marketingDocumentPath, context.RequestAborted))
+                    .Replace("{{PUBLIC_SITE_URL}}", publicSiteUrl, StringComparison.Ordinal);
+                var canonicalUrl = path == "/" ? $"{publicSiteUrl}/" : $"{publicSiteUrl}{path}";
+                context.Response.ContentType = "text/html; charset=utf-8";
+                context.Response.Headers.CacheControl = "no-cache";
+                context.Response.Headers.Link = $"<{canonicalUrl}>; rel=\"canonical\"";
+                if (!HttpMethods.IsHead(context.Request.Method))
+                {
+                    await context.Response.WriteAsync(document, context.RequestAborted);
+                }
+                return;
+            }
+
+            if (path.Equals("/robots.txt", StringComparison.OrdinalIgnoreCase))
+            {
+                var robots = $"User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: {publicSiteUrl}/sitemap.xml\n";
+                context.Response.ContentType = "text/plain; charset=utf-8";
+                context.Response.Headers.CacheControl = "public,max-age=3600";
+                if (!HttpMethods.IsHead(context.Request.Method))
+                {
+                    await context.Response.WriteAsync(robots, context.RequestAborted);
+                }
+                return;
+            }
+
+            if (path.Equals("/sitemap.xml", StringComparison.OrdinalIgnoreCase))
+            {
+                var sitemap = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n");
+                foreach (var page in marketingDocuments)
+                {
+                    var location = page.Key == "/" ? $"{publicSiteUrl}/" : $"{publicSiteUrl}{page.Key}";
+                    var lastModified = File.GetLastWriteTimeUtc(page.Value).ToString("yyyy-MM-dd");
+                    var priority = page.Key == "/" ? "1.0" : "0.8";
+                    sitemap.Append($"  <url>\n    <loc>{location}</loc>\n    <lastmod>{lastModified}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>{priority}</priority>\n  </url>\n");
+                }
+                sitemap.Append("</urlset>\n");
+                context.Response.ContentType = "application/xml; charset=utf-8";
+                context.Response.Headers.CacheControl = "public,max-age=3600";
+                if (!HttpMethods.IsHead(context.Request.Method))
+                {
+                    await context.Response.WriteAsync(sitemap.ToString(), context.RequestAborted);
+                }
+                return;
+            }
+
             await next();
         });
 
@@ -170,8 +259,28 @@ public static class EntryPoint
         MapMembers(app);
         MapWinners(app);
         MapExports(app);
-        app.MapFallbackToFile("index.html");
+        app.MapFallback(() => Results.NotFound());
         await app.RunAsync();
+    }
+
+    private static string? ResolveConfiguredPublicSiteUrl(IConfiguration configuration)
+    {
+        var candidate = configuration["PUBLIC_SITE_URL"] ?? configuration["RENDER_EXTERNAL_URL"];
+        if (!Uri.TryCreate(candidate, UriKind.Absolute, out var uri) ||
+            (uri.Scheme != Uri.UriSchemeHttps && uri.Scheme != Uri.UriSchemeHttp))
+        {
+            return null;
+        }
+
+        return uri.GetLeftPart(UriPartial.Authority).TrimEnd('/');
+    }
+
+    private static string ResolveRequestSiteUrl(HttpContext context)
+    {
+        var candidate = $"{context.Request.Scheme}://{context.Request.Host}";
+        return Uri.TryCreate(candidate, UriKind.Absolute, out var uri)
+            ? uri.GetLeftPart(UriPartial.Authority).TrimEnd('/')
+            : "http://127.0.0.1";
     }
 
     private static void MapHealth(WebApplication app)
@@ -693,6 +802,11 @@ public static class EntryPoint
         authenticated = account is not null,
         onboardingRequired = account is not null && !accounts.IsClubComplete(club),
         user = account is null ? null : new { account.Id, account.DisplayName, account.Email },
+        balance = account is null ? null : new
+        {
+            trophyCredits = account.TrophyCreditBalance,
+            unlimited = account.HasUnlimitedTrophyCredits
+        },
         club = ClubPayload(club, accounts),
         aiConfigured = reader.IsAvailable,
         illustrationConfigured = illustrator.IsAvailable,

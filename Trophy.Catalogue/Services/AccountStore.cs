@@ -139,6 +139,7 @@ public sealed class AccountStore(
                     account.PasswordHash = passwordHasher.HashPassword(account, credential);
             }
 
+            account.HasUnlimitedTrophyCredits = true;
             club.UpdatedAt = DateTimeOffset.UtcNow;
             await SaveUnsafeAsync(cancellationToken);
             return Clone(account);

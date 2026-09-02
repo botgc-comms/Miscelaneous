@@ -18,6 +18,8 @@ public sealed class AccountRecord
     public required string NormalizedEmail { get; set; }
     public string PasswordHash { get; set; } = string.Empty;
     public string? ClubId { get; set; }
+    public int TrophyCreditBalance { get; set; } = 1;
+    public bool HasUnlimitedTrophyCredits { get; set; }
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }
 

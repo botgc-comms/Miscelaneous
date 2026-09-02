@@ -51,6 +51,8 @@ Render asks for one secret: `OPENAI_API_KEY`. The Blueprint builds the Docker im
 
 The current topology intentionally uses one Render instance and its attached disk. It is suitable for product validation and small-scale launch, but billing should remain disabled until the database/object-storage, email verification, password recovery, subscription entitlements, backups and account-deletion gates in [COMMERCIAL-LAUNCH.md](COMMERCIAL-LAUNCH.md) are complete.
 
+Render supplies its RENDER_EXTERNAL_URL automatically for canonical links, Open Graph metadata, robots.txt and sitemap.xml. When a custom domain is connected, set PUBLIC_SITE_URL to that preferred HTTPS origin (for example, https://archive.example.org) so every search signal points to the custom domain rather than the retained onrender.com address.
+
 ## Security and privacy boundaries
 
 - Passwords are hashed with ASP.NET Core's password hasher; plaintext passwords are never stored.

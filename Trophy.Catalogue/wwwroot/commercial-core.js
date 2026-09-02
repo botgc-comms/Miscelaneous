@@ -5,6 +5,7 @@
   };
 
   installHeaderLink();
+  installBalanceIndicator();
   installNewTrophyFlow();
   installMemberDirectory();
   installTrophyPhotoManager();
@@ -22,15 +23,53 @@
     actions.prepend(link);
   }
 
-  function installNewTrophyFlow() {
+  function catalogueActions() {
     const heading = document.querySelector('.catalogue-heading');
-    if (!heading || document.querySelector('#new-trophy-button')) return;
+    if (!heading) return null;
+    let actions = heading.querySelector('.catalogue-actions');
+    if (!actions) {
+      actions = document.createElement('div');
+      actions.className = 'catalogue-actions';
+      heading.append(actions);
+    }
+    return actions;
+  }
+
+  function installBalanceIndicator() {
+    const actions = catalogueActions();
+    if (!actions || actions.querySelector('#credit-balance')) return;
+    const balance = document.createElement('a');
+    balance.id = 'credit-balance';
+    balance.className = 'credit-balance';
+    balance.href = '/#pricing';
+    balance.innerHTML = '<span><small>Trophy credits</small><strong id="credit-balance-value">—</strong></span><em>View plans</em>';
+    balance.setAttribute('aria-label', 'Trophy credit balance. View plans.');
+    actions.append(balance);
+  }
+
+  function updateBalanceIndicator(balance) {
+    const value = document.querySelector('#credit-balance-value');
+    const link = document.querySelector('#credit-balance');
+    if (!value || !link) return;
+    if (balance?.unlimited) {
+      value.textContent = 'Unlimited';
+      link.setAttribute('aria-label', 'Trophy credit balance: unlimited. View plans.');
+      return;
+    }
+    const credits = Number(balance?.trophyCredits || 0);
+    value.textContent = credits + (credits === 1 ? ' credit' : ' credits');
+    link.setAttribute('aria-label', 'Trophy credit balance: ' + credits + '. View plans.');
+  }
+
+  function installNewTrophyFlow() {
+    const actions = catalogueActions();
+    if (!actions || document.querySelector('#new-trophy-button')) return;
     const button = document.createElement('button');
     button.id = 'new-trophy-button';
     button.className = 'new-trophy-button';
     button.type = 'button';
     button.innerHTML = '<span aria-hidden="true">+</span><span><strong>Add trophy</strong><small>Photograph a new piece</small></span>';
-    heading.append(button);
+    actions.append(button);
 
     const dialog = document.createElement('dialog');
     dialog.id = 'new-trophy-dialog';
@@ -90,30 +129,30 @@
   }
 
   function installMemberDirectory() {
-    const tools = document.querySelector('.catalogue-tools');
-    if (!tools || document.querySelector('#member-directory-card')) return;
-    const card = document.createElement('section');
-    card.id = 'member-directory-card';
-    card.className = 'member-directory-card';
-    card.innerHTML = `
-      <div class="member-directory-copy">
-        <span class="member-directory-icon" aria-hidden="true">↔</span>
-        <span><strong>Member matching</strong><small id="member-directory-summary">Upload a club member export to suggest likely identities.</small></span>
-      </div>
-      <div class="member-directory-actions">
-        <label class="member-upload-button">Upload CSV / XLSX<input id="member-file-input" type="file" accept=".csv,.tsv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden></label>
-        <button id="clear-member-directory" type="button" hidden>Remove</button>
-      </div>
-      <p class="member-privacy">Privacy by design: complete dates of birth are reduced to birth year during import; the original file is not retained.</p>`;
-    tools.after(card);
-    card.querySelector('#member-file-input').addEventListener('change', importMembers);
-    card.querySelector('#clear-member-directory').addEventListener('click', clearMembers);
+    const actions = catalogueActions();
+    if (!actions || document.querySelector('#member-directory-control')) return;
+    const control = document.createElement('div');
+    control.id = 'member-directory-control';
+    control.className = 'member-directory-control';
+    control.innerHTML = `
+      <label class="member-upload-button" title="Dates of birth are reduced to birth year and the original file is not retained.">
+        <span class="member-upload-icon" aria-hidden="true">CSV</span>
+        <span><strong id="member-upload-title">Upload member information</strong><small id="member-directory-summary">CSV or Excel member export</small></span>
+        <input id="member-file-input" type="file" accept=".csv,.tsv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden>
+      </label>
+      <button id="clear-member-directory" type="button" title="Remove imported member information" aria-label="Remove imported member information" hidden>×</button>`;
+    const trophyButton = actions.querySelector('#new-trophy-button');
+    if (trophyButton) trophyButton.before(control);
+    else actions.append(control);
+    control.querySelector('#member-file-input').addEventListener('change', importMembers);
+    control.querySelector('#clear-member-directory').addEventListener('click', clearMembers);
   }
 
   async function refreshCapabilities() {
     try {
       const auth = await api('/api/auth/status');
       commercial.illustrationConfigured = Boolean(auth.illustrationConfigured);
+      updateBalanceIndicator(auth.balance);
       if (auth.authenticated) await refreshMemberSummary();
       updateIllustrationControl();
     } catch { }
@@ -124,13 +163,19 @@
       const data = await api('/api/members');
       commercial.memberDirectory = data.directory;
       const summary = document.querySelector('#member-directory-summary');
+      const title = document.querySelector('#member-upload-title');
+      const control = document.querySelector('#member-directory-control');
       const clear = document.querySelector('#clear-member-directory');
-      if (!summary || !clear) return;
+      if (!summary || !title || !control || !clear) return;
       if (data.directory.memberCount) {
-        summary.textContent = `${data.directory.memberCount} members loaded · ${data.directory.withBirthYearCount} with a birth year`;
+        title.textContent = 'Update member information';
+        summary.textContent = data.directory.memberCount + ' members loaded' + (data.directory.sourceName ? ' · ' + data.directory.sourceName : '');
+        control.classList.add('has-data');
         clear.hidden = false;
       } else {
-        summary.textContent = 'Upload a club member export to suggest likely identities.';
+        title.textContent = 'Upload member information';
+        summary.textContent = 'CSV or Excel member export';
+        control.classList.remove('has-data');
         clear.hidden = true;
       }
     } catch { }
