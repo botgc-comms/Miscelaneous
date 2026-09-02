@@ -14,4 +14,4 @@ COPY --from=build /app/publish .
 
 ENV ASPNETCORE_ENVIRONMENT=Production
 EXPOSE 10000
-CMD ["sh", "-c", "dotnet Trophy.Catalogue.dll --urls http://0.0.0.0:${PORT:-10000}"]
+CMD ["sh", "-c", "dotnet Trophy.Catalogue.dll --urls http://0.0.0.0:${PORT:-10000} --hostBuilder:reloadConfigOnChange=false"]
