@@ -53,6 +53,35 @@
     staffing: { label: 'Staff hours × hourly cost', quantityLabel: 'Additional hours', unitLabel: 'Hourly cost' }
   });
 
+  const INTELLIGENT_GOLF_EVENT_TYPES = Object.freeze([
+    { id: 0, label: 'No event type' },
+    { id: 17, label: 'Committee Meeting' },
+    { id: 10, label: 'County Event' },
+    { id: 20, label: 'Green Fee' },
+    { id: 19, label: 'Green Fees' },
+    { id: 15, label: 'Invitation Days' },
+    { id: 16, label: 'Juniors' },
+    { id: 4, label: 'Ladies Team' },
+    { id: 22, label: 'Meeting Room Hire' },
+    { id: 18, label: 'Member Private Meal' },
+    { id: 8, label: 'Member Social Event' },
+    { id: 3, label: 'Mens Team' },
+    { id: 7, label: 'Mixed Team' },
+    { id: 21, label: 'Non Member Social Event' },
+    { id: 5, label: 'Open Competition' },
+    { id: 6, label: 'Seniors Team' },
+    { id: 14, label: 'Society' },
+    { id: 23, label: 'Special Dining Event' },
+    { id: 11, label: 'Wakes' }
+  ]);
+
+  function renderIntelligentGolfEventTypeOptions(selectedId = 0) {
+    const selected = Number(selectedId) || 0;
+    return INTELLIGENT_GOLF_EVENT_TYPES
+      .map(type => `<option value="${type.id}"${type.id === selected ? ' selected' : ''}>${escapeHtml(type.label)}</option>`)
+      .join('');
+  }
+
   const PLATFORM_ROLE_DEFINITIONS = Object.freeze([
     { id: 'team-member', name: 'Team member', description: 'Can receive and complete assigned tasks.' },
     { id: 'organiser', name: 'Organiser', description: 'Can create events and manage event planning.' },
@@ -695,7 +724,7 @@
     }
   }
 
-  function createEvent(name, organiser = '', eventDate = '', description = '', milestoneDates = {}, organiserRef = null) {
+  function createEvent(name, organiser = '', eventDate = '', description = '', milestoneDates = {}, organiserRef = null, integrationDetails = {}) {
     const id = crypto.randomUUID();
     const now = new Date().toISOString();
     const resolvedOrganiserRef = assignmentReference(organiserRef ?? organiser);
@@ -707,6 +736,12 @@
       organiserRef: resolvedOrganiserRef,
       eventDate,
       description,
+      startTime: integrationDetails.startTime ?? '',
+      endTime: integrationDetails.endTime ?? '',
+      intelligentGolfEventTypeId: Number(integrationDetails.eventTypeId) || 0,
+      expectedAttendees: Math.max(0, Number(integrationDetails.expectedAttendees) || 0),
+      intelligentGolfGroupId: '151',
+      intelligentGolfGroupName: 'BOTGC Event Planner',
       createdAt: now,
       closedAt: null,
       answers: organiserName ? { 'event-decision-owner': resolvedOrganiserRef ?? organiserName } : {},
@@ -809,6 +844,12 @@
     event.lifecycle.memberUpdate ??= '';
     event.lifecycle.interestedParties = Array.isArray(event.lifecycle.interestedParties) ? event.lifecycle.interestedParties : [];
     event.lifecycle.history = Array.isArray(event.lifecycle.history) ? event.lifecycle.history : [];
+    event.startTime = typeof event.startTime === 'string' ? event.startTime : '';
+    event.endTime = typeof event.endTime === 'string' ? event.endTime : '';
+    event.intelligentGolfEventTypeId = Number(event.intelligentGolfEventTypeId) || 0;
+    event.expectedAttendees = Math.max(0, Number(event.expectedAttendees) || 0);
+    event.intelligentGolfGroupId ||= '151';
+    event.intelligentGolfGroupName ||= 'BOTGC Event Planner';
     event.answers ??= {};
     const clonedHints = event.clonedAnswerHints && typeof event.clonedAnswerHints === 'object'
       ? event.clonedAnswerHints
@@ -2019,6 +2060,10 @@
               <div class="event-context-meta">
                 <div class="event-organiser-field"><span>Organiser</span>${renderAssignmentPicker({ value: event.organiserRef ?? event.organiser, fallback: event.organiser, mode: 'person', eventField: 'organiser', compact: true })}</div>
                 <div><span>Event date</span><strong>${escapeHtml(formatDate(event.eventDate))}</strong></div>
+                <label><span>IG event type</span><select data-event-field="intelligentGolfEventTypeId">${renderIntelligentGolfEventTypeOptions(event.intelligentGolfEventTypeId)}</select></label>
+                <label><span>Expected attendees</span><input type="number" min="0" step="1" value="${escapeHtml(event.expectedAttendees)}" data-event-field="expectedAttendees"></label>
+                <label><span>Start time</span><input type="time" value="${escapeHtml(event.startTime)}" data-event-field="startTime"></label>
+                <label><span>End time</span><input type="time" value="${escapeHtml(event.endTime)}" data-event-field="endTime"></label>
               </div>
             </div>
             <label class="event-description-field">
@@ -2049,12 +2094,16 @@
     if (state.activeView === 'plugins') ensurePluginSettingsLoaded();
     if (state.activeView === 'retrospective' && event) ensureFeedbackLoaded(event.id);
     if (state.activeView === 'artwork' && event) {
-      import('./poster-app.js?v=20260831-member-email-plugin-2')
+      import('./poster-app.js?v=20260903-intelligent-golf-diary-1')
         .then(module => module.mountPosterStudio({
           eventId: event.id,
           eventName: event.name,
           eventDate: event.eventDate,
           description: event.description,
+          startTime: event.startTime,
+          endTime: event.endTime,
+          eventTypeId: event.intelligentGolfEventTypeId,
+          expectedAttendees: event.expectedAttendees,
           referenceLibrary: loadReferenceLibrary(),
           onArtworkReady: (thumbnailDataUrl, artworkInfo = {}) => {
             const target = state.events.find(item => item.id === event.id);
@@ -2553,13 +2602,15 @@
             <aside class="poster-publish-preview diary-preview"><img id="memberDiaryPreview" alt="Campaign artwork for the member diary"><span>Member diary artwork</span><small>Square artwork is preferred when available</small></aside>
             <div class="poster-publish-fields">
               <div id="memberDiaryConnectionStatus" class="yodeck-connection-status checking"><span></span><div><strong>Checking the member diary connection…</strong><small>The connection is managed securely by Event Playbook.</small></div></div>
+              <div class="member-email-section-heading"><div><strong>Diary entry</strong><small>Generated from the event details and editable before publishing.</small></div><button id="generateMemberDiary" class="button button-secondary" type="button">Generate diary entry with AI</button></div>
               <label class="field"><span>Diary title</span><input id="memberDiaryTitle" type="text" maxlength="180" required></label>
               <div class="poster-publish-date-grid diary-date-grid">
                 <label class="field"><span>Event date</span><input id="memberDiaryDate" type="date" readonly required></label>
                 <label class="field"><span>Start time <em>optional</em></span><input id="memberDiaryStartTime" type="time"></label>
                 <label class="field"><span>End time <em>optional</em></span><input id="memberDiaryEndTime" type="time"></label>
               </div>
-              <label class="field"><span>Member-facing description</span><textarea id="memberDiaryDescription" rows="6" maxlength="5000" required></textarea><small>This is the information members will see in the diary.</small></label>
+              <label class="field"><span>HTML diary body</span><textarea id="memberDiaryDescription" rows="12" maxlength="200000" required spellcheck="true"></textarea><small>You can edit the generated HTML before it is published.</small></label>
+              <details class="member-email-preview-panel"><summary>Preview diary entry</summary><iframe id="memberDiaryBodyPreview" title="Member diary entry preview" sandbox></iframe></details>
               <label class="field"><span>Booking or information link <em>optional</em></span><input id="memberDiaryBookingUrl" type="url" maxlength="1000" placeholder="https://"></label>
               <div id="memberDiaryDialogMessage" class="poster-publish-dialog-message" role="status"></div>
             </div>
@@ -4705,6 +4756,22 @@
                   <span>Provisional event date</span>
                   <input id="new-event-date" type="date" required>
                 </label>
+                <label>
+                  <span>Intelligent Golf event type</span>
+                  <select id="new-event-type">${renderIntelligentGolfEventTypeOptions(0)}</select>
+                </label>
+                <label>
+                  <span>Expected attendees</span>
+                  <input id="new-event-attendees" type="number" min="0" step="1" value="0">
+                </label>
+                <label>
+                  <span>Start time <em>optional</em></span>
+                  <input id="new-event-start-time" type="time">
+                </label>
+                <label>
+                  <span>End time <em>optional</em></span>
+                  <input id="new-event-end-time" type="time">
+                </label>
                 <div class="new-event-organiser-field">
                   <span>Organiser</span>
                   ${renderAssignmentPicker({ mode: 'person', newEventField: 'organiser', id: 'new-event-organiser' })}
@@ -5727,7 +5794,19 @@
         const event = getActiveEvent();
         if (!event) return;
         const field = element.dataset.eventField;
-        event[field] = element.value.trim();
+        const value = element.value.trim();
+        const candidateStart = field === 'startTime' ? value : event.startTime;
+        const candidateEnd = field === 'endTime' ? value : event.endTime;
+        if ((field === 'startTime' || field === 'endTime') &&
+            candidateStart && candidateEnd && candidateEnd <= candidateStart) {
+          element.setCustomValidity('Choose an end time after the start time.');
+          element.reportValidity();
+          element.setCustomValidity('');
+          return;
+        }
+        event[field] = field === 'intelligentGolfEventTypeId' || field === 'expectedAttendees'
+          ? Math.max(0, Number(value) || 0)
+          : value;
         if (field === 'organiser') {
           updateTeam(event, event.organiser);
         }
@@ -6594,6 +6673,10 @@
         const nameInput = document.getElementById('new-event-name');
         const eventDateInput = document.getElementById('new-event-date');
         const descriptionInput = document.getElementById('new-event-description');
+        const eventTypeInput = document.getElementById('new-event-type');
+        const attendeesInput = document.getElementById('new-event-attendees');
+        const startTimeInput = document.getElementById('new-event-start-time');
+        const endTimeInput = document.getElementById('new-event-end-time');
 
         const name = nameInput.value.trim();
         const eventDate = eventDateInput.value;
@@ -6601,6 +6684,13 @@
         const organiser = organiserInput.value.trim();
         const organiserRef = assignmentReferenceFromInput(organiserInput, 'person');
         const description = descriptionInput.value.trim();
+
+        if (startTimeInput.value && endTimeInput.value && endTimeInput.value <= startTimeInput.value) {
+          endTimeInput.setCustomValidity('Choose an end time after the start time.');
+          endTimeInput.reportValidity();
+          endTimeInput.setCustomValidity('');
+          return;
+        }
 
         if (organiser && !organiserRef) {
           organiserInput.setCustomValidity('Choose an organiser from People & Roles.');
@@ -6639,7 +6729,12 @@
         }
 
         milestoneDates.DT = eventDate;
-        createEvent(name, organiser, eventDate, description, milestoneDates, organiserRef);
+        createEvent(name, organiser, eventDate, description, milestoneDates, organiserRef, {
+          eventTypeId: Number(eventTypeInput.value) || 0,
+          expectedAttendees: Math.max(0, Number(attendeesInput.value) || 0),
+          startTime: startTimeInput.value,
+          endTime: endTimeInput.value
+        });
         newEventDialog?.close();
         render();
       });

@@ -55,9 +55,9 @@ function createSession(key, context) {
             publishTags: '',
             publishStartDate: '',
             diaryTitle: (context?.eventName ?? '').trim(),
-            diaryDescription: context?.description ?? '',
-            diaryStartTime: '',
-            diaryEndTime: '',
+            diaryDescription: '',
+            diaryStartTime: context?.startTime ?? '',
+            diaryEndTime: context?.endTime ?? '',
             diaryBookingUrl: '',
             emailSubject: '',
             emailBodyHtml: '',
@@ -1043,11 +1043,13 @@ export async function mountPosterStudio(context = {}) {
         diaryDialogConfirm: document.querySelector('#confirmMemberDiary'),
         diaryDialogMessage: document.querySelector('#memberDiaryDialogMessage'),
         diaryConnectionStatus: document.querySelector('#memberDiaryConnectionStatus'),
+        diaryGenerateButton: document.querySelector('#generateMemberDiary'),
         diaryTitle: document.querySelector('#memberDiaryTitle'),
         diaryDate: document.querySelector('#memberDiaryDate'),
         diaryStartTime: document.querySelector('#memberDiaryStartTime'),
         diaryEndTime: document.querySelector('#memberDiaryEndTime'),
         diaryDescription: document.querySelector('#memberDiaryDescription'),
+        diaryBodyPreview: document.querySelector('#memberDiaryBodyPreview'),
         diaryBookingUrl: document.querySelector('#memberDiaryBookingUrl')
     };
 
@@ -1308,6 +1310,17 @@ function wireEvents(session) {
         event.preventDefault();
         addToMemberDiary();
     });
+    elements.diaryGenerateButton?.addEventListener('click', () => generateMemberDiaryDraft(session));
+    elements.diaryTitle?.addEventListener('input', () => {
+        captureMemberDiaryDialog(session);
+        renderMemberDiaryPreview();
+        scheduleSessionPersistence(session);
+    });
+    elements.diaryDescription?.addEventListener('input', () => {
+        captureMemberDiaryDialog(session);
+        renderMemberDiaryPreview();
+        scheduleSessionPersistence(session);
+    });
 }
 
 function synchroniseSelectedEventContext(session, seedBrief = false) {
@@ -1329,12 +1342,17 @@ function synchroniseSelectedEventContext(session, seedBrief = false) {
     if (typeof context.eventDate === 'string') {
         session.form.eventDate = context.eventDate;
     }
+    if (typeof context.startTime === 'string' && !session.form.diaryStartTime) {
+        session.form.diaryStartTime = context.startTime;
+    }
+    if (typeof context.endTime === 'string' && !session.form.diaryEndTime) {
+        session.form.diaryEndTime = context.endTime;
+    }
 
     if (seedBrief) {
         session.form.description = typeof context.description === 'string' && context.description.trim()
             ? context.description
             : catalogueEvent?.description ?? session.form.description;
-        session.form.diaryDescription ||= session.form.description;
         session.form.price = catalogueEvent?.defaultPrice ?? session.form.price;
     }
 }
@@ -2962,7 +2980,7 @@ function captureMemberDiaryDialog(session) {
     session.form.diaryBookingUrl = elements.diaryBookingUrl.value.trim();
 }
 
-function openMemberDiaryDialog() {
+async function openMemberDiaryDialog() {
     const session = activeSession;
     if (!session || !elements.diaryDialog) return;
     const diaryArtwork = getMemberDiaryArtwork(session);
@@ -2977,7 +2995,7 @@ function openMemberDiaryDialog() {
     elements.diaryDate.value = session.form.eventDate;
     elements.diaryStartTime.value = session.form.diaryStartTime || '';
     elements.diaryEndTime.value = session.form.diaryEndTime || '';
-    elements.diaryDescription.value = session.form.diaryDescription || session.form.description;
+    elements.diaryDescription.value = session.form.diaryDescription || '';
     elements.diaryBookingUrl.value = session.form.diaryBookingUrl || '';
     elements.diaryDialogMessage.textContent = '';
     elements.diaryDialogMessage.className = 'poster-publish-dialog-message';
@@ -2985,7 +3003,7 @@ function openMemberDiaryDialog() {
     const connection = session.config?.memberDiary ?? {};
     elements.diaryConnectionStatus.className = `yodeck-connection-status ${connection.configured ? 'ready' : 'unavailable'}`;
     elements.diaryConnectionStatus.innerHTML = connection.configured
-        ? '<span></span><div><strong>Member diary connection ready</strong><small>The event will be saved securely to the club diary.</small></div>'
+        ? '<span></span><div><strong>Member diary connection ready</strong><small>If this event has not yet been created in Intelligent Golf, it will be created before the diary entry is published.</small></div>'
         : '<span></span><div><strong>Member diary connection unavailable</strong><small>An administrator must complete the server-side diary connection before this event can be added.</small></div>';
     elements.diaryDialogConfirm.disabled = !connection.configured;
     elements.diaryDialogConfirm.textContent = session.diaryPublication ? 'Update member diary' : 'Add to member diary';
@@ -2994,7 +3012,73 @@ function openMemberDiaryDialog() {
     }
 
     elements.diaryDialog.showModal();
+    renderMemberDiaryPreview();
     requestAnimationFrame(() => elements.diaryTitle.focus());
+
+    const body = session.form.diaryDescription.trim();
+    if (connection.configured && (!body || body === session.form.description.trim())) {
+        await generateMemberDiaryDraft(session);
+    }
+}
+
+async function generateMemberDiaryDraft(session) {
+    const artwork = getMemberDiaryArtwork(session);
+    if (!artwork || !elements.diaryGenerateButton) return;
+
+    captureMemberDiaryDialog(session);
+    elements.diaryGenerateButton.disabled = true;
+    elements.diaryGenerateButton.textContent = 'Generating diary entry…';
+    elements.diaryDialogMessage.textContent = 'Preparing an event-specific diary entry from the approved campaign…';
+    elements.diaryDialogMessage.className = 'poster-publish-dialog-message working';
+
+    try {
+        const response = await fetch('/api/poster/member-diary/draft', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                eventId: session.context?.eventId || session.key,
+                eventName: getCampaignEventName(session),
+                eventDate: session.form.eventDate,
+                description: session.form.description,
+                additionalInstructions: session.form.additionalInstructions || null,
+                price: session.form.includePrice ? session.form.price : null,
+                startTime: session.form.diaryStartTime || session.context?.startTime || null,
+                endTime: session.form.diaryEndTime || session.context?.endTime || null,
+                bookingUrl: session.form.diaryBookingUrl || null,
+                artwork: {
+                    outputId: artwork.output.id,
+                    name: artwork.output.name,
+                    dataUrl: artwork.canvas.toDataURL('image/png')
+                }
+            })
+        });
+        const result = await readApiResponse(response);
+        session.form.diaryTitle = String(result.title ?? '').trim();
+        session.form.diaryDescription = String(result.bodyHtml ?? '').trim();
+        elements.diaryTitle.value = session.form.diaryTitle;
+        elements.diaryDescription.value = session.form.diaryDescription;
+        renderMemberDiaryPreview();
+        elements.diaryDialogMessage.textContent = result.mode === 'openai'
+            ? 'The AI draft is ready. Review and edit it before publishing.'
+            : 'A reliable draft is ready. Review and edit it before publishing.';
+        elements.diaryDialogMessage.className = 'poster-publish-dialog-message success';
+        scheduleSessionPersistence(session);
+    } catch (error) {
+        elements.diaryDialogMessage.textContent = error instanceof Error
+            ? error.message
+            : 'The member diary draft could not be generated.';
+        elements.diaryDialogMessage.className = 'poster-publish-dialog-message error';
+    } finally {
+        elements.diaryGenerateButton.disabled = false;
+        elements.diaryGenerateButton.textContent = 'Generate diary entry with AI';
+    }
+}
+
+function renderMemberDiaryPreview() {
+    if (!elements.diaryBodyPreview) return;
+    const title = elements.diaryTitle?.value.trim() || 'Member diary preview';
+    const body = elements.diaryDescription?.value || '<p style="font-family:Arial,sans-serif;color:#52666b">Generate or enter a diary entry to preview it here.</p>';
+    elements.diaryBodyPreview.srcdoc = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(title)}</title></head><body style="margin:18px;background:#fff">${body}</body></html>`;
 }
 
 function closeMemberDiaryDialog() {
@@ -3022,7 +3106,7 @@ async function addToMemberDiary() {
     elements.shareDiaryButton.disabled = true;
     elements.diaryDialogConfirm.disabled = true;
     elements.diaryDialogConfirm.textContent = session.diaryPublication ? 'Updating member diary…' : 'Adding to member diary…';
-    elements.diaryDialogMessage.textContent = 'Saving the event details and campaign artwork to the member diary…';
+    elements.diaryDialogMessage.textContent = 'Checking the Intelligent Golf event, then publishing the linked diary entry…';
     elements.diaryDialogMessage.className = 'poster-publish-dialog-message working';
     elements.shareMessage.textContent = 'Saving this event to the member diary…';
 
@@ -3032,9 +3116,14 @@ async function addToMemberDiary() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 eventId: session.context?.eventId || session.key,
-                eventName: session.form.diaryTitle,
+                eventName: getCampaignEventName(session),
+                title: session.form.diaryTitle,
                 eventDate: session.form.eventDate,
                 description: session.form.diaryDescription,
+                eventDescription: session.form.description,
+                eventTypeId: Number(session.context?.eventTypeId) || 0,
+                attendees: Math.max(0, Number(session.context?.expectedAttendees) || 0),
+                venue: 'Clubhouse',
                 startTime: session.form.diaryStartTime || null,
                 endTime: session.form.diaryEndTime || null,
                 bookingUrl: session.form.diaryBookingUrl || null,
@@ -3048,7 +3137,7 @@ async function addToMemberDiary() {
         const result = await readApiResponse(response);
         session.diaryPublication = {
             remoteId: String(result.diaryEntryId),
-            externalId: String(result.externalId ?? ''),
+            externalId: String(result.intelligentGolfEventId ?? ''),
             operation: String(result.operation ?? 'saved'),
             eventDate: String(result.eventDate ?? session.form.eventDate),
             updatedAt: new Date().toISOString()

@@ -31,6 +31,10 @@ public interface IIntelligentGolfReportClient
 
 public interface IIntelligentGolfTransport
 {
+    Task<IntelligentGolfTransportResponse> GetResponseAsync(
+        string path,
+        CancellationToken cancellationToken = default);
+
     Task<HtmlDocument> GetDocumentAsync(
         string path,
         CancellationToken cancellationToken = default);
@@ -40,11 +44,18 @@ public interface IIntelligentGolfTransport
         IReadOnlyCollection<KeyValuePair<string, string>> fields,
         CancellationToken cancellationToken = default);
 
+    Task<IntelligentGolfTransportResponse> PostFormResponseAsync(
+        string path,
+        IReadOnlyCollection<KeyValuePair<string, string>> fields,
+        CancellationToken cancellationToken = default);
+
     Task<string> PostFormAsync(
         string path,
         IReadOnlyCollection<KeyValuePair<string, string>> fields,
         CancellationToken cancellationToken = default);
 }
+
+public sealed record IntelligentGolfTransportResponse(string Body, Uri? FinalUri);
 
 public interface IIntelligentGolfSession
 {

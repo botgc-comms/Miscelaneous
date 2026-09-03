@@ -114,6 +114,7 @@ app.MapMemberEmailEndpoints();
 app.MapMemberCampaignEmailEndpoints();
 app.MapMemberWorkspaceEndpoints();
 app.MapCompetitionEndpoints();
+app.MapEventPlannerEndpoints();
 
 app.Run();
 

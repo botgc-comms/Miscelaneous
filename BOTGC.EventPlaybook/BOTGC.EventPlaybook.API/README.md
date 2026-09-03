@@ -22,6 +22,8 @@ This is a standalone .NET 9 API for the event-planner integration with Intellige
 | `GET` | `/api/members` | List active members, enriched with names, email addresses, categories and the IG recipient ID. Add `?refresh=true` to bypass the cached reports. |
 | `POST` | `/api/members/emails/test` | Send one test copy to an email address through IG. |
 | `POST` | `/api/members/emails/campaign` | Send one campaign to selected active members. The request uses club member numbers; the API resolves IG's internal recipient IDs server-side. |
+| `POST` | `/api/event-planner/events/synchronise` | Allocate an IG event when necessary and update its core name, date, time, type, attendance and description fields. |
+| `PUT` | `/api/event-planner/member-diary` | Create a diary entry when necessary, link it to the IG event, then update its complete HTML body. |
 | `GET` | `/api/members/{memberNumber}/diary` | Read the configured member diary page. |
 | `PUT` | `/api/members/{memberNumber}/diary` | Submit fields to the configured member diary update page. |
 | `GET` | `/api/members/{memberNumber}/planner` | Read the configured member planner page. |
@@ -64,9 +66,9 @@ To use Redis:
 
 Callers must provide `EventPlaybookApi:ApiKey` in the `X-Api-Key` header. The authentication endpoint accepts the IG credentials only from that trusted server-to-server caller and returns an opaque four-hour token. Domain endpoints also require that token in `X-Intelligent-Golf-Session`. Health and Swagger routes remain accessible without either header. An empty API key is accepted only when `ASPNETCORE_ENVIRONMENT=Development`; in every other environment the authentication and domain endpoints return `503` until a key is configured.
 
-## Diary and planner integration point
+## Member workspace integration point
 
-The existing BOTGC codebase contains no diary or planner IG implementation, so this project deliberately does not guess IG URLs or form field names. Configure these after observing the authenticated requests made by the relevant IG pages:
+The generic per-member diary and planner routes below remain configurable adapters. They are separate from the event-planner event and member-diary publishing routes above, whose IG request contracts have now been captured and implemented.
 
 ```json
 {

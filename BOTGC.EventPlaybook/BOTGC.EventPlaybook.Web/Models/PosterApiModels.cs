@@ -172,9 +172,19 @@ public sealed class MemberDiaryPublishRequest
 
     public required string EventName { get; init; }
 
+    public string? Title { get; init; }
+
     public required string EventDate { get; init; }
 
     public required string Description { get; init; }
+
+    public string? EventDescription { get; init; }
+
+    public int? EventTypeId { get; init; }
+
+    public int? Attendees { get; init; }
+
+    public string? Venue { get; init; }
 
     public string? StartTime { get; init; }
 
@@ -185,15 +195,19 @@ public sealed class MemberDiaryPublishRequest
     public PublishAsset? Artwork { get; init; }
 }
 
-public sealed class MemberDiaryPublishCommand
+public sealed class MemberDiaryDraftRequest
 {
     public required string EventId { get; init; }
 
     public required string EventName { get; init; }
 
-    public required DateOnly EventDate { get; init; }
+    public required string EventDate { get; init; }
 
     public required string Description { get; init; }
+
+    public string? AdditionalInstructions { get; init; }
+
+    public string? Price { get; init; }
 
     public string? StartTime { get; init; }
 
@@ -201,20 +215,20 @@ public sealed class MemberDiaryPublishCommand
 
     public string? BookingUrl { get; init; }
 
-    public string? ArtworkFileName { get; init; }
-
-    public byte[]? ArtworkBytes { get; init; }
+    public required PublishAsset Artwork { get; init; }
 }
 
-public sealed class MemberDiaryPublishResult
+public sealed class MemberDiaryDraftResult
 {
-    public required string RemoteId { get; init; }
+    public required string Title { get; init; }
 
-    public required string ExternalId { get; init; }
+    public required string BodyHtml { get; init; }
 
-    public required string Operation { get; init; }
+    public required string ArtworkUrl { get; init; }
 
-    public required DateOnly EventDate { get; init; }
+    public required string Mode { get; init; }
+
+    public required string Model { get; init; }
 }
 
 public sealed class MemberEmailDraftRequest

@@ -42,10 +42,6 @@ var yodeckMediaDuration = int.TryParse(
     out var configuredYodeckMediaDuration)
         ? Math.Clamp(configuredYodeckMediaDuration, 5, 300)
         : 15;
-var intelligentGolfDiaryEndpoint = Environment.GetEnvironmentVariable("INTELLIGENT_GOLF_DIARY_ENDPOINT")?.Trim() ?? string.Empty;
-var intelligentGolfApiToken = Environment.GetEnvironmentVariable("INTELLIGENT_GOLF_API_TOKEN")?.Trim() ?? string.Empty;
-var intelligentGolfClubId = Environment.GetEnvironmentVariable("INTELLIGENT_GOLF_CLUB_ID")?.Trim() ?? string.Empty;
-var intelligentGolfHttpMethod = Environment.GetEnvironmentVariable("INTELLIGENT_GOLF_DIARY_HTTP_METHOD")?.Trim();
 var demoPassword = Environment.GetEnvironmentVariable("DEMO_PASSWORD") ?? string.Empty;
 var adminPassword = Environment.GetEnvironmentVariable("ADMIN_PASSWORD") ?? string.Empty;
 const string demoCookieScheme = "BOTGC.EventPlaybook.Demo";
@@ -86,15 +82,6 @@ builder.Services.Configure<YodeckOptions>(options =>
         : yodeckPlaylistName;
     options.MediaDurationSeconds = yodeckMediaDuration;
 });
-builder.Services.Configure<IntelligentGolfOptions>(options =>
-{
-    options.DiaryEndpoint = intelligentGolfDiaryEndpoint;
-    options.ApiToken = intelligentGolfApiToken;
-    options.ClubId = intelligentGolfClubId;
-    options.HttpMethod = string.Equals(intelligentGolfHttpMethod, "POST", StringComparison.OrdinalIgnoreCase)
-        ? "POST"
-        : "PUT";
-});
 builder.Services
     .AddOptions<EventPlaybookApiOptions>()
     .Bind(builder.Configuration.GetSection(EventPlaybookApiOptions.SectionName));
@@ -115,18 +102,19 @@ builder.Services.AddHttpClient("Yodeck", client =>
     client.Timeout = TimeSpan.FromMinutes(3);
 });
 builder.Services.AddSingleton<IYodeckPublisher, YodeckPublisher>();
-builder.Services.AddHttpClient("IntelligentGolf", client =>
-{
-    client.Timeout = TimeSpan.FromMinutes(2);
-});
-builder.Services.AddSingleton<IIntelligentGolfDiaryPublisher, IntelligentGolfDiaryPublisher>();
 builder.Services.AddHttpClient(IntelligentGolfApiSessionClient.HttpClientName, client =>
 {
     client.Timeout = TimeSpan.FromMinutes(2);
 });
 builder.Services.AddSingleton<IIntelligentGolfApiSessionClient, IntelligentGolfApiSessionClient>();
 builder.Services.AddSingleton<IIntelligentGolfMemberCommunicationsClient, IntelligentGolfMemberCommunicationsClient>();
+builder.Services.AddSingleton<IIntelligentGolfIntegrationLinkStore, IntelligentGolfIntegrationLinkStore>();
+builder.Services.AddSingleton<IIntelligentGolfEventIntegration, IntelligentGolfEventIntegration>();
+builder.Services.AddSingleton<PlaybookEventChangePipeline>();
+builder.Services.AddSingleton<IPlaybookEventChangePublisher>(services => services.GetRequiredService<PlaybookEventChangePipeline>());
+builder.Services.AddHostedService(services => services.GetRequiredService<PlaybookEventChangePipeline>());
 builder.Services.AddSingleton<IMemberEmailComposer, MemberEmailComposer>();
+builder.Services.AddSingleton<IMemberDiaryComposer, MemberDiaryComposer>();
 builder.Services.AddSingleton<IMemberEmailArtworkStore, MemberEmailArtworkStore>();
 builder.Services.AddSingleton<ITaskCompletionRegistry, TaskCompletionRegistry>();
 builder.Services.AddSingleton<IFeedbackStore, FeedbackStore>();
@@ -154,18 +142,13 @@ builder.Services
 var app = builder.Build();
 
 app.Logger.LogInformation(
-    "Poster Studio configured. API key: {ApiKeyStatus}; image model: {ImageModel}; image quality: {ImageQuality}; prompt model: {PromptModel}; Yodeck: {YodeckStatus}; member diary: {MemberDiaryStatus}; demo access: {DemoAccessStatus}; administrator access: {AdminAccessStatus}",
+    "Poster Studio configured. API key: {ApiKeyStatus}; image model: {ImageModel}; image quality: {ImageQuality}; prompt model: {PromptModel}; Yodeck: {YodeckStatus}; demo access: {DemoAccessStatus}; administrator access: {AdminAccessStatus}",
     string.IsNullOrWhiteSpace(openAiApiKey) ? "not configured - mock mode" : "OPENAI_API_KEY",
     effectiveImageModel,
     effectiveImageQuality,
     effectivePromptModel,
     !string.IsNullOrWhiteSpace(yodeckApiToken) && yodeckPlaylistId > 0
         ? $"playlist {yodeckPlaylistId}"
-        : "not configured",
-    !string.IsNullOrWhiteSpace(intelligentGolfDiaryEndpoint) &&
-    !string.IsNullOrWhiteSpace(intelligentGolfApiToken) &&
-    !string.IsNullOrWhiteSpace(intelligentGolfClubId)
-        ? "configured"
         : "not configured",
     string.IsNullOrWhiteSpace(demoPassword) ? "disabled" : "password protected",
     string.IsNullOrWhiteSpace(adminPassword) ? "not configured" : "password protected");
@@ -344,7 +327,7 @@ app.MapGet("/api/poster/config", async (
     IPosterConfigurationService configurationService,
     IClubBrandingStore brandingStore,
     IYodeckPublisher yodeckPublisher,
-    IIntelligentGolfDiaryPublisher diaryPublisher,
+    IIntelligentGolfEventIntegration intelligentGolfIntegration,
     IPluginSettingsStore pluginSettingsStore,
     Microsoft.Extensions.Options.IOptions<EventPlaybookApiOptions> eventPlaybookApiOptions,
     CancellationToken cancellationToken) =>
@@ -389,7 +372,7 @@ app.MapGet("/api/poster/config", async (
         },
         memberDiary = new
         {
-            configured = diaryPublisher.IsConfigured,
+            configured = await intelligentGolfIntegration.IsAvailableAsync(cancellationToken),
             destinationName = "Club member diary"
         },
         memberEmail = new
@@ -506,6 +489,7 @@ app.MapGet("/api/shared-state", async (
 app.MapPut("/api/shared-state", async (
     SaveSharedPlaybookStateRequest request,
     ISharedPlaybookStateStore store,
+    IPlaybookEventChangePublisher eventChangePublisher,
     CancellationToken cancellationToken) =>
 {
     if (request.State.ValueKind != System.Text.Json.JsonValueKind.Object)
@@ -513,7 +497,12 @@ app.MapPut("/api/shared-state", async (
         return Results.BadRequest(new { error = "Shared state must be a JSON object." });
     }
 
+    var previous = await store.GetAsync(cancellationToken);
     var result = await store.SaveAsync(request, cancellationToken);
+    if (!result.Conflict)
+    {
+        await eventChangePublisher.PublishAsync(previous.State, result.Document.State, cancellationToken);
+    }
     return result.Conflict ? Results.Conflict(result.Document) : Results.Ok(result.Document);
 });
 
@@ -857,20 +846,51 @@ app.MapPost("/api/poster/publish", async (
     }
 });
 
+app.MapPost("/api/poster/member-diary/draft", async (
+    MemberDiaryDraftRequest draft,
+    HttpRequest httpRequest,
+    IMemberEmailArtworkStore artworkStore,
+    IMemberDiaryComposer composer,
+    CancellationToken cancellationToken) =>
+{
+    if (string.IsNullOrWhiteSpace(draft.EventId) ||
+        string.IsNullOrWhiteSpace(draft.EventName) ||
+        string.IsNullOrWhiteSpace(draft.Description) ||
+        !DateOnly.TryParseExact(draft.EventDate, "yyyy-MM-dd", out _))
+    {
+        return Results.BadRequest(new { error = "Event name, date and description are required to draft the member diary entry." });
+    }
+
+    if (draft.Artwork is null)
+    {
+        return Results.BadRequest(new { error = "Finished campaign artwork is required." });
+    }
+
+    if (!TryDecodePngDataUrl(draft.Artwork.DataUrl, out var artworkBytes, out var artworkError))
+    {
+        return Results.BadRequest(new { error = artworkError });
+    }
+
+    var artworkToken = await artworkStore.SaveAsync(draft.EventId, artworkBytes, cancellationToken);
+    var publicScheme = httpRequest.Headers["X-Forwarded-Proto"].FirstOrDefault() ?? httpRequest.Scheme;
+    var artworkUrl = $"{publicScheme}://{httpRequest.Host}{httpRequest.PathBase}/api/poster/member-email/artwork/{artworkToken}";
+    return Results.Ok(await composer.ComposeAsync(draft, artworkUrl, cancellationToken));
+});
+
 app.MapPut("/api/poster/member-diary", async (
     MemberDiaryPublishRequest request,
-    IIntelligentGolfDiaryPublisher diaryPublisher,
+    IIntelligentGolfEventIntegration intelligentGolfIntegration,
     CancellationToken cancellationToken) =>
 {
     if (string.IsNullOrWhiteSpace(request.EventId) ||
         string.IsNullOrWhiteSpace(request.EventName) ||
         string.IsNullOrWhiteSpace(request.Description) ||
-        !DateOnly.TryParseExact(request.EventDate, "yyyy-MM-dd", out var eventDate))
+        !DateOnly.TryParseExact(request.EventDate, "yyyy-MM-dd", out _))
     {
         return Results.BadRequest(new { error = "Event name, date and member-facing description are required." });
     }
 
-    if (request.EventName.Trim().Length > 180 || request.Description.Trim().Length > 5000)
+    if ((request.Title?.Trim().Length ?? request.EventName.Trim().Length) > 250 || request.Description.Length > 200_000)
     {
         return Results.BadRequest(new { error = "The diary title or description is too long." });
     }
@@ -897,49 +917,24 @@ app.MapPut("/api/poster/member-diary", async (
         return Results.BadRequest(new { error = "The booking or information link must be a complete http or https URL." });
     }
 
-    byte[]? artworkBytes = null;
-    string? artworkFileName = null;
-    if (request.Artwork is not null)
-    {
-        if (!TryDecodePngDataUrl(request.Artwork.DataUrl, out artworkBytes, out var artworkError))
-        {
-            return Results.BadRequest(new { error = artworkError });
-        }
-
-        artworkFileName = $"{request.EventId.Trim()}-{request.Artwork.OutputId.Trim()}.png";
-    }
-
     try
     {
-        var published = await diaryPublisher.UpsertAsync(new MemberDiaryPublishCommand
-        {
-            EventId = request.EventId.Trim(),
-            EventName = request.EventName.Trim(),
-            EventDate = eventDate,
-            Description = request.Description.Trim(),
-            StartTime = string.IsNullOrWhiteSpace(startTime) ? null : startTime,
-            EndTime = string.IsNullOrWhiteSpace(endTime) ? null : endTime,
-            BookingUrl = string.IsNullOrWhiteSpace(bookingUrl) ? null : bookingUrl,
-            ArtworkFileName = artworkFileName,
-            ArtworkBytes = artworkBytes
-        }, cancellationToken);
+        var published = await intelligentGolfIntegration.PublishDiaryAsync(request, cancellationToken);
 
         return Results.Ok(new
         {
             success = true,
-            diaryEntryId = published.RemoteId,
-            published.ExternalId,
-            published.Operation,
-            eventDate = published.EventDate.ToString("yyyy-MM-dd")
+            diaryEntryId = published.IntelligentGolfDiaryEntryId,
+            intelligentGolfEventId = published.IntelligentGolfEventId,
+            operation = published.Created ? "created" : "updated",
+            eventDate = request.EventDate
         });
     }
     catch (InvalidOperationException exception)
     {
         return Results.Problem(
             exception.Message,
-            statusCode: diaryPublisher.IsConfigured
-                ? StatusCodes.Status502BadGateway
-                : StatusCodes.Status503ServiceUnavailable);
+            statusCode: StatusCodes.Status502BadGateway);
     }
 });
 

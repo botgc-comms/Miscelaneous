@@ -8,14 +8,19 @@ public sealed class IntelligentGolfTransport(
     IIntelligentGolfSession session,
     ILogger<IntelligentGolfTransport> logger) : IIntelligentGolfTransport
 {
+    public Task<IntelligentGolfTransportResponse> GetResponseAsync(
+        string path,
+        CancellationToken cancellationToken = default) =>
+        SendResponseAsync(
+            () => new HttpRequestMessage(HttpMethod.Get, path),
+            cancellationToken);
+
     public async Task<HtmlDocument> GetDocumentAsync(
         string path,
         CancellationToken cancellationToken = default)
     {
-        var html = await SendAsync(
-            () => new HttpRequestMessage(HttpMethod.Get, path),
-            cancellationToken);
-        return ParseDocument(html);
+        var response = await GetResponseAsync(path, cancellationToken);
+        return ParseDocument(response.Body);
     }
 
     public async Task<HtmlDocument> PostFormDocumentAsync(
@@ -24,13 +29,25 @@ public sealed class IntelligentGolfTransport(
         CancellationToken cancellationToken = default) =>
         ParseDocument(await PostFormAsync(path, fields, cancellationToken));
 
+    public Task<IntelligentGolfTransportResponse> PostFormResponseAsync(
+        string path,
+        IReadOnlyCollection<KeyValuePair<string, string>> fields,
+        CancellationToken cancellationToken = default) =>
+        SendResponseAsync(
+            () => CreateFormRequest(path, fields),
+            cancellationToken);
+
     public Task<string> PostFormAsync(
         string path,
         IReadOnlyCollection<KeyValuePair<string, string>> fields,
         CancellationToken cancellationToken = default) =>
-        SendAsync(
-            () => CreateFormRequest(path, fields),
-            cancellationToken);
+        PostFormBodyAsync(path, fields, cancellationToken);
+
+    private async Task<string> PostFormBodyAsync(
+        string path,
+        IReadOnlyCollection<KeyValuePair<string, string>> fields,
+        CancellationToken cancellationToken) =>
+        (await PostFormResponseAsync(path, fields, cancellationToken)).Body;
 
     private static HttpRequestMessage CreateFormRequest(
         string path,
@@ -49,7 +66,7 @@ public sealed class IntelligentGolfTransport(
         return request;
     }
 
-    private async Task<string> SendAsync(
+    private async Task<IntelligentGolfTransportResponse> SendResponseAsync(
         Func<HttpRequestMessage> requestFactory,
         CancellationToken cancellationToken)
     {
@@ -58,7 +75,7 @@ public sealed class IntelligentGolfTransport(
         var firstResponse = await SendOnceAsync(requestFactory, cancellationToken);
         if (!firstResponse.RequiresLogin)
         {
-            return firstResponse.Body;
+            return new IntelligentGolfTransportResponse(firstResponse.Body, firstResponse.FinalUri);
         }
 
         logger.LogWarning("Intelligent Golf requested a new login; refreshing the shared session and retrying once.");
@@ -71,7 +88,7 @@ public sealed class IntelligentGolfTransport(
                 "Intelligent Golf still requires login after the shared session was refreshed.");
         }
 
-        return retryResponse.Body;
+        return new IntelligentGolfTransportResponse(retryResponse.Body, retryResponse.FinalUri);
     }
 
     private async Task<TransportResponse> SendOnceAsync(
@@ -97,12 +114,13 @@ public sealed class IntelligentGolfTransport(
                 response.StatusCode);
         }
 
-        var finalPath = response.RequestMessage?.RequestUri?.AbsolutePath ?? string.Empty;
+        var finalUri = response.RequestMessage?.RequestUri;
+        var finalPath = finalUri?.AbsolutePath ?? string.Empty;
         var requiresLogin = finalPath.EndsWith("/login.php", StringComparison.OrdinalIgnoreCase) ||
                             IntelligentGolfLoginService.RequiresMemberLogin(body) ||
                             body.Contains("Login Required", StringComparison.OrdinalIgnoreCase);
 
-        return new TransportResponse(body, requiresLogin);
+        return new TransportResponse(body, finalUri, requiresLogin);
     }
 
     private static HtmlDocument ParseDocument(string raw)
@@ -156,5 +174,5 @@ public sealed class IntelligentGolfTransport(
         return null;
     }
 
-    private sealed record TransportResponse(string Body, bool RequiresLogin);
+    private sealed record TransportResponse(string Body, Uri? FinalUri, bool RequiresLogin);
 }
