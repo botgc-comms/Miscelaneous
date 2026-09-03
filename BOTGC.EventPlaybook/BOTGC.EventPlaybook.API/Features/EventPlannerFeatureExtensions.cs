@@ -123,10 +123,74 @@ public sealed class SynchronisePlannerEventHandler(
             new("description", MemberEmailHtmlSanitizer.Sanitise(request.DescriptionHtml))
         };
 
-        await transport.PostFormAsync(
-            $"/event.php?eventid={externalId.Value}&requestType=ajax&ajaxaction=confirmeditevent",
-            fields,
-            cancellationToken);
+        IntelligentGolfTransportResponse updateResponse;
+        try
+        {
+            updateResponse = await transport.PostFormResponseAsync(
+                $"/event.php?eventid={externalId.Value}&requestType=ajax&ajaxaction=confirmeditevent",
+                fields,
+                cancellationToken);
+        }
+        catch (IntelligentGolfAuthenticationException)
+        {
+            throw;
+        }
+        catch (Exception exception) when (exception is HttpRequestException or TimeoutException)
+        {
+            throw new IntelligentGolfMutationException(
+                "planner-details-update",
+                $"Intelligent Golf planner entry {externalId.Value} exists, but its event details could not be submitted.",
+                externalId,
+                exception.Message,
+                exception);
+        }
+
+        var rejection = IntelligentGolfMutationResponseInspector.FindRejection(updateResponse.Body);
+        if (!string.IsNullOrWhiteSpace(rejection))
+        {
+            throw new IntelligentGolfMutationException(
+                "planner-details-update",
+                $"Intelligent Golf planner entry {externalId.Value} exists, but Intelligent Golf rejected its event details.",
+                externalId,
+                rejection);
+        }
+
+        IntelligentGolfTransportResponse verificationResponse;
+        try
+        {
+            verificationResponse = await transport.GetResponseAsync(
+                $"/event.php?eventid={externalId.Value}&eventPlaybookVerify={DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}",
+                cancellationToken);
+        }
+        catch (IntelligentGolfAuthenticationException)
+        {
+            throw;
+        }
+        catch (Exception exception) when (exception is HttpRequestException or TimeoutException)
+        {
+            throw new IntelligentGolfMutationException(
+                "planner-details-verification",
+                $"Intelligent Golf planner entry {externalId.Value} exists and the update was submitted, but the saved details could not be checked.",
+                externalId,
+                exception.Message,
+                exception);
+        }
+
+        if (!IntelligentGolfMutationResponseInspector.ContainsText(
+                verificationResponse.Body,
+                request.Name.Trim()))
+        {
+            var responseSummary = IntelligentGolfMutationResponseInspector.Summarise(updateResponse.Body);
+            var detail = string.IsNullOrWhiteSpace(responseSummary)
+                ? "The update endpoint returned an empty response, and the event name was absent when the planner entry was read back."
+                : $"The update endpoint replied: {responseSummary} The event name was absent when the planner entry was read back.";
+            throw new IntelligentGolfMutationException(
+                "planner-details-verification",
+                $"Intelligent Golf planner entry {externalId.Value} was created, but its saved details could not be verified.",
+                externalId,
+                detail);
+        }
+
         await cache.SetAsync(cacheKey, new ExternalEventLink(externalId.Value), LinkLifetime, cancellationToken);
 
         var synchronisedAt = DateTimeOffset.UtcNow;
@@ -299,10 +363,37 @@ public sealed class PublishPlannerDiaryHandler(
             new("body", MemberEmailHtmlSanitizer.Sanitise(request.BodyHtml))
         ]);
 
-        await transport.PostFormAsync(
-            "/diaryadmin.php?&requestType=ajax&ajaxaction=editnow",
-            fields,
-            cancellationToken);
+        IntelligentGolfTransportResponse diaryUpdateResponse;
+        try
+        {
+            diaryUpdateResponse = await transport.PostFormResponseAsync(
+                "/diaryadmin.php?&requestType=ajax&ajaxaction=editnow",
+                fields,
+                cancellationToken);
+        }
+        catch (IntelligentGolfAuthenticationException)
+        {
+            throw;
+        }
+        catch (Exception exception) when (exception is HttpRequestException or TimeoutException)
+        {
+            throw new IntelligentGolfMutationException(
+                "member-diary-update",
+                $"Intelligent Golf diary entry {diaryId.Value} exists, but its HTML content could not be submitted.",
+                request.IntelligentGolfEventId,
+                exception.Message,
+                exception);
+        }
+
+        var diaryRejection = IntelligentGolfMutationResponseInspector.FindRejection(diaryUpdateResponse.Body);
+        if (!string.IsNullOrWhiteSpace(diaryRejection))
+        {
+            throw new IntelligentGolfMutationException(
+                "member-diary-update",
+                $"Intelligent Golf diary entry {diaryId.Value} exists, but Intelligent Golf rejected its HTML update.",
+                request.IntelligentGolfEventId,
+                diaryRejection);
+        }
         await cache.SetAsync(cacheKey, new ExternalDiaryLink(diaryId.Value), LinkLifetime, cancellationToken);
 
         var publishedAt = DateTimeOffset.UtcNow;
@@ -438,6 +529,132 @@ public sealed class PublishPlannerDiaryHandler(
     }
 
     private sealed record ExternalDiaryLink(int IntelligentGolfDiaryEntryId);
+}
+
+internal static class IntelligentGolfMutationResponseInspector
+{
+    private static readonly string[] ErrorClassFragments =
+    [
+        "alert-danger",
+        "user-message-error",
+        "validation-error",
+        "ui-state-error"
+    ];
+
+    public static string? FindRejection(string raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw)) return null;
+        var trimmed = raw.Trim();
+
+        try
+        {
+            using var json = JsonDocument.Parse(trimmed);
+            if (json.RootElement.ValueKind == JsonValueKind.Object)
+            {
+                var root = json.RootElement;
+                if (root.TryGetProperty("success", out var success) &&
+                    success.ValueKind == JsonValueKind.False)
+                {
+                    return ReadJsonMessage(root) ?? "Intelligent Golf returned success=false.";
+                }
+
+                if (root.TryGetProperty("result", out var result) &&
+                    result.ValueKind == JsonValueKind.String &&
+                    string.Equals(result.GetString(), "error", StringComparison.OrdinalIgnoreCase))
+                {
+                    return ReadJsonMessage(root) ?? "Intelligent Golf returned result=error.";
+                }
+
+                if (root.TryGetProperty("error", out var error) &&
+                    error.ValueKind is not JsonValueKind.Null and not JsonValueKind.False)
+                {
+                    var errorMessage = ReadJsonValue(error);
+                    if (!string.IsNullOrWhiteSpace(errorMessage)) return errorMessage;
+                }
+            }
+        }
+        catch (JsonException)
+        {
+            // The legacy IG AJAX handlers also return plain text or HTML.
+        }
+
+        if (trimmed.Equals("false", StringComparison.OrdinalIgnoreCase) ||
+            trimmed.Equals("error", StringComparison.OrdinalIgnoreCase))
+        {
+            return $"Intelligent Golf returned '{trimmed}'.";
+        }
+
+        var document = new HtmlDocument();
+        document.LoadHtml(raw);
+        foreach (var classFragment in ErrorClassFragments)
+        {
+            var node = document.DocumentNode.SelectSingleNode(
+                $"//*[contains(concat(' ', normalize-space(@class), ' '), ' {classFragment} ')]");
+            var message = NormaliseText(node?.InnerText);
+            if (!string.IsNullOrWhiteSpace(message)) return message;
+        }
+
+        var plainText = NormaliseText(document.DocumentNode.InnerText);
+        if (plainText.Contains("fatal error", StringComparison.OrdinalIgnoreCase) ||
+            plainText.Contains("access denied", StringComparison.OrdinalIgnoreCase) ||
+            plainText.Contains("permission denied", StringComparison.OrdinalIgnoreCase))
+        {
+            return Truncate(plainText, 500);
+        }
+
+        return null;
+    }
+
+    public static bool ContainsText(string raw, string expected)
+    {
+        if (string.IsNullOrWhiteSpace(raw) || string.IsNullOrWhiteSpace(expected)) return false;
+        var document = new HtmlDocument();
+        document.LoadHtml(raw);
+        var text = WebUtility.HtmlDecode(document.DocumentNode.InnerText);
+        return text.Contains(expected, StringComparison.OrdinalIgnoreCase) ||
+               WebUtility.HtmlDecode(raw).Contains(expected, StringComparison.OrdinalIgnoreCase);
+    }
+
+    public static string? Summarise(string raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw)) return null;
+        var rejection = FindRejection(raw);
+        if (!string.IsNullOrWhiteSpace(rejection)) return rejection;
+
+        var document = new HtmlDocument();
+        document.LoadHtml(raw);
+        return Truncate(NormaliseText(document.DocumentNode.InnerText), 500);
+    }
+
+    private static string? ReadJsonMessage(JsonElement root)
+    {
+        foreach (var name in new[] { "message", "error", "detail", "reason" })
+        {
+            if (root.TryGetProperty(name, out var value))
+            {
+                var message = ReadJsonValue(value);
+                if (!string.IsNullOrWhiteSpace(message)) return message;
+            }
+        }
+        return null;
+    }
+
+    private static string? ReadJsonValue(JsonElement value) => value.ValueKind switch
+    {
+        JsonValueKind.String => value.GetString(),
+        JsonValueKind.Object or JsonValueKind.Array => value.GetRawText(),
+        JsonValueKind.True or JsonValueKind.False or JsonValueKind.Number => value.GetRawText(),
+        _ => null
+    };
+
+    private static string NormaliseText(string? value) =>
+        Regex.Replace(WebUtility.HtmlDecode(value ?? string.Empty), @"\s+", " ").Trim();
+
+    private static string? Truncate(string? value, int maximumLength)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return null;
+        return value.Length <= maximumLength ? value : $"{value[..maximumLength]}…";
+    }
 }
 
 public static class EventPlannerFeatureExtensions

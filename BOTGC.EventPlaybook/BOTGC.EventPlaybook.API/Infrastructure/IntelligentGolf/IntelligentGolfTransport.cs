@@ -103,24 +103,98 @@ public sealed class IntelligentGolfTransport(
                 new Uri(session.BaseUrl, UriKind.Absolute),
                 request.RequestUri?.ToString().TrimStart('/') ?? string.Empty);
         }
+        AddAjaxHeaders(request);
         using var response = await client.SendAsync(request, cancellationToken);
         var body = await response.Content.ReadAsStringAsync(cancellationToken);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new HttpRequestException(
-                $"Intelligent Golf returned HTTP {(int)response.StatusCode} ({response.StatusCode}).",
-                null,
-                response.StatusCode);
-        }
-
         var finalUri = response.RequestMessage?.RequestUri;
         var finalPath = finalUri?.AbsolutePath ?? string.Empty;
         var requiresLogin = finalPath.EndsWith("/login.php", StringComparison.OrdinalIgnoreCase) ||
                             IntelligentGolfLoginService.RequiresMemberLogin(body) ||
                             body.Contains("Login Required", StringComparison.OrdinalIgnoreCase);
 
+        if (!response.IsSuccessStatusCode && !requiresLogin)
+        {
+            var detail = SummariseFailure(body);
+            var message = $"Intelligent Golf returned HTTP {(int)response.StatusCode} ({response.StatusCode}).";
+            if (!string.IsNullOrWhiteSpace(detail)) message = $"{message} {detail}";
+            throw new HttpRequestException(message, null, response.StatusCode);
+        }
+
         return new TransportResponse(body, finalUri, requiresLogin);
+    }
+
+    private static string? SummariseFailure(string raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw)) return null;
+        try
+        {
+            using var json = JsonDocument.Parse(raw);
+            if (json.RootElement.ValueKind == JsonValueKind.Object)
+            {
+                foreach (var name in new[] { "message", "error", "detail", "reason" })
+                {
+                    if (!json.RootElement.TryGetProperty(name, out var value)) continue;
+                    var text = value.ValueKind == JsonValueKind.String ? value.GetString() : value.GetRawText();
+                    if (!string.IsNullOrWhiteSpace(text)) return Truncate(text.Trim());
+                }
+            }
+        }
+        catch (JsonException)
+        {
+            // Legacy endpoints commonly return HTML.
+        }
+
+        var document = new HtmlDocument();
+        document.LoadHtml(raw);
+        var error = document.DocumentNode.SelectSingleNode(
+            "//*[contains(@class,'alert-danger') or contains(@class,'user-message-error') or contains(@class,'error')]");
+        var summary = System.Net.WebUtility.HtmlDecode(error?.InnerText ?? document.DocumentNode.InnerText);
+        summary = System.Text.RegularExpressions.Regex.Replace(summary, @"\s+", " ").Trim();
+        return string.IsNullOrWhiteSpace(summary) ? null : Truncate(summary);
+    }
+
+    private static string Truncate(string value) =>
+        value.Length <= 500 ? value : $"{value[..500]}…";
+
+    private static void AddAjaxHeaders(HttpRequestMessage request)
+    {
+        if (request.RequestUri is null ||
+            !request.Headers.Contains("X-Requested-With"))
+        {
+            return;
+        }
+
+        // IG's browser endpoints are not a public API. Reproduce the headers its own
+        // JavaScript sends so POST requests pass the same origin/referer checks.
+        request.Headers.Accept.Clear();
+        request.Headers.TryAddWithoutValidation("Accept", "*/*");
+        request.Headers.TryAddWithoutValidation(
+            "Origin",
+            request.RequestUri.GetLeftPart(UriPartial.Authority));
+        request.Headers.Referrer = BuildAjaxReferrer(request.RequestUri);
+    }
+
+    private static Uri BuildAjaxReferrer(Uri requestUri)
+    {
+        var builder = new UriBuilder(requestUri)
+        {
+            Query = string.Empty,
+            Fragment = string.Empty
+        };
+
+        if (requestUri.AbsolutePath.EndsWith("/event.php", StringComparison.OrdinalIgnoreCase))
+        {
+            var eventId = System.Text.RegularExpressions.Regex.Match(
+                requestUri.Query,
+                @"(?:^|[?&])eventid=(\d+)(?:&|$)",
+                System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            if (eventId.Success)
+            {
+                builder.Query = $"eventid={eventId.Groups[1].Value}";
+            }
+        }
+
+        return builder.Uri;
     }
 
     private static HtmlDocument ParseDocument(string raw)

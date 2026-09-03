@@ -7,3 +7,15 @@ public sealed class IntelligentGolfFeatureNotConfiguredException(string feature)
 
 public sealed class IntelligentGolfEmailSenderNotConfiguredException()
     : Exception("The Intelligent Golf member email sender identity has not been configured in Plugin administration.");
+
+public sealed class IntelligentGolfMutationException(
+    string stage,
+    string message,
+    int? intelligentGolfEventId = null,
+    string? responseDetail = null,
+    Exception? innerException = null) : Exception(message, innerException)
+{
+    public string Stage { get; } = stage;
+    public int? IntelligentGolfEventId { get; } = intelligentGolfEventId;
+    public string? ResponseDetail { get; } = responseDetail;
+}

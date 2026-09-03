@@ -6,6 +6,10 @@ namespace BOTGC.EventPlaybook.Services;
 public interface IIntelligentGolfIntegrationLinkStore
 {
     Task<IntelligentGolfIntegrationLink?> GetAsync(string eventId, CancellationToken cancellationToken);
+    Task SaveAllocatedEventAsync(
+        string eventId,
+        int intelligentGolfEventId,
+        CancellationToken cancellationToken);
     Task SaveEventAsync(
         string eventId,
         int intelligentGolfEventId,
@@ -51,6 +55,15 @@ public sealed class IntelligentGolfIntegrationLinkStore : IIntelligentGolfIntegr
             _gate.Release();
         }
     }
+
+    public Task SaveAllocatedEventAsync(
+        string eventId,
+        int intelligentGolfEventId,
+        CancellationToken cancellationToken) =>
+        UpdateAsync(eventId, link =>
+        {
+            link.IntelligentGolfEventId = intelligentGolfEventId;
+        }, cancellationToken);
 
     public Task SaveEventAsync(
         string eventId,

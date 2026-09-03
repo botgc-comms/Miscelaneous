@@ -17,6 +17,8 @@ public static class ApiExceptionResponse
                 (StatusCodes.Status501NotImplemented, feature.Message),
             IntelligentGolfAuthenticationException =>
                 (StatusCodes.Status503ServiceUnavailable, "The Intelligent Golf session is unavailable."),
+            IntelligentGolfMutationException mutationException =>
+                (StatusCodes.Status502BadGateway, mutationException.Message),
             HttpRequestException =>
                 (StatusCodes.Status502BadGateway, "Intelligent Golf returned an unsuccessful response."),
             TimeoutException =>
@@ -27,6 +29,21 @@ public static class ApiExceptionResponse
                 (StatusCodes.Status500InternalServerError, "An unexpected error occurred.")
         };
 
-        await Results.Problem(statusCode: status, title: title).ExecuteAsync(context);
+        var mutation = exception as IntelligentGolfMutationException;
+        var extensions = mutation is null
+            ? null
+            : new Dictionary<string, object?>
+            {
+                ["stage"] = mutation.Stage,
+                ["intelligentGolfEventId"] = mutation.IntelligentGolfEventId,
+                ["retryable"] = true
+            };
+
+        await Results.Problem(
+                statusCode: status,
+                title: title,
+                detail: mutation?.ResponseDetail,
+                extensions: extensions)
+            .ExecuteAsync(context);
     }
 }

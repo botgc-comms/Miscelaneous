@@ -95,6 +95,16 @@ public sealed class IntelligentGolfEventIntegration(
         }
         catch (Exception exception) when (exception is not OperationCanceledException)
         {
+            if (exception is IntelligentGolfApiRequestException { IntelligentGolfEventId: > 0 } apiException)
+            {
+                // The IG allocation and update are two separate operations. Retain the
+                // allocated ID even when the update fails so a retry updates the same
+                // blank record instead of creating a duplicate.
+                await linkStore.SaveAllocatedEventAsync(
+                    eventSnapshot.EventId,
+                    apiException.IntelligentGolfEventId.Value,
+                    cancellationToken);
+            }
             await linkStore.RecordFailureAsync(eventSnapshot.EventId, exception.Message, cancellationToken);
             throw;
         }
@@ -189,23 +199,55 @@ public sealed class IntelligentGolfEventIntegration(
         var statusCode = (int)response.StatusCode;
         var raw = await response.Content.ReadAsStringAsync(cancellationToken);
         response.Dispose();
-        throw new InvalidOperationException(ExtractError(raw) ?? $"The Intelligent Golf event request failed ({statusCode}).");
+        var problem = ExtractProblem(raw);
+        throw new IntelligentGolfApiRequestException(
+            problem?.Message ?? $"The Intelligent Golf event request failed ({statusCode}).",
+            statusCode,
+            problem?.Stage,
+            problem?.IntelligentGolfEventId);
     }
 
-    private static string? ExtractError(string raw)
+    private static IntelligentGolfApiProblem? ExtractProblem(string raw)
     {
         try
         {
             using var json = JsonDocument.Parse(raw);
-            if (json.RootElement.TryGetProperty("error", out var error)) return error.GetString();
-            if (json.RootElement.TryGetProperty("title", out var title)) return title.GetString();
-            if (json.RootElement.TryGetProperty("detail", out var detail)) return detail.GetString();
+            var root = json.RootElement;
+            var title = ReadString(root, "title");
+            var detail = ReadString(root, "detail");
+            var error = ReadString(root, "error");
+            var stage = ReadString(root, "stage");
+            var eventId = ReadInt(root, "intelligentGolfEventId");
+            var message = detail;
+            if (string.IsNullOrWhiteSpace(message)) message = error;
+            if (string.IsNullOrWhiteSpace(message)) message = title;
+            else if (!string.IsNullOrWhiteSpace(title) &&
+                     !message.Contains(title, StringComparison.OrdinalIgnoreCase))
+                message = $"{title} {message}";
+
+            return string.IsNullOrWhiteSpace(message)
+                ? null
+                : new IntelligentGolfApiProblem(message.Trim(), stage, eventId);
         }
         catch (JsonException)
         {
             // A concise status fallback is preferable to returning an IG HTML page.
         }
         return null;
+    }
+
+    private static string? ReadString(JsonElement root, string name) =>
+        root.TryGetProperty(name, out var value) && value.ValueKind == JsonValueKind.String
+            ? value.GetString()
+            : null;
+
+    private static int? ReadInt(JsonElement root, string name)
+    {
+        if (!root.TryGetProperty(name, out var value)) return null;
+        if (value.ValueKind == JsonValueKind.Number && value.TryGetInt32(out var number)) return number;
+        return value.ValueKind == JsonValueKind.String && int.TryParse(value.GetString(), out number)
+            ? number
+            : null;
     }
 
     private static string PlainTextToHtml(string value)
@@ -247,5 +289,21 @@ public sealed class IntelligentGolfEventIntegration(
             throw new ArgumentException("Event ID, name, date and description are required for Intelligent Golf.");
         if (!DateOnly.TryParseExact(snapshot.EventDate, "yyyy-MM-dd", out _))
             throw new ArgumentException("The event date must use yyyy-MM-dd format.");
+    }
+
+    private sealed record IntelligentGolfApiProblem(
+        string Message,
+        string? Stage,
+        int? IntelligentGolfEventId);
+
+    private sealed class IntelligentGolfApiRequestException(
+        string message,
+        int statusCode,
+        string? stage,
+        int? intelligentGolfEventId) : InvalidOperationException(message)
+    {
+        public int StatusCode { get; } = statusCode;
+        public string? Stage { get; } = stage;
+        public int? IntelligentGolfEventId { get; } = intelligentGolfEventId;
     }
 }

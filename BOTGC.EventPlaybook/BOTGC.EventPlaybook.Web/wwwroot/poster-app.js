@@ -3014,10 +3014,41 @@ async function openMemberDiaryDialog() {
     elements.diaryDialog.showModal();
     renderMemberDiaryPreview();
     requestAnimationFrame(() => elements.diaryTitle.focus());
+    if (connection.configured) {
+        await refreshMemberDiaryIntegrationStatus(session);
+    }
 
     const body = session.form.diaryDescription.trim();
     if (connection.configured && (!body || body === session.form.description.trim())) {
         await generateMemberDiaryDraft(session);
+    }
+}
+
+async function refreshMemberDiaryIntegrationStatus(session) {
+    const eventId = session.context?.eventId || session.key;
+    if (!eventId || !elements.diaryConnectionStatus) return;
+
+    try {
+        const response = await fetch(`/api/integrations/intelligent-golf/events/${encodeURIComponent(eventId)}`, {
+            cache: 'no-store'
+        });
+        if (!response.ok) return;
+        const status = await response.json();
+        if (status.lastError) {
+            const record = status.plannerEntryId
+                ? `Planner entry ${status.plannerEntryId} has been allocated, but its details are not yet synchronised.`
+                : 'The planner entry has not been synchronised.';
+            elements.diaryConnectionStatus.className = 'yodeck-connection-status unavailable';
+            elements.diaryConnectionStatus.innerHTML = `<span></span><div><strong>Intelligent Golf needs attention</strong><small>${escapeHtml(record)} Publishing will retry the same entry. ${escapeHtml(status.lastError)}</small></div>`;
+            return;
+        }
+
+        if (status.plannerEntryId) {
+            elements.diaryConnectionStatus.className = 'yodeck-connection-status ready';
+            elements.diaryConnectionStatus.innerHTML = `<span></span><div><strong>Planner entry ${escapeHtml(String(status.plannerEntryId))} is linked</strong><small>The event details will be checked and updated before the diary entry is published.</small></div>`;
+        }
+    } catch {
+        // The initial dialog state already reports whether the integration is configured.
     }
 }
 

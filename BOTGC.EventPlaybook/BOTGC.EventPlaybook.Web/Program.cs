@@ -387,6 +387,31 @@ app.MapGet("/api/poster/config", async (
     });
 });
 
+app.MapGet("/api/integrations/intelligent-golf/events/{eventId}", async (
+    string eventId,
+    IIntelligentGolfEventIntegration intelligentGolfIntegration,
+    IIntelligentGolfIntegrationLinkStore linkStore,
+    CancellationToken cancellationToken) =>
+{
+    if (string.IsNullOrWhiteSpace(eventId))
+    {
+        return Results.BadRequest(new { error = "An Event Playbook event ID is required." });
+    }
+
+    var available = await intelligentGolfIntegration.IsAvailableAsync(cancellationToken);
+    var link = await linkStore.GetAsync(eventId.Trim(), cancellationToken);
+    return Results.Ok(new
+    {
+        available,
+        plannerEntryId = link?.IntelligentGolfEventId,
+        diaryEntryId = link?.IntelligentGolfDiaryEntryId,
+        eventSynchronisedAtUtc = link?.EventSynchronisedAtUtc,
+        diaryPublishedAtUtc = link?.DiaryPublishedAtUtc,
+        lastError = link?.LastError,
+        updatedAtUtc = link?.UpdatedAtUtc
+    });
+});
+
 app.MapGet("/api/poster/member-email/artwork/{token}", (
     string token,
     IMemberEmailArtworkStore artworkStore) =>
