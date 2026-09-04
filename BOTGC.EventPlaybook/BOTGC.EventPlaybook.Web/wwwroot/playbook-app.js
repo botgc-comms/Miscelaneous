@@ -995,7 +995,9 @@
       Communications: ['member-communications-sent'],
       'Golf Operations': ['tee-times-reserved'],
       Clubhouse: [],
-      Course: []
+      Course: [],
+      Finance: ['entry-charge'],
+      Administration: ['entry-charge']
     };
     if ((answerSignals[area] ?? []).some(questionId => getQuestionValue(questionId, event) === true)) return true;
 
@@ -1030,7 +1032,9 @@
       ['Clubhouse', 'clubhouse', 'clubhouse'],
       ['Golf Operations', 'golf-manager', 'golf'],
       ['Course', 'greens', 'golf'],
-      ['Communications', 'communications', 'communications']
+      ['Communications', 'communications', 'communications'],
+      ['Finance', 'finance', 'admission'],
+      ['Administration', 'office', 'admission']
     ];
     const selectedAreas = getQuestionValue('event-affected-areas', event) ?? [];
     for (const [area, roleId, affectedAreaValue] of areaOwners) {
@@ -1038,7 +1042,7 @@
       add(contactForRole(roleId, event)?.name, area);
     }
 
-    if (selectedAreas.includes('suppliers')) add('', 'External suppliers or performers');
+    if (selectedAreas.includes('suppliers') || selectedAreas.includes('entertainment')) add('', 'External suppliers or performers');
     if (selectedAreas.includes('staffing')) add('', 'Other staff or volunteers');
     return stakeholders;
   }

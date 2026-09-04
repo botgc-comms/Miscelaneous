@@ -26,9 +26,11 @@ public sealed class RetrospectiveAnalysisService(
     private static readonly Dictionary<string, string[]> ModuleSignals = new(StringComparer.OrdinalIgnoreCase)
     {
         ["catering"] = ["bar", "buffet", "cater", "catering", "chef", "chili", "chilli", "curry", "diet", "dietary", "drink", "food", "kitchen", "meal", "menu", "mild", "potato", "rice", "spicy", "staffing", "vegetarian", "vegan"],
-        ["communications"] = ["advert", "advertising", "communication", "email", "member", "message", "promotion", "publicity", "signage", "ticket"],
+        ["communications"] = ["advert", "advertising", "communication", "email", "member", "message", "promotion", "publicity", "signage"],
         ["golf"] = ["competition", "course", "golf", "green", "handicap", "hole", "marshal", "score", "tee"],
-        ["clubhouse"] = ["av", "decoration", "music", "room", "screen", "seating", "table"],
+        ["clubhouse"] = ["av", "decoration", "layout", "room", "screen", "seating", "table"],
+        ["entertainment"] = ["act", "band", "comedian", "dance", "dj", "entertainment", "host", "lighting", "magician", "microphone", "music", "performer", "playlist", "sound", "speaker"],
+        ["admission"] = ["admission", "booking", "cash", "door", "entry", "guest list", "payment", "price", "refund", "ticket"],
         ["presentation"] = ["award", "medal", "presentation", "prize", "trophy", "voucher"],
         ["staffing"] = ["briefing", "cover", "rota", "shift", "staff", "volunteer"],
         ["safety"] = ["contingency", "hazard", "risk", "safe", "safety", "weather"],

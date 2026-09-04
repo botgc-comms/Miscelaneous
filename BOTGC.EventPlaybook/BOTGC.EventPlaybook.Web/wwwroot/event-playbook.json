@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "2.4",
+  "schemaVersion": "2.5",
   "id": "botgc-event-playbook",
   "title": "Event Playbook",
   "description": "A data-driven event planning guide that turns answers into dated, assignable tasks, operational advisories and reusable event knowledge.",
@@ -125,6 +125,24 @@
               "source": "expanded"
             },
             {
+              "id": "entertainment-involved",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will the event include music, a DJ, live entertainment, a guest speaker or another programmed social activity?",
+              "allowDontKnow": true,
+              "dontKnowTask": {
+                "id": "decide-entertainment-involvement",
+                "title": "Decide whether the event will include entertainment, music or a guest speaker",
+                "detail": "Agree the intended atmosphere and programme with the organiser, then return to this question and replace Don't know with Yes or No.",
+                "deadlineCode": "B4",
+                "responsibleArea": "Event Coordination",
+                "defaultOwnerRoleId": "event-coordinator",
+                "source": "refined"
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
               "id": "catering-involved",
               "type": "question",
               "answerType": "yesNo",
@@ -141,6 +159,25 @@
               },
               "required": true,
               "source": "expanded"
+            },
+            {
+              "id": "entry-charge",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will attendees be charged specifically for entry to the event?",
+              "helpText": "This is separate from ordinary bar purchases, optional food purchases or routine golf fees.",
+              "allowDontKnow": true,
+              "dontKnowTask": {
+                "id": "decide-entry-charge",
+                "title": "Decide whether admission will be charged and agree the pricing principle",
+                "detail": "Confirm whether the event must cover costs, break even or make a contribution, then agree whether an admission charge is needed before publicity begins.",
+                "deadlineCode": "B4",
+                "responsibleArea": "Event Coordination",
+                "defaultOwnerRoleId": "event-coordinator",
+                "source": "refined"
+              },
+              "required": true,
+              "source": "refined"
             },
             {
               "id": "communications-involved",
@@ -290,6 +327,8 @@
                 { "value": "golf", "label": "Course, tee times or competitions" },
                 { "value": "communications", "label": "Member or visitor communications" },
                 { "value": "suppliers", "label": "External suppliers or performers" },
+                { "value": "entertainment", "label": "Entertainment, speakers or technical production" },
+                { "value": "admission", "label": "Ticket sales, admission payments or refunds" },
                 { "value": "staffing", "label": "Other staff or volunteers" }
               ],
               "required": true,
@@ -469,6 +508,48 @@
               ] },
               "responsibleArea": "Communications",
               "defaultOwnerRoleId": "communications",
+              "source": "refined"
+            },
+            {
+              "id": "cancel-or-rebook-entertainment",
+              "type": "task",
+              "title": "Cancel, postpone or rebook the entertainer or speaker and confirm the financial impact",
+              "detail": "Use the recorded supplier terms, notify the provider through one named contact, release any hired equipment or access arrangements, and record deposits, cancellation fees or replacement-date commitments in Event Finances.",
+              "deadlineCode": "CX",
+              "showWhen": { "all": [
+                { "eventField": "lifecycle.status", "operator": "in", "value": ["cancelled", "postponed"] },
+                { "questionId": "entertainment-delivery", "operator": "in", "value": ["external", "mixed"] }
+              ] },
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator",
+              "source": "refined"
+            },
+            {
+              "id": "stop-ticket-sales-after-event-change",
+              "type": "task",
+              "title": "Stop ticket sales and prevent further admission payments for the changed event",
+              "detail": "Close or amend every sales route, preserve the purchaser and payment records, and make sure public booking links show the same cancellation or postponement status.",
+              "deadlineCode": "CX",
+              "showWhen": { "all": [
+                { "eventField": "lifecycle.status", "operator": "in", "value": ["cancelled", "postponed"] },
+                { "questionId": "entry-charge", "operator": "equals", "value": true }
+              ] },
+              "responsibleArea": "Administration",
+              "defaultOwnerRoleId": "office",
+              "source": "refined"
+            },
+            {
+              "id": "resolve-admission-refunds-after-event-change",
+              "type": "task",
+              "title": "Identify everyone who paid and complete the agreed refunds or ticket transfers",
+              "detail": "Reconcile all payment routes against the purchaser list, apply the published policy consistently, tell purchasers what will happen and record refunds, retained fees or transferred income in Event Finances.",
+              "deadlineCode": "CX",
+              "showWhen": { "all": [
+                { "eventField": "lifecycle.status", "operator": "in", "value": ["cancelled", "postponed"] },
+                { "questionId": "entry-charge", "operator": "equals", "value": true }
+              ] },
+              "responsibleArea": "Finance",
+              "defaultOwnerRoleId": "finance",
               "source": "refined"
             },
             {
@@ -1840,6 +1921,312 @@
       ]
     },
     {
+      "id": "entertainment",
+      "title": "Entertainment and event production",
+      "shortTitle": "Entertainment",
+      "description": "Shape the social programme, decide who will deliver it, arrange performers or speakers, and coordinate payment, room and technical requirements.",
+      "activation": {
+        "all": [
+          {
+            "questionId": "entertainment-involved",
+            "operator": "equals",
+            "value": true
+          }
+        ]
+      },
+      "sections": [
+        {
+          "id": "entertainment-brief",
+          "title": "Entertainment concept and programme",
+          "items": [
+            {
+              "id": "entertainment-types",
+              "type": "question",
+              "answerType": "multiChoice",
+              "label": "What entertainment or programmed social activity is being considered?",
+              "options": [
+                { "value": "internal-music", "label": "Background music or a club playlist" },
+                { "value": "dj", "label": "DJ or disco" },
+                { "value": "live-music", "label": "Live singer, musician or band" },
+                { "value": "guest-speaker", "label": "Guest or after-dinner speaker" },
+                { "value": "host", "label": "Host, compère, quizmaster or caller" },
+                { "value": "performance", "label": "Comedian, magician or other performer" },
+                { "value": "games", "label": "Games, quiz or participative activity" },
+                { "value": "other", "label": "Other entertainment" }
+              ],
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "entertainment-outline",
+              "type": "question",
+              "answerType": "text",
+              "label": "What experience are we trying to create, and what should actually happen?",
+              "helpText": "Describe the audience, atmosphere, programme, approximate timings and any important content or restrictions.",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "entertainment-delivery",
+              "type": "question",
+              "answerType": "singleChoice",
+              "label": "Who will provide the entertainment?",
+              "options": [
+                { "value": "internal", "label": "Club staff, members or volunteers" },
+                { "value": "external", "label": "An external entertainer, speaker or supplier" },
+                { "value": "mixed", "label": "A mixture of internal and external people" },
+                { "value": "not-decided", "label": "Not yet decided" }
+              ],
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "entertainment-brief-task",
+              "type": "task",
+              "title": "Agree the entertainment brief, audience, running times and working budget",
+              "detail": "Turn the initial idea into a clear programme that can be quoted, booked, staffed, promoted and delivered.",
+              "deadlineCode": "B4",
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator",
+              "source": "refined"
+            },
+            {
+              "id": "decide-entertainment-delivery-task",
+              "type": "task",
+              "title": "Decide whether the entertainment will be delivered internally or by an external provider",
+              "detail": "Compare the available people, quality, cost, equipment and operational risk before committing to the delivery route.",
+              "deadlineCode": "B3",
+              "showWhen": { "all": [{ "questionId": "entertainment-delivery", "operator": "equals", "value": "not-decided" }] },
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator",
+              "source": "refined"
+            }
+          ]
+        },
+        {
+          "id": "music-and-speakers",
+          "title": "Music, DJs, hosts and speakers",
+          "items": [
+            {
+              "id": "music-arrangement",
+              "type": "question",
+              "answerType": "singleChoice",
+              "label": "How will the music be provided?",
+              "options": [
+                { "value": "club-playlist", "label": "A club-managed playlist using house equipment" },
+                { "value": "external-dj", "label": "An external DJ or disco" },
+                { "value": "live-performer", "label": "A live singer, musician or band" },
+                { "value": "provider-playlist", "label": "Music supplied by another entertainer or organiser" },
+                { "value": "not-decided", "label": "Not yet decided" }
+              ],
+              "showWhen": { "any": [
+                { "questionId": "entertainment-types", "operator": "contains", "value": "internal-music" },
+                { "questionId": "entertainment-types", "operator": "contains", "value": "dj" },
+                { "questionId": "entertainment-types", "operator": "contains", "value": "live-music" }
+              ] },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "internal-music-task",
+              "type": "task",
+              "title": "Prepare, approve and test the event playlist on the clubhouse sound system",
+              "detail": "Confirm who controls the music, the required content and timings, volume limits, playback device, internet dependency and a backup option.",
+              "deadlineCode": "B2",
+              "showWhen": { "all": [{ "questionId": "music-arrangement", "operator": "equals", "value": "club-playlist" }] },
+              "responsibleArea": "Clubhouse",
+              "defaultOwnerRoleId": "clubhouse",
+              "source": "refined"
+            },
+            {
+              "id": "speaker-arrangement",
+              "type": "question",
+              "answerType": "singleChoice",
+              "label": "How will the guest speaker be arranged?",
+              "options": [
+                { "value": "club-speaker", "label": "A club member, officer or staff speaker" },
+                { "value": "invited-unpaid", "label": "An invited external speaker with no fee" },
+                { "value": "paid-external", "label": "A paid external speaker" },
+                { "value": "not-decided", "label": "Not yet decided" }
+              ],
+              "showWhen": { "all": [{ "questionId": "entertainment-types", "operator": "contains", "value": "guest-speaker" }] },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "speaker-brief-task",
+              "type": "task",
+              "title": "Confirm the speaker, subject, duration, introduction and content boundaries",
+              "detail": "Agree the audience, tone, start time, speaking duration, questions, host introduction and any material or accessibility requirements.",
+              "deadlineCode": "B2",
+              "showWhen": { "all": [{ "questionId": "entertainment-types", "operator": "contains", "value": "guest-speaker" }] },
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator",
+              "source": "refined"
+            }
+          ]
+        },
+        {
+          "id": "performer-booking",
+          "title": "External providers, terms and payment",
+          "items": [
+            {
+              "id": "external-entertainment-provider",
+              "type": "question",
+              "answerType": "text",
+              "label": "Which entertainer, speaker or supplier is preferred, and who is the contact?",
+              "showWhen": { "all": [{ "questionId": "entertainment-delivery", "operator": "in", "value": ["external", "mixed"] }] },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "external-entertainment-cost",
+              "type": "question",
+              "answerType": "text",
+              "label": "What will the external entertainment cost, including travel, equipment, accommodation or other expenses?",
+              "showWhen": { "all": [{ "questionId": "entertainment-delivery", "operator": "in", "value": ["external", "mixed"] }] },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "external-entertainment-payment",
+              "type": "question",
+              "answerType": "singleChoice",
+              "label": "How will the external entertainer or speaker be paid?",
+              "options": [
+                { "value": "invoice", "label": "Supplier invoice paid by Accounts" },
+                { "value": "advance", "label": "Card or bank payment in advance" },
+                { "value": "event-day", "label": "Payment on the event day" },
+                { "value": "no-fee", "label": "No fee is payable" },
+                { "value": "not-agreed", "label": "Not yet agreed" }
+              ],
+              "showWhen": { "all": [{ "questionId": "entertainment-delivery", "operator": "in", "value": ["external", "mixed"] }] },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "book-entertainment-task",
+              "type": "task",
+              "title": "Book the external entertainer or speaker and record the complete agreement",
+              "detail": "Confirm the date, performance and setup times, fee, deposit, cancellation terms, technical rider, insurance where relevant, contact details and what each party supplies.",
+              "deadlineCode": "B3",
+              "showWhen": { "all": [{ "questionId": "entertainment-delivery", "operator": "in", "value": ["external", "mixed"] }] },
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator",
+              "source": "refined"
+            },
+            {
+              "id": "pay-entertainment-task",
+              "type": "task",
+              "title": "Authorise the entertainment cost and arrange the agreed deposit or payment",
+              "detail": "Give Accounts the supplier, agreed amount, due date, payment method and evidence needed for the event P&L and final reconciliation.",
+              "deadlineCode": "B2",
+              "showWhen": { "all": [
+                { "questionId": "entertainment-delivery", "operator": "in", "value": ["external", "mixed"] },
+                { "questionId": "external-entertainment-payment", "operator": "notEquals", "value": "no-fee" }
+              ] },
+              "responsibleArea": "Finance",
+              "defaultOwnerRoleId": "finance",
+              "source": "refined"
+            }
+          ]
+        },
+        {
+          "id": "entertainment-production",
+          "title": "Room, technical setup and event-day delivery",
+          "items": [
+            {
+              "id": "entertainment-space-requirements",
+              "type": "question",
+              "answerType": "multiChoice",
+              "label": "What room or performance-space arrangements are required?",
+              "options": [
+                { "value": "stage", "label": "Stage or defined performance area" },
+                { "value": "dance-floor", "label": "Dance floor or furniture cleared" },
+                { "value": "audience-seating", "label": "Audience seating facing the performer or speaker" },
+                { "value": "lectern", "label": "Lectern, top table or presentation position" },
+                { "value": "green-room", "label": "Private preparation or changing space" },
+                { "value": "access", "label": "Supplier vehicle, loading or early access" },
+                { "value": "standard", "label": "No change from the standard room setup" },
+                { "value": "other", "label": "Other arrangement" }
+              ],
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "entertainment-technical-requirements",
+              "type": "question",
+              "answerType": "multiChoice",
+              "label": "What technical equipment or services are required?",
+              "options": [
+                { "value": "house-pa", "label": "House PA or sound system" },
+                { "value": "microphones", "label": "Microphones" },
+                { "value": "external-pa", "label": "Supplier-provided PA" },
+                { "value": "lighting", "label": "Performance or dance-floor lighting" },
+                { "value": "projector", "label": "Projector, screen or presentation laptop" },
+                { "value": "power", "label": "Dedicated power, cables or safe cable routing" },
+                { "value": "internet", "label": "Internet or streaming connection" },
+                { "value": "none", "label": "No special technical requirement" },
+                { "value": "other", "label": "Other equipment" }
+              ],
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "entertainment-event-contact",
+              "type": "question",
+              "answerType": "assignment",
+              "assignmentMode": "person",
+              "label": "Who will be the entertainer or speaker's named club contact on the day?",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "entertainment-running-order-task",
+              "type": "task",
+              "title": "Add the entertainment, introductions, breaks and finish time to the event running order",
+              "detail": "Make the hand-offs between food service, announcements, entertainment and close-down explicit, and brief everyone affected.",
+              "deadlineCode": "B2",
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator",
+              "source": "refined"
+            },
+            {
+              "id": "entertainment-room-plan-task",
+              "type": "task",
+              "title": "Agree and prepare the room layout, performer access and technical setup",
+              "detail": "Translate the entertainment brief and supplier rider into a timed setup plan, including furniture, stage, dance floor, power, cable safety and access.",
+              "deadlineCode": "B1",
+              "responsibleArea": "Clubhouse",
+              "defaultOwnerRoleId": "clubhouse",
+              "source": "refined"
+            },
+            {
+              "id": "entertainment-soundcheck-task",
+              "type": "task",
+              "title": "Complete the soundcheck and technical test before guests need the room",
+              "detail": "Test every microphone, playback source, presentation, light and connection with the person who will use it, and keep a workable fallback.",
+              "deadlineCode": "DT",
+              "showWhen": { "not": { "questionId": "entertainment-technical-requirements", "operator": "contains", "value": "none" } },
+              "responsibleArea": "Clubhouse",
+              "defaultOwnerRoleId": "clubhouse",
+              "source": "refined"
+            },
+            {
+              "id": "entertainment-event-day-task",
+              "type": "task",
+              "title": "Receive the entertainer or speaker and manage the agreed event-day programme",
+              "detail": "Confirm arrival, access, setup, hospitality, introductions, cues, payment hand-off where applicable and the agreed finish time.",
+              "deadlineCode": "DT",
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator",
+              "source": "refined"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "clubhouse",
       "title": "Clubhouse",
       "shortTitle": "Clubhouse",
@@ -2106,50 +2493,6 @@
           "id": "av-signage",
           "title": "1.3 Audio-visual and digital signage setup",
           "items": [
-            {
-              "id": "music-played",
-              "type": "question",
-              "answerType": "yesNo",
-              "label": "Will music be played during the event?",
-              "required": true,
-              "source": "pdf"
-            },
-            {
-              "id": "music-selection-task",
-              "type": "task",
-              "title": "Determine the appropriate music selection and record it in the event plan",
-              "deadlineCode": "B2",
-              "showWhen": {
-                "all": [
-                  {
-                    "questionId": "music-played",
-                    "operator": "equals",
-                    "value": true
-                  }
-                ]
-              },
-              "source": "pdf",
-              "responsibleArea": "Clubhouse",
-              "defaultOwnerRoleId": "clubhouse"
-            },
-            {
-              "id": "play-music-task",
-              "type": "task",
-              "title": "Set up and play the selected music",
-              "deadlineCode": "DT",
-              "showWhen": {
-                "all": [
-                  {
-                    "questionId": "music-played",
-                    "operator": "equals",
-                    "value": true
-                  }
-                ]
-              },
-              "source": "pdf",
-              "responsibleArea": "Clubhouse",
-              "defaultOwnerRoleId": "clubhouse"
-            },
             {
               "id": "screen-channel",
               "type": "question",
@@ -2891,6 +3234,279 @@
               "source": "pdf",
               "responsibleArea": "Finance",
               "defaultOwnerRoleId": "finance"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "admission",
+      "title": "Admission, tickets and event payments",
+      "shortTitle": "Admission",
+      "description": "Agree what people will be charged, how places are sold or reserved, how door payments work and how income is reconciled.",
+      "activation": {
+        "all": [
+          {
+            "questionId": "entry-charge",
+            "operator": "equals",
+            "value": true
+          }
+        ]
+      },
+      "sections": [
+        {
+          "id": "admission-offer",
+          "title": "Price, capacity and ticket offer",
+          "items": [
+            {
+              "id": "admission-price-details",
+              "type": "question",
+              "answerType": "text",
+              "label": "What will each type of attendee be charged, and what is included in that price?",
+              "helpText": "Record member, visitor, adult or child prices where they differ, and be explicit about whether food, entertainment or other benefits are included.",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "admission-capacity",
+              "type": "question",
+              "answerType": "number",
+              "label": "What is the maximum number of paid places available?",
+              "min": 1,
+              "max": 2000,
+              "unit": "places",
+              "required": false,
+              "source": "refined"
+            },
+            {
+              "id": "admission-tickets-required",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will tickets, named bookings or another proof of purchase be required?",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "ticket-sales-methods",
+              "type": "question",
+              "answerType": "multiChoice",
+              "label": "How will tickets or paid places be sold and recorded?",
+              "options": [
+                { "value": "club-office", "label": "Club office or reception" },
+                { "value": "professional-shop", "label": "Professional Shop" },
+                { "value": "bar", "label": "Clubhouse bar" },
+                { "value": "member-system", "label": "Member system or club website" },
+                { "value": "external-platform", "label": "External ticketing or payment platform" },
+                { "value": "organiser-list", "label": "Organiser-managed list" },
+                { "value": "door-only", "label": "At the door only" },
+                { "value": "other", "label": "Other method" }
+              ],
+              "showWhen": { "all": [{ "questionId": "admission-tickets-required", "operator": "equals", "value": true }] },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "ticket-sales-open-date",
+              "type": "question",
+              "answerType": "date",
+              "label": "When should ticket sales or paid bookings open?",
+              "showWhen": { "all": [{ "questionId": "admission-tickets-required", "operator": "equals", "value": true }] },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "ticket-sales-close-date",
+              "type": "question",
+              "answerType": "date",
+              "label": "When should advance ticket sales or paid bookings close?",
+              "showWhen": { "all": [{ "questionId": "admission-tickets-required", "operator": "equals", "value": true }] },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "complimentary-admission",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will anyone receive complimentary or discounted admission?",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "complimentary-admission-details",
+              "type": "question",
+              "answerType": "text",
+              "label": "Who qualifies, who may approve it, and how will it be recorded?",
+              "showWhen": { "all": [{ "questionId": "complimentary-admission", "operator": "equals", "value": true }] },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "approve-admission-offer-task",
+              "type": "task",
+              "title": "Approve the admission prices, capacity, inclusions and sales dates",
+              "detail": "Check the proposed income against the event budget and likely attendance before any price or ticket arrangement is advertised.",
+              "deadlineCode": "B4",
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator",
+              "source": "refined"
+            },
+            {
+              "id": "configure-ticket-sales-task",
+              "type": "task",
+              "title": "Set up and test the agreed ticket or paid-booking route",
+              "detail": "Create the agreed ticket or booking record, apply capacity and sales dates, test the purchase route and give the working link or instructions to Communications.",
+              "deadlineCode": "B3",
+              "showWhen": { "all": [{ "questionId": "admission-tickets-required", "operator": "equals", "value": true }] },
+              "responsibleArea": "Administration",
+              "defaultOwnerRoleId": "office",
+              "source": "refined"
+            }
+          ]
+        },
+        {
+          "id": "admission-publicity",
+          "title": "Price and booking communications",
+          "items": [
+            {
+              "id": "admission-publicity-channels",
+              "type": "question",
+              "answerType": "multiChoice",
+              "label": "Where must the admission price and purchase or booking instructions appear?",
+              "options": [
+                { "value": "posters", "label": "Printed and digital posters" },
+                { "value": "member-email", "label": "Member email" },
+                { "value": "member-diary", "label": "Member diary" },
+                { "value": "clubhouse-screens", "label": "Clubhouse screens" },
+                { "value": "web-social", "label": "Website or social channels" },
+                { "value": "booking-confirmation", "label": "Booking or ticket confirmation" },
+                { "value": "other", "label": "Other communication" }
+              ],
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "admission-refund-policy",
+              "type": "question",
+              "answerType": "singleChoice",
+              "label": "What cancellation or refund position should purchasers be told?",
+              "options": [
+                { "value": "full-refund", "label": "Full refund if the club cancels" },
+                { "value": "transfer-or-refund", "label": "Transfer to a new date or refund" },
+                { "value": "case-by-case", "label": "Handled case by case" },
+                { "value": "non-refundable", "label": "Tickets are normally non-refundable" },
+                { "value": "not-agreed", "label": "Not yet agreed" }
+              ],
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "publish-admission-details-task",
+              "type": "task",
+              "title": "Put the approved admission price, inclusions and purchase instructions into every selected communication",
+              "detail": "Use one approved statement across posters, clubhouse screens, member email, diary and booking confirmations so members see the same price and conditions everywhere.",
+              "deadlineCode": "B3",
+              "responsibleArea": "Communications",
+              "defaultOwnerRoleId": "communications",
+              "source": "refined"
+            },
+            {
+              "id": "confirm-admission-terms-task",
+              "type": "task",
+              "title": "Agree and publish the ticket cancellation, transfer and refund terms",
+              "detail": "Resolve the policy before taking money and make the purchaser-facing wording clear enough to use if the event changes.",
+              "deadlineCode": "B3",
+              "showWhen": { "all": [{ "questionId": "admission-refund-policy", "operator": "equals", "value": "not-agreed" }] },
+              "responsibleArea": "Finance",
+              "defaultOwnerRoleId": "finance",
+              "source": "refined"
+            }
+          ]
+        },
+        {
+          "id": "admission-payment",
+          "title": "Taking payment and admitting guests",
+          "items": [
+            {
+              "id": "admission-payment-timing",
+              "type": "question",
+              "answerType": "multiChoice",
+              "label": "When can attendees pay the admission charge?",
+              "options": [
+                { "value": "advance", "label": "In advance" },
+                { "value": "door", "label": "At the door" },
+                { "value": "account", "label": "Charged to a member or customer account" }
+              ],
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "admission-payment-methods",
+              "type": "question",
+              "answerType": "multiChoice",
+              "label": "Which payment methods will be accepted?",
+              "options": [
+                { "value": "card", "label": "Card" },
+                { "value": "cash", "label": "Cash" },
+                { "value": "bank", "label": "Bank transfer" },
+                { "value": "online", "label": "Online or ticketing-platform payment" },
+                { "value": "member-account", "label": "Member or customer account" },
+                { "value": "other", "label": "Other method" }
+              ],
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "door-admission-process",
+              "type": "question",
+              "answerType": "text",
+              "label": "How will door sales, ticket checks, the guest list and walk-ins be handled?",
+              "showWhen": { "all": [{ "questionId": "admission-payment-timing", "operator": "contains", "value": "door" }] },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "admission-cash-float",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Is a cash float or secure cash handover required for door payments?",
+              "showWhen": { "all": [
+                { "questionId": "admission-payment-timing", "operator": "contains", "value": "door" },
+                { "questionId": "admission-payment-methods", "operator": "contains", "value": "cash" }
+              ] },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "prepare-admission-desk-task",
+              "type": "task",
+              "title": "Prepare the admission desk, ticket or guest list checks and facilities for taking door payments",
+              "detail": "Assign named people, provide the final attendee list, define how walk-ins and complimentary places are approved, and test any card terminal before doors open.",
+              "deadlineCode": "B1",
+              "showWhen": { "all": [{ "questionId": "admission-payment-timing", "operator": "contains", "value": "door" }] },
+              "responsibleArea": "Administration",
+              "defaultOwnerRoleId": "office",
+              "source": "refined"
+            },
+            {
+              "id": "prepare-admission-float-task",
+              "type": "task",
+              "title": "Prepare, record and securely hand over the admission cash float",
+              "detail": "Record the opening float, who receives it, how cash is kept secure and who counts and returns it after admissions close.",
+              "deadlineCode": "B1",
+              "showWhen": { "all": [{ "questionId": "admission-cash-float", "operator": "equals", "value": true }] },
+              "responsibleArea": "Finance",
+              "defaultOwnerRoleId": "finance",
+              "source": "refined"
+            },
+            {
+              "id": "reconcile-admission-income-task",
+              "type": "task",
+              "title": "Reconcile tickets, door takings, refunds and complimentary entries against attendance",
+              "detail": "Record the final ticket income in Event Finances, explain differences between tickets and attendance, and provide cash, card and online totals to Accounts.",
+              "deadlineCode": "A1",
+              "responsibleArea": "Finance",
+              "defaultOwnerRoleId": "finance",
+              "source": "refined"
             }
           ]
         }
