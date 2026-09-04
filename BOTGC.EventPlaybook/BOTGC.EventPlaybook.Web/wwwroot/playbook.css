@@ -252,6 +252,20 @@
   line-height: 1.35 !important;
 }
 
+.integration-diagnostics-link {
+  display: inline-block !important;
+  margin-top: 4px !important;
+  color: #0d5570 !important;
+  font-size: .62rem !important;
+  font-weight: 800 !important;
+  text-decoration: underline !important;
+  text-underline-offset: 2px !important;
+}
+
+.integration-diagnostics-link:hover {
+  color: #083a4b !important;
+}
+
 .yodeck-playlist-summary {
   display: grid !important;
   gap: 4px !important;

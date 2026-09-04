@@ -36,6 +36,7 @@ public static class ApiExceptionResponse
             {
                 ["stage"] = mutation.Stage,
                 ["intelligentGolfEventId"] = mutation.IntelligentGolfEventId,
+                ["intelligentGolfRecordId"] = mutation.IntelligentGolfRecordId,
                 ["retryable"] = true
             };
 

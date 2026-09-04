@@ -410,6 +410,8 @@ app.MapGet("/api/integrations/intelligent-golf/events/{eventId}", async (
         eventSynchronisedAtUtc = link?.EventSynchronisedAtUtc,
         diaryPublishedAtUtc = link?.DiaryPublishedAtUtc,
         lastError = link?.LastError,
+        lastErrorStage = link?.LastErrorStage,
+        lastErrorStatusCode = link?.LastErrorStatusCode,
         updatedAtUtc = link?.UpdatedAtUtc
     });
 });
@@ -957,10 +959,26 @@ app.MapPut("/api/poster/member-diary", async (
             eventDate = request.EventDate
         });
     }
+    catch (IntelligentGolfApiRequestException exception)
+    {
+        return Results.Problem(
+            title: "Intelligent Golf publishing failed",
+            detail: exception.Message,
+            statusCode: StatusCodes.Status502BadGateway,
+            extensions: new Dictionary<string, object?>
+            {
+                ["stage"] = exception.Stage,
+                ["intelligentGolfEventId"] = exception.IntelligentGolfEventId,
+                ["intelligentGolfRecordId"] = exception.IntelligentGolfRecordId,
+                ["upstreamStatusCode"] = exception.StatusCode,
+                ["retryable"] = exception.Retryable
+            });
+    }
     catch (InvalidOperationException exception)
     {
         return Results.Problem(
-            exception.Message,
+            title: "Member diary publishing failed",
+            detail: exception.Message,
             statusCode: StatusCodes.Status502BadGateway);
     }
 });

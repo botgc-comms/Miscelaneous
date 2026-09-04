@@ -22,7 +22,17 @@ public interface IIntelligentGolfIntegrationLinkStore
         int diaryEntryId,
         DateTimeOffset publishedAtUtc,
         CancellationToken cancellationToken);
-    Task RecordFailureAsync(string eventId, string message, CancellationToken cancellationToken);
+    Task SaveAllocatedDiaryAsync(
+        string eventId,
+        int intelligentGolfEventId,
+        int diaryEntryId,
+        CancellationToken cancellationToken);
+    Task RecordFailureAsync(
+        string eventId,
+        string message,
+        string? stage,
+        int? statusCode,
+        CancellationToken cancellationToken);
 }
 
 public sealed class IntelligentGolfIntegrationLinkStore : IIntelligentGolfIntegrationLinkStore
@@ -77,6 +87,8 @@ public sealed class IntelligentGolfIntegrationLinkStore : IIntelligentGolfIntegr
             link.LastEventFingerprint = fingerprint;
             link.EventSynchronisedAtUtc = synchronisedAtUtc;
             link.LastError = null;
+            link.LastErrorStage = null;
+            link.LastErrorStatusCode = null;
         }, cancellationToken);
 
     public Task SaveDiaryAsync(
@@ -91,10 +103,33 @@ public sealed class IntelligentGolfIntegrationLinkStore : IIntelligentGolfIntegr
             link.IntelligentGolfDiaryEntryId = diaryEntryId;
             link.DiaryPublishedAtUtc = publishedAtUtc;
             link.LastError = null;
+            link.LastErrorStage = null;
+            link.LastErrorStatusCode = null;
         }, cancellationToken);
 
-    public Task RecordFailureAsync(string eventId, string message, CancellationToken cancellationToken) =>
-        UpdateAsync(eventId, link => link.LastError = message.Trim(), cancellationToken);
+    public Task SaveAllocatedDiaryAsync(
+        string eventId,
+        int intelligentGolfEventId,
+        int diaryEntryId,
+        CancellationToken cancellationToken) =>
+        UpdateAsync(eventId, link =>
+        {
+            link.IntelligentGolfEventId = intelligentGolfEventId;
+            link.IntelligentGolfDiaryEntryId = diaryEntryId;
+        }, cancellationToken);
+
+    public Task RecordFailureAsync(
+        string eventId,
+        string message,
+        string? stage,
+        int? statusCode,
+        CancellationToken cancellationToken) =>
+        UpdateAsync(eventId, link =>
+        {
+            link.LastError = message.Trim();
+            link.LastErrorStage = string.IsNullOrWhiteSpace(stage) ? null : stage.Trim();
+            link.LastErrorStatusCode = statusCode;
+        }, cancellationToken);
 
     private async Task UpdateAsync(
         string eventId,
@@ -153,6 +188,8 @@ public sealed class IntelligentGolfIntegrationLinkStore : IIntelligentGolfIntegr
         EventSynchronisedAtUtc = link.EventSynchronisedAtUtc,
         DiaryPublishedAtUtc = link.DiaryPublishedAtUtc,
         LastError = link.LastError,
+        LastErrorStage = link.LastErrorStage,
+        LastErrorStatusCode = link.LastErrorStatusCode,
         UpdatedAtUtc = link.UpdatedAtUtc
     };
 

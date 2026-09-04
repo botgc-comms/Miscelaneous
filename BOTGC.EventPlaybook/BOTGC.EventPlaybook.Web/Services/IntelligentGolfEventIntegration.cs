@@ -119,7 +119,13 @@ public sealed class IntelligentGolfEventIntegration(
                     apiException.IntelligentGolfEventId.Value,
                     cancellationToken);
             }
-            await linkStore.RecordFailureAsync(eventSnapshot.EventId, exception.Message, cancellationToken);
+            var requestException = exception as IntelligentGolfApiRequestException;
+            await linkStore.RecordFailureAsync(
+                eventSnapshot.EventId,
+                exception.Message,
+                requestException?.Stage,
+                requestException?.StatusCode,
+                cancellationToken);
             var failedLink = await linkStore.GetAsync(eventSnapshot.EventId, cancellationToken);
             await RecordActivitySafelyAsync(new IntegrationActivityWrite
             {
@@ -127,11 +133,12 @@ public sealed class IntelligentGolfEventIntegration(
                 Outcome = "failed",
                 EventPlaybookEventId = eventSnapshot.EventId,
                 EventName = eventSnapshot.Name,
-                ExternalEventId = exception is IntelligentGolfApiRequestException requestException
+                ExternalEventId = requestException is not null
                     ? requestException.IntelligentGolfEventId ?? failedLink?.IntelligentGolfEventId
                     : failedLink?.IntelligentGolfEventId,
-                Stage = (exception as IntelligentGolfApiRequestException)?.Stage ?? "planner-synchronisation",
-                StatusCode = (exception as IntelligentGolfApiRequestException)?.StatusCode,
+                ExternalRecordId = requestException?.IntelligentGolfRecordId,
+                Stage = requestException?.Stage ?? "planner-synchronisation",
+                StatusCode = requestException?.StatusCode,
                 Message = exception.Message
             }, cancellationToken);
             throw;
@@ -206,7 +213,21 @@ public sealed class IntelligentGolfEventIntegration(
         }
         catch (Exception exception) when (exception is not OperationCanceledException)
         {
-            await linkStore.RecordFailureAsync(request.EventId, exception.Message, cancellationToken);
+            var requestException = exception as IntelligentGolfApiRequestException;
+            if (requestException?.IntelligentGolfRecordId is > 0)
+            {
+                await linkStore.SaveAllocatedDiaryAsync(
+                    request.EventId,
+                    requestException.IntelligentGolfEventId ?? eventResult.IntelligentGolfEventId,
+                    requestException.IntelligentGolfRecordId.Value,
+                    cancellationToken);
+            }
+            await linkStore.RecordFailureAsync(
+                request.EventId,
+                exception.Message,
+                requestException?.Stage,
+                requestException?.StatusCode,
+                cancellationToken);
             var failedLink = await linkStore.GetAsync(request.EventId, cancellationToken);
             await RecordActivitySafelyAsync(new IntegrationActivityWrite
             {
@@ -215,9 +236,9 @@ public sealed class IntelligentGolfEventIntegration(
                 EventPlaybookEventId = request.EventId,
                 EventName = request.EventName,
                 ExternalEventId = eventResult.IntelligentGolfEventId,
-                ExternalRecordId = failedLink?.IntelligentGolfDiaryEntryId,
-                Stage = (exception as IntelligentGolfApiRequestException)?.Stage ?? "member-diary-publish",
-                StatusCode = (exception as IntelligentGolfApiRequestException)?.StatusCode,
+                ExternalRecordId = requestException?.IntelligentGolfRecordId ?? failedLink?.IntelligentGolfDiaryEntryId,
+                Stage = requestException?.Stage ?? "member-diary-publish",
+                StatusCode = requestException?.StatusCode,
                 Message = exception.Message
             }, cancellationToken);
             throw;
@@ -266,7 +287,9 @@ public sealed class IntelligentGolfEventIntegration(
             problem?.Message ?? $"The Intelligent Golf event request failed ({statusCode}).",
             statusCode,
             problem?.Stage,
-            problem?.IntelligentGolfEventId);
+            problem?.IntelligentGolfEventId,
+            problem?.IntelligentGolfRecordId,
+            problem?.Retryable ?? true);
     }
 
     private static IntelligentGolfApiProblem? ExtractProblem(string raw)
@@ -280,6 +303,8 @@ public sealed class IntelligentGolfEventIntegration(
             var error = ReadString(root, "error");
             var stage = ReadString(root, "stage");
             var eventId = ReadInt(root, "intelligentGolfEventId");
+            var recordId = ReadInt(root, "intelligentGolfRecordId");
+            var retryable = ReadBool(root, "retryable");
             var message = detail;
             if (string.IsNullOrWhiteSpace(message)) message = error;
             if (string.IsNullOrWhiteSpace(message)) message = title;
@@ -289,7 +314,7 @@ public sealed class IntelligentGolfEventIntegration(
 
             return string.IsNullOrWhiteSpace(message)
                 ? null
-                : new IntelligentGolfApiProblem(message.Trim(), stage, eventId);
+                : new IntelligentGolfApiProblem(message.Trim(), stage, eventId, recordId, retryable);
         }
         catch (JsonException)
         {
@@ -309,6 +334,16 @@ public sealed class IntelligentGolfEventIntegration(
         if (value.ValueKind == JsonValueKind.Number && value.TryGetInt32(out var number)) return number;
         return value.ValueKind == JsonValueKind.String && int.TryParse(value.GetString(), out number)
             ? number
+            : null;
+    }
+
+    private static bool? ReadBool(JsonElement root, string name)
+    {
+        if (!root.TryGetProperty(name, out var value)) return null;
+        if (value.ValueKind == JsonValueKind.True) return true;
+        if (value.ValueKind == JsonValueKind.False) return false;
+        return value.ValueKind == JsonValueKind.String && bool.TryParse(value.GetString(), out var result)
+            ? result
             : null;
     }
 
@@ -370,16 +405,22 @@ public sealed class IntelligentGolfEventIntegration(
     private sealed record IntelligentGolfApiProblem(
         string Message,
         string? Stage,
-        int? IntelligentGolfEventId);
+        int? IntelligentGolfEventId,
+        int? IntelligentGolfRecordId,
+        bool? Retryable);
+}
 
-    private sealed class IntelligentGolfApiRequestException(
-        string message,
-        int statusCode,
-        string? stage,
-        int? intelligentGolfEventId) : InvalidOperationException(message)
-    {
-        public int StatusCode { get; } = statusCode;
-        public string? Stage { get; } = stage;
-        public int? IntelligentGolfEventId { get; } = intelligentGolfEventId;
-    }
+public sealed class IntelligentGolfApiRequestException(
+    string message,
+    int statusCode,
+    string? stage,
+    int? intelligentGolfEventId,
+    int? intelligentGolfRecordId,
+    bool retryable) : InvalidOperationException(message)
+{
+    public int StatusCode { get; } = statusCode;
+    public string? Stage { get; } = stage;
+    public int? IntelligentGolfEventId { get; } = intelligentGolfEventId;
+    public int? IntelligentGolfRecordId { get; } = intelligentGolfRecordId;
+    public bool Retryable { get; } = retryable;
 }

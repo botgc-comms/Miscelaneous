@@ -23,6 +23,8 @@ public sealed class IntelligentGolfIntegrationLink
     public DateTimeOffset? EventSynchronisedAtUtc { get; set; }
     public DateTimeOffset? DiaryPublishedAtUtc { get; set; }
     public string? LastError { get; set; }
+    public string? LastErrorStage { get; set; }
+    public int? LastErrorStatusCode { get; set; }
     public DateTimeOffset UpdatedAtUtc { get; set; }
 }
 

@@ -2304,11 +2304,23 @@ async function readApiResponse(response) {
     }
 
     if (!response.ok) {
-        const error = new Error(body.detail ?? body.error ?? 'The image service returned an error.');
+        const error = new Error(body.detail ?? body.error ?? body.title ?? 'The service returned an error.');
+        error.title = typeof body.title === 'string' ? body.title : null;
         error.retryable = body.retryable === true;
         error.safetyRefusal = body.safetyRefusal === true;
         error.requestId = typeof body.requestId === 'string' ? body.requestId : null;
         error.code = typeof body.code === 'string' ? body.code : null;
+        error.stage = typeof body.stage === 'string' ? body.stage : null;
+        error.intelligentGolfEventId = Number(body.intelligentGolfEventId) > 0
+            ? Number(body.intelligentGolfEventId)
+            : null;
+        error.intelligentGolfRecordId = Number(body.intelligentGolfRecordId) > 0
+            ? Number(body.intelligentGolfRecordId)
+            : null;
+        error.upstreamStatusCode = Number(body.upstreamStatusCode) > 0
+            ? Number(body.upstreamStatusCode)
+            : null;
+        error.traceId = typeof body.traceId === 'string' ? body.traceId : null;
         error.httpStatus = response.status;
         throw error;
     }
@@ -2980,6 +2992,36 @@ function captureMemberDiaryDialog(session) {
     session.form.diaryBookingUrl = elements.diaryBookingUrl.value.trim();
 }
 
+function memberDiaryStageLabel(stage) {
+    const labels = {
+        'planner-allocation': 'creating the Intelligent Golf planner entry',
+        'planner-allocation-response': 'reading the new planner entry ID',
+        'planner-page-preparation': 'opening the linked planner entry',
+        'planner-details-update': 'updating the planner details',
+        'planner-details-verification': 'checking the saved planner details',
+        'member-diary-discovery': 'checking for an existing member diary entry',
+        'member-diary-allocation': 'creating the member diary entry',
+        'member-diary-allocation-response': 'reading the new member diary entry ID',
+        'member-diary-update': 'saving the member diary HTML'
+    };
+    return labels[stage] ?? null;
+}
+
+function formatMemberDiaryFailure(error) {
+    const message = error instanceof Error
+        ? error.message
+        : 'The event could not be added to the member diary.';
+    const stage = memberDiaryStageLabel(error?.stage);
+    const identifiers = [];
+    if (error?.intelligentGolfEventId) identifiers.push(`planner entry ${error.intelligentGolfEventId}`);
+    if (error?.intelligentGolfRecordId) identifiers.push(`diary entry ${error.intelligentGolfRecordId}`);
+    const context = [stage ? `failed while ${stage}` : null, identifiers.length ? identifiers.join(', ') : null]
+        .filter(Boolean)
+        .join(' · ');
+    const reference = error?.traceId ? ` Reference: ${error.traceId}.` : '';
+    return `${context ? `${message} (${context})` : message}${reference}`;
+}
+
 async function openMemberDiaryDialog() {
     const session = activeSession;
     if (!session || !elements.diaryDialog) return;
@@ -3038,8 +3080,10 @@ async function refreshMemberDiaryIntegrationStatus(session) {
             const record = status.plannerEntryId
                 ? `Planner entry ${status.plannerEntryId} has been allocated, but its details are not yet synchronised.`
                 : 'The planner entry has not been synchronised.';
+            const failedStage = memberDiaryStageLabel(status.lastErrorStage);
+            const stage = failedStage ? ` The last attempt failed while ${failedStage}.` : '';
             elements.diaryConnectionStatus.className = 'yodeck-connection-status unavailable';
-            elements.diaryConnectionStatus.innerHTML = `<span></span><div><strong>Intelligent Golf needs attention</strong><small>${escapeHtml(record)} Publishing will retry the same entry. ${escapeHtml(status.lastError)}</small></div>`;
+            elements.diaryConnectionStatus.innerHTML = `<span></span><div><strong>Intelligent Golf needs attention</strong><small>${escapeHtml(record)} Publishing will retry the same entry.${escapeHtml(stage)} ${escapeHtml(status.lastError)}</small><a class="integration-diagnostics-link" href="/?view=plugins">View integration activity</a></div>`;
             return;
         }
 
@@ -3179,7 +3223,7 @@ async function addToMemberDiary() {
         await persistSession(session);
         elements.diaryDialog.close();
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'The event could not be added to the member diary.';
+        const message = formatMemberDiaryFailure(error);
         elements.shareMessage.textContent = message;
         elements.diaryDialogMessage.textContent = message;
         elements.diaryDialogMessage.className = 'poster-publish-dialog-message error';

@@ -12,10 +12,12 @@ public sealed class IntelligentGolfMutationException(
     string stage,
     string message,
     int? intelligentGolfEventId = null,
+    int? intelligentGolfRecordId = null,
     string? responseDetail = null,
     Exception? innerException = null) : Exception(message, innerException)
 {
     public string Stage { get; } = stage;
     public int? IntelligentGolfEventId { get; } = intelligentGolfEventId;
+    public int? IntelligentGolfRecordId { get; } = intelligentGolfRecordId;
     public string? ResponseDetail { get; } = responseDetail;
 }
