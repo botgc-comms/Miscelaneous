@@ -109,6 +109,7 @@ builder.Services.AddHttpClient(IntelligentGolfApiSessionClient.HttpClientName, c
 builder.Services.AddSingleton<IIntelligentGolfApiSessionClient, IntelligentGolfApiSessionClient>();
 builder.Services.AddSingleton<IIntelligentGolfMemberCommunicationsClient, IntelligentGolfMemberCommunicationsClient>();
 builder.Services.AddSingleton<IIntelligentGolfIntegrationLinkStore, IntelligentGolfIntegrationLinkStore>();
+builder.Services.AddSingleton<IIntegrationActivityStore, IntegrationActivityStore>();
 builder.Services.AddSingleton<IIntelligentGolfEventIntegration, IntelligentGolfEventIntegration>();
 builder.Services.AddSingleton<PlaybookEventChangePipeline>();
 builder.Services.AddSingleton<IPlaybookEventChangePublisher>(services => services.GetRequiredService<PlaybookEventChangePipeline>());
@@ -142,7 +143,7 @@ builder.Services
 var app = builder.Build();
 
 app.Logger.LogInformation(
-    "Poster Studio configured. API key: {ApiKeyStatus}; image model: {ImageModel}; image quality: {ImageQuality}; prompt model: {PromptModel}; Yodeck: {YodeckStatus}; demo access: {DemoAccessStatus}; administrator access: {AdminAccessStatus}",
+    "Communications Centre configured. API key: {ApiKeyStatus}; image model: {ImageModel}; image quality: {ImageQuality}; prompt model: {PromptModel}; Yodeck: {YodeckStatus}; demo access: {DemoAccessStatus}; administrator access: {AdminAccessStatus}",
     string.IsNullOrWhiteSpace(openAiApiKey) ? "not configured - mock mode" : "OPENAI_API_KEY",
     effectiveImageModel,
     effectiveImageQuality,
@@ -968,6 +969,14 @@ app.MapGet("/api/admin/plugins", async (
     CancellationToken cancellationToken) =>
 {
     return Results.Ok(await pluginSettingsStore.GetOverviewAsync(cancellationToken));
+});
+
+app.MapGet("/api/admin/integration-activity", async (
+    int? limit,
+    IIntegrationActivityStore activityStore,
+    CancellationToken cancellationToken) =>
+{
+    return Results.Ok(await activityStore.GetRecentAsync(limit ?? 100, cancellationToken));
 });
 
 app.MapPut("/api/admin/branding", async (

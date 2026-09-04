@@ -27,7 +27,9 @@ public sealed class IntelligentGolfEventIntegration(
     IIntelligentGolfApiSessionClient sessionClient,
     IPluginSettingsStore pluginSettingsStore,
     IIntelligentGolfIntegrationLinkStore linkStore,
-    IOptions<EventPlaybookApiOptions> options) : IIntelligentGolfEventIntegration
+    IIntegrationActivityStore activityStore,
+    IOptions<EventPlaybookApiOptions> options,
+    ILogger<IntelligentGolfEventIntegration> logger) : IIntelligentGolfEventIntegration
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
     private readonly ConcurrentDictionary<string, SemaphoreSlim> _eventLocks = new(StringComparer.OrdinalIgnoreCase);
@@ -91,6 +93,18 @@ public sealed class IntelligentGolfEventIntegration(
                 fingerprint,
                 result.SynchronisedAtUtc,
                 cancellationToken);
+            await RecordActivitySafelyAsync(new IntegrationActivityWrite
+            {
+                Operation = "Synchronise planner event",
+                Outcome = "succeeded",
+                EventPlaybookEventId = eventSnapshot.EventId,
+                EventName = eventSnapshot.Name,
+                ExternalEventId = result.IntelligentGolfEventId,
+                Stage = result.Allocated ? "planner-allocation-and-update" : "planner-details-update",
+                Message = result.Allocated
+                    ? $"Created Intelligent Golf planner entry {result.IntelligentGolfEventId} and synchronised its event details."
+                    : $"Updated Intelligent Golf planner entry {result.IntelligentGolfEventId}."
+            }, cancellationToken);
             return result;
         }
         catch (Exception exception) when (exception is not OperationCanceledException)
@@ -106,6 +120,20 @@ public sealed class IntelligentGolfEventIntegration(
                     cancellationToken);
             }
             await linkStore.RecordFailureAsync(eventSnapshot.EventId, exception.Message, cancellationToken);
+            var failedLink = await linkStore.GetAsync(eventSnapshot.EventId, cancellationToken);
+            await RecordActivitySafelyAsync(new IntegrationActivityWrite
+            {
+                Operation = "Synchronise planner event",
+                Outcome = "failed",
+                EventPlaybookEventId = eventSnapshot.EventId,
+                EventName = eventSnapshot.Name,
+                ExternalEventId = exception is IntelligentGolfApiRequestException requestException
+                    ? requestException.IntelligentGolfEventId ?? failedLink?.IntelligentGolfEventId
+                    : failedLink?.IntelligentGolfEventId,
+                Stage = (exception as IntelligentGolfApiRequestException)?.Stage ?? "planner-synchronisation",
+                StatusCode = (exception as IntelligentGolfApiRequestException)?.StatusCode,
+                Message = exception.Message
+            }, cancellationToken);
             throw;
         }
         finally
@@ -135,31 +163,65 @@ public sealed class IntelligentGolfEventIntegration(
         // This deliberately provisions the IG event when an older Playbook event
         // has no external link yet, then immediately uses that link for the diary.
         var eventResult = await SynchroniseEventAsync(snapshot, true, cancellationToken);
-        var link = await linkStore.GetAsync(request.EventId, cancellationToken);
-        using var message = CreateRequest(HttpMethod.Put, "api/event-planner/member-diary");
-        message.Content = JsonContent.Create(new
+        try
         {
-            eventPlaybookEventId = request.EventId.Trim(),
-            intelligentGolfEventId = eventResult.IntelligentGolfEventId,
-            intelligentGolfDiaryEntryId = link?.IntelligentGolfDiaryEntryId,
-            headline = string.IsNullOrWhiteSpace(request.Title) ? request.EventName.Trim() : request.Title.Trim(),
-            diaryDate = request.EventDate.Trim(),
-            startTime = EmptyAsNull(request.StartTime),
-            endTime = EmptyAsNull(request.EndTime),
-            venue = string.IsNullOrWhiteSpace(request.Venue) ? "Clubhouse" : request.Venue.Trim(),
-            bodyHtml = request.Description.Trim(),
-            tagIds = new[] { 1, 2, 3, 4 }
-        });
-        using var response = await SendAsync(message, cancellationToken);
-        var result = await response.Content.ReadFromJsonAsync<IntelligentGolfDiaryPublishResult>(JsonOptions, cancellationToken)
-            ?? throw new InvalidOperationException("The Event Playbook API did not return the member diary entry ID.");
-        await linkStore.SaveDiaryAsync(
-            request.EventId,
-            result.IntelligentGolfEventId,
-            result.IntelligentGolfDiaryEntryId,
-            result.PublishedAtUtc,
-            cancellationToken);
-        return result;
+            var link = await linkStore.GetAsync(request.EventId, cancellationToken);
+            using var message = CreateRequest(HttpMethod.Put, "api/event-planner/member-diary");
+            message.Content = JsonContent.Create(new
+            {
+                eventPlaybookEventId = request.EventId.Trim(),
+                intelligentGolfEventId = eventResult.IntelligentGolfEventId,
+                intelligentGolfDiaryEntryId = link?.IntelligentGolfDiaryEntryId,
+                headline = string.IsNullOrWhiteSpace(request.Title) ? request.EventName.Trim() : request.Title.Trim(),
+                diaryDate = request.EventDate.Trim(),
+                startTime = EmptyAsNull(request.StartTime),
+                endTime = EmptyAsNull(request.EndTime),
+                venue = string.IsNullOrWhiteSpace(request.Venue) ? "Clubhouse" : request.Venue.Trim(),
+                bodyHtml = request.Description.Trim(),
+                tagIds = new[] { 1, 2, 3, 4 }
+            });
+            using var response = await SendAsync(message, cancellationToken);
+            var result = await response.Content.ReadFromJsonAsync<IntelligentGolfDiaryPublishResult>(JsonOptions, cancellationToken)
+                ?? throw new InvalidOperationException("The Event Playbook API did not return the member diary entry ID.");
+            await linkStore.SaveDiaryAsync(
+                request.EventId,
+                result.IntelligentGolfEventId,
+                result.IntelligentGolfDiaryEntryId,
+                result.PublishedAtUtc,
+                cancellationToken);
+            await RecordActivitySafelyAsync(new IntegrationActivityWrite
+            {
+                Operation = "Publish member diary",
+                Outcome = "succeeded",
+                EventPlaybookEventId = request.EventId,
+                EventName = request.EventName,
+                ExternalEventId = result.IntelligentGolfEventId,
+                ExternalRecordId = result.IntelligentGolfDiaryEntryId,
+                Stage = result.Created ? "member-diary-create-and-update" : "member-diary-update",
+                Message = result.Created
+                    ? $"Created and updated member diary entry {result.IntelligentGolfDiaryEntryId}."
+                    : $"Updated member diary entry {result.IntelligentGolfDiaryEntryId}."
+            }, cancellationToken);
+            return result;
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            await linkStore.RecordFailureAsync(request.EventId, exception.Message, cancellationToken);
+            var failedLink = await linkStore.GetAsync(request.EventId, cancellationToken);
+            await RecordActivitySafelyAsync(new IntegrationActivityWrite
+            {
+                Operation = "Publish member diary",
+                Outcome = "failed",
+                EventPlaybookEventId = request.EventId,
+                EventName = request.EventName,
+                ExternalEventId = eventResult.IntelligentGolfEventId,
+                ExternalRecordId = failedLink?.IntelligentGolfDiaryEntryId,
+                Stage = (exception as IntelligentGolfApiRequestException)?.Stage ?? "member-diary-publish",
+                StatusCode = (exception as IntelligentGolfApiRequestException)?.StatusCode,
+                Message = exception.Message
+            }, cancellationToken);
+            throw;
+        }
     }
 
     private async Task EnsureAvailableAsync(CancellationToken cancellationToken)
@@ -279,6 +341,20 @@ public sealed class IntelligentGolfEventIntegration(
 
     private static string? EmptyAsNull(string? value) =>
         string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+
+    private async Task RecordActivitySafelyAsync(
+        IntegrationActivityWrite activity,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await activityStore.RecordAsync(activity, cancellationToken);
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            logger.LogWarning(exception, "Could not persist the {Operation} integration activity entry.", activity.Operation);
+        }
+    }
 
     private static void ValidateSnapshot(PlaybookEventIntegrationSnapshot snapshot)
     {

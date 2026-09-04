@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "2.5",
+  "schemaVersion": "2.6",
   "id": "botgc-event-playbook",
   "title": "Event Playbook",
   "description": "A data-driven event planning guide that turns answers into dated, assignable tasks, operational advisories and reusable event knowledge.",
@@ -128,11 +128,12 @@
               "id": "entertainment-involved",
               "type": "question",
               "answerType": "yesNo",
-              "label": "Will the event include music, a DJ, live entertainment, a guest speaker or another programmed social activity?",
+              "label": "Does entertainment need to be organised for this event?",
+              "helpText": "This includes a club playlist, a DJ, live performers, a guest speaker, a host or any other programmed social activity.",
               "allowDontKnow": true,
               "dontKnowTask": {
                 "id": "decide-entertainment-involvement",
-                "title": "Decide whether the event will include entertainment, music or a guest speaker",
+                "title": "Decide whether entertainment needs to be organised",
                 "detail": "Agree the intended atmosphere and programme with the organiser, then return to this question and replace Don't know with Yes or No.",
                 "deadlineCode": "B4",
                 "responsibleArea": "Event Coordination",
@@ -164,8 +165,8 @@
               "id": "entry-charge",
               "type": "question",
               "answerType": "yesNo",
-              "label": "Will attendees be charged specifically for entry to the event?",
-              "helpText": "This is separate from ordinary bar purchases, optional food purchases or routine golf fees.",
+              "label": "Will attendees be charged for entry to the event?",
+              "helpText": "This opens the planning for prices, tickets or paid places, advance and door payments, Professional Shop sales and reconciliation. It is separate from ordinary bar purchases, optional food purchases or routine golf fees.",
               "allowDontKnow": true,
               "dontKnowTask": {
                 "id": "decide-entry-charge",
@@ -183,11 +184,12 @@
               "id": "communications-involved",
               "type": "question",
               "answerType": "yesNo",
-              "label": "Will the event need member or visitor communications, advertising or booking information?",
+              "label": "Will the event need to be advertised or communicated to members, visitors or attendees?",
+              "helpText": "Choose Yes to decide whether to use the clubhouse screens, member email, social media or the Member Diary, and to create the corresponding Communications Centre work.",
               "allowDontKnow": true,
               "dontKnowTask": {
                 "id": "decide-communications-involvement",
-                "title": "Decide whether member or visitor communications, advertising or booking information will be needed",
+                "title": "Decide whether the event needs advertising or attendee communications",
                 "detail": "Consult the event organiser and Communications team, then return to this question and replace Don't know with Yes or No.",
                 "deadlineCode": "B3",
                 "responsibleArea": "Communications",
@@ -1003,7 +1005,7 @@
               "type": "question",
               "answerType": "yesNo",
               "label": "Are any additional golf fees or payments due on the day?",
-              "helpText": "For example entry fees, sweep payments, visitor green fees or other event-specific charges.",
+              "helpText": "For example golf-competition entry fees, sweep payments or visitor green fees. This is separate from any charge for admission to the event.",
               "required": true,
               "source": "refined"
             },
@@ -1868,14 +1870,15 @@
               "id": "speaker-required",
               "type": "question",
               "answerType": "yesNo",
-              "label": "Does someone need to welcome guests, make announcements or present prizes?",
+              "label": "Does someone need to host the presentation, welcome guests or announce prizes?",
+              "helpText": "This is about presentation duties. A guest or after-dinner speaker is planned separately in Entertainment.",
               "required": true,
               "source": "refined"
             },
             {
               "id": "speaker-task",
               "type": "task",
-              "title": "Assign the presenter and prepare the running order, winners and key announcements",
+              "title": "Assign the presentation host and prepare the running order, winners and key announcements",
               "deadlineCode": "B1",
               "showWhen": {
                 "all": [
@@ -2498,7 +2501,7 @@
               "type": "question",
               "answerType": "yesNo",
               "label": "Will a specific channel, such as a sports event, need to be displayed on the screens?",
-              "helpText": "The original playbook notes that this will not normally be required.",
+              "helpText": "This is about operational viewing during the event. Promotional use of the clubhouse screens is chosen in Communications.",
               "required": true,
               "source": "pdf"
             },
@@ -2519,33 +2522,6 @@
               "source": "pdf",
               "responsibleArea": "Clubhouse",
               "defaultOwnerRoleId": "clubhouse"
-            },
-            {
-              "id": "digital-signage",
-              "type": "question",
-              "answerType": "yesNo",
-              "label": "Will digital signage screens display specific images or information?",
-              "helpText": "The original playbook notes that some events will not normally require digital signage screens.",
-              "required": true,
-              "source": "pdf"
-            },
-            {
-              "id": "digital-signage-task",
-              "type": "task",
-              "title": "Prepare artwork and set it up on YoDeck to activate on the event date",
-              "deadlineCode": "B1",
-              "showWhen": {
-                "all": [
-                  {
-                    "questionId": "digital-signage",
-                    "operator": "equals",
-                    "value": true
-                  }
-                ]
-              },
-              "source": "pdf",
-              "responsibleArea": "Communications",
-              "defaultOwnerRoleId": "communications"
             }
           ]
         }
@@ -2938,14 +2914,15 @@
               "id": "digital-menu",
               "type": "question",
               "answerType": "yesNo",
-              "label": "Are menus to be advertised digitally?",
+              "label": "Will a separate digital menu be displayed inside the clubhouse during food service?",
+              "helpText": "This is an operational food-service display, not the decision about promoting the event on the clubhouse screens.",
               "required": true,
               "source": "pdf"
             },
             {
               "id": "digital-menu-task",
               "type": "task",
-              "title": "Design the digital menu and set it up to display at the correct time",
+              "title": "Design the food-service digital menu and set it up on the agreed clubhouse display",
               "deadlineCode": "B2",
               "showWhen": {
                 "all": [
@@ -3179,6 +3156,7 @@
               "type": "question",
               "answerType": "yesNo",
               "label": "Will there be a charge for the meal?",
+              "helpText": "This is the food charge within the voucher process. If food is included in a paid admission price, record that inclusion in Admission as well.",
               "showWhen": {
                 "all": [
                   {
@@ -3365,25 +3343,8 @@
         },
         {
           "id": "admission-publicity",
-          "title": "Price and booking communications",
+          "title": "Admission terms for communications",
           "items": [
-            {
-              "id": "admission-publicity-channels",
-              "type": "question",
-              "answerType": "multiChoice",
-              "label": "Where must the admission price and purchase or booking instructions appear?",
-              "options": [
-                { "value": "posters", "label": "Printed and digital posters" },
-                { "value": "member-email", "label": "Member email" },
-                { "value": "member-diary", "label": "Member diary" },
-                { "value": "clubhouse-screens", "label": "Clubhouse screens" },
-                { "value": "web-social", "label": "Website or social channels" },
-                { "value": "booking-confirmation", "label": "Booking or ticket confirmation" },
-                { "value": "other", "label": "Other communication" }
-              ],
-              "required": true,
-              "source": "refined"
-            },
             {
               "id": "admission-refund-policy",
               "type": "question",
@@ -3402,11 +3363,13 @@
             {
               "id": "publish-admission-details-task",
               "type": "task",
-              "title": "Put the approved admission price, inclusions and purchase instructions into every selected communication",
-              "detail": "Use one approved statement across posters, clubhouse screens, member email, diary and booking confirmations so members see the same price and conditions everywhere.",
+              "title": "Provide the approved admission price, inclusions and purchase instructions for event communications",
+              "detail": "Create one approved statement for the Communications Centre and booking confirmations so every selected channel uses the same price and conditions. Communication channels are chosen in the Communications module.",
               "deadlineCode": "B3",
               "responsibleArea": "Communications",
               "defaultOwnerRoleId": "communications",
+              "actionView": "artwork",
+              "actionLabel": "Open Communications Centre",
               "source": "refined"
             },
             {
@@ -3514,9 +3477,9 @@
     },
     {
       "id": "communications",
-      "title": "Communications and bookings",
-      "shortTitle": "Comms",
-      "description": "Promotion, entry information, booking deadlines and participant instructions.",
+      "title": "Communications",
+      "shortTitle": "Communications",
+      "description": "Choose the channels for the event, create the corresponding Communications Centre work, and plan any final attendee information.",
       "activation": {
         "all": [
           {
@@ -3529,7 +3492,7 @@
       "sections": [
         {
           "id": "communications-plan",
-          "title": "Promotion and participant information",
+          "title": "Audience and communication channels",
           "items": [
             {
               "id": "audience",
@@ -3562,20 +3525,151 @@
               "source": "expanded"
             },
             {
+              "id": "digital-signage",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Should the event be promoted on the clubhouse digital screens?",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "digital-signage-task",
+              "type": "task",
+              "title": "Prepare and schedule the clubhouse-screen campaign in the Communications Centre",
+              "detail": "Create or approve the digital-screen artwork, choose its display dates and send it to the clubhouse screens.",
+              "deadlineCode": "B3",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "digital-signage",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Communications",
+              "defaultOwnerRoleId": "communications",
+              "actionView": "artwork",
+              "actionLabel": "Open Communications Centre"
+            },
+            {
+              "id": "member-email-required",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Should members be emailed about the event?",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "member-email-task",
+              "type": "task",
+              "title": "Prepare, test and send the member email from the Communications Centre",
+              "detail": "Generate or draft the email, review its event details and artwork, select the intended membership audience, send a test and then send the approved message.",
+              "deadlineCode": "B3",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "member-email-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Communications",
+              "defaultOwnerRoleId": "communications",
+              "actionView": "artwork",
+              "actionLabel": "Open Communications Centre"
+            },
+            {
+              "id": "social-media-required",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Should the event be promoted on social media?",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "social-media-task",
+              "type": "task",
+              "title": "Prepare the social-media campaign and approved square artwork in the Communications Centre",
+              "detail": "Use the approved campaign style and square artwork to prepare the social copy and agree when and where it will be published.",
+              "deadlineCode": "B3",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "social-media-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Communications",
+              "defaultOwnerRoleId": "communications",
+              "actionView": "artwork",
+              "actionLabel": "Open Communications Centre"
+            },
+            {
+              "id": "member-diary-required",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Should the event be published in the Member Diary?",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "member-diary-task",
+              "type": "task",
+              "title": "Prepare and publish the Member Diary entry from the Communications Centre",
+              "detail": "Generate or draft the member-facing diary entry, review the date, times, artwork and HTML content, and publish the approved entry.",
+              "deadlineCode": "B3",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "member-diary-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Communications",
+              "defaultOwnerRoleId": "communications",
+              "actionView": "artwork",
+              "actionLabel": "Open Communications Centre"
+            },
+            {
               "id": "booking-required",
               "type": "question",
               "answerType": "yesNo",
-              "label": "Do attendees need to book, enter, buy a ticket or confirm attendance?",
+              "label": "If entry is free, do attendees still need to register, reserve a place or confirm attendance?",
+              "helpText": "Paid tickets and payment routes are planned in Admission. Use this question only for a free RSVP, registration or capacity-controlled event.",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "entry-charge",
+                    "operator": "equals",
+                    "value": false
+                  }
+                ]
+              },
               "required": true,
-              "source": "expanded"
+              "source": "refined"
             },
             {
               "id": "booking-details-task",
               "type": "task",
-              "title": "Confirm the booking method, capacity, price and closing date",
+              "title": "Confirm the free registration or RSVP method, capacity and closing date",
               "deadlineCode": "B3",
               "showWhen": {
                 "all": [
+                  {
+                    "questionId": "entry-charge",
+                    "operator": "equals",
+                    "value": false
+                  },
                   {
                     "questionId": "booking-required",
                     "operator": "equals",
@@ -3583,33 +3677,7 @@
                   }
                 ]
               },
-              "source": "expanded",
-              "responsibleArea": "Communications",
-              "defaultOwnerRoleId": "communications"
-            },
-            {
-              "id": "promotion-required",
-              "type": "question",
-              "answerType": "yesNo",
-              "label": "Should the event be promoted through club channels?",
-              "required": true,
-              "source": "expanded"
-            },
-            {
-              "id": "promotion-task",
-              "type": "task",
-              "title": "Prepare and schedule the event announcement across the agreed club channels",
-              "deadlineCode": "B3",
-              "showWhen": {
-                "all": [
-                  {
-                    "questionId": "promotion-required",
-                    "operator": "equals",
-                    "value": true
-                  }
-                ]
-              },
-              "source": "expanded",
+              "source": "refined",
               "responsibleArea": "Communications",
               "defaultOwnerRoleId": "communications"
             },
@@ -3636,8 +3704,8 @@
                 ]
               },
               "source": "expanded",
-              "responsibleArea": "Finance",
-              "defaultOwnerRoleId": "finance"
+              "responsibleArea": "Communications",
+              "defaultOwnerRoleId": "communications"
             }
           ]
         }

@@ -781,6 +781,8 @@ button{cursor:pointer}
 .task-fields label,.retro-field,.admin-form label{display:grid!important;min-width:0;gap:4px!important}
 .task-fields label>span,.retro-field>span,.admin-form label>span{color:#52666b!important;font-size:.54rem!important;font-weight:900!important;letter-spacing:.06em;text-transform:uppercase}
 .task-operational-row{display:flex!important;flex-wrap:wrap!important;align-items:center!important;gap:6px!important;margin-top:10px!important;padding-top:9px!important;border-top:1px solid var(--border-soft)!important}
+.task-workspace-action{min-height:30px!important;padding:5px 10px!important;font-size:.58rem!important;white-space:nowrap!important}
+.task-inline-meta .task-workspace-action{align-self:center!important}
 .text-button.inline{min-height:25px!important;padding:4px 7px!important;border:0!important;border-radius:6px!important;color:var(--blue)!important;background:transparent!important;font-size:.58rem!important;font-weight:850!important}
 
 /* CATALOGUE / ADMIN / RETRO */
@@ -804,7 +806,7 @@ button{cursor:pointer}
 .advisory-icon{display:grid!important;width:28px!important;height:28px!important;place-items:center!important;border-radius:50%!important;color:#fff!important;background:#9a7838!important;font-weight:900!important}
 .advisory-body p{margin:4px 0 8px!important;color:#6e6042!important;font-size:.63rem!important}
 
-/* POSTER STUDIO IS A VIEW IN THIS APP */
+/* THE COMMUNICATIONS CENTRE IS A VIEW IN THIS APP */
 .main-content.poster-studio{margin-top:22px!important}
 .poster-studio .workflow-strip{width:100%!important;margin:0 0 15px!important;padding:12px 15px!important;border:1px solid var(--border)!important;border-radius:11px!important;background:#fff!important;box-shadow:var(--shadow)!important}
 .poster-studio .content-grid{display:grid!important;width:100%!important;grid-template-columns:minmax(480px,.85fr) minmax(560px,1.15fr)!important;gap:16px!important;align-items:start!important}
@@ -863,7 +865,7 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(198,161,91,.22)!i
 }
 
 
-/* Final shell guard: this app has ONE layout, never the old Poster Studio grid shell. */
+/* Final shell guard: this app has ONE layout, never the old Communications Centre grid shell. */
 .app-shell{display:block!important;grid-template-columns:none!important;}
 .sidebar{top:0!important;left:0!important;bottom:0!important;margin:0!important;}
 .playbook-page.page{display:block!important;float:none!important;}
@@ -3836,7 +3838,7 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(198,161,91,.22)!i
 .dashboard-task-actions details { min-width: 0; }
 .dashboard-task-actions summary { color: #617673; cursor: pointer; font-size: .56rem; font-weight: 850; }
 .dashboard-task-actions p { max-width: 760px; margin: 7px 0 2px; color: #627473; font-size: .62rem; line-height: 1.5; }
-.dashboard-task-actions > button { flex: 0 0 auto; }
+.dashboard-task-action-buttons { display: flex; flex: 0 0 auto; align-items: center; gap: 8px; }
 .dashboard-setup-empty .button { margin-top: 14px; }
 
 @media (max-width: 900px) {
@@ -3856,6 +3858,7 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(198,161,91,.22)!i
   .dashboard-task-event-row > span { text-align: left; }
   .dashboard-deadline { min-width: 0; margin-top: 9px; padding: 9px 0 0; border-top: 1px solid #d7c28f; border-left: 0; }
   .dashboard-task-actions { align-items: flex-start; flex-direction: column; }
+  .dashboard-task-action-buttons { flex-wrap: wrap; }
 }
 
 /* Event task board — focused timeframe tabs */
@@ -4491,6 +4494,26 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(198,161,91,.22)!i
 .plugin-card-loading { min-height: 220px; flex-direction: row; align-items: center; gap: 14px; padding: 22px; }
 .plugin-card-loading h3 { margin: 0 0 4px; color: var(--navy); font-family: Georgia,"Times New Roman",serif; }
 .plugin-card-loading p { margin: 0; color: var(--muted); font-size: .65rem; }
+
+.integration-activity-panel { margin-top: 18px; overflow: hidden; border: 1px solid var(--border); border-radius: 15px; background: #fff; box-shadow: var(--shadow); }
+.integration-activity-panel>header { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 18px 20px; border-top: 4px solid var(--blue); border-bottom: 1px solid var(--border); background: linear-gradient(180deg,#fbfcfc,#f5f8f7); }
+.integration-activity-panel>header h3 { margin: 3px 0 4px; color: var(--navy); font: 700 1.2rem/1.1 Georgia,"Times New Roman",serif; }
+.integration-activity-panel>header p { margin: 0; color: var(--muted); font-size: .65rem; line-height: 1.45; }
+.integration-activity-list { display: grid; }
+.integration-activity-row { display: grid; grid-template-columns: 34px minmax(0,1fr); gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--border); }
+.integration-activity-row:last-child { border-bottom: 0; }
+.integration-activity-row.failed { background: #fffafa; }
+.integration-activity-result { display: grid; width: 30px; height: 30px; place-items: center; border-radius: 50%; color: #fff; background: var(--green); font: 900 .78rem/1 ui-sans-serif,system-ui,sans-serif; }
+.integration-activity-row.failed .integration-activity-result { background: #a63c32; }
+.integration-activity-copy { min-width: 0; }
+.integration-activity-copy>div { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+.integration-activity-copy strong { color: var(--navy); font-size: .72rem; }
+.integration-activity-copy time { flex: 0 0 auto; color: var(--muted); font-size: .57rem; }
+.integration-activity-copy p { margin: 5px 0; color: #334f58; font-size: .67rem; line-height: 1.45; }
+.integration-activity-copy small { display: block; color: var(--muted); font-size: .57rem; line-height: 1.4; }
+.integration-activity-empty { padding: 28px 20px; text-align: center; }
+.integration-activity-empty strong { color: var(--navy); font-family: Georgia,"Times New Roman",serif; }
+.integration-activity-empty p { margin: 5px 0 0; color: var(--muted); font-size: .65rem; }
 .plugin-load-error { display: flex; align-items: center; gap: 14px; padding: 15px 17px; border: 1px solid #e1c4bf; border-radius: 11px; background: #fff7f5; box-shadow: var(--shadow); }
 .plugin-load-error span { flex: 1 1 auto; color: #72534e; font-size: .65rem; }
 
@@ -4539,6 +4562,9 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(198,161,91,.22)!i
   .plugin-dialog .modal-actions .button { width: 100%; }
   .plugin-card-actions { align-items: flex-start; flex-direction: column; }
   .plugin-card-header { flex-wrap: wrap; }
+  .integration-activity-panel>header,
+  .integration-activity-copy>div { align-items: flex-start; flex-direction: column; }
+  .integration-activity-row { padding-inline: 14px; }
   .plugin-module-switch { margin-left: 61px; }
   .sidebar-footer { grid-template-columns: 1fr; }
 }

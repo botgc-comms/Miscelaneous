@@ -103,7 +103,34 @@ public sealed class SynchronisePlannerEventHandler(
                     new ExternalEventLink(externalId.Value),
                     LinkLifetime,
                     cancellationToken);
+                logger.LogInformation(
+                    "Allocated Intelligent Golf planner entry {IntelligentGolfEventId} for Event Playbook event {EventPlaybookEventId}.",
+                    externalId.Value,
+                    request.EventPlaybookEventId);
             }
+        }
+
+        // Match Intelligent Golf's own browser workflow. Opening the allocated event
+        // page establishes the server-side page context used by the subsequent AJAX
+        // update; posting immediately after allocation can leave a blank event behind.
+        try
+        {
+            await transport.GetResponseAsync(
+                $"/event.php?eventid={externalId.Value}",
+                cancellationToken);
+        }
+        catch (IntelligentGolfAuthenticationException)
+        {
+            throw;
+        }
+        catch (Exception exception) when (exception is HttpRequestException or TimeoutException)
+        {
+            throw new IntelligentGolfMutationException(
+                "planner-page-preparation",
+                $"Intelligent Golf planner entry {externalId.Value} exists, but its edit page could not be prepared for updating.",
+                externalId,
+                exception.Message,
+                exception);
         }
 
         var fields = new List<KeyValuePair<string, string>>
@@ -148,6 +175,10 @@ public sealed class SynchronisePlannerEventHandler(
         var rejection = IntelligentGolfMutationResponseInspector.FindRejection(updateResponse.Body);
         if (!string.IsNullOrWhiteSpace(rejection))
         {
+            logger.LogWarning(
+                "Intelligent Golf rejected the planner details update for event {IntelligentGolfEventId}: {Rejection}",
+                externalId.Value,
+                rejection);
             throw new IntelligentGolfMutationException(
                 "planner-details-update",
                 $"Intelligent Golf planner entry {externalId.Value} exists, but Intelligent Golf rejected its event details.",
@@ -184,6 +215,10 @@ public sealed class SynchronisePlannerEventHandler(
             var detail = string.IsNullOrWhiteSpace(responseSummary)
                 ? "The update endpoint returned an empty response, and the event name was absent when the planner entry was read back."
                 : $"The update endpoint replied: {responseSummary} The event name was absent when the planner entry was read back.";
+            logger.LogWarning(
+                "Could not verify the planner details update for Intelligent Golf event {IntelligentGolfEventId}. {Detail}",
+                externalId.Value,
+                detail);
             throw new IntelligentGolfMutationException(
                 "planner-details-verification",
                 $"Intelligent Golf planner entry {externalId.Value} was created, but its saved details could not be verified.",
@@ -342,6 +377,10 @@ public sealed class PublishPlannerDiaryHandler(
                 }
 
                 await cache.SetAsync(cacheKey, new ExternalDiaryLink(diaryId.Value), LinkLifetime, cancellationToken);
+                logger.LogInformation(
+                    "Resolved Intelligent Golf diary entry {DiaryEntryId} for event {IntelligentGolfEventId}.",
+                    diaryId.Value,
+                    request.IntelligentGolfEventId);
             }
         }
 
@@ -388,6 +427,10 @@ public sealed class PublishPlannerDiaryHandler(
         var diaryRejection = IntelligentGolfMutationResponseInspector.FindRejection(diaryUpdateResponse.Body);
         if (!string.IsNullOrWhiteSpace(diaryRejection))
         {
+            logger.LogWarning(
+                "Intelligent Golf rejected the HTML update for diary entry {DiaryEntryId}: {Rejection}",
+                diaryId.Value,
+                diaryRejection);
             throw new IntelligentGolfMutationException(
                 "member-diary-update",
                 $"Intelligent Golf diary entry {diaryId.Value} exists, but Intelligent Golf rejected its HTML update.",

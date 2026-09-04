@@ -305,7 +305,7 @@ public sealed class OpenAiImageService(
             System.Net.HttpStatusCode.Unauthorized or System.Net.HttpStatusCode.Forbidden =>
                 "The image service rejected the server credentials or model access. Ask an administrator to check the OpenAI configuration.",
             _ when isSafetyRefusal =>
-                "The image service declined this prompt after safety review. Poster Studio kept the event brief and any completed artwork.",
+                "The image service declined this prompt after safety review. The Communications Centre kept the event brief and any completed artwork.",
             _ when (int)statusCode >= 500 =>
                 "The image service is temporarily unavailable. The completed artwork has been kept and the missing format can be retried.",
             _ when !string.IsNullOrWhiteSpace(providerMessage) =>

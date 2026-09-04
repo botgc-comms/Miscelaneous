@@ -121,7 +121,7 @@ function openStudioDatabase() {
             }
         };
         request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error ?? new Error('Unable to open Poster Studio storage.'));
+        request.onerror = () => reject(request.error ?? new Error('Unable to open Communications Centre storage.'));
     });
 
     return studioDatabasePromise;
@@ -135,7 +135,7 @@ async function readStoredSession(key) {
         const transaction = database.transaction(STUDIO_SESSION_STORE, 'readonly');
         const request = transaction.objectStore(STUDIO_SESSION_STORE).get(key);
         request.onsuccess = () => resolve(request.result ?? null);
-        request.onerror = () => reject(request.error ?? new Error('Unable to read the saved Poster Studio session.'));
+        request.onerror = () => reject(request.error ?? new Error('Unable to read the saved Communications Centre session.'));
     });
 }
 
@@ -147,8 +147,8 @@ async function writeStoredSession(record) {
         const transaction = database.transaction(STUDIO_SESSION_STORE, 'readwrite');
         transaction.objectStore(STUDIO_SESSION_STORE).put(record);
         transaction.oncomplete = () => resolve();
-        transaction.onerror = () => reject(transaction.error ?? new Error('Unable to save the Poster Studio session.'));
-        transaction.onabort = () => reject(transaction.error ?? new Error('Saving the Poster Studio session was interrupted.'));
+        transaction.onerror = () => reject(transaction.error ?? new Error('Unable to save the Communications Centre session.'));
+        transaction.onabort = () => reject(transaction.error ?? new Error('Saving the Communications Centre session was interrupted.'));
     });
 }
 
@@ -156,7 +156,7 @@ async function readServerSession(key) {
     const response = await fetch(`/api/poster/session?key=${encodeURIComponent(key)}`, { cache: 'no-store' });
     if (response.status === 404) return null;
     if (!response.ok) {
-        throw new Error(`Poster Studio shared session load failed (${response.status}).`);
+        throw new Error(`Communications Centre shared session load failed (${response.status}).`);
     }
     return response.json();
 }
@@ -169,7 +169,7 @@ async function writeServerSession(key, record) {
     });
     const document = await response.json();
     if (!response.ok) {
-        throw new Error(document?.error ?? `Poster Studio shared session save failed (${response.status}).`);
+        throw new Error(document?.error ?? `Communications Centre shared session save failed (${response.status}).`);
     }
     return document;
 }
@@ -636,13 +636,13 @@ async function hydrateSession(session) {
             session.serverRevision = Number(serverDocument.revision) || 0;
         }
     } catch (error) {
-        console.warn('Unable to restore the shared Poster Studio session. Trying the browser cache.', error);
+        console.warn('Unable to restore the shared Communications Centre session. Trying the browser cache.', error);
     }
 
     try {
         browserStored = await readStoredSession(session.key);
     } catch (error) {
-        console.warn('Unable to restore the browser-cached Poster Studio session.', error);
+        console.warn('Unable to restore the browser-cached Communications Centre session.', error);
     }
 
     const stored = chooseNewestStoredSession(serverStored, browserStored);
@@ -687,12 +687,12 @@ async function persistSession(session) {
             try {
                 await writeStoredSession(browserRecord);
             } catch (error) {
-                console.warn('Unable to update the browser-cached Poster Studio session.', error);
+                console.warn('Unable to update the browser-cached Communications Centre session.', error);
             }
             const document = await writeServerSession(session.key, serverRecord);
             session.serverRevision = Number(document.revision) || session.serverRevision;
         })
-        .catch(error => console.warn('Unable to save the shared Poster Studio session.', error));
+        .catch(error => console.warn('Unable to save the shared Communications Centre session.', error));
 
     return session.persistenceChain;
 }
@@ -2277,7 +2277,7 @@ async function postPosterRequest(url, payload, sessionSignal) {
             throw createGenerationError('AbortError', 'Generation cancelled. Your saved settings and previous artwork are unchanged.');
         }
         if (error instanceof TypeError) {
-            throw new Error('Poster Studio could not reach the image service. Check that the application server is running, then try again.');
+            throw new Error('The Communications Centre could not reach the image service. Check that the application server is running, then try again.');
         }
         throw error;
     } finally {

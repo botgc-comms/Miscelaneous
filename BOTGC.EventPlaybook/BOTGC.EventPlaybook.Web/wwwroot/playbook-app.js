@@ -107,6 +107,8 @@
   let pluginSettingsCache = null;
   let pluginSettingsRequest = null;
   let pluginSettingsNotice = '';
+  let integrationActivityCache = null;
+  let integrationActivityRequest = null;
   const DEFAULT_CLUB_BRANDING = Object.freeze({
     clubName: 'Burton-on-Trent Golf Club',
     crestUrl: '/assets/botgc-mark.svg',
@@ -573,25 +575,43 @@
   }
 
   async function loadInitialPlaybook() {
-    const storedTemplate = localStorage.getItem(STORAGE_TEMPLATE);
-    if (storedTemplate) {
+    let storedTemplate = null;
+    const storedTemplateJson = localStorage.getItem(STORAGE_TEMPLATE);
+    if (storedTemplateJson) {
       try {
-        return JSON.parse(storedTemplate);
+        storedTemplate = JSON.parse(storedTemplateJson);
       } catch {
         localStorage.removeItem(STORAGE_TEMPLATE);
+        storedTemplate = null;
       }
     }
 
+    let bundledPlaybook;
     if (window.EMBEDDED_PLAYBOOK) {
-      return structuredClone(window.EMBEDDED_PLAYBOOK);
+      bundledPlaybook = structuredClone(window.EMBEDDED_PLAYBOOK);
+    } else {
+      try {
+        const response = await fetch('./event-playbook.json', { cache: 'no-store' });
+        if (!response.ok) {
+          throw new Error(`Unable to load event-playbook.json (${response.status}).`);
+        }
+        bundledPlaybook = await response.json();
+      } catch (error) {
+        if (storedTemplate) return storedTemplate;
+        throw error;
+      }
     }
 
-    const response = await fetch('./event-playbook.json');
-    if (!response.ok) {
-      throw new Error(`Unable to load event-playbook.json (${response.status}).`);
+    if (storedTemplate) {
+      const storedVersion = Number.parseFloat(storedTemplate.schemaVersion);
+      const bundledVersion = Number.parseFloat(bundledPlaybook.schemaVersion);
+      if (Number.isFinite(storedVersion) && Number.isFinite(bundledVersion) && storedVersion >= bundledVersion) {
+        return storedTemplate;
+      }
+      localStorage.removeItem(STORAGE_TEMPLATE);
     }
 
-    return response.json();
+    return bundledPlaybook;
   }
 
   function buildDontKnowTask(question) {
@@ -1925,7 +1945,7 @@
       : state.activeView === 'tasks' ? 'Task Board'
       : state.activeView === 'finances' ? 'Event Finances'
       : state.activeView === 'catalogue' ? 'Event Catalogue'
-      : state.activeView === 'artwork' ? 'Event Poster Studio'
+      : state.activeView === 'artwork' ? 'Communications Centre'
       : state.activeView === 'directory' ? 'People & Roles'
       : state.activeView === 'references' ? 'Image Library'
       : state.activeView === 'admin' ? 'Playbook Administration'
@@ -1938,7 +1958,7 @@
       : state.activeView === 'catalogue' ? 'Review previous events, clone successful plans and reuse the knowledge captured from earlier events.'
       : state.activeView === 'artwork' ? 'Explore three quick campaign concepts, choose the strongest idea, then produce matching high-resolution artwork for screens, member communications and print.'
       : state.activeView === 'directory' ? 'Maintain the people, shared mailboxes, responsibilities and platform access used throughout every event.'
-      : state.activeView === 'references' ? `Maintain reusable images of the clubhouse, course, trophies and interiors so Poster Studio artwork can look recognisably like ${clubBranding.clubName}.`
+      : state.activeView === 'references' ? `Maintain reusable images of the clubhouse, course, trophies and interiors so Communications Centre artwork can look recognisably like ${clubBranding.clubName}.`
       : state.activeView === 'admin' ? 'Configure the questions, tasks, ownership rules and advisories that make up the club event planning process.'
       : state.activeView === 'plugins' ? 'Securely configure the external services that connect the Event Playbook to the rest of the club’s systems.'
       : state.activeView === 'retrospective' ? 'Release the member feedback form, review what went well, what did not, and turn the evidence into guidance for next time.'
@@ -1967,7 +1987,7 @@
             <button class="${isPlanningView ? 'active' : ''}" data-view="module:start" ${event ? '' : 'disabled'}><span class="nav-icon">◇</span>Event Planner</button>
             <button class="${state.activeView === 'tasks' ? 'active' : ''}" data-view="tasks" ${event ? '' : 'disabled'}><span class="nav-icon">✓</span>Task Board</button>
             <button class="${state.activeView === 'finances' ? 'active' : ''}" data-view="finances" ${event ? '' : 'disabled'}><span class="nav-icon">£</span>Event Finances</button>
-            <button class="${state.activeView === 'artwork' ? 'active' : ''}" data-view="artwork" ${event ? '' : 'disabled'}><span class="nav-icon">✦</span>Digital Artwork</button>
+            <button class="${state.activeView === 'artwork' ? 'active' : ''}" data-view="artwork" ${event ? '' : 'disabled'}><span class="nav-icon">✦</span>Communications Centre</button>
             <button class="${state.activeView === 'retrospective' ? 'active' : ''}" data-view="retrospective" ${event ? '' : 'disabled'}><span class="nav-icon">↺</span>Retrospectives</button>
           </nav>
 
@@ -2095,10 +2115,13 @@
     `;
 
     bindEvents();
-    if (state.activeView === 'plugins') ensurePluginSettingsLoaded();
+    if (state.activeView === 'plugins') {
+      ensurePluginSettingsLoaded();
+      ensureIntegrationActivityLoaded();
+    }
     if (state.activeView === 'retrospective' && event) ensureFeedbackLoaded(event.id);
     if (state.activeView === 'artwork' && event) {
-      import('./poster-app.js?v=20260903-intelligent-golf-diary-1')
+      import('./poster-app.js?v=20260904-communications-centre-1')
         .then(module => module.mountPosterStudio({
           eventId: event.id,
           eventName: event.name,
@@ -2148,7 +2171,7 @@
             saveState();
           }
         }))
-        .catch(error => console.error('Unable to initialise Poster Studio', error));
+        .catch(error => console.error('Unable to initialise Communications Centre', error));
     }
   }
 
@@ -2231,7 +2254,7 @@
             <div>
               <p class="section-kicker">Image library</p>
               <h2>Build a visual memory of the club</h2>
-              <p class="panel-copy">Upload real images of the clubhouse, interiors, trophies, course and other distinctive club details. Describe what each image shows and the Poster Studio will use that information to choose the most relevant images automatically.</p>
+              <p class="panel-copy">Upload real images of the clubhouse, interiors, trophies, course and other distinctive club details. Describe what each image shows and the Communications Centre will use that information to choose the most relevant images automatically.</p>
             </div>
             <div class="reference-library-stats">
               <div><strong>${references.length}</strong><small>Total references</small></div>
@@ -2277,7 +2300,7 @@
               <div>
                 <p class="section-kicker">Library contents</p>
                 <h2>Available images</h2>
-                <p class="panel-copy">Poster Studio can select these images automatically and pass the best matches to the image generator together with the organiser brief.</p>
+                <p class="panel-copy">The Communications Centre can select these images automatically and pass the best matches to the image generator together with the organiser brief.</p>
               </div>
             </div>
             ${references.length === 0 ? '<div class="reference-library-empty">No images have been added yet.</div>' : `<div class="reference-library-grid">${references.map(renderReferenceCard).join('')}</div>`}
@@ -2370,7 +2393,7 @@
       <section class="empty-catalogue-state">
         <span class="eyebrow">No active event</span>
         <h2>Create an event to begin planning</h2>
-        <p>The catalogue is the starting point for the Event Playbook. Create a new event here, then move into the planner, task board and Digital Artwork when you are ready.</p>
+        <p>The catalogue is the starting point for the Event Playbook. Create a new event here, then move into the planner, task board and Communications Centre when you are ready.</p>
         <button class="button button-primary" data-action="new-event">Create new event</button>
       </section>`;
   }
@@ -2505,7 +2528,7 @@
           <article class="share-action-card">
             <span class="share-action-icon">▤</span>
             <div><h3>Print</h3><p>Print the approved campaign as an A3, A4 or A5 portrait poster.</p></div>
-            <button id="sharePrintButton" class="button button-secondary" type="button">Print</button>
+            <button id="sharePrintButton" class="button button-gold" type="button">Print</button>
           </article>
           <article id="shareDiaryCard" class="share-action-card">
             <span class="share-action-icon">◫</span>
@@ -3161,6 +3184,11 @@
     }
   }
 
+  function renderTaskWorkspaceAction(item, event) {
+    if (!item.actionView || !item.actionLabel) return '';
+    return `<button type="button" class="button button-secondary task-workspace-action" data-task-workspace-view="${escapeHtml(item.actionView)}" data-task-workspace-event-id="${escapeHtml(event?.id ?? '')}">${escapeHtml(item.actionLabel)}</button>`;
+  }
+
   function renderInlineTask(item, event) {
     const taskState = event.taskState[item.id] ?? {};
     const dueDate = getDueDate(item.deadlineCode, event);
@@ -3191,6 +3219,7 @@
           </div>
           <div class="task-inline-meta">
             ${item.responsibleArea ? `<span class="area-chip">${escapeHtml(item.responsibleArea)}</span>` : ''}
+            ${renderTaskWorkspaceAction(item, event)}
             <div class="assignee-compact">
               <span>Owner</span>
               ${renderAssignmentPicker({ value: taskAssignmentReference(taskState) ?? taskState.assignee, fallback: taskState.assignee, eligibleRoleId: item.defaultOwnerRoleId, taskId: item.id, compact: true })}
@@ -3453,7 +3482,10 @@
               </div>
               <div class="dashboard-task-actions">
                 ${detail ? `<details><summary>Task detail</summary><p>${escapeHtml(detail)}</p></details>` : '<span></span>'}
-                <button type="button" class="text-button inline" data-dashboard-open-event="${escapeHtml(event.id)}">Open event task board</button>
+                <div class="dashboard-task-action-buttons">
+                  ${renderTaskWorkspaceAction(item, event)}
+                  <button type="button" class="text-button inline" data-dashboard-open-event="${escapeHtml(event.id)}">Open event task board</button>
+                </div>
               </div>
             </div>
           </div>
@@ -3646,6 +3678,7 @@
               <div class="task-operational-row">
                 <span class="notification-chip ${taskState.notificationStatus ?? 'none'}">${taskState.notificationStatus === 'queued' ? 'Assignment notification queued' : taskState.notificationStatus === 'outbox' ? 'Notification written to development outbox' : taskState.assignee ? 'Owner assigned' : 'Awaiting owner'}</span>
                 ${taskState.assignee && !assignmentRecipient(taskAssignmentReference(taskState) ?? taskState.assignee, event).email ? `<span class="notification-chip warning">No email configured for this person or role</span>` : ''}
+                ${renderTaskWorkspaceAction(item, event)}
                 ${taskState.completionToken ? `<button class="text-button inline" data-copy-completion="${escapeHtml(item.id)}">Copy completion link</button>` : ''}
                 ${taskState.completedAt ? `<span class="completed-at">Completed ${escapeHtml(formatDate(taskState.completedAt.substring(0,10)))}</span>` : ''}
               </div>
@@ -4555,6 +4588,31 @@
     return pluginSettingsRequest;
   }
 
+  async function ensureIntegrationActivityLoaded(force = false) {
+    if (integrationActivityCache && !force) return integrationActivityCache;
+    if (integrationActivityRequest && !force) return integrationActivityRequest;
+
+    integrationActivityRequest = (async () => {
+      try {
+        const response = await fetch('/api/admin/integration-activity?limit=100', { cache: 'no-store' });
+        const payload = await response.json().catch(() => ([]));
+        if (!response.ok) {
+          throw new Error(payload.error || `Integration activity could not be loaded (${response.status}).`);
+        }
+        integrationActivityCache = Array.isArray(payload) ? payload : [];
+      } catch (error) {
+        integrationActivityCache = { error: error.message || 'Integration activity could not be loaded.' };
+      } finally {
+        integrationActivityRequest = null;
+      }
+
+      if (state.activeView === 'plugins') render();
+      return integrationActivityCache;
+    })();
+
+    return integrationActivityRequest;
+  }
+
   function pluginStatus(summary) {
     if (summary?.enabled && summary?.configured) return { label: 'Active', className: 'enabled' };
     if (summary?.configured) return { label: 'Ready', className: 'configured' };
@@ -4575,6 +4633,48 @@
     return Number.isNaN(date.getTime())
       ? 'Settings saved'
       : `Updated ${date.toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}`;
+  }
+
+  function integrationActivityDate(value) {
+    const date = new Date(value);
+    return Number.isNaN(date.getTime())
+      ? 'Time unavailable'
+      : date.toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'medium' });
+  }
+
+  function renderIntegrationActivity() {
+    if (!integrationActivityCache) {
+      return `<section class="integration-activity-panel" aria-busy="true">
+        <header><div><span class="eyebrow">Diagnostics</span><h3>Integration activity</h3><p>Loading recent operations…</p></div></header>
+      </section>`;
+    }
+
+    if (integrationActivityCache.error) {
+      return `<section class="integration-activity-panel">
+        <header><div><span class="eyebrow">Diagnostics</span><h3>Integration activity</h3><p>${escapeHtml(integrationActivityCache.error)}</p></div><button class="button button-secondary" type="button" data-refresh-integration-activity>Try again</button></header>
+      </section>`;
+    }
+
+    const entries = integrationActivityCache;
+    return `<section class="integration-activity-panel">
+      <header><div><span class="eyebrow">Diagnostics</span><h3>Integration activity</h3><p>Recent external operations are retained here without credentials, session cookies or submitted request bodies.</p></div><button class="button button-secondary" type="button" data-refresh-integration-activity>Refresh</button></header>
+      ${entries.length
+        ? `<div class="integration-activity-list">${entries.map(entry => {
+            const succeeded = entry.outcome === 'succeeded';
+            const eventLabel = entry.eventName || entry.eventPlaybookEventId || 'No event recorded';
+            const identifiers = [
+              entry.externalEventId ? `IG event ${entry.externalEventId}` : '',
+              entry.externalRecordId ? `IG record ${entry.externalRecordId}` : '',
+              entry.stage ? `Stage: ${entry.stage}` : '',
+              entry.statusCode ? `HTTP ${entry.statusCode}` : ''
+            ].filter(Boolean);
+            return `<article class="integration-activity-row ${succeeded ? 'succeeded' : 'failed'}">
+              <span class="integration-activity-result" aria-label="${succeeded ? 'Succeeded' : 'Failed'}">${succeeded ? '✓' : '!'}</span>
+              <div class="integration-activity-copy"><div><strong>${escapeHtml(entry.operation || 'Integration operation')}</strong><time datetime="${escapeHtml(entry.occurredAtUtc || '')}">${escapeHtml(integrationActivityDate(entry.occurredAtUtc))}</time></div><p>${escapeHtml(entry.message || '')}</p><small>${escapeHtml(eventLabel)}${identifiers.length ? ` · ${escapeHtml(identifiers.join(' · '))}` : ''}</small></div>
+            </article>`;
+          }).join('')}</div>`
+        : `<div class="integration-activity-empty"><strong>No integration activity yet</strong><p>Attempts to synchronise an event or publish a member diary entry will appear here.</p></div>`}
+    </section>`;
   }
 
   function renderPluginAdministration() {
@@ -4630,7 +4730,8 @@
           </div>
           <footer class="plugin-card-actions"><small>${escapeHtml(pluginUpdatedLabel(monday.updatedAtUtc))}</small><button class="button button-primary" type="button" data-configure-plugin="monday">${monday.configured ? 'Update settings' : 'Configure'}</button></footer>
         </article>
-      </section>`;
+      </section>
+      ${renderIntegrationActivity()}`;
   }
 
   function renderPluginDialogs() {
@@ -4743,7 +4844,7 @@
             <div>
               <span class="eyebrow">New event</span>
               <h2>Create an event plan</h2>
-              <p>Record the event clearly now so the Playbook, task engine and Digital Artwork all start from the same information.</p>
+              <p>Record the event clearly now so the Playbook, task engine and Communications Centre all start from the same information.</p>
             </div>
             <button class="icon-button" type="button" data-cancel-new-event aria-label="Close">×</button>
           </div>
@@ -5585,6 +5686,13 @@
       });
     });
 
+    document.querySelectorAll('[data-refresh-integration-activity]').forEach(element => {
+      element.addEventListener('click', () => {
+        integrationActivityCache = null;
+        render();
+      });
+    });
+
     document.getElementById('intelligent-golf-plugin-form')?.addEventListener('submit', eventArgs => {
       eventArgs.preventDefault();
       const dialog = eventArgs.currentTarget.closest('dialog');
@@ -5892,6 +6000,16 @@
         state.taskBoardMode = 'mine';
         state.taskFilter = 'open';
         state.taskBoardHorizon = 'auto';
+        saveState();
+        render();
+      });
+    });
+
+    document.querySelectorAll('[data-task-workspace-view]').forEach(element => {
+      element.addEventListener('click', () => {
+        const eventId = element.dataset.taskWorkspaceEventId;
+        if (eventId && state.events.some(event => event.id === eventId)) state.activeEventId = eventId;
+        state.activeView = element.dataset.taskWorkspaceView;
         saveState();
         render();
       });

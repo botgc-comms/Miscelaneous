@@ -87,15 +87,16 @@ With `DEMO_PASSWORD` unset, local startup behaves as before and opens without a 
 This deployment is now suitable for lightweight, shared prototype testing:
 
 - event plans, answers, task-board state, deadlines and contacts are shared through a revisioned server document at `App_Data/shared-playbook-state.json`;
-- Poster Studio settings and every generated artwork format are saved per event under `App_Data/poster-sessions`;
+- Communications Centre settings and every generated artwork format are saved per event under `App_Data/poster-sessions`;
 - artwork embedded in generated member emails is stored under `App_Data/MemberEmailArtwork`, so links in sent emails survive restarts and redeployments;
 - browser `localStorage` and IndexedDB remain local caches, so a temporary network failure does not immediately discard the tester's work;
 - task completion records, the notification development outbox and development-login cookie encryption keys also live under `App_Data`;
 - encrypted plugin credentials live in `App_Data/plugin-settings.json`, with their Data Protection keys in `App_Data/DataProtection-Keys`;
-- the club name and uploaded crest configured in **Playbook Administration** live under `App_Data/branding` and are reused by the navigation, shared pages and Poster Studio;
+- the administrator-only integration activity view is backed by `App_Data/integration-activity.json` and retains the latest 500 safe operation summaries without credentials, cookies or submitted request bodies;
+- the club name and uploaded crest configured in **Playbook Administration** live under `App_Data/branding` and are reused by the navigation, shared pages and Communications Centre;
 - the Render disk mounted at `/app/App_Data` survives restarts and redeployments.
 
-Two people using different browsers can therefore work with the same events and reopen the same Poster Studio campaigns. Event-state saves use revision checks and field-level merging for edits that overlap. This is deliberately a single-instance prototype: Poster Studio uses last-save-wins, there is no edit-presence indicator, and the JSON/file store is not intended to replace a production database or object store.
+Two people using different browsers can therefore work with the same events and reopen the same Communications Centre campaigns. Event-state saves use revision checks and field-level merging for edits that overlap. This is deliberately a single-instance prototype: the Communications Centre uses last-save-wins, there is no edit-presence indicator, and the JSON/file store is not intended to replace a production database or object store.
 
 ## Backups and production limits
 
