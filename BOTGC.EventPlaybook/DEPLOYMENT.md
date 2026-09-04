@@ -35,7 +35,7 @@ Render automatically rebuilds and deploys both services whenever a commit reache
 | --- | --- | --- |
 | `DEMO_PASSWORD` | Recommended for every hosted development deployment | Enables the shared-password screen. Authentication is disabled when absent. |
 | `ADMIN_PASSWORD` | Required for administration | Enables the separate administrator sign-in. Playbook and Plugin Administration remain locked when absent. Use a different value from `DEMO_PASSWORD`. |
-| `OPENAI_API_KEY` | Only for live generation | Enables OpenAI prompt and image generation. Without it, the server uses mock artwork. |
+| `OPENAI_API_KEY` | Only for live generation | Enables OpenAI briefings, prompt generation and image generation. Without it, the server uses deterministic briefing copy and mock artwork. |
 | `OPENAI_IMAGE_MODEL` | No | Defaults to `gpt-image-2`. |
 | `OPENAI_IMAGE_QUALITY` | No | Defaults to `high`. |
 | `OPENAI_PROMPT_MODEL` | No | Defaults to `gpt-5.6`. |

@@ -4628,3 +4628,75 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(198,161,91,.22)!i
   .member-feedback-summary .button { grid-column: 1/-1; width: 100%; }
   .retrospective-outcome-details>summary { grid-template-columns: 1fr; }
 }
+
+/* Generated event and staff briefing */
+.briefing-page { display: grid; gap: 18px; }
+.briefing-intro-card { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 20px 22px; border: 1px solid var(--border); border-top: 4px solid var(--blue); border-radius: 14px; background: #fff; box-shadow: var(--shadow); }
+.briefing-intro-card h2,.event-briefing-card h2,.staff-briefing-area>header h2 { margin: 4px 0 5px; color: var(--navy); font: 700 1.45rem/1.12 Georgia,"Times New Roman",serif; }
+.briefing-intro-card p,.staff-briefing-area>header p { max-width: 780px; margin: 0; color: var(--muted); font-size: .69rem; line-height: 1.5; }
+.briefing-status { display: grid; min-width: 310px; grid-template-columns: 12px minmax(0,1fr) auto; align-items: center; gap: 10px; padding: 12px 13px; border: 1px solid #c7d9d4; border-radius: 11px; background: #f4f9f7; }
+.briefing-status>span { width: 10px; height: 10px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px rgba(48,111,91,.10); }
+.briefing-status>div { display: grid; gap: 2px; }
+.briefing-status strong { color: var(--navy); font-size: .68rem; }
+.briefing-status small { color: var(--muted); font-size: .58rem; line-height: 1.35; }
+.briefing-status.generating>span { background: var(--gold); box-shadow: 0 0 0 4px rgba(198,161,91,.13); animation: briefing-pulse 1.2s ease-in-out infinite; }
+.briefing-status.failed { border-color: #e2beb8; background: #fff7f5; }
+.briefing-status.failed>span { background: #a94b40; box-shadow: 0 0 0 4px rgba(169,75,64,.10); }
+@keyframes briefing-pulse { 50% { opacity: .38; transform: scale(.8); } }
+.briefing-generation-placeholder { display: flex; min-height: 220px; align-items: center; justify-content: center; gap: 18px; padding: 34px; border: 1px solid var(--border); border-radius: 14px; background: #fff; box-shadow: var(--shadow); text-align: left; }
+.briefing-generation-placeholder>span { display: grid; width: 52px; height: 52px; place-items: center; border-radius: 50%; color: #fff; background: var(--green); font-size: 1.2rem; }
+.briefing-generation-placeholder.failed>span { background: #a94b40; }
+.briefing-generation-placeholder h2 { margin: 0 0 5px; color: var(--navy); font: 700 1.2rem/1.2 Georgia,"Times New Roman",serif; }
+.briefing-generation-placeholder p { margin: 0 0 12px; color: var(--muted); font-size: .7rem; }
+.event-briefing-card { position: relative; overflow: hidden; padding: 22px; border: 1px solid var(--border); border-top: 4px solid var(--green); border-radius: 14px; background: #fff; box-shadow: var(--shadow); }
+.event-briefing-card.stale { border-top-color: var(--gold); }
+.briefing-stale-banner { margin: -22px -22px 18px; padding: 9px 22px; color: #715a28; background: #fff7df; font-size: .63rem; font-weight: 800; }
+.event-briefing-card>header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+.briefing-readonly-badge { padding: 5px 9px; border: 1px solid #cad8d5; border-radius: 999px; color: #627572; background: #f4f7f6; font-size: .56rem; font-weight: 900; letter-spacing: .04em; text-transform: uppercase; }
+.event-briefing-summary { max-width: 1080px; margin: 12px 0 18px; color: #28444c; font-size: .8rem; line-height: 1.65; }
+.briefing-key-information { display: grid; grid-template-columns: repeat(auto-fit,minmax(155px,1fr)); gap: 8px; margin-bottom: 18px; }
+.briefing-key-information>div { display: grid; gap: 4px; padding: 11px 12px; border: 1px solid #d6e1de; border-radius: 9px; background: #f7faf9; }
+.briefing-key-information small { color: #69807b; font-size: .53rem; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; }
+.briefing-key-information strong { color: var(--navy); font-size: .72rem; line-height: 1.35; }
+.briefing-section-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 11px; }
+.briefing-section-grid>section { padding: 15px 16px; border: 1px solid #d8e2df; border-left: 4px solid var(--green); border-radius: 10px; background: #fbfcfc; }
+.briefing-section-grid h3,.staff-briefing-section h3 { margin: 0 0 9px; color: var(--navy); font: 700 .9rem/1.2 Georgia,"Times New Roman",serif; }
+.briefing-section-grid ul,.staff-briefing-section ul { margin: 0; padding-left: 18px; color: #344f56; font-size: .68rem; line-height: 1.55; }
+.briefing-section-grid li+li,.staff-briefing-section li+li { margin-top: 5px; }
+.briefing-empty-copy { margin: 0; color: #7a8986; font-size: .65rem; font-style: italic; line-height: 1.45; }
+.staff-briefing-area { padding: 20px; border: 1px solid var(--border); border-radius: 14px; background: #e8efed; box-shadow: var(--shadow); }
+.staff-briefing-area>header { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 15px; }
+.staff-briefing-sheet { max-width: 1120px; margin: 0 auto; padding: 24px 27px 18px; border: 1px solid #cbd7d4; border-top: 7px solid var(--navy); border-radius: 3px; color: #243d45; background: #fff; box-shadow: 0 10px 28px rgba(13,53,72,.10); }
+.staff-briefing-sheet-header { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding-bottom: 12px; border-bottom: 2px solid var(--gold); }
+.staff-briefing-sheet-header>div { display: flex; align-items: center; gap: 10px; }
+.staff-briefing-sheet-header img { width: 38px; height: 44px; object-fit: contain; }
+.staff-briefing-sheet-header span { color: var(--navy); font: 700 .83rem/1.2 Georgia,"Times New Roman",serif; }
+.staff-briefing-sheet-header small { color: var(--green); font-size: .6rem; font-weight: 950; letter-spacing: .13em; }
+.staff-briefing-title { padding: 17px 0 14px; }
+.staff-briefing-title h2 { margin: 0 0 7px; color: var(--navy); font: 700 1.45rem/1.1 Georgia,"Times New Roman",serif; }
+.staff-briefing-title p { margin: 0; color: #536a6e; font-size: .72rem; line-height: 1.5; }
+.staff-briefing-phases { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 11px; }
+.staff-briefing-section { min-width: 0; padding: 14px; border: 1px solid #d6e1de; border-top: 4px solid var(--green); border-radius: 9px; background: #fbfcfc; }
+.staff-briefing-phases .staff-briefing-section:nth-child(2) { border-top-color: var(--gold); background: #fffdf7; }
+.staff-briefing-phases .staff-briefing-section:nth-child(3) { border-top-color: var(--blue); }
+.staff-briefing-support { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 11px; margin-top: 11px; }
+.staff-briefing-support .staff-briefing-section { border-top-width: 1px; border-left: 4px solid var(--navy); }
+.staff-briefing-sheet>footer { margin-top: 15px; padding-top: 9px; border-top: 1px solid #dbe4e2; color: #788784; font-size: .53rem; text-align: right; }
+
+@media (max-width: 900px) {
+  .briefing-intro-card,.staff-briefing-area>header { align-items: flex-start; flex-direction: column; }
+  .briefing-status { width: 100%; min-width: 0; }
+  .briefing-section-grid,.staff-briefing-phases,.staff-briefing-support { grid-template-columns: 1fr; }
+}
+
+@media print {
+  @page { size: A4 portrait; margin: 10mm; }
+  body.printing-staff-briefing * { visibility: hidden!important; }
+  body.printing-staff-briefing .staff-briefing-sheet,
+  body.printing-staff-briefing .staff-briefing-sheet * { visibility: visible!important; }
+  body.printing-staff-briefing .staff-briefing-sheet { position: absolute; top: 0; left: 0; width: 100%; max-width: none; margin: 0; padding: 0; border: 0; border-top: 6px solid #0d3548; border-radius: 0; box-shadow: none; }
+  body.printing-staff-briefing .staff-briefing-phases { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 7mm; }
+  body.printing-staff-briefing .staff-briefing-support { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 7mm; }
+  body.printing-staff-briefing .staff-briefing-section { break-inside: avoid; }
+  body.printing-staff-briefing .staff-briefing-sheet>footer { margin-top: 8mm; }
+}

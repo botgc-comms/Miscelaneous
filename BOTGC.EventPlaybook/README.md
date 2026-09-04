@@ -12,14 +12,15 @@ The browser talks only to the Web project. Intelligent Golf credentials are encr
 This solution deliberately integrates the two successful prototypes without replacing either of them:
 
 1. the original **Event Playbook** interaction model — master questions, conditional modules, deadline codes, generated tasks and task board;
-2. the later **Communications Centre** — GPT-assisted creative direction, GPT Image 2 generation, progressive display of outputs, regeneration feedback and multiple campaign formats.
+2. a read-only **Briefing Summary** — an automatically refreshed management summary and printable staff notice generated from the live event plan;
+3. the later **Communications Centre** — GPT-assisted creative direction, GPT Image 2 generation, progressive display of outputs, regeneration feedback and multiple campaign formats.
 
 ## Runtime
 
 - Web: ASP.NET Core / .NET 8
 - API: ASP.NET Core / .NET 9
 - Static browser UI for the Playbook, preserving the original prototype interaction
-- ASP.NET Core APIs for OpenAI poster generation, task completion links and notification integration seams
+- ASP.NET Core APIs for OpenAI briefings and poster generation, task completion links and notification integration seams
 - JSON-driven Playbook and poster configuration
 
 ## Run
@@ -67,6 +68,17 @@ OPENAI_PROMPT_MODEL=gpt-5.6
 ```
 
 `OPENAI_API_KEY` is never stored in browser code or application configuration.
+
+## Briefing Summary
+
+The selected event workspace includes a read-only **Briefing Summary**. It combines the event description, current event fields, every visible answered planning question and the active task plan into:
+
+- a concise management-facing event briefing;
+- key information and relevant operational sections;
+- a separate staff briefing divided into preparation, event-day work and afterwards;
+- a printable A4 notice containing key contacts and unresolved points.
+
+The saved briefing includes a fingerprint of all its source information. Changing an event field, answer, task owner, task note, due date or completion state makes the previous briefing stale. Opening the Briefing Summary automatically generates a replacement; stale copy may be viewed while generation is running but cannot be printed as current.
 
 ## appsettings.json
 

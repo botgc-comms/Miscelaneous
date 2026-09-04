@@ -120,6 +120,7 @@ builder.Services.AddSingleton<IMemberEmailArtworkStore, MemberEmailArtworkStore>
 builder.Services.AddSingleton<ITaskCompletionRegistry, TaskCompletionRegistry>();
 builder.Services.AddSingleton<IFeedbackStore, FeedbackStore>();
 builder.Services.AddSingleton<IRetrospectiveAnalysisService, RetrospectiveAnalysisService>();
+builder.Services.AddSingleton<IEventBriefingService, EventBriefingService>();
 builder.Services.AddSingleton<IPluginSettingsStore, PluginSettingsStore>();
 builder.Services.AddSingleton<IClubBrandingStore, ClubBrandingStore>();
 builder.Services.AddSingleton<PrototypePersistenceStore>();
@@ -1214,6 +1215,22 @@ app.MapPost("/api/retrospective/analyse", async (
     try
     {
         var result = await analysisService.AnalyseAsync(request, cancellationToken);
+        return Results.Ok(result);
+    }
+    catch (InvalidOperationException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
+});
+
+app.MapPost("/api/briefing/generate", async (
+    EventBriefingRequest request,
+    IEventBriefingService briefingService,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var result = await briefingService.GenerateAsync(request, cancellationToken);
         return Results.Ok(result);
     }
     catch (InvalidOperationException exception)

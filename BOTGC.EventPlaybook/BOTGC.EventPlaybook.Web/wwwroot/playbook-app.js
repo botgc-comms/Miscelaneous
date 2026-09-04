@@ -104,6 +104,7 @@
   let applyingSharedState = false;
   const feedbackCache = new Map();
   const feedbackRequests = new Set();
+  const briefingGenerationRequests = new Map();
   let pluginSettingsCache = null;
   let pluginSettingsRequest = null;
   let pluginSettingsNotice = '';
@@ -125,7 +126,7 @@
     displayName: ''
   };
   const requestedView = new URLSearchParams(window.location.search).get('view');
-  if (['dashboard', 'tasks', 'finances', 'catalogue', 'artwork', 'retrospective', 'admin', 'plugins', 'references', 'directory'].includes(requestedView)) {
+  if (['dashboard', 'tasks', 'finances', 'briefing', 'catalogue', 'artwork', 'retrospective', 'admin', 'plugins', 'references', 'directory'].includes(requestedView)) {
     state.activeView = requestedView;
   }
 
@@ -769,6 +770,7 @@
       team: organiserName ? [organiserName] : [],
       advisoryOverrides: {},
       retrospective: {},
+      briefing: {},
       finances: { entries: [] },
       milestoneDates: { ...milestoneDates, DT: eventDate || milestoneDates.DT || '' },
       lifecycle: {
@@ -919,6 +921,7 @@
       event.team ??= [];
       event.advisoryOverrides ??= {};
       event.retrospective ??= {};
+      event.briefing = event.briefing && typeof event.briefing === 'object' ? event.briefing : {};
       normaliseEventFinances(event);
       event.playbookVersion ??= playbook?.schemaVersion ?? '1.0';
       event.sourceEventId ??= null;
@@ -1701,6 +1704,7 @@
     copy.eventSeriesId = sourceEvent.eventSeriesId ?? sourceEvent.id;
     copy.learningInsights = [];
     copy.retrospective = {};
+    copy.briefing = {};
     copy.advisoryOverrides = {};
     copy.taskState = {};
     const priorFinanceSummary = financeTotals(sourceEvent);
@@ -1904,6 +1908,204 @@
       .replace(/^-|-$/g, '') || 'event';
   }
 
+  function formatBriefingAnswer(item, value) {
+    if (value === 'dont-know') return 'Decision pending';
+    if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+    if (item.answerType === 'assignment') return assignmentDisplay(value, 'Not assigned');
+    const options = Array.isArray(item.options) ? item.options : [];
+    const optionLabel = candidate => options.find(option => option.value === candidate)?.label ?? candidate;
+    if (Array.isArray(value)) return value.map(optionLabel).join(', ');
+    if (value && typeof value === 'object') {
+      if (value.start || value.end) return [value.start, value.end].filter(Boolean).join(' to ');
+      return Object.entries(value).map(([key, entry]) => `${key}: ${entry}`).join(', ');
+    }
+    if (item.answerType === 'singleChoice') return optionLabel(value);
+    if (item.answerType === 'date') return formatDate(value);
+    if (item.answerType === 'number' && item.unit) return `${value} ${item.unit}`;
+    return String(value ?? '').trim();
+  }
+
+  function briefingSourcePayload(event) {
+    const answers = [];
+    for (const module of playbook.modules) {
+      if (!isModuleActive(module, event)) continue;
+      for (const section of module.sections) {
+        for (const item of section.items) {
+          if (item.type !== 'question' || !isItemVisible(item, event)) continue;
+          const value = getQuestionValue(item.id, event);
+          if (value === undefined || value === null || value === '' || (Array.isArray(value) && value.length === 0)) continue;
+          const answer = formatBriefingAnswer(item, value);
+          if (!answer) continue;
+          answers.push({
+            module: module.title,
+            section: section.title,
+            question: item.label,
+            answer
+          });
+        }
+      }
+    }
+
+    const tasks = getActiveTasks(event).map(task => {
+      const ownerReference = taskAssignmentReference(task.state) ?? task.state.assignee;
+      const owner = assignmentDisplay(ownerReference, task.state.assignee || (task.item.defaultOwnerRoleId ? roleById(task.item.defaultOwnerRoleId)?.name : '') || '');
+      const phase = ['A1', 'A2'].includes(task.item.deadlineCode)
+        ? 'afterwards'
+        : task.item.deadlineCode === 'DT'
+          ? 'event-day'
+          : 'preparation';
+      return {
+        phase,
+        area: task.item.responsibleArea ?? task.module.title,
+        title: task.item.title,
+        detail: getTaskDetail(task.item, event),
+        dueDate: task.dueDate ? formatDate(task.dueDate) : '',
+        owner,
+        completed: task.state.completed === true,
+        notes: String(task.state.notes ?? '').trim()
+      };
+    });
+
+    const lifecycle = normaliseEventLifecycle(event);
+    return {
+      eventName: event.name,
+      eventDescription: event.description,
+      eventDate: event.eventDate,
+      startTime: event.startTime,
+      endTime: event.endTime,
+      organiser: event.organiser,
+      status: eventStatusDefinition(event).label,
+      statusReason: lifecycle.reason || lifecycle.memberUpdate || '',
+      expectedAttendees: event.expectedAttendees,
+      answers,
+      tasks
+    };
+  }
+
+  function briefingFingerprint(payload) {
+    const input = `briefing-v1|${playbook.schemaVersion}|${JSON.stringify(payload)}`;
+    let hash = 2166136261;
+    for (let index = 0; index < input.length; index += 1) {
+      hash ^= input.charCodeAt(index);
+      hash = Math.imul(hash, 16777619);
+    }
+    return `v1-${(hash >>> 0).toString(16).padStart(8, '0')}-${input.length}`;
+  }
+
+  function currentBriefingSource(event) {
+    const payload = briefingSourcePayload(event);
+    return { payload, fingerprint: briefingFingerprint(payload) };
+  }
+
+  function renderBriefingList(values, emptyText) {
+    const items = Array.isArray(values) ? values.filter(Boolean) : [];
+    return items.length
+      ? `<ul>${items.map(value => `<li>${escapeHtml(value)}</li>`).join('')}</ul>`
+      : `<p class="briefing-empty-copy">${escapeHtml(emptyText)}</p>`;
+  }
+
+  function renderStaffBriefingSection(title, values, emptyText) {
+    return `<section class="staff-briefing-section"><h3>${escapeHtml(title)}</h3>${renderBriefingList(values, emptyText)}</section>`;
+  }
+
+  function renderBriefing(event) {
+    const briefing = event.briefing ?? {};
+    const source = currentBriefingSource(event);
+    const current = briefing.sourceFingerprint === source.fingerprint;
+    const hasSummary = Boolean(briefing.eventSummary && briefing.staffBriefing);
+    const failed = !current && briefing.errorFingerprint === source.fingerprint;
+    const generatedAt = briefing.generatedAt
+      ? new Date(briefing.generatedAt).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })
+      : '';
+    const keyInformation = Array.isArray(briefing.keyInformation) ? briefing.keyInformation : [];
+    const sections = Array.isArray(briefing.sections) ? briefing.sections : [];
+    const staff = briefing.staffBriefing ?? {};
+
+    const status = current
+      ? { className: 'current', title: 'Briefing up to date', copy: generatedAt ? `Generated ${generatedAt}` : 'Generated from the current event plan' }
+      : failed
+        ? { className: 'failed', title: 'Briefing could not be refreshed', copy: briefing.error || 'The briefing service returned an error.' }
+        : { className: 'generating', title: hasSummary ? 'Refreshing after planning changes' : 'Preparing the first briefing', copy: 'The event description, answers and active work are being compiled now.' };
+
+    return `<div class="briefing-page">
+      <section class="briefing-intro-card">
+        <div><span class="eyebrow">Read-only event intelligence</span><h2>One reliable briefing from the current plan</h2><p>This page is regenerated whenever the event description, planning answers, task ownership, notes, dates or completion state changes.</p></div>
+        <div class="briefing-status ${status.className}" data-briefing-status><span aria-hidden="true"></span><div><strong>${escapeHtml(status.title)}</strong><small>${escapeHtml(status.copy)}</small></div>${failed ? '<button type="button" class="button button-secondary" data-retry-briefing>Try again</button>' : ''}</div>
+      </section>
+
+      ${hasSummary ? `<section class="event-briefing-card ${current ? '' : 'stale'}">
+        ${!current ? '<div class="briefing-stale-banner">The plan has changed. This previous briefing remains visible while the replacement is prepared.</div>' : ''}
+        <header><div><span class="eyebrow">Event briefing</span><h2>${escapeHtml(briefing.headline || event.name)}</h2></div><span class="briefing-readonly-badge">Read only</span></header>
+        <p class="event-briefing-summary">${escapeHtml(briefing.eventSummary)}</p>
+        ${keyInformation.length ? `<div class="briefing-key-information">${keyInformation.map(fact => `<div><small>${escapeHtml(fact.label)}</small><strong>${escapeHtml(fact.value)}</strong></div>`).join('')}</div>` : ''}
+        ${sections.length ? `<div class="briefing-section-grid">${sections.map(section => `<section><h3>${escapeHtml(section.title)}</h3>${renderBriefingList(section.points, 'No additional details recorded.')}</section>`).join('')}</div>` : ''}
+      </section>` : `<section class="briefing-generation-placeholder ${failed ? 'failed' : ''}"><span aria-hidden="true">${failed ? '!' : '✦'}</span><div><h2>${escapeHtml(status.title)}</h2><p>${escapeHtml(status.copy)}</p>${failed ? '<button type="button" class="button button-primary" data-retry-briefing>Try again</button>' : ''}</div></section>`}
+
+      ${hasSummary ? `<section class="staff-briefing-area">
+        <header><div><span class="eyebrow">Printable staff notice</span><h2>Staff briefing</h2><p>A practical version for the staff noticeboard, covering preparation, delivery and follow-up.</p></div><button type="button" class="button button-gold" data-print-staff-briefing ${current ? '' : 'disabled'}>Print staff briefing</button></header>
+        <article class="staff-briefing-sheet" id="staff-briefing-print-area">
+          <header class="staff-briefing-sheet-header"><div><img src="${escapeHtml(clubBranding.crestUrl)}" alt=""><span>${escapeHtml(clubBranding.clubName)}</span></div><small>STAFF BRIEFING</small></header>
+          <div class="staff-briefing-title"><h2>${escapeHtml(staff.heading || `Staff briefing: ${event.name}`)}</h2><p>${escapeHtml(staff.introduction || briefing.eventSummary)}</p></div>
+          <div class="staff-briefing-phases">
+            ${renderStaffBriefingSection('Before the event', staff.preparation, 'No specific preparation actions have been generated.')}
+            ${renderStaffBriefingSection('On the day', staff.eventDay, 'No specific event-day actions have been generated.')}
+            ${renderStaffBriefingSection('Afterwards', staff.afterwards, 'No specific follow-up actions have been generated.')}
+          </div>
+          <div class="staff-briefing-support">
+            ${renderStaffBriefingSection('Key contacts', staff.keyContacts, 'No named contacts have been recorded.')}
+            ${renderStaffBriefingSection('Important notes', staff.importantNotes, 'No additional warnings or unresolved points have been recorded.')}
+          </div>
+          <footer>Generated from the current approved event information · ${escapeHtml(generatedAt || 'Current plan')}</footer>
+        </article>
+      </section>` : ''}
+    </div>`;
+  }
+
+  async function ensureEventBriefing(event, force = false) {
+    const source = currentBriefingSource(event);
+    event.briefing ??= {};
+    if (!force && event.briefing.sourceFingerprint === source.fingerprint) return;
+    if (!force && event.briefing.errorFingerprint === source.fingerprint) return;
+    if (briefingGenerationRequests.get(event.id)?.fingerprint === source.fingerprint) return;
+
+    event.briefing.error = '';
+    event.briefing.errorFingerprint = '';
+    const requestRecord = { fingerprint: source.fingerprint, promise: null };
+    briefingGenerationRequests.set(event.id, requestRecord);
+    requestRecord.promise = (async () => {
+      try {
+        const response = await fetch('/api/briefing/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(source.payload)
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.error || `The briefing service returned ${response.status}.`);
+
+        const latestSource = currentBriefingSource(event);
+        if (latestSource.fingerprint !== source.fingerprint) return;
+        event.briefing = {
+          ...result,
+          sourceFingerprint: source.fingerprint,
+          generatedAt: new Date().toISOString(),
+          error: '',
+          errorFingerprint: ''
+        };
+        saveState();
+      } catch (error) {
+        const latestSource = currentBriefingSource(event);
+        if (latestSource.fingerprint === source.fingerprint) {
+          event.briefing.error = error.message || 'The briefing could not be generated.';
+          event.briefing.errorFingerprint = source.fingerprint;
+          saveState();
+        }
+      } finally {
+        if (briefingGenerationRequests.get(event.id) === requestRecord) briefingGenerationRequests.delete(event.id);
+        if (state.activeView === 'briefing' && state.activeEventId === event.id) render();
+      }
+    })();
+  }
+
   function render() {
     if (!playbook) {
       app.innerHTML = '<div class="loading">Loading playbook…</div>';
@@ -1944,6 +2146,7 @@
     const shellTitle = state.activeView === 'dashboard' ? 'My Dashboard'
       : state.activeView === 'tasks' ? 'Task Board'
       : state.activeView === 'finances' ? 'Event Finances'
+      : state.activeView === 'briefing' ? 'Briefing Summary'
       : state.activeView === 'catalogue' ? 'Event Catalogue'
       : state.activeView === 'artwork' ? 'Communications Centre'
       : state.activeView === 'directory' ? 'People & Roles'
@@ -1955,6 +2158,7 @@
     const shellIntro = state.activeView === 'dashboard' ? 'See the work that needs your attention across every active event, in one calm daily view.'
       : state.activeView === 'tasks' ? 'See every action generated by the playbook, who owns it, when it is due and what needs attention.'
       : state.activeView === 'finances' ? 'Track estimated and actual income and costs so the club can see whether this event is likely to make a profit, break even or make a loss.'
+      : state.activeView === 'briefing' ? 'Read the latest event and staff briefings compiled from the description, planning answers and operational work.'
       : state.activeView === 'catalogue' ? 'Review previous events, clone successful plans and reuse the knowledge captured from earlier events.'
       : state.activeView === 'artwork' ? 'Explore three quick campaign concepts, choose the strongest idea, then produce matching high-resolution artwork for screens, member communications and print.'
       : state.activeView === 'directory' ? 'Maintain the people, shared mailboxes, responsibilities and platform access used throughout every event.'
@@ -1965,7 +2169,7 @@
       : 'Plan the event consistently from first decision to final close-down, with every relevant question, responsibility and deadline in one place.';
     const showEventEditor = Boolean(event) && state.activeView === 'module:start';
     const showEventTools = Boolean(event) && (isPlanningView || state.activeView === 'tasks' || state.activeView === 'retrospective');
-    const showLifecycleBanner = Boolean(event) && (isPlanningView || ['tasks', 'finances', 'artwork', 'retrospective'].includes(state.activeView));
+    const showLifecycleBanner = Boolean(event) && (isPlanningView || ['tasks', 'finances', 'briefing', 'artwork', 'retrospective'].includes(state.activeView));
     const lifecycle = event ? normaliseEventLifecycle(event) : null;
     const lifecycleDefinition = event ? eventStatusDefinition(event) : null;
 
@@ -1985,6 +2189,7 @@
             <button class="${state.activeView === 'catalogue' ? 'active' : ''}" data-view="catalogue"><span class="nav-icon">▦</span>Event Catalogue</button>
             <span class="side-nav-group-label">Current event workspace</span>
             <button class="${isPlanningView ? 'active' : ''}" data-view="module:start" ${event ? '' : 'disabled'}><span class="nav-icon">◇</span>Event Planner</button>
+            <button class="${state.activeView === 'briefing' ? 'active' : ''}" data-view="briefing" ${event ? '' : 'disabled'}><span class="nav-icon">☷</span>Briefing Summary</button>
             <button class="${state.activeView === 'tasks' ? 'active' : ''}" data-view="tasks" ${event ? '' : 'disabled'}><span class="nav-icon">✓</span>Task Board</button>
             <button class="${state.activeView === 'finances' ? 'active' : ''}" data-view="finances" ${event ? '' : 'disabled'}><span class="nav-icon">£</span>Event Finances</button>
             <button class="${state.activeView === 'artwork' ? 'active' : ''}" data-view="artwork" ${event ? '' : 'disabled'}><span class="nav-icon">✦</span>Communications Centre</button>
@@ -2103,7 +2308,7 @@
 
           <main class="main-content ${state.activeView === 'artwork' ? 'poster-studio' : ''}">
             ${showLifecycleBanner ? renderEventLifecycleBanner(event) : ''}
-            ${state.activeView === 'dashboard' ? renderDashboard() : state.activeView === 'catalogue' ? renderCatalogue() : state.activeView === 'directory' ? renderDirectory() : state.activeView === 'references' ? renderReferenceLibrary() : state.activeView === 'plugins' ? renderPluginAdministration() : state.activeView === 'admin' ? renderAdmin() : !event ? renderEmptyState() : state.activeView === 'tasks' ? renderTaskBoard(event, tasks) : state.activeView === 'finances' ? renderEventFinances(event) : state.activeView === 'artwork' ? renderArtworkStudio(event) : state.activeView === 'retrospective' ? renderRetrospective(event) : renderModuleView(event)}
+            ${state.activeView === 'dashboard' ? renderDashboard() : state.activeView === 'catalogue' ? renderCatalogue() : state.activeView === 'directory' ? renderDirectory() : state.activeView === 'references' ? renderReferenceLibrary() : state.activeView === 'plugins' ? renderPluginAdministration() : state.activeView === 'admin' ? renderAdmin() : !event ? renderEmptyState() : state.activeView === 'tasks' ? renderTaskBoard(event, tasks) : state.activeView === 'finances' ? renderEventFinances(event) : state.activeView === 'briefing' ? renderBriefing(event) : state.activeView === 'artwork' ? renderArtworkStudio(event) : state.activeView === 'retrospective' ? renderRetrospective(event) : renderModuleView(event)}
           </main>
         </main>
       </div>
@@ -2120,6 +2325,7 @@
       ensureIntegrationActivityLoaded();
     }
     if (state.activeView === 'retrospective' && event) ensureFeedbackLoaded(event.id);
+    if (state.activeView === 'briefing' && event) ensureEventBriefing(event);
     if (state.activeView === 'artwork' && event) {
       import('./poster-app.js?v=20260904-communications-centre-1')
         .then(module => module.mountPosterStudio({
@@ -5658,6 +5864,31 @@
       });
     });
 
+    document.querySelectorAll('[data-retry-briefing]').forEach(element => {
+      element.addEventListener('click', () => {
+        const event = getActiveEvent();
+        if (!event) return;
+        ensureEventBriefing(event, true);
+        render();
+      });
+    });
+
+    document.querySelectorAll('[data-print-staff-briefing]').forEach(element => {
+      element.addEventListener('click', () => {
+        const event = getActiveEvent();
+        if (!event || element.disabled) return;
+        const originalTitle = document.title;
+        document.title = `${event.name} - Staff briefing`;
+        document.body.classList.add('printing-staff-briefing');
+        try {
+          window.print();
+        } finally {
+          document.body.classList.remove('printing-staff-briefing');
+          document.title = originalTitle;
+        }
+      });
+    });
+
     document.querySelectorAll('[data-configure-plugin]').forEach(element => {
       element.addEventListener('click', () => {
         const dialogId = element.dataset.configurePlugin === 'monday'
@@ -5784,6 +6015,7 @@
         state.notificationOutbox = (state.notificationOutbox ?? []).filter(notification => notification.eventId !== eventId);
         feedbackCache.delete(eventId);
         feedbackRequests.delete(eventId);
+        briefingGenerationRequests.delete(eventId);
         if (state.activeEventId === eventId) {
           state.activeEventId = state.events.find(candidate => !candidate.closedAt)?.id ?? state.events[0]?.id ?? null;
         }
