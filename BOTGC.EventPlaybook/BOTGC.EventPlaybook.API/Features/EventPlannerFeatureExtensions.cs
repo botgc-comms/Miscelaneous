@@ -405,44 +405,9 @@ public sealed class PublishPlannerDiaryHandler(
                                 responseDetail: exception.Message,
                                 innerException: exception);
                         }
+                        created = true;
                         diaryId = ExtractDiaryId(allocationResponse, request.IntelligentGolfEventId);
-                        created = diaryId is > 0;
                     }
-                }
-
-                if (diaryId is null or <= 0)
-                {
-                    created = true;
-                    IntelligentGolfTransportResponse creationResponse;
-                    try
-                    {
-                        creationResponse = await transport.PostFormResponseAsync(
-                            $"/event.php?eventid={request.IntelligentGolfEventId}&requestType=ajax&ajaxaction=confirmeditdiary",
-                            new List<KeyValuePair<string, string>>
-                            {
-                                new("id", string.Empty),
-                                new("headline", request.Headline.Trim()),
-                                new("body", HtmlToPlainText(request.BodyHtml)),
-                                new("venue", request.Venue?.Trim() ?? string.Empty),
-                                new("visibleToMembers", "1")
-                            },
-                            cancellationToken);
-                    }
-                    catch (IntelligentGolfAuthenticationException)
-                    {
-                        throw;
-                    }
-                    catch (Exception exception) when (exception is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
-                    {
-                        throw new IntelligentGolfMutationException(
-                            "member-diary-allocation",
-                            $"Intelligent Golf planner entry {request.IntelligentGolfEventId} is linked, but the fallback diary request failed.",
-                            request.IntelligentGolfEventId,
-                            responseDetail: exception.Message,
-                            innerException: exception);
-                    }
-
-                    diaryId = ExtractDiaryId(creationResponse, request.IntelligentGolfEventId);
                 }
 
                 if (diaryId is null or <= 0)
@@ -473,10 +438,14 @@ public sealed class PublishPlannerDiaryHandler(
                 if (diaryId is null or <= 0)
                 {
                     throw new IntelligentGolfMutationException(
-                        "member-diary-allocation-response",
-                        "Intelligent Golf accepted the initial diary request, but Event Playbook could not read the new diary-entry ID.",
+                        created ? "member-diary-allocation-response" : "member-diary-discovery",
+                        created
+                            ? "Intelligent Golf accepted the initial diary request, but Event Playbook could not read the new diary-entry ID."
+                            : "Event Playbook could not find an existing diary entry or Intelligent Golf's add-to-diary control on the linked planner entry.",
                         request.IntelligentGolfEventId,
-                        responseDetail: "No HTML update was attempted. Inspect the linked planner entry in Intelligent Golf before retrying.");
+                        responseDetail: created
+                            ? "No blank-ID fallback was submitted and no HTML update was attempted. Inspect the linked planner entry in Intelligent Golf before retrying."
+                            : "No diary creation request or HTML update was submitted. Confirm that this Intelligent Golf account can add planner events to the members' diary.");
                 }
 
                 await cache.SetAsync(cacheKey, new ExternalDiaryLink(diaryId.Value), LinkLifetime, cancellationToken);
@@ -484,7 +453,52 @@ public sealed class PublishPlannerDiaryHandler(
                     "Resolved Intelligent Golf diary entry {DiaryEntryId} for event {IntelligentGolfEventId}.",
                     diaryId.Value,
                     request.IntelligentGolfEventId);
+
             }
+        }
+
+        // Intelligent Golf's event page always submits this first-stage form with
+        // the allocated diary ID. It establishes the event-to-diary relationship
+        // and member visibility before diaryadmin.php accepts the richer HTML.
+        IntelligentGolfTransportResponse initialUpdateResponse;
+        try
+        {
+            initialUpdateResponse = await transport.PostFormResponseAsync(
+                $"/event.php?eventid={request.IntelligentGolfEventId}&requestType=ajax&ajaxaction=confirmeditdiary",
+                new List<KeyValuePair<string, string>>
+                {
+                    new("id", diaryId.Value.ToString(CultureInfo.InvariantCulture)),
+                    new("headline", request.Headline.Trim()),
+                    new("body", HtmlToPlainText(request.BodyHtml)),
+                    new("venue", request.Venue?.Trim() ?? string.Empty),
+                    new("visibleToMembers", "1")
+                },
+                cancellationToken);
+        }
+        catch (IntelligentGolfAuthenticationException)
+        {
+            throw;
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
+        {
+            throw new IntelligentGolfMutationException(
+                "member-diary-initialisation",
+                $"Intelligent Golf diary entry {diaryId.Value} is linked, but its member-facing details could not be saved.",
+                request.IntelligentGolfEventId,
+                diaryId,
+                exception.Message,
+                exception);
+        }
+
+        var initialRejection = IntelligentGolfMutationResponseInspector.FindRejection(initialUpdateResponse.Body);
+        if (!string.IsNullOrWhiteSpace(initialRejection))
+        {
+            throw new IntelligentGolfMutationException(
+                "member-diary-initialisation",
+                $"Intelligent Golf diary entry {diaryId.Value} is linked, but Intelligent Golf rejected its member-facing details.",
+                request.IntelligentGolfEventId,
+                diaryId,
+                initialRejection);
         }
 
         var fields = new List<KeyValuePair<string, string>>
@@ -593,8 +607,9 @@ public sealed class PublishPlannerDiaryHandler(
         var patterns = new[]
         {
             @"(?:diary(?:entry)?[_-]?id|diaryid)\s*[""':=\s]+(\d+)",
-            @"(?:editDiary|openEditDiaryEntryDialog)\s*\([^\d]*(\d+)",
-            @"diaryadmin\.php[^""'\s>]*[?&](?:id|diaryid)=(\d+)"
+            @"(?:editDiary|openEditDiaryEntryDialog|openDiaryEntryDialog)\s*\([^\d]*(\d+)",
+            @"diaryadmin\.php[^""'\s>]*[?&](?:id|diaryid|entryid)=(\d+)",
+            @"(?:confirmeditdiary|editdiary)[\s\S]{0,400}?[""']?id[""']?\s*[:=]\s*[""']?(\d+)"
         };
         foreach (var pattern in patterns)
         {
@@ -604,7 +619,47 @@ public sealed class PublishPlannerDiaryHandler(
                     candidates.Add(id);
             }
         }
+
+        var document = new HtmlDocument();
+        document.LoadHtml(raw);
+        foreach (var node in document.DocumentNode.Descendants())
+        {
+            var diaryRelated = node.Name.Contains("diary", StringComparison.OrdinalIgnoreCase) ||
+                               node.Attributes.Any(attribute =>
+                                   attribute.Name.Contains("diary", StringComparison.OrdinalIgnoreCase) ||
+                                   attribute.Value.Contains("diary", StringComparison.OrdinalIgnoreCase));
+            if (!diaryRelated) continue;
+
+            foreach (var attribute in node.Attributes)
+            {
+                if (attribute.Name.Equals("data-id", StringComparison.OrdinalIgnoreCase) ||
+                    attribute.Name.Equals("data-entry-id", StringComparison.OrdinalIgnoreCase) ||
+                    attribute.Name.Equals("data-diary-id", StringComparison.OrdinalIgnoreCase))
+                {
+                    AddDiaryCandidate(candidates, attribute.Value, eventId);
+                    continue;
+                }
+
+                if (attribute.Name.Equals("href", StringComparison.OrdinalIgnoreCase) ||
+                    attribute.Name.Equals("onclick", StringComparison.OrdinalIgnoreCase))
+                {
+                    foreach (Match match in Regex.Matches(
+                                 WebUtility.HtmlDecode(attribute.Value),
+                                 @"(?:^|[?&,('""\s])(?:id|diaryid|entryid)\s*[=:]\s*['""\s]*(\d+)",
+                                 RegexOptions.IgnoreCase))
+                    {
+                        AddDiaryCandidate(candidates, match.Groups[1].Value, eventId);
+                    }
+                }
+            }
+        }
         return candidates.Count == 0 ? null : candidates.Max();
+    }
+
+    private static void AddDiaryCandidate(ICollection<int> candidates, string? value, int eventId)
+    {
+        if (int.TryParse(value?.Trim(), out var candidate) && candidate > 0 && candidate != eventId)
+            candidates.Add(candidate);
     }
 
     private static int? ExtractDiaryId(IntelligentGolfTransportResponse response, int eventId)

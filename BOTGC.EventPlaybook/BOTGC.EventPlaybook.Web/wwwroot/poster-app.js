@@ -3002,6 +3002,7 @@ function memberDiaryStageLabel(stage) {
         'member-diary-discovery': 'checking for an existing member diary entry',
         'member-diary-allocation': 'creating the member diary entry',
         'member-diary-allocation-response': 'reading the new member diary entry ID',
+        'member-diary-initialisation': 'saving the initial member diary details',
         'member-diary-update': 'saving the member diary HTML'
     };
     return labels[stage] ?? null;
