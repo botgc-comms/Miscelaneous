@@ -11,6 +11,7 @@ namespace BOTGC.EventPlaybook.API.Infrastructure.IntelligentGolf;
 public static class IntelligentGolfServiceCollectionExtensions
 {
     public const string HttpClientName = "IntelligentGolf";
+    public const string NoRedirectHttpClientName = "IntelligentGolfNoRedirect";
 
     public static IServiceCollection AddIntelligentGolf(
         this IServiceCollection services,
@@ -82,21 +83,26 @@ public static class IntelligentGolfServiceCollectionExtensions
         services
             .AddHttpClient(HttpClientName, (provider, client) =>
             {
-                var settings = provider.GetRequiredService<IOptions<IntelligentGolfOptions>>().Value;
-                client.BaseAddress = new Uri(settings.BaseUrl.TrimEnd('/') + "/");
-                client.DefaultRequestHeaders.Add(
-                    "Accept",
-                    "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-                client.DefaultRequestHeaders.Add("Accept-Language", "en-GB,en;q=0.9");
-                client.DefaultRequestHeaders.Add(
-                    "User-Agent",
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/121 Safari/537.36");
+                ConfigureClient(provider, client);
             })
             .ConfigurePrimaryHttpMessageHandler(provider => new HttpClientHandler
             {
                 CookieContainer = provider.GetRequiredService<CookieContainer>(),
                 UseCookies = true,
                 AllowAutoRedirect = true
+            })
+            .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
+
+        services
+            .AddHttpClient(NoRedirectHttpClientName, (provider, client) =>
+            {
+                ConfigureClient(provider, client);
+            })
+            .ConfigurePrimaryHttpMessageHandler(provider => new HttpClientHandler
+            {
+                CookieContainer = provider.GetRequiredService<CookieContainer>(),
+                UseCookies = true,
+                AllowAutoRedirect = false
             })
             .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
 
@@ -112,6 +118,19 @@ public static class IntelligentGolfServiceCollectionExtensions
 
         services.AddIntelligentGolfReportParsers(typeof(Program).Assembly);
         return services;
+    }
+
+    private static void ConfigureClient(IServiceProvider provider, HttpClient client)
+    {
+        var settings = provider.GetRequiredService<IOptions<IntelligentGolfOptions>>().Value;
+        client.BaseAddress = new Uri(settings.BaseUrl.TrimEnd('/') + "/");
+        client.DefaultRequestHeaders.Add(
+            "Accept",
+            "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+        client.DefaultRequestHeaders.Add("Accept-Language", "en-GB,en;q=0.9");
+        client.DefaultRequestHeaders.Add(
+            "User-Agent",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/121 Safari/537.36");
     }
 
     public static IServiceCollection AddIntelligentGolfReportParsers(

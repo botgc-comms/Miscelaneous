@@ -385,12 +385,42 @@ public sealed class PublishPlannerDiaryHandler(
                 if (diaryId is null or <= 0)
                 {
                     var allocationPath = ExtractDiaryAllocationPath(eventPage.Body);
-                    if (!string.IsNullOrWhiteSpace(allocationPath))
+                    if (string.IsNullOrWhiteSpace(allocationPath))
+                    {
+                        IntelligentGolfTransportResponse eventAdminPage;
+                        try
+                        {
+                            eventAdminPage = await transport.GetResponseAsync(
+                                $"/eventadmin.php?group=-1&booking={request.IntelligentGolfEventId}",
+                                cancellationToken);
+                        }
+                        catch (IntelligentGolfAuthenticationException)
+                        {
+                            throw;
+                        }
+                        catch (Exception exception) when (exception is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
+                        {
+                            throw new IntelligentGolfMutationException(
+                                "member-diary-discovery",
+                                $"Intelligent Golf planner entry {request.IntelligentGolfEventId} is linked, but its event-admin diary control could not be read.",
+                                request.IntelligentGolfEventId,
+                                responseDetail: exception.Message,
+                                innerException: exception);
+                        }
+
+                        diaryId = ExtractDiaryId(eventAdminPage, request.IntelligentGolfEventId);
+                        allocationPath = ExtractDiaryAllocationPath(eventAdminPage.Body);
+                    }
+
+                    if (diaryId is null or <= 0 && !string.IsNullOrWhiteSpace(allocationPath))
                     {
                         IntelligentGolfTransportResponse allocationResponse;
                         try
                         {
-                            allocationResponse = await transport.GetResponseAsync(allocationPath, cancellationToken);
+                            allocationResponse = await transport.GetResponseFollowingRedirectsAsync(
+                                allocationPath,
+                                $"/eventadmin.php?group=-1&booking={request.IntelligentGolfEventId}",
+                                cancellationToken);
                         }
                         catch (IntelligentGolfAuthenticationException)
                         {
@@ -470,7 +500,9 @@ public sealed class PublishPlannerDiaryHandler(
                     new("id", diaryId.Value.ToString(CultureInfo.InvariantCulture)),
                     new("headline", request.Headline.Trim()),
                     new("body", HtmlToPlainText(request.BodyHtml)),
-                    new("venue", request.Venue?.Trim() ?? string.Empty),
+                    // IG's own event-page request leaves this blank. The venue is
+                    // supplied by the subsequent diaryadmin.php HTML update.
+                    new("venue", string.Empty),
                     new("visibleToMembers", "1")
                 },
                 cancellationToken);
@@ -653,7 +685,9 @@ public sealed class PublishPlannerDiaryHandler(
                 }
             }
         }
-        return candidates.Count == 0 ? null : candidates.Max();
+        // Preserve the first diary-specific match from the page. Choosing the
+        // numerically largest ID can select an unrelated record on IG admin pages.
+        return candidates.Count == 0 ? null : candidates[0];
     }
 
     private static void AddDiaryCandidate(ICollection<int> candidates, string? value, int eventId)
@@ -664,12 +698,15 @@ public sealed class PublishPlannerDiaryHandler(
 
     private static int? ExtractDiaryId(IntelligentGolfTransportResponse response, int eventId)
     {
-        var queryMatch = Regex.Match(
-            response.FinalUri?.Query ?? string.Empty,
-            @"(?:^|[?&])(?:id|diaryid|diaryentryid)=(\d+)(?:&|$)",
-            RegexOptions.IgnoreCase);
-        if (queryMatch.Success && int.TryParse(queryMatch.Groups[1].Value, out var id) && id != eventId)
-            return id;
+        foreach (var uri in (response.RedirectUris ?? []).Reverse().Append(response.FinalUri).OfType<Uri>())
+        {
+            var queryMatch = Regex.Match(
+                uri.Query,
+                @"(?:^|[?&])(?:id|diaryid|diaryentryid)=(\d+)(?:&|$)",
+                RegexOptions.IgnoreCase);
+            if (queryMatch.Success && int.TryParse(queryMatch.Groups[1].Value, out var id) && id != eventId)
+                return id;
+        }
         return ExtractDiaryId(response.Body, eventId);
     }
 
@@ -704,8 +741,7 @@ public sealed class PublishPlannerDiaryHandler(
             foreach (var property in element.EnumerateObject())
             {
                 if ((property.Name.Equals("diaryId", StringComparison.OrdinalIgnoreCase) ||
-                     property.Name.Equals("diaryEntryId", StringComparison.OrdinalIgnoreCase) ||
-                     property.Name.Equals("id", StringComparison.OrdinalIgnoreCase)) &&
+                     property.Name.Equals("diaryEntryId", StringComparison.OrdinalIgnoreCase)) &&
                     TryReadPositiveInt(property.Value, out var id) && id != eventId)
                     return id;
                 var nested = FindDiaryId(property.Value, eventId);

@@ -35,6 +35,11 @@ public interface IIntelligentGolfTransport
         string path,
         CancellationToken cancellationToken = default);
 
+    Task<IntelligentGolfTransportResponse> GetResponseFollowingRedirectsAsync(
+        string path,
+        string referrerPath,
+        CancellationToken cancellationToken = default);
+
     Task<HtmlDocument> GetDocumentAsync(
         string path,
         CancellationToken cancellationToken = default);
@@ -55,7 +60,10 @@ public interface IIntelligentGolfTransport
         CancellationToken cancellationToken = default);
 }
 
-public sealed record IntelligentGolfTransportResponse(string Body, Uri? FinalUri);
+public sealed record IntelligentGolfTransportResponse(
+    string Body,
+    Uri? FinalUri,
+    IReadOnlyList<Uri>? RedirectUris = null);
 
 public interface IIntelligentGolfSession
 {
