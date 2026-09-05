@@ -1,0 +1,16 @@
+diff --git a/wwwroot/index.html b/wwwroot/index.html
+--- a/wwwroot/index.html
++++ b/wwwroot/index.html
+@@ -132 +132,5 @@
+-          <h1><span>Preserve every</span><span>name <em>on every</em></span><span>trophy.</span></h1>
++          <h1>
++            <span>Preserve every</span>
++            <span>name <em>on every</em></span>
++            <span>trophy.</span>
++          </h1>
+diff --git a/wwwroot/marketing.css b/wwwroot/marketing.css
+--- a/wwwroot/marketing.css
++++ b/wwwroot/marketing.css
+@@ -424 +424 @@
+-  .marketing-home .hero h1 { font-size: clamp(48px, 14vw, 60px); line-height: .91; }
++  .marketing-home .hero h1 { font-size: clamp(45px, 12vw, 60px); line-height: .91; }

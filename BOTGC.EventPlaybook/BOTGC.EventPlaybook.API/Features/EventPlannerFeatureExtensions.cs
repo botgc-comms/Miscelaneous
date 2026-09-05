@@ -341,201 +341,78 @@ public sealed class PublishPlannerDiaryHandler(
         var request = command.Request;
         Validate(request);
         var cacheKey = $"intelligent-golf:diary-link:{request.EventPlaybookEventId.Trim().ToLowerInvariant()}";
+        var plannerCacheKey = $"intelligent-golf:diary-link:planner:{request.IntelligentGolfEventId}";
         var diaryId = request.IntelligentGolfDiaryEntryId;
         if (diaryId is null or <= 0)
         {
-            diaryId = (await cache.GetAsync<ExternalDiaryLink>(cacheKey, cancellationToken))?.IntelligentGolfDiaryEntryId;
+            diaryId = (await cache.GetAsync<ExternalDiaryLink>(cacheKey, cancellationToken))?.IntelligentGolfDiaryEntryId
+                      ?? (await cache.GetAsync<ExternalDiaryLink>(plannerCacheKey, cancellationToken))?.IntelligentGolfDiaryEntryId;
         }
 
-        var created = false;
+        await using var diaryLock = await lockManager.AcquireAsync(
+            $"intelligent-golf:member-diary:planner:{request.IntelligentGolfEventId}",
+            cancellationToken);
+        if (!diaryLock.IsAcquired)
+        {
+            throw new TimeoutException("Another request is currently publishing this member diary entry. Try again shortly.");
+        }
+
         if (diaryId is null or <= 0)
         {
-            await using var diaryLock = await lockManager.AcquireAsync(
-                $"intelligent-golf:diary-allocation:{request.EventPlaybookEventId}",
-                cancellationToken);
-            if (!diaryLock.IsAcquired)
+            diaryId = (await cache.GetAsync<ExternalDiaryLink>(cacheKey, cancellationToken))?.IntelligentGolfDiaryEntryId
+                      ?? (await cache.GetAsync<ExternalDiaryLink>(plannerCacheKey, cancellationToken))?.IntelligentGolfDiaryEntryId;
+        }
+        var created = diaryId is null or <= 0;
+        if (created)
+        {
+            IntelligentGolfTransportResponse creationResponse;
+            try
             {
-                throw new TimeoutException("Another request is currently creating this member diary entry. Try again shortly.");
+                creationResponse = await transport.GetResponseAsync(
+                    $"/event.php?eventid={request.IntelligentGolfEventId}&requestType=ajax&ajaxaction=addtodiary&bookingid={request.IntelligentGolfEventId}",
+                    cancellationToken);
+            }
+            catch (IntelligentGolfAuthenticationException)
+            {
+                throw;
+            }
+            catch (Exception exception) when (exception is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
+            {
+                throw new IntelligentGolfMutationException(
+                    "member-diary-add",
+                    $"Intelligent Golf could not create a member diary entry for planner entry {request.IntelligentGolfEventId}.",
+                    request.IntelligentGolfEventId,
+                    responseDetail: exception.Message,
+                    innerException: exception);
             }
 
-            diaryId = (await cache.GetAsync<ExternalDiaryLink>(cacheKey, cancellationToken))?.IntelligentGolfDiaryEntryId;
+            diaryId = ExtractCreatedDiaryId(creationResponse.Body);
             if (diaryId is null or <= 0)
             {
-                IntelligentGolfTransportResponse eventPage;
-                try
-                {
-                    eventPage = await transport.GetResponseAsync(
-                        $"/event.php?eventid={request.IntelligentGolfEventId}",
-                        cancellationToken);
-                }
-                catch (IntelligentGolfAuthenticationException)
-                {
-                    throw;
-                }
-                catch (Exception exception) when (exception is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
-                {
-                    throw new IntelligentGolfMutationException(
-                        "member-diary-discovery",
-                        $"Intelligent Golf planner entry {request.IntelligentGolfEventId} is linked, but its member-diary controls could not be read.",
-                        request.IntelligentGolfEventId,
-                        responseDetail: exception.Message,
-                        innerException: exception);
-                }
-                diaryId = ExtractDiaryId(eventPage, request.IntelligentGolfEventId);
-                if (diaryId is null or <= 0)
-                {
-                    var allocationPath = ExtractDiaryAllocationPath(eventPage.Body);
-                    if (string.IsNullOrWhiteSpace(allocationPath))
-                    {
-                        IntelligentGolfTransportResponse eventAdminPage;
-                        try
-                        {
-                            eventAdminPage = await transport.GetResponseAsync(
-                                $"/eventadmin.php?group=-1&booking={request.IntelligentGolfEventId}",
-                                cancellationToken);
-                        }
-                        catch (IntelligentGolfAuthenticationException)
-                        {
-                            throw;
-                        }
-                        catch (Exception exception) when (exception is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
-                        {
-                            throw new IntelligentGolfMutationException(
-                                "member-diary-discovery",
-                                $"Intelligent Golf planner entry {request.IntelligentGolfEventId} is linked, but its event-admin diary control could not be read.",
-                                request.IntelligentGolfEventId,
-                                responseDetail: exception.Message,
-                                innerException: exception);
-                        }
-
-                        diaryId = ExtractDiaryId(eventAdminPage, request.IntelligentGolfEventId);
-                        allocationPath = ExtractDiaryAllocationPath(eventAdminPage.Body);
-                    }
-
-                    if (diaryId is null or <= 0 && !string.IsNullOrWhiteSpace(allocationPath))
-                    {
-                        IntelligentGolfTransportResponse allocationResponse;
-                        try
-                        {
-                            allocationResponse = await transport.GetResponseFollowingRedirectsAsync(
-                                allocationPath,
-                                $"/eventadmin.php?group=-1&booking={request.IntelligentGolfEventId}",
-                                cancellationToken);
-                        }
-                        catch (IntelligentGolfAuthenticationException)
-                        {
-                            throw;
-                        }
-                        catch (Exception exception) when (exception is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
-                        {
-                            throw new IntelligentGolfMutationException(
-                                "member-diary-allocation",
-                                $"Intelligent Golf planner entry {request.IntelligentGolfEventId} is linked, but its member diary entry could not be created.",
-                                request.IntelligentGolfEventId,
-                                responseDetail: exception.Message,
-                                innerException: exception);
-                        }
-                        created = true;
-                        diaryId = ExtractDiaryId(allocationResponse, request.IntelligentGolfEventId);
-                    }
-                }
-
-                if (diaryId is null or <= 0)
-                {
-                    IntelligentGolfTransportResponse refreshedEventPage;
-                    try
-                    {
-                        refreshedEventPage = await transport.GetResponseAsync(
-                            $"/event.php?eventid={request.IntelligentGolfEventId}",
-                            cancellationToken);
-                    }
-                    catch (IntelligentGolfAuthenticationException)
-                    {
-                        throw;
-                    }
-                    catch (Exception exception) when (exception is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
-                    {
-                        throw new IntelligentGolfMutationException(
-                            "member-diary-allocation-response",
-                            $"Intelligent Golf accepted the diary request for planner entry {request.IntelligentGolfEventId}, but the updated event page could not be read.",
-                            request.IntelligentGolfEventId,
-                            responseDetail: exception.Message,
-                            innerException: exception);
-                    }
-                    diaryId = ExtractDiaryId(refreshedEventPage, request.IntelligentGolfEventId);
-                }
-
-                if (diaryId is null or <= 0)
-                {
-                    throw new IntelligentGolfMutationException(
-                        created ? "member-diary-allocation-response" : "member-diary-discovery",
-                        created
-                            ? "Intelligent Golf accepted the initial diary request, but Event Playbook could not read the new diary-entry ID."
-                            : "Event Playbook could not find an existing diary entry or Intelligent Golf's add-to-diary control on the linked planner entry.",
-                        request.IntelligentGolfEventId,
-                        responseDetail: created
-                            ? "No blank-ID fallback was submitted and no HTML update was attempted. Inspect the linked planner entry in Intelligent Golf before retrying."
-                            : "No diary creation request or HTML update was submitted. Confirm that this Intelligent Golf account can add planner events to the members' diary.");
-                }
-
-                await cache.SetAsync(cacheKey, new ExternalDiaryLink(diaryId.Value), LinkLifetime, cancellationToken);
-                logger.LogInformation(
-                    "Resolved Intelligent Golf diary entry {DiaryEntryId} for event {IntelligentGolfEventId}.",
-                    diaryId.Value,
-                    request.IntelligentGolfEventId);
-
+                throw new IntelligentGolfMutationException(
+                    "member-diary-add-response",
+                    "Intelligent Golf reported that the diary entry was created but did not return its ID, so no edit was submitted.",
+                    request.IntelligentGolfEventId,
+                    responseDetail: "Expected actions[].html to contain data-ajax-action=\"editdiary\" and data-ajax-data-inline-id.");
             }
+
+            await SaveDiaryLinksAsync(cacheKey, plannerCacheKey, diaryId.Value, cancellationToken);
+            logger.LogInformation(
+                "Created Intelligent Golf diary entry {DiaryEntryId}, linked to event {IntelligentGolfEventId}.",
+                diaryId.Value,
+                request.IntelligentGolfEventId);
         }
 
-        // Intelligent Golf's event page always submits this first-stage form with
-        // the allocated diary ID. It establishes the event-to-diary relationship
-        // and member visibility before diaryadmin.php accepts the richer HTML.
-        IntelligentGolfTransportResponse initialUpdateResponse;
-        try
+        var resolvedDiaryId = diaryId.GetValueOrDefault();
+        if (resolvedDiaryId <= 0)
         {
-            initialUpdateResponse = await transport.PostFormResponseAsync(
-                $"/event.php?eventid={request.IntelligentGolfEventId}&requestType=ajax&ajaxaction=confirmeditdiary",
-                new List<KeyValuePair<string, string>>
-                {
-                    new("id", diaryId.Value.ToString(CultureInfo.InvariantCulture)),
-                    new("headline", request.Headline.Trim()),
-                    new("body", HtmlToPlainText(request.BodyHtml)),
-                    // IG's own event-page request leaves this blank. The venue is
-                    // supplied by the subsequent diaryadmin.php HTML update.
-                    new("venue", string.Empty),
-                    new("visibleToMembers", "1")
-                },
-                cancellationToken);
-        }
-        catch (IntelligentGolfAuthenticationException)
-        {
-            throw;
-        }
-        catch (Exception exception) when (exception is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
-        {
-            throw new IntelligentGolfMutationException(
-                "member-diary-initialisation",
-                $"Intelligent Golf diary entry {diaryId.Value} is linked, but its member-facing details could not be saved.",
-                request.IntelligentGolfEventId,
-                diaryId,
-                exception.Message,
-                exception);
+            throw new InvalidOperationException("The Intelligent Golf diary-entry ID was not resolved.");
         }
 
-        var initialRejection = IntelligentGolfMutationResponseInspector.FindRejection(initialUpdateResponse.Body);
-        if (!string.IsNullOrWhiteSpace(initialRejection))
-        {
-            throw new IntelligentGolfMutationException(
-                "member-diary-initialisation",
-                $"Intelligent Golf diary entry {diaryId.Value} is linked, but Intelligent Golf rejected its member-facing details.",
-                request.IntelligentGolfEventId,
-                diaryId,
-                initialRejection);
-        }
-
+        // Update the newly created or previously linked entry with the full HTML.
         var fields = new List<KeyValuePair<string, string>>
         {
-            new("id", diaryId.Value.ToString(CultureInfo.InvariantCulture)),
+            new("id", resolvedDiaryId.ToString(CultureInfo.InvariantCulture)),
             new("booking", request.IntelligentGolfEventId.ToString(CultureInfo.InvariantCulture)),
             new("warning", "0"),
             new("headline", request.Headline.Trim())
@@ -567,9 +444,9 @@ public sealed class PublishPlannerDiaryHandler(
         {
             throw new IntelligentGolfMutationException(
                 "member-diary-update",
-                $"Intelligent Golf diary entry {diaryId.Value} exists, but its HTML content could not be submitted.",
+                $"Intelligent Golf diary entry {resolvedDiaryId} exists, but its HTML content could not be submitted.",
                 request.IntelligentGolfEventId,
-                diaryId,
+                resolvedDiaryId,
                 exception.Message,
                 exception);
         }
@@ -579,27 +456,27 @@ public sealed class PublishPlannerDiaryHandler(
         {
             logger.LogWarning(
                 "Intelligent Golf rejected the HTML update for diary entry {DiaryEntryId}: {Rejection}",
-                diaryId.Value,
+                resolvedDiaryId,
                 diaryRejection);
             throw new IntelligentGolfMutationException(
                 "member-diary-update",
-                $"Intelligent Golf diary entry {diaryId.Value} exists, but Intelligent Golf rejected its HTML update.",
+                $"Intelligent Golf diary entry {resolvedDiaryId} exists, but Intelligent Golf rejected its HTML update.",
                 request.IntelligentGolfEventId,
-                diaryId,
+                resolvedDiaryId,
                 diaryRejection);
         }
-        await cache.SetAsync(cacheKey, new ExternalDiaryLink(diaryId.Value), LinkLifetime, cancellationToken);
+        await SaveDiaryLinksAsync(cacheKey, plannerCacheKey, resolvedDiaryId, cancellationToken);
 
         var publishedAt = DateTimeOffset.UtcNow;
         logger.LogInformation(
             "{Operation} Intelligent Golf diary entry {DiaryEntryId}, linked to event {IntelligentGolfEventId}.",
             created ? "Created and updated" : "Updated",
-            diaryId,
+            resolvedDiaryId,
             request.IntelligentGolfEventId);
         return new PublishPlannerDiaryResult(
             request.EventPlaybookEventId,
             request.IntelligentGolfEventId,
-            diaryId.Value,
+            resolvedDiaryId,
             created,
             publishedAt);
     }
@@ -621,112 +498,52 @@ public sealed class PublishPlannerDiaryHandler(
         SynchronisePlannerEventHandler.ValidateTimeRange(request.StartTime, request.EndTime);
     }
 
-    private static string HtmlToPlainText(string html)
-    {
-        var document = new HtmlDocument();
-        document.LoadHtml(MemberEmailHtmlSanitizer.Sanitise(html));
-        return WebUtility.HtmlDecode(document.DocumentNode.InnerText)
-            .Replace("\u00a0", " ", StringComparison.Ordinal)
-            .Trim();
-    }
-
-    private static int? ExtractDiaryId(string raw, int eventId)
-    {
-        var jsonId = TryExtractDiaryIdFromJson(raw, eventId);
-        if (jsonId.HasValue) return jsonId;
-
-        var candidates = new List<int>();
-        var patterns = new[]
-        {
-            @"(?:diary(?:entry)?[_-]?id|diaryid)\s*[""':=\s]+(\d+)",
-            @"(?:editDiary|openEditDiaryEntryDialog|openDiaryEntryDialog)\s*\([^\d]*(\d+)",
-            @"diaryadmin\.php[^""'\s>]*[?&](?:id|diaryid|entryid)=(\d+)",
-            @"(?:confirmeditdiary|editdiary)[\s\S]{0,400}?[""']?id[""']?\s*[:=]\s*[""']?(\d+)"
-        };
-        foreach (var pattern in patterns)
-        {
-            foreach (Match match in Regex.Matches(raw, pattern, RegexOptions.IgnoreCase))
-            {
-                if (int.TryParse(match.Groups[1].Value, out var id) && id > 0 && id != eventId)
-                    candidates.Add(id);
-            }
-        }
-
-        var document = new HtmlDocument();
-        document.LoadHtml(raw);
-        foreach (var node in document.DocumentNode.Descendants())
-        {
-            var diaryRelated = node.Name.Contains("diary", StringComparison.OrdinalIgnoreCase) ||
-                               node.Attributes.Any(attribute =>
-                                   attribute.Name.Contains("diary", StringComparison.OrdinalIgnoreCase) ||
-                                   attribute.Value.Contains("diary", StringComparison.OrdinalIgnoreCase));
-            if (!diaryRelated) continue;
-
-            foreach (var attribute in node.Attributes)
-            {
-                if (attribute.Name.Equals("data-id", StringComparison.OrdinalIgnoreCase) ||
-                    attribute.Name.Equals("data-entry-id", StringComparison.OrdinalIgnoreCase) ||
-                    attribute.Name.Equals("data-diary-id", StringComparison.OrdinalIgnoreCase))
-                {
-                    AddDiaryCandidate(candidates, attribute.Value, eventId);
-                    continue;
-                }
-
-                if (attribute.Name.Equals("href", StringComparison.OrdinalIgnoreCase) ||
-                    attribute.Name.Equals("onclick", StringComparison.OrdinalIgnoreCase))
-                {
-                    foreach (Match match in Regex.Matches(
-                                 WebUtility.HtmlDecode(attribute.Value),
-                                 @"(?:^|[?&,('""\s])(?:id|diaryid|entryid)\s*[=:]\s*['""\s]*(\d+)",
-                                 RegexOptions.IgnoreCase))
-                    {
-                        AddDiaryCandidate(candidates, match.Groups[1].Value, eventId);
-                    }
-                }
-            }
-        }
-        // Preserve the first diary-specific match from the page. Choosing the
-        // numerically largest ID can select an unrelated record on IG admin pages.
-        return candidates.Count == 0 ? null : candidates[0];
-    }
-
-    private static void AddDiaryCandidate(ICollection<int> candidates, string? value, int eventId)
-    {
-        if (int.TryParse(value?.Trim(), out var candidate) && candidate > 0 && candidate != eventId)
-            candidates.Add(candidate);
-    }
-
-    private static int? ExtractDiaryId(IntelligentGolfTransportResponse response, int eventId)
-    {
-        foreach (var uri in (response.RedirectUris ?? []).Reverse().Append(response.FinalUri).OfType<Uri>())
-        {
-            var queryMatch = Regex.Match(
-                uri.Query,
-                @"(?:^|[?&])(?:id|diaryid|diaryentryid)=(\d+)(?:&|$)",
-                RegexOptions.IgnoreCase);
-            if (queryMatch.Success && int.TryParse(queryMatch.Groups[1].Value, out var id) && id != eventId)
-                return id;
-        }
-        return ExtractDiaryId(response.Body, eventId);
-    }
-
-    private static string? ExtractDiaryAllocationPath(string html)
-    {
-        var document = new HtmlDocument();
-        document.LoadHtml(html);
-        var link = document.DocumentNode.SelectSingleNode("//a[@id='eventbutton']")
-                   ?? document.DocumentNode.SelectSingleNode("//a[contains(@href, 'eventbookingid=')]");
-        var href = WebUtility.HtmlDecode(link?.GetAttributeValue("href", string.Empty) ?? string.Empty).Trim();
-        if (string.IsNullOrWhiteSpace(href) || Uri.TryCreate(href, UriKind.Absolute, out _)) return null;
-        return href.StartsWith('/') ? href : $"/{href}";
-    }
-
-    private static int? TryExtractDiaryIdFromJson(string raw, int eventId)
+    private static int? ExtractCreatedDiaryId(string raw)
     {
         try
         {
-            using var document = JsonDocument.Parse(raw);
-            return FindDiaryId(document.RootElement, eventId);
+            using var response = JsonDocument.Parse(raw);
+            if (!response.RootElement.TryGetProperty("actions", out var actions) ||
+                actions.ValueKind != JsonValueKind.Array)
+            {
+                return null;
+            }
+
+            var ids = new HashSet<int>();
+            foreach (var action in actions.EnumerateArray())
+            {
+                if (!action.TryGetProperty("html", out var htmlElement) ||
+                    htmlElement.ValueKind != JsonValueKind.String)
+                {
+                    continue;
+                }
+
+                var html = htmlElement.GetString() ?? string.Empty;
+                foreach (Match tagMatch in Regex.Matches(html, @"<[^>]+>", RegexOptions.Singleline))
+                {
+                    var tag = tagMatch.Value;
+                    if (!Regex.IsMatch(
+                            tag,
+                            @"\bdata-ajax-action\s*=\s*(['""])editdiary\1",
+                            RegexOptions.IgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    var idMatch = Regex.Match(
+                        tag,
+                        @"\bdata-ajax-data-inline-id\s*=\s*(['""])(\d+)\1",
+                        RegexOptions.IgnoreCase);
+                    if (idMatch.Success &&
+                        int.TryParse(idMatch.Groups[2].Value, NumberStyles.None, CultureInfo.InvariantCulture, out var id) &&
+                        id > 0)
+                    {
+                        ids.Add(id);
+                    }
+                }
+            }
+
+            return ids.Count == 1 ? ids.Single() : null;
         }
         catch (JsonException)
         {
@@ -734,37 +551,15 @@ public sealed class PublishPlannerDiaryHandler(
         }
     }
 
-    private static int? FindDiaryId(JsonElement element, int eventId)
+    private async Task SaveDiaryLinksAsync(
+        string cacheKey,
+        string plannerCacheKey,
+        int diaryId,
+        CancellationToken cancellationToken)
     {
-        if (element.ValueKind == JsonValueKind.Object)
-        {
-            foreach (var property in element.EnumerateObject())
-            {
-                if ((property.Name.Equals("diaryId", StringComparison.OrdinalIgnoreCase) ||
-                     property.Name.Equals("diaryEntryId", StringComparison.OrdinalIgnoreCase)) &&
-                    TryReadPositiveInt(property.Value, out var id) && id != eventId)
-                    return id;
-                var nested = FindDiaryId(property.Value, eventId);
-                if (nested.HasValue) return nested;
-            }
-        }
-        else if (element.ValueKind == JsonValueKind.Array)
-        {
-            foreach (var item in element.EnumerateArray())
-            {
-                var nested = FindDiaryId(item, eventId);
-                if (nested.HasValue) return nested;
-            }
-        }
-        return null;
-    }
-
-    private static bool TryReadPositiveInt(JsonElement value, out int result)
-    {
-        if (value.ValueKind == JsonValueKind.Number && value.TryGetInt32(out result)) return result > 0;
-        if (value.ValueKind == JsonValueKind.String && int.TryParse(value.GetString(), out result)) return result > 0;
-        result = 0;
-        return false;
+        var link = new ExternalDiaryLink(diaryId);
+        await cache.SetAsync(cacheKey, link, LinkLifetime, cancellationToken);
+        await cache.SetAsync(plannerCacheKey, link, LinkLifetime, cancellationToken);
     }
 
     private sealed record ExternalDiaryLink(int IntelligentGolfDiaryEntryId);

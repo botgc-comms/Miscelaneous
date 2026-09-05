@@ -1,0 +1,13 @@
+diff --git a/wwwroot/marketing.css b/wwwroot/marketing.css
+--- a/wwwroot/marketing.css
++++ b/wwwroot/marketing.css
+@@ -456,0 +457,1 @@
++
++@media (max-width: 1020px) {
++  .marketing-home .hero::after {
++    background: linear-gradient(180deg, rgba(2, 17, 13, .88), rgba(2, 17, 13, .60) 46%, rgba(2, 17, 13, .98) 88%);
++  }
++  .marketing-home .hero-inner { grid-template-columns: 1fr; gap: 54px; }
++  .marketing-home .hero-copy { max-width: 650px; }
++  .marketing-home .product-preview { margin-inline: auto; }
++}

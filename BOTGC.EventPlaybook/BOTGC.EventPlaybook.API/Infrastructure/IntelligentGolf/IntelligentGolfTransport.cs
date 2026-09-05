@@ -1,4 +1,3 @@
-using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using HtmlAgilityPack;
@@ -14,14 +13,8 @@ public sealed class IntelligentGolfTransport(
         string path,
         CancellationToken cancellationToken = default) =>
         SendResponseAsync(
-            () => new HttpRequestMessage(HttpMethod.Get, path),
+            () => CreateGetRequest(path),
             cancellationToken);
-
-    public Task<IntelligentGolfTransportResponse> GetResponseFollowingRedirectsAsync(
-        string path,
-        string referrerPath,
-        CancellationToken cancellationToken = default) =>
-        SendRedirectAwareGetResponseAsync(path, referrerPath, cancellationToken);
 
     public async Task<HtmlDocument> GetDocumentAsync(
         string path,
@@ -79,100 +72,17 @@ public sealed class IntelligentGolfTransport(
         return request;
     }
 
-    private async Task<IntelligentGolfTransportResponse> SendRedirectAwareGetResponseAsync(
-        string path,
-        string referrerPath,
-        CancellationToken cancellationToken)
+    private static HttpRequestMessage CreateGetRequest(string path)
     {
-        await session.EnsureAuthenticatedAsync(cancellationToken: cancellationToken);
-
-        var firstResponse = await SendRedirectAwareGetOnceAsync(path, referrerPath, cancellationToken);
-        if (!firstResponse.RequiresLogin)
+        var request = new HttpRequestMessage(HttpMethod.Get, path);
+        if (path.Contains("requestType=ajax", StringComparison.OrdinalIgnoreCase) ||
+            path.Contains("ajaxaction=", StringComparison.OrdinalIgnoreCase))
         {
-            return new IntelligentGolfTransportResponse(
-                firstResponse.Body,
-                firstResponse.FinalUri,
-                firstResponse.RedirectUris);
+            request.Headers.TryAddWithoutValidation("X-Requested-With", "XMLHttpRequest");
         }
 
-        logger.LogWarning("Intelligent Golf requested a new login; refreshing the shared session and retrying once.");
-        await session.EnsureAuthenticatedAsync(forceRefresh: true, cancellationToken);
-
-        var retryResponse = await SendRedirectAwareGetOnceAsync(path, referrerPath, cancellationToken);
-        if (retryResponse.RequiresLogin)
-        {
-            throw new IntelligentGolfAuthenticationException(
-                "Intelligent Golf still requires login after the shared session was refreshed.");
-        }
-
-        return new IntelligentGolfTransportResponse(
-            retryResponse.Body,
-            retryResponse.FinalUri,
-            retryResponse.RedirectUris);
+        return request;
     }
-
-    private async Task<RedirectAwareTransportResponse> SendRedirectAwareGetOnceAsync(
-        string path,
-        string referrerPath,
-        CancellationToken cancellationToken)
-    {
-        var client = httpClientFactory.CreateClient(
-            IntelligentGolfServiceCollectionExtensions.NoRedirectHttpClientName);
-        var baseUri = new Uri(session.BaseUrl.TrimEnd('/') + "/", UriKind.Absolute);
-        var currentUri = ResolveUri(baseUri, path);
-        var referrerUri = ResolveUri(baseUri, referrerPath);
-        var redirectUris = new List<Uri>();
-
-        for (var redirectCount = 0; redirectCount <= 10; redirectCount++)
-        {
-            using var request = new HttpRequestMessage(HttpMethod.Get, currentUri);
-            request.Headers.Referrer = referrerUri;
-            using var response = await client.SendAsync(request, cancellationToken);
-            var body = await response.Content.ReadAsStringAsync(cancellationToken);
-
-            if (IsRedirect(response.StatusCode) && response.Headers.Location is not null)
-            {
-                if (redirectCount == 10)
-                    throw new HttpRequestException("Intelligent Golf returned too many redirects.");
-
-                var nextUri = response.Headers.Location.IsAbsoluteUri
-                    ? response.Headers.Location
-                    : new Uri(currentUri, response.Headers.Location);
-                redirectUris.Add(nextUri);
-                referrerUri = currentUri;
-                currentUri = nextUri;
-                continue;
-            }
-
-            var finalPath = currentUri.AbsolutePath;
-            var requiresLogin = finalPath.EndsWith("/login.php", StringComparison.OrdinalIgnoreCase) ||
-                                IntelligentGolfLoginService.RequiresMemberLogin(body) ||
-                                body.Contains("Login Required", StringComparison.OrdinalIgnoreCase);
-            if (!response.IsSuccessStatusCode && !requiresLogin)
-            {
-                var detail = SummariseFailure(body);
-                var message = $"Intelligent Golf returned HTTP {(int)response.StatusCode} ({response.StatusCode}).";
-                if (!string.IsNullOrWhiteSpace(detail)) message = $"{message} {detail}";
-                throw new HttpRequestException(message, null, response.StatusCode);
-            }
-
-            return new RedirectAwareTransportResponse(body, currentUri, requiresLogin, redirectUris);
-        }
-
-        throw new HttpRequestException("Intelligent Golf redirect handling ended unexpectedly.");
-    }
-
-    private static Uri ResolveUri(Uri baseUri, string path) =>
-        Uri.TryCreate(path, UriKind.Absolute, out var absoluteUri)
-            ? absoluteUri
-            : new Uri(baseUri, path.TrimStart('/'));
-
-    private static bool IsRedirect(HttpStatusCode statusCode) => statusCode is
-        HttpStatusCode.MovedPermanently or
-        HttpStatusCode.Redirect or
-        HttpStatusCode.RedirectMethod or
-        HttpStatusCode.TemporaryRedirect or
-        HttpStatusCode.PermanentRedirect;
 
     private async Task<IntelligentGolfTransportResponse> SendResponseAsync(
         Func<HttpRequestMessage> requestFactory,
@@ -276,9 +186,12 @@ public sealed class IntelligentGolfTransport(
         // JavaScript sends so POST requests pass the same origin/referer checks.
         request.Headers.Accept.Clear();
         request.Headers.TryAddWithoutValidation("Accept", "*/*");
-        request.Headers.TryAddWithoutValidation(
-            "Origin",
-            request.RequestUri.GetLeftPart(UriPartial.Authority));
+        if (request.Method != HttpMethod.Get)
+        {
+            request.Headers.TryAddWithoutValidation(
+                "Origin",
+                request.RequestUri.GetLeftPart(UriPartial.Authority));
+        }
         request.Headers.Referrer = BuildAjaxReferrer(request.RequestUri);
     }
 
@@ -357,10 +270,4 @@ public sealed class IntelligentGolfTransport(
     }
 
     private sealed record TransportResponse(string Body, Uri? FinalUri, bool RequiresLogin);
-
-    private sealed record RedirectAwareTransportResponse(
-        string Body,
-        Uri FinalUri,
-        bool RequiresLogin,
-        IReadOnlyList<Uri> RedirectUris);
 }

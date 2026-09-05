@@ -11,7 +11,6 @@ namespace BOTGC.EventPlaybook.API.Infrastructure.IntelligentGolf;
 public static class IntelligentGolfServiceCollectionExtensions
 {
     public const string HttpClientName = "IntelligentGolf";
-    public const string NoRedirectHttpClientName = "IntelligentGolfNoRedirect";
 
     public static IServiceCollection AddIntelligentGolf(
         this IServiceCollection services,
@@ -90,19 +89,6 @@ public static class IntelligentGolfServiceCollectionExtensions
                 CookieContainer = provider.GetRequiredService<CookieContainer>(),
                 UseCookies = true,
                 AllowAutoRedirect = true
-            })
-            .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
-
-        services
-            .AddHttpClient(NoRedirectHttpClientName, (provider, client) =>
-            {
-                ConfigureClient(provider, client);
-            })
-            .ConfigurePrimaryHttpMessageHandler(provider => new HttpClientHandler
-            {
-                CookieContainer = provider.GetRequiredService<CookieContainer>(),
-                UseCookies = true,
-                AllowAutoRedirect = false
             })
             .SetHandlerLifetime(Timeout.InfiniteTimeSpan);
 
