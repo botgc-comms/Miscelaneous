@@ -71,12 +71,14 @@ OPENAI_PROMPT_MODEL=gpt-5.6
 
 ## Briefing Summary
 
-The selected event workspace includes a read-only **Briefing Summary**. It combines the event description, current event fields, every visible answered planning question and the active task plan into:
+The selected event workspace includes a read-only **Briefing Summary**. It combines the event description, current event fields, every visible answered planning question, recorded outcomes and explicitly classified staff duties into:
 
-- a concise management-facing event briefing;
+- a concise, copyable event summary for the planner, describing the event rather than reporting task progress;
 - key information and relevant operational sections;
-- a separate staff briefing divided into preparation, event-day work and afterwards;
-- a printable A4 notice containing key contacts and unresolved points.
+- a separate staff briefing divided into immediate setup, delivery and close-down, with every action labelled for the relevant team;
+- a printable A4 notice containing key contacts and only unresolved points that affect event delivery.
+
+Planning deadlines are never treated as staff instructions. A task only supplies an action to the staff briefing when its Playbook definition contains explicit `staffBriefing` metadata with a phase, audience and practical instruction. The Playbook administration form applies the same distinction to newly added tasks. Catering also records food covers, agreed meal choices, service time, dietary requirements and event-specific bar hours so the Kitchen and Bar sections contain usable facts. Internally prepared food and external caterers follow separate operational paths, with supplier liaison assigned instead of kitchen preparation when an outside provider is responsible.
 
 The saved briefing includes a fingerprint of all its source information. Changing an event field, answer, task owner, task note, due date or completion state makes the previous briefing stale. Opening the Briefing Summary automatically generates a replacement; stale copy may be viewed while generation is running but cannot be printed as current.
 

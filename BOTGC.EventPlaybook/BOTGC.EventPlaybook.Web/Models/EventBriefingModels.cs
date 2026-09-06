@@ -17,6 +17,7 @@ public sealed class EventBriefingRequest
 
 public sealed class EventBriefingAnswer
 {
+    public string QuestionId { get; init; } = string.Empty;
     public required string Module { get; init; }
     public required string Section { get; init; }
     public required string Question { get; init; }
@@ -25,7 +26,6 @@ public sealed class EventBriefingAnswer
 
 public sealed class EventBriefingTask
 {
-    public required string Phase { get; init; }
     public required string Area { get; init; }
     public required string Title { get; init; }
     public string Detail { get; init; } = string.Empty;
@@ -33,6 +33,9 @@ public sealed class EventBriefingTask
     public string Owner { get; init; } = string.Empty;
     public string Notes { get; init; } = string.Empty;
     public bool Completed { get; init; }
+    public string StaffBriefingPhase { get; init; } = string.Empty;
+    public string StaffBriefingAudience { get; init; } = string.Empty;
+    public string StaffBriefingInstruction { get; init; } = string.Empty;
 }
 
 public sealed class EventBriefingResult
@@ -62,9 +65,15 @@ public sealed class StaffBriefingResult
 {
     public required string Heading { get; init; }
     public required string Introduction { get; init; }
-    public List<string> Preparation { get; init; } = [];
-    public List<string> EventDay { get; init; } = [];
-    public List<string> Afterwards { get; init; } = [];
+    public List<StaffBriefingAction> Preparation { get; init; } = [];
+    public List<StaffBriefingAction> EventDay { get; init; } = [];
+    public List<StaffBriefingAction> Afterwards { get; init; } = [];
     public List<string> KeyContacts { get; init; } = [];
     public List<string> ImportantNotes { get; init; } = [];
+}
+
+public sealed class StaffBriefingAction
+{
+    public required string Audience { get; init; }
+    public required string Instruction { get; init; }
 }

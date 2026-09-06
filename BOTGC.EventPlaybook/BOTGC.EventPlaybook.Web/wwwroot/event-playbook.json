@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "2.6",
+  "schemaVersion": "2.7",
   "id": "botgc-event-playbook",
   "title": "Event Playbook",
   "description": "A data-driven event planning guide that turns answers into dated, assignable tasks, operational advisories and reusable event knowledge.",
@@ -998,7 +998,12 @@
               },
               "source": "refined",
               "responsibleArea": "Golf Operations",
-              "defaultOwnerRoleId": "professional-shop"
+              "defaultOwnerRoleId": "professional-shop",
+              "staffBriefing": {
+                "phase": "event-day",
+                "audience": "Golf Operations",
+                "instruction": "Collect scores, calculate the results and have the final result ready for the presentation."
+              }
             },
             {
               "id": "additional-golf-fees",
@@ -1042,7 +1047,12 @@
               },
               "source": "refined",
               "responsibleArea": "Golf Operations",
-              "defaultOwnerRoleId": "professional-shop"
+              "defaultOwnerRoleId": "professional-shop",
+              "staffBriefing": {
+                "phase": "event-day",
+                "audience": "Professional Shop",
+                "instruction": "Collect the agreed event-day golf fees and retain the information needed for reconciliation."
+              }
             }
           ]
         },
@@ -1165,7 +1175,12 @@
               },
               "source": "refined",
               "responsibleArea": "Golf Operations",
-              "defaultOwnerRoleId": "golf-manager"
+              "defaultOwnerRoleId": "golf-manager",
+              "staffBriefing": {
+                "phase": "before-event",
+                "audience": "Golf Operations",
+                "instruction": "Position all agreed on-course signage before players arrive."
+              }
             },
             {
               "id": "competition-markers-task",
@@ -1189,7 +1204,12 @@
               },
               "source": "refined",
               "responsibleArea": "Golf Operations",
-              "defaultOwnerRoleId": "golf-manager"
+              "defaultOwnerRoleId": "golf-manager",
+              "staffBriefing": {
+                "phase": "before-event",
+                "audience": "Golf Operations",
+                "instruction": "Position the agreed nearest-the-pin and longest-drive markers on the correct holes."
+              }
             },
             {
               "id": "special-scorecards-task",
@@ -1305,7 +1325,12 @@
               },
               "source": "refined",
               "responsibleArea": "Event Coordination",
-              "defaultOwnerRoleId": "event-coordinator"
+              "defaultOwnerRoleId": "event-coordinator",
+              "staffBriefing": {
+                "phase": "before-event",
+                "audience": "Registration team",
+                "instruction": "Set up the player registration or sign-in point and have it staffed before arrivals begin."
+              }
             },
             {
               "id": "arrival-direction-signage",
@@ -1331,7 +1356,12 @@
               },
               "source": "refined",
               "responsibleArea": "Clubhouse",
-              "defaultOwnerRoleId": "clubhouse"
+              "defaultOwnerRoleId": "clubhouse",
+              "staffBriefing": {
+                "phase": "before-event",
+                "audience": "Clubhouse / Front of House",
+                "instruction": "Position the agreed arrival and registration signage before guests arrive."
+              }
             },
             {
               "id": "starter-required",
@@ -1357,7 +1387,12 @@
               },
               "source": "refined",
               "responsibleArea": "Golf Operations",
-              "defaultOwnerRoleId": "golf-manager"
+              "defaultOwnerRoleId": "golf-manager",
+              "staffBriefing": {
+                "phase": "event-day",
+                "audience": "Starter",
+                "instruction": "Manage the first tee and start players in accordance with the agreed event format and timings."
+              }
             },
             {
               "id": "course-marshals-required",
@@ -1384,7 +1419,12 @@
               },
               "source": "refined",
               "responsibleArea": "Golf Operations",
-              "defaultOwnerRoleId": "event-coordinator"
+              "defaultOwnerRoleId": "event-coordinator",
+              "staffBriefing": {
+                "phase": "event-day",
+                "audience": "Course marshals",
+                "instruction": "Cover the agreed on-course positions and follow the event lead's safety and escalation instructions."
+              }
             }
           ]
         }
@@ -1838,7 +1878,12 @@
               },
               "source": "refined",
               "responsibleArea": "Clubhouse",
-              "defaultOwnerRoleId": "clubhouse"
+              "defaultOwnerRoleId": "clubhouse",
+              "staffBriefing": {
+                "phase": "before-event",
+                "audience": "Clubhouse / Front of House",
+                "instruction": "Lay out the prize table, presentation cloth, trophies, prizes and winner labels before the presentation."
+              }
             },
             {
               "id": "presentation-microphone-needed",
@@ -1864,7 +1909,12 @@
               },
               "source": "refined",
               "responsibleArea": "Clubhouse",
-              "defaultOwnerRoleId": "clubhouse"
+              "defaultOwnerRoleId": "clubhouse",
+              "staffBriefing": {
+                "phase": "before-event",
+                "audience": "Clubhouse / Front of House",
+                "instruction": "Set up and test the microphone or PA system before it is needed."
+              }
             },
             {
               "id": "speaker-required",
@@ -1891,7 +1941,12 @@
               },
               "source": "refined",
               "responsibleArea": "Event Coordination",
-              "defaultOwnerRoleId": "event-coordinator"
+              "defaultOwnerRoleId": "event-coordinator",
+              "staffBriefing": {
+                "phase": "event-day",
+                "audience": "Presentation host",
+                "instruction": "Follow the agreed presentation running order and make the welcome, winner and prize announcements."
+              }
             },
             {
               "id": "photos-required",
@@ -1917,7 +1972,12 @@
               },
               "source": "refined",
               "responsibleArea": "Communications",
-              "defaultOwnerRoleId": "communications"
+              "defaultOwnerRoleId": "communications",
+              "staffBriefing": {
+                "phase": "event-day",
+                "audience": "Event photographer",
+                "instruction": "Take the agreed photographs of winners, trophies and the presentation."
+              }
             }
           ]
         }
@@ -2039,6 +2099,11 @@
               "showWhen": { "all": [{ "questionId": "music-arrangement", "operator": "equals", "value": "club-playlist" }] },
               "responsibleArea": "Clubhouse",
               "defaultOwnerRoleId": "clubhouse",
+              "staffBriefing": {
+                "phase": "event-day",
+                "audience": "Clubhouse / Bar",
+                "instruction": "Run the approved event playlist at the agreed times and volume, with the backup source available."
+              },
               "source": "refined"
             },
             {
@@ -2202,6 +2267,11 @@
               "deadlineCode": "B1",
               "responsibleArea": "Clubhouse",
               "defaultOwnerRoleId": "clubhouse",
+              "staffBriefing": {
+                "phase": "before-event",
+                "audience": "Clubhouse / Front of House",
+                "instruction": "Set up the agreed room layout, performer access and technical equipment before the entertainer or speaker arrives."
+              },
               "source": "refined"
             },
             {
@@ -2213,6 +2283,11 @@
               "showWhen": { "not": { "questionId": "entertainment-technical-requirements", "operator": "contains", "value": "none" } },
               "responsibleArea": "Clubhouse",
               "defaultOwnerRoleId": "clubhouse",
+              "staffBriefing": {
+                "phase": "before-event",
+                "audience": "Clubhouse / Technical support",
+                "instruction": "Complete the soundcheck and test every required microphone, playback source, light and connection before guests need the room."
+              },
               "source": "refined"
             },
             {
@@ -2223,6 +2298,11 @@
               "deadlineCode": "DT",
               "responsibleArea": "Event Coordination",
               "defaultOwnerRoleId": "event-coordinator",
+              "staffBriefing": {
+                "phase": "event-day",
+                "audience": "Event lead / Front of House",
+                "instruction": "Receive the entertainer or speaker, show them the agreed facilities and manage the event-day running order."
+              },
               "source": "refined"
             }
           ]
@@ -2308,7 +2388,12 @@
               },
               "source": "pdf",
               "responsibleArea": "Clubhouse",
-              "defaultOwnerRoleId": "clubhouse"
+              "defaultOwnerRoleId": "clubhouse",
+              "staffBriefing": {
+                "phase": "before-event",
+                "audience": "Clubhouse / Front of House",
+                "instruction": "Set up the tables and seating exactly as recorded in the agreed room layout."
+              }
             },
             {
               "id": "remove-seating-task",
@@ -2326,7 +2411,12 @@
               },
               "source": "pdf",
               "responsibleArea": "Clubhouse",
-              "defaultOwnerRoleId": "clubhouse"
+              "defaultOwnerRoleId": "clubhouse",
+              "staffBriefing": {
+                "phase": "after-event",
+                "audience": "Clubhouse / Front of House",
+                "instruction": "Remove and store the event tables and seating, then return the room to its standard layout."
+              }
             }
           ]
         },
@@ -2435,7 +2525,12 @@
               },
               "source": "pdf",
               "responsibleArea": "Clubhouse",
-              "defaultOwnerRoleId": "clubhouse"
+              "defaultOwnerRoleId": "clubhouse",
+              "staffBriefing": {
+                "phase": "before-event",
+                "audience": "Clubhouse / Front of House",
+                "instruction": "Dress the room using the agreed theme and decoration plan before guests arrive."
+              }
             },
             {
               "id": "brief-room-task",
@@ -2488,7 +2583,12 @@
               },
               "source": "pdf",
               "responsibleArea": "Clubhouse",
-              "defaultOwnerRoleId": "clubhouse"
+              "defaultOwnerRoleId": "clubhouse",
+              "staffBriefing": {
+                "phase": "after-event",
+                "audience": "Clubhouse / Front of House",
+                "instruction": "Remove the event decorations and return the room to its standard setup."
+              }
             }
           ]
         },
@@ -2521,7 +2621,12 @@
               },
               "source": "pdf",
               "responsibleArea": "Clubhouse",
-              "defaultOwnerRoleId": "clubhouse"
+              "defaultOwnerRoleId": "clubhouse",
+              "staffBriefing": {
+                "phase": "before-event",
+                "audience": "Clubhouse / Bar",
+                "instruction": "Set the agreed television channel or stream on the specified display and confirm it is working before the event."
+              }
             }
           ]
         }
@@ -2553,6 +2658,71 @@
               "label": "From what time is catering likely to be required?",
               "required": false,
               "source": "expanded"
+            },
+            {
+              "id": "bar-service-required",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will the bar be open specifically to support this event?",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "bar-service-start",
+              "type": "question",
+              "answerType": "time",
+              "label": "From what time should event bar service be available?",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "bar-service-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "bar-service-end",
+              "type": "question",
+              "answerType": "time",
+              "label": "Until what time should event bar service remain available?",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "bar-service-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "event-day-bar-service-task",
+              "type": "task",
+              "title": "Provide the agreed event bar service",
+              "deadlineCode": "DT",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "bar-service-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Food & Beverage",
+              "defaultOwnerRoleId": "food-beverage-manager",
+              "staffBriefing": {
+                "phase": "event-day",
+                "audience": "Bar",
+                "instruction": "Open and operate the bar for the event during the agreed service hours."
+              }
             },
             {
               "id": "extend-catering-hours",
@@ -2772,7 +2942,53 @@
               },
               "source": "pdf",
               "responsibleArea": "Food & Beverage",
-              "defaultOwnerRoleId": "food-beverage-manager"
+              "defaultOwnerRoleId": "food-beverage-manager",
+              "staffBriefing": {
+                "phase": "before-event",
+                "audience": "Supplier liaison / Front of House",
+                "instruction": "Meet the external food supplier on arrival, provide access to the agreed preparation and service areas, confirm power and waste arrangements, and report any problem to the event lead."
+              }
+            },
+            {
+              "id": "external-food-service-liaison-task",
+              "type": "task",
+              "title": "Provide event-day liaison for the external food supplier",
+              "detail": "Be the supplier's named club contact during setup and service, coordinate with the bar and front-of-house teams, and resolve or escalate operational problems.",
+              "deadlineCode": "DT",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "food-prepared",
+                    "operator": "equals",
+                    "value": true
+                  },
+                  {
+                    "questionId": "external-food-supplier",
+                    "operator": "equals",
+                    "value": true
+                  },
+                  {
+                    "questionId": "catering-covers",
+                    "operator": "answered"
+                  },
+                  {
+                    "questionId": "agreed-menu-choices",
+                    "operator": "answered"
+                  },
+                  {
+                    "questionId": "meal-service-time",
+                    "operator": "answered"
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Food & Beverage",
+              "defaultOwnerRoleId": "food-beverage-manager",
+              "staffBriefing": {
+                "phase": "event-day",
+                "audience": "Supplier liaison / Front of House",
+                "instruction": "Act as the external food supplier's club contact throughout setup and service, confirm the recorded covers, menu, service time and dietary requirements, and coordinate any changes with the event lead."
+              }
             },
             {
               "id": "supplier-briefing-task",
@@ -2867,6 +3083,160 @@
               "defaultOwnerRoleId": "food-beverage-manager"
             },
             {
+              "id": "catering-covers",
+              "type": "question",
+              "answerType": "number",
+              "label": "How many food covers are required for the event?",
+              "unit": "covers",
+              "min": 1,
+              "max": 1000,
+              "helpText": "Use the confirmed catering number rather than the broader attendance estimate, whether food is provided by the club or an external supplier.",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "food-prepared",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "agreed-menu-choices",
+              "type": "question",
+              "answerType": "text",
+              "label": "What food and meal choices have been agreed for the event?",
+              "helpText": "Record the wording the catering provider, bar and front-of-house teams need—for example each main choice, sides and desserts.",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "food-prepared",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "meal-service-time",
+              "type": "question",
+              "answerType": "time",
+              "label": "At what time should food service begin?",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "food-prepared",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "dietary-requirements-summary",
+              "type": "question",
+              "answerType": "text",
+              "label": "What dietary, allergen or alternative-meal requirements must the catering provider and service team know?",
+              "helpText": "Record confirmed requirements or state that none are currently known; do not include unnecessary personal medical information, whether food is provided internally or externally.",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "food-prepared",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "food-service-readiness-task",
+              "type": "task",
+              "title": "Complete the kitchen and food-service setup for the agreed menu",
+              "deadlineCode": "B1",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "food-prepared",
+                    "operator": "equals",
+                    "value": true
+                  },
+                  {
+                    "questionId": "external-food-supplier",
+                    "operator": "equals",
+                    "value": false
+                  },
+                  {
+                    "questionId": "catering-covers",
+                    "operator": "answered"
+                  },
+                  {
+                    "questionId": "agreed-menu-choices",
+                    "operator": "answered"
+                  },
+                  {
+                    "questionId": "meal-service-time",
+                    "operator": "answered"
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Food & Beverage",
+              "defaultOwnerRoleId": "food-beverage-manager",
+              "staffBriefing": {
+                "phase": "before-event",
+                "audience": "Kitchen & Catering",
+                "instruction": "Complete food preparation and service setup for the recorded covers, menu choices, service time and dietary requirements."
+              }
+            },
+            {
+              "id": "event-day-food-service-task",
+              "type": "task",
+              "title": "Prepare and serve the agreed event menu",
+              "deadlineCode": "DT",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "food-prepared",
+                    "operator": "equals",
+                    "value": true
+                  },
+                  {
+                    "questionId": "external-food-supplier",
+                    "operator": "equals",
+                    "value": false
+                  },
+                  {
+                    "questionId": "catering-covers",
+                    "operator": "answered"
+                  },
+                  {
+                    "questionId": "agreed-menu-choices",
+                    "operator": "answered"
+                  },
+                  {
+                    "questionId": "meal-service-time",
+                    "operator": "answered"
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Food & Beverage",
+              "defaultOwnerRoleId": "food-beverage-manager",
+              "staffBriefing": {
+                "phase": "event-day",
+                "audience": "Kitchen & Catering",
+                "instruction": "Prepare and serve the agreed meal choices at the recorded service time, including the confirmed dietary alternatives."
+              }
+            },
+            {
               "id": "printed-menus",
               "type": "question",
               "answerType": "yesNo",
@@ -2935,7 +3305,12 @@
               },
               "source": "pdf",
               "responsibleArea": "Food & Beverage",
-              "defaultOwnerRoleId": "food-beverage-manager"
+              "defaultOwnerRoleId": "food-beverage-manager",
+              "staffBriefing": {
+                "phase": "before-event",
+                "audience": "Kitchen & Catering",
+                "instruction": "Display the agreed food-service menu on the selected clubhouse screen before ordering begins."
+              }
             },
             {
               "id": "menu-briefing-task",
@@ -3031,7 +3406,12 @@
               },
               "source": "pdf",
               "responsibleArea": "Golf Operations",
-              "defaultOwnerRoleId": "professional-shop"
+              "defaultOwnerRoleId": "professional-shop",
+              "staffBriefing": {
+                "phase": "event-day",
+                "audience": "Professional Shop",
+                "instruction": "Collect meal orders using the agreed method and cut-off time, then pass them to the kitchen."
+              }
             },
             {
               "id": "kitchen-transfer-task",
@@ -3049,7 +3429,12 @@
               },
               "source": "pdf",
               "responsibleArea": "Food & Beverage",
-              "defaultOwnerRoleId": "food-beverage-manager"
+              "defaultOwnerRoleId": "food-beverage-manager",
+              "staffBriefing": {
+                "phase": "event-day",
+                "audience": "Kitchen",
+                "instruction": "Receive and process orders from the Professional Shop using the agreed transfer method."
+              }
             },
             {
               "id": "organiser-order-task",
@@ -3086,7 +3471,12 @@
               },
               "source": "pdf",
               "responsibleArea": "Food & Beverage",
-              "defaultOwnerRoleId": "food-beverage-manager"
+              "defaultOwnerRoleId": "food-beverage-manager",
+              "staffBriefing": {
+                "phase": "event-day",
+                "audience": "Bar",
+                "instruction": "Collect meal orders at the bar using the agreed method and pass them to the kitchen."
+              }
             }
           ]
         },
@@ -3193,7 +3583,12 @@
               },
               "source": "pdf",
               "responsibleArea": "Finance",
-              "defaultOwnerRoleId": "finance"
+              "defaultOwnerRoleId": "finance",
+              "staffBriefing": {
+                "phase": "event-day",
+                "audience": "Front of House",
+                "instruction": "Distribute the food or drink vouchers at the agreed point and explain how guests should use them."
+              }
             },
             {
               "id": "collect-payment-task",
@@ -3211,7 +3606,12 @@
               },
               "source": "pdf",
               "responsibleArea": "Finance",
-              "defaultOwnerRoleId": "finance"
+              "defaultOwnerRoleId": "finance",
+              "staffBriefing": {
+                "phase": "after-event",
+                "audience": "Finance / Cash handling",
+                "instruction": "Collect the meal payments, complete the agreed cash or card handover and provide the totals to Accounts."
+              }
             }
           ]
         }
@@ -3448,6 +3848,11 @@
               "showWhen": { "all": [{ "questionId": "admission-payment-timing", "operator": "contains", "value": "door" }] },
               "responsibleArea": "Administration",
               "defaultOwnerRoleId": "office",
+              "staffBriefing": {
+                "phase": "before-event",
+                "audience": "Admissions / Front of House",
+                "instruction": "Set up the admission desk with the final guest list, ticket checks and working payment facilities before doors open."
+              },
               "source": "refined"
             },
             {
@@ -3459,6 +3864,11 @@
               "showWhen": { "all": [{ "questionId": "admission-cash-float", "operator": "equals", "value": true }] },
               "responsibleArea": "Finance",
               "defaultOwnerRoleId": "finance",
+              "staffBriefing": {
+                "phase": "before-event",
+                "audience": "Admissions / Cash handling",
+                "instruction": "Record and securely hand over the admission float before doors open."
+              },
               "source": "refined"
             },
             {
@@ -3469,6 +3879,11 @@
               "deadlineCode": "A1",
               "responsibleArea": "Finance",
               "defaultOwnerRoleId": "finance",
+              "staffBriefing": {
+                "phase": "after-event",
+                "audience": "Finance / Admissions",
+                "instruction": "Reconcile tickets, door takings, refunds and complimentary entries against the final attendance."
+              },
               "source": "refined"
             }
           ]
@@ -3950,7 +4365,12 @@
               },
               "source": "expanded",
               "responsibleArea": "Golf Operations",
-              "defaultOwnerRoleId": "golf-manager"
+              "defaultOwnerRoleId": "golf-manager",
+              "staffBriefing": {
+                "phase": "after-event",
+                "audience": "Event close-down team",
+                "instruction": "Return the clubhouse, course and event equipment to their normal state and report anything outstanding to the event lead."
+              }
             },
             {
               "id": "collect-attendee-feedback",

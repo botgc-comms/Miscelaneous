@@ -575,6 +575,60 @@
     }
   }
 
+  function replayLocalAdminCustomisations(bundledPlaybook, storedTemplate) {
+    const merged = structuredClone(bundledPlaybook);
+    const itemIds = new Set();
+    const replayedAdminItems = [];
+    for (const module of merged.modules ?? []) {
+      for (const section of module.sections ?? []) {
+        for (const item of section.items ?? []) itemIds.add(item.id);
+      }
+    }
+
+    for (const storedModule of storedTemplate.modules ?? []) {
+      const targetModule = (merged.modules ?? []).find(module => module.id === storedModule.id);
+      if (!targetModule) continue;
+      for (const storedSection of storedModule.sections ?? []) {
+        const targetSection = (targetModule.sections ?? []).find(section => section.id === storedSection.id);
+        if (!targetSection) continue;
+        for (const item of storedSection.items ?? []) {
+          if (item.source !== 'admin' || itemIds.has(item.id)) continue;
+          const replayedItem = structuredClone(item);
+          targetSection.items.push(replayedItem);
+          replayedAdminItems.push(replayedItem);
+          itemIds.add(item.id);
+        }
+      }
+    }
+
+    merged.responsibilityRoles ??= [];
+    const mergedRoleIds = new Set(merged.responsibilityRoles.map(role => role.id));
+    const storedRoles = new Map((storedTemplate.responsibilityRoles ?? []).map(role => [role.id, role]));
+    const requiredRoleIds = replayedAdminItems
+      .map(item => item.defaultOwnerRoleId)
+      .filter(Boolean);
+    for (let index = 0; index < requiredRoleIds.length; index += 1) {
+      const roleId = requiredRoleIds[index];
+      if (mergedRoleIds.has(roleId)) continue;
+      const storedRole = storedRoles.get(roleId);
+      if (!storedRole) continue;
+      merged.responsibilityRoles.push(structuredClone(storedRole));
+      mergedRoleIds.add(roleId);
+      if (storedRole.fallbackRoleId) requiredRoleIds.push(storedRole.fallbackRoleId);
+    }
+
+    merged.advisoryRules ??= [];
+    const advisoryIds = new Set(merged.advisoryRules.map(advisory => advisory.id));
+    for (const advisory of storedTemplate.advisoryRules ?? []) {
+      const isLegacyAdminAdvisory = /^advisory-\d+$/.test(String(advisory.id ?? ''));
+      if ((advisory.source !== 'admin' && !isLegacyAdminAdvisory) || advisoryIds.has(advisory.id)) continue;
+      merged.advisoryRules.push(structuredClone(advisory));
+      advisoryIds.add(advisory.id);
+    }
+
+    return merged;
+  }
+
   async function loadInitialPlaybook() {
     let storedTemplate = null;
     const storedTemplateJson = localStorage.getItem(STORAGE_TEMPLATE);
@@ -606,10 +660,19 @@
     if (storedTemplate) {
       const storedVersion = Number.parseFloat(storedTemplate.schemaVersion);
       const bundledVersion = Number.parseFloat(bundledPlaybook.schemaVersion);
-      if (Number.isFinite(storedVersion) && Number.isFinite(bundledVersion) && storedVersion >= bundledVersion) {
+      const versionsAreComparable = Number.isFinite(storedVersion) && Number.isFinite(bundledVersion);
+      const sameVersionContentDiffers = versionsAreComparable &&
+        storedVersion === bundledVersion &&
+        JSON.stringify(storedTemplate) !== JSON.stringify(bundledPlaybook);
+      if (versionsAreComparable && storedVersion > bundledVersion) {
         return storedTemplate;
       }
-      localStorage.removeItem(STORAGE_TEMPLATE);
+      if (!versionsAreComparable || bundledVersion > storedVersion || sameVersionContentDiffers) {
+        const merged = replayLocalAdminCustomisations(bundledPlaybook, storedTemplate);
+        localStorage.setItem(STORAGE_TEMPLATE, JSON.stringify(merged));
+        return merged;
+      }
+      return bundledPlaybook;
     }
 
     return bundledPlaybook;
@@ -708,6 +771,12 @@
     for (const task of tasks) {
       if (task.deadlineCode && !deadlineCodes.has(task.deadlineCode)) throw new Error(`${task.id} uses unknown deadline code ${task.deadlineCode}.`);
       if (task.defaultOwnerRoleId && !roleIds.has(task.defaultOwnerRoleId)) throw new Error(`${task.id} uses unknown owner role ${task.defaultOwnerRoleId}.`);
+      if (task.staffBriefing) {
+        const validStaffPhases = new Set(['before-event', 'event-day', 'after-event']);
+        if (!validStaffPhases.has(task.staffBriefing.phase)) throw new Error(`${task.id} uses unknown staff briefing phase ${task.staffBriefing.phase}.`);
+        if (!String(task.staffBriefing.audience ?? '').trim()) throw new Error(`${task.id} must name the staff audience for its briefing instruction.`);
+        if (!String(task.staffBriefing.instruction ?? '').trim()) throw new Error(`${task.id} must provide a practical staff briefing instruction.`);
+      }
     }
 
     for (const advisory of candidate.advisoryRules ?? []) {
@@ -1937,6 +2006,7 @@
           const answer = formatBriefingAnswer(item, value);
           if (!answer) continue;
           answers.push({
+            questionId: item.id,
             module: module.title,
             section: section.title,
             question: item.label,
@@ -1949,20 +2019,20 @@
     const tasks = getActiveTasks(event).map(task => {
       const ownerReference = taskAssignmentReference(task.state) ?? task.state.assignee;
       const owner = assignmentDisplay(ownerReference, task.state.assignee || (task.item.defaultOwnerRoleId ? roleById(task.item.defaultOwnerRoleId)?.name : '') || '');
-      const phase = ['A1', 'A2'].includes(task.item.deadlineCode)
-        ? 'afterwards'
-        : task.item.deadlineCode === 'DT'
-          ? 'event-day'
-          : 'preparation';
+      const staffBriefing = task.item.staffBriefing && typeof task.item.staffBriefing === 'object'
+        ? task.item.staffBriefing
+        : {};
       return {
-        phase,
         area: task.item.responsibleArea ?? task.module.title,
         title: task.item.title,
         detail: getTaskDetail(task.item, event),
         dueDate: task.dueDate ? formatDate(task.dueDate) : '',
         owner,
         completed: task.state.completed === true,
-        notes: String(task.state.notes ?? '').trim()
+        notes: String(task.state.notes ?? '').trim(),
+        staffBriefingPhase: String(staffBriefing.phase ?? '').trim(),
+        staffBriefingAudience: String(staffBriefing.audience ?? '').trim(),
+        staffBriefingInstruction: String(staffBriefing.instruction ?? '').trim()
       };
     });
 
@@ -1983,13 +2053,13 @@
   }
 
   function briefingFingerprint(payload) {
-    const input = `briefing-v1|${playbook.schemaVersion}|${JSON.stringify(payload)}`;
+    const input = `briefing-v2|${playbook.schemaVersion}|${JSON.stringify(payload)}`;
     let hash = 2166136261;
     for (let index = 0; index < input.length; index += 1) {
       hash ^= input.charCodeAt(index);
       hash = Math.imul(hash, 16777619);
     }
-    return `v1-${(hash >>> 0).toString(16).padStart(8, '0')}-${input.length}`;
+    return `v2-${(hash >>> 0).toString(16).padStart(8, '0')}-${input.length}`;
   }
 
   function currentBriefingSource(event) {
@@ -2005,7 +2075,25 @@
   }
 
   function renderStaffBriefingSection(title, values, emptyText) {
-    return `<section class="staff-briefing-section"><h3>${escapeHtml(title)}</h3>${renderBriefingList(values, emptyText)}</section>`;
+    const actions = Array.isArray(values) ? values.filter(Boolean) : [];
+    const content = actions.length
+      ? `<ul class="staff-briefing-action-list">${actions.map(action => {
+          if (typeof action === 'string') return `<li><span>${escapeHtml(action)}</span></li>`;
+          return `<li><strong>${escapeHtml(action.audience || 'Event team')}</strong><span>${escapeHtml(action.instruction || '')}</span></li>`;
+        }).join('')}</ul>`
+      : `<p class="briefing-empty-copy">${escapeHtml(emptyText)}</p>`;
+    return `<section class="staff-briefing-section"><h3>${escapeHtml(title)}</h3>${content}</section>`;
+  }
+
+  function plannerSummaryText(briefing) {
+    const lines = [briefing.headline, briefing.eventSummary].filter(Boolean);
+    const facts = Array.isArray(briefing.keyInformation) ? briefing.keyInformation : [];
+    if (facts.length) lines.push(facts.map(fact => `${fact.label}: ${fact.value}`).join('\n'));
+    for (const section of Array.isArray(briefing.sections) ? briefing.sections : []) {
+      if (!section?.title || !Array.isArray(section.points) || !section.points.length) continue;
+      lines.push(`${section.title}\n${section.points.map(point => `• ${point}`).join('\n')}`);
+    }
+    return lines.join('\n\n').trim();
   }
 
   function renderBriefing(event) {
@@ -2025,7 +2113,7 @@
       ? { className: 'current', title: 'Briefing up to date', copy: generatedAt ? `Generated ${generatedAt}` : 'Generated from the current event plan' }
       : failed
         ? { className: 'failed', title: 'Briefing could not be refreshed', copy: briefing.error || 'The briefing service returned an error.' }
-        : { className: 'generating', title: hasSummary ? 'Refreshing after planning changes' : 'Preparing the first briefing', copy: 'The event description, answers and active work are being compiled now.' };
+        : { className: 'generating', title: hasSummary ? 'Refreshing after planning changes' : 'Preparing the first briefing', copy: 'The event details, confirmed answers and operational staff duties are being compiled now.' };
 
     return `<div class="briefing-page">
       <section class="briefing-intro-card">
@@ -2035,21 +2123,21 @@
 
       ${hasSummary ? `<section class="event-briefing-card ${current ? '' : 'stale'}">
         ${!current ? '<div class="briefing-stale-banner">The plan has changed. This previous briefing remains visible while the replacement is prepared.</div>' : ''}
-        <header><div><span class="eyebrow">Event briefing</span><h2>${escapeHtml(briefing.headline || event.name)}</h2></div><span class="briefing-readonly-badge">Read only</span></header>
+        <header><div><span class="eyebrow">Event summary for the planner</span><h2>${escapeHtml(briefing.headline || event.name)}</h2></div><div class="briefing-card-actions"><span class="briefing-readonly-badge">Read only</span><button type="button" class="button button-secondary" data-copy-planner-summary ${current ? '' : 'disabled'}>Copy summary</button></div></header>
         <p class="event-briefing-summary">${escapeHtml(briefing.eventSummary)}</p>
         ${keyInformation.length ? `<div class="briefing-key-information">${keyInformation.map(fact => `<div><small>${escapeHtml(fact.label)}</small><strong>${escapeHtml(fact.value)}</strong></div>`).join('')}</div>` : ''}
         ${sections.length ? `<div class="briefing-section-grid">${sections.map(section => `<section><h3>${escapeHtml(section.title)}</h3>${renderBriefingList(section.points, 'No additional details recorded.')}</section>`).join('')}</div>` : ''}
       </section>` : `<section class="briefing-generation-placeholder ${failed ? 'failed' : ''}"><span aria-hidden="true">${failed ? '!' : '✦'}</span><div><h2>${escapeHtml(status.title)}</h2><p>${escapeHtml(status.copy)}</p>${failed ? '<button type="button" class="button button-primary" data-retry-briefing>Try again</button>' : ''}</div></section>`}
 
       ${hasSummary ? `<section class="staff-briefing-area">
-        <header><div><span class="eyebrow">Printable staff notice</span><h2>Staff briefing</h2><p>A practical version for the staff noticeboard, covering preparation, delivery and follow-up.</p></div><button type="button" class="button button-gold" data-print-staff-briefing ${current ? '' : 'disabled'}>Print staff briefing</button></header>
+        <header><div><span class="eyebrow">Printable operational notice</span><h2>Staff briefing</h2><p>Only practical duties for the teams delivering the event—separate from the organisers’ planning checklist.</p></div><button type="button" class="button button-gold" data-print-staff-briefing ${current ? '' : 'disabled'}>Print staff briefing</button></header>
         <article class="staff-briefing-sheet" id="staff-briefing-print-area">
           <header class="staff-briefing-sheet-header"><div><img src="${escapeHtml(clubBranding.crestUrl)}" alt=""><span>${escapeHtml(clubBranding.clubName)}</span></div><small>STAFF BRIEFING</small></header>
           <div class="staff-briefing-title"><h2>${escapeHtml(staff.heading || `Staff briefing: ${event.name}`)}</h2><p>${escapeHtml(staff.introduction || briefing.eventSummary)}</p></div>
           <div class="staff-briefing-phases">
-            ${renderStaffBriefingSection('Before the event', staff.preparation, 'No specific preparation actions have been generated.')}
-            ${renderStaffBriefingSection('On the day', staff.eventDay, 'No specific event-day actions have been generated.')}
-            ${renderStaffBriefingSection('Afterwards', staff.afterwards, 'No specific follow-up actions have been generated.')}
+            ${renderStaffBriefingSection('Before guests arrive', staff.preparation, 'No immediate setup duties have been recorded.')}
+            ${renderStaffBriefingSection('During the event', staff.eventDay, 'No event-delivery duties have been recorded.')}
+            ${renderStaffBriefingSection('Close-down and afterwards', staff.afterwards, 'No immediate close-down duties have been recorded.')}
           </div>
           <div class="staff-briefing-support">
             ${renderStaffBriefingSection('Key contacts', staff.keyContacts, 'No named contacts have been recorded.')}
@@ -3395,6 +3483,15 @@
     return `<button type="button" class="button button-secondary task-workspace-action" data-task-workspace-view="${escapeHtml(item.actionView)}" data-task-workspace-event-id="${escapeHtml(event?.id ?? '')}">${escapeHtml(item.actionLabel)}</button>`;
   }
 
+  function staffBriefingPhaseLabel(item) {
+    const labels = {
+      'before-event': 'Before guests arrive',
+      'event-day': 'During the event',
+      'after-event': 'Close-down / afterwards'
+    };
+    return labels[item?.staffBriefing?.phase] ?? '';
+  }
+
   function renderInlineTask(item, event) {
     const taskState = event.taskState[item.id] ?? {};
     const dueDate = getDueDate(item.deadlineCode, event);
@@ -3425,6 +3522,7 @@
           </div>
           <div class="task-inline-meta">
             ${item.responsibleArea ? `<span class="area-chip">${escapeHtml(item.responsibleArea)}</span>` : ''}
+            ${staffBriefingPhaseLabel(item) ? `<span class="staff-duty-chip">Staff duty · ${escapeHtml(staffBriefingPhaseLabel(item))}</span>` : ''}
             ${renderTaskWorkspaceAction(item, event)}
             <div class="assignee-compact">
               <span>Owner</span>
@@ -3856,7 +3954,7 @@
             <div>
               <div class="task-module-label">${escapeHtml(module.title)}${item.responsibleArea ? ` · ${escapeHtml(item.responsibleArea)}` : ''}</div>
               <h3>${escapeHtml(item.title)}</h3>
-              <div class="task-card-summary-meta"><span class="task-owner-chip">${escapeHtml(owner)}</span><span class="task-relative-due">${escapeHtml(relativeDue)}</span>${priorLearning.length ? `<span class="task-learning-chip">↺ Learning from last time</span>` : ''}</div>
+              <div class="task-card-summary-meta"><span class="task-owner-chip">${escapeHtml(owner)}</span><span class="task-relative-due">${escapeHtml(relativeDue)}</span>${staffBriefingPhaseLabel(item) ? `<span class="staff-duty-chip">Staff duty · ${escapeHtml(staffBriefingPhaseLabel(item))}</span>` : ''}${priorLearning.length ? `<span class="task-learning-chip">↺ Learning from last time</span>` : ''}</div>
             </div>
             <div class="task-due-block ${dueDate ? '' : 'missing'} ${horizon === 'attention' ? 'urgent' : ''}">
               <span class="task-board-milestone-code">${escapeHtml(item.deadlineCode ?? '—')}</span>
@@ -5015,6 +5113,9 @@
             <label class="wide"><span>Question / task wording</span><input id="admin-wording" type="text"></label>
             <label><span>Answer type</span><select id="admin-answer-type"><option value="yesNo">Yes / No</option><option value="text">Text</option><option value="time">Time</option><option value="number">Number</option><option value="assignment">Person or role</option></select></label>
             <label><span>Deadline code (tasks)</span><select id="admin-deadline"><option value="">None</option>${playbook.deadlineCodes.map(d => `<option value="${escapeHtml(d.code)}">${escapeHtml(d.code)}</option>`).join('')}</select></label>
+            <label><span>Include in staff briefing</span><select id="admin-staff-briefing-phase"><option value="">No — planning task</option><option value="before-event">Before guests arrive</option><option value="event-day">During the event</option><option value="after-event">Close-down / afterwards</option></select></label>
+            <label><span>Staff audience</span><input id="admin-staff-briefing-audience" type="text" placeholder="e.g. Kitchen, Bar or Greens"></label>
+            <label class="wide"><span>Staff briefing instruction</span><input id="admin-staff-briefing-instruction" type="text" placeholder="A direct practical instruction for the staff delivering the event"></label>
             <label><span>Default owner role</span><select id="admin-role"><option value="">None</option>${responsibilityRoles().map(r => `<option value="${escapeHtml(r.id)}">${escapeHtml(r.name)}</option>`).join('')}</select></label>
             <label><span>Show when question</span><select id="admin-condition-question"><option value="">Always</option>${[...itemIndex.values()].filter(x => x.item.type === 'question').map(x => `<option value="${escapeHtml(x.item.id)}">${escapeHtml(x.item.label)}</option>`).join('')}</select></label>
             <label><span>Condition value</span><input id="admin-condition-value" type="text" placeholder="true, false or exact value"></label>
@@ -5870,6 +5971,21 @@
         if (!event) return;
         ensureEventBriefing(event, true);
         render();
+      });
+    });
+
+    document.querySelectorAll('[data-copy-planner-summary]').forEach(element => {
+      element.addEventListener('click', async () => {
+        const event = getActiveEvent();
+        const copy = plannerSummaryText(event?.briefing ?? {});
+        if (!copy) return;
+        try {
+          await navigator.clipboard.writeText(copy);
+          element.textContent = 'Copied';
+          setTimeout(() => { if (element.isConnected) element.textContent = 'Copy summary'; }, 1800);
+        } catch {
+          alert('The planner summary could not be copied. Select the text and copy it manually.');
+        }
       });
     });
 
@@ -6856,6 +6972,14 @@
         if (!section) return;
         const conditionQuestion = document.getElementById('admin-condition-question')?.value;
         const rawCondition = document.getElementById('admin-condition-value')?.value.trim();
+        const staffBriefingPhase = document.getElementById('admin-staff-briefing-phase')?.value || undefined;
+        const staffBriefingInstructionElement = document.getElementById('admin-staff-briefing-instruction');
+        const staffBriefingInstruction = staffBriefingInstructionElement?.value.trim() || undefined;
+        if (type === 'task' && staffBriefingPhase && !staffBriefingInstruction) {
+          alert('Enter a practical staff briefing instruction for this operational task.');
+          staffBriefingInstructionElement?.focus();
+          return;
+        }
         let conditionValue = rawCondition;
         if (rawCondition === 'true') conditionValue = true;
         if (rawCondition === 'false') conditionValue = false;
@@ -6868,6 +6992,9 @@
           answerType: document.getElementById('admin-answer-type')?.value || 'text',
           deadlineCode: document.getElementById('admin-deadline')?.value || undefined,
           defaultOwnerRoleId: document.getElementById('admin-role')?.value || undefined,
+          staffBriefingPhase,
+          staffBriefingAudience: document.getElementById('admin-staff-briefing-audience')?.value.trim() || undefined,
+          staffBriefingInstruction,
           conditionQuestion: conditionQuestion || undefined,
           conditionValue
         });
@@ -6913,7 +7040,14 @@
             const showWhen = draft.conditionQuestion ? { all: [{ questionId: draft.conditionQuestion, operator: 'equals', value: draft.conditionValue }] } : undefined;
             if (draft.type === 'task') {
               const role = (candidate.responsibilityRoles ?? []).find(item => item.id === draft.defaultOwnerRoleId);
-              section.items.push({ id: draft.id, type: 'task', title: draft.wording, deadlineCode: draft.deadlineCode, defaultOwnerRoleId: draft.defaultOwnerRoleId, responsibleArea: role?.area, showWhen, source: 'admin' });
+              const staffBriefing = draft.staffBriefingPhase
+                ? {
+                    phase: draft.staffBriefingPhase,
+                    audience: draft.staffBriefingAudience || role?.area || role?.name || 'Event team',
+                    instruction: draft.staffBriefingInstruction
+                  }
+                : undefined;
+              section.items.push({ id: draft.id, type: 'task', title: draft.wording, deadlineCode: draft.deadlineCode, defaultOwnerRoleId: draft.defaultOwnerRoleId, responsibleArea: role?.area, staffBriefing, showWhen, source: 'admin' });
             } else {
               section.items.push({ id: draft.id, type: 'question', label: draft.wording, answerType: draft.answerType, assignmentMode: draft.answerType === 'assignment' ? 'personOrRole' : undefined, required: true, showWhen, source: 'admin' });
             }
@@ -6929,7 +7063,8 @@
               triggerAnswer: draft.triggerAnswer,
               derivedCondition: { fact: draft.leftFact, operator: draft.operator, valueFact: draft.rightFact },
               message: draft.message,
-              requireOverrideReason: true
+              requireOverrideReason: true,
+              source: 'admin'
             });
           }
           validatePlaybook(candidate);
