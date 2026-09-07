@@ -3353,17 +3353,25 @@ async function sendToClubhouseScreens() {
             endDate: screenResult.endDate,
             pushConfirmed: screenResult.pushConfirmed === true,
             pushStatus: String(screenResult.pushStatus ?? ''),
+            screenCount: Number(screenResult.screenCount || 0),
+            uploadConfirmed: screenResult.uploadConfirmed === true,
+            mediaSource: String(screenResult.mediaSource ?? ''),
+            width: Number(screenResult.width || 0),
+            height: Number(screenResult.height || 0),
             updatedAt: new Date().toISOString()
         };
         const pushMessage = screenResult.pushConfirmed
-            ? 'The changes were pushed to the screens.'
+            ? `Yodeck confirmed the push to ${screenResult.screenCount} screen${screenResult.screenCount === 1 ? '' : 's'}.`
             : `The screen service accepted the push request; confirmation is still pending${screenResult.pushStatus ? ` (${screenResult.pushStatus})` : ''}.`;
+        const uploadMessage = screenResult.uploadConfirmed && screenResult.mediaSource === 'local'
+            ? `A ${screenResult.width} × ${screenResult.height} PNG file was uploaded to Yodeck's media library and finished processing.`
+            : 'Yodeck did not confirm a completed local file upload.';
         elements.shareMessage.textContent = wasUpdated
-            ? `“${screenResult.artworkName}” was updated on ${screenResult.destinationName}; its schedule now runs from ${screenResult.startDate} to ${screenResult.endDate}. ${pushMessage}`
-            : `“${screenResult.artworkName}” will appear on ${screenResult.destinationName} from ${screenResult.startDate} to ${screenResult.endDate}. ${pushMessage}`;
+            ? `“${screenResult.artworkName}” was updated on ${screenResult.destinationName} for ${screenResult.startDate} to ${screenResult.endDate}. ${uploadMessage} ${pushMessage}`
+            : `“${screenResult.artworkName}” was added to ${screenResult.destinationName} for ${screenResult.startDate} to ${screenResult.endDate}. ${uploadMessage} ${pushMessage}`;
         elements.publishDialogMessage.textContent = wasUpdated
-            ? `Updated successfully. No additional screen-library or playlist item was created. ${pushMessage}`
-            : `Sent successfully. The artwork is now scheduled for ${screenResult.destinationName}. ${pushMessage}`;
+            ? `Updated successfully. ${uploadMessage} No additional playlist item was created. ${pushMessage}`
+            : `Sent successfully. ${uploadMessage} The dated availability was retained and ${pushMessage}`;
         elements.publishDialogMessage.className = 'poster-publish-dialog-message success';
         elements.publishDialogConfirm.textContent = wasUpdated ? 'Clubhouse screens updated' : 'Sent to clubhouse screens';
 

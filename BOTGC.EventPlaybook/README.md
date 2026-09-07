@@ -229,14 +229,14 @@ It retains:
 - `gpt-image-2` image generation/editing;
 - exact event title/date/price supplied to the image model;
 - complete AI-designed poster typography rather than a browser text overlay;
-- primary 2160 × 3840 clubhouse artwork;
+- primary 2160 × 3840 clubhouse artwork, uploaded to Yodeck at its full generated resolution;
 - 1080 × 1080 email/social version;
 - 2480 × 3508 A4 version;
 - primary artwork generated first;
 - derivative formats generated from the primary campaign;
 - each image appearing as soon as it becomes available;
 - regeneration using organiser feedback;
-- real Yodeck media-library upload, event-specific tagging, availability dates and idempotent Clubhouse-playlist publishing that updates the same media item on repeat sends;
+- real binary Yodeck media-library upload, processing-state verification, event-specific tagging, screen-local availability dates and idempotent Clubhouse-playlist publishing that updates the same local media item on repeat sends before pushing the exact registered screens;
 - a future membership-email publishing seam.
 
 The Communications Centre also accepts the event name, date and description from the active Event Playbook event. A generic custom-event definition allows newly created Playbook events to create campaign artwork before they have their own permanent event-catalogue scene recipe.

@@ -818,6 +818,11 @@ app.MapPost("/api/poster/publish", async (
         return Results.BadRequest(new { error = imageError });
     }
 
+    if (!TryReadPngDimensions(imageBytes, out var imageWidth, out var imageHeight))
+    {
+        return Results.BadRequest(new { error = "The digital-screen artwork does not contain a valid PNG image header." });
+    }
+
     var tags = request.Tags
         .Select(tag => tag.Trim())
         .Where(tag => !string.IsNullOrWhiteSpace(tag))
@@ -840,7 +845,9 @@ app.MapPost("/api/poster/publish", async (
             EndDate = eventDate,
             MediaName = request.MediaName.Trim(),
             Tags = tags,
-            ImageBytes = imageBytes
+            ImageBytes = imageBytes,
+            ImageWidth = imageWidth,
+            ImageHeight = imageHeight
         }, cancellationToken);
 
         return Results.Ok(new
@@ -858,9 +865,15 @@ app.MapPost("/api/poster/publish", async (
                 operation = published.MediaWasCreated ? "created" : "updated",
                 playlistChanged = published.PlaylistWasChanged,
                 duplicatePlaylistEntriesRemoved = published.DuplicatePlaylistEntriesRemoved,
+                uploadConfirmed = published.MediaUploadConfirmed,
+                mediaSource = published.MediaSource,
+                fileExtension = published.FileExtension,
+                width = published.ImageWidth,
+                height = published.ImageHeight,
                 pushRequested = published.ScreenPushRequested,
                 pushConfirmed = published.ScreenPushConfirmed,
                 pushStatus = published.ScreenPushStatus,
+                screenCount = published.ScreenCount,
                 published.Tags
             }
         });
@@ -1387,6 +1400,34 @@ static bool TryDecodePngDataUrl(string? dataUrl, out byte[] imageBytes, out stri
         return false;
     }
 
+    return true;
+}
+
+static bool TryReadPngDimensions(byte[] imageBytes, out int width, out int height)
+{
+    width = 0;
+    height = 0;
+
+    // PNG signature (8), IHDR length (4), IHDR name (4), width (4), height (4).
+    if (imageBytes.Length < 24 ||
+        imageBytes[12] != (byte)'I' ||
+        imageBytes[13] != (byte)'H' ||
+        imageBytes[14] != (byte)'D' ||
+        imageBytes[15] != (byte)'R')
+    {
+        return false;
+    }
+
+    var unsignedWidth = System.Buffers.Binary.BinaryPrimitives.ReadUInt32BigEndian(imageBytes.AsSpan(16, 4));
+    var unsignedHeight = System.Buffers.Binary.BinaryPrimitives.ReadUInt32BigEndian(imageBytes.AsSpan(20, 4));
+    if (unsignedWidth == 0 || unsignedHeight == 0 ||
+        unsignedWidth > int.MaxValue || unsignedHeight > int.MaxValue)
+    {
+        return false;
+    }
+
+    width = (int)unsignedWidth;
+    height = (int)unsignedHeight;
     return true;
 }
 

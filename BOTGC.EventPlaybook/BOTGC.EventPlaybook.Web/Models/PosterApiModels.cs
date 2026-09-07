@@ -135,6 +135,10 @@ public sealed class YodeckPublishCommand
     public required IReadOnlyList<string> Tags { get; init; }
 
     public required byte[] ImageBytes { get; init; }
+
+    public required int ImageWidth { get; init; }
+
+    public required int ImageHeight { get; init; }
 }
 
 public sealed class YodeckPublishResult
@@ -159,11 +163,23 @@ public sealed class YodeckPublishResult
 
     public required int DuplicatePlaylistEntriesRemoved { get; init; }
 
+    public required bool MediaUploadConfirmed { get; init; }
+
+    public required string MediaSource { get; init; }
+
+    public required string FileExtension { get; init; }
+
+    public required int ImageWidth { get; init; }
+
+    public required int ImageHeight { get; init; }
+
     public required bool ScreenPushRequested { get; init; }
 
     public required bool ScreenPushConfirmed { get; init; }
 
     public required string ScreenPushStatus { get; init; }
+
+    public required int ScreenCount { get; init; }
 }
 
 public sealed class MemberDiaryPublishRequest

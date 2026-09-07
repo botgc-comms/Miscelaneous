@@ -2415,7 +2415,7 @@
     if (state.activeView === 'retrospective' && event) ensureFeedbackLoaded(event.id);
     if (state.activeView === 'briefing' && event) ensureEventBriefing(event);
     if (state.activeView === 'artwork' && event) {
-      import('./poster-app.js?v=20260904-communications-centre-1')
+      import('./poster-app.js?v=20260907-yodeck-upload-2')
         .then(module => module.mountPosterStudio({
           eventId: event.id,
           eventName: event.name,
@@ -2840,14 +2840,14 @@
             <button id="closePosterPublishDialog" class="icon-button" type="button" aria-label="Close clubhouse screen sharing dialog">×</button>
           </div>
           <div class="poster-publish-body">
-            <aside class="poster-publish-preview"><img id="posterPublishPreview" alt="Artwork selected for the clubhouse screens"><span>Clubhouse Digital Display</span><small>2160 × 3840 PNG</small></aside>
+            <aside class="poster-publish-preview"><img id="posterPublishPreview" alt="Artwork selected for the clubhouse screens"><span>Clubhouse Digital Display</span><small>Full-resolution PNG delivery file</small></aside>
             <div class="poster-publish-fields">
               <div id="yodeckConnectionStatus" class="yodeck-connection-status checking"><span></span><div><strong>Checking the clubhouse screen connection…</strong><small>The connection is managed securely by Event Playbook.</small></div></div>
               <label class="field"><span>Artwork name</span><input id="yodeckMediaName" type="text" maxlength="180" required><small>This is how the artwork will be identified in the screen library.</small></label>
               <label class="field"><span>Tags</span><input id="yodeckTags" type="text" placeholder="event-playbook, clubhouse-screens, event-name"><small>Separate tags with commas. Event Playbook is always added automatically.</small></label>
               <div class="poster-publish-date-grid">
-                <label class="field"><span>Start showing</span><input id="yodeckStartDate" type="date" required><small>The poster becomes available from the start of this day.</small></label>
-                <label class="field"><span>Stop showing</span><input id="yodeckEndDate" type="date" readonly><small>Fixed to the end of the selected event date.</small></label>
+                <label class="field"><span>Start showing</span><input id="yodeckStartDate" type="date" required><small>Yodeck makes the uploaded file available from this local calendar date.</small></label>
+                <label class="field"><span>Stop showing</span><input id="yodeckEndDate" type="date" readonly><small>Fixed to the end of the selected event date in Yodeck.</small></label>
               </div>
               <div class="yodeck-playlist-summary"><span>Destination</span><strong id="yodeckPlaylistName">Clubhouse screens</strong><small>The artwork is added to the existing screen rotation without replacing anything already there.</small></div>
               <div id="posterPublishDialogMessage" class="poster-publish-dialog-message" role="status"></div>

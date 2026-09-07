@@ -17,7 +17,7 @@ Keeping the API separate prevents Intelligent Golf credentials and its authentic
    - `DEMO_PASSWORD`: a strong shared password for approved testers;
    - `ADMIN_PASSWORD`: a different strong password for the people allowed to change Playbook rules and plugin credentials;
    - `OPENAI_API_KEY`: the server-side OpenAI API key, or leave it empty to use mock artwork generation;
-   - `YODECK_API_TOKEN`: an API token with Media and Playlists view/change access;
+   - `YODECK_API_TOKEN`: an API token with Media and Playlists view/change, Screens view and Push to Screens access;
    - `YODECK_PLAYLIST_ID`: the numeric ID of the existing Clubhouse playlist;
    - no separate member-diary endpoint or token is needed; that integration uses the Intelligent Golf plugin session held by the private API.
 6. Deploy or sync the Blueprint. This keeps the existing Web service and creates `botgc-event-playbook-api-dev`.
@@ -64,7 +64,7 @@ Secrets belong in Render's Environment settings. Do not commit them to Git, the 
 | `IntelligentGolf__EmailFromAddress` | Legacy fallback only | Normally saved through Plugin administration. |
 | `Cache__Provider` | No | `Memory` for the current single-instance prototype; use Redis only before scaling the API horizontally. |
 
-The Yodeck token requires permission to view and change both **Media** and **Playlists** in the workspace that contains the Clubhouse playlist. The first send creates a tagged PNG media item with an availability window from the chosen start date through 23:59:59 on the event date and adds it to the existing playlist. Later sends for the same Event Playbook event update that media item's image, metadata and dates in place. Event Playbook also avoids duplicate playlist references and can recognise media created by earlier versions from the event ID stored in its description. Existing unrelated playlist items are preserved.
+The Yodeck token requires permission to view and change both **Media** and **Playlists**, view **Screens**, and **Push to Screens** in the workspace that contains the Clubhouse playlist. A send creates or updates a true local full-resolution PNG, completes the signed binary upload, and waits for Yodeck to report the media state as `finished` before touching the playlist. The selected availability dates are sent as screen-local timestamps, from 00:00:00 on the chosen start date through 23:59:59 on the event date. Event Playbook then verifies the playlist entry, retrieves the registered screens in that workspace, pushes those exact device IDs with download time slots bypassed, and succeeds only if Yodeck confirms every target screen. URL-imported legacy items are replaced by local-upload items, duplicate playlist references are removed, and unrelated playlist items are preserved.
 
 The member-diary workflow uses the private API's authenticated Intelligent Golf session. Event Playbook keeps a persistent mapping from its event ID to the corresponding IG event and diary-entry IDs. Creating or changing an event queues a synchronisation. Publishing a member diary entry also performs this check synchronously, so an older Playbook event with no IG event is provisioned first and then receives its linked diary entry. Repeated publishing updates the same IG records rather than creating duplicates. The browser never receives the IG credentials or session token.
 
