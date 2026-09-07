@@ -241,7 +241,7 @@ public sealed class YodeckPublisherTests
     }
 
     [Fact]
-    public async Task PublishAsync_PushesExactRegisteredScreensAndWaitsForCompletion()
+    public async Task PublishAsync_PushesPlaylistWorkspaceAndWaitsForCompletion()
     {
         var scenario = new YodeckScenario
         {
@@ -255,15 +255,12 @@ public sealed class YodeckPublisherTests
             request.Method == HttpMethod.Post && request.Path == "/api/v2/screens/push");
         var pushBody = JsonNode.Parse(push.TextBody!)!.AsObject();
         Assert.False(pushBody["use_download_timeslots"]!.GetValue<bool>());
-        Assert.False(pushBody.ContainsKey("filter_workspaces"));
-        Assert.Equal([501L, 502L], pushBody["filter_devices"]!.AsArray()
+        Assert.False(pushBody.ContainsKey("filter_devices"));
+        Assert.Equal([9L], pushBody["filter_workspaces"]!.AsArray()
             .Select(value => value!.GetValue<long>())
             .ToList());
-        var screenLookup = Assert.Single(scenario.Requests, request =>
+        Assert.DoesNotContain(scenario.Requests, request =>
             request.Method == HttpMethod.Get && request.Path == "/api/v2/screens");
-        Assert.Contains("registered=true", screenLookup.Uri.Query, StringComparison.Ordinal);
-        Assert.Contains("limit=100", screenLookup.Uri.Query, StringComparison.Ordinal);
-        Assert.Contains("workspace=9", screenLookup.Uri.Query, StringComparison.Ordinal);
         Assert.Equal(2, scenario.Requests.Count(request =>
             request.Method == HttpMethod.Get && request.Path == "/api/v2/screens/push/status/job-1"));
         Assert.True(result.ScreenPushConfirmed);
@@ -272,7 +269,7 @@ public sealed class YodeckPublisherTests
     }
 
     [Fact]
-    public async Task PublishAsync_FailsUnlessEveryTargetScreenIsConfirmedByYodeck()
+    public async Task PublishAsync_AcceptsCompletedWorkspacePushWhenYodeckReportsOnlyAffectedScreens()
     {
         var scenario = new YodeckScenario
         {
@@ -281,10 +278,36 @@ public sealed class YodeckPublisherTests
         };
         var publisher = CreatePublisher(scenario);
 
+        var result = await publisher.PublishAsync(CreateCommand(), CancellationToken.None);
+
+        Assert.True(result.ScreenPushConfirmed);
+        Assert.Equal("completed", result.ScreenPushStatus);
+        Assert.Equal(1, result.ScreenCount);
+    }
+
+    [Fact]
+    public async Task PublishAsync_FailsAndRecordsActivityWhenYodeckReportsFailedPush()
+    {
+        var scenario = new YodeckScenario
+        {
+            PushStatuses = new Queue<string>(["failed"])
+        };
+        var activityStore = new RecordingIntegrationActivityStore();
+        var publisher = CreatePublisher(scenario, activityStore);
+
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
             publisher.PublishAsync(CreateCommand(), CancellationToken.None));
 
-        Assert.Contains("Expected: 501, 502; confirmed: 501", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("push ended with status 'failed'", exception.Message, StringComparison.Ordinal);
+        var activity = Assert.Single(activityStore.Activities);
+        Assert.Equal("Yodeck", activity.Integration);
+        Assert.Equal("Publish clubhouse screens", activity.Operation);
+        Assert.Equal("failed", activity.Outcome);
+        Assert.Equal("event-123", activity.EventPlaybookEventId);
+        Assert.Equal("Sunday Lunch", activity.EventName);
+        Assert.Equal("screen-publish", activity.Stage);
+        Assert.Null(activity.StatusCode);
+        Assert.Contains("push ended with status 'failed'", activity.Message, StringComparison.Ordinal);
     }
 
     private static YodeckPublisher CreatePublisher(

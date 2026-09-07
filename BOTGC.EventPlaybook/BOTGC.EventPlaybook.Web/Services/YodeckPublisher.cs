@@ -120,10 +120,8 @@ public sealed class YodeckPublisher(
                 matchingMedia.Select(item => ReadInt64(item, "id")).OfType<long>().ToHashSet(),
                 cancellationToken);
             await VerifyPlaylistContainsAsync(mediaId, cancellationToken);
-            failedPhase = "identify the registered Clubhouse screens";
-            var targetScreens = await GetTargetScreensAsync(workspaceId, cancellationToken);
             failedPhase = "push the changes to the screens";
-            screenPush = await PushScreensAsync(targetScreens, cancellationToken);
+            screenPush = await PushScreensAsync(workspaceId, cancellationToken);
         }
         catch (Exception exception)
         {
@@ -656,59 +654,20 @@ public sealed class YodeckPublisher(
         }
     }
 
-    private async Task<IReadOnlyList<ScreenTarget>> GetTargetScreensAsync(
+    private async Task<ScreenPushResult> PushScreensAsync(
         long? workspaceId,
         CancellationToken cancellationToken)
     {
-        var screens = new Dictionary<long, ScreenTarget>();
-        var visitedPages = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var workspaceFilter = workspaceId is > 0 ? $"&workspace={workspaceId.Value}" : string.Empty;
-        string? pageUrl = $"screens?registered=true&limit=100{workspaceFilter}";
-
-        while (!string.IsNullOrWhiteSpace(pageUrl) && visitedPages.Add(pageUrl))
+        if (workspaceId is not > 0)
         {
-            using var response = await SendYodeckAsync(
-                HttpMethod.Get,
-                pageUrl,
-                content: null,
-                cancellationToken);
-            var page = await ReadObjectAsync(response, "retrieve the registered Clubhouse screens", cancellationToken);
-            if (page["results"] is JsonArray results)
-            {
-                foreach (var screen in results.OfType<JsonObject>())
-                {
-                    var id = ReadInt64(screen, "id");
-                    if (id is not > 0) continue;
-                    screens[id.Value] = new ScreenTarget(
-                        id.Value,
-                        ReadString(screen, "name")?.Trim() ?? $"Screen {id.Value}");
-                }
-            }
-
-            pageUrl = ReadString(page, "next");
+            throw new InvalidOperationException(
+                "Yodeck did not identify the workspace containing the Clubhouse playlist, so Event Playbook did not risk pushing unrelated screens.");
         }
 
-        if (screens.Count == 0)
-        {
-            var scope = workspaceId is > 0 ? $" in playlist workspace {workspaceId.Value}" : string.Empty;
-            throw new InvalidOperationException($"Yodeck did not return any registered screens{scope}.");
-        }
-
-        return screens.Values.OrderBy(screen => screen.Id).ToList();
-    }
-
-    private async Task<ScreenPushResult> PushScreensAsync(
-        IReadOnlyCollection<ScreenTarget> targetScreens,
-        CancellationToken cancellationToken)
-    {
-        var targetIds = targetScreens.Select(screen => screen.Id).ToHashSet();
         var payload = new JsonObject
         {
             ["use_download_timeslots"] = false,
-            ["filter_devices"] = new JsonArray(targetIds
-                .OrderBy(id => id)
-                .Select(id => (JsonNode?)JsonValue.Create(id))
-                .ToArray())
+            ["filter_workspaces"] = new JsonArray(JsonValue.Create(workspaceId.Value))
         };
 
         using var content = JsonContent.Create(payload);
@@ -723,7 +682,7 @@ public sealed class YodeckPublisher(
 
         if (IsSuccessfulPushStatus(status))
         {
-            return ReadCompletedScreenPush(push, status, targetIds);
+            return ReadCompletedScreenPush(push, status);
         }
 
         if (string.IsNullOrWhiteSpace(statusUrl))
@@ -752,7 +711,7 @@ public sealed class YodeckPublisher(
             status = NormalisePushStatus(ReadString(statusPayload, "status"));
             if (IsSuccessfulPushStatus(status))
             {
-                return ReadCompletedScreenPush(statusPayload, status, targetIds);
+                return ReadCompletedScreenPush(statusPayload, status);
             }
 
             if (IsFailedPushStatus(status))
@@ -768,8 +727,7 @@ public sealed class YodeckPublisher(
 
     private static ScreenPushResult ReadCompletedScreenPush(
         JsonObject payload,
-        string status,
-        IReadOnlySet<long> expectedScreenIds)
+        string status)
     {
         var confirmedScreenIds = payload["screens"] switch
         {
@@ -782,16 +740,6 @@ public sealed class YodeckPublisher(
                 new HashSet<long> { ReadInt64(screen, "id")!.Value },
             _ => new HashSet<long>()
         };
-
-        if (!confirmedScreenIds.SetEquals(expectedScreenIds))
-        {
-            var expected = string.Join(", ", expectedScreenIds.OrderBy(id => id));
-            var confirmed = confirmedScreenIds.Count == 0
-                ? "none"
-                : string.Join(", ", confirmedScreenIds.OrderBy(id => id));
-            throw new InvalidOperationException(
-                $"Yodeck did not confirm the push for every intended screen. Expected: {expected}; confirmed: {confirmed}.");
-        }
 
         return new ScreenPushResult(true, status, confirmedScreenIds.Count);
     }
@@ -959,8 +907,6 @@ public sealed class YodeckPublisher(
     private sealed record PlaylistUpdateResult(bool Changed, int DuplicateEntriesRemoved);
 
     private sealed record MediaUploadResult(string Status, string Source, string FileExtension);
-
-    private sealed record ScreenTarget(long Id, string Name);
 
     private sealed record ScreenPushResult(bool Confirmed, string Status, int ScreenCount);
 
