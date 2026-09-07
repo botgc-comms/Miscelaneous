@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using System.Text;
 using System.Text.Json;
@@ -26,7 +27,8 @@ public sealed class YodeckPublisherTests
         {
             MediaStatuses = new Queue<string>(["initialized", "uploading", "encoding", "finished"])
         };
-        var publisher = CreatePublisher(scenario);
+        var activityStore = new RecordingIntegrationActivityStore();
+        var publisher = CreatePublisher(scenario, activityStore);
 
         var result = await publisher.PublishAsync(CreateCommand(), CancellationToken.None);
 
@@ -37,10 +39,8 @@ public sealed class YodeckPublisherTests
         Assert.Equal("image", createBody["media_origin"]?["type"]?.GetValue<string>());
         var availability = createBody["availability_schedule"]!.AsObject();
         Assert.True(availability["enable"]!.GetValue<bool>());
-        Assert.Equal("2026-09-07T00:00:00", availability["available_after"]!.GetValue<string>());
-        Assert.Equal("2026-10-25T23:59:59", availability["available_before"]!.GetValue<string>());
-        Assert.DoesNotContain('Z', availability["available_after"]!.GetValue<string>());
-        Assert.DoesNotContain('Z', availability["available_before"]!.GetValue<string>());
+        Assert.Equal("2026-09-07T00:00:00Z", availability["available_after"]!.GetValue<string>());
+        Assert.Equal("2026-10-25T23:59:59Z", availability["available_before"]!.GetValue<string>());
         var slot = Assert.IsType<JsonObject>(Assert.Single(availability["availability_slots"]!.AsArray()));
         Assert.Equal("00:00:00", slot["start"]!.GetValue<string>());
         Assert.Equal("23:59:59", slot["end"]!.GetValue<string>());
@@ -72,6 +72,17 @@ public sealed class YodeckPublisherTests
         Assert.True(result.ScreenPushConfirmed);
         Assert.Equal("completed", result.ScreenPushStatus);
         Assert.Equal(2, result.ScreenCount);
+
+        var activity = Assert.Single(activityStore.Activities);
+        Assert.Equal("Yodeck", activity.Integration);
+        Assert.Equal("Publish clubhouse screens", activity.Operation);
+        Assert.Equal("succeeded", activity.Outcome);
+        Assert.Equal("event-123", activity.EventPlaybookEventId);
+        Assert.Equal("Sunday Lunch", activity.EventName);
+        Assert.Equal(91, activity.ExternalRecordId);
+        Assert.Equal("screen-push-confirmed", activity.Stage);
+        Assert.Null(activity.StatusCode);
+        Assert.Contains("confirmed the Clubhouse playlist push to 2 screens", activity.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -107,6 +118,62 @@ public sealed class YodeckPublisherTests
         Assert.Contains(91, ids);
         Assert.DoesNotContain(80, ids);
         Assert.Equal(1, ids.Count(id => id == 91));
+    }
+
+    [Fact]
+    public async Task PublishAsync_UpdatesExistingMediaWithRfc3339UtcAvailabilityTimestamps()
+    {
+        const string previousUpload = "2026-09-07T12:00:00Z";
+        var scenario = new YodeckScenario
+        {
+            ExistingMedia =
+            [
+                Media(80, "local", previousUpload, previousUpload)
+            ],
+            RejectNonUtcAvailabilityScheduleOnMediaPatch = true
+        };
+        var publisher = CreatePublisher(scenario);
+
+        var result = await publisher.PublishAsync(CreateCommand(), CancellationToken.None);
+
+        Assert.False(result.MediaWasCreated);
+        var update = Assert.Single(scenario.Requests, request =>
+            request.Method == HttpMethod.Patch && request.Path == "/api/v2/media/80");
+        var availability = JsonNode.Parse(update.TextBody!)!["availability_schedule"]!.AsObject();
+        Assert.Equal("2026-09-07T00:00:00Z", availability["available_after"]!.GetValue<string>());
+        Assert.Equal("2026-10-25T23:59:59Z", availability["available_before"]!.GetValue<string>());
+        Assert.Equal(0, scenario.RejectedAvailabilityScheduleCount);
+    }
+
+    [Fact]
+    public async Task PublishAsync_RecordsExistingMediaPatchFailureInIntegrationActivity()
+    {
+        const string previousUpload = "2026-09-07T12:00:00Z";
+        var scenario = new YodeckScenario
+        {
+            ExistingMedia =
+            [
+                Media(80, "local", previousUpload, previousUpload)
+            ],
+            RejectMediaPatch = true
+        };
+        var activityStore = new RecordingIntegrationActivityStore();
+        var publisher = CreatePublisher(scenario, activityStore);
+
+        var exception = await Assert.ThrowsAnyAsync<InvalidOperationException>(() =>
+            publisher.PublishAsync(CreateCommand(), CancellationToken.None));
+
+        Assert.Contains("update the existing clubhouse screen artwork item (400)", exception.Message, StringComparison.Ordinal);
+        var activity = Assert.Single(activityStore.Activities);
+        Assert.Equal("Yodeck", activity.Integration);
+        Assert.Equal("Publish clubhouse screens", activity.Operation);
+        Assert.Equal("failed", activity.Outcome);
+        Assert.Equal("event-123", activity.EventPlaybookEventId);
+        Assert.Equal("Sunday Lunch", activity.EventName);
+        Assert.Null(activity.ExternalRecordId);
+        Assert.Equal("media-update", activity.Stage);
+        Assert.Equal(400, activity.StatusCode);
+        Assert.Contains("availability_schedule", activity.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -220,7 +287,9 @@ public sealed class YodeckPublisherTests
         Assert.Contains("Expected: 501, 502; confirmed: 501", exception.Message, StringComparison.Ordinal);
     }
 
-    private static YodeckPublisher CreatePublisher(YodeckScenario scenario) =>
+    private static YodeckPublisher CreatePublisher(
+        YodeckScenario scenario,
+        IIntegrationActivityStore? activityStore = null) =>
         new(
             new FakeHttpClientFactory(scenario.Handler),
             Microsoft.Extensions.Options.Options.Create(new YodeckOptions
@@ -232,6 +301,7 @@ public sealed class YodeckPublisherTests
                 PlaylistName = "Clubhouse",
                 MediaDurationSeconds = 15
             }),
+            activityStore ?? new RecordingIntegrationActivityStore(),
             NullLogger<YodeckPublisher>.Instance);
 
     private static YodeckPublishCommand CreateCommand() => new()
@@ -307,6 +377,12 @@ public sealed class YodeckPublisherTests
 
         public IReadOnlyList<long> ConfirmedScreenIds { get; init; } = [501L, 502L];
 
+        public bool RejectNonUtcAvailabilityScheduleOnMediaPatch { get; init; }
+
+        public bool RejectMediaPatch { get; init; }
+
+        public int RejectedAvailabilityScheduleCount { get; private set; }
+
         public List<CapturedRequest> Requests { get; } = [];
 
         public HttpMessageHandler Handler => new RecordingHandler(HandleAsync, Requests);
@@ -344,7 +420,7 @@ public sealed class YodeckPublisherTests
                 }),
                 ("POST", "/api/v2/media") => Json(Media(91, "local", "2026-09-07T13:00:00Z"), HttpStatusCode.Created),
                 ("PATCH", var path) when path.StartsWith("/api/v2/media/", StringComparison.Ordinal) =>
-                    Json(Media(ParseMediaId(path), "local", "2026-09-07T13:00:00Z")),
+                    UpdateMedia(request, path),
                 ("GET", var path) when path.EndsWith("/upload", StringComparison.Ordinal) =>
                     Json(new JsonObject { ["upload_url"] = $"https://uploads.example.test{path}.png" }),
                 ("PUT", var path) when request.Uri.Host == "uploads.example.test" => Empty(),
@@ -394,6 +470,53 @@ public sealed class YodeckPublisherTests
 
         private static JsonObject Tag(string name) => new() { ["name"] = name };
 
+        private HttpResponseMessage UpdateMedia(CapturedRequest request, string path)
+        {
+            var payload = JsonNode.Parse(request.TextBody!)!.AsObject();
+            var availability = payload["availability_schedule"] as JsonObject;
+            if (RejectMediaPatch)
+            {
+                return InvalidAvailabilitySchedule(availability);
+            }
+
+            var availableAfter = availability?["available_after"]?.GetValue<string>();
+            var availableBefore = availability?["available_before"]?.GetValue<string>();
+            if (RejectNonUtcAvailabilityScheduleOnMediaPatch &&
+                (!IsUtcTimestamp(availableAfter) || !IsUtcTimestamp(availableBefore)))
+            {
+                RejectedAvailabilityScheduleCount += 1;
+                return InvalidAvailabilitySchedule(availability);
+            }
+
+            return Json(Media(ParseMediaId(path), "local", "2026-09-07T13:00:00Z"));
+        }
+
+        private static HttpResponseMessage InvalidAvailabilitySchedule(JsonObject? availability) =>
+            Json(new JsonObject
+            {
+                ["error"] = new JsonObject
+                {
+                    ["code"] = "err_1003",
+                    ["message"] = "Invalid field name or value",
+                    ["details"] = new JsonObject
+                    {
+                        ["field_name"] = "availability_schedule",
+                        ["field_value"] = availability?.DeepClone()
+                    },
+                    ["timestamp"] = "2026-09-07T11:18:38.430006Z"
+                }
+            }, HttpStatusCode.BadRequest);
+
+        private static bool IsUtcTimestamp(string? value) =>
+            value is not null &&
+            value.EndsWith('Z') &&
+            DateTimeOffset.TryParseExact(
+                value,
+                "yyyy-MM-dd'T'HH:mm:ss'Z'",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal,
+                out _);
+
         private JsonObject UploadedMedia(long id)
         {
             var media = Media(id, "local", "2026-09-07T13:00:00Z");
@@ -431,6 +554,22 @@ public sealed class YodeckPublisherTests
         {
             BaseAddress = new Uri("https://app.yodeck.test/api/v2/")
         };
+    }
+
+    private sealed class RecordingIntegrationActivityStore : IIntegrationActivityStore
+    {
+        public List<IntegrationActivityWrite> Activities { get; } = [];
+
+        public Task RecordAsync(IntegrationActivityWrite activity, CancellationToken cancellationToken)
+        {
+            Activities.Add(activity);
+            return Task.CompletedTask;
+        }
+
+        public Task<IReadOnlyList<IntegrationActivityEntry>> GetRecentAsync(
+            int limit,
+            CancellationToken cancellationToken) =>
+            Task.FromResult<IReadOnlyList<IntegrationActivityEntry>>([]);
     }
 
     private sealed class RecordingHandler(

@@ -4966,9 +4966,13 @@
         ? `<div class="integration-activity-list">${entries.map(entry => {
             const succeeded = entry.outcome === 'succeeded';
             const eventLabel = entry.eventName || entry.eventPlaybookEventId || 'No event recorded';
+            const integration = entry.integration || 'Integration';
+            const isIntelligentGolf = integration.toLowerCase() === 'intelligent golf';
+            const isYodeck = integration.toLowerCase() === 'yodeck';
             const identifiers = [
-              entry.externalEventId ? `IG event ${entry.externalEventId}` : '',
-              entry.externalRecordId ? `IG record ${entry.externalRecordId}` : '',
+              integration,
+              entry.externalEventId ? `${isIntelligentGolf ? 'IG' : 'External'} event ${entry.externalEventId}` : '',
+              entry.externalRecordId ? `${isYodeck ? 'Yodeck media' : isIntelligentGolf ? 'IG record' : 'External record'} ${entry.externalRecordId}` : '',
               entry.stage ? `Stage: ${entry.stage}` : '',
               entry.statusCode ? `HTTP ${entry.statusCode}` : ''
             ].filter(Boolean);
@@ -4977,7 +4981,7 @@
               <div class="integration-activity-copy"><div><strong>${escapeHtml(entry.operation || 'Integration operation')}</strong><time datetime="${escapeHtml(entry.occurredAtUtc || '')}">${escapeHtml(integrationActivityDate(entry.occurredAtUtc))}</time></div><p>${escapeHtml(entry.message || '')}</p><small>${escapeHtml(eventLabel)}${identifiers.length ? ` · ${escapeHtml(identifiers.join(' · '))}` : ''}</small></div>
             </article>`;
           }).join('')}</div>`
-        : `<div class="integration-activity-empty"><strong>No integration activity yet</strong><p>Attempts to synchronise an event or publish a member diary entry will appear here.</p></div>`}
+        : `<div class="integration-activity-empty"><strong>No integration activity yet</strong><p>Attempts to synchronise an event, publish a member diary entry or send artwork to the clubhouse screens will appear here.</p></div>`}
     </section>`;
   }
 
@@ -5958,6 +5962,7 @@
           location.assign(adminLoginUrl(requestedView));
           return;
         }
+        if (requestedView === 'plugins') integrationActivityCache = null;
         state.activeView = requestedView;
         if (state.activeView === 'tasks') state.taskBoardHorizon = 'auto';
         saveState();

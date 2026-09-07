@@ -12,6 +12,7 @@ namespace BOTGC.EventPlaybook.Services;
 public sealed class YodeckPublisher(
     IHttpClientFactory httpClientFactory,
     IOptions<YodeckOptions> options,
+    IIntegrationActivityStore activityStore,
     ILogger<YodeckPublisher> logger) : IYodeckPublisher
 {
     private readonly YodeckOptions _options = options.Value;
@@ -24,20 +25,51 @@ public sealed class YodeckPublisher(
         YodeckPublishCommand command,
         CancellationToken cancellationToken)
     {
-        if (!IsConfigured)
-        {
-            throw new InvalidOperationException(
-                "Clubhouse screen sharing is not configured. Ask an administrator to complete the server connection settings.");
-        }
-
-        await _publishGate.WaitAsync(cancellationToken);
         try
         {
-            return await UpsertAsync(command, cancellationToken);
+            if (!IsConfigured)
+            {
+                throw new InvalidOperationException(
+                    "Clubhouse screen sharing is not configured. Ask an administrator to complete the server connection settings.");
+            }
+
+            await _publishGate.WaitAsync(cancellationToken);
+            try
+            {
+                var result = await UpsertAsync(command, cancellationToken);
+                await RecordActivitySafelyAsync(new IntegrationActivityWrite
+                {
+                    Integration = "Yodeck",
+                    Operation = "Publish clubhouse screens",
+                    Outcome = "succeeded",
+                    EventPlaybookEventId = command.EventId,
+                    EventName = command.EventName,
+                    ExternalRecordId = ToActivityRecordId(result.MediaId),
+                    Stage = "screen-push-confirmed",
+                    Message = $"Uploaded local Yodeck media {result.MediaId} and confirmed the {result.PlaylistName} playlist push to {result.ScreenCount} screen{(result.ScreenCount == 1 ? string.Empty : "s")}."
+                });
+                return result;
+            }
+            finally
+            {
+                _publishGate.Release();
+            }
         }
-        finally
+        catch (Exception exception) when (exception is not OperationCanceledException)
         {
-            _publishGate.Release();
+            var requestFailure = FindRequestFailure(exception);
+            await RecordActivitySafelyAsync(new IntegrationActivityWrite
+            {
+                Integration = "Yodeck",
+                Operation = "Publish clubhouse screens",
+                Outcome = "failed",
+                EventPlaybookEventId = command.EventId,
+                EventName = command.EventName,
+                Stage = requestFailure?.Stage ?? (IsConfigured ? "screen-publish" : "configuration"),
+                StatusCode = requestFailure?.StatusCode,
+                Message = exception.Message
+            });
+            throw;
         }
     }
 
@@ -355,14 +387,14 @@ public sealed class YodeckPublisher(
             ["tags"] = new JsonArray(tags
                 .Select(tag => (JsonNode?)JsonValue.Create(tag))
                 .ToArray()),
-            // Yodeck interprets these timestamps in the screen's local time.
-            // Do not append a UTC suffix: doing so can shift the playback
-            // boundary away from the dates selected by the organiser.
+            // Although Yodeck applies media availability using each screen's
+            // configured location, its live API validator requires RFC 3339
+            // date-time values with an explicit offset.
             ["availability_schedule"] = new JsonObject
             {
                 ["enable"] = true,
-                ["available_after"] = $"{command.StartDate:yyyy-MM-dd}T00:00:00",
-                ["available_before"] = $"{command.EndDate:yyyy-MM-dd}T23:59:59",
+                ["available_after"] = $"{command.StartDate:yyyy-MM-dd}T00:00:00Z",
+                ["available_before"] = $"{command.EndDate:yyyy-MM-dd}T23:59:59Z",
                 ["availability_slots"] = new JsonArray
                 {
                     new JsonObject
@@ -401,8 +433,10 @@ public sealed class YodeckPublisher(
         if (!response.IsSuccessStatusCode)
         {
             var details = await response.Content.ReadAsStringAsync(cancellationToken);
-            throw new InvalidOperationException(
-                $"The clubhouse screen artwork upload failed ({(int)response.StatusCode}). {TrimDetails(details)}");
+            throw new YodeckApiRequestException(
+                $"The clubhouse screen artwork upload failed ({(int)response.StatusCode}). {TrimDetails(details)}",
+                (int)response.StatusCode,
+                "binary-upload");
         }
     }
 
@@ -829,8 +863,55 @@ public sealed class YodeckPublisher(
         var retryAfter = response.Headers.RetryAfter?.Delta is { } delay
             ? $" Retry after approximately {Math.Ceiling(delay.TotalSeconds)} seconds."
             : string.Empty;
-        throw new InvalidOperationException(
-            $"The screen service could not {action} ({(int)response.StatusCode}).{retryAfter} {TrimDetails(details)}".Trim());
+        throw new YodeckApiRequestException(
+            $"The screen service could not {action} ({(int)response.StatusCode}).{retryAfter} {TrimDetails(details)}".Trim(),
+            (int)response.StatusCode,
+            ActivityStageFor(action));
+    }
+
+    private async Task RecordActivitySafelyAsync(IntegrationActivityWrite activity)
+    {
+        try
+        {
+            // Integration diagnostics should survive the browser request ending
+            // immediately after an upstream failure.
+            await activityStore.RecordAsync(activity, CancellationToken.None);
+        }
+        catch (Exception exception)
+        {
+            logger.LogWarning(
+                exception,
+                "Could not persist the {Operation} integration activity entry.",
+                activity.Operation);
+        }
+    }
+
+    private static YodeckApiRequestException? FindRequestFailure(Exception exception)
+    {
+        for (Exception? current = exception; current is not null; current = current.InnerException)
+        {
+            if (current is YodeckApiRequestException requestFailure) return requestFailure;
+        }
+
+        return null;
+    }
+
+    private static int? ToActivityRecordId(long mediaId) =>
+        mediaId is > 0 and <= int.MaxValue ? (int)mediaId : null;
+
+    private static string ActivityStageFor(string action)
+    {
+        if (action.Contains("existing clubhouse screen artwork", StringComparison.OrdinalIgnoreCase)) return "media-update";
+        if (action.Contains("create the clubhouse screen artwork", StringComparison.OrdinalIgnoreCase)) return "media-create";
+        if (action.Contains("upload URL", StringComparison.OrdinalIgnoreCase)) return "binary-upload-url";
+        if (action.Contains("complete", StringComparison.OrdinalIgnoreCase) && action.Contains("upload", StringComparison.OrdinalIgnoreCase)) return "binary-upload-complete";
+        if (action.Contains("uploaded clubhouse artwork", StringComparison.OrdinalIgnoreCase)) return "media-processing";
+        if (action.Contains("screen rotation", StringComparison.OrdinalIgnoreCase)) return "playlist-update";
+        if (action.Contains("registered Clubhouse screens", StringComparison.OrdinalIgnoreCase)) return "screen-discovery";
+        if (action.Contains("push", StringComparison.OrdinalIgnoreCase)) return "screen-push";
+        if (action.Contains("tag", StringComparison.OrdinalIgnoreCase)) return "media-tags";
+        if (action.Contains("existing event artwork", StringComparison.OrdinalIgnoreCase)) return "media-lookup";
+        return "yodeck-request";
     }
 
     private static long? ReadInt64(JsonObject value, string propertyName) =>
@@ -882,6 +963,16 @@ public sealed class YodeckPublisher(
     private sealed record ScreenTarget(long Id, string Name);
 
     private sealed record ScreenPushResult(bool Confirmed, string Status, int ScreenCount);
+
+    private sealed class YodeckApiRequestException(
+        string message,
+        int statusCode,
+        string stage) : InvalidOperationException(message)
+    {
+        public int StatusCode { get; } = statusCode;
+
+        public string Stage { get; } = stage;
+    }
 
     private static string NormaliseMediaStatus(string? status) =>
         (status ?? string.Empty).Trim().ToLowerInvariant().Replace('-', '_').Replace(' ', '_');
