@@ -1294,6 +1294,7 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(198,161,91,.22)!i
 }
 
 .new-event-fields input,
+.new-event-fields select,
 .new-event-fields textarea,
 .new-event-milestone input {
   width: 100%;

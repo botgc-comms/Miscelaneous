@@ -325,6 +325,18 @@ app.MapGet("/api/branding/crest", async (
     return Results.File(crest.Content, crest.ContentType);
 });
 
+app.MapGet("/api/plugins/status", async (
+    IPluginSettingsStore pluginSettingsStore,
+    CancellationToken cancellationToken) =>
+{
+    var plugins = await pluginSettingsStore.GetOverviewAsync(cancellationToken);
+    return Results.Ok(new
+    {
+        intelligentGolf = new { enabled = plugins.IntelligentGolf.Enabled },
+        monday = new { enabled = plugins.Monday.Enabled }
+    });
+});
+
 app.MapGet("/api/poster/config", async (
     IPosterConfigurationService configurationService,
     IClubBrandingStore brandingStore,

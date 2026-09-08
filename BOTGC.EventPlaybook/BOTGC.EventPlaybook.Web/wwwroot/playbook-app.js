@@ -108,6 +108,10 @@
   let pluginSettingsCache = null;
   let pluginSettingsRequest = null;
   let pluginSettingsNotice = '';
+  let pluginCapabilities = {
+    intelligentGolfEnabled: false,
+    mondayEnabled: false
+  };
   let integrationActivityCache = null;
   let integrationActivityRequest = null;
   const DEFAULT_CLUB_BRANDING = Object.freeze({
@@ -210,6 +214,24 @@
       };
     } catch (error) {
       console.error('Unable to determine administrator access', error);
+    }
+  }
+
+  function updatePluginCapabilities(value) {
+    pluginCapabilities = {
+      intelligentGolfEnabled: value?.intelligentGolf?.enabled === true,
+      mondayEnabled: value?.monday?.enabled === true
+    };
+  }
+
+  async function initialisePluginStatus() {
+    try {
+      const response = await fetch('/api/plugins/status', { cache: 'no-store' });
+      if (!response.ok) throw new Error(`Plugin status could not be loaded (${response.status}).`);
+      updatePluginCapabilities(await response.json());
+    } catch (error) {
+      console.error('Unable to determine enabled plugins', error);
+      updatePluginCapabilities(null);
     }
   }
 
@@ -883,6 +905,78 @@
     const to = new Date(`${toIsoDate}T12:00:00`);
     if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime())) return null;
     return Math.round((to.getTime() - from.getTime()) / 86400000);
+  }
+
+  function isValidIsoDate(value) {
+    const candidate = String(value ?? '').trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(candidate)) return false;
+    const date = new Date(`${candidate}T12:00:00`);
+    return !Number.isNaN(date.getTime()) && toIsoDate(date) === candidate;
+  }
+
+  function reanchorEventDate(event, nextEventDate) {
+    const nextDate = String(nextEventDate ?? '').trim();
+    if (!event || !isValidIsoDate(nextDate)) return false;
+
+    const previousDate = event.eventDate;
+    if (previousDate === nextDate) return true;
+
+    const previousTaskDates = new Map(getActiveTasks(event).map(task => [task.item.id, task.dueDate]));
+    const previousMilestones = { ...(event.milestoneDates ?? {}) };
+    const deadlineDefinitions = new Map((playbook.deadlineCodes ?? []).map(definition => [definition.code, definition]));
+    const milestoneCodes = new Set([
+      ...Object.keys(DEFAULT_MILESTONE_OFFSETS),
+      ...deadlineDefinitions.keys(),
+      ...Object.keys(previousMilestones),
+      'DT'
+    ]);
+
+    event.eventDate = nextDate;
+    event.milestoneDates ??= {};
+
+    for (const code of milestoneCodes) {
+      if (!code) continue;
+      if (code === 'DT') {
+        event.milestoneDates.DT = nextDate;
+        continue;
+      }
+
+      if (deadlineDefinitions.get(code)?.dynamic === true || code === 'CX') {
+        continue;
+      }
+
+      const preservedOffset = isValidIsoDate(previousDate) && isValidIsoDate(previousMilestones[code])
+        ? daysBetweenIsoDates(previousDate, previousMilestones[code])
+        : null;
+      const configuredOffset = preservedOffset ?? getDeadlineOffset(code, event);
+      event.milestoneDates[code] = configuredOffset === null
+        ? (previousMilestones[code] ?? '')
+        : addDaysToIsoDate(nextDate, configuredOffset);
+    }
+
+    normaliseMilestoneDates(event);
+
+    const refreshedTasks = getActiveTasks(event);
+    const refreshedDueDates = new Map(refreshedTasks.map(task => [task.item.id, task.dueDate]));
+    for (const notification of state.notificationOutbox ?? []) {
+      if (notification.eventId !== event.id || notification.status === 'sent') continue;
+      if (refreshedDueDates.has(notification.taskId)) {
+        notification.dueDate = refreshedDueDates.get(notification.taskId);
+      }
+    }
+
+    for (const task of refreshedTasks) {
+      if (previousTaskDates.get(task.item.id) === task.dueDate) continue;
+      if (!task.state.completed) {
+        task.state.lastReminderAt = null;
+        task.state.escalatedAt = null;
+      }
+      if (task.state.completionToken) {
+        void registerCompletionLink(event, task.item, task.state, task.dueDate);
+      }
+    }
+
+    return true;
   }
 
   function formatMilestoneOffset(offset) {
@@ -2376,8 +2470,8 @@
               <input class="event-title-input" type="text" value="${escapeHtml(event.name)}" data-event-field="name" aria-label="Event name">
               <div class="event-context-meta">
                 <div class="event-organiser-field"><span>Organiser</span>${renderAssignmentPicker({ value: event.organiserRef ?? event.organiser, fallback: event.organiser, mode: 'person', eventField: 'organiser', compact: true })}</div>
-                <div><span>Event date</span><strong>${escapeHtml(formatDate(event.eventDate))}</strong></div>
-                <label><span>IG event type</span><select data-event-field="intelligentGolfEventTypeId">${renderIntelligentGolfEventTypeOptions(event.intelligentGolfEventTypeId)}</select></label>
+                <label><span>Event date</span><input type="date" required value="${escapeHtml(event.eventDate)}" data-event-field="eventDate"></label>
+                ${pluginCapabilities.intelligentGolfEnabled ? `<label><span>IG event type</span><select data-event-field="intelligentGolfEventTypeId">${renderIntelligentGolfEventTypeOptions(event.intelligentGolfEventTypeId)}</select></label>` : ''}
                 <label><span>Expected attendees</span><input type="number" min="0" step="1" value="${escapeHtml(event.expectedAttendees)}" data-event-field="expectedAttendees"></label>
                 <label><span>Start time</span><input type="time" value="${escapeHtml(event.startTime)}" data-event-field="startTime"></label>
                 <label><span>End time</span><input type="time" value="${escapeHtml(event.endTime)}" data-event-field="endTime"></label>
@@ -4879,6 +4973,7 @@
         const payload = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(payload.error || `Plugin settings could not be loaded (${response.status}).`);
         pluginSettingsCache = payload;
+        updatePluginCapabilities(payload);
       } catch (error) {
         pluginSettingsCache = { error: error.message || 'Plugin settings could not be loaded.' };
       } finally {
@@ -5172,10 +5267,10 @@
                   <span>Provisional event date</span>
                   <input id="new-event-date" type="date" required>
                 </label>
-                <label>
+                ${pluginCapabilities.intelligentGolfEnabled ? `<label>
                   <span>Intelligent Golf event type</span>
                   <select id="new-event-type">${renderIntelligentGolfEventTypeOptions(0)}</select>
-                </label>
+                </label>` : ''}
                 <label>
                   <span>Expected attendees</span>
                   <input id="new-event-attendees" type="number" min="0" step="1" value="0">
@@ -5328,9 +5423,7 @@
 
     if (event.clonedAnswerHints) delete event.clonedAnswerHints[questionId];
     if (indexed.item.bind === 'eventDate') {
-      event.eventDate = value;
-      event.milestoneDates ??= {};
-      event.milestoneDates.DT = value;
+      reanchorEventDate(event, value);
     } else {
       event.answers[questionId] = value;
     }
@@ -5746,6 +5839,11 @@
       const result = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(result.error || `Plugin settings could not be saved (${response.status}).`);
 
+      if (endpoint.endsWith('/intelligent-golf')) {
+        pluginCapabilities.intelligentGolfEnabled = result.enabled === true;
+      } else if (endpoint.endsWith('/monday')) {
+        pluginCapabilities.mondayEnabled = result.enabled === true;
+      }
       dialog?.close();
       pluginSettingsCache = null;
       pluginSettingsNotice = successMessage;
@@ -5785,6 +5883,7 @@
       const result = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(result.error || `${name} could not be turned ${shouldEnable ? 'on' : 'off'}.`);
       pluginSettingsCache = result;
+      updatePluginCapabilities(result);
       pluginSettingsNotice = '';
       render();
     } catch (error) {
@@ -6084,6 +6183,7 @@
           if (!response.ok) throw new Error(result.error || `The ${name} credentials could not be removed.`);
           element.closest('dialog')?.close();
           pluginSettingsCache = result;
+          updatePluginCapabilities(result);
           pluginSettingsNotice = `${name} was disconnected and its saved credentials were removed.`;
           render();
         } catch (error) {
@@ -6164,13 +6264,8 @@
         if (event.clonedAnswerHints) delete event.clonedAnswerHints[element.dataset.questionInput];
         element.classList.remove('prior-answer-hint');
         delete element.dataset.priorAnswerHint;
-        if (indexed.item.bind === 'eventDate') {
-          event.eventDate = element.value;
-          event.milestoneDates ??= {};
-          event.milestoneDates.DT = element.value;
-        } else {
-          event.answers[element.dataset.questionInput] = element.value;
-        }
+        if (indexed.item.bind === 'eventDate') return;
+        event.answers[element.dataset.questionInput] = element.value;
         saveState();
       });
       element.addEventListener('change', () => {
@@ -6269,9 +6364,18 @@
           element.setCustomValidity('');
           return;
         }
-        event[field] = field === 'intelligentGolfEventTypeId' || field === 'expectedAttendees'
-          ? Math.max(0, Number(value) || 0)
-          : value;
+        if (field === 'eventDate') {
+          if (!reanchorEventDate(event, value)) {
+            element.setCustomValidity('Choose a valid event date.');
+            element.reportValidity();
+            element.setCustomValidity('');
+            return;
+          }
+        } else {
+          event[field] = field === 'intelligentGolfEventTypeId' || field === 'expectedAttendees'
+            ? Math.max(0, Number(value) || 0)
+            : value;
+        }
         if (field === 'organiser') {
           updateTeam(event, event.organiser);
         }
@@ -6285,10 +6389,16 @@
         const event = getActiveEvent();
         if (!event) return;
         const code = element.dataset.milestoneCode;
-        event.milestoneDates ??= {};
-        event.milestoneDates[code] = element.value;
         if (code === 'DT') {
-          event.eventDate = element.value;
+          if (!reanchorEventDate(event, element.value)) {
+            element.setCustomValidity('Choose a valid event date.');
+            element.reportValidity();
+            element.setCustomValidity('');
+            return;
+          }
+        } else {
+          event.milestoneDates ??= {};
+          event.milestoneDates[code] = element.value;
         }
         saveState();
         render();
@@ -7224,7 +7334,7 @@
 
         milestoneDates.DT = eventDate;
         createEvent(name, organiser, eventDate, description, milestoneDates, organiserRef, {
-          eventTypeId: Number(eventTypeInput.value) || 0,
+          eventTypeId: Number(eventTypeInput?.value) || 0,
           expectedAttendees: Math.max(0, Number(attendeesInput.value) || 0),
           startTime: startTimeInput.value,
           endTime: endTimeInput.value
@@ -7366,6 +7476,7 @@
       indexPlaybook();
       await initialiseClubBranding();
       await initialiseAccessSession();
+      await initialisePluginStatus();
       await initialiseSharedState();
       migrateMilestoneState();
       initialiseOperationalState();
