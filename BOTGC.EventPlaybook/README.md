@@ -236,7 +236,7 @@ It retains:
 - derivative formats generated from the primary campaign;
 - each image appearing as soon as it becomes available;
 - regeneration using organiser feedback;
-- real binary Yodeck media-library upload, processing-state verification, event-specific tagging, dated availability and idempotent Clubhouse-playlist publishing that updates the same local media item on repeat sends before performing a workspace-scoped screen push;
+- real binary Yodeck media-library upload, processing-state verification, event-specific tagging, dated availability and idempotent Clubhouse-playlist publishing that updates the same local media item on repeat sends before asking Yodeck to refresh its assigned screens;
 - a future membership-email publishing seam.
 
 The Communications Centre also accepts the event name, date and description from the active Event Playbook event. A generic custom-event definition allows newly created Playbook events to create campaign artwork before they have their own permanent event-catalogue scene recipe.

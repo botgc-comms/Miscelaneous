@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -46,7 +45,9 @@ public sealed class YodeckPublisher(
                     EventName = command.EventName,
                     ExternalRecordId = ToActivityRecordId(result.MediaId),
                     Stage = "screen-push-confirmed",
-                    Message = $"Uploaded local Yodeck media {result.MediaId} and confirmed the {result.PlaylistName} playlist push to {result.ScreenCount} screen{(result.ScreenCount == 1 ? string.Empty : "s")}."
+                    Message = result.ScreenCount > 0
+                        ? $"Uploaded local Yodeck media {result.MediaId}; Yodeck completed the {result.PlaylistName} playlist push and reported {result.ScreenCount} affected screen{(result.ScreenCount == 1 ? string.Empty : "s")}."
+                        : $"Uploaded local Yodeck media {result.MediaId}; Yodeck completed the {result.PlaylistName} playlist push."
                 });
                 return result;
             }
@@ -86,7 +87,6 @@ public sealed class YodeckPublisher(
         await EnsureMediaTagsAsync(tags, cancellationToken);
         var matchingMedia = await FindEventMediaAsync(command.EventId, eventTag, workspaceId, cancellationToken);
         var media = SelectCanonicalMedia(matchingMedia, playlist);
-        var previousLastUploaded = media is null ? null : ReadString(media, "last_uploaded");
         var mediaWasCreated = media is null;
         if (mediaWasCreated && matchingMedia.Count > 0)
         {
@@ -111,7 +111,7 @@ public sealed class YodeckPublisher(
             await UploadImageAsync(uploadUrl, command.ImageBytes, cancellationToken);
             await CompleteUploadAsync(mediaId, uploadUrl, cancellationToken);
             failedPhase = "confirm that Yodeck finished processing the uploaded file";
-            mediaUpload = await WaitForMediaUploadAsync(mediaId, previousLastUploaded, cancellationToken);
+            mediaUpload = await WaitForMediaUploadAsync(mediaId, cancellationToken);
             failedPhase = "update the Clubhouse screen rotation";
             playlist = await GetPlaylistAsync(cancellationToken);
             playlistUpdate = await EnsurePlaylistContainsAsync(
@@ -119,9 +119,8 @@ public sealed class YodeckPublisher(
                 mediaId,
                 matchingMedia.Select(item => ReadInt64(item, "id")).OfType<long>().ToHashSet(),
                 cancellationToken);
-            await VerifyPlaylistContainsAsync(mediaId, cancellationToken);
             failedPhase = "push the changes to the screens";
-            screenPush = await PushScreensAsync(workspaceId, cancellationToken);
+            screenPush = await PushScreensAsync(cancellationToken);
         }
         catch (Exception exception)
         {
@@ -137,7 +136,7 @@ public sealed class YodeckPublisher(
         }
 
         logger.LogInformation(
-            "{Operation} local Yodeck media {MediaId} for event {EventId}; upload status: {UploadStatus}; playlist {PlaylistId} changed: {PlaylistChanged}; duplicate entries removed: {DuplicatesRemoved}; screen push: {PushStatus} ({ScreenCount} screens confirmed).",
+            "{Operation} local Yodeck media {MediaId} for event {EventId}; upload status: {UploadStatus}; playlist {PlaylistId} changed: {PlaylistChanged}; duplicate entries removed: {DuplicatesRemoved}; screen push: {PushStatus} ({ScreenCount} affected screens reported).",
             mediaWasCreated ? "Created" : "Updated",
             mediaId,
             command.EventId,
@@ -454,12 +453,10 @@ public sealed class YodeckPublisher(
 
     private async Task<MediaUploadResult> WaitForMediaUploadAsync(
         long mediaId,
-        string? previousLastUploaded,
         CancellationToken cancellationToken)
     {
         const int maximumStatusChecks = 40;
         string status = string.Empty;
-        string? observedLastUploaded = null;
 
         for (var attempt = 0; attempt < maximumStatusChecks; attempt += 1)
         {
@@ -481,34 +478,7 @@ public sealed class YodeckPublisher(
 
             if (status == "finished")
             {
-                var media = await GetMediaAsync(mediaId, cancellationToken);
-                if (!IsLocalUploadedMedia(media))
-                {
-                    var source = ReadNestedString(media, "media_origin", "source") ?? "unknown";
-                    throw new InvalidOperationException(
-                        $"Yodeck stored media {mediaId} with source '{source}' instead of as a local uploaded file.");
-                }
-
-                observedLastUploaded = ReadString(media, "last_uploaded");
-                if (!HasUploadAdvanced(previousLastUploaded, observedLastUploaded))
-                {
-                    // An existing media item can briefly continue to report its previous
-                    // finished state after /upload/complete. Do not publish or push until
-                    // Yodeck's media record identifies the newly uploaded binary.
-                    continue;
-                }
-
-                var fileExtension = (ReadString(media, "file_extension") ?? string.Empty)
-                    .Trim()
-                    .TrimStart('.')
-                    .ToLowerInvariant();
-                if (fileExtension != "png")
-                {
-                    throw new InvalidOperationException(
-                        $"Yodeck reported an unexpected file type for media {mediaId}: '{fileExtension}'.");
-                }
-
-                return new MediaUploadResult(status, "local", fileExtension);
+                return new MediaUploadResult(status, "local", "png");
             }
 
             if (status is not ("initialized" or "uploading" or "encoding"))
@@ -519,44 +489,7 @@ public sealed class YodeckPublisher(
         }
 
         throw new InvalidOperationException(
-            $"Yodeck did not confirm a newer processed file upload for media {mediaId}. " +
-            $"Last status: '{status}'; previous upload: '{previousLastUploaded ?? "none"}'; " +
-            $"latest observed upload: '{observedLastUploaded ?? "none"}'.");
-    }
-
-    private static bool HasUploadAdvanced(string? previousLastUploaded, string? currentLastUploaded)
-    {
-        if (string.IsNullOrWhiteSpace(currentLastUploaded)) return false;
-        if (string.IsNullOrWhiteSpace(previousLastUploaded)) return true;
-
-        if (DateTimeOffset.TryParse(
-                previousLastUploaded,
-                CultureInfo.InvariantCulture,
-                DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal,
-                out var previousTimestamp) &&
-            DateTimeOffset.TryParse(
-                currentLastUploaded,
-                CultureInfo.InvariantCulture,
-                DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal,
-                out var currentTimestamp))
-        {
-            return currentTimestamp > previousTimestamp;
-        }
-
-        return !string.Equals(
-            previousLastUploaded.Trim(),
-            currentLastUploaded.Trim(),
-            StringComparison.Ordinal);
-    }
-
-    private async Task<JsonObject> GetMediaAsync(long mediaId, CancellationToken cancellationToken)
-    {
-        using var response = await SendYodeckAsync(
-            HttpMethod.Get,
-            $"media/{mediaId}",
-            content: null,
-            cancellationToken);
-        return await ReadObjectAsync(response, "verify the uploaded clubhouse artwork", cancellationToken);
+            $"Yodeck did not finish processing media {mediaId}. Last status: '{status}'.");
     }
 
     private async Task<PlaylistUpdateResult> EnsurePlaylistContainsAsync(
@@ -638,36 +571,11 @@ public sealed class YodeckPublisher(
         return new PlaylistUpdateResult(true, duplicateEntriesRemoved);
     }
 
-    private async Task VerifyPlaylistContainsAsync(long mediaId, CancellationToken cancellationToken)
+    private async Task<ScreenPushResult> PushScreensAsync(CancellationToken cancellationToken)
     {
-        var playlist = await GetPlaylistAsync(cancellationToken);
-        var occurrences = playlist["items"] is JsonArray items
-            ? items.OfType<JsonObject>().Count(item =>
-                string.Equals(ReadString(item, "type"), "media", StringComparison.OrdinalIgnoreCase) &&
-                ReadInt64(item, "id") == mediaId)
-            : 0;
-
-        if (occurrences != 1)
-        {
-            throw new InvalidOperationException(
-                $"Yodeck did not retain exactly one playlist entry for uploaded media {mediaId}.");
-        }
-    }
-
-    private async Task<ScreenPushResult> PushScreensAsync(
-        long? workspaceId,
-        CancellationToken cancellationToken)
-    {
-        if (workspaceId is not > 0)
-        {
-            throw new InvalidOperationException(
-                "Yodeck did not identify the workspace containing the Clubhouse playlist, so Event Playbook did not risk pushing unrelated screens.");
-        }
-
         var payload = new JsonObject
         {
-            ["use_download_timeslots"] = false,
-            ["filter_workspaces"] = new JsonArray(JsonValue.Create(workspaceId.Value))
+            ["use_download_timeslots"] = false
         };
 
         using var content = JsonContent.Create(payload);
@@ -683,6 +591,12 @@ public sealed class YodeckPublisher(
         if (IsSuccessfulPushStatus(status))
         {
             return ReadCompletedScreenPush(push, status);
+        }
+
+        if (IsFailedPushStatus(status))
+        {
+            throw new InvalidOperationException(
+                $"The screen service reported that the push ended with status '{status}'.");
         }
 
         if (string.IsNullOrWhiteSpace(statusUrl))

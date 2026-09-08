@@ -2811,7 +2811,7 @@
         <div class="share-actions">
           <article class="share-action-card">
             <span class="share-action-icon">▣</span>
-            <div><h3>Clubhouse screens</h3><p>Choose when the digital-screen artwork should appear around the clubhouse.</p></div>
+            <div><h3>Clubhouse screens</h3><p>Choose when the digital-screen artwork should appear around the clubhouse.</p><span id="shareScreensStatus" class="share-action-status hidden"></span></div>
             <button id="shareScreensButton" class="button button-gold" type="button">Send to clubhouse screens</button>
           </article>
           <article id="shareEmailCard" class="share-action-card">

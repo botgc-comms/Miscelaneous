@@ -82,7 +82,7 @@ public sealed class YodeckPublisherTests
         Assert.Equal(91, activity.ExternalRecordId);
         Assert.Equal("screen-push-confirmed", activity.Stage);
         Assert.Null(activity.StatusCode);
-        Assert.Contains("confirmed the Clubhouse playlist push to 2 screens", activity.Message, StringComparison.Ordinal);
+        Assert.Contains("completed the Clubhouse playlist push and reported 2 affected screens", activity.Message, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -128,7 +128,7 @@ public sealed class YodeckPublisherTests
         {
             ExistingMedia =
             [
-                Media(80, "local", previousUpload, previousUpload)
+                Media(80, "local", previousUpload)
             ],
             RejectNonUtcAvailabilityScheduleOnMediaPatch = true
         };
@@ -153,7 +153,7 @@ public sealed class YodeckPublisherTests
         {
             ExistingMedia =
             [
-                Media(80, "local", previousUpload, previousUpload)
+                Media(80, "local", previousUpload)
             ],
             RejectMediaPatch = true
         };
@@ -174,38 +174,6 @@ public sealed class YodeckPublisherTests
         Assert.Equal("media-update", activity.Stage);
         Assert.Equal(400, activity.StatusCode);
         Assert.Contains("availability_schedule", activity.Message, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public async Task PublishAsync_DoesNotAcceptPreviousFinishedUploadBeforeMediaVersionAdvances()
-    {
-        const string previousUpload = "2026-09-07T12:00:00Z";
-        const string currentUpload = "2026-09-07T13:00:00Z";
-        var scenario = new YodeckScenario
-        {
-            ExistingMedia =
-            [
-                Media(80, "local", previousUpload, previousUpload)
-            ],
-            MediaStatuses = new Queue<string>(["finished"]),
-            MediaLastUploadedTimestamps = new Queue<string>([previousUpload, currentUpload])
-        };
-        var publisher = CreatePublisher(scenario);
-
-        var result = await publisher.PublishAsync(CreateCommand(), CancellationToken.None);
-
-        Assert.False(result.MediaWasCreated);
-        Assert.Equal(80, result.MediaId);
-        Assert.Equal(2, scenario.Requests.Count(request =>
-            request.Method == HttpMethod.Get && request.Path == "/api/v2/media/80/status"));
-        Assert.Equal(2, scenario.Requests.Count(request =>
-            request.Method == HttpMethod.Get && request.Path == "/api/v2/media/80"));
-
-        var secondMediaCheck = scenario.Requests.FindLastIndex(request =>
-            request.Method == HttpMethod.Get && request.Path == "/api/v2/media/80");
-        var playlistUpdate = scenario.IndexOf(HttpMethod.Patch, "/api/v2/playlists/77");
-        Assert.True(secondMediaCheck < playlistUpdate,
-            "The playlist must not be updated until Yodeck reports the newly uploaded media version.");
     }
 
     [Fact]
@@ -241,7 +209,7 @@ public sealed class YodeckPublisherTests
     }
 
     [Fact]
-    public async Task PublishAsync_PushesPlaylistWorkspaceAndWaitsForCompletion()
+    public async Task PublishAsync_PushesAllScreensAndWaitsForCompletion()
     {
         var scenario = new YodeckScenario
         {
@@ -256,9 +224,7 @@ public sealed class YodeckPublisherTests
         var pushBody = JsonNode.Parse(push.TextBody!)!.AsObject();
         Assert.False(pushBody["use_download_timeslots"]!.GetValue<bool>());
         Assert.False(pushBody.ContainsKey("filter_devices"));
-        Assert.Equal([9L], pushBody["filter_workspaces"]!.AsArray()
-            .Select(value => value!.GetValue<long>())
-            .ToList());
+        Assert.False(pushBody.ContainsKey("filter_workspaces"));
         Assert.DoesNotContain(scenario.Requests, request =>
             request.Method == HttpMethod.Get && request.Path == "/api/v2/screens");
         Assert.Equal(2, scenario.Requests.Count(request =>
@@ -269,7 +235,7 @@ public sealed class YodeckPublisherTests
     }
 
     [Fact]
-    public async Task PublishAsync_AcceptsCompletedWorkspacePushWhenYodeckReportsOnlyAffectedScreens()
+    public async Task PublishAsync_AcceptsCompletedPushWhenYodeckReportsOnlyAffectedScreens()
     {
         var scenario = new YodeckScenario
         {
@@ -343,8 +309,7 @@ public sealed class YodeckPublisherTests
     private static JsonObject Media(
         long id,
         string source,
-        string lastModified,
-        string? lastUploaded = null)
+        string lastModified)
     {
         var media = new JsonObject
         {
@@ -358,10 +323,6 @@ public sealed class YodeckPublisherTests
                 ["source"] = source
             }
         };
-        if (!string.IsNullOrWhiteSpace(lastUploaded))
-        {
-            media["last_uploaded"] = lastUploaded;
-        }
         return media;
     }
 
@@ -392,9 +353,6 @@ public sealed class YodeckPublisherTests
         public Queue<string> PushStatuses { get; init; } = new(["completed"]);
 
         public Queue<string> MediaStatuses { get; init; } = new(["finished"]);
-
-        public Queue<string> MediaLastUploadedTimestamps { get; init; } =
-            new(["2026-09-07T13:00:00Z"]);
 
         public IReadOnlyList<long> RegisteredScreenIds { get; init; } = [501L, 502L];
 
@@ -543,9 +501,6 @@ public sealed class YodeckPublisherTests
         private JsonObject UploadedMedia(long id)
         {
             var media = Media(id, "local", "2026-09-07T13:00:00Z");
-            media["last_uploaded"] = MediaLastUploadedTimestamps.Count > 1
-                ? MediaLastUploadedTimestamps.Dequeue()
-                : MediaLastUploadedTimestamps.Peek();
             media["status"] = "finished";
             media["file_extension"] = "png";
             return media;

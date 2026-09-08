@@ -77,6 +77,8 @@ function createSession(key, context) {
         refinementVisible: false,
         publishVisible: false,
         screenPublication: null,
+        screenPublishOperation: null,
+        isPublishingScreens: false,
         diaryPublication: null,
         emailPublication: null,
         memberEmailMembers: [],
@@ -345,6 +347,7 @@ function serialiseSession(session, includeInlineArtwork = true) {
         refinementVisible: session.refinementVisible,
         publishVisible: session.publishVisible,
         screenPublication: session.screenPublication,
+        screenPublishOperation: session.screenPublishOperation,
         diaryPublication: session.diaryPublication,
         emailPublication: session.emailPublication
     };
@@ -460,7 +463,26 @@ function applyStoredSession(session, stored) {
             endDate: String(stored.screenPublication.endDate ?? ''),
             pushConfirmed: stored.screenPublication.pushConfirmed === true,
             pushStatus: String(stored.screenPublication.pushStatus ?? ''),
+            screenCount: Number(stored.screenPublication.screenCount || 0),
+            uploadConfirmed: stored.screenPublication.uploadConfirmed === true,
+            mediaSource: String(stored.screenPublication.mediaSource ?? ''),
+            width: Number(stored.screenPublication.width || 0),
+            height: Number(stored.screenPublication.height || 0),
             updatedAt: String(stored.screenPublication.updatedAt ?? '')
+        };
+    }
+    if (stored.screenPublishOperation && typeof stored.screenPublishOperation === 'object') {
+        const storedStatus = String(stored.screenPublishOperation.status ?? '');
+        session.screenPublishOperation = {
+            status: storedStatus === 'sending' ? 'failed' : storedStatus,
+            mediaName: String(stored.screenPublishOperation.mediaName ?? ''),
+            startDate: String(stored.screenPublishOperation.startDate ?? ''),
+            endDate: String(stored.screenPublishOperation.endDate ?? ''),
+            startedAt: String(stored.screenPublishOperation.startedAt ?? ''),
+            updatedAt: String(stored.screenPublishOperation.updatedAt ?? ''),
+            error: storedStatus === 'sending'
+                ? 'The previous background send was interrupted when the page closed. Try again; the existing Yodeck item will be updated rather than duplicated.'
+                : String(stored.screenPublishOperation.error ?? '')
         };
     }
     if (stored.diaryPublication && typeof stored.diaryPublication === 'object' && stored.diaryPublication.remoteId) {
@@ -985,6 +1007,7 @@ export async function mountPosterStudio(context = {}) {
         regenerateButton: document.querySelector('#regenerateButton'),
         sharePanel: document.querySelector('#sharePanel'),
         shareScreensButton: document.querySelector('#shareScreensButton'),
+        shareScreensStatus: document.querySelector('#shareScreensStatus'),
         shareEmailButton: document.querySelector('#shareEmailButton'),
         shareEmailCard: document.querySelector('#shareEmailCard'),
         shareEmailStatus: document.querySelector('#shareEmailStatus'),
@@ -1424,6 +1447,7 @@ function restoreSessionToDom(session) {
             elements.shareMessage.textContent = `${shareHistory.join(' ')} Sending again will update the existing destination item.`;
         }
     }
+    renderScreenPublishState(session);
     if (!session.isGenerating && elements.generationElapsed) {
         elements.generationElapsed.textContent = session.errorMessage
             ? 'The form is unlocked and ready to try again.'
@@ -1438,6 +1462,49 @@ function restoreSessionToDom(session) {
     if (session.errorMessage) {
         renderGenerationError(session);
     }
+}
+
+function renderScreenPublishState(session) {
+    if (!isSessionVisible(session) || !elements.shareScreensButton) return;
+
+    const operation = session.screenPublishOperation;
+    const status = elements.shareScreensStatus;
+    const isSending = session.isPublishingScreens || operation?.status === 'sending';
+    if (isSending) {
+        elements.shareScreensButton.disabled = true;
+        elements.shareScreensButton.textContent = 'Sending…';
+        if (status) {
+            status.textContent = 'Sending in background…';
+            status.className = 'share-action-status sending';
+        }
+        if (elements.shareMessage) {
+            elements.shareMessage.textContent = 'Artwork is being sent to the clubhouse screens in the background. You can continue working elsewhere in Event Playbook.';
+        }
+        return;
+    }
+
+    elements.shareScreensButton.disabled = false;
+    if (operation?.status === 'failed') {
+        elements.shareScreensButton.textContent = 'Try again';
+        if (status) {
+            status.textContent = 'Could not send · try again';
+            status.className = 'share-action-status failed';
+        }
+        if (elements.shareMessage) elements.shareMessage.textContent = operation.error;
+        return;
+    }
+
+    if (session.screenPublication) {
+        elements.shareScreensButton.textContent = 'Update clubhouse screens';
+        if (status) {
+            status.textContent = 'Scheduled · push completed';
+            status.className = 'share-action-status';
+        }
+        return;
+    }
+
+    elements.shareScreensButton.textContent = 'Send to clubhouse screens';
+    if (status) status.className = 'share-action-status hidden';
 }
 
 async function generateConcepts(session, isRegeneration) {
@@ -3240,6 +3307,7 @@ async function addToMemberDiary() {
 function openScreenShareDialog() {
     const session = activeSession;
     if (!session || !elements.publishDialog) return;
+    if (session.isPublishingScreens || session.screenPublishOperation?.status === 'sending') return;
 
     const primaryOutput = getPrimaryOutput(session);
     const primaryCanvas = primaryOutput ? session.posterCanvases.get(primaryOutput.id) : null;
@@ -3264,9 +3332,11 @@ function openScreenShareDialog() {
     elements.yodeckEndDate.value = eventDate;
     elements.publishDialogMessage.textContent = '';
     elements.publishDialogMessage.className = 'poster-publish-dialog-message';
-    elements.publishDialogConfirm.textContent = session.screenPublication
-        ? 'Update clubhouse screens'
-        : 'Send to clubhouse screens';
+    elements.publishDialogConfirm.textContent = session.screenPublishOperation?.status === 'failed'
+        ? 'Try sending again'
+        : session.screenPublication
+            ? 'Update clubhouse screens'
+            : 'Send to clubhouse screens';
 
     const screenConnection = session.config?.clubhouseScreens ?? {};
     elements.yodeckPlaylistName.textContent = screenConnection.destinationName || 'Clubhouse screens';
@@ -3277,6 +3347,10 @@ function openScreenShareDialog() {
     elements.publishDialogConfirm.disabled = !screenConnection.configured;
     if (screenConnection.configured && session.screenPublication) {
         elements.publishDialogMessage.textContent = 'This event already has a clubhouse-screen item. Sending again will replace its image, name, tags and dates without adding another playlist entry.';
+    }
+    if (screenConnection.configured && session.screenPublishOperation?.status === 'failed') {
+        elements.publishDialogMessage.textContent = session.screenPublishOperation.error;
+        elements.publishDialogMessage.className = 'poster-publish-dialog-message error';
     }
 
     elements.publishDialog.showModal();
@@ -3294,6 +3368,7 @@ function closePublishDialog() {
 
 async function sendToClubhouseScreens() {
     const session = activeSession;
+    if (!session || session.isPublishingScreens || session.screenPublishOperation?.status === 'sending') return;
     const primaryOutput = getPrimaryOutput(session);
     const primaryCanvas = primaryOutput ? session.posterCanvases.get(primaryOutput.id) : null;
     if (!primaryOutput || !primaryCanvas) {
@@ -3316,31 +3391,41 @@ async function sendToClubhouseScreens() {
         .map(tag => tag.trim())
         .filter(Boolean);
 
-    elements.shareScreensButton.disabled = true;
+    const request = {
+        eventId: session.context?.eventId || session.key,
+        eventName: getCampaignEventName(session),
+        eventDate,
+        startDate,
+        mediaName: session.form.publishMediaName,
+        tags,
+        digitalScreenAsset: {
+            outputId: primaryOutput.id,
+            name: primaryOutput.name,
+            dataUrl: primaryCanvas.toDataURL('image/png')
+        },
+        sendToClubhouseScreens: true
+    };
+
+    session.isPublishingScreens = true;
+    session.screenPublishOperation = {
+        status: 'sending',
+        mediaName: session.form.publishMediaName,
+        startDate,
+        endDate: eventDate,
+        startedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        error: ''
+    };
     elements.publishDialogConfirm.disabled = true;
-    elements.publishDialogConfirm.textContent = 'Sending to clubhouse screens…';
-    elements.shareMessage.textContent = 'Sending the digital-screen artwork to the clubhouse screens…';
-    elements.publishDialogMessage.textContent = 'Uploading the artwork and updating the clubhouse screen rotation…';
-    elements.publishDialogMessage.className = 'poster-publish-dialog-message working';
+    elements.publishDialog?.close();
+    renderScreenPublishState(session);
+    void persistSession(session);
 
     try {
         const response = await fetch('/api/poster/publish', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                eventId: session.context?.eventId || session.key,
-                eventName: getCampaignEventName(session),
-                eventDate,
-                startDate,
-                mediaName: session.form.publishMediaName,
-                tags,
-                digitalScreenAsset: {
-                    outputId: primaryOutput.id,
-                    name: primaryOutput.name,
-                    dataUrl: primaryCanvas.toDataURL('image/png')
-                },
-                sendToClubhouseScreens: true
-            })
+            body: JSON.stringify(request)
         });
         const result = await readApiResponse(response);
         const screenResult = result.clubhouseScreens;
@@ -3360,20 +3445,24 @@ async function sendToClubhouseScreens() {
             height: Number(screenResult.height || 0),
             updatedAt: new Date().toISOString()
         };
+        session.screenPublishOperation = {
+            ...session.screenPublishOperation,
+            status: 'succeeded',
+            updatedAt: new Date().toISOString(),
+            error: ''
+        };
         const pushMessage = screenResult.pushConfirmed
-            ? `Yodeck confirmed the push to ${screenResult.screenCount} screen${screenResult.screenCount === 1 ? '' : 's'}.`
+            ? 'Yodeck confirmed that the screen push completed.'
             : `The screen service accepted the push request; confirmation is still pending${screenResult.pushStatus ? ` (${screenResult.pushStatus})` : ''}.`;
         const uploadMessage = screenResult.uploadConfirmed && screenResult.mediaSource === 'local'
             ? `A ${screenResult.width} × ${screenResult.height} PNG file was uploaded to Yodeck's media library and finished processing.`
             : 'Yodeck did not confirm a completed local file upload.';
-        elements.shareMessage.textContent = wasUpdated
+        const successMessage = wasUpdated
             ? `“${screenResult.artworkName}” was updated on ${screenResult.destinationName} for ${screenResult.startDate} to ${screenResult.endDate}. ${uploadMessage} ${pushMessage}`
             : `“${screenResult.artworkName}” was added to ${screenResult.destinationName} for ${screenResult.startDate} to ${screenResult.endDate}. ${uploadMessage} ${pushMessage}`;
-        elements.publishDialogMessage.textContent = wasUpdated
-            ? `Updated successfully. ${uploadMessage} No additional playlist item was created. ${pushMessage}`
-            : `Sent successfully. ${uploadMessage} The dated availability was retained and ${pushMessage}`;
-        elements.publishDialogMessage.className = 'poster-publish-dialog-message success';
-        elements.publishDialogConfirm.textContent = wasUpdated ? 'Clubhouse screens updated' : 'Sent to clubhouse screens';
+        if (isSessionVisible(session) && elements.shareMessage) {
+            elements.shareMessage.textContent = successMessage;
+        }
 
         const selectedOutputs = getSelectedOutputs(session);
         const squareOutput = selectedOutputs
@@ -3392,17 +3481,18 @@ async function sendToClubhouseScreens() {
         }
 
         setWorkflowStep(session, 4, true);
-        await persistSession(session);
-        elements.publishDialog?.close();
     } catch (error) {
         const message = error instanceof Error ? error.message : 'The artwork could not be sent to the clubhouse screens.';
-        elements.shareMessage.textContent = message;
-        elements.publishDialogMessage.textContent = message;
-        elements.publishDialogMessage.className = 'poster-publish-dialog-message error';
-        elements.publishDialogConfirm.textContent = 'Try sending again';
-        elements.publishDialogConfirm.disabled = false;
+        session.screenPublishOperation = {
+            ...session.screenPublishOperation,
+            status: 'failed',
+            updatedAt: new Date().toISOString(),
+            error: message
+        };
     } finally {
-        elements.shareScreensButton.disabled = false;
+        session.isPublishingScreens = false;
+        renderScreenPublishState(session);
+        await persistSession(session);
     }
 }
 

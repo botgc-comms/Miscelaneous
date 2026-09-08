@@ -758,6 +758,12 @@
     background: #f7eed8;
     font-size: .61rem;
     font-weight: 800;
+}.poster-studio .share-action-status.sending{
+    color: #0d5268;
+    background: #e4f2f5;
+}.poster-studio .share-action-status.failed{
+    color: #9d3028;
+    background: #fae9e6;
 }.poster-studio .share-message{
     min-height: 20px;
     margin-top: 16px;
