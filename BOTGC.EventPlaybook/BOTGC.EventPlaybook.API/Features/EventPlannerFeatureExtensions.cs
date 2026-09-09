@@ -20,13 +20,48 @@ public sealed record SynchronisePlannerEventRequest(
     int? Attendees,
     string? GroupId,
     string? GroupName,
-    string DescriptionHtml);
+    string DescriptionHtml,
+    bool CreateNewWhenDateOccupied = false);
 
 public sealed record SynchronisePlannerEventResult(
     string EventPlaybookEventId,
     int IntelligentGolfEventId,
     bool Allocated,
     DateTimeOffset SynchronisedAtUtc);
+
+public sealed record IntelligentGolfPlannerEventCandidate(
+    int IntelligentGolfEventId,
+    string Name);
+
+public sealed class IntelligentGolfPlannerMatchRequiredException(
+    DateOnly eventDate,
+    IReadOnlyList<IntelligentGolfPlannerEventCandidate> candidates,
+    string stage = "planner-event-match-required",
+    string? message = null)
+    : Exception(message ?? BuildMessage(eventDate, candidates))
+{
+    public DateOnly EventDate { get; } = eventDate;
+    public IReadOnlyList<IntelligentGolfPlannerEventCandidate> Candidates { get; } = candidates;
+    public string Stage { get; } = stage;
+
+    private static string BuildMessage(
+        DateOnly eventDate,
+        IReadOnlyCollection<IntelligentGolfPlannerEventCandidate> candidates) =>
+        $"Intelligent Golf already contains {candidates.Count} planner " +
+        $"{(candidates.Count == 1 ? "event" : "events")} on {eventDate:yyyy-MM-dd}. " +
+        "Choose one to adopt or explicitly create a separate event.";
+}
+
+public sealed record AdoptPlannerEventRequest(
+    string EventPlaybookEventId,
+    DateOnly EventDate,
+    int IntelligentGolfEventId);
+
+public sealed record AdoptPlannerEventResult(
+    string EventPlaybookEventId,
+    int IntelligentGolfEventId,
+    bool Adopted,
+    DateTimeOffset AdoptedAtUtc);
 
 public sealed record PublishPlannerDiaryRequest(
     string EventPlaybookEventId,
@@ -49,6 +84,9 @@ public sealed record PublishPlannerDiaryResult(
 
 public sealed record SynchronisePlannerEventCommand(
     SynchronisePlannerEventRequest Request) : IRequest<SynchronisePlannerEventResult>;
+
+public sealed record AdoptPlannerEventCommand(
+    AdoptPlannerEventRequest Request) : IRequest<AdoptPlannerEventResult>;
 
 public sealed record PublishPlannerDiaryCommand(
     PublishPlannerDiaryRequest Request) : IRequest<PublishPlannerDiaryResult>;
@@ -80,7 +118,7 @@ public sealed class SynchronisePlannerEventHandler(
         if (externalId is null or <= 0)
         {
             await using var allocationLock = await lockManager.AcquireAsync(
-                $"intelligent-golf:event-allocation:{request.EventPlaybookEventId}",
+                $"intelligent-golf:event-allocation:{request.EventPlaybookEventId.Trim().ToLowerInvariant()}",
                 cancellationToken);
             if (!allocationLock.IsAcquired)
             {
@@ -90,6 +128,18 @@ public sealed class SynchronisePlannerEventHandler(
             externalId = (await cache.GetAsync<ExternalEventLink>(cacheKey, cancellationToken))?.IntelligentGolfEventId;
             if (externalId is null or <= 0)
             {
+                if (!request.CreateNewWhenDateOccupied)
+                {
+                    var candidates = await IntelligentGolfPlannerEventDiscovery.FindByDateAsync(
+                        transport,
+                        request.EventDate,
+                        cancellationToken);
+                    if (candidates.Count > 0)
+                    {
+                        throw new IntelligentGolfPlannerMatchRequiredException(request.EventDate, candidates);
+                    }
+                }
+
                 var allocationDate = request.EventDate.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture);
                 IntelligentGolfTransportResponse allocation;
                 try
@@ -323,6 +373,266 @@ public sealed class SynchronisePlannerEventHandler(
     }
 
     private sealed record ExternalEventLink(int IntelligentGolfEventId);
+}
+
+public sealed class AdoptPlannerEventHandler(
+    IIntelligentGolfTransport transport,
+    ICacheService cache,
+    IDistributedLockManager lockManager,
+    ILogger<AdoptPlannerEventHandler> logger)
+    : IRequestHandler<AdoptPlannerEventCommand, AdoptPlannerEventResult>
+{
+    private static readonly TimeSpan LinkLifetime = TimeSpan.FromDays(3650);
+
+    public async Task<AdoptPlannerEventResult> Handle(
+        AdoptPlannerEventCommand command,
+        CancellationToken cancellationToken)
+    {
+        var request = command.Request;
+        if (string.IsNullOrWhiteSpace(request.EventPlaybookEventId))
+            throw new ArgumentException("The Event Playbook event ID is required.");
+        if (request.EventDate == default)
+            throw new ArgumentException("The event date is required.");
+        if (request.IntelligentGolfEventId <= 0)
+            throw new ArgumentException("A valid Intelligent Golf event ID is required.");
+
+        var eventPlaybookEventId = request.EventPlaybookEventId.Trim();
+        var cacheKey = EventCacheKey(eventPlaybookEventId);
+        await using var adoptionLock = await lockManager.AcquireAsync(
+            $"intelligent-golf:event-allocation:{eventPlaybookEventId.ToLowerInvariant()}",
+            cancellationToken);
+        if (!adoptionLock.IsAcquired)
+        {
+            throw new TimeoutException(
+                "Another request is currently linking this Intelligent Golf event. Try again shortly.");
+        }
+
+        var existingLink = await cache.GetAsync<ExternalEventLink>(cacheKey, cancellationToken);
+        if (existingLink?.IntelligentGolfEventId is > 0)
+        {
+            if (existingLink.IntelligentGolfEventId != request.IntelligentGolfEventId)
+            {
+                throw new ArgumentException(
+                    $"This Event Playbook event is already linked to Intelligent Golf event {existingLink.IntelligentGolfEventId}.");
+            }
+
+            return new AdoptPlannerEventResult(
+                eventPlaybookEventId,
+                request.IntelligentGolfEventId,
+                false,
+                DateTimeOffset.UtcNow);
+        }
+
+        var candidates = await IntelligentGolfPlannerEventDiscovery.FindByDateAsync(
+            transport,
+            request.EventDate,
+            cancellationToken);
+        if (candidates.All(candidate => candidate.IntelligentGolfEventId != request.IntelligentGolfEventId))
+        {
+            throw new IntelligentGolfPlannerMatchRequiredException(
+                request.EventDate,
+                candidates,
+                "planner-event-match-expired",
+                candidates.Count == 0
+                    ? $"Intelligent Golf event {request.IntelligentGolfEventId} is no longer present on {request.EventDate:yyyy-MM-dd}. Refresh the available events before choosing again."
+                    : "The Intelligent Golf events on this date have changed. Choose one of the refreshed events or explicitly create a separate event.");
+        }
+
+        await cache.SetAsync(
+            cacheKey,
+            new ExternalEventLink(request.IntelligentGolfEventId),
+            LinkLifetime,
+            cancellationToken);
+        var adoptedAt = DateTimeOffset.UtcNow;
+        logger.LogInformation(
+            "Adopted existing Intelligent Golf event {IntelligentGolfEventId} for Event Playbook event {EventPlaybookEventId} without changing its details.",
+            request.IntelligentGolfEventId,
+            eventPlaybookEventId);
+        return new AdoptPlannerEventResult(
+            eventPlaybookEventId,
+            request.IntelligentGolfEventId,
+            true,
+            adoptedAt);
+    }
+
+    private static string EventCacheKey(string eventPlaybookEventId) =>
+        $"intelligent-golf:event-link:{eventPlaybookEventId.Trim().ToLowerInvariant()}";
+
+    private sealed record ExternalEventLink(int IntelligentGolfEventId);
+}
+
+internal static class IntelligentGolfPlannerEventDiscovery
+{
+    public static async Task<IReadOnlyList<IntelligentGolfPlannerEventCandidate>> FindByDateAsync(
+        IIntelligentGolfTransport transport,
+        DateOnly eventDate,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var date = eventDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+            var response = await transport.GetResponseAsync(
+                $"/eventview.php?date={date}&view=day&subView=all",
+                cancellationToken);
+            var candidates = Parse(response.Body);
+            if (candidates.Count == 0) return candidates;
+
+            var matching = new List<IntelligentGolfPlannerEventCandidate>(candidates.Count);
+            foreach (var candidate in candidates)
+            {
+                try
+                {
+                    var eventResponse = await transport.GetResponseAsync(
+                        $"/event.php?eventid={candidate.IntelligentGolfEventId}",
+                        cancellationToken);
+                    var candidateDate = ParseEventDate(eventResponse.Body);
+
+                    // Day views can contain links for neighbouring dates. Exclude one only when
+                    // Intelligent Golf gives us a definitive, different date. Some installations
+                    // load the date field later in an edit fragment, so an unavailable date remains
+                    // a candidate for the organiser rather than allowing a duplicate automatically.
+                    if (candidateDate.HasValue && candidateDate.Value != eventDate) continue;
+                }
+                catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+                {
+                    throw;
+                }
+                catch
+                {
+                    // The day-view result is still positive evidence of an existing event. Retain
+                    // it as an unverified candidate if its individual detail page is unavailable.
+                }
+
+                matching.Add(candidate);
+            }
+
+            return matching;
+        }
+        catch (IntelligentGolfAuthenticationException)
+        {
+            throw;
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (IntelligentGolfMutationException)
+        {
+            throw;
+        }
+        catch (Exception exception)
+        {
+            throw new IntelligentGolfMutationException(
+                "planner-event-discovery",
+                $"Intelligent Golf planner events on {eventDate:yyyy-MM-dd} could not be checked.",
+                responseDetail: exception.Message,
+                innerException: exception);
+        }
+    }
+
+    internal static IReadOnlyList<IntelligentGolfPlannerEventCandidate> Parse(string raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw)) return [];
+
+        var candidates = new Dictionary<int, string>();
+        foreach (Match anchorMatch in Regex.Matches(
+                     raw,
+                     @"<a\b(?<attributes>[^>]*)>(?<content>.*?)</a\s*>",
+                     RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant))
+        {
+            var hrefMatch = Regex.Match(
+                anchorMatch.Groups["attributes"].Value,
+                "\\bhref\\s*=\\s*(?:\"(?<double>[^\"]*)\"|'(?<single>[^']*)'|(?<bare>[^\\s>]+))",
+                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+            if (!hrefMatch.Success) continue;
+
+            var href = hrefMatch.Groups["double"].Success
+                ? hrefMatch.Groups["double"].Value
+                : hrefMatch.Groups["single"].Success
+                    ? hrefMatch.Groups["single"].Value
+                    : hrefMatch.Groups["bare"].Value;
+            href = WebUtility.HtmlDecode(href);
+            var eventIdMatch = Regex.Match(
+                href,
+                @"(?:^|/)event\.php\?[^#]*?\beventid=(?<id>\d+)(?:[&#]|$)",
+                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+            if (!eventIdMatch.Success ||
+                !int.TryParse(
+                    eventIdMatch.Groups["id"].Value,
+                    NumberStyles.None,
+                    CultureInfo.InvariantCulture,
+                    out var eventId) ||
+                eventId <= 0)
+            {
+                continue;
+            }
+
+            var name = Regex.Replace(
+                anchorMatch.Groups["content"].Value,
+                @"<[^>]+>",
+                " ",
+                RegexOptions.Singleline | RegexOptions.CultureInvariant);
+            name = Regex.Replace(
+                    WebUtility.HtmlDecode(name),
+                    @"\s+",
+                    " ",
+                    RegexOptions.CultureInvariant)
+                .Trim();
+            if (string.IsNullOrWhiteSpace(name)) name = $"Intelligent Golf event {eventId}";
+
+            if (!candidates.TryGetValue(eventId, out var existingName) || name.Length > existingName.Length)
+                candidates[eventId] = name;
+        }
+
+        return candidates
+            .OrderBy(candidate => candidate.Key)
+            .Select(candidate => new IntelligentGolfPlannerEventCandidate(candidate.Key, candidate.Value))
+            .ToArray();
+    }
+
+    internal static DateOnly? ParseEventDate(string raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw)) return null;
+
+        foreach (Match inputMatch in Regex.Matches(
+                     raw,
+                     @"<input\b(?<attributes>[^>]*)>",
+                     RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant))
+        {
+            var attributes = inputMatch.Groups["attributes"].Value;
+            var name = ReadAttribute(attributes, "name");
+            if (!string.Equals(name, "date", StringComparison.OrdinalIgnoreCase)) continue;
+
+            var value = ReadAttribute(attributes, "value");
+            if (DateOnly.TryParseExact(
+                    value,
+                    "dd/MM/yyyy",
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.None,
+                    out var eventDate))
+            {
+                return eventDate;
+            }
+        }
+
+        return null;
+    }
+
+    private static string? ReadAttribute(string attributes, string attributeName)
+    {
+        var match = Regex.Match(
+            attributes,
+            $@"(?:^|\s){Regex.Escape(attributeName)}\s*=\s*(?:""(?<double>[^""]*)""|'(?<single>[^']*)'|(?<bare>[^\s>]+))",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        if (!match.Success) return null;
+
+        var value = match.Groups["double"].Success
+            ? match.Groups["double"].Value
+            : match.Groups["single"].Success
+                ? match.Groups["single"].Value
+                : match.Groups["bare"].Value;
+        return WebUtility.HtmlDecode(value).Trim();
+    }
 }
 
 public sealed class PublishPlannerDiaryHandler(
@@ -704,7 +1014,18 @@ public static class EventPlannerFeatureExtensions
             .WithName("SynchronisePlannerEvent")
             .WithTags("Event planner")
             .WithSummary("Allocate when necessary and synchronise an Event Playbook event with Intelligent Golf")
-            .Produces<SynchronisePlannerEventResult>();
+            .Produces<SynchronisePlannerEventResult>()
+            .ProducesProblem(StatusCodes.Status409Conflict);
+
+        endpoints.MapPost(
+                "/api/event-planner/events/adopt",
+                async (AdoptPlannerEventRequest request, IMediator mediator, CancellationToken cancellationToken) =>
+                    Results.Ok(await mediator.Send(new AdoptPlannerEventCommand(request), cancellationToken)))
+            .WithName("AdoptPlannerEvent")
+            .WithTags("Event planner")
+            .WithSummary("Link an Event Playbook event to an existing same-day Intelligent Golf event without changing it")
+            .Produces<AdoptPlannerEventResult>()
+            .ProducesProblem(StatusCodes.Status409Conflict);
 
         endpoints.MapPut(
                 "/api/event-planner/member-diary",

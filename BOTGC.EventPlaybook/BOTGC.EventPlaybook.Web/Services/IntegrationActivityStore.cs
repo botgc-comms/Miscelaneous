@@ -36,9 +36,7 @@ public sealed partial class IntegrationActivityStore : IIntegrationActivityStore
                 OccurredAtUtc = DateTimeOffset.UtcNow,
                 Integration = Clean(activity.Integration, 120) ?? "Integration",
                 Operation = Clean(activity.Operation, 160) ?? "Integration operation",
-                Outcome = string.Equals(activity.Outcome, "succeeded", StringComparison.OrdinalIgnoreCase)
-                    ? "succeeded"
-                    : "failed",
+                Outcome = NormaliseOutcome(activity.Outcome),
                 EventPlaybookEventId = Clean(activity.EventPlaybookEventId, 160),
                 EventName = Clean(activity.EventName, 240),
                 ExternalEventId = activity.ExternalEventId,
@@ -98,6 +96,13 @@ public sealed partial class IntegrationActivityStore : IIntegrationActivityStore
         var cleaned = WhitespaceRegex().Replace(value, " ").Trim();
         cleaned = SecretRegex().Replace(cleaned, "$1$2[redacted]");
         return cleaned.Length <= maximumLength ? cleaned : $"{cleaned[..maximumLength]}…";
+    }
+
+    private static string NormaliseOutcome(string? value)
+    {
+        if (string.Equals(value, "succeeded", StringComparison.OrdinalIgnoreCase)) return "succeeded";
+        if (string.Equals(value, "action-required", StringComparison.OrdinalIgnoreCase)) return "action-required";
+        return "failed";
     }
 
     [GeneratedRegex(@"\s+")]

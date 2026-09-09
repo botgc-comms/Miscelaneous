@@ -105,6 +105,11 @@
   const feedbackCache = new Map();
   const feedbackRequests = new Set();
   const briefingGenerationRequests = new Map();
+  const taskBoardSelection = {
+    eventId: '',
+    scopeKey: '',
+    taskIds: new Set()
+  };
   let pluginSettingsCache = null;
   let pluginSettingsRequest = null;
   let pluginSettingsNotice = '';
@@ -112,6 +117,11 @@
     intelligentGolfEnabled: false,
     mondayEnabled: false
   };
+  const intelligentGolfEventStatuses = new Map();
+  const intelligentGolfStatusRequests = new Map();
+  const intelligentGolfStatusRefreshTimers = new Map();
+  const deferredIntelligentGolfMatches = new Set();
+  const intelligentGolfResolutionNotices = new Map();
   let integrationActivityCache = null;
   let integrationActivityRequest = null;
   const DEFAULT_CLUB_BRANDING = Object.freeze({
@@ -235,6 +245,91 @@
     }
   }
 
+  function normaliseIntelligentGolfEventStatus(value) {
+    return {
+      available: value?.available === true,
+      linked: value?.linked === true || Number(value?.plannerEntryId) > 0,
+      plannerEntryId: Number(value?.plannerEntryId) || null,
+      plannerMatchRequired: value?.plannerMatchRequired === true,
+      plannerMatchEventDate: String(value?.plannerMatchEventDate ?? ''),
+      plannerMatchCandidates: Array.isArray(value?.plannerMatchCandidates)
+        ? value.plannerMatchCandidates
+          .map(candidate => ({
+            intelligentGolfEventId: Number(candidate?.intelligentGolfEventId) || 0,
+            name: String(candidate?.name ?? '').trim(),
+            linkedToAnotherPlaybookEvent: candidate?.linkedToAnotherPlaybookEvent === true
+          }))
+          .filter(candidate => candidate.intelligentGolfEventId > 0 && candidate.name)
+        : [],
+      matchRequiredAtUtc: value?.matchRequiredAtUtc ?? null,
+      lastError: String(value?.lastError ?? ''),
+      updatedAtUtc: value?.updatedAtUtc ?? null,
+      checkedAt: Date.now()
+    };
+  }
+
+  function intelligentGolfMatchSignature(eventId, status) {
+    if (!status?.plannerMatchRequired || status.plannerMatchCandidates.length === 0) return '';
+    return `${eventId}:${status.plannerMatchEventDate}:${status.plannerMatchCandidates.map(candidate => candidate.intelligentGolfEventId).join(',')}`;
+  }
+
+  async function ensureIntelligentGolfEventStatus(eventId, force = false) {
+    if (!pluginCapabilities.intelligentGolfEnabled || !eventId) return null;
+    const cached = intelligentGolfEventStatuses.get(eventId);
+    if (!force && cached &&
+        (cached.linked || cached.plannerMatchRequired || Date.now() - cached.checkedAt < 15000)) return cached;
+    if (intelligentGolfStatusRequests.has(eventId)) return intelligentGolfStatusRequests.get(eventId);
+
+    const request = (async () => {
+      try {
+        const response = await fetch(`/api/integrations/intelligent-golf/events/${encodeURIComponent(eventId)}`, {
+          cache: 'no-store'
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.error || `Intelligent Golf status could not be loaded (${response.status}).`);
+        const next = normaliseIntelligentGolfEventStatus(result);
+        const previous = intelligentGolfEventStatuses.get(eventId);
+        intelligentGolfEventStatuses.set(eventId, next);
+        const visibleChange = JSON.stringify({ ...previous, checkedAt: 0 }) !== JSON.stringify({ ...next, checkedAt: 0 });
+        const interactionActive = document.querySelector('dialog[open]') ||
+          document.activeElement?.matches?.('input, textarea, select, [contenteditable="true"]');
+        if (visibleChange && state.activeEventId === eventId && !interactionActive) render();
+        return next;
+      } catch (error) {
+        console.warn('Unable to check the Intelligent Golf planner link.', error);
+        return intelligentGolfEventStatuses.get(eventId) ?? null;
+      } finally {
+        intelligentGolfStatusRequests.delete(eventId);
+      }
+    })();
+    intelligentGolfStatusRequests.set(eventId, request);
+    return request;
+  }
+
+  function scheduleIntelligentGolfStatusRefresh(eventId) {
+    if (!pluginCapabilities.intelligentGolfEnabled || !eventId) return;
+    if (intelligentGolfEventStatuses.get(eventId)?.linked) return;
+    const existing = intelligentGolfStatusRefreshTimers.get(eventId);
+    if (existing) window.clearTimeout(existing);
+    intelligentGolfEventStatuses.delete(eventId);
+
+    // Bounded checks cover the debounced shared-state save and one slower IG
+    // round trip without leaving a permanent browser polling loop behind.
+    const delays = [900, 2300, 5000, 9000, 13000];
+    const check = async index => {
+      await ensureIntelligentGolfEventStatus(eventId, true);
+      const status = intelligentGolfEventStatuses.get(eventId);
+      if (status?.linked || status?.plannerMatchRequired || index >= delays.length - 1) {
+        intelligentGolfStatusRefreshTimers.delete(eventId);
+        return;
+      }
+      const timer = window.setTimeout(() => check(index + 1), delays[index + 1]);
+      intelligentGolfStatusRefreshTimers.set(eventId, timer);
+    };
+    const timer = window.setTimeout(() => check(0), delays[0]);
+    intelligentGolfStatusRefreshTimers.set(eventId, timer);
+  }
+
   async function initialiseClubBranding() {
     try {
       const loaded = window.clubBrandingReady
@@ -286,6 +381,250 @@
         delete event.milestoneDates[oldCode];
       }
     }
+  }
+
+  function migrateAdmissionPlanningState() {
+    if (!itemIndex.has('admission-arrangements')) return false;
+
+    let changed = false;
+    const targetItemRemap = {
+      'booking-required': 'admission-arrangements',
+      'admission-tickets-required': 'admission-arrangements',
+      'booking-details-task': 'configure-ticket-sales-task',
+      'decide-entry-charge': 'decide-booking-or-entry-charge'
+    };
+
+    const migrateRecord = (record, inferLegacyMeaning) => {
+      if (!record || typeof record !== 'object') return;
+
+      const hasArrangements = Array.isArray(record['admission-arrangements']) &&
+        record['admission-arrangements'].length > 0;
+      const legacyCharge = record['entry-charge'];
+      const legacyBooking = record['booking-required'];
+      const legacyTickets = record['admission-tickets-required'];
+
+      if (inferLegacyMeaning && !hasArrangements) {
+        const arrangements = [];
+        if (legacyCharge === true) {
+          arrangements.push('entry-payment');
+          if (legacyTickets === true) arrangements.push('advance-booking');
+        } else if (legacyBooking === true) {
+          record['entry-charge'] = true;
+          arrangements.push('advance-booking');
+        } else if (legacyCharge === false && legacyBooking === 'dont-know') {
+          record['entry-charge'] = 'dont-know';
+        } else if (legacyCharge === false && legacyBooking !== false) {
+          // The old question established that entry was free, not that booking
+          // was unnecessary. Require a fresh answer to the combined gateway.
+          delete record['entry-charge'];
+        }
+
+        if (arrangements.length > 0) record['admission-arrangements'] = arrangements;
+      }
+
+      delete record['booking-required'];
+      delete record['admission-tickets-required'];
+    };
+
+    for (const event of state.events ?? []) {
+      const before = JSON.stringify({
+        answers: event.answers,
+        clonedAnswerHints: event.clonedAnswerHints,
+        taskState: event.taskState,
+        playbookVersion: event.playbookVersion,
+        dataMigrations: event.dataMigrations,
+        learningInsights: event.learningInsights,
+        retrospectiveTaskAnalysis: event.retrospective?.taskAnalysis
+      });
+      const eventVersion = Number.parseFloat(event.playbookVersion);
+      const migrationWasApplied = event.dataMigrations?.admissionPlanningV34 === true;
+      const versionlessExplicitNeither = !Number.isFinite(eventVersion) &&
+        event.answers?.['entry-charge'] === false &&
+        event.answers?.['booking-required'] === false;
+      const legacyRecords = [event.answers, event.clonedAnswerHints, event.taskState];
+      const hasLegacyAdmissionKeys = legacyRecords.some(record => record && typeof record === 'object' && [
+        'booking-required',
+        'admission-tickets-required',
+        'booking-details-task'
+      ].some(key => Object.prototype.hasOwnProperty.call(record, key)));
+      const isLegacyEvent = !migrationWasApplied &&
+        ((Number.isFinite(eventVersion) && eventVersion < 3.4) || hasLegacyAdmissionKeys);
+
+      event.answers = event.answers && typeof event.answers === 'object' ? event.answers : {};
+      migrateRecord(event.answers, isLegacyEvent);
+      migrateRecord(event.clonedAnswerHints, isLegacyEvent);
+      if (!migrationWasApplied && !Number.isFinite(eventVersion) &&
+          !versionlessExplicitNeither &&
+          !Array.isArray(event.answers['admission-arrangements']) &&
+          event.answers['entry-charge'] === false) {
+        // Versionless records cannot prove that an old "free entry" answer
+        // also meant no booking, so ask the combined gateway again.
+        delete event.answers['entry-charge'];
+      }
+
+      event.taskState = event.taskState && typeof event.taskState === 'object' ? event.taskState : {};
+      const legacyBookingTask = event.taskState['booking-details-task'];
+      if (legacyBookingTask) {
+        const bookingTask = event.taskState['configure-ticket-sales-task'] ?? {};
+        if (!String(bookingTask.notes ?? '').trim() && String(legacyBookingTask.notes ?? '').trim()) {
+          bookingTask.notes = legacyBookingTask.notes;
+        }
+        event.taskState['configure-ticket-sales-task'] = bookingTask;
+        delete event.taskState['booking-details-task'];
+      }
+
+      const legacyDecisionTask = event.taskState['decide-entry-charge'];
+      if (legacyDecisionTask) {
+        const decisionTask = event.taskState['decide-booking-or-entry-charge'] ?? {};
+        if (!String(decisionTask.notes ?? '').trim() && String(legacyDecisionTask.notes ?? '').trim()) {
+          decisionTask.notes = legacyDecisionTask.notes;
+        }
+        event.taskState['decide-booking-or-entry-charge'] = decisionTask;
+        delete event.taskState['decide-entry-charge'];
+      }
+
+      for (const insight of event.learningInsights ?? []) {
+        if (!Array.isArray(insight.targetItemIds)) continue;
+        insight.targetItemIds = [...new Set(insight.targetItemIds.map(itemId => targetItemRemap[itemId] ?? itemId))];
+      }
+      for (const proposal of event.retrospective?.taskAnalysis?.proposals ?? []) {
+        if (proposal.targetItemId && targetItemRemap[proposal.targetItemId]) {
+          proposal.targetItemId = targetItemRemap[proposal.targetItemId];
+        }
+      }
+
+      event.dataMigrations = event.dataMigrations && typeof event.dataMigrations === 'object'
+        ? event.dataMigrations
+        : {};
+      event.dataMigrations.admissionPlanningV34 = true;
+
+      const after = JSON.stringify({
+        answers: event.answers,
+        clonedAnswerHints: event.clonedAnswerHints,
+        taskState: event.taskState,
+        playbookVersion: event.playbookVersion,
+        dataMigrations: event.dataMigrations,
+        learningInsights: event.learningInsights,
+        retrospectiveTaskAnalysis: event.retrospective?.taskAnalysis
+      });
+      if (before !== after) changed = true;
+    }
+
+    const notificationCount = state.notificationOutbox?.length ?? 0;
+    state.notificationOutbox = (state.notificationOutbox ?? [])
+      .filter(notification => notification.taskId !== 'booking-details-task')
+      .filter(notification => notification.taskId !== 'decide-entry-charge');
+    if (state.notificationOutbox.length !== notificationCount) changed = true;
+
+    return changed;
+  }
+
+  function migrateAdmissionPricingState() {
+    if (!itemIndex.has('admission-free-categories') || !itemIndex.has('set-admission-prices-task')) return false;
+
+    let changed = false;
+    const legacyQuestionId = 'admission-price-details';
+    const priceTaskId = 'set-admission-prices-task';
+    const legacyComplimentaryId = 'complimentary-admission';
+    const legacyComplimentaryDetailsId = 'complimentary-admission-details';
+    const targetItemRemap = {
+      [legacyQuestionId]: priceTaskId,
+      [legacyComplimentaryId]: 'admission-free-entry',
+      [legacyComplimentaryDetailsId]: priceTaskId
+    };
+
+    const usableText = value => typeof value === 'string' && value.trim() ? value.trim() : '';
+    const appendLegacyPricingNote = (taskState, value, sourceLabel) => {
+      const pricing = usableText(value);
+      if (!pricing) return;
+      const note = `${sourceLabel}: ${pricing}`;
+      const existing = usableText(taskState.notes);
+      if (!existing) {
+        taskState.notes = note;
+      } else if (!existing.includes(pricing)) {
+        taskState.notes = `${existing}\n\n${note}`;
+      }
+    };
+
+    for (const event of state.events ?? []) {
+      const before = JSON.stringify({
+        answers: event.answers,
+        clonedAnswerHints: event.clonedAnswerHints,
+        taskState: event.taskState,
+        dataMigrations: event.dataMigrations,
+        learningInsights: event.learningInsights,
+        retrospectiveTaskAnalysis: event.retrospective?.taskAnalysis
+      });
+
+      event.answers = event.answers && typeof event.answers === 'object' ? event.answers : {};
+      event.taskState = event.taskState && typeof event.taskState === 'object' ? event.taskState : {};
+      const legacyComplimentary = event.answers[legacyComplimentaryId];
+      const legacyComplimentaryHint = event.clonedAnswerHints?.[legacyComplimentaryId];
+      if (!Object.prototype.hasOwnProperty.call(event.answers, 'admission-free-entry') && legacyComplimentary === false) {
+        event.answers['admission-free-entry'] = false;
+      }
+      if (event.clonedAnswerHints && typeof event.clonedAnswerHints === 'object' &&
+          !Object.prototype.hasOwnProperty.call(event.clonedAnswerHints, 'admission-free-entry') &&
+          legacyComplimentaryHint === false) {
+        event.clonedAnswerHints['admission-free-entry'] = false;
+      }
+
+      const legacyAnswer = event.answers[legacyQuestionId];
+      const legacyHint = event.clonedAnswerHints?.[legacyQuestionId];
+      const legacyComplimentaryDetails = event.answers[legacyComplimentaryDetailsId];
+      const legacyComplimentaryDetailsHint = event.clonedAnswerHints?.[legacyComplimentaryDetailsId];
+      if (usableText(legacyAnswer) || usableText(legacyHint) ||
+          usableText(legacyComplimentaryDetails) || usableText(legacyComplimentaryDetailsHint) ||
+          legacyComplimentary === true || legacyComplimentaryHint === true) {
+        const priceTaskState = event.taskState[priceTaskId] ?? {};
+        appendLegacyPricingNote(priceTaskState, legacyAnswer, 'Previously recorded pricing — review and confirm');
+        appendLegacyPricingNote(priceTaskState, legacyHint, 'Previous event pricing hint — review and confirm');
+        appendLegacyPricingNote(priceTaskState, legacyComplimentaryDetails, 'Previously recorded complimentary or discounted entry — review and confirm');
+        appendLegacyPricingNote(priceTaskState, legacyComplimentaryDetailsHint, 'Previous event complimentary-entry hint — review and confirm');
+        if (legacyComplimentary === true && !usableText(legacyComplimentaryDetails)) {
+          appendLegacyPricingNote(priceTaskState, 'Complimentary or discounted admission was previously selected; decide which categories now receive free entry.', 'Previous decision — review and confirm');
+        }
+        if (legacyComplimentaryHint === true && !usableText(legacyComplimentaryDetailsHint)) {
+          appendLegacyPricingNote(priceTaskState, 'The previous event included complimentary or discounted admission; review the free-entry categories.', 'Previous event hint — review and confirm');
+        }
+        event.taskState[priceTaskId] = priceTaskState;
+      }
+      delete event.answers[legacyQuestionId];
+      delete event.answers[legacyComplimentaryId];
+      delete event.answers[legacyComplimentaryDetailsId];
+      if (event.clonedAnswerHints && typeof event.clonedAnswerHints === 'object') {
+        delete event.clonedAnswerHints[legacyQuestionId];
+        delete event.clonedAnswerHints[legacyComplimentaryId];
+        delete event.clonedAnswerHints[legacyComplimentaryDetailsId];
+      }
+
+      for (const insight of event.learningInsights ?? []) {
+        if (!Array.isArray(insight.targetItemIds)) continue;
+        insight.targetItemIds = [...new Set(insight.targetItemIds.map(itemId => targetItemRemap[itemId] ?? itemId))];
+      }
+      for (const proposal of event.retrospective?.taskAnalysis?.proposals ?? []) {
+        if (proposal.targetItemId && targetItemRemap[proposal.targetItemId]) {
+          proposal.targetItemId = targetItemRemap[proposal.targetItemId];
+        }
+      }
+
+      event.dataMigrations = event.dataMigrations && typeof event.dataMigrations === 'object'
+        ? event.dataMigrations
+        : {};
+      event.dataMigrations.admissionPricingV35 = true;
+
+      const after = JSON.stringify({
+        answers: event.answers,
+        clonedAnswerHints: event.clonedAnswerHints,
+        taskState: event.taskState,
+        dataMigrations: event.dataMigrations,
+        learningInsights: event.learningInsights,
+        retrospectiveTaskAnalysis: event.retrospective?.taskAnalysis
+      });
+      if (before !== after) changed = true;
+    }
+
+    return changed;
   }
 
   function migratePlaybookMilestoneCodes(candidate) {
@@ -442,6 +781,9 @@
     state.contacts = shared.contacts;
     state.referenceLibrary = shared.referenceLibrary;
     state.events = shared.events;
+    const admissionPlanningMigrated = migrateAdmissionPlanningState();
+    const admissionPricingMigrated = migrateAdmissionPricingState();
+    const admissionStateMigrated = admissionPlanningMigrated || admissionPricingMigrated;
     if (state.activeEventId && !state.events.some(event => event.id === state.activeEventId)) {
       state.activeEventId = null;
       state.activeView = 'catalogue';
@@ -454,6 +796,7 @@
       console.warn('The shared Image Library is too large for the browser cache. Server storage remains authoritative.', error);
     }
     applyingSharedState = false;
+    if (admissionStateMigrated && sharedStateReady) scheduleSharedStateSave(100);
   }
 
   function scheduleSharedStateSave(delay = 450) {
@@ -793,11 +1136,47 @@
     for (const task of tasks) {
       if (task.deadlineCode && !deadlineCodes.has(task.deadlineCode)) throw new Error(`${task.id} uses unknown deadline code ${task.deadlineCode}.`);
       if (task.defaultOwnerRoleId && !roleIds.has(task.defaultOwnerRoleId)) throw new Error(`${task.id} uses unknown owner role ${task.defaultOwnerRoleId}.`);
+      if (task.ownerFromQuestionId) {
+        const ownerQuestion = questions.get(task.ownerFromQuestionId);
+        if (!ownerQuestion || ownerQuestion.answerType !== 'assignment') {
+          throw new Error(`${task.id} owner source must reference an assignment question.`);
+        }
+      }
+      if (task.reviewSummary) {
+        if (!Array.isArray(task.reviewSummary.fields) || task.reviewSummary.fields.length === 0) {
+          throw new Error(`${task.id} must define at least one review summary field.`);
+        }
+        const reviewQuestionIds = new Set();
+        for (const field of task.reviewSummary.fields) {
+          if (!field?.questionId || itemTypes.get(field.questionId) !== 'question') {
+            throw new Error(`${task.id} review summary references missing question ${field?.questionId ?? '(unknown)'}.`);
+          }
+          if (reviewQuestionIds.has(field.questionId)) {
+            throw new Error(`${task.id} review summary repeats question ${field.questionId}.`);
+          }
+          reviewQuestionIds.add(field.questionId);
+        }
+      }
       if (task.staffBriefing) {
         const validStaffPhases = new Set(['before-event', 'event-day', 'after-event']);
         if (!validStaffPhases.has(task.staffBriefing.phase)) throw new Error(`${task.id} uses unknown staff briefing phase ${task.staffBriefing.phase}.`);
         if (!String(task.staffBriefing.audience ?? '').trim()) throw new Error(`${task.id} must name the staff audience for its briefing instruction.`);
         if (!String(task.staffBriefing.instruction ?? '').trim()) throw new Error(`${task.id} must provide a practical staff briefing instruction.`);
+      }
+    }
+
+    for (const question of questions.values()) {
+      if (!question.planningContext) continue;
+      if (!Array.isArray(question.planningContext.fields) || question.planningContext.fields.length === 0) {
+        throw new Error(`${question.id} planning context must define at least one field.`);
+      }
+      for (const field of question.planningContext.fields) {
+        if (!field?.questionId || !questions.has(field.questionId)) {
+          throw new Error(`${question.id} planning context references missing question ${field?.questionId ?? '(unknown)'}.`);
+        }
+        for (const questionId of referencedQuestions(field.showWhen)) {
+          if (!questions.has(questionId)) throw new Error(`${question.id} planning context references missing question ${questionId}.`);
+        }
       }
     }
 
@@ -878,6 +1257,7 @@
         history: []
       },
       playbookVersion: playbook?.schemaVersion ?? '1.0',
+      dataMigrations: { admissionPlanningV34: true, admissionPricingV35: true },
       sourceEventId: null,
       eventSeriesId: id,
       learningInsights: [],
@@ -888,6 +1268,7 @@
     state.activeEventId = id;
     state.activeView = 'module:start';
     saveState();
+    scheduleIntelligentGolfStatusRefresh(id);
     return event;
   }
 
@@ -1175,6 +1556,17 @@
       taskState.notificationStatus === 'sent';
   }
 
+  function hasPaidAdmissionCategories(event) {
+    const arrangements = getQuestionValue('admission-arrangements', event);
+    if (!Array.isArray(arrangements) || !arrangements.includes('entry-payment')) return false;
+    const hasFreeEntry = getQuestionValue('admission-free-entry', event);
+    if (hasFreeEntry === false) return true;
+    if (hasFreeEntry !== true) return false;
+    const freeCategories = getQuestionValue('admission-free-categories', event);
+    if (!Array.isArray(freeCategories) || freeCategories.length === 0) return false;
+    return !['children', 'members', 'visitors'].every(category => freeCategories.includes(category));
+  }
+
   function hasCancellationEvidence(event, area) {
     const answerSignals = {
       'Food & Beverage': [],
@@ -1182,10 +1574,11 @@
       'Golf Operations': ['tee-times-reserved'],
       Clubhouse: [],
       Course: [],
-      Finance: ['entry-charge'],
+      Finance: [],
       Administration: ['entry-charge']
     };
     if ((answerSignals[area] ?? []).some(questionId => getQuestionValue(questionId, event) === true)) return true;
+    if (area === 'Finance' && getQuestionValue('entry-charge', event) === true && hasPaidAdmissionCategories(event)) return true;
 
     return Object.entries(event.taskState ?? {}).some(([taskId, taskState]) => {
       const indexed = itemIndex.get(taskId);
@@ -1555,9 +1948,26 @@
     taskState.lastReminderAt ??= null;
     taskState.escalatedAt ??= null;
 
+    const ownerSourceQuestionId = String(task.item.ownerFromQuestionId ?? '').trim();
+    const ownerSourceTag = ownerSourceQuestionId ? `question:${ownerSourceQuestionId}` : '';
+    const ownerSourceReference = ownerSourceQuestionId
+      ? assignmentReference(getQuestionValue(ownerSourceQuestionId, event))
+      : null;
+    const currentReference = taskAssignmentReference(taskState);
+    const sourceCanManageOwner = !taskState.assignee || taskState.assignedBy === 'default-role' || taskState.assignedBy === ownerSourceTag;
+    const sourceMatchesCurrent = ownerSourceReference && currentReference &&
+      ownerSourceReference.kind === currentReference.kind && ownerSourceReference.id === currentReference.id;
+
+    if (ownerSourceReference && sourceCanManageOwner && !sourceMatchesCurrent) {
+      assignTaskToReference(event, task.item, ownerSourceReference, ownerSourceTag);
+    } else if (!ownerSourceReference && taskState.assignedBy === ownerSourceTag) {
+      assignTaskToReference(event, task.item, null, ownerSourceTag);
+    }
+
     if (!taskState.assignee && task.item.defaultOwnerRoleId) {
       assignTaskToReference(event, task.item, { kind: 'role', id: task.item.defaultOwnerRoleId }, 'default-role');
     }
+    reconcileTaskReviewCompletion(task.item, event, taskState);
     return taskState;
   }
 
@@ -1697,6 +2107,18 @@
         if (!response.ok) continue;
         const records = await response.json();
         for (const record of records) {
+          const legacyTaskReplacement = {
+            'booking-details-task': 'configure-ticket-sales-task',
+            'decide-entry-charge': 'decide-booking-or-entry-charge'
+          }[record.taskId];
+          if (legacyTaskReplacement) {
+            const replacementState = ensureTaskState(event, legacyTaskReplacement);
+            if (!String(replacementState.notes ?? '').trim() && String(record.completionNotes ?? '').trim()) {
+              replacementState.notes = record.completionNotes;
+            }
+            continue;
+          }
+          if (!itemIndex.has(record.taskId)) continue;
           const taskState = ensureTaskState(event, record.taskId);
           taskState.completed = true;
           taskState.status = 'completed';
@@ -1717,9 +2139,16 @@
 
   function markTaskComplete(event, item, completed) {
     const taskState = ensureTaskState(event, item.id);
+    const review = taskReviewState(item, event);
+    if (completed && review && !review.ready) return false;
     taskState.completed = Boolean(completed);
     taskState.status = completed ? 'completed' : 'open';
     taskState.completedAt = completed ? new Date().toISOString() : null;
+    if (review) {
+      taskState.reviewSignature = completed ? review.signature : null;
+      if (completed) taskState.reviewInvalidatedAt = null;
+    }
+    return true;
   }
 
   function minutesFromTime(value) {
@@ -2088,6 +2517,143 @@
     return String(value ?? '').trim();
   }
 
+  function taskReviewState(item, event) {
+    const review = item?.reviewSummary;
+    if (!review || !Array.isArray(review.fields) || !event) return null;
+
+    const fields = review.fields.map(field => {
+      const question = itemIndex.get(field.questionId)?.item;
+      const visible = Boolean(question && isItemVisible(question, event));
+      const value = question ? getQuestionValue(field.questionId, event) : undefined;
+      const hasAnswer = Boolean(question && isAnsweredValue(value) && (
+        question.answerType !== 'assignment' || assignmentDisplay(value, '').trim()
+      ));
+      const required = field.required === undefined
+        ? question?.required !== false
+        : field.required !== false;
+      const missing = !question || (visible && required && !hasAnswer);
+      const unselectedOptionLabels = question && field.showUnselectedOptions === true && Array.isArray(value)
+        ? (question.options ?? [])
+          .filter(option => !value.includes(option.value))
+          .map(option => option.label)
+        : null;
+      const answer = !question
+        ? 'Question unavailable'
+        : !visible
+          ? (field.notApplicableText || 'Not applicable')
+          : hasAnswer
+            ? (unselectedOptionLabels
+              ? (unselectedOptionLabels.join(', ') || field.allSelectedText || 'None')
+              : formatBriefingAnswer(question, value))
+            : (field.emptyText || (required ? 'Answer needed' : 'Not specified'));
+      return {
+        questionId: field.questionId,
+        label: field.label || question?.label || field.questionId,
+        visible,
+        required,
+        missing,
+        answer
+      };
+    });
+
+    return {
+      config: review,
+      fields,
+      missing: fields.filter(field => field.missing),
+      ready: fields.every(field => !field.missing),
+      signature: JSON.stringify(fields.map(field => [field.questionId, field.visible, field.answer]))
+    };
+  }
+
+  function invalidateTaskReviewConfirmations(event, questionId) {
+    if (!event || !questionId) return;
+    for (const module of playbook.modules ?? []) {
+      for (const section of module.sections ?? []) {
+        for (const item of section.items ?? []) {
+          if (item.type !== 'task' || !item.reviewSummary?.fields?.some(field => field.questionId === questionId)) continue;
+          const taskState = event.taskState?.[item.id];
+          if (!taskState || (!taskState.completed && !taskState.reviewSignature)) continue;
+          const wasConfirmed = taskState.completed === true;
+          taskState.completed = false;
+          taskState.status = 'open';
+          taskState.completedAt = null;
+          taskState.reviewSignature = null;
+          if (wasConfirmed) taskState.reviewInvalidatedAt = new Date().toISOString();
+        }
+      }
+    }
+  }
+
+  function reconcileTaskReviewCompletion(item, event, taskState) {
+    const review = taskReviewState(item, event);
+    if (!review || taskState.completed !== true) return review;
+    const answersChanged = Boolean(taskState.reviewSignature && taskState.reviewSignature !== review.signature);
+    if (!review.ready || answersChanged) {
+      taskState.completed = false;
+      taskState.status = 'open';
+      taskState.completedAt = null;
+      taskState.reviewSignature = null;
+      taskState.reviewInvalidatedAt ??= new Date().toISOString();
+    }
+    return review;
+  }
+
+  function taskCompletionControl(item, event, taskState) {
+    const review = taskReviewState(item, event);
+    const completed = taskState.completed === true;
+    const blocked = Boolean(review && !completed && !review.ready);
+    return {
+      review,
+      blocked,
+      title: completed
+        ? (review ? 'Reopen the confirmed plan' : 'Mark task open')
+        : blocked
+          ? `Complete ${review.missing.length} missing Event control answer${review.missing.length === 1 ? '' : 's'} first`
+          : (review?.config.confirmLabel || 'Mark task complete'),
+      label: completed
+        ? (review ? 'Confirmed' : 'Complete')
+        : (review?.config.confirmLabel || 'Mark complete')
+    };
+  }
+
+  function renderTaskReviewSummary(item, event, taskState, showCompletionAction = true) {
+    const review = taskReviewState(item, event);
+    if (!review) return '';
+    const completed = taskState.completed === true;
+    const statusText = completed
+      ? (review.config.confirmedLabel || 'Arrangements confirmed')
+      : review.ready
+        ? 'Ready to confirm'
+        : `${review.missing.length} answer${review.missing.length === 1 ? '' : 's'} needed`;
+    const confirmText = review.ready
+      ? (review.config.confirmLabel || 'Confirm these arrangements')
+      : `Complete ${review.missing.length} answer${review.missing.length === 1 ? '' : 's'} first`;
+
+    return `<section class="task-review-summary ${completed ? 'confirmed' : ''} ${review.ready ? 'ready' : 'needs-answers'}" aria-label="${escapeHtml(review.config.title || 'Task review')}">
+      <header class="task-review-summary-heading">
+        <div><span>Decision check</span><strong>${escapeHtml(review.config.title || 'Review the recorded answers')}</strong></div>
+        <span class="task-review-summary-status">${completed ? '✓ ' : ''}${escapeHtml(statusText)}</span>
+      </header>
+      <dl class="task-review-summary-grid">
+        ${review.fields.map(field => `<div class="task-review-summary-field ${field.missing ? 'missing' : ''} ${field.visible ? '' : 'not-applicable'}">
+          <dt>${escapeHtml(field.label)}</dt>
+          <dd>${escapeHtml(field.answer)}</dd>
+        </div>`).join('')}
+      </dl>
+      <footer class="task-review-summary-footer">
+        <p>${escapeHtml(review.config.instruction || 'Check the answers before confirming this task.')}</p>
+        <div class="task-review-summary-actions">
+          ${renderTaskWorkspaceAction(item, event)}
+          ${completed
+            ? `<span class="task-review-confirmed">✓ ${escapeHtml(review.config.confirmedLabel || 'Confirmed')}</span>`
+            : showCompletionAction
+              ? `<button type="button" class="button button-primary" data-task-confirm="${escapeHtml(item.id)}" data-task-confirm-event-id="${escapeHtml(event.id)}" ${review.ready ? '' : 'disabled'}>${escapeHtml(confirmText)}</button>`
+              : ''}
+        </div>
+      </footer>
+    </section>`;
+  }
+
   function briefingSourcePayload(event) {
     const answers = [];
     for (const module of playbook.modules) {
@@ -2288,6 +2854,164 @@
     })();
   }
 
+  function renderIntelligentGolfPlannerMatchBanner(event) {
+    if (!pluginCapabilities.intelligentGolfEnabled || !event) return '';
+    const status = intelligentGolfEventStatuses.get(event.id);
+    const notice = intelligentGolfResolutionNotices.get(event.id);
+    if (status?.plannerMatchRequired && status.plannerMatchCandidates.length > 0) {
+      const count = status.plannerMatchCandidates.length;
+      return `<section class="ig-planner-match-banner action-required" role="status">
+        <span class="ig-planner-match-icon" aria-hidden="true">!</span>
+        <div><strong>Intelligent Golf planner event needs matching</strong><p>${count} planner entr${count === 1 ? 'y already exists' : 'ies already exist'} on ${escapeHtml(formatDate(status.plannerMatchEventDate || event.eventDate))}. Confirm whether one is this event before Event Playbook creates anything else.</p></div>
+        <button class="button button-primary" type="button" data-review-ig-planner-match>Review ${count === 1 ? 'event' : 'events'}</button>
+      </section>`;
+    }
+    if (notice) {
+      return `<section class="ig-planner-match-banner ${notice.tone === 'error' ? 'failed' : 'succeeded'}" role="${notice.tone === 'error' ? 'alert' : 'status'}">
+        <span class="ig-planner-match-icon" aria-hidden="true">${notice.tone === 'error' ? '!' : '✓'}</span>
+        <div><strong>${notice.tone === 'error' ? 'Intelligent Golf needs attention' : 'Intelligent Golf planner linked'}</strong><p>${escapeHtml(notice.message)}</p></div>
+        <button class="button button-secondary" type="button" data-dismiss-ig-planner-notice>Dismiss</button>
+      </section>`;
+    }
+    return '';
+  }
+
+  function renderIntelligentGolfPlannerMatchDialog(event) {
+    if (!pluginCapabilities.intelligentGolfEnabled || !event) return '';
+    const status = intelligentGolfEventStatuses.get(event.id);
+    if (!status?.plannerMatchRequired || status.plannerMatchCandidates.length === 0) return '';
+    const availableCandidates = status.plannerMatchCandidates.filter(candidate => !candidate.linkedToAnotherPlaybookEvent);
+    const selectedId = availableCandidates[0]?.intelligentGolfEventId ?? 0;
+    const count = status.plannerMatchCandidates.length;
+    return `<dialog id="ig-planner-match-dialog" class="modal ig-planner-match-dialog" data-event-id="${escapeHtml(event.id)}" data-match-signature="${escapeHtml(intelligentGolfMatchSignature(event.id, status))}" aria-labelledby="ig-planner-match-heading">
+      <div class="modal-heading">
+        <div><span class="eyebrow">Intelligent Golf integration</span><h2 id="ig-planner-match-heading">Is this event already in the planner?</h2><p>Event Playbook found ${count === 1 ? 'an entry' : 'entries'} on the same date and has paused before creating a duplicate.</p></div>
+        <button class="icon-button" type="button" data-defer-ig-planner-match aria-label="Decide later">×</button>
+      </div>
+      <div class="ig-planner-match-body">
+        <section class="ig-planner-match-summary">
+          <span class="eyebrow">Event Playbook event</span>
+          <h3>${escapeHtml(event.name)}</h3>
+          <p>${escapeHtml(formatDate(status.plannerMatchEventDate || event.eventDate))}</p>
+          <div><strong>No changes have been made in Intelligent Golf</strong><span>If you link an existing entry, its current group, type and other configuration will be preserved.</span></div>
+        </section>
+        <fieldset class="ig-planner-match-candidates">
+          <legend>Choose the matching planner entry</legend>
+          ${status.plannerMatchCandidates.map(candidate => {
+            const unavailable = candidate.linkedToAnotherPlaybookEvent;
+            return `<label class="ig-planner-match-candidate${unavailable ? ' unavailable' : ''}">
+              <input type="radio" name="ig-planner-match-candidate" value="${candidate.intelligentGolfEventId}"${candidate.intelligentGolfEventId === selectedId ? ' checked' : ''}${unavailable ? ' disabled' : ''}>
+              <span><strong>${escapeHtml(candidate.name)}</strong><small>Intelligent Golf planner entry ${candidate.intelligentGolfEventId}${unavailable ? ' · already linked to another Playbook event' : ''}</small></span>
+            </label>`;
+          }).join('')}
+        </fieldset>
+        <div class="ig-planner-match-guidance">
+          <div><strong>Use selected event</strong><span>Links this Playbook event to the selected planner entry without updating the existing IG details now.</span></div>
+          <div><strong>Create a separate event</strong><span>Use this only when the entry above is genuinely a different event on the same day.</span></div>
+        </div>
+        <div class="ig-planner-match-error" role="alert" hidden></div>
+      </div>
+      <div class="modal-actions">
+        <button class="button button-secondary" type="button" data-defer-ig-planner-match>Decide later</button>
+        <span></span>
+        <button class="button button-secondary" type="button" data-resolve-ig-planner-match="create-new">Create a separate event</button>
+        <button class="button button-primary" type="button" data-resolve-ig-planner-match="adopt"${selectedId ? '' : ' disabled'}>Use selected event</button>
+      </div>
+    </dialog>`;
+  }
+
+  function maybeOpenIntelligentGolfPlannerMatch(event) {
+    if (!event) return;
+    const status = intelligentGolfEventStatuses.get(event.id);
+    const signature = intelligentGolfMatchSignature(event.id, status);
+    if (!signature || deferredIntelligentGolfMatches.has(signature)) return;
+    requestAnimationFrame(() => {
+      const dialog = document.getElementById('ig-planner-match-dialog');
+      if (!dialog || dialog.open || document.querySelector('dialog[open]')) return;
+      dialog.showModal();
+      dialog.querySelector('input[name="ig-planner-match-candidate"]:checked')?.focus();
+    });
+  }
+
+  function deferIntelligentGolfPlannerMatch(dialog) {
+    const signature = dialog?.dataset.matchSignature;
+    if (signature) deferredIntelligentGolfMatches.add(signature);
+    dialog?.close();
+  }
+
+  async function resolveIntelligentGolfPlannerMatch(dialog, action) {
+    const eventId = dialog?.dataset.eventId;
+    if (!eventId || !['adopt', 'create-new'].includes(action)) return;
+    const selected = dialog.querySelector('input[name="ig-planner-match-candidate"]:checked');
+    if (action === 'adopt' && !selected) return;
+
+    const errorBox = dialog.querySelector('.ig-planner-match-error');
+    if (errorBox) {
+      errorBox.hidden = true;
+      errorBox.textContent = '';
+    }
+    dialog.setAttribute('aria-busy', 'true');
+    dialog.querySelectorAll('button, input').forEach(element => {
+      element.dataset.igMatchWasDisabled = element.disabled ? 'true' : 'false';
+      element.disabled = true;
+    });
+    try {
+      const response = await fetch(`/api/integrations/intelligent-golf/events/${encodeURIComponent(eventId)}/planner-match`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, intelligentGolfEventId: action === 'adopt' ? Number(selected.value) : null })
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const error = new Error(result.detail || result.error || result.title || `The planner choice could not be saved (${response.status}).`);
+        error.result = result;
+        throw error;
+      }
+
+      intelligentGolfResolutionNotices.set(eventId, { tone: 'success', message: result.message || 'The Intelligent Golf planner event is now linked.' });
+      deferredIntelligentGolfMatches.delete(dialog.dataset.matchSignature);
+      dialog.close();
+      intelligentGolfEventStatuses.delete(eventId);
+      await ensureIntelligentGolfEventStatus(eventId, true);
+      render();
+    } catch (error) {
+      if ((Array.isArray(error.result?.candidates) && error.result.candidates.length > 0) ||
+          error.result?.refreshMatch === true) {
+        intelligentGolfResolutionNotices.set(eventId, { tone: 'error', message: 'The planner entries changed while you were deciding. Review the refreshed choices.' });
+        deferredIntelligentGolfMatches.delete(dialog.dataset.matchSignature);
+        dialog.close();
+        intelligentGolfEventStatuses.delete(eventId);
+        await ensureIntelligentGolfEventStatus(eventId, true);
+        render();
+        return;
+      }
+      if (error.result?.matchCleared === true) {
+        intelligentGolfResolutionNotices.set(eventId, {
+          tone: 'error',
+          message: `${error.message || 'The selected planner entry is no longer available.'} Save an event detail to run the same-day check again.`
+        });
+        deferredIntelligentGolfMatches.delete(dialog.dataset.matchSignature);
+        dialog.close();
+        intelligentGolfEventStatuses.delete(eventId);
+        await ensureIntelligentGolfEventStatus(eventId, true);
+        render();
+        return;
+      }
+      if (errorBox) {
+        errorBox.hidden = false;
+        errorBox.textContent = error.message || 'The planner choice could not be saved.';
+      }
+      dialog.removeAttribute('aria-busy');
+      dialog.querySelectorAll('button, input').forEach(element => {
+        element.disabled = element.dataset.igMatchWasDisabled === 'true';
+        delete element.dataset.igMatchWasDisabled;
+      });
+      const availableSelected = dialog.querySelector('input[name="ig-planner-match-candidate"]:checked:not(:disabled)');
+      const adoptButton = dialog.querySelector('[data-resolve-ig-planner-match="adopt"]');
+      if (adoptButton) adoptButton.disabled = !availableSelected;
+    }
+  }
+
   function render() {
     if (!playbook) {
       app.innerHTML = '<div class="loading">Loading playbook…</div>';
@@ -2342,7 +3066,7 @@
       : state.activeView === 'finances' ? 'Track estimated and actual income and costs so the club can see whether this event is likely to make a profit, break even or make a loss.'
       : state.activeView === 'briefing' ? 'Read the latest event and staff briefings compiled from the description, planning answers and operational work.'
       : state.activeView === 'catalogue' ? 'Review previous events, clone successful plans and reuse the knowledge captured from earlier events.'
-      : state.activeView === 'artwork' ? 'Explore three quick campaign concepts, choose the strongest idea, then produce matching high-resolution artwork for screens, member communications and print.'
+      : state.activeView === 'artwork' ? 'Create a campaign from three AI concepts or adapt an existing supplied design into matching artwork for screens, member communications and print.'
       : state.activeView === 'directory' ? 'Maintain the people, shared mailboxes, responsibilities and platform access used throughout every event.'
       : state.activeView === 'references' ? `Maintain reusable images of the clubhouse, course, trophies and interiors so Communications Centre artwork can look recognisably like ${clubBranding.clubName}.`
       : state.activeView === 'admin' ? 'Configure the questions, tasks, ownership rules and advisories that make up the club event planning process.'
@@ -2489,6 +3213,7 @@
             </section>` : ''}
 
           <main class="main-content ${state.activeView === 'artwork' ? 'poster-studio' : ''}">
+            ${event ? renderIntelligentGolfPlannerMatchBanner(event) : ''}
             ${showLifecycleBanner ? renderEventLifecycleBanner(event) : ''}
             ${state.activeView === 'dashboard' ? renderDashboard() : state.activeView === 'catalogue' ? renderCatalogue() : state.activeView === 'directory' ? renderDirectory() : state.activeView === 'references' ? renderReferenceLibrary() : state.activeView === 'plugins' ? renderPluginAdministration() : state.activeView === 'admin' ? renderAdmin() : !event ? renderEmptyState() : state.activeView === 'tasks' ? renderTaskBoard(event, tasks) : state.activeView === 'finances' ? renderEventFinances(event) : state.activeView === 'briefing' ? renderBriefing(event) : state.activeView === 'artwork' ? renderArtworkStudio(event) : state.activeView === 'retrospective' ? renderRetrospective(event) : renderModuleView(event)}
           </main>
@@ -2498,6 +3223,7 @@
       ${renderNewEventDialog()}
       <dialog id="event-summary-dialog" class="modal event-summary-dialog"><div id="event-summary-content"></div></dialog>
       ${renderEventStatusDialog(event)}
+      ${renderIntelligentGolfPlannerMatchDialog(event)}
       ${renderPluginDialogs()}
     `;
 
@@ -2508,8 +3234,12 @@
     }
     if (state.activeView === 'retrospective' && event) ensureFeedbackLoaded(event.id);
     if (state.activeView === 'briefing' && event) ensureEventBriefing(event);
+    if (event && pluginCapabilities.intelligentGolfEnabled) {
+      ensureIntelligentGolfEventStatus(event.id);
+      maybeOpenIntelligentGolfPlannerMatch(event);
+    }
     if (state.activeView === 'artwork' && event) {
-      import('./poster-app.js?v=20260907-yodeck-upload-2')
+      import('./poster-app.js?v=20260908-uploaded-design-1')
         .then(module => module.mountPosterStudio({
           eventId: event.id,
           eventName: event.name,
@@ -2839,7 +3569,7 @@
             <span class="required-pill">Selected event</span>
           </div>
           <label class="field"><span>Event description</span><textarea id="eventDescription" rows="7"></textarea><small>The selected event supplies its name and date automatically. Use this description to shape the generated artwork.</small></label>
-          <div class="field"><span>Poster style</span><div id="styleOptions" class="style-options"></div></div>
+          <div id="posterStyleField" class="field"><span>Poster style</span><div id="styleOptions" class="style-options"></div><small id="posterStyleHelp">Choose the visual direction for AI-created concepts.</small></div>
           <div class="poster-content-box">
             <div><p class="section-kicker">Poster content</p><h3>What should be added to the finished artwork?</h3></div>
             <div class="toggle-grid">
@@ -2849,8 +3579,8 @@
             </div>
             <label id="priceField" class="field hidden"><span>Price to display</span><input id="price" type="text" placeholder="£12.50"></label>
           </div>
-          <label class="field"><span>Additional creative instructions <em>optional</em></span><textarea id="additionalInstructions" rows="4" placeholder="For example: show the player attempting a ridiculous shot over mature trees towards a distant green."></textarea></label>
-          <div class="supporting-upload-box">
+          <label class="field"><span id="additionalInstructionsLabel">Additional creative instructions <em>optional</em></span><textarea id="additionalInstructions" rows="4" placeholder="For example: show the player attempting a ridiculous shot over mature trees towards a distant green."></textarea><small id="additionalInstructionsHelp">These instructions refine the creative brief used for AI-generated concepts.</small></label>
+          <div id="supportingUploadBox" class="supporting-upload-box">
             <div><p class="section-kicker">Supporting references</p><h3>Optional files for the studio</h3><p class="panel-copy">Upload images that should influence the artwork, for example a trophy photo, mascot, prop or previous campaign element.</p></div>
             <label class="supporting-dropzone" for="supportingFilesInput">
               <input id="supportingFilesInput" type="file" accept="image/png,image/jpeg,image/webp" multiple>
@@ -2864,7 +3594,28 @@
             <div id="supportingFilesList" class="supporting-files-list"></div>
           </div>
           <div class="format-picker"><div><p class="section-kicker">Outputs</p><h3>Create the campaign in these formats</h3></div><div id="outputOptions" class="output-options"></div></div>
-          <button id="generateButton" class="button button-primary button-large" type="button"><span>✦</span> Generate 3 preview concepts</button>
+          <div class="campaign-start-actions">
+            <button id="generateButton" class="button button-primary button-large" type="button"><span>✦</span> Generate 3 preview concepts</button>
+            <button id="uploadDesignButton" class="button button-secondary button-large" type="button"><span>↥</span> Upload design</button>
+            <input id="sourceDesignInput" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+          </div>
+          <p class="campaign-start-help">Already have artwork from an entertainer or supplier? Upload it as the fixed visual source. The studio will preserve its style and only apply your specific instructions while creating the three campaign formats.</p>
+          <div id="sourceDesignUploadError" class="source-design-upload-error hidden" role="alert"></div>
+          <section id="sourceDesignPanel" class="source-design-panel hidden" aria-live="polite">
+            <img id="sourceDesignPreview" class="source-design-preview" alt="Uploaded source design">
+            <div class="source-design-details">
+              <span class="source-design-badge">Authoritative design</span>
+              <strong id="sourceDesignName">Uploaded poster</strong>
+              <small id="sourceDesignMetadata"></small>
+              <p>The original is the sole visual reference. Style presets, supporting uploads and Image Library references are not used in this workflow.</p>
+              <div id="sourceDesignMessage" class="source-design-message" role="status"></div>
+              <div class="source-design-actions">
+                <button id="produceSourceDesignButton" class="button button-primary" type="button">Create 3 campaign formats</button>
+                <button id="replaceSourceDesignButton" class="button button-secondary" type="button">Replace</button>
+                <button id="removeSourceDesignButton" class="text-button" type="button">Remove</button>
+              </div>
+            </div>
+          </section>
         </section>
 
         <div class="campaign-column">
@@ -2872,7 +3623,7 @@
             <div class="panel-heading compact"><div><p class="section-kicker">Campaign preview</p><h2 id="campaignTitle">${escapeHtml(event.name || 'No artwork generated')}</h2></div><span id="campaignStatus" class="status-pill neutral">Not started</span></div>
             <div id="emptyState" class="empty-state">${retainedArtworkThumbnail
               ? `<div class="saved-catalogue-art"><img src="${escapeHtml(retainedArtworkThumbnail)}" alt="Previously generated campaign artwork for ${escapeHtml(event.name)}"></div><span class="status-pill ready">Saved with this event</span><h3>Previously generated campaign</h3><p>This older catalogue preview is connected to the event, but it may have been cropped into a square. Generate the campaign again once to retain uncropped full-size formats and the studio settings here.</p>`
-              : `<div class="empty-art"><img src="${escapeHtml(clubBranding.crestUrl)}" alt="${escapeHtml(clubBranding.clubName)} crest"><span class="spark spark-one">✦</span><span class="spark spark-two">✦</span></div><h3>Your event campaign will appear here</h3><p>The studio first creates three low-resolution digital-screen concepts. Choose one idea, then it is rebuilt as a high-resolution master and recomposed for the other formats.</p>`}</div>
+              : `<div class="empty-art"><img src="${escapeHtml(clubBranding.crestUrl)}" alt="${escapeHtml(clubBranding.clubName)} crest"><span class="spark spark-one">✦</span><span class="spark spark-two">✦</span></div><h3>Your event campaign will appear here</h3><p>Start with three AI concepts, or upload an existing design and retain its visual style while the studio creates all three campaign formats.</p>`}</div>
             <div id="generationProgress" class="generation-progress hidden">
               <div class="progress-row" data-progress="concepts"><span class="progress-icon">1</span><div><strong>Low-resolution concepts</strong><small>Three distinct digital-screen ideas, saved as each one finishes</small></div><span class="progress-state">Waiting</span></div>
               <div class="progress-row" data-progress="primary"><span class="progress-icon">2</span><div><strong>High-resolution master artwork</strong><small>Rebuilding the selected concept with exact copy and polished detail</small></div><span class="progress-state">Waiting</span></div>
@@ -3488,6 +4239,8 @@
             ${item.required === false ? '<span class="optional-label">Optional</span>' : ''}
           </div>
           ${item.helpText ? `<p class="help-text">${escapeHtml(item.helpText)}</p>` : ''}
+          ${item.example ? `<p class="question-example"><span>Example</span><strong>${escapeHtml(item.example)}</strong></p>` : ''}
+          ${renderPlanningContext(item, event)}
           ${renderDerivedContextForQuestion(item.id, event)}
           ${renderPriorLearning(event, item)}
           ${renderAnswerControl(item, value, priorHint)}
@@ -3495,6 +4248,52 @@
         </div>
       </article>
     `;
+  }
+
+  function renderPlanningContext(item, event) {
+    const context = item?.planningContext;
+    if (!context || !Array.isArray(context.fields)) return '';
+
+    const fields = [];
+    for (const field of context.fields) {
+      if (field.showWhen && !conditionMatches(field.showWhen, event)) continue;
+      const indexed = itemIndex.get(field.questionId);
+      const question = indexed?.item;
+      if (!question || question.type !== 'question' || !isModuleActive(indexed.module, event) || !isItemVisible(question, event)) continue;
+
+      let value = getQuestionValue(field.questionId, event);
+      if (!isAnsweredValue(value) || (value === false && field.includeFalse !== true)) continue;
+
+      const excluded = new Set(Array.isArray(field.excludeValues) ? field.excludeValues : []);
+      if (Array.isArray(value)) {
+        value = value.filter(candidate => !excluded.has(candidate));
+        if (value.length === 0) continue;
+      } else if (excluded.has(value)) {
+        continue;
+      }
+
+      const answer = value === true && field.trueText
+        ? field.trueText
+        : value === false && field.falseText
+          ? field.falseText
+          : formatBriefingAnswer(question, value);
+      if (!String(answer ?? '').trim()) continue;
+      fields.push({
+        label: field.label || question.label,
+        answer,
+        impliesWork: value !== false || field.falseImpliesWork === true
+      });
+    }
+
+    const conflictsWithNo = fields.some(field => field.impliesWork) && getQuestionValue(item.id, event) === false;
+    return `<aside class="planning-context-card ${fields.length ? '' : 'empty'} ${conflictsWithNo ? 'conflict' : ''}">
+      <header><span aria-hidden="true">↩</span><div><strong>${escapeHtml(context.title || 'Relevant planning already recorded')}</strong><small>${escapeHtml(context.description || 'This updates automatically from earlier answers.')}</small></div></header>
+      ${fields.length
+        ? `<dl>${fields.map(field => `<div><dt>${escapeHtml(field.label)}</dt><dd>${escapeHtml(field.answer)}</dd></div>`).join('')}</dl>`
+        : `<p>${escapeHtml(context.emptyText || 'No relevant setup has been identified from the current answers yet.')}</p>`}
+      ${conflictsWithNo && context.falseAnswerWarning ? `<p class="planning-context-warning">${escapeHtml(context.falseAnswerWarning)}</p>` : ''}
+      ${context.footerText ? `<footer>${escapeHtml(context.footerText)}</footer>` : ''}
+    </aside>`;
   }
 
   function renderAnswerControl(item, value, priorHint) {
@@ -3592,6 +4391,8 @@
     const dueText = dueDate ? formatDate(dueDate) : item.deadlineCode ? `Configure ${item.deadlineCode}` : 'No deadline';
     const milestoneLabel = item.deadlineCode ? (MILESTONE_LABELS[item.deadlineCode] ?? item.deadlineCode) : 'No milestone';
     const detail = getTaskDetail(item, event);
+    const completionControl = taskCompletionControl(item, event, taskState);
+    const ownerInputId = `task-owner-${item.id}`;
     return `
       <article class="flow-item task-item ${taskState.completed ? 'completed' : ''}" data-item-id="${item.id}">
         <div class="flow-rail task-flow-rail">
@@ -3609,18 +4410,19 @@
               ${detail ? `<p class="help-text">${escapeHtml(detail)}</p>` : ''}
               ${renderPriorLearning(event, item)}
             </div>
-            <label class="complete-toggle task-complete-control" title="Mark task complete">
-              <input type="checkbox" data-task-complete="${item.id}" ${taskState.completed ? 'checked' : ''}>
-              <span></span><small>${taskState.completed ? 'Complete' : 'Mark complete'}</small>
+            <label class="complete-toggle task-complete-control ${completionControl.blocked ? 'blocked' : ''}" title="${escapeHtml(completionControl.title)}">
+              <input type="checkbox" data-task-complete="${item.id}" ${taskState.completed ? 'checked' : ''} ${completionControl.blocked ? 'disabled' : ''}>
+              <span></span><small>${escapeHtml(completionControl.label)}</small>
             </label>
           </div>
+          ${renderTaskReviewSummary(item, event, taskState)}
           <div class="task-inline-meta">
             ${item.responsibleArea ? `<span class="area-chip">${escapeHtml(item.responsibleArea)}</span>` : ''}
             ${staffBriefingPhaseLabel(item) ? `<span class="staff-duty-chip">Staff duty · ${escapeHtml(staffBriefingPhaseLabel(item))}</span>` : ''}
-            ${renderTaskWorkspaceAction(item, event)}
+            ${item.reviewSummary ? '' : renderTaskWorkspaceAction(item, event)}
             <div class="assignee-compact">
-              <span>Owner</span>
-              ${renderAssignmentPicker({ value: taskAssignmentReference(taskState) ?? taskState.assignee, fallback: taskState.assignee, eligibleRoleId: item.defaultOwnerRoleId, taskId: item.id, compact: true })}
+              <label class="assignee-compact-label" for="${escapeHtml(ownerInputId)}">Owner</label>
+              ${renderAssignmentPicker({ value: taskAssignmentReference(taskState) ?? taskState.assignee, fallback: taskState.assignee, eligibleRoleId: item.defaultOwnerRoleId, taskId: item.id, id: ownerInputId, compact: true })}
             </div>
           </div>
         </div>
@@ -3854,10 +4656,11 @@
     const detail = getTaskDetail(item, event);
     const artwork = event.publishedCataloguePosterThumbnail || event.cataloguePosterThumbnail || '';
     const eventTone = dashboardEventTone(event);
+    const completionControl = taskCompletionControl(item, event, taskState);
     return `
       <article class="task-card dashboard-task-card event-tone-${eventTone} timing-${escapeHtml(horizon)} ${artwork ? 'has-event-artwork' : ''} ${taskState.completed ? 'completed' : ''}">
-        <label class="task-card-check" title="${taskState.completed ? 'Mark task open' : 'Mark task complete'}">
-          <input type="checkbox" data-dashboard-task-complete="${escapeHtml(item.id)}" data-dashboard-event-id="${escapeHtml(event.id)}" ${taskState.completed ? 'checked' : ''}>
+        <label class="task-card-check ${completionControl.blocked ? 'blocked' : ''}" title="${escapeHtml(completionControl.title)}">
+          <input type="checkbox" data-dashboard-task-complete="${escapeHtml(item.id)}" data-dashboard-event-id="${escapeHtml(event.id)}" ${taskState.completed ? 'checked' : ''} ${completionControl.blocked ? 'disabled' : ''}>
           <span></span>
         </label>
         <div class="task-card-content">
@@ -3878,10 +4681,11 @@
                   <strong>${escapeHtml(dueLabel)}</strong>
                 </div>
               </div>
+              ${renderTaskReviewSummary(item, event, taskState)}
               <div class="dashboard-task-actions">
                 ${detail ? `<details><summary>Task detail</summary><p>${escapeHtml(detail)}</p></details>` : '<span></span>'}
                 <div class="dashboard-task-action-buttons">
-                  ${renderTaskWorkspaceAction(item, event)}
+                  ${item.reviewSummary ? '' : renderTaskWorkspaceAction(item, event)}
                   <button type="button" class="text-button inline" data-dashboard-open-event="${escapeHtml(event.id)}">Open event task board</button>
                 </div>
               </div>
@@ -3951,6 +4755,49 @@
     `;
   }
 
+  function prepareTaskBoardSelection(event, tasks, scopeKey) {
+    if (taskBoardSelection.eventId !== event.id || taskBoardSelection.scopeKey !== scopeKey) {
+      taskBoardSelection.eventId = event.id;
+      taskBoardSelection.scopeKey = scopeKey;
+      taskBoardSelection.taskIds.clear();
+    }
+
+    const selectableIds = new Set(tasks
+      .filter(task => !task.state.completed && !taskCompletionControl(task.item, event, task.state).blocked)
+      .map(task => task.item.id));
+
+    for (const taskId of taskBoardSelection.taskIds) {
+      if (!selectableIds.has(taskId)) taskBoardSelection.taskIds.delete(taskId);
+    }
+
+    return selectableIds;
+  }
+
+  function updateTaskBoardSelectionUi() {
+    const checkboxes = [...document.querySelectorAll('[data-task-select]')].filter(element => !element.disabled);
+    const selected = checkboxes.filter(element => element.checked);
+    const selectedCount = selected.length;
+
+    for (const checkbox of checkboxes) {
+      checkbox.closest('.task-card')?.classList.toggle('selected', checkbox.checked);
+    }
+
+    document.querySelectorAll('[data-task-selection-summary]').forEach(element => {
+      element.textContent = `${selectedCount} task${selectedCount === 1 ? '' : 's'} selected`;
+    });
+
+    document.querySelectorAll('[data-task-complete-selected]').forEach(element => {
+      element.disabled = selectedCount === 0;
+      element.textContent = selectedCount ? `Complete selected (${selectedCount})` : 'Complete selected';
+    });
+
+    document.querySelectorAll('[data-task-select-all]').forEach(element => {
+      element.disabled = checkboxes.length === 0;
+      element.checked = checkboxes.length > 0 && selectedCount === checkboxes.length;
+      element.indeterminate = selectedCount > 0 && selectedCount < checkboxes.length;
+    });
+  }
+
   function renderTaskBoard(event, tasks) {
     processReminderRules(event, tasks);
     const mode = state.taskBoardMode === 'overview' ? 'overview' : 'mine';
@@ -3980,6 +4827,10 @@
       : requestedHorizon;
     const activeTab = horizonTabs.find(tab => tab.value === activeHorizon) ?? horizonTabs[0];
     const activeDefinition = taskHorizonDefinition(activeHorizon, activeTab.tasks);
+    const selectionScopeKey = `${event.id}|${mode}|${mode === 'mine' ? (person?.id ?? '') : ''}|${activeHorizon}`;
+    const selectableTaskIds = prepareTaskBoardSelection(event, activeTab.tasks, selectionScopeKey);
+    const selectedTaskCount = taskBoardSelection.taskIds.size;
+    const allSelectableTasksSelected = selectableTaskIds.size > 0 && selectedTaskCount === selectableTaskIds.size;
     const emptyHeading = activeHorizon === 'completed'
       ? `No completed tasks for ${mode === 'mine' ? escapeHtml(person?.name ?? 'this person') : 'this event'}`
       : `No tasks in ${activeTab.label.toLocaleLowerCase()}`;
@@ -4014,21 +4865,31 @@
             <div><strong>${escapeHtml(activeTab.label)}</strong><small>${escapeHtml(activeDefinition.description)}</small></div>
           </div>
           <div class="task-toolbar-actions">
-            <button class="button button-secondary" data-action="send-notifications">Send queued notifications</button>
-            <button class="button button-secondary" data-action="export-csv">Export CSV</button>
-            <button class="button button-secondary" data-action="print">Print</button>
+            ${selectableTaskIds.size ? `<div class="task-bulk-actions" aria-label="Bulk task completion">
+              <label class="task-select-all" title="Select every task shown that is ready to complete">
+                <input type="checkbox" data-task-select-all ${allSelectableTasksSelected ? 'checked' : ''} ${selectableTaskIds.size ? '' : 'disabled'}>
+                <span aria-hidden="true"></span><small>Select all</small>
+              </label>
+              <span class="task-selection-summary" data-task-selection-summary>${selectedTaskCount} task${selectedTaskCount === 1 ? '' : 's'} selected</span>
+              <button type="button" class="button button-primary" data-task-complete-selected ${selectedTaskCount ? '' : 'disabled'}>${selectedTaskCount ? `Complete selected (${selectedTaskCount})` : 'Complete selected'}</button>
+            </div>` : ''}
+            <div class="task-secondary-actions">
+              <button class="button button-secondary" data-action="send-notifications">Send queued notifications</button>
+              <button class="button button-secondary" data-action="export-csv">Export CSV</button>
+              <button class="button button-secondary" data-action="print">Print</button>
+            </div>
           </div>
         </header>
         ${activeHorizon === 'later' && missingDates.length ? `<div class="task-horizon-inline-notice"><strong>${missingDates.length} task${missingDates.length === 1 ? '' : 's'} need a date.</strong><span>Configure the relevant milestone or event date.</span><button class="text-button inline" data-view="module:start">Open planning timeline</button></div>` : ''}
         <div class="task-group-list task-horizon-results">
-          ${activeTab.tasks.length ? activeTab.tasks.map(task => renderTaskBoardCard(task, event)).join('') : `
+          ${activeTab.tasks.length ? activeTab.tasks.map(task => renderTaskBoardCard(task, event, taskBoardSelection.taskIds.has(task.item.id))).join('') : `
             <div class="empty-state task-horizon-empty"><div class="empty-icon">${activeHorizon === 'attention' ? '✓' : activeTab.icon}</div><h3>${emptyHeading}</h3><p>${emptyCopy}</p></div>`}
         </div>
       </section>
     `;
   }
 
-  function renderTaskBoardCard(task, event) {
+  function renderTaskBoardCard(task, event, selected = false) {
     const { item, module, dueDate } = task;
     const taskState = task.state;
     const dueLabel = dueDate ? formatDate(dueDate) : item.deadlineCode ? `Deadline ${item.deadlineCode} is not configured` : 'No due date';
@@ -4037,12 +4898,15 @@
     const owner = taskState.assignee || (item.defaultOwnerRoleId ? roleById(item.defaultOwnerRoleId)?.name : '') || 'Awaiting owner';
     const relativeDue = taskDueRelativeLabel(task);
     const priorLearning = priorLearningForItem(event, item);
+    const completionControl = taskCompletionControl(item, event, taskState);
     return `
-      <article class="task-card timing-${escapeHtml(horizon)} ${taskState.completed ? 'completed' : ''}">
-        <label class="task-card-check" title="${taskState.completed ? 'Mark task open' : 'Mark task complete'}">
-          <input type="checkbox" data-task-complete="${item.id}" ${taskState.completed ? 'checked' : ''}>
-          <span></span>
-        </label>
+      <article class="task-card timing-${escapeHtml(horizon)} ${taskState.completed ? 'completed' : ''} ${selected ? 'selected' : ''}">
+        ${taskState.completed
+          ? `<div class="task-card-selection-status completed" title="Task completed" aria-label="Task completed"><span aria-hidden="true">✓</span></div>`
+          : `<label class="task-card-check ${completionControl.blocked ? 'blocked' : ''}" title="${escapeHtml(completionControl.blocked ? completionControl.title : `Select ${item.title}`)}">
+              <input type="checkbox" data-task-select="${escapeHtml(item.id)}" aria-label="Select ${escapeHtml(item.title)}" ${selected ? 'checked' : ''} ${completionControl.blocked ? 'disabled' : ''}>
+              <span aria-hidden="true"></span>
+            </label>`}
         <div class="task-card-content">
           <div class="task-card-heading">
             <div>
@@ -4050,15 +4914,19 @@
               <h3>${escapeHtml(item.title)}</h3>
               <div class="task-card-summary-meta"><span class="task-owner-chip">${escapeHtml(owner)}</span><span class="task-relative-due">${escapeHtml(relativeDue)}</span>${staffBriefingPhaseLabel(item) ? `<span class="staff-duty-chip">Staff duty · ${escapeHtml(staffBriefingPhaseLabel(item))}</span>` : ''}${priorLearning.length ? `<span class="task-learning-chip">↺ Learning from last time</span>` : ''}</div>
             </div>
-            <div class="task-due-block ${dueDate ? '' : 'missing'} ${horizon === 'attention' ? 'urgent' : ''}">
-              <span class="task-board-milestone-code">${escapeHtml(item.deadlineCode ?? '—')}</span>
-              <span class="task-board-milestone-copy">
-                <small>${escapeHtml(item.deadlineCode ? (MILESTONE_LABELS[item.deadlineCode] ?? item.deadlineCode) : 'No milestone')}</small>
-                <strong>${escapeHtml(dueLabel)}</strong>
+            <div class="task-due-block ${item.deadlineCode && !dueDate ? 'missing' : ''} ${item.deadlineCode ? '' : 'no-milestone'} ${horizon === 'attention' ? 'urgent' : ''}">
+              <span class="task-board-milestone-label">
+                <small class="task-board-milestone-code">${escapeHtml(item.deadlineCode ?? '—')}</small>
+                <span>${escapeHtml(item.deadlineCode ? (MILESTONE_LABELS[item.deadlineCode] ?? item.deadlineCode) : 'No milestone')}</span>
               </span>
+              <time class="task-board-due-date" ${dueDate ? `datetime="${escapeHtml(dueDate)}"` : ''}>${escapeHtml(dueLabel)}</time>
             </div>
           </div>
           ${renderTaskBoardLearning(event, item)}
+          ${renderTaskReviewSummary(item, event, taskState, false)}
+          <div class="task-card-primary-actions">
+            <button type="button" class="button ${taskState.completed ? 'button-secondary' : 'button-primary'}" data-task-completion-action="${escapeHtml(item.id)}" data-task-target-completed="${taskState.completed ? 'false' : 'true'}" ${completionControl.blocked ? 'disabled' : ''} title="${escapeHtml(completionControl.title)}">${taskState.completed ? 'Reopen task' : 'Complete task'}</button>
+          </div>
           <details class="task-card-manage">
             <summary><span>Details and assignment</span><span class="task-card-manage-chevron" aria-hidden="true"></span></summary>
             <div class="task-card-manage-body">
@@ -4069,14 +4937,14 @@
                   ${renderAssignmentPicker({ value: taskAssignmentReference(taskState) ?? taskState.assignee, fallback: taskState.assignee, eligibleRoleId: task.item.defaultOwnerRoleId, taskId: item.id })}
                 </div>
                 <label class="task-notes-field">
-                  <span>Task notes</span>
-                  <input type="text" value="${escapeHtml(taskState.notes ?? '')}" placeholder="Add any event-specific detail" data-task-notes="${item.id}">
+                  <span>${escapeHtml(item.reviewSummary?.notesLabel || (item.reviewSummary ? 'Confirmation note (optional)' : 'Task notes'))}</span>
+                  <input type="text" value="${escapeHtml(taskState.notes ?? '')}" placeholder="${escapeHtml(item.reviewSummary?.notesPlaceholder || (item.reviewSummary ? 'Add context only if needed; the plan is recorded above' : 'Add any event-specific detail'))}" data-task-notes="${item.id}">
                 </label>
               </div>
               <div class="task-operational-row">
                 <span class="notification-chip ${taskState.notificationStatus ?? 'none'}">${taskState.notificationStatus === 'queued' ? 'Assignment notification queued' : taskState.notificationStatus === 'outbox' ? 'Notification written to development outbox' : taskState.assignee ? 'Owner assigned' : 'Awaiting owner'}</span>
                 ${taskState.assignee && !assignmentRecipient(taskAssignmentReference(taskState) ?? taskState.assignee, event).email ? `<span class="notification-chip warning">No email configured for this person or role</span>` : ''}
-                ${renderTaskWorkspaceAction(item, event)}
+                ${item.reviewSummary ? '' : renderTaskWorkspaceAction(item, event)}
                 ${taskState.completionToken ? `<button class="text-button inline" data-copy-completion="${escapeHtml(item.id)}">Copy completion link</button>` : ''}
                 ${taskState.completedAt ? `<span class="completed-at">Completed ${escapeHtml(formatDate(taskState.completedAt.substring(0,10)))}</span>` : ''}
               </div>
@@ -5060,6 +5928,9 @@
       ${entries.length
         ? `<div class="integration-activity-list">${entries.map(entry => {
             const succeeded = entry.outcome === 'succeeded';
+            const actionRequired = entry.outcome === 'action-required';
+            const outcomeLabel = succeeded ? 'Succeeded' : actionRequired ? 'Action required' : 'Failed';
+            const outcomeIcon = succeeded ? '✓' : actionRequired ? '?' : '!';
             const eventLabel = entry.eventName || entry.eventPlaybookEventId || 'No event recorded';
             const integration = entry.integration || 'Integration';
             const isIntelligentGolf = integration.toLowerCase() === 'intelligent golf';
@@ -5071,8 +5942,8 @@
               entry.stage ? `Stage: ${entry.stage}` : '',
               entry.statusCode ? `HTTP ${entry.statusCode}` : ''
             ].filter(Boolean);
-            return `<article class="integration-activity-row ${succeeded ? 'succeeded' : 'failed'}">
-              <span class="integration-activity-result" aria-label="${succeeded ? 'Succeeded' : 'Failed'}">${succeeded ? '✓' : '!'}</span>
+            return `<article class="integration-activity-row ${succeeded ? 'succeeded' : actionRequired ? 'action-required' : 'failed'}">
+              <span class="integration-activity-result" aria-label="${outcomeLabel}">${outcomeIcon}</span>
               <div class="integration-activity-copy"><div><strong>${escapeHtml(entry.operation || 'Integration operation')}</strong><time datetime="${escapeHtml(entry.occurredAtUtc || '')}">${escapeHtml(integrationActivityDate(entry.occurredAtUtc))}</time></div><p>${escapeHtml(entry.message || '')}</p><small>${escapeHtml(eventLabel)}${identifiers.length ? ` · ${escapeHtml(identifiers.join(' · '))}` : ''}</small></div>
             </article>`;
           }).join('')}</div>`
@@ -5437,10 +6308,16 @@
       event.lifecycle.communicationsOwner = assignmentDisplay(value);
       updateTeam(event, assignmentRecipient(value, event).name || event.lifecycle.communicationsOwner);
     }
+    invalidateTaskReviewConfirmations(event, questionId);
     normaliseEventLifecycle(event);
     const decisionTask = buildDontKnowTask(indexed.item);
     if (decisionTask && value !== 'dont-know') delete event.taskState[decisionTask.id];
     normaliseAnswers(event);
+    for (const candidate of itemIndex.values()) {
+      if (candidate.item.type === 'task' && candidate.item.ownerFromQuestionId === questionId) {
+        ensureOperationalTaskState(event, { item: candidate.item });
+      }
+    }
     for (const rule of playbook.advisoryRules ?? []) {
       if (rule.targetQuestionId === questionId && value !== rule.triggerAnswer) delete event.advisoryOverrides?.[rule.id];
     }
@@ -5903,6 +6780,38 @@
   function bindEvents() {
     bindAssignmentPickers();
 
+    const plannerMatchDialog = document.getElementById('ig-planner-match-dialog');
+    document.querySelector('[data-review-ig-planner-match]')?.addEventListener('click', () => {
+      if (!plannerMatchDialog || plannerMatchDialog.open || document.querySelector('dialog[open]')) return;
+      deferredIntelligentGolfMatches.delete(plannerMatchDialog.dataset.matchSignature);
+      plannerMatchDialog.showModal();
+      plannerMatchDialog.querySelector('input[name="ig-planner-match-candidate"]:checked')?.focus();
+    });
+    document.querySelector('[data-dismiss-ig-planner-notice]')?.addEventListener('click', () => {
+      const event = getActiveEvent();
+      if (!event) return;
+      intelligentGolfResolutionNotices.delete(event.id);
+      render();
+    });
+    plannerMatchDialog?.addEventListener('cancel', eventArgs => {
+      eventArgs.preventDefault();
+      deferIntelligentGolfPlannerMatch(plannerMatchDialog);
+    });
+    plannerMatchDialog?.querySelectorAll('[data-defer-ig-planner-match]').forEach(button => {
+      button.addEventListener('click', () => deferIntelligentGolfPlannerMatch(plannerMatchDialog));
+    });
+    plannerMatchDialog?.querySelectorAll('input[name="ig-planner-match-candidate"]').forEach(input => {
+      input.addEventListener('change', () => {
+        const adoptButton = plannerMatchDialog.querySelector('[data-resolve-ig-planner-match="adopt"]');
+        if (adoptButton) adoptButton.disabled = !plannerMatchDialog.querySelector('input[name="ig-planner-match-candidate"]:checked:not(:disabled)');
+      });
+    });
+    plannerMatchDialog?.querySelectorAll('[data-resolve-ig-planner-match]').forEach(button => {
+      button.addEventListener('click', () => resolveIntelligentGolfPlannerMatch(
+        plannerMatchDialog,
+        button.dataset.resolveIgPlannerMatch));
+    });
+
     const brandingForm = document.getElementById('club-branding-form');
     const brandingCrestInput = document.getElementById('club-branding-crest');
     const brandingPreview = document.getElementById('club-branding-preview');
@@ -6266,6 +7175,7 @@
         delete element.dataset.priorAnswerHint;
         if (indexed.item.bind === 'eventDate') return;
         event.answers[element.dataset.questionInput] = element.value;
+        invalidateTaskReviewConfirmations(event, element.dataset.questionInput);
         saveState();
       });
       element.addEventListener('change', () => {
@@ -6304,7 +7214,87 @@
         const event = getActiveEvent();
         if (!event) return;
         const indexed = itemIndex.get(element.dataset.taskComplete);
-        if (indexed) markTaskComplete(event, indexed.item, element.checked);
+        if (!indexed || markTaskComplete(event, indexed.item, element.checked) === false) {
+          render();
+          return;
+        }
+        saveState();
+        render();
+      });
+    });
+
+    document.querySelectorAll('[data-task-select]').forEach(element => {
+      element.addEventListener('change', () => {
+        const event = getActiveEvent();
+        if (!event || taskBoardSelection.eventId !== event.id) return;
+        const taskId = element.dataset.taskSelect;
+        if (element.checked) taskBoardSelection.taskIds.add(taskId);
+        else taskBoardSelection.taskIds.delete(taskId);
+        updateTaskBoardSelectionUi();
+      });
+    });
+
+    document.querySelector('[data-task-select-all]')?.addEventListener('change', eventArgs => {
+      const event = getActiveEvent();
+      if (!event || taskBoardSelection.eventId !== event.id) return;
+      const checked = eventArgs.currentTarget.checked;
+      document.querySelectorAll('[data-task-select]').forEach(element => {
+        if (element.disabled) return;
+        element.checked = checked;
+        if (checked) taskBoardSelection.taskIds.add(element.dataset.taskSelect);
+        else taskBoardSelection.taskIds.delete(element.dataset.taskSelect);
+      });
+      updateTaskBoardSelectionUi();
+    });
+
+    if (document.querySelector('[data-task-select]')) updateTaskBoardSelectionUi();
+
+    document.querySelectorAll('[data-task-completion-action]').forEach(element => {
+      element.addEventListener('click', () => {
+        const event = getActiveEvent();
+        const indexed = itemIndex.get(element.dataset.taskCompletionAction);
+        const completed = element.dataset.taskTargetCompleted === 'true';
+        if (!event || !indexed || markTaskComplete(event, indexed.item, completed) === false) {
+          render();
+          return;
+        }
+        taskBoardSelection.taskIds.delete(indexed.item.id);
+        saveState();
+        render();
+      });
+    });
+
+    document.querySelector('[data-task-complete-selected]')?.addEventListener('click', () => {
+      const event = getActiveEvent();
+      if (!event || taskBoardSelection.eventId !== event.id || !taskBoardSelection.taskIds.size) return;
+      const tasksById = new Map(getActiveTasks(event).map(task => [task.item.id, task]));
+      let completedCount = 0;
+      let skippedCount = 0;
+
+      for (const taskId of taskBoardSelection.taskIds) {
+        const task = tasksById.get(taskId);
+        if (!task || task.state.completed) continue;
+        if (markTaskComplete(event, task.item, true) === false) skippedCount += 1;
+        else completedCount += 1;
+      }
+
+      taskBoardSelection.taskIds.clear();
+      if (completedCount) saveState();
+      render();
+      if (skippedCount) alert(`${skippedCount} selected task${skippedCount === 1 ? ' was' : 's were'} not completed because required answers are still missing.`);
+    });
+
+    document.querySelectorAll('[data-task-confirm]').forEach(element => {
+      element.addEventListener('click', () => {
+        const eventId = element.dataset.taskConfirmEventId;
+        const event = eventId
+          ? state.events.find(candidate => candidate.id === eventId)
+          : getActiveEvent();
+        const indexed = itemIndex.get(element.dataset.taskConfirm);
+        if (!event || !indexed || markTaskComplete(event, indexed.item, true) === false) {
+          render();
+          return;
+        }
         saveState();
         render();
       });
@@ -6380,6 +7370,7 @@
           updateTeam(event, event.organiser);
         }
         saveState();
+        scheduleIntelligentGolfStatusRefresh(event.id);
         render();
       });
     });
@@ -6484,7 +7475,10 @@
         if (!event) return;
         const task = getActiveTasks(event).find(candidate => candidate.item.id === element.dataset.dashboardTaskComplete);
         if (!task) return;
-        markTaskComplete(event, task.item, element.checked);
+        if (markTaskComplete(event, task.item, element.checked) === false) {
+          render();
+          return;
+        }
         saveState();
         render();
       });
@@ -7460,6 +8454,8 @@
       playbook = candidate;
       localStorage.setItem(STORAGE_TEMPLATE, JSON.stringify(candidate));
       indexPlaybook();
+      migrateAdmissionPlanningState();
+      migrateAdmissionPricingState();
       state.activeView = 'module:start';
       saveState();
       render();
@@ -7479,6 +8475,8 @@
       await initialisePluginStatus();
       await initialiseSharedState();
       migrateMilestoneState();
+      migrateAdmissionPlanningState();
+      migrateAdmissionPricingState();
       initialiseOperationalState();
       const params = new URLSearchParams(location.search);
       const requestedView = params.get('view');

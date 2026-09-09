@@ -414,9 +414,24 @@ app.MapGet("/api/integrations/intelligent-golf/events/{eventId}", async (
 
     var available = await intelligentGolfIntegration.IsAvailableAsync(cancellationToken);
     var link = await linkStore.GetAsync(eventId.Trim(), cancellationToken);
+    var matchCandidates = new List<object>();
+    foreach (var candidate in link?.PendingMatchCandidates ?? [])
+    {
+        var linkedPlaybookEventId = await linkStore.FindPlaybookEventIdByIntelligentGolfEventIdAsync(
+            candidate.IntelligentGolfEventId,
+            cancellationToken);
+        matchCandidates.Add(new
+        {
+            candidate.IntelligentGolfEventId,
+            candidate.Name,
+            linkedToAnotherPlaybookEvent = !string.IsNullOrWhiteSpace(linkedPlaybookEventId) &&
+                !string.Equals(linkedPlaybookEventId, eventId.Trim(), StringComparison.OrdinalIgnoreCase)
+        });
+    }
     return Results.Ok(new
     {
         available,
+        linked = link?.IntelligentGolfEventId is > 0,
         plannerEntryId = link?.IntelligentGolfEventId,
         diaryEntryId = link?.IntelligentGolfDiaryEntryId,
         eventSynchronisedAtUtc = link?.EventSynchronisedAtUtc,
@@ -424,8 +439,123 @@ app.MapGet("/api/integrations/intelligent-golf/events/{eventId}", async (
         lastError = link?.LastError,
         lastErrorStage = link?.LastErrorStage,
         lastErrorStatusCode = link?.LastErrorStatusCode,
+        plannerMatchRequired = link?.IntelligentGolfEventId is null && matchCandidates.Count > 0,
+        plannerMatchEventDate = link?.PendingMatchEventDate,
+        plannerMatchCandidates = matchCandidates,
+        matchRequiredAtUtc = link?.MatchRequiredAtUtc,
         updatedAtUtc = link?.UpdatedAtUtc
     });
+});
+
+app.MapPost("/api/integrations/intelligent-golf/events/{eventId}/planner-match", async (
+    string eventId,
+    ResolveIntelligentGolfPlannerMatchRequest request,
+    ISharedPlaybookStateStore stateStore,
+    IIntelligentGolfIntegrationLinkStore linkStore,
+    IIntelligentGolfEventIntegration intelligentGolfIntegration,
+    CancellationToken cancellationToken) =>
+{
+    var key = eventId.Trim();
+    if (string.IsNullOrWhiteSpace(key))
+        return Results.BadRequest(new { error = "An Event Playbook event ID is required." });
+
+    var action = request.Action?.Trim().ToLowerInvariant();
+    if (action is not ("adopt" or "create-new"))
+        return Results.BadRequest(new { error = "Choose either an existing planner event or a separate new event." });
+
+    var sharedState = await stateStore.GetAsync(cancellationToken);
+    if (!PlaybookEventChangePipeline.ReadEvents(sharedState.State).TryGetValue(key, out var snapshot))
+        return Results.NotFound(new { error = "The Event Playbook event could not be found in shared storage." });
+
+    var link = await linkStore.GetAsync(key, cancellationToken);
+    if (link?.IntelligentGolfEventId is > 0)
+    {
+        return Results.Ok(new
+        {
+            resolved = true,
+            action = "already-linked",
+            plannerEntryId = link.IntelligentGolfEventId,
+            message = $"This event is already linked to Intelligent Golf planner entry {link.IntelligentGolfEventId}."
+        });
+    }
+    if (link?.PendingMatchCandidates is not { Count: > 0 })
+        return Results.Conflict(new { error = "There is no outstanding Intelligent Golf planner match to resolve." });
+    if (!string.Equals(link.PendingMatchEventDate, snapshot.EventDate, StringComparison.Ordinal))
+        return Results.Conflict(new { error = "The event date has changed since these planner entries were found. Wait for Intelligent Golf to check the new date." });
+
+    try
+    {
+        if (action == "adopt")
+        {
+            var selectedId = request.IntelligentGolfEventId;
+            if (selectedId is not > 0 ||
+                !link.PendingMatchCandidates.Any(candidate => candidate.IntelligentGolfEventId == selectedId.Value))
+            {
+                return Results.BadRequest(new { error = "Choose one of the Intelligent Golf planner entries found on this date." });
+            }
+
+            var adopted = await intelligentGolfIntegration.AdoptExistingEventAsync(
+                snapshot,
+                selectedId.Value,
+                cancellationToken);
+            return Results.Ok(new
+            {
+                resolved = true,
+                action = "adopted",
+                plannerEntryId = adopted.IntelligentGolfEventId,
+                message = $"Linked Intelligent Golf planner entry {adopted.IntelligentGolfEventId} without changing its existing configuration."
+            });
+        }
+
+        var created = await intelligentGolfIntegration.CreateSeparateEventAsync(snapshot, cancellationToken);
+        return Results.Ok(new
+        {
+            resolved = true,
+            action = "created",
+            plannerEntryId = created.IntelligentGolfEventId,
+            message = $"Created and linked separate Intelligent Golf planner entry {created.IntelligentGolfEventId}."
+        });
+    }
+    catch (IntelligentGolfApiRequestException exception)
+    {
+        return Results.Problem(
+            title: "Intelligent Golf planner matching failed",
+            detail: exception.Message,
+            statusCode: exception.RequiresPlannerMatch
+                ? StatusCodes.Status409Conflict
+                : StatusCodes.Status502BadGateway,
+            extensions: new Dictionary<string, object?>
+            {
+                ["stage"] = exception.Stage,
+                ["intelligentGolfEventId"] = exception.IntelligentGolfEventId,
+                ["upstreamStatusCode"] = exception.StatusCode,
+                ["retryable"] = exception.Retryable,
+                ["eventDate"] = exception.EventDate,
+                ["candidates"] = exception.Candidates,
+                ["matchCleared"] = action == "adopt" &&
+                    exception.RequiresPlannerMatch &&
+                    exception.Candidates.Count == 0
+            });
+    }
+    catch (IntelligentGolfPlannerEventAlreadyLinkedException exception)
+    {
+        return Results.Problem(
+            title: "That planner event has already been linked",
+            detail: exception.Message,
+            statusCode: StatusCodes.Status409Conflict,
+            extensions: new Dictionary<string, object?>
+            {
+                ["refreshMatch"] = true,
+                ["intelligentGolfEventId"] = exception.IntelligentGolfEventId
+            });
+    }
+    catch (InvalidOperationException exception)
+    {
+        return Results.Problem(
+            title: "Intelligent Golf planner matching failed",
+            detail: exception.Message,
+            statusCode: StatusCodes.Status409Conflict);
+    }
 });
 
 app.MapGet("/api/poster/member-email/artwork/{token}", (
@@ -617,6 +747,10 @@ app.MapPut("/api/poster/artwork", async (
     {
         return Results.BadRequest(new { error = "Poster artwork exceeds the 80 MB storage limit." });
     }
+    if (IsUploadedDesignArtworkId(outputId) && request.ContentLength is > 40L * 1024L * 1024L)
+    {
+        return Results.BadRequest(new { error = "The uploaded design must be 40 MB or smaller." });
+    }
     if (string.IsNullOrWhiteSpace(request.ContentType) ||
         !request.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
     {
@@ -626,11 +760,16 @@ app.MapPut("/api/poster/artwork", async (
     try
     {
         ValidatePosterArtworkId(outputId.Trim(), posterConfiguration);
+        if (IsUploadedDesignArtworkId(outputId) && !IsSupportedUploadedDesignContentType(request.ContentType))
+        {
+            return Results.BadRequest(new { error = "Upload the design as a PNG, JPEG or WebP image." });
+        }
         var artwork = await store.SaveArtworkAsync(
             key.Trim(),
             outputId.Trim(),
             request.Body,
             request.ContentType,
+            IsUploadedDesignArtworkId(outputId) ? 40L * 1024L * 1024L : 80L * 1024L * 1024L,
             cancellationToken);
         var url = $"/api/poster/artwork?key={Uri.EscapeDataString(key.Trim())}&outputId={Uri.EscapeDataString(outputId.Trim())}&version={artwork.Version}";
         return Results.Ok(new { url, artwork.Version });
@@ -771,6 +910,81 @@ app.MapPost("/api/poster/generate-variant", async (
         return Results.Ok(result);
     }
     catch (KeyNotFoundException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
+    catch (OpenAiImageException exception)
+    {
+        return Results.Json(new
+        {
+            error = exception.Message,
+            retryable = exception.Retryable,
+            safetyRefusal = exception.IsSafetyRefusal,
+            requestId = exception.RequestId,
+            code = exception.ErrorCode
+        }, statusCode: StatusCodes.Status502BadGateway);
+    }
+    catch (InvalidOperationException exception)
+    {
+        return Results.Problem(exception.Message, statusCode: StatusCodes.Status502BadGateway);
+    }
+});
+
+app.MapPost("/api/poster/generate-from-uploaded-design", async (
+    GenerateFromUploadedDesignRequest request,
+    IOpenAiImageService imageService,
+    IPosterSessionStore sessionStore,
+    CancellationToken cancellationToken) =>
+{
+    if (string.IsNullOrWhiteSpace(request.EventId) ||
+        string.IsNullOrWhiteSpace(request.EventName) ||
+        string.IsNullOrWhiteSpace(request.OutputId) ||
+        string.IsNullOrWhiteSpace(request.EventDate) ||
+        string.IsNullOrWhiteSpace(request.SourceDesignSessionKey) ||
+        string.IsNullOrWhiteSpace(request.SourceDesignVersion))
+    {
+        return Results.BadRequest(new
+        {
+            error = "Event, output format, event date and a complete retained source-design reference are required."
+        });
+    }
+
+    if (!DateOnly.TryParseExact(request.EventDate, "yyyy-MM-dd", out _))
+    {
+        return Results.BadRequest(new { error = "The event date must use yyyy-MM-dd format." });
+    }
+
+    if (request.IncludePrice && string.IsNullOrWhiteSpace(request.Price))
+    {
+        return Results.BadRequest(new { error = "Enter the price that should appear in the adapted design." });
+    }
+
+    var sourceDesign = await sessionStore.GetArtworkAsync(
+        request.SourceDesignSessionKey.Trim(),
+        "source-design",
+        request.SourceDesignVersion.Trim(),
+        cancellationToken);
+    if (sourceDesign is null)
+    {
+        return Results.NotFound(new
+        {
+            error = "The retained uploaded design could not be found. Upload the design again before generating its formats."
+        });
+    }
+
+    try
+    {
+        var result = await imageService.GenerateFromUploadedDesignAsync(
+            request,
+            sourceDesign,
+            cancellationToken);
+        return Results.Ok(result);
+    }
+    catch (KeyNotFoundException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
+    catch (InvalidDataException exception)
     {
         return Results.BadRequest(new { error = exception.Message });
     }
@@ -987,16 +1201,22 @@ app.MapPut("/api/poster/member-diary", async (
     catch (IntelligentGolfApiRequestException exception)
     {
         return Results.Problem(
-            title: "Intelligent Golf publishing failed",
+            title: exception.RequiresPlannerMatch
+                ? "Choose the Intelligent Golf planner event"
+                : "Intelligent Golf publishing failed",
             detail: exception.Message,
-            statusCode: StatusCodes.Status502BadGateway,
+            statusCode: exception.RequiresPlannerMatch
+                ? StatusCodes.Status409Conflict
+                : StatusCodes.Status502BadGateway,
             extensions: new Dictionary<string, object?>
             {
                 ["stage"] = exception.Stage,
                 ["intelligentGolfEventId"] = exception.IntelligentGolfEventId,
                 ["intelligentGolfRecordId"] = exception.IntelligentGolfRecordId,
                 ["upstreamStatusCode"] = exception.StatusCode,
-                ["retryable"] = exception.Retryable
+                ["retryable"] = exception.Retryable,
+                ["eventDate"] = exception.EventDate,
+                ["candidates"] = exception.Candidates
             });
     }
     catch (InvalidOperationException exception)
@@ -1369,12 +1589,26 @@ static bool PasswordMatches(string suppliedPassword, string configuredPassword)
 
 static void ValidatePosterArtworkId(string outputId, IPosterConfigurationService posterConfiguration)
 {
+    if (IsUploadedDesignArtworkId(outputId))
+    {
+        return;
+    }
+
     if (System.Text.RegularExpressions.Regex.IsMatch(outputId, "^concept-[1-3]$", System.Text.RegularExpressions.RegexOptions.CultureInvariant))
     {
         return;
     }
 
     posterConfiguration.GetOutput(outputId);
+}
+
+static bool IsUploadedDesignArtworkId(string? outputId) =>
+    string.Equals(outputId?.Trim(), "source-design", StringComparison.OrdinalIgnoreCase);
+
+static bool IsSupportedUploadedDesignContentType(string? contentType)
+{
+    var mediaType = contentType?.Split(';', 2)[0].Trim();
+    return mediaType?.ToLowerInvariant() is "image/png" or "image/jpeg" or "image/jpg" or "image/webp";
 }
 
 static bool TryDecodePngDataUrl(string? dataUrl, out byte[] imageBytes, out string error)

@@ -17,6 +17,7 @@ public sealed class OpenAiImageService(
     ILogger<OpenAiImageService> logger) : IOpenAiImageService
 {
     private const string ConceptPreviewSize = "720x1280";
+    private const int MaximumUploadedDesignBytes = 40 * 1024 * 1024;
     private readonly OpenAiOptions _options = options.Value;
 
     public async Task<GeneratedArtworkResponse> GenerateConceptAsync(
@@ -182,6 +183,35 @@ public sealed class OpenAiImageService(
             cancellationToken);
     }
 
+    public async Task<GeneratedArtworkResponse> GenerateFromUploadedDesignAsync(
+        GenerateFromUploadedDesignRequest request,
+        PosterArtworkFile sourceDesign,
+        CancellationToken cancellationToken)
+    {
+        var output = posterConfiguration.GetOutput(request.OutputId);
+        var promptResult = await promptService.BuildUploadedDesignPromptAsync(
+            request,
+            output,
+            cancellationToken);
+
+        if (string.IsNullOrWhiteSpace(_options.ApiKey))
+        {
+            throw new InvalidOperationException(
+                "OpenAI image editing must be configured before an uploaded design can be adapted.");
+        }
+
+        // The retained organiser design is deliberately the only image supplied.
+        // Stream it from server storage instead of round-tripping a large base64
+        // value through the browser for every requested output.
+        return await EditUploadedDesignAsync(
+            sourceDesign,
+            request.SourceDesignFileName,
+            promptResult,
+            output.OpenAiSize,
+            _options.ImageQuality,
+            cancellationToken);
+    }
+
     private async Task<GeneratedArtworkResponse> GenerateImageAsync(
         ImagePromptResult promptResult,
         string size,
@@ -265,6 +295,87 @@ public sealed class OpenAiImageService(
                 response.StatusCode,
                 body);
             throw CreateUpstreamException("adapt the artwork", response, body);
+        }
+
+        return ParseImageResponse(body, promptResult);
+    }
+
+    private async Task<GeneratedArtworkResponse> EditUploadedDesignAsync(
+        PosterArtworkFile sourceDesign,
+        string? sourceDesignFileName,
+        ImagePromptResult promptResult,
+        string size,
+        string quality,
+        CancellationToken cancellationToken)
+    {
+        if (!File.Exists(sourceDesign.Path))
+        {
+            throw new InvalidDataException(
+                "The retained uploaded design could not be found. Upload the design again before generating its formats.");
+        }
+
+        var fileInfo = new FileInfo(sourceDesign.Path);
+        if (fileInfo.Length <= 0 || fileInfo.Length > MaximumUploadedDesignBytes)
+        {
+            throw new InvalidDataException("The retained uploaded design must be 40 MB or smaller.");
+        }
+
+        var contentType = NormaliseUploadedDesignContentType(sourceDesign.ContentType);
+        await using var sourceStream = new FileStream(
+            sourceDesign.Path,
+            FileMode.Open,
+            FileAccess.Read,
+            FileShare.Read,
+            65536,
+            FileOptions.Asynchronous | FileOptions.SequentialScan);
+
+        var header = new byte[12];
+        var headerLength = await sourceStream.ReadAtLeastAsync(
+            header,
+            (int)Math.Min(header.Length, fileInfo.Length),
+            throwOnEndOfStream: false,
+            cancellationToken: cancellationToken);
+        var detectedType = DetectSupportedRasterType(header.AsSpan(0, headerLength));
+        if (detectedType is null || !string.Equals(detectedType, contentType, StringComparison.Ordinal))
+        {
+            throw new InvalidDataException(
+                "The retained uploaded design is not a valid PNG, JPEG or WebP image. Upload the design again.");
+        }
+        sourceStream.Position = 0;
+
+        using var form = new MultipartFormDataContent();
+        form.Add(new StringContent(_options.ImageModel), "model");
+        form.Add(new StringContent(promptResult.Prompt), "prompt");
+        form.Add(new StringContent(size), "size");
+        form.Add(new StringContent(quality), "quality");
+        if (SupportsInputFidelity(_options.ImageModel))
+        {
+            form.Add(new StringContent("high"), "input_fidelity");
+        }
+        form.Add(new StringContent("png"), "output_format");
+
+        var imageContent = new StreamContent(sourceStream);
+        imageContent.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+        form.Add(
+            imageContent,
+            "image[]",
+            BuildSafeFileName(sourceDesignFileName, GuessFileExtension(contentType), 0));
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, "images/edits");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _options.ApiKey);
+        request.Content = form;
+
+        using var client = httpClientFactory.CreateClient("OpenAI");
+        using var response = await client.SendAsync(request, cancellationToken);
+        var body = await response.Content.ReadAsStringAsync(cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            logger.LogError(
+                "OpenAI uploaded-design adaptation failed with {StatusCode}: {Body}",
+                response.StatusCode,
+                body);
+            throw CreateUpstreamException("adapt the uploaded design", response, body);
         }
 
         return ParseImageResponse(body, promptResult);
@@ -388,6 +499,39 @@ public sealed class OpenAiImageService(
         var base64 = dataUrl[(markerIndex + marker.Length)..];
         var bytes = Convert.FromBase64String(base64);
         return new ImagePayload(bytes, contentType, GuessFileExtension(contentType));
+    }
+
+    private static string NormaliseUploadedDesignContentType(string? contentType) =>
+        contentType?.Split(';', 2)[0].Trim().ToLowerInvariant() switch
+        {
+            "image/png" => "image/png",
+            "image/jpeg" or "image/jpg" => "image/jpeg",
+            "image/webp" => "image/webp",
+            _ => throw new InvalidDataException(
+                "The retained uploaded design is not a supported PNG, JPEG or WebP image. Upload the design again.")
+        };
+
+    private static string? DetectSupportedRasterType(ReadOnlySpan<byte> bytes)
+    {
+        ReadOnlySpan<byte> pngSignature = [137, 80, 78, 71, 13, 10, 26, 10];
+        if (bytes.Length >= pngSignature.Length && bytes[..pngSignature.Length].SequenceEqual(pngSignature))
+        {
+            return "image/png";
+        }
+
+        if (bytes.Length >= 3 && bytes[0] == 0xff && bytes[1] == 0xd8 && bytes[2] == 0xff)
+        {
+            return "image/jpeg";
+        }
+
+        if (bytes.Length >= 12 &&
+            bytes[..4].SequenceEqual("RIFF"u8) &&
+            bytes.Slice(8, 4).SequenceEqual("WEBP"u8))
+        {
+            return "image/webp";
+        }
+
+        return null;
     }
 
     private static string GuessFileExtension(string contentType) => contentType.ToLowerInvariant() switch

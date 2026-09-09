@@ -7,6 +7,9 @@ const STUDIO_SESSION_STORE = 'event-sessions';
 const POSTER_REQUEST_TIMEOUT_MS = 5 * 60 * 1000;
 const MAX_SAFETY_PROMPT_RETRIES = 3;
 const CONCEPT_PREVIEW_COUNT = 3;
+const SOURCE_DESIGN_OUTPUT_ID = 'source-design';
+const SOURCE_DESIGN_MAX_BYTES = 40 * 1024 * 1024;
+const SOURCE_DESIGN_MIME_TYPES = new Set(['image/png', 'image/jpeg', 'image/webp']);
 const INTERRUPTED_GENERATION_MESSAGE = 'The previous generation did not finish. Completed artwork and settings have been kept so only the missing formats need to be retried.';
 let activeSession = null;
 let configCache = null;
@@ -22,6 +25,8 @@ function createSession(key, context) {
         selectedStyleId: null,
         selectedOutputIds: new Set(),
         primaryArtworkDataUrl: null,
+        sourceDesign: null,
+        generationOrigin: 'concept',
         concepts: [],
         selectedConceptId: null,
         artworkByOutput: new Map(),
@@ -200,18 +205,21 @@ async function writeServerArtwork(key, outputId, artworkDataUrl) {
     if (!response.ok || typeof document?.url !== 'string') {
         throw new Error(document?.error ?? `Completed ${outputId} artwork could not be saved (${response.status}).`);
     }
-    return document.url;
+    return {
+        url: document.url,
+        version: typeof document.version === 'string' ? document.version : getArtworkVersion(document.url)
+    };
 }
 
 async function persistCompletedArtwork(session, outputId, artworkSource) {
     if (!isInlineArtworkSource(artworkSource)) return artworkSource;
     try {
-        const storedSource = await writeServerArtwork(session.key, outputId, artworkSource);
-        session.artworkByOutput.set(outputId, storedSource);
+        const storedArtwork = await writeServerArtwork(session.key, outputId, artworkSource);
+        session.artworkByOutput.set(outputId, storedArtwork.url);
         if (getPrimaryOutput(session)?.id === outputId) {
-            session.primaryArtworkDataUrl = storedSource;
+            session.primaryArtworkDataUrl = storedArtwork.url;
         }
-        return storedSource;
+        return storedArtwork.url;
     } catch (error) {
         // Keep the inline image in the browser session. The shared-session writer
         // deliberately excludes it so one oversized payload cannot erase the
@@ -224,12 +232,42 @@ async function persistCompletedArtwork(session, outputId, artworkSource) {
 async function persistConceptArtwork(session, concept, artworkSource) {
     if (!isInlineArtworkSource(artworkSource)) return artworkSource;
     try {
-        const storedSource = await writeServerArtwork(session.key, concept.id, artworkSource);
-        concept.artworkSource = storedSource;
-        return storedSource;
+        const storedArtwork = await writeServerArtwork(session.key, concept.id, artworkSource);
+        concept.artworkSource = storedArtwork.url;
+        return storedArtwork.url;
     } catch (error) {
         console.warn(`Unable to persist ${concept.id}.`, error);
         return artworkSource;
+    }
+}
+
+async function persistSourceDesignArtwork(session) {
+    const sourceDesign = session.sourceDesign;
+    if (!sourceDesign || !isInlineArtworkSource(sourceDesign.artworkSource)) {
+        return sourceDesign?.artworkSource ?? null;
+    }
+
+    try {
+        const storedArtwork = await writeServerArtwork(session.key, SOURCE_DESIGN_OUTPUT_ID, sourceDesign.artworkSource);
+        if (session.sourceDesign === sourceDesign) {
+            sourceDesign.artworkSource = storedArtwork.url;
+            sourceDesign.version = storedArtwork.version;
+            sourceDesign.saved = true;
+        }
+        return storedArtwork.url;
+    } catch (error) {
+        sourceDesign.saved = false;
+        console.warn('Unable to persist the uploaded source design.', error);
+        return sourceDesign.artworkSource;
+    }
+}
+
+function getArtworkVersion(artworkSource) {
+    if (typeof artworkSource !== 'string' || !artworkSource) return null;
+    try {
+        return new URL(artworkSource, globalThis.location?.origin ?? 'http://localhost').searchParams.get('version');
+    } catch {
+        return null;
     }
 }
 
@@ -241,6 +279,9 @@ async function migrateInlineArtwork(session) {
     for (const concept of session.concepts) {
         if (!isInlineArtworkSource(concept.artworkSource)) continue;
         await persistConceptArtwork(session, concept, concept.artworkSource);
+    }
+    if (isInlineArtworkSource(session.sourceDesign?.artworkSource)) {
+        await persistSourceDesignArtwork(session);
     }
 }
 
@@ -263,7 +304,7 @@ async function artworkSourceToDataUrl(artworkSource) {
 }
 
 function serialiseSession(session, includeInlineArtwork = true) {
-    const form = session.generationSnapshot?.form ?? session.form;
+    const form = session.sourceDesign ? session.form : session.generationSnapshot?.form ?? session.form;
     const generationWasInterrupted = session.isGenerating && session.campaignStatus.mode === 'generating';
     const compactGenerationSnapshot = session.generationSnapshot
         ? {
@@ -273,6 +314,7 @@ function serialiseSession(session, includeInlineArtwork = true) {
             styleVariationId: session.generationSnapshot.styleVariationId,
             conceptStyleVariationIds: session.generationSnapshot.conceptStyleVariationIds ?? [],
             isRegeneration: session.generationSnapshot.isRegeneration === true,
+            generationOrigin: session.generationSnapshot.generationOrigin ?? session.generationOrigin,
             safetyRecovery: session.generationSnapshot.safetyRecovery ?? null,
             selectedOutputIds: session.generationSnapshot.selectedOutputIds,
             referenceSelection: session.generationSnapshot.referenceSelection ?? null
@@ -298,14 +340,30 @@ function serialiseSession(session, includeInlineArtwork = true) {
         status: concept.status,
         failure: concept.failure ?? null
     }));
+    const sourceDesign = session.sourceDesign
+        ? {
+            fileName: session.sourceDesign.fileName,
+            artworkSource: includeInlineArtwork || !isInlineArtworkSource(session.sourceDesign.artworkSource)
+                ? session.sourceDesign.artworkSource
+                : null,
+            version: session.sourceDesign.version ?? getArtworkVersion(session.sourceDesign.artworkSource),
+            width: session.sourceDesign.width,
+            height: session.sourceDesign.height,
+            byteLength: session.sourceDesign.byteLength,
+            uploadedAt: session.sourceDesign.uploadedAt,
+            saved: session.sourceDesign.saved === true
+        }
+        : null;
 
     return {
         key: session.key,
-        schemaVersion: 8,
+        schemaVersion: 9,
         savedAt: new Date().toISOString(),
         selectedStyleId: session.selectedStyleId,
         selectedOutputIds: [...session.selectedOutputIds],
         primaryArtworkDataUrl,
+        sourceDesign,
+        generationOrigin: session.generationOrigin,
         artworkByOutput,
         failedOutputs: Object.fromEntries(session.failedOutputs),
         concepts,
@@ -380,6 +438,30 @@ function applyStoredSession(session, stored) {
     }
     session.form.selectedLibraryReferences = [];
 
+    const storedSourceDesign = stored.sourceDesign && typeof stored.sourceDesign === 'object'
+        ? stored.sourceDesign
+        : null;
+    const storedSourceDesignArtwork = isPersistedArtworkSource(storedSourceDesign?.artworkSource)
+        ? storedSourceDesign.artworkSource
+        : null;
+    session.sourceDesign = storedSourceDesignArtwork
+        ? {
+            fileName: typeof storedSourceDesign.fileName === 'string' ? storedSourceDesign.fileName : 'uploaded-design.png',
+            artworkSource: storedSourceDesignArtwork,
+            version: typeof storedSourceDesign.version === 'string'
+                ? storedSourceDesign.version
+                : getArtworkVersion(storedSourceDesignArtwork),
+            width: Number(storedSourceDesign.width) || 0,
+            height: Number(storedSourceDesign.height) || 0,
+            byteLength: Number(storedSourceDesign.byteLength) || 0,
+            uploadedAt: typeof storedSourceDesign.uploadedAt === 'string' ? storedSourceDesign.uploadedAt : stored.savedAt,
+            saved: !isInlineArtworkSource(storedSourceDesignArtwork) || storedSourceDesign.saved === true
+        }
+        : null;
+    session.generationOrigin = stored.generationOrigin === 'uploaded-design'
+        ? 'uploaded-design'
+        : 'concept';
+
     session.primaryArtworkDataUrl = isPersistedArtworkSource(stored.primaryArtworkDataUrl) ? stored.primaryArtworkDataUrl : null;
     session.artworkByOutput = new Map(
         stored.artworkByOutput && typeof stored.artworkByOutput === 'object'
@@ -434,6 +516,9 @@ function applyStoredSession(session, stored) {
                 ? stored.generationSnapshot.conceptStyleVariationIds.filter(value => typeof value === 'string')
                 : session.concepts.map(concept => concept.styleVariationId).filter(Boolean),
             isRegeneration: stored.generationSnapshot?.isRegeneration === true,
+            generationOrigin: stored.generationSnapshot?.generationOrigin === 'uploaded-design'
+                ? 'uploaded-design'
+                : session.generationOrigin,
             safetyRecovery: stored.generationSnapshot?.safetyRecovery && typeof stored.generationSnapshot.safetyRecovery === 'object'
                 ? stored.generationSnapshot.safetyRecovery
                 : null,
@@ -502,7 +587,36 @@ function applyStoredSession(session, stored) {
         };
     }
 
-    if (session.artworkByOutput.size > 0) {
+    if (session.artworkByOutput.size > 0 && session.generationOrigin === 'uploaded-design') {
+        const expectedOutputs = session.config.outputs;
+        const readyOutputs = expectedOutputs.filter(output => session.artworkByOutput.has(output.id));
+        const missingOutputs = expectedOutputs.filter(output => !session.artworkByOutput.has(output.id));
+        const hasMissingFormats = missingOutputs.length > 0;
+        session.progress = {
+            concepts: { cssClass: 'complete', label: 'Original retained' },
+            primary: {
+                cssClass: hasMissingFormats ? 'error' : 'complete',
+                label: `${readyOutputs.length} of ${expectedOutputs.length} ready`
+            },
+            variants: { cssClass: 'complete', label: 'Original-only source' },
+            compose: {
+                cssClass: hasMissingFormats ? 'active' : 'complete',
+                label: `${readyOutputs.length} ready`
+            }
+        };
+        session.campaignStatus = hasMissingFormats
+            ? { text: 'Some formats need retrying', mode: 'neutral' }
+            : { text: 'Saved artwork restored', mode: 'ready' };
+        session.workflowStep = 3;
+        session.workflowComplete = !hasMissingFormats;
+        session.errorMessage = hasMissingFormats
+            ? isGenericGenerationError(session.errorMessage)
+                ? buildMissingFormatsMessage(missingOutputs, session.failedOutputs, true)
+                : session.errorMessage
+            : null;
+        session.refinementVisible = readyOutputs.length > 0;
+        session.publishVisible = readyOutputs.length > 0;
+    } else if (session.artworkByOutput.size > 0) {
         const selectedVariants = session.config.outputs.filter(output =>
             session.selectedOutputIds.has(output.id) && !output.isPrimary
         );
@@ -558,6 +672,19 @@ function applyStoredSession(session, stored) {
             : null;
         session.refinementVisible = false;
         session.publishVisible = false;
+    } else if (storedGenerationWasInterrupted && session.generationOrigin === 'uploaded-design' && session.sourceDesign) {
+        session.progress = {
+            concepts: { cssClass: 'complete', label: 'Original retained' },
+            primary: { cssClass: 'error', label: `0 of ${session.config.outputs.length} ready` },
+            variants: { cssClass: 'complete', label: 'Original-only source' },
+            compose: { cssClass: 'error', label: 'No formats ready' }
+        };
+        session.workflowStep = 3;
+        session.workflowComplete = false;
+        session.campaignStatus = { text: 'Design adaptation interrupted', mode: 'neutral' };
+        session.errorMessage = 'The previous design adaptation did not finish. The original design has been kept; retry the missing formats to continue.';
+        session.refinementVisible = false;
+        session.publishVisible = false;
     } else if (storedGenerationWasInterrupted) {
         session.workflowStep = 1;
         session.workflowComplete = false;
@@ -570,7 +697,7 @@ function applyStoredSession(session, stored) {
     return true;
 }
 
-function createGenerationSnapshot(session, isRegeneration) {
+function createGenerationSnapshot(session, isRegeneration, generationOrigin = 'concept') {
     const conceptStyleVariationIds = selectStyleVariationIds(session, CONCEPT_PREVIEW_COUNT);
     return {
         id: typeof globalThis.crypto?.randomUUID === 'function' ? globalThis.crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
@@ -579,6 +706,7 @@ function createGenerationSnapshot(session, isRegeneration) {
         styleVariationId: null,
         conceptStyleVariationIds,
         isRegeneration: isRegeneration === true,
+        generationOrigin,
         selectedOutputIds: [...session.selectedOutputIds],
         referenceSelection: session.referenceSelection,
         form: cloneGenerationForm(session.form)
@@ -609,6 +737,10 @@ function applyGenerationSnapshot(session, snapshot) {
 
     if (typeof snapshot.selectedStyleId === 'string') {
         session.selectedStyleId = snapshot.selectedStyleId;
+        applied = true;
+    }
+    if (snapshot.generationOrigin === 'uploaded-design' || snapshot.generationOrigin === 'concept') {
+        session.generationOrigin = snapshot.generationOrigin;
         applied = true;
     }
     if (Array.isArray(snapshot.selectedOutputIds)) {
@@ -686,10 +818,16 @@ function chooseNewestStoredSession(serverStored, browserStored) {
         return browserSavedAt > serverSavedAt ? browserStored : serverStored;
     }
 
-    const countArtwork = stored => stored?.artworkByOutput && typeof stored.artworkByOutput === 'object'
-        ? Object.values(stored.artworkByOutput).filter(isPersistedArtworkSource).length
-            + (Array.isArray(stored?.concepts) ? stored.concepts.filter(concept => isPersistedArtworkSource(concept?.artworkSource)).length : 0)
-        : (Array.isArray(stored?.concepts) ? stored.concepts.filter(concept => isPersistedArtworkSource(concept?.artworkSource)).length : 0);
+    const countArtwork = stored => {
+        const generatedCount = stored?.artworkByOutput && typeof stored.artworkByOutput === 'object'
+            ? Object.values(stored.artworkByOutput).filter(isPersistedArtworkSource).length
+            : 0;
+        const conceptCount = Array.isArray(stored?.concepts)
+            ? stored.concepts.filter(concept => isPersistedArtworkSource(concept?.artworkSource)).length
+            : 0;
+        const sourceDesignCount = isPersistedArtworkSource(stored?.sourceDesign?.artworkSource) ? 1 : 0;
+        return generatedCount + conceptCount + sourceDesignCount;
+    };
     return countArtwork(browserStored) > countArtwork(serverStored) ? browserStored : serverStored;
 }
 
@@ -805,7 +943,7 @@ function scoreReferenceMatch(reference, tokens) {
 
 function updateAutomaticReferenceSelection(session) {
     const library = loadReferenceLibrary().filter(item => item.active !== false && item.dataUrl);
-    if (!session.form.useLibraryReferences) {
+    if (session.sourceDesign || !session.form.useLibraryReferences) {
         session.form.selectedLibraryReferences = [];
         renderSupportingFiles(session);
         return;
@@ -860,11 +998,11 @@ function buildReferenceSelectionRequest(session, library) {
 
 async function analyseAutomaticReferenceSelection(session, signal) {
     const library = loadReferenceLibrary().filter(item => item.active !== false && item.dataUrl);
-    if (!session.form.useLibraryReferences || library.length === 0) {
+    if (session.sourceDesign || !session.form.useLibraryReferences || library.length === 0) {
         session.form.selectedLibraryReferences = [];
         session.referenceSelection = {
             eventIntent: '',
-            mode: library.length === 0 ? 'empty-library' : 'disabled',
+            mode: session.sourceDesign ? 'uploaded-design' : library.length === 0 ? 'empty-library' : 'disabled',
             model: 'none',
             matches: [],
             selected: []
@@ -971,7 +1109,9 @@ export async function mountPosterStudio(context = {}) {
 
     elements = {
         eventDescription: document.querySelector('#eventDescription'),
+        posterStyleField: document.querySelector('#posterStyleField'),
         styleOptions: document.querySelector('#styleOptions'),
+        posterStyleHelp: document.querySelector('#posterStyleHelp'),
         includeDate: document.querySelector('#includeDate'),
         includePrice: document.querySelector('#includePrice'),
         includeClubBranding: document.querySelector('#includeClubBranding'),
@@ -981,11 +1121,25 @@ export async function mountPosterStudio(context = {}) {
         priceField: document.querySelector('#priceField'),
         price: document.querySelector('#price'),
         additionalInstructions: document.querySelector('#additionalInstructions'),
+        additionalInstructionsLabel: document.querySelector('#additionalInstructionsLabel'),
+        additionalInstructionsHelp: document.querySelector('#additionalInstructionsHelp'),
+        supportingUploadBox: document.querySelector('#supportingUploadBox'),
         supportingFilesInput: document.querySelector('#supportingFilesInput'),
         useLibraryReferences: document.querySelector('#useLibraryReferences'),
         supportingFilesList: document.querySelector('#supportingFilesList'),
         outputOptions: document.querySelector('#outputOptions'),
         generateButton: document.querySelector('#generateButton'),
+        uploadDesignButton: document.querySelector('#uploadDesignButton'),
+        sourceDesignInput: document.querySelector('#sourceDesignInput'),
+        sourceDesignPanel: document.querySelector('#sourceDesignPanel'),
+        sourceDesignPreview: document.querySelector('#sourceDesignPreview'),
+        sourceDesignName: document.querySelector('#sourceDesignName'),
+        sourceDesignMetadata: document.querySelector('#sourceDesignMetadata'),
+        sourceDesignMessage: document.querySelector('#sourceDesignMessage'),
+        sourceDesignUploadError: document.querySelector('#sourceDesignUploadError'),
+        produceSourceDesignButton: document.querySelector('#produceSourceDesignButton'),
+        replaceSourceDesignButton: document.querySelector('#replaceSourceDesignButton'),
+        removeSourceDesignButton: document.querySelector('#removeSourceDesignButton'),
         generationMode: document.querySelector('#generationMode'),
         campaignTitle: document.querySelector('#campaignTitle'),
         campaignStatus: document.querySelector('#campaignStatus'),
@@ -1115,9 +1269,10 @@ async function initialise(session) {
     await rebuildPersistedCanvases(session);
 
     applyFormToDom(session);
+    wireEvents(session);
+    updateSourceDesignUi(session);
     configureShareConnections(session);
     updateAutomaticReferenceSelection(session);
-    wireEvents(session);
     restoreSessionToDom(session);
     scheduleSessionPersistence(session);
 }
@@ -1220,6 +1375,36 @@ function wireEvents(session) {
         scheduleSessionPersistence(session);
     });
 
+    const openSourceDesignPicker = () => {
+        if (!session.isGenerating) elements.sourceDesignInput?.click();
+    };
+    elements.uploadDesignButton?.addEventListener('click', openSourceDesignPicker);
+    elements.replaceSourceDesignButton?.addEventListener('click', openSourceDesignPicker);
+    elements.sourceDesignInput?.addEventListener('change', async event => {
+        const input = event.target;
+        const file = input.files?.[0] ?? null;
+        input.value = '';
+        if (!file) return;
+        try {
+            await selectSourceDesign(session, file);
+        } catch (error) {
+            showSourceDesignUploadError(error instanceof Error ? error.message : 'The supplied design could not be read.');
+        }
+    });
+    elements.sourceDesignPreview?.addEventListener('load', () => {
+        if (!session.sourceDesign) return;
+        session.sourceDesign.available = true;
+        updateSourceDesignUi(session);
+    });
+    elements.sourceDesignPreview?.addEventListener('error', () => {
+        if (!session.sourceDesign) return;
+        session.sourceDesign.available = false;
+        showSourceDesignMessage('The retained original could not be loaded. Replace the upload before creating or refining the formats.', true);
+        updateSourceDesignUi(session);
+    });
+    elements.removeSourceDesignButton?.addEventListener('click', () => removeSourceDesign(session));
+    elements.produceSourceDesignButton?.addEventListener('click', () => produceUploadedDesign(session));
+
     elements.supportingFilesList?.addEventListener('click', event => {
         const button = event.target.closest('[data-remove-supporting-file]');
         if (!button) return;
@@ -1252,7 +1437,9 @@ function wireEvents(session) {
         scheduleSessionPersistence(session);
     });
     elements.generateButton.addEventListener('click', () => generateConcepts(session, false));
-    elements.regenerateButton.addEventListener('click', () => generateConcepts(session, true));
+    elements.regenerateButton.addEventListener('click', () => session.generationOrigin === 'uploaded-design' && session.sourceDesign
+        ? produceUploadedDesign(session)
+        : generateConcepts(session, true));
     elements.generateMoreConceptsButton?.addEventListener('click', () => generateConcepts(session, false));
     elements.produceSelectedConceptButton?.addEventListener('click', () => produceSelectedConcept(session));
     elements.conceptResults?.addEventListener('click', event => {
@@ -1507,9 +1694,226 @@ function renderScreenPublishState(session) {
     if (status) status.className = 'share-action-status hidden';
 }
 
+async function produceUploadedDesign(session, outputsToRetry = null) {
+    if (session.isGenerating) return session.generationPromise;
+    if (!session.sourceDesign?.artworkSource) {
+        showSourceDesignMessage('Upload the supplied poster before creating campaign formats.', true);
+        return;
+    }
+    if (session.sourceDesign.available === false) {
+        showSourceDesignMessage('The retained original is unavailable. Replace the upload before creating or refining the formats.', true);
+        return;
+    }
+
+    if (!session.sourceDesign.version || isInlineArtworkSource(session.sourceDesign.artworkSource)) {
+        showSourceDesignMessage('Saving the original design before creating the formats…');
+        await persistSourceDesignArtwork(session);
+    }
+    const sourceDesignVersion = session.sourceDesign.version ?? getArtworkVersion(session.sourceDesign.artworkSource);
+    if (!sourceDesignVersion) {
+        showSourceDesignMessage('The original design could not be saved securely. Try replacing the upload before creating the formats.', true);
+        return;
+    }
+
+    captureFormFromDom(session);
+    session.config.outputs.forEach(output => session.selectedOutputIds.add(output.id));
+    renderOutputs(session);
+
+    const generationController = new AbortController();
+    const isRetry = Array.isArray(outputsToRetry);
+    const outputs = isRetry ? outputsToRetry : [...session.config.outputs];
+    const generationSnapshot = createGenerationSnapshot(session, Boolean(session.artworkByOutput.size), 'uploaded-design');
+    generationSnapshot.selectedOutputIds = session.config.outputs.map(output => output.id);
+    generationSnapshot.conceptStyleVariationIds = [];
+    generationSnapshot.styleVariationId = null;
+
+    session.generationOrigin = 'uploaded-design';
+    session.generationSnapshot = generationSnapshot;
+    session.concepts = [];
+    session.selectedConceptId = null;
+    session.referenceSelection = null;
+    session.failedOutputs.clear();
+    for (const output of outputs) {
+        session.artworkByOutput.delete(output.id);
+        session.posterCanvases.delete(output.id);
+    }
+    if (outputs.some(output => output.isPrimary)) session.primaryArtworkDataUrl = null;
+
+    session.generationAbortController = generationController;
+    session.isGenerating = true;
+    session.errorMessage = null;
+    session.refinementVisible = false;
+    session.publishVisible = false;
+    setBusy(session, true);
+    setWorkflowStep(session, 3);
+    beginUploadedDesignProgress(session, outputs.length, isRetry);
+    setCampaignStatus(session, isRetry ? 'Retrying supplied-design formats' : 'Adapting supplied design', 'generating');
+    updateSourceDesignUi(session);
+    startGenerationClock(session);
+    await persistSession(session);
+
+    session.generationPromise = (async () => {
+        const failures = new Map();
+        try {
+            let completed = 0;
+            for (const output of outputs) {
+                if (generationController.signal.aborted) {
+                    throw createGenerationError('AbortError', 'Generation cancelled. The original design and completed formats have been kept.');
+                }
+
+                setProgressState(session, 'primary', 'active', `${completed} of ${outputs.length} ready · creating ${output.name}`);
+                try {
+                    const generated = await generateUploadedDesignOutputWithAutomaticRetry(
+                        generationSnapshot,
+                        output,
+                        session.key,
+                        sourceDesignVersion,
+                        session.sourceDesign.fileName,
+                        generationController.signal,
+                        session
+                    );
+                    session.artworkByOutput.set(output.id, generated.dataUrl);
+                    if (output.isPrimary) session.primaryArtworkDataUrl = generated.dataUrl;
+                    await composeOutput(session, output, generated.dataUrl, session.context);
+                    await persistCompletedArtwork(session, output.id, generated.dataUrl);
+                    session.failedOutputs.delete(output.id);
+                    completed += 1;
+                } catch (error) {
+                    if (error?.name === 'AbortError') throw error;
+                    const failure = serialiseGenerationFailure(error);
+                    session.failedOutputs.set(output.id, failure);
+                    failures.set(output.id, failure);
+                }
+
+                setProgressState(session, 'primary', 'active', `${completed} of ${outputs.length} ready`);
+                setProgressState(session, 'compose', 'active', `${session.posterCanvases.size} ready`);
+                renderCampaignResults(session);
+                await persistSession(session);
+            }
+
+            const missingFormats = getMissingSourceDesignOutputs(session);
+            if (failures.size > 0 || missingFormats.length > 0) {
+                finishUploadedDesignWithMissingFormats(session, missingFormats);
+            } else {
+                finishUploadedDesignReady(session);
+            }
+        } catch (error) {
+            if (!generationController.signal.aborted) generationController.abort();
+            if (error?.name !== 'AbortError' && error?.name !== 'TimeoutError') console.error(error);
+            for (const output of getMissingSourceDesignOutputs(session)) {
+                if (!session.failedOutputs.has(output.id)) session.failedOutputs.set(output.id, serialiseGenerationFailure(error));
+            }
+            finishUploadedDesignWithMissingFormats(session, getMissingSourceDesignOutputs(session), error);
+        } finally {
+            stopGenerationClock(session);
+            session.isGenerating = false;
+            session.generationPromise = null;
+            if (session.generationAbortController === generationController) session.generationAbortController = null;
+            setBusy(session, false);
+            updateSourceDesignUi(session);
+            await persistSession(session);
+        }
+    })();
+
+    return session.generationPromise;
+}
+
+async function generateUploadedDesignOutputWithAutomaticRetry(snapshot, output, sourceDesignSessionKey, sourceDesignVersion, sourceDesignFileName, signal, session) {
+    let attempt = 0;
+    while (true) {
+        try {
+            return await generateUploadedDesignOutput(snapshot, output, sourceDesignSessionKey, sourceDesignVersion, sourceDesignFileName, signal);
+        } catch (error) {
+            if (signal.aborted || error?.name === 'AbortError') throw error;
+            if (error?.retryable !== true || attempt >= 1) throw error;
+            attempt += 1;
+            setProgressState(session, 'primary', 'active', `Retrying ${output.name}`);
+            await waitForRetry(5000, signal);
+        }
+    }
+}
+
+async function generateUploadedDesignOutput(snapshot, output, sourceDesignSessionKey, sourceDesignVersion, sourceDesignFileName, signal) {
+    const form = snapshot.form;
+    const refinementInstructions = [form.additionalInstructions, form.refinementNotes]
+        .map(value => String(value ?? '').trim())
+        .filter(Boolean)
+        .join('\n\n');
+    return postPosterRequest('/api/poster/generate-from-uploaded-design', {
+        eventId: form.eventId,
+        eventName: form.eventName,
+        outputId: output.id,
+        eventDate: form.eventDate,
+        sourceDesignSessionKey,
+        sourceDesignVersion,
+        sourceDesignFileName,
+        includeDate: form.includeDate,
+        includePrice: form.includePrice,
+        includeClubBranding: form.includeClubBranding,
+        price: form.price,
+        refinementInstructions
+    }, signal);
+}
+
+function beginUploadedDesignProgress(session, outputCount, isRetry) {
+    session.errorMessage = null;
+    session.progress = {
+        concepts: { cssClass: 'complete', label: 'Original retained' },
+        primary: { cssClass: 'active', label: isRetry ? `Retrying ${outputCount}` : `0 of ${outputCount} ready` },
+        variants: { cssClass: 'active', label: 'Original-only source' },
+        compose: { cssClass: '', label: 'Waiting' }
+    };
+    if (!isSessionVisible(session)) return;
+    elements.generationProgress.querySelector('[data-generation-error]')?.remove();
+    elements.emptyState.classList.add('hidden');
+    elements.conceptSelectionPanel?.classList.add('hidden');
+    elements.refinementPanel.classList.add('hidden');
+    elements.sharePanel.classList.add('hidden');
+    elements.generationProgress.classList.remove('hidden');
+    updateGenerationOriginUi(session);
+    for (const [name, progress] of Object.entries(session.progress)) setProgressState(session, name, progress.cssClass, progress.label);
+}
+
+function getMissingSourceDesignOutputs(session) {
+    return session.config.outputs.filter(output => !session.artworkByOutput.has(output.id));
+}
+
+function finishUploadedDesignReady(session) {
+    session.failedOutputs.clear();
+    session.errorMessage = null;
+    setProgressState(session, 'concepts', 'complete', 'Original retained');
+    setProgressState(session, 'primary', 'complete', `${session.config.outputs.length} of ${session.config.outputs.length} ready`);
+    setProgressState(session, 'variants', 'complete', 'Original-only source');
+    setProgressState(session, 'compose', 'complete', 'Complete');
+    setCampaignStatus(session, 'Ready to review', 'ready');
+    setWorkflowStep(session, 3, true);
+    revealReviewAndShare(session);
+    updateGenerationOriginUi(session);
+    if (isSessionVisible(session)) elements.generationProgress.querySelector('[data-generation-error]')?.remove();
+}
+
+function finishUploadedDesignWithMissingFormats(session, missingFormats, error = null) {
+    const readyCount = session.config.outputs.length - missingFormats.length;
+    session.errorMessage = missingFormats.length > 0
+        ? buildMissingFormatsMessage(missingFormats, session.failedOutputs, true)
+        : error instanceof Error
+            ? error.message
+            : 'The supplied design could not be adapted.';
+    setProgressState(session, 'concepts', 'complete', 'Original retained');
+    setProgressState(session, 'primary', 'error', `${readyCount} of ${session.config.outputs.length} ready`);
+    setProgressState(session, 'variants', 'complete', 'Original-only source');
+    setProgressState(session, 'compose', readyCount > 0 ? 'active' : 'error', `${session.posterCanvases.size} ready`);
+    setCampaignStatus(session, readyCount > 0 ? 'Some formats need retrying' : 'Design adaptation failed', 'neutral');
+    setWorkflowStep(session, 3, false);
+    if (readyCount > 0) revealReviewAndShare(session);
+    renderGenerationError(session);
+}
+
 async function generateConcepts(session, isRegeneration) {
     if (session.isGenerating) return session.generationPromise;
 
+    session.generationOrigin = 'concept';
+    updateGenerationOriginUi(session);
     captureFormFromDom(session);
     const referenceController = new AbortController();
     session.isGenerating = true;
@@ -2124,7 +2528,7 @@ function isGenericGenerationError(message) {
     ].includes(normalised);
 }
 
-function buildMissingFormatsMessage(outputs, failures = activeSession?.failedOutputs) {
+function buildMissingFormatsMessage(outputs, failures = activeSession?.failedOutputs, sourceDesignMode = false) {
     const names = outputs.map(output => output.name);
     const formatList = names.length > 1
         ? `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`
@@ -2134,7 +2538,10 @@ function buildMissingFormatsMessage(outputs, failures = activeSession?.failedOut
         ? ` ${firstFailure.message}`
         : '';
     const reference = firstFailure?.requestId ? ` Support reference: ${firstFailure.requestId}.` : '';
-    return `${formatList} could not be created.${reason}${reference} The digital-screen master and every completed format have been kept. Use “Retry missing formats” to continue without regenerating them.`;
+    const retainedCopy = sourceDesignMode
+        ? 'The original supplied design and every completed format have been kept.'
+        : 'The digital-screen master and every completed format have been kept.';
+    return `${formatList} could not be created.${reason}${reference} ${retainedCopy} Use “Retry missing formats” to continue without regenerating them.`;
 }
 
 function revealReviewAndShare(session) {
@@ -2144,6 +2551,7 @@ function revealReviewAndShare(session) {
     elements.refinementPanel.classList.remove('hidden');
     elements.sharePanel.classList.remove('hidden');
     elements.shareTopButton.disabled = false;
+    updateGenerationOriginUi(session);
 }
 
 function finishCampaignReady(session, variantCount = getSelectedVariantOutputs(session).length) {
@@ -2171,6 +2579,11 @@ function finishCampaignWithMissingFormats(session) {
 
 async function retryMissingFormats(session) {
     if (session.isGenerating) return session.generationPromise;
+    if (session.generationOrigin === 'uploaded-design') {
+        const missingSourceDesignOutputs = getMissingSourceDesignOutputs(session);
+        if (!session.sourceDesign?.artworkSource || missingSourceDesignOutputs.length === 0) return;
+        return produceUploadedDesign(session, missingSourceDesignOutputs);
+    }
     const primaryOutput = getPrimaryOutput(session);
     const masterArtworkSource = session.primaryArtworkDataUrl ?? session.artworkByOutput.get(primaryOutput?.id);
     const missingFormats = getMissingVariantOutputs(session);
@@ -2239,6 +2652,258 @@ async function retryMissingFormats(session) {
 }
 
 
+async function selectSourceDesign(session, file) {
+    showSourceDesignUploadError('');
+    if (!SOURCE_DESIGN_MIME_TYPES.has(file.type)) {
+        throw new Error('Upload the supplied poster as a PNG, JPEG or WebP image.');
+    }
+    if (file.size <= 0 || file.size > SOURCE_DESIGN_MAX_BYTES) {
+        throw new Error('The supplied poster must be smaller than 40 MB.');
+    }
+
+    const artworkSource = await fileToDataUrl(file);
+    const image = await loadImage(artworkSource);
+    if (!image.naturalWidth || !image.naturalHeight) {
+        throw new Error('The supplied poster does not contain a readable image.');
+    }
+
+    session.sourceDesign = {
+        fileName: file.name,
+        artworkSource,
+        version: null,
+        width: image.naturalWidth,
+        height: image.naturalHeight,
+        byteLength: file.size,
+        uploadedAt: new Date().toISOString(),
+        available: true,
+        saved: false
+    };
+    resetCampaignForSourceDesign(session);
+    session.form.refinementNotes = '';
+    if (elements.refinementNotes) elements.refinementNotes.value = '';
+    session.config.outputs.forEach(output => session.selectedOutputIds.add(output.id));
+    renderOutputs(session);
+    updateSourceDesignUi(session);
+    showSourceDesignMessage('Saving the original design with this event…');
+
+    await persistSourceDesignArtwork(session);
+    updateSourceDesignUi(session);
+    showSourceDesignMessage(
+        session.sourceDesign?.saved
+            ? 'Original design saved. Review your change instructions, then create the three formats.'
+            : 'The original is available in this browser, but could not be saved for generation. Check the connection or replace the upload, then try again.',
+        session.sourceDesign?.saved !== true
+    );
+    await persistSession(session);
+}
+
+function removeSourceDesign(session) {
+    if (session.isGenerating) return;
+    session.sourceDesign = null;
+    resetCampaignAfterSourceDesignRemoval(session);
+    showSourceDesignUploadError('');
+    updateSourceDesignUi(session);
+    renderConceptChoices(session);
+    scheduleSessionPersistence(session);
+}
+
+function resetCampaignForSourceDesign(session) {
+    clearGeneratedCampaignState(session);
+    session.generationOrigin = 'uploaded-design';
+    session.form.selectedLibraryReferences = [];
+    session.progress = {
+        concepts: { cssClass: 'complete', label: 'Original retained' },
+        primary: { cssClass: '', label: 'Waiting' },
+        variants: { cssClass: '', label: 'Constrained by original' },
+        compose: { cssClass: '', label: 'Waiting' }
+    };
+    setCampaignStatus(session, 'Source design ready', 'ready');
+    setWorkflowStep(session, 2, true);
+    hideGeneratedCampaignUi(session);
+    renderSupportingFiles(session);
+    updateGenerationOriginUi(session);
+}
+
+function resetCampaignAfterSourceDesignRemoval(session) {
+    clearGeneratedCampaignState(session);
+    session.generationOrigin = 'concept';
+    session.progress = {
+        concepts: { cssClass: '', label: 'Waiting' },
+        primary: { cssClass: '', label: 'Waiting' },
+        variants: { cssClass: '', label: 'Waiting' },
+        compose: { cssClass: '', label: 'Waiting' }
+    };
+    setCampaignStatus(session, 'Not started', 'neutral');
+    setWorkflowStep(session, 1, false);
+    hideGeneratedCampaignUi(session);
+    updateAutomaticReferenceSelection(session);
+    updateGenerationOriginUi(session);
+}
+
+function clearGeneratedCampaignState(session) {
+    session.primaryArtworkDataUrl = null;
+    session.concepts = [];
+    session.selectedConceptId = null;
+    session.artworkByOutput.clear();
+    session.posterCanvases.clear();
+    session.failedOutputs.clear();
+    session.generationSnapshot = null;
+    session.referenceSelection = null;
+    session.errorMessage = null;
+    session.refinementVisible = false;
+    session.publishVisible = false;
+    session.workflowComplete = false;
+}
+
+function hideGeneratedCampaignUi(session) {
+    if (!isSessionVisible(session)) return;
+    elements.emptyState.classList.remove('hidden');
+    elements.generationProgress.classList.add('hidden');
+    elements.conceptSelectionPanel?.classList.add('hidden');
+    elements.generatedArtworkPanel.classList.add('hidden');
+    elements.posterResults.classList.add('hidden');
+    elements.posterResults.innerHTML = '';
+    elements.refinementPanel.classList.add('hidden');
+    elements.sharePanel.classList.add('hidden');
+    elements.shareTopButton.disabled = true;
+    elements.generationProgress.querySelector('[data-generation-error]')?.remove();
+}
+
+function showSourceDesignMessage(message, isError = false) {
+    if (!elements.sourceDesignMessage) return;
+    elements.sourceDesignMessage.textContent = message ?? '';
+    elements.sourceDesignMessage.classList.toggle('error', isError);
+}
+
+function showSourceDesignUploadError(message) {
+    if (!elements.sourceDesignUploadError) return;
+    elements.sourceDesignUploadError.textContent = message ?? '';
+    elements.sourceDesignUploadError.classList.toggle('hidden', !message);
+}
+
+function updateSourceDesignUi(session) {
+    if (!isSessionVisible(session)) return;
+    const sourceDesign = session.sourceDesign;
+    const hasSourceDesign = Boolean(sourceDesign?.artworkSource);
+
+    elements.sourceDesignPanel?.classList.toggle('hidden', !hasSourceDesign);
+    if (hasSourceDesign) elements.conceptSelectionPanel?.classList.add('hidden');
+    if (hasSourceDesign) {
+        if (elements.sourceDesignPreview.getAttribute('src') !== sourceDesign.artworkSource) {
+            elements.sourceDesignPreview.src = sourceDesign.artworkSource;
+        }
+        elements.sourceDesignPreview.alt = `Uploaded source design: ${sourceDesign.fileName}`;
+        elements.sourceDesignName.textContent = sourceDesign.fileName;
+        const dimensions = sourceDesign.width > 0 && sourceDesign.height > 0
+            ? `${sourceDesign.width} × ${sourceDesign.height}`
+            : 'Dimensions unavailable';
+        elements.sourceDesignMetadata.textContent = `${dimensions} · ${formatFileSize(sourceDesign.byteLength)}`;
+    } else if (elements.sourceDesignPreview) {
+        elements.sourceDesignPreview.removeAttribute('src');
+        showSourceDesignMessage('');
+    }
+
+    if (elements.uploadDesignButton) {
+        elements.uploadDesignButton.innerHTML = hasSourceDesign
+            ? '<span>↥</span> Replace uploaded design'
+            : '<span>↥</span> Upload design';
+        elements.uploadDesignButton.disabled = session.isGenerating;
+    }
+    if (elements.produceSourceDesignButton) elements.produceSourceDesignButton.disabled = session.isGenerating || !hasSourceDesign || sourceDesign.available === false;
+    if (elements.replaceSourceDesignButton) elements.replaceSourceDesignButton.disabled = session.isGenerating;
+    if (elements.removeSourceDesignButton) elements.removeSourceDesignButton.disabled = session.isGenerating;
+    if (elements.generateButton) elements.generateButton.disabled = session.isGenerating || hasSourceDesign;
+
+    elements.posterStyleField?.classList.toggle('source-design-bypassed', hasSourceDesign);
+    elements.supportingUploadBox?.classList.toggle('source-design-bypassed', hasSourceDesign);
+    if (elements.posterStyleHelp) {
+        elements.posterStyleHelp.textContent = hasSourceDesign
+            ? 'Style supplied by the uploaded design. Remove it to use an AI style preset.'
+            : 'Choose the visual direction for AI-created concepts.';
+    }
+    if (elements.additionalInstructionsLabel) {
+        elements.additionalInstructionsLabel.innerHTML = hasSourceDesign
+            ? 'Specific changes to make <em>optional</em>'
+            : 'Additional creative instructions <em>optional</em>';
+    }
+    if (elements.additionalInstructionsHelp) {
+        elements.additionalInstructionsHelp.textContent = hasSourceDesign
+            ? 'Only these changes and the layout adjustments needed for each format will be applied to the uploaded design.'
+            : 'These instructions refine the creative brief used for AI-generated concepts.';
+    }
+
+    elements.styleOptions?.querySelectorAll('input[name="posterStyle"]').forEach(input => {
+        input.disabled = session.isGenerating || hasSourceDesign;
+    });
+    if (elements.supportingFilesInput) elements.supportingFilesInput.disabled = session.isGenerating || hasSourceDesign;
+    if (elements.useLibraryReferences) elements.useLibraryReferences.disabled = session.isGenerating || hasSourceDesign;
+    elements.outputOptions?.querySelectorAll('input[type="checkbox"]').forEach(input => {
+        input.disabled = session.isGenerating || hasSourceDesign || input.closest('.output-card')?.classList.contains('primary');
+    });
+
+    updateGenerationOriginUi(session);
+}
+
+function updateGenerationOriginUi(session) {
+    if (!isSessionVisible(session)) return;
+    const uploadedDesignMode = Boolean(session.sourceDesign) || session.generationOrigin === 'uploaded-design';
+    const workflowSourceStep = document.querySelector('.poster-studio .workflow-step[data-step="2"]');
+    const sourceProgress = elements.generationProgress?.querySelector('[data-progress="concepts"]');
+    const primaryProgress = elements.generationProgress?.querySelector('[data-progress="primary"]');
+    const variantsProgress = elements.generationProgress?.querySelector('[data-progress="variants"]');
+
+    if (workflowSourceStep) {
+        workflowSourceStep.querySelector('strong').textContent = uploadedDesignMode ? 'Source design' : 'Choose concept';
+        workflowSourceStep.querySelector('small').textContent = uploadedDesignMode ? 'Original retained' : '3 draft ideas';
+    }
+    if (sourceProgress) {
+        sourceProgress.querySelector('strong').textContent = uploadedDesignMode ? 'Uploaded source design' : 'Low-resolution concepts';
+        sourceProgress.querySelector('small').textContent = uploadedDesignMode
+            ? 'The supplied artwork remains the sole visual source'
+            : 'Three distinct digital-screen ideas, saved as each one finishes';
+    }
+    if (primaryProgress) {
+        primaryProgress.querySelector('strong').textContent = uploadedDesignMode ? 'Campaign format generation' : 'High-resolution master artwork';
+        primaryProgress.querySelector('small').textContent = uploadedDesignMode
+            ? 'Each selected size is generated directly from the original'
+            : 'Rebuilding the selected concept with exact copy and polished detail';
+    }
+    if (variantsProgress) {
+        variantsProgress.querySelector('strong').textContent = uploadedDesignMode ? 'Visual consistency' : 'Reference-led format adaptations';
+        variantsProgress.querySelector('small').textContent = uploadedDesignMode
+            ? 'No style preset or Image Library reference is introduced'
+            : 'Recomposing the approved master for each selected dimension';
+    }
+
+    const refinementHeading = elements.refinementPanel?.querySelector('h3');
+    const refinementCopy = elements.refinementPanel?.querySelector('p:not(.section-kicker)');
+    const generatedArtworkCopy = elements.generatedArtworkPanel?.querySelector('.panel-heading .panel-copy');
+    if (refinementHeading) refinementHeading.textContent = session.generationOrigin === 'uploaded-design' ? 'Refine the supplied design' : 'Explore three refined ideas';
+    if (refinementCopy) {
+        refinementCopy.textContent = session.generationOrigin === 'uploaded-design'
+            ? 'Describe only the changes you want. All three formats will be recreated directly from the retained original design.'
+            : 'Describe what worked and what should change. The studio will create three new low-resolution concepts before any high-resolution formats are replaced.';
+    }
+    if (elements.regenerateButton) {
+        elements.regenerateButton.textContent = session.generationOrigin === 'uploaded-design'
+            ? 'Apply changes to 3 formats'
+            : 'Create 3 refined concepts';
+        elements.regenerateButton.disabled = session.isGenerating || (session.generationOrigin === 'uploaded-design' && (!session.sourceDesign || session.sourceDesign.available === false));
+    }
+    if (generatedArtworkCopy) {
+        generatedArtworkCopy.textContent = session.generationOrigin === 'uploaded-design'
+            ? 'Review each AI adaptation against the retained original before sharing. Every format was produced directly from that original, never from another generated version.'
+            : 'Each finished poster appears here immediately, without waiting for the rest of the campaign to finish generating.';
+    }
+}
+
+function formatFileSize(byteLength) {
+    const bytes = Number(byteLength) || 0;
+    if (bytes < 1024) return `${bytes} bytes`;
+    if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 async function addSupportingFiles(session, files) {
     const existing = session.form.supportingImages ?? [];
     const availableSlots = Math.max(0, 4 - existing.length);
@@ -2279,7 +2944,9 @@ function renderSupportingFiles(session) {
         : [];
     const hasAssessedSelection = Boolean(session.referenceSelection);
 
-    const automaticMarkup = session.form.useLibraryReferences === false
+    const automaticMarkup = session.sourceDesign
+        ? '<div class="automatic-reference-summary muted"><strong>Not used with the supplied design</strong><small>The uploaded poster remains the only visual source for all three formats.</small></div>'
+        : session.form.useLibraryReferences === false
         ? '<div class="automatic-reference-summary muted"><strong>Image Library disabled</strong><small>No shared library images will be supplied.</small></div>'
         : automaticFiles.length > 0
             ? `<div class="automatic-reference-summary"><strong>${automaticFiles.length} relevant library reference${automaticFiles.length === 1 ? '' : 's'} selected</strong><small>${automaticFiles.map(reference => `${escapeHtml(reference.title || 'Untitled reference')}${Number.isFinite(reference.relevanceConfidence) ? ` (${reference.relevanceConfidence}%)` : ''}`).join(' · ')}</small></div>`
@@ -3606,8 +4273,8 @@ function cancelGeneration(session) {
 
 function setBusy(session, isBusy) {
     if (!isSessionVisible(session)) return;
-    elements.generateButton.disabled = isBusy;
-    elements.regenerateButton.disabled = isBusy;
+    elements.generateButton.disabled = isBusy || Boolean(session.sourceDesign);
+    elements.regenerateButton.disabled = isBusy || (session.generationOrigin === 'uploaded-design' && (!session.sourceDesign || session.sourceDesign.available === false));
     if (elements.generateMoreConceptsButton) elements.generateMoreConceptsButton.disabled = isBusy;
     if (elements.produceSelectedConceptButton) {
         elements.produceSelectedConceptButton.disabled = isBusy || !session.selectedConceptId;
@@ -3632,11 +4299,14 @@ function setBusy(session, isBusy) {
         }
     });
     document.body.classList.toggle('busy', isBusy);
+    updateSourceDesignUi(session);
 }
 
 function renderGenerationError(session) {
     if (!isSessionVisible(session) || !session.errorMessage) return;
-    const canRetryMissingFormats = Boolean(session.primaryArtworkDataUrl) && getMissingVariantOutputs(session).length > 0;
+    const canRetryMissingFormats = session.generationOrigin === 'uploaded-design'
+        ? Boolean(session.sourceDesign?.artworkSource) && session.sourceDesign.available !== false && getMissingSourceDesignOutputs(session).length > 0
+        : Boolean(session.primaryArtworkDataUrl) && getMissingVariantOutputs(session).length > 0;
     elements.generationProgress.classList.remove('hidden');
     elements.generationProgress.querySelector('[data-generation-error]')?.remove();
     elements.generationProgress.insertAdjacentHTML('beforeend', `<div class="progress-row generation-error-row" data-generation-error><span class="progress-icon">!</span><div><strong>${canRetryMissingFormats ? 'Some formats are missing' : 'Generation stopped'}</strong><small>${escapeHtml(session.errorMessage)}</small></div><div class="generation-error-actions"><span class="progress-state">Error</span>${canRetryMissingFormats ? '<button class="button button-secondary" type="button" data-retry-missing-formats>Retry missing formats</button>' : ''}</div></div>`);

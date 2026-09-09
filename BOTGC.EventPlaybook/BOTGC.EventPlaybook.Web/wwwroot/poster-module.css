@@ -1098,3 +1098,118 @@
   display:grid;
   gap:.75rem;
 }
+
+.poster-studio .campaign-start-actions{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(170px,.72fr);
+  gap:10px;
+  align-items:stretch;
+}
+.poster-studio .campaign-start-actions .button{width:100%}
+.poster-studio .campaign-start-help{
+  margin:9px 2px 0;
+  color:var(--muted);
+  font-size:.75rem;
+  line-height:1.45;
+}
+.poster-studio .source-design-upload-error{
+  margin-top:10px;
+  padding:10px 12px;
+  border:1px solid #e1bbb5;
+  border-radius:10px;
+  color:#9d352d;
+  background:#fff5f3;
+  font-size:.74rem;
+  font-weight:700;
+  line-height:1.4;
+}
+.poster-studio .source-design-upload-error.hidden{display:none}
+.poster-studio .source-design-panel{
+  display:grid;
+  grid-template-columns:130px minmax(0,1fr);
+  gap:16px;
+  align-items:start;
+  margin-top:16px;
+  padding:15px;
+  border:1px solid #a9c8bc;
+  border-radius:15px;
+  background:linear-gradient(145deg,#f1f8f4 0%,#fbfcfc 100%);
+  box-shadow:inset 4px 0 0 var(--green);
+}
+.poster-studio .source-design-panel.hidden{display:none}
+.poster-studio .source-design-preview{
+  display:block;
+  width:130px;
+  max-height:180px;
+  border:1px solid #bfd1cb;
+  border-radius:11px;
+  background:#fff;
+  object-fit:contain;
+  box-shadow:0 8px 20px rgba(13,53,72,.1);
+}
+.poster-studio .source-design-details{
+  display:grid;
+  gap:5px;
+  min-width:0;
+}
+.poster-studio .source-design-details>strong{
+  overflow:hidden;
+  color:var(--ink);
+  font-size:.92rem;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.poster-studio .source-design-details>small{color:var(--muted);font-size:.7rem}
+.poster-studio .source-design-details>p{
+  margin:5px 0 2px;
+  color:var(--muted);
+  font-size:.75rem;
+  line-height:1.45;
+}
+.poster-studio .source-design-badge{
+  justify-self:start;
+  padding:4px 8px;
+  border-radius:999px;
+  color:#235c41;
+  background:#dfeee6;
+  font-size:.61rem;
+  font-weight:850;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+}
+.poster-studio .source-design-message{
+  min-height:1.1em;
+  color:var(--green);
+  font-size:.7rem;
+  font-weight:700;
+  line-height:1.4;
+}
+.poster-studio .source-design-message.error{color:#a83c32}
+.poster-studio .source-design-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  align-items:center;
+  margin-top:6px;
+}
+.poster-studio .source-design-actions .text-button{
+  min-height:40px;
+  padding:0 8px;
+  border:0;
+  color:#7a4b42;
+  background:transparent;
+  cursor:pointer;
+  font-weight:750;
+}
+.poster-studio .source-design-bypassed{opacity:.58}
+.poster-studio .source-design-bypassed .style-card,
+.poster-studio .source-design-bypassed .supporting-dropzone,
+.poster-studio .source-design-bypassed .automatic-references-toggle{cursor:not-allowed}
+@media (max-width:650px){
+  .poster-studio .campaign-start-actions{grid-template-columns:1fr}
+  .poster-studio .source-design-panel{grid-template-columns:1fr}
+  .poster-studio .source-design-preview{width:min(180px,100%);max-height:230px}
+  .poster-studio .source-design-actions{align-items:stretch;flex-direction:column}
+  .poster-studio .source-design-actions .button,
+  .poster-studio .source-design-actions .text-button{width:100%}
+}

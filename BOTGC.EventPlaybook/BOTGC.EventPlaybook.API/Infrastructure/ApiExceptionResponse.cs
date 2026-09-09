@@ -1,3 +1,4 @@
+using BOTGC.EventPlaybook.API.Features;
 using BOTGC.EventPlaybook.API.Infrastructure.IntelligentGolf;
 using Microsoft.AspNetCore.Diagnostics;
 
@@ -11,6 +12,8 @@ public static class ApiExceptionResponse
 
         var (status, title) = exception switch
         {
+            IntelligentGolfPlannerMatchRequiredException matchRequired =>
+                (StatusCodes.Status409Conflict, matchRequired.Message),
             IntelligentGolfEmailSenderNotConfiguredException sender =>
                 (StatusCodes.Status501NotImplemented, sender.Message),
             IntelligentGolfFeatureNotConfiguredException feature =>
@@ -30,15 +33,24 @@ public static class ApiExceptionResponse
         };
 
         var mutation = exception as IntelligentGolfMutationException;
-        var extensions = mutation is null
-            ? null
-            : new Dictionary<string, object?>
+        var match = exception as IntelligentGolfPlannerMatchRequiredException;
+        var extensions = match is not null
+            ? new Dictionary<string, object?>
             {
-                ["stage"] = mutation.Stage,
-                ["intelligentGolfEventId"] = mutation.IntelligentGolfEventId,
-                ["intelligentGolfRecordId"] = mutation.IntelligentGolfRecordId,
-                ["retryable"] = true
-            };
+                ["stage"] = match.Stage,
+                ["eventDate"] = match.EventDate.ToString("yyyy-MM-dd"),
+                ["candidates"] = match.Candidates,
+                ["retryable"] = false
+            }
+            : mutation is not null
+                ? new Dictionary<string, object?>
+                {
+                    ["stage"] = mutation.Stage,
+                    ["intelligentGolfEventId"] = mutation.IntelligentGolfEventId,
+                    ["intelligentGolfRecordId"] = mutation.IntelligentGolfRecordId,
+                    ["retryable"] = true
+                }
+                : null;
 
         await Results.Problem(
                 statusCode: status,

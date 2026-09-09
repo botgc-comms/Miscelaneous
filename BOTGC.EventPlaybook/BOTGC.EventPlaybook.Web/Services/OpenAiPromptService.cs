@@ -252,6 +252,53 @@ public sealed class OpenAiPromptService(
             cancellationToken);
     }
 
+    public async Task<ImagePromptResult> BuildUploadedDesignPromptAsync(
+        GenerateFromUploadedDesignRequest request,
+        PosterOutputDefinition output,
+        CancellationToken cancellationToken)
+    {
+        var clubName = (await clubBrandingStore.GetOverviewAsync(cancellationToken)).ClubName;
+        var builder = new StringBuilder();
+
+        // Do not send an uploaded-design brief through the creative-director
+        // model. A deterministic prompt prevents that extra model from adding a
+        // style, scene or reference which the organiser did not request.
+        builder.AppendLine("EDIT THE FIRST AND ONLY ATTACHED IMAGE");
+        builder.AppendLine("The attached file is an organiser-supplied, approved finished poster. It is the sole authoritative reference for the campaign's visual style, composition, subjects, illustration or photographic technique, palette, texture, typography character, logos, decorative details and overall identity.");
+        builder.AppendLine("This is a format adaptation and tightly scoped refinement, not a redesign. The result must be immediately recognisable as the same supplied poster. Do not reinterpret, modernise, simplify, embellish or replace its creative direction. Do not introduce a new scene, style, font character, colour treatment, character, prop, logo, slogan, sponsor or decorative motif.");
+        builder.AppendLine("Make the smallest changes necessary. Preserve every source element which is not directly affected by an allowed change below.");
+        builder.AppendLine();
+        builder.AppendLine("ALLOWED CHANGES ONLY");
+        builder.AppendLine($"1. Recompose the existing design for {output.Name}, exactly {output.Width} by {output.Height} pixels. Extend or rearrange the existing background and reflow existing elements only where the different aspect ratio requires it. Do not crop away, cover or replace important artwork, people, logos or text.");
+        builder.AppendLine($"2. Follow this target-format guidance only where it does not alter the source style: {output.CompositionGuidance}");
+        AppendList(builder, output.ReservedOverlayZones);
+        builder.AppendLine("3. Apply the organiser's refinement instructions as narrow, local edits. Even if they are broadly worded, interpret them as the minimum change needed and never as permission to restyle the rest of the poster.");
+        builder.AppendLine(string.IsNullOrWhiteSpace(request.RefinementInstructions)
+            ? "No additional refinement was requested."
+            : request.RefinementInstructions.Trim());
+        builder.AppendLine();
+        builder.AppendLine("EVENT COPY AND BRANDING");
+        builder.AppendLine($"Event identity: {request.EventName.Trim()}. Preserve the source poster's rendering of its event title unless the organiser's refinement instruction explicitly asks for a correction.");
+        builder.AppendLine(request.IncludeDate
+            ? $"The event date must appear exactly as: {FormatEventDate(request.EventDate)}. If the source already contains that exact date, preserve its styling and placement as closely as the new frame permits; otherwise make only the smallest copy correction needed."
+            : "Do not add a new event date. Preserve source copy unless the organiser explicitly asks for its removal.");
+        builder.AppendLine(request.IncludePrice && !string.IsNullOrWhiteSpace(request.Price)
+            ? $"The price must appear exactly as: {request.Price.Trim()}. If it is already correct, preserve its styling and placement; otherwise make only the smallest copy correction needed."
+            : "Do not add a new price. Preserve source copy unless the organiser explicitly asks for its removal.");
+        builder.AppendLine(request.IncludeClubBranding
+            ? $"The real {clubName} crest will be applied after this edit. Create or retain a visually quiet upper-right safe area for that overlay, but do not draw, imitate or invent the crest."
+            : $"Do not add {clubName} branding. Do not remove or alter entertainer, sponsor or other marks already present in the supplied design unless the organiser explicitly requests it.");
+        builder.AppendLine();
+        builder.AppendLine("NON-NEGOTIABLE CONTINUITY CHECK");
+        builder.AppendLine("Before returning the image, compare it with the attached source. The art style, palette, lighting, material treatment, typography character, subjects, logos, visual hierarchy and distinctive details must still match. Undo any unrequested creative deviation. Return the complete finished artwork edge to edge, not a framed poster, mockup, contact sheet or poster inside another image.");
+
+        return new ImagePromptResult
+        {
+            Prompt = builder.ToString().Trim(),
+            Model = "deterministic-uploaded-design-lock"
+        };
+    }
+
     private async Task<ImagePromptResult> CreatePromptAsync(
         string systemInstruction,
         object brief,

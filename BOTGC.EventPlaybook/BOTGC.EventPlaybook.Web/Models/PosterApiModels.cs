@@ -72,6 +72,39 @@ public sealed class GenerateVariantRequest
     public List<SupportingImageReference> SupportingImages { get; init; } = [];
 }
 
+/// <summary>
+/// Adapts an organiser-supplied, already-approved design into one configured
+/// campaign output. The uploaded design is intentionally the only visual input:
+/// this request has no style or supporting-reference properties which could
+/// accidentally introduce a different creative direction.
+/// </summary>
+public sealed class GenerateFromUploadedDesignRequest
+{
+    public required string EventId { get; init; }
+
+    public required string EventName { get; init; }
+
+    public required string OutputId { get; init; }
+
+    public required string EventDate { get; init; }
+
+    public required string SourceDesignSessionKey { get; init; }
+
+    public required string SourceDesignVersion { get; init; }
+
+    public string? SourceDesignFileName { get; init; }
+
+    public bool IncludeDate { get; init; }
+
+    public bool IncludePrice { get; init; }
+
+    public bool IncludeClubBranding { get; init; }
+
+    public string? Price { get; init; }
+
+    public string? RefinementInstructions { get; init; }
+}
+
 public sealed class GeneratedArtworkResponse
 {
     public required string DataUrl { get; init; }

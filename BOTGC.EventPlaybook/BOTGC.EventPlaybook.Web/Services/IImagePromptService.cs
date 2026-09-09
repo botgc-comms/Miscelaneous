@@ -17,4 +17,9 @@ public interface IImagePromptService
         PosterStyleDefinition style,
         PosterOutputDefinition output,
         CancellationToken cancellationToken);
+
+    Task<ImagePromptResult> BuildUploadedDesignPromptAsync(
+        GenerateFromUploadedDesignRequest request,
+        PosterOutputDefinition output,
+        CancellationToken cancellationToken);
 }

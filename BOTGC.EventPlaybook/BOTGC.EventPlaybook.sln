@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BOTGC.EventPlaybook.API", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BOTGC.EventPlaybook.Web.Tests", "BOTGC.EventPlaybook.Web.Tests\BOTGC.EventPlaybook.Web.Tests.csproj", "{8C9F5B43-6A4A-4E95-B069-C4D6D7D23A7A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BOTGC.EventPlaybook.API.Tests", "BOTGC.EventPlaybook.API.Tests\BOTGC.EventPlaybook.API.Tests.csproj", "{C34C691B-C188-432D-9AD6-9571C58407A4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,5 +28,9 @@ Global
 		{8C9F5B43-6A4A-4E95-B069-C4D6D7D23A7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C9F5B43-6A4A-4E95-B069-C4D6D7D23A7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C9F5B43-6A4A-4E95-B069-C4D6D7D23A7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C34C691B-C188-432D-9AD6-9571C58407A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C34C691B-C188-432D-9AD6-9571C58407A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C34C691B-C188-432D-9AD6-9571C58407A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C34C691B-C188-432D-9AD6-9571C58407A4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

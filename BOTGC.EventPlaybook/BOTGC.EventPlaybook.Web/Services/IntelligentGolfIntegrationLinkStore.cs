@@ -33,6 +33,15 @@ public interface IIntelligentGolfIntegrationLinkStore
         string? stage,
         int? statusCode,
         CancellationToken cancellationToken);
+    Task SaveMatchRequiredAsync(
+        string eventId,
+        string eventDate,
+        IReadOnlyCollection<IntelligentGolfPlannerEventCandidate> candidates,
+        CancellationToken cancellationToken);
+    Task ClearMatchRequiredAsync(string eventId, CancellationToken cancellationToken);
+    Task<string?> FindPlaybookEventIdByIntelligentGolfEventIdAsync(
+        int intelligentGolfEventId,
+        CancellationToken cancellationToken);
 }
 
 public sealed class IntelligentGolfIntegrationLinkStore : IIntelligentGolfIntegrationLinkStore
@@ -73,6 +82,7 @@ public sealed class IntelligentGolfIntegrationLinkStore : IIntelligentGolfIntegr
         UpdateAsync(eventId, link =>
         {
             link.IntelligentGolfEventId = intelligentGolfEventId;
+            ClearPendingMatch(link);
         }, cancellationToken);
 
     public Task SaveEventAsync(
@@ -89,6 +99,7 @@ public sealed class IntelligentGolfIntegrationLinkStore : IIntelligentGolfIntegr
             link.LastError = null;
             link.LastErrorStage = null;
             link.LastErrorStatusCode = null;
+            ClearPendingMatch(link);
         }, cancellationToken);
 
     public Task SaveDiaryAsync(
@@ -130,6 +141,50 @@ public sealed class IntelligentGolfIntegrationLinkStore : IIntelligentGolfIntegr
             link.LastErrorStage = string.IsNullOrWhiteSpace(stage) ? null : stage.Trim();
             link.LastErrorStatusCode = statusCode;
         }, cancellationToken);
+
+    public Task SaveMatchRequiredAsync(
+        string eventId,
+        string eventDate,
+        IReadOnlyCollection<IntelligentGolfPlannerEventCandidate> candidates,
+        CancellationToken cancellationToken) =>
+        UpdateAsync(eventId, link =>
+        {
+            link.PendingMatchEventDate = eventDate.Trim();
+            link.PendingMatchCandidates = candidates
+                .Where(candidate => candidate.IntelligentGolfEventId > 0)
+                .GroupBy(candidate => candidate.IntelligentGolfEventId)
+                .Select(group => new IntelligentGolfPlannerEventCandidate
+                {
+                    IntelligentGolfEventId = group.Key,
+                    Name = group.First().Name.Trim()
+                })
+                .ToList();
+            link.MatchRequiredAtUtc = DateTimeOffset.UtcNow;
+            link.LastError = null;
+            link.LastErrorStage = null;
+            link.LastErrorStatusCode = null;
+        }, cancellationToken);
+
+    public Task ClearMatchRequiredAsync(string eventId, CancellationToken cancellationToken) =>
+        UpdateAsync(eventId, ClearPendingMatch, cancellationToken);
+
+    public async Task<string?> FindPlaybookEventIdByIntelligentGolfEventIdAsync(
+        int intelligentGolfEventId,
+        CancellationToken cancellationToken)
+    {
+        if (intelligentGolfEventId <= 0) return null;
+        await _gate.WaitAsync(cancellationToken);
+        try
+        {
+            var document = await LoadAsync(cancellationToken);
+            return document.Events.Values.FirstOrDefault(link =>
+                link.IntelligentGolfEventId == intelligentGolfEventId)?.EventPlaybookEventId;
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
 
     private async Task UpdateAsync(
         string eventId,
@@ -190,12 +245,28 @@ public sealed class IntelligentGolfIntegrationLinkStore : IIntelligentGolfIntegr
         LastError = link.LastError,
         LastErrorStage = link.LastErrorStage,
         LastErrorStatusCode = link.LastErrorStatusCode,
+        PendingMatchEventDate = link.PendingMatchEventDate,
+        PendingMatchCandidates = (link.PendingMatchCandidates ?? [])
+            .Select(candidate => new IntelligentGolfPlannerEventCandidate
+            {
+                IntelligentGolfEventId = candidate.IntelligentGolfEventId,
+                Name = candidate.Name
+            })
+            .ToList(),
+        MatchRequiredAtUtc = link.MatchRequiredAtUtc,
         UpdatedAtUtc = link.UpdatedAtUtc
     };
 
+    private static void ClearPendingMatch(IntelligentGolfIntegrationLink link)
+    {
+        link.PendingMatchEventDate = null;
+        link.PendingMatchCandidates = [];
+        link.MatchRequiredAtUtc = null;
+    }
+
     private sealed class LinkDocument
     {
-        public int Version { get; init; } = 1;
+        public int Version { get; init; } = 2;
         public Dictionary<string, IntelligentGolfIntegrationLink> Events { get; init; } =
             new(StringComparer.OrdinalIgnoreCase);
     }

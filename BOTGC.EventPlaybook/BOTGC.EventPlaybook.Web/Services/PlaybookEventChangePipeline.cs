@@ -59,6 +59,12 @@ public sealed class PlaybookEventChangePipeline : BackgroundService, IPlaybookEv
             {
                 break;
             }
+            catch (IntelligentGolfApiRequestException exception) when (exception.RequiresPlannerMatch)
+            {
+                _logger.LogInformation(
+                    "Intelligent Golf planner matching requires an organiser decision for Event Playbook event {EventId}.",
+                    snapshot.EventId);
+            }
             catch (Exception exception)
             {
                 _logger.LogError(
@@ -69,7 +75,7 @@ public sealed class PlaybookEventChangePipeline : BackgroundService, IPlaybookEv
         }
     }
 
-    private static Dictionary<string, PlaybookEventIntegrationSnapshot> ReadEvents(JsonElement? state)
+    internal static Dictionary<string, PlaybookEventIntegrationSnapshot> ReadEvents(JsonElement? state)
     {
         var result = new Dictionary<string, PlaybookEventIntegrationSnapshot>(StringComparer.OrdinalIgnoreCase);
         if (!state.HasValue || state.Value.ValueKind != JsonValueKind.Object ||

@@ -25,7 +25,16 @@ public sealed class IntelligentGolfIntegrationLink
     public string? LastError { get; set; }
     public string? LastErrorStage { get; set; }
     public int? LastErrorStatusCode { get; set; }
+    public string? PendingMatchEventDate { get; set; }
+    public List<IntelligentGolfPlannerEventCandidate> PendingMatchCandidates { get; set; } = [];
+    public DateTimeOffset? MatchRequiredAtUtc { get; set; }
     public DateTimeOffset UpdatedAtUtc { get; set; }
+}
+
+public sealed class IntelligentGolfPlannerEventCandidate
+{
+    public int IntelligentGolfEventId { get; init; }
+    public required string Name { get; init; }
 }
 
 public sealed class IntelligentGolfEventSynchroniseResult
@@ -43,4 +52,17 @@ public sealed class IntelligentGolfDiaryPublishResult
     public int IntelligentGolfDiaryEntryId { get; init; }
     public bool Created { get; init; }
     public DateTimeOffset PublishedAtUtc { get; init; }
+}
+
+public sealed class IntelligentGolfEventAdoptResult
+{
+    public required string EventPlaybookEventId { get; init; }
+    public int IntelligentGolfEventId { get; init; }
+    public DateTimeOffset AdoptedAtUtc { get; init; }
+}
+
+public sealed class ResolveIntelligentGolfPlannerMatchRequest
+{
+    public required string Action { get; init; }
+    public int? IntelligentGolfEventId { get; init; }
 }

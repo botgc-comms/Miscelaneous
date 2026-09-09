@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "2.7",
+  "schemaVersion": "3.5",
   "id": "botgc-event-playbook",
   "title": "Event Playbook",
   "description": "A data-driven event planning guide that turns answers into dated, assignable tasks, operational advisories and reusable event knowledge.",
@@ -110,11 +110,12 @@
               "id": "clubhouse-involved",
               "type": "question",
               "answerType": "yesNo",
-              "label": "Will any clubhouse room or reserved seating area be used?",
+              "label": "Will any clubhouse room or area need to be reserved, prepared or rearranged for the event?",
+              "helpText": "Choose Yes for room reservations, seating changes, a top table, room dressing or operational television and audio-visual setup.",
               "allowDontKnow": true,
               "dontKnowTask": {
                 "id": "decide-clubhouse-involvement",
-                "title": "Decide whether a clubhouse room or reserved seating area will be used",
+                "title": "Decide whether a clubhouse room or area needs to be reserved, prepared or rearranged",
                 "detail": "Consult the event organiser and Clubhouse team, then return to this question and replace Don't know with Yes or No.",
                 "deadlineCode": "B3",
                 "responsibleArea": "Clubhouse",
@@ -165,13 +166,13 @@
               "id": "entry-charge",
               "type": "question",
               "answerType": "yesNo",
-              "label": "Will attendees be charged for entry to the event?",
-              "helpText": "This opens the planning for prices, tickets or paid places, advance and door payments, Professional Shop sales and reconciliation. It is separate from ordinary bar purchases, optional food purchases or routine golf fees.",
+              "label": "Will attendees need to book to come to the event and/or will they be charged?",
+              "helpText": "Choose Yes if attendees must book, register, reserve or confirm a place, if they will pay an entry charge, or both. This opens the Bookings and Tickets planning area. It does not cover optional bar or food purchases or routine golf fees.",
               "allowDontKnow": true,
               "dontKnowTask": {
-                "id": "decide-entry-charge",
-                "title": "Decide whether admission will be charged and agree the pricing principle",
-                "detail": "Confirm whether the event must cover costs, break even or make a contribution, then agree whether an admission charge is needed before publicity begins.",
+                "id": "decide-booking-or-entry-charge",
+                "title": "Decide whether attendees need to book and/or pay for entry",
+                "detail": "Confirm whether attendance must be reserved or registered and whether an entry charge is needed, then return to this question before booking arrangements or publicity begin.",
                 "deadlineCode": "B4",
                 "responsibleArea": "Event Coordination",
                 "defaultOwnerRoleId": "event-coordinator",
@@ -221,19 +222,21 @@
               "id": "staffing-involved",
               "type": "question",
               "answerType": "yesNo",
-              "label": "Will staff, volunteers or organisers need specific event-day duties?",
+              "label": "Will this event require event-specific staffing, volunteer cover, rota changes or named operational duties?",
+              "helpText": "Choose Yes for additional people, changed or extended shifts, or named responsibility for opening, setup, service, handovers, close-down or lock-up.",
+              "example": "An extra bar shift, volunteers staffing registration, an early-opening keyholder or somebody remaining to lock up.",
               "allowDontKnow": true,
               "dontKnowTask": {
                 "id": "decide-staffing-involvement",
-                "title": "Decide whether staff, volunteers or organisers need specific event-day duties",
-                "detail": "Consult the event organiser and department leads, then return to this question and replace Don't know with Yes or No.",
+                "title": "Decide whether the event needs staffing changes, volunteer cover or named operational duties",
+                "detail": "Check the full event timetable with the organiser and affected department leads, including setup and lock-up, then return to this question and replace Don't know with Yes or No.",
                 "deadlineCode": "B2",
                 "responsibleArea": "Event Coordination",
                 "defaultOwnerRoleId": "event-coordinator",
                 "source": "refined"
               },
               "required": true,
-              "source": "expanded"
+              "source": "refined"
             },
             {
               "id": "safety-involved",
@@ -311,11 +314,16 @@
               "id": "event-minimum-attendance",
               "type": "question",
               "answerType": "number",
-              "label": "What is the minimum viable attendance, if there is one?",
-              "helpText": "Leave blank where attendance does not affect whether the event proceeds.",
+              "label": "If attendance is a viability trigger, what minimum attendance would make the event viable?",
+              "helpText": "Optional. Leave this blank if there is no fixed number and the decision will be made case by case.",
               "min": 0,
               "unit": "people",
               "required": false,
+              "showWhen": {
+                "all": [
+                  { "questionId": "event-viability-triggers", "operator": "contains", "value": "attendance" }
+                ]
+              },
               "source": "refined"
             },
             {
@@ -375,11 +383,58 @@
             {
               "id": "agree-event-viability-control",
               "type": "task",
-              "title": "Agree the event viability criteria, final decision owner and change communication route",
-              "detail": "Record what could stop the event, who decides and who issues the authoritative update to teams and members.",
+              "title": "Review and confirm the event's go/no-go plan",
+              "detail": "Check the recorded decision owner, communications owner, viability triggers, optional attendance threshold and affected teams. Correct anything that is missing or wrong, then confirm the plan.",
               "deadlineCode": "B3",
               "responsibleArea": "Event Coordination",
               "defaultOwnerRoleId": "event-coordinator",
+              "actionView": "module:event-control",
+              "actionLabel": "Review Event control answers",
+              "reviewSummary": {
+                "title": "Current go/no-go plan",
+                "instruction": "The Event Coordinator reviews these answers. Reassign this task only if someone else will perform the check.",
+                "confirmLabel": "Confirm go/no-go plan",
+                "confirmedLabel": "Go/no-go plan confirmed",
+                "fields": [
+                  {
+                    "questionId": "event-decision-owner",
+                    "label": "Final decision owner",
+                    "emptyText": "Choose the person who can make the final decision"
+                  },
+                  {
+                    "questionId": "event-communications-owner",
+                    "label": "Change communications owner",
+                    "emptyText": "Choose who will issue the authoritative update"
+                  },
+                  {
+                    "questionId": "event-viability-triggers",
+                    "label": "Go/no-go triggers",
+                    "emptyText": "Record what could stop or place the event at risk"
+                  },
+                  {
+                    "questionId": "event-minimum-attendance",
+                    "label": "Minimum viable attendance",
+                    "required": false,
+                    "emptyText": "No fixed threshold - decide case by case",
+                    "notApplicableText": "Not applicable - attendance is not a go/no-go trigger"
+                  },
+                  {
+                    "questionId": "event-affected-areas",
+                    "label": "Teams and commitments to check",
+                    "emptyText": "Select the affected teams or commitments"
+                  },
+                  {
+                    "questionId": "additional-operational-commitments",
+                    "label": "Extra commitments planned",
+                    "emptyText": "Confirm whether extra commitments will be made"
+                  },
+                  {
+                    "questionId": "member-communications-sent",
+                    "label": "Members already told it is proceeding",
+                    "emptyText": "Confirm whether communications have already been sent"
+                  }
+                ]
+              },
               "source": "refined"
             },
             {
@@ -529,8 +584,8 @@
             {
               "id": "stop-ticket-sales-after-event-change",
               "type": "task",
-              "title": "Stop ticket sales and prevent further admission payments for the changed event",
-              "detail": "Close or amend every sales route, preserve the purchaser and payment records, and make sure public booking links show the same cancellation or postponement status.",
+              "title": "Close booking, registration and ticket-sales routes for the changed event",
+              "detail": "Close or amend every booking or sales route, preserve the attendee and purchaser records, and make sure public links show the same cancellation or postponement status.",
               "deadlineCode": "CX",
               "showWhen": { "all": [
                 { "eventField": "lifecycle.status", "operator": "in", "value": ["cancelled", "postponed"] },
@@ -548,7 +603,21 @@
               "deadlineCode": "CX",
               "showWhen": { "all": [
                 { "eventField": "lifecycle.status", "operator": "in", "value": ["cancelled", "postponed"] },
-                { "questionId": "entry-charge", "operator": "equals", "value": true }
+                { "questionId": "entry-charge", "operator": "equals", "value": true },
+                { "questionId": "admission-arrangements", "operator": "contains", "value": "entry-payment" },
+                { "questionId": "admission-free-entry", "operator": "answered" },
+                { "any": [
+                  { "questionId": "admission-free-entry", "operator": "equals", "value": false },
+                  { "all": [
+                    { "questionId": "admission-free-entry", "operator": "equals", "value": true },
+                    { "questionId": "admission-free-categories", "operator": "answered" },
+                    { "not": { "all": [
+                      { "questionId": "admission-free-categories", "operator": "contains", "value": "children" },
+                      { "questionId": "admission-free-categories", "operator": "contains", "value": "members" },
+                      { "questionId": "admission-free-categories", "operator": "contains", "value": "visitors" }
+                    ] } }
+                  ] }
+                ] }
               ] },
               "responsibleArea": "Finance",
               "defaultOwnerRoleId": "finance",
@@ -1864,8 +1933,8 @@
             {
               "id": "prize-table-task",
               "type": "task",
-              "title": "Prepare the prize table, presentation cloth and prize display",
-              "detail": "Check that the presentation table, club cloth/tablecloth, trophies, prizes and winner labels are laid out before the presentation starts.",
+              "title": "Arrange the approved prizes and presentation display on the prepared table",
+              "detail": "Once the Clubhouse team has prepared the table and agreed covering, lay out the trophies, prizes and winner labels before the presentation starts.",
               "deadlineCode": "DT",
               "showWhen": {
                 "all": [
@@ -1882,7 +1951,7 @@
               "staffBriefing": {
                 "phase": "before-event",
                 "audience": "Clubhouse / Front of House",
-                "instruction": "Lay out the prize table, presentation cloth, trophies, prizes and winner labels before the presentation."
+                "instruction": "Once the table and covering are ready, lay out the trophies, prizes and winner labels before the presentation."
               }
             },
             {
@@ -2207,12 +2276,13 @@
               "id": "entertainment-space-requirements",
               "type": "question",
               "answerType": "multiChoice",
-              "label": "What room or performance-space arrangements are required?",
+              "label": "What performer or speaker space arrangements are required?",
+              "helpText": "Record room choice, seating direction, top tables and table coverings in Clubhouse. Select only the performer, speaker or supplier-specific requirements here.",
               "options": [
                 { "value": "stage", "label": "Stage or defined performance area" },
                 { "value": "dance-floor", "label": "Dance floor or furniture cleared" },
-                { "value": "audience-seating", "label": "Audience seating facing the performer or speaker" },
-                { "value": "lectern", "label": "Lectern, top table or presentation position" },
+                { "value": "audience-seating", "label": "Performer or speaker sight-line requirement" },
+                { "value": "lectern", "label": "Lectern or speaker position" },
                 { "value": "green-room", "label": "Private preparation or changing space" },
                 { "value": "access", "label": "Supplier vehicle, loading or early access" },
                 { "value": "standard", "label": "No change from the standard room setup" },
@@ -2262,15 +2332,15 @@
             {
               "id": "entertainment-room-plan-task",
               "type": "task",
-              "title": "Agree and prepare the room layout, performer access and technical setup",
-              "detail": "Translate the entertainment brief and supplier rider into a timed setup plan, including furniture, stage, dance floor, power, cable safety and access.",
+              "title": "Confirm performer access, performance position and technical setup with the Clubhouse team",
+              "detail": "Translate the entertainment brief and supplier rider into a timed technical plan covering the stage or performance position, dance-floor clearance, power, cable safety, loading and access. Use the shared Clubhouse plan for room and seating layout.",
               "deadlineCode": "B1",
               "responsibleArea": "Clubhouse",
               "defaultOwnerRoleId": "clubhouse",
               "staffBriefing": {
                 "phase": "before-event",
                 "audience": "Clubhouse / Front of House",
-                "instruction": "Set up the agreed room layout, performer access and technical equipment before the entertainer or speaker arrives."
+                "instruction": "Prepare the agreed performer access, stage or speaker position and technical equipment before the entertainer or speaker arrives; follow the separate Clubhouse plan for seating and special tables."
               },
               "source": "refined"
             },
@@ -2313,7 +2383,7 @@
       "id": "clubhouse",
       "title": "Clubhouse",
       "shortTitle": "Clubhouse",
-      "description": "Seating, room dressing, audio-visual equipment and digital signage.",
+      "description": "Room reservations, seating layouts, special tables, room dressing and audio-visual setup.",
       "activation": {
         "all": [
           {
@@ -2326,20 +2396,198 @@
       "sections": [
         {
           "id": "seating",
-          "title": "1.1 Seating arrangements and table setup",
+          "title": "1.1 Rooms, seating and special tables",
           "items": [
+            {
+              "id": "clubhouse-areas",
+              "type": "question",
+              "answerType": "multiChoice",
+              "label": "Which clubhouse rooms or areas need to be reserved or prepared?",
+              "helpText": "Select every area that the Clubhouse team will need to make ready for the event.",
+              "options": [
+                { "value": "peacock-lounge", "label": "Peacock Lounge" },
+                { "value": "dance-floor-area", "label": "Dance-floor area" },
+                { "value": "spike-bar", "label": "Spike Bar" },
+                { "value": "other", "label": "Other clubhouse room or area" }
+              ],
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "clubhouse-other-area",
+              "type": "question",
+              "answerType": "text",
+              "label": "Which other clubhouse room or area is required?",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "clubhouse-areas",
+                    "operator": "contains",
+                    "value": "other"
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
             {
               "id": "seated-dining",
               "type": "question",
               "answerType": "yesNo",
-              "label": "Will there be seated dining or reserved tables for guests?",
+              "label": "Will guests eat a served or pre-arranged meal while seated at tables?",
+              "helpText": "This controls dining-specific tablecloth and seating-chart work. Record the physical seating direction separately below.",
               "required": true,
-              "source": "pdf"
+              "source": "refined"
+            },
+            {
+              "id": "seating-setup-required",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Does seating need to be laid out or rearranged specifically for the event?",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "seating-layout",
+              "type": "question",
+              "answerType": "singleChoice",
+              "label": "How should the seating be arranged?",
+              "options": [
+                { "value": "television-focus", "label": "Rows facing the television or screens" },
+                { "value": "rear-room-focus", "label": "Rows facing the rear of the room or top-table position" },
+                { "value": "boardroom", "label": "Boardroom or meeting layout" },
+                { "value": "dining-tables", "label": "Dining or cabaret tables" },
+                { "value": "mixed-zones", "label": "Mixed or zoned seating" },
+                { "value": "other", "label": "Another agreed layout" }
+              ],
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "seating-setup-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "seating-layout-notes",
+              "type": "question",
+              "answerType": "text",
+              "label": "What additional seating or layout instructions should the Clubhouse team follow?",
+              "helpText": "For example, record an unusual orientation, reserved spaces, mixed layouts or accessibility requirements.",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "seating-setup-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "required": false,
+              "source": "refined"
+            },
+            {
+              "id": "top-table-required",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Is a top or board table required?",
+              "helpText": "This will normally be required for an AGM, member forum or another event where board members or speakers face the room.",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "top-table-seat-count",
+              "type": "question",
+              "answerType": "number",
+              "label": "How many seats are required at the top table?",
+              "min": 1,
+              "step": 1,
+              "unit": "seats",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "top-table-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "special-table-covering",
+              "type": "question",
+              "answerType": "singleChoice",
+              "label": "Which covering, if any, is required for the top, board or prize table?",
+              "helpText": "This records the table covering only. Prize and trophy display requirements remain in Presentation and prizes.",
+              "options": [
+                { "value": "club-presentation-cloth", "label": "Club presentation or prize cloth" },
+                { "value": "plain-tablecloth", "label": "Plain tablecloth" },
+                { "value": "other", "label": "Another covering" },
+                { "value": "none", "label": "No covering" }
+              ],
+              "showWhen": {
+                "any": [
+                  {
+                    "questionId": "top-table-required",
+                    "operator": "equals",
+                    "value": true
+                  },
+                  {
+                    "all": [
+                      {
+                        "questionId": "presentation-involved",
+                        "operator": "equals",
+                        "value": true
+                      },
+                      {
+                        "questionId": "prize-table-required",
+                        "operator": "equals",
+                        "value": true
+                      }
+                    ]
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "special-table-covering-notes",
+              "type": "question",
+              "answerType": "text",
+              "label": "What table covering is required?",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "special-table-covering",
+                    "operator": "equals",
+                    "value": "other"
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "room-layout-plan-task",
+              "type": "task",
+              "title": "Agree and record the clubhouse room, seating and special-table plan",
+              "detail": "Record the selected room or areas, seating direction, dining layout, top-table seat count, table coverings and any access requirements so that staff have one unambiguous setup plan.",
+              "deadlineCode": "B2",
+              "source": "refined",
+              "responsibleArea": "Clubhouse",
+              "defaultOwnerRoleId": "clubhouse"
             },
             {
               "id": "tablecloths-task",
               "type": "task",
-              "title": "Ensure tablecloths and decorations are available",
+              "title": "Ensure dining tablecloths and table decorations are available",
               "deadlineCode": "B2",
               "showWhen": {
                 "all": [
@@ -2350,7 +2598,7 @@
                   }
                 ]
               },
-              "source": "pdf",
+              "source": "refined",
               "responsibleArea": "Clubhouse",
               "defaultOwnerRoleId": "clubhouse"
             },
@@ -2373,49 +2621,95 @@
               "defaultOwnerRoleId": "clubhouse"
             },
             {
-              "id": "setup-seating-task",
+              "id": "special-table-covering-task",
               "type": "task",
-              "title": "Set up tables and seating according to the agreed arrangement",
-              "deadlineCode": "DT",
+              "title": "Confirm the required top-table or presentation-table covering is available",
+              "detail": "Locate and check the recorded club cloth, plain tablecloth or other covering in time for the room setup.",
+              "deadlineCode": "B1",
               "showWhen": {
                 "all": [
                   {
-                    "questionId": "seated-dining",
-                    "operator": "equals",
-                    "value": true
+                    "questionId": "special-table-covering",
+                    "operator": "answered"
+                  },
+                  {
+                    "questionId": "special-table-covering",
+                    "operator": "notEquals",
+                    "value": "none"
                   }
                 ]
               },
-              "source": "pdf",
+              "source": "refined",
+              "responsibleArea": "Clubhouse",
+              "defaultOwnerRoleId": "clubhouse"
+            },
+            {
+              "id": "setup-seating-task",
+              "type": "task",
+              "title": "Prepare the selected clubhouse room, seating and special tables to the agreed layout",
+              "detail": "Use the recorded room plan, including seating direction, dining tables, top-table seat count and selected coverings where required.",
+              "deadlineCode": "DT",
+              "source": "refined",
               "responsibleArea": "Clubhouse",
               "defaultOwnerRoleId": "clubhouse",
               "staffBriefing": {
                 "phase": "before-event",
                 "audience": "Clubhouse / Front of House",
-                "instruction": "Set up the tables and seating exactly as recorded in the agreed room layout."
+                "instruction": "Prepare the selected room or areas exactly as recorded, including the seating direction, dining layout, top table, seat count and table covering where required."
+              }
+            },
+            {
+              "id": "fire-exit-layout-check-task",
+              "type": "task",
+              "title": "Complete the final room-layout and fire-exit safety check before guests arrive",
+              "detail": "Walk every prepared area after setup and make sure all fire exits, escape routes, doorways and access aisles are completely clear. Move any chair, table, decoration, cable or equipment that creates an obstruction.",
+              "deadlineCode": "DT",
+              "source": "refined",
+              "responsibleArea": "Clubhouse",
+              "defaultOwnerRoleId": "clubhouse",
+              "staffBriefing": {
+                "phase": "before-event",
+                "audience": "Clubhouse / Front of House",
+                "instruction": "After completing the room setup, walk every prepared area and confirm that all fire exits, escape routes, doorways and access aisles are completely clear."
               }
             },
             {
               "id": "remove-seating-task",
               "type": "task",
-              "title": "Remove and store the tables and seating",
-              "deadlineCode": "DT",
+              "title": "Return the room, seating and special tables to the standard layout",
+              "detail": "After the event, remove the temporary top table or special covering where used and return furniture in each prepared area to its normal position.",
+              "deadlineCode": "A1",
               "showWhen": {
-                "all": [
+                "any": [
                   {
                     "questionId": "seated-dining",
+                    "operator": "equals",
+                    "value": true
+                  },
+                  {
+                    "questionId": "seating-setup-required",
+                    "operator": "equals",
+                    "value": true
+                  },
+                  {
+                    "questionId": "top-table-required",
+                    "operator": "equals",
+                    "value": true
+                  },
+                  {
+                    "questionId": "prize-table-required",
                     "operator": "equals",
                     "value": true
                   }
                 ]
               },
-              "source": "pdf",
+              "source": "refined",
               "responsibleArea": "Clubhouse",
               "defaultOwnerRoleId": "clubhouse",
               "staffBriefing": {
                 "phase": "after-event",
                 "audience": "Clubhouse / Front of House",
-                "instruction": "Remove and store the event tables and seating, then return the room to its standard layout."
+                "instruction": "Remove temporary seating, special tables and coverings, then return every prepared area to its normal layout."
               }
             }
           ]
@@ -3619,9 +3913,9 @@
     },
     {
       "id": "admission",
-      "title": "Admission, tickets and event payments",
-      "shortTitle": "Admission",
-      "description": "Agree what people will be charged, how places are sold or reserved, how door payments work and how income is reconciled.",
+      "title": "Bookings, tickets and admission payments",
+      "shortTitle": "Bookings & Tickets",
+      "description": "Decide whether attendees must book and/or pay, how places or tickets are made available, what people must do to register and how admission is managed.",
       "activation": {
         "all": [
           {
@@ -3634,22 +3928,99 @@
       "sections": [
         {
           "id": "admission-offer",
-          "title": "Price, capacity and ticket offer",
+          "title": "Booking, price and capacity",
           "items": [
             {
-              "id": "admission-price-details",
+              "id": "admission-arrangements",
               "type": "question",
-              "answerType": "text",
-              "label": "What will each type of attendee be charged, and what is included in that price?",
-              "helpText": "Record member, visitor, adult or child prices where they differ, and be explicit about whether food, entertainment or other benefits are included.",
+              "answerType": "multiChoice",
+              "label": "Which arrangements apply to attending the event?",
+              "helpText": "Select both options when attendees must reserve a place and also pay an entry charge. An advance ticket purchase counts as booking a place, even if no separate registration form is used.",
+              "example": "A free AGM may require members to reserve a place; a party may require a paid named booking; a pay-on-the-door event may only require an entry charge.",
+              "options": [
+                { "value": "advance-booking", "label": "Attendees must book, register, reserve or RSVP" },
+                { "value": "entry-payment", "label": "Attendees will be charged for entry" }
+              ],
               "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "admission-free-entry",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Is entry free for certain attendee categories?",
+              "showWhen": { "all": [{ "questionId": "admission-arrangements", "operator": "contains", "value": "entry-payment" }] },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "admission-free-categories",
+              "type": "question",
+              "answerType": "multiChoice",
+              "label": "Which attendee categories have free entry?",
+              "helpText": "Select every category that may attend without paying. Every category not selected here will need an agreed entry price.",
+              "options": [
+                { "value": "children", "label": "Children" },
+                { "value": "members", "label": "Members" },
+                { "value": "visitors", "label": "Visitors" }
+              ],
+              "showWhen": { "all": [
+                { "questionId": "admission-arrangements", "operator": "contains", "value": "entry-payment" },
+                { "questionId": "admission-free-entry", "operator": "equals", "value": true }
+              ] },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "set-admission-prices-task",
+              "type": "task",
+              "title": "Set the entry price for each attendee category that is not free",
+              "detail": "Use the free-entry categories recorded above. Agree and record the price for every unticked category, including what each price includes, before the booking or ticket information is published.",
+              "deadlineCode": "B4",
+              "showWhen": { "all": [
+                { "questionId": "admission-arrangements", "operator": "contains", "value": "entry-payment" },
+                { "questionId": "admission-free-entry", "operator": "answered" },
+                { "any": [
+                  { "questionId": "admission-free-entry", "operator": "equals", "value": false },
+                  { "all": [
+                    { "questionId": "admission-free-entry", "operator": "equals", "value": true },
+                    { "questionId": "admission-free-categories", "operator": "answered" },
+                    { "not": { "all": [
+                      { "questionId": "admission-free-categories", "operator": "contains", "value": "children" },
+                      { "questionId": "admission-free-categories", "operator": "contains", "value": "members" },
+                      { "questionId": "admission-free-categories", "operator": "contains", "value": "visitors" }
+                    ] } }
+                  ] }
+                ] }
+              ] },
+              "responsibleArea": "Finance",
+              "defaultOwnerRoleId": "finance",
+              "reviewSummary": {
+                "title": "Free-entry categories and prices",
+                "instruction": "Review who has free entry, record the agreed price for every remaining category in the task notes, then confirm the prices.",
+                "confirmLabel": "Confirm entry prices",
+                "confirmedLabel": "Entry prices confirmed",
+                "notesLabel": "Agreed prices",
+                "notesPlaceholder": "For example: Members £8; visitors £12; children free",
+                "fields": [
+                  { "questionId": "admission-free-entry", "label": "Any free-entry categories" },
+                  {
+                    "questionId": "admission-free-categories",
+                    "label": "Prices required for",
+                    "showUnselectedOptions": true,
+                    "notApplicableText": "Children, members and visitors",
+                    "allSelectedText": "None — all listed categories have free entry"
+                  }
+                ]
+              },
               "source": "refined"
             },
             {
               "id": "admission-capacity",
               "type": "question",
               "answerType": "number",
-              "label": "What is the maximum number of paid places available?",
+              "label": "What is the maximum number of places available?",
+              "helpText": "Record the total event capacity across both free and paid attendees.",
               "min": 1,
               "max": 2000,
               "unit": "places",
@@ -3657,18 +4028,11 @@
               "source": "refined"
             },
             {
-              "id": "admission-tickets-required",
-              "type": "question",
-              "answerType": "yesNo",
-              "label": "Will tickets, named bookings or another proof of purchase be required?",
-              "required": true,
-              "source": "refined"
-            },
-            {
               "id": "ticket-sales-methods",
               "type": "question",
               "answerType": "multiChoice",
-              "label": "How will tickets or paid places be sold and recorded?",
+              "label": "How will attendees access and complete the booking, registration or ticket process?",
+              "helpText": "Choose every route people may use. Communications channels used to advertise the event are selected separately in Communications.",
               "options": [
                 { "value": "club-office", "label": "Club office or reception" },
                 { "value": "professional-shop", "label": "Professional Shop" },
@@ -3676,10 +4040,22 @@
                 { "value": "member-system", "label": "Member system or club website" },
                 { "value": "external-platform", "label": "External ticketing or payment platform" },
                 { "value": "organiser-list", "label": "Organiser-managed list" },
+                { "value": "email-phone", "label": "Email or telephone response" },
                 { "value": "door-only", "label": "At the door only" },
                 { "value": "other", "label": "Other method" }
               ],
-              "showWhen": { "all": [{ "questionId": "admission-tickets-required", "operator": "equals", "value": true }] },
+              "showWhen": { "all": [{ "questionId": "admission-arrangements", "operator": "answered" }] },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "booking-registration-instructions",
+              "type": "question",
+              "answerType": "text",
+              "label": "What must an attendee do to secure a place or buy entry?",
+              "helpText": "Describe the steps, working link or contact, information to provide and payment point where applicable. The confirmation method is recorded separately below.",
+              "example": "Complete the member booking form, pay online and retain the confirmation email; or telephone the office to be added to the free guest list.",
+              "showWhen": { "all": [{ "questionId": "admission-arrangements", "operator": "answered" }] },
               "required": true,
               "source": "refined"
             },
@@ -3687,8 +4063,11 @@
               "id": "ticket-sales-open-date",
               "type": "question",
               "answerType": "date",
-              "label": "When should ticket sales or paid bookings open?",
-              "showWhen": { "all": [{ "questionId": "admission-tickets-required", "operator": "equals", "value": true }] },
+              "label": "When should advance booking, registration or ticket sales open?",
+              "showWhen": { "any": [
+                { "questionId": "admission-arrangements", "operator": "contains", "value": "advance-booking" },
+                { "questionId": "admission-payment-timing", "operator": "contains", "value": "advance" }
+              ] },
               "required": true,
               "source": "refined"
             },
@@ -3696,33 +4075,32 @@
               "id": "ticket-sales-close-date",
               "type": "question",
               "answerType": "date",
-              "label": "When should advance ticket sales or paid bookings close?",
-              "showWhen": { "all": [{ "questionId": "admission-tickets-required", "operator": "equals", "value": true }] },
+              "label": "When should advance booking, registration or ticket sales close?",
+              "showWhen": { "any": [
+                { "questionId": "admission-arrangements", "operator": "contains", "value": "advance-booking" },
+                { "questionId": "admission-payment-timing", "operator": "contains", "value": "advance" }
+              ] },
               "required": true,
               "source": "refined"
             },
             {
-              "id": "complimentary-admission",
-              "type": "question",
-              "answerType": "yesNo",
-              "label": "Will anyone receive complimentary or discounted admission?",
-              "required": true,
-              "source": "refined"
-            },
-            {
-              "id": "complimentary-admission-details",
+              "id": "booking-confirmation-process",
               "type": "question",
               "answerType": "text",
-              "label": "Who qualifies, who may approve it, and how will it be recorded?",
-              "showWhen": { "all": [{ "questionId": "complimentary-admission", "operator": "equals", "value": true }] },
+              "label": "How will attendees know their booking or advance purchase is confirmed, and what should they retain or show on arrival?",
+              "helpText": "Record whether confirmation is a named guest-list entry, email, ticket, receipt, QR code or another proof of booking or purchase.",
+              "showWhen": { "any": [
+                { "questionId": "admission-arrangements", "operator": "contains", "value": "advance-booking" },
+                { "questionId": "admission-payment-timing", "operator": "contains", "value": "advance" }
+              ] },
               "required": true,
               "source": "refined"
             },
             {
               "id": "approve-admission-offer-task",
               "type": "task",
-              "title": "Approve the admission prices, capacity, inclusions and sales dates",
-              "detail": "Check the proposed income against the event budget and likely attendance before any price or ticket arrangement is advertised.",
+              "title": "Approve the attendance process and event capacity",
+              "detail": "Check that the attendee journey and total capacity are clear and workable. Where entry is charged, confirm the separate price-setting task is complete before prices or tickets are advertised.",
               "deadlineCode": "B4",
               "responsibleArea": "Event Coordination",
               "defaultOwnerRoleId": "event-coordinator",
@@ -3731,10 +4109,13 @@
             {
               "id": "configure-ticket-sales-task",
               "type": "task",
-              "title": "Set up and test the agreed ticket or paid-booking route",
-              "detail": "Create the agreed ticket or booking record, apply capacity and sales dates, test the purchase route and give the working link or instructions to Communications.",
+              "title": "Set up and test the agreed booking, registration or advance-ticket route",
+              "detail": "Create the agreed booking or ticket record, apply capacity and opening or closing dates, test the complete attendee journey and give the working link or instructions to Communications.",
               "deadlineCode": "B3",
-              "showWhen": { "all": [{ "questionId": "admission-tickets-required", "operator": "equals", "value": true }] },
+              "showWhen": { "any": [
+                { "questionId": "admission-arrangements", "operator": "contains", "value": "advance-booking" },
+                { "questionId": "admission-payment-timing", "operator": "contains", "value": "advance" }
+              ] },
               "responsibleArea": "Administration",
               "defaultOwnerRoleId": "office",
               "source": "refined"
@@ -3743,8 +4124,17 @@
         },
         {
           "id": "admission-publicity",
-          "title": "Admission terms for communications",
+          "title": "Booking and admission details for communications",
           "items": [
+            {
+              "id": "admission-public-instructions",
+              "type": "question",
+              "answerType": "text",
+              "label": "What exact booking, registration or purchase information must be published?",
+              "helpText": "Provide the approved public wording: the working link or contact, price where applicable, what is included, capacity or closing date and how confirmation works. The Communications module controls which channels publish it.",
+              "required": true,
+              "source": "refined"
+            },
             {
               "id": "admission-refund-policy",
               "type": "question",
@@ -3757,14 +4147,30 @@
                 { "value": "non-refundable", "label": "Tickets are normally non-refundable" },
                 { "value": "not-agreed", "label": "Not yet agreed" }
               ],
+              "showWhen": { "all": [
+                { "questionId": "admission-arrangements", "operator": "contains", "value": "entry-payment" },
+                { "questionId": "admission-free-entry", "operator": "answered" },
+                { "any": [
+                  { "questionId": "admission-free-entry", "operator": "equals", "value": false },
+                  { "all": [
+                    { "questionId": "admission-free-entry", "operator": "equals", "value": true },
+                    { "questionId": "admission-free-categories", "operator": "answered" },
+                    { "not": { "all": [
+                      { "questionId": "admission-free-categories", "operator": "contains", "value": "children" },
+                      { "questionId": "admission-free-categories", "operator": "contains", "value": "members" },
+                      { "questionId": "admission-free-categories", "operator": "contains", "value": "visitors" }
+                    ] } }
+                  ] }
+                ] }
+              ] },
               "required": true,
               "source": "refined"
             },
             {
               "id": "publish-admission-details-task",
               "type": "task",
-              "title": "Provide the approved admission price, inclusions and purchase instructions for event communications",
-              "detail": "Create one approved statement for the Communications Centre and booking confirmations so every selected channel uses the same price and conditions. Communication channels are chosen in the Communications module.",
+              "title": "Provide the approved attendance, booking and any price instructions for event communications",
+              "detail": "Create one approved statement for the Communications Centre and attendee confirmations so every selected channel uses the same booking route, price where applicable and attendance conditions.",
               "deadlineCode": "B3",
               "responsibleArea": "Communications",
               "defaultOwnerRoleId": "communications",
@@ -3778,7 +4184,10 @@
               "title": "Agree and publish the ticket cancellation, transfer and refund terms",
               "detail": "Resolve the policy before taking money and make the purchaser-facing wording clear enough to use if the event changes.",
               "deadlineCode": "B3",
-              "showWhen": { "all": [{ "questionId": "admission-refund-policy", "operator": "equals", "value": "not-agreed" }] },
+              "showWhen": { "all": [
+                { "questionId": "admission-arrangements", "operator": "contains", "value": "entry-payment" },
+                { "questionId": "admission-refund-policy", "operator": "equals", "value": "not-agreed" }
+              ] },
               "responsibleArea": "Finance",
               "defaultOwnerRoleId": "finance",
               "source": "refined"
@@ -3787,7 +4196,7 @@
         },
         {
           "id": "admission-payment",
-          "title": "Taking payment and admitting guests",
+          "title": "Payment and admission on the day",
           "items": [
             {
               "id": "admission-payment-timing",
@@ -3799,6 +4208,22 @@
                 { "value": "door", "label": "At the door" },
                 { "value": "account", "label": "Charged to a member or customer account" }
               ],
+              "showWhen": { "all": [
+                { "questionId": "admission-arrangements", "operator": "contains", "value": "entry-payment" },
+                { "questionId": "admission-free-entry", "operator": "answered" },
+                { "any": [
+                  { "questionId": "admission-free-entry", "operator": "equals", "value": false },
+                  { "all": [
+                    { "questionId": "admission-free-entry", "operator": "equals", "value": true },
+                    { "questionId": "admission-free-categories", "operator": "answered" },
+                    { "not": { "all": [
+                      { "questionId": "admission-free-categories", "operator": "contains", "value": "children" },
+                      { "questionId": "admission-free-categories", "operator": "contains", "value": "members" },
+                      { "questionId": "admission-free-categories", "operator": "contains", "value": "visitors" }
+                    ] } }
+                  ] }
+                ] }
+              ] },
               "required": true,
               "source": "refined"
             },
@@ -3815,6 +4240,22 @@
                 { "value": "member-account", "label": "Member or customer account" },
                 { "value": "other", "label": "Other method" }
               ],
+              "showWhen": { "all": [
+                { "questionId": "admission-arrangements", "operator": "contains", "value": "entry-payment" },
+                { "questionId": "admission-free-entry", "operator": "answered" },
+                { "any": [
+                  { "questionId": "admission-free-entry", "operator": "equals", "value": false },
+                  { "all": [
+                    { "questionId": "admission-free-entry", "operator": "equals", "value": true },
+                    { "questionId": "admission-free-categories", "operator": "answered" },
+                    { "not": { "all": [
+                      { "questionId": "admission-free-categories", "operator": "contains", "value": "children" },
+                      { "questionId": "admission-free-categories", "operator": "contains", "value": "members" },
+                      { "questionId": "admission-free-categories", "operator": "contains", "value": "visitors" }
+                    ] } }
+                  ] }
+                ] }
+              ] },
               "required": true,
               "source": "refined"
             },
@@ -3822,8 +4263,11 @@
               "id": "door-admission-process",
               "type": "question",
               "answerType": "text",
-              "label": "How will door sales, ticket checks, the guest list and walk-ins be handled?",
-              "showWhen": { "all": [{ "questionId": "admission-payment-timing", "operator": "contains", "value": "door" }] },
+              "label": "How will bookings or tickets be checked, and how will walk-ins or door sales be handled?",
+              "showWhen": { "any": [
+                { "questionId": "admission-arrangements", "operator": "contains", "value": "advance-booking" },
+                { "questionId": "admission-payment-timing", "operator": "contains", "value": "door" }
+              ] },
               "required": true,
               "source": "refined"
             },
@@ -3842,16 +4286,19 @@
             {
               "id": "prepare-admission-desk-task",
               "type": "task",
-              "title": "Prepare the admission desk, ticket or guest list checks and facilities for taking door payments",
-              "detail": "Assign named people, provide the final attendee list, define how walk-ins and complimentary places are approved, and test any card terminal before doors open.",
+              "title": "Prepare the admission desk, booking or ticket checks and any door-payment facilities",
+              "detail": "Assign named people, provide the final attendee list, define how walk-ins and complimentary places are approved and, where needed, test the payment facilities before doors open.",
               "deadlineCode": "B1",
-              "showWhen": { "all": [{ "questionId": "admission-payment-timing", "operator": "contains", "value": "door" }] },
+              "showWhen": { "any": [
+                { "questionId": "admission-arrangements", "operator": "contains", "value": "advance-booking" },
+                { "questionId": "admission-payment-timing", "operator": "contains", "value": "door" }
+              ] },
               "responsibleArea": "Administration",
               "defaultOwnerRoleId": "office",
               "staffBriefing": {
                 "phase": "before-event",
                 "audience": "Admissions / Front of House",
-                "instruction": "Set up the admission desk with the final guest list, ticket checks and working payment facilities before doors open."
+                "instruction": "Set up the admission desk with the final guest list or ticket checks and any required payment facilities before doors open."
               },
               "source": "refined"
             },
@@ -3874,15 +4321,31 @@
             {
               "id": "reconcile-admission-income-task",
               "type": "task",
-              "title": "Reconcile tickets, door takings, refunds and complimentary entries against attendance",
-              "detail": "Record the final ticket income in Event Finances, explain differences between tickets and attendance, and provide cash, card and online totals to Accounts.",
+              "title": "Reconcile admission payments, refunds and complimentary entries against attendance",
+              "detail": "Record the final admission income in Event Finances, explain differences between payments and attendance, and provide cash, card and online totals to Accounts.",
               "deadlineCode": "A1",
+              "showWhen": { "all": [
+                { "questionId": "admission-arrangements", "operator": "contains", "value": "entry-payment" },
+                { "questionId": "admission-free-entry", "operator": "answered" },
+                { "any": [
+                  { "questionId": "admission-free-entry", "operator": "equals", "value": false },
+                  { "all": [
+                    { "questionId": "admission-free-entry", "operator": "equals", "value": true },
+                    { "questionId": "admission-free-categories", "operator": "answered" },
+                    { "not": { "all": [
+                      { "questionId": "admission-free-categories", "operator": "contains", "value": "children" },
+                      { "questionId": "admission-free-categories", "operator": "contains", "value": "members" },
+                      { "questionId": "admission-free-categories", "operator": "contains", "value": "visitors" }
+                    ] } }
+                  ] }
+                ] }
+              ] },
               "responsibleArea": "Finance",
               "defaultOwnerRoleId": "finance",
               "staffBriefing": {
                 "phase": "after-event",
                 "audience": "Finance / Admissions",
-                "instruction": "Reconcile tickets, door takings, refunds and complimentary entries against the final attendance."
+                "instruction": "Reconcile admission payments, refunds and complimentary entries against the final attendance."
               },
               "source": "refined"
             }
@@ -3938,6 +4401,81 @@
               ],
               "required": true,
               "source": "expanded"
+            },
+            {
+              "id": "communication-prerequisites-required",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Does any planned member or attendee communication depend on material or a service that must be prepared first?",
+              "helpText": "Choose Yes when the message needs to link to, include or ask members to use something that is not yet ready.",
+              "example": "A questionnaire or feedback form, ticket, booking or RSVP service, information page, downloadable document, or a tested link and QR code.",
+              "allowDontKnow": true,
+              "dontKnowTask": {
+                "id": "decide-communication-prerequisites",
+                "title": "Decide what must be ready before event communications are released",
+                "detail": "Check the intended response or action with the organiser and Communications team, then replace Don't know with Yes or No.",
+                "deadlineCode": "B4",
+                "responsibleArea": "Communications",
+                "defaultOwnerRoleId": "communications",
+                "source": "refined"
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "communication-prerequisites",
+              "type": "question",
+              "answerType": "multiChoice",
+              "label": "What needs to be ready before communications can be released?",
+              "helpText": "Select the things the communication depends on, rather than the channels that will carry it. Ticket prices and payment decisions remain in Admission.",
+              "options": [
+                { "value": "ticketing-payment", "label": "Ticket sales, payment page or purchase route" },
+                { "value": "registration-rsvp", "label": "Registration, RSVP or expression-of-interest form" },
+                { "value": "questionnaire-feedback", "label": "Questionnaire, poll or feedback form" },
+                { "value": "information-page", "label": "Information page, downloadable document or terms" },
+                { "value": "qr-short-link", "label": "QR-code destination, short link or trackable link" },
+                { "value": "response-route", "label": "Reply mailbox, telephone contact or monitored response route" },
+                { "value": "other", "label": "Another material or service" }
+              ],
+              "showWhen": {
+                "all": [
+                  { "questionId": "communication-prerequisites-required", "operator": "equals", "value": true }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "communication-prerequisite-details",
+              "type": "question",
+              "answerType": "text",
+              "label": "What exactly must be prepared, and who owns it?",
+              "helpText": "Record the purpose, intended audience, owner and any approval or closing date that the person preparing it needs to know.",
+              "example": "Create a question form for the member forum, agree who will review submissions and the closing date, then provide the approved link before the member email is sent.",
+              "showWhen": {
+                "all": [
+                  { "questionId": "communication-prerequisites-required", "operator": "equals", "value": true }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "prepare-communication-prerequisites-task",
+              "type": "task",
+              "title": "Confirm every prerequisite is ready before member or attendee communications are released",
+              "detail": "Coordinate with the operational owner of each selected form, booking route, page, document or service. Where booking, ticketing or attendee-feedback work already exists, verify that task rather than recreating it. Test the final link and QR destination, confirm approvals and data or privacy handling, and record the working URL or file in task notes before publishing.",
+              "deadlineCode": "B4",
+              "showWhen": {
+                "all": [
+                  { "questionId": "communication-prerequisites-required", "operator": "equals", "value": true },
+                  { "questionId": "communication-prerequisites", "operator": "answered" },
+                  { "questionId": "communication-prerequisite-details", "operator": "answered" }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Communications",
+              "defaultOwnerRoleId": "communications"
             },
             {
               "id": "digital-signage",
@@ -4056,51 +4594,12 @@
               "actionLabel": "Open Communications Centre"
             },
             {
-              "id": "booking-required",
-              "type": "question",
-              "answerType": "yesNo",
-              "label": "If entry is free, do attendees still need to register, reserve a place or confirm attendance?",
-              "helpText": "Paid tickets and payment routes are planned in Admission. Use this question only for a free RSVP, registration or capacity-controlled event.",
-              "showWhen": {
-                "all": [
-                  {
-                    "questionId": "entry-charge",
-                    "operator": "equals",
-                    "value": false
-                  }
-                ]
-              },
-              "required": true,
-              "source": "refined"
-            },
-            {
-              "id": "booking-details-task",
-              "type": "task",
-              "title": "Confirm the free registration or RSVP method, capacity and closing date",
-              "deadlineCode": "B3",
-              "showWhen": {
-                "all": [
-                  {
-                    "questionId": "entry-charge",
-                    "operator": "equals",
-                    "value": false
-                  },
-                  {
-                    "questionId": "booking-required",
-                    "operator": "equals",
-                    "value": true
-                  }
-                ]
-              },
-              "source": "refined",
-              "responsibleArea": "Communications",
-              "defaultOwnerRoleId": "communications"
-            },
-            {
               "id": "final-instructions-required",
               "type": "question",
               "answerType": "yesNo",
               "label": "Do attendees need final instructions before the event?",
+              "helpText": "Choose Yes when attendees need practical information shortly before arrival, rather than another promotional message.",
+              "example": "Arrival time, parking, dress code, what to bring, meal choices, payment on the night or where to report on arrival.",
               "required": true,
               "source": "expanded"
             },
@@ -4143,20 +4642,48 @@
       "sections": [
         {
           "id": "roles",
-          "title": "Roles and briefing",
+          "title": "Leadership, duties and briefing",
           "items": [
+            {
+              "id": "staffing-coordinator",
+              "type": "question",
+              "answerType": "assignment",
+              "assignmentMode": "personOrRole",
+              "label": "Who is responsible for coordinating staffing and any rota changes for this event?",
+              "helpText": "This may be the event coordinator or the relevant department lead; it is separate from the person leading the event on the day.",
+              "required": true,
+              "source": "refined"
+            },
             {
               "id": "event-lead-assigned",
               "type": "question",
               "answerType": "yesNo",
-              "label": "Has one person been identified as the event lead on the day?",
+              "label": "Has the event-day lead been agreed?",
+              "helpText": "The event-day lead must be one named person with clear authority to coordinate the event while it is taking place.",
+              "example": "The person staff contact when a decision or response is needed during setup, the event or close-down.",
               "required": true,
-              "source": "expanded"
+              "source": "refined"
+            },
+            {
+              "id": "event-day-lead",
+              "type": "question",
+              "answerType": "assignment",
+              "assignmentMode": "person",
+              "label": "Who is the event-day lead?",
+              "helpText": "Choose the person who has accepted the role, not a department or shared responsibility.",
+              "showWhen": {
+                "all": [
+                  { "questionId": "event-lead-assigned", "operator": "equals", "value": true }
+                ]
+              },
+              "required": true,
+              "source": "refined"
             },
             {
               "id": "event-lead-task",
               "type": "task",
               "title": "Assign the event-day lead and make their authority and responsibilities clear",
+              "detail": "Identify one person, confirm that they accept the role, then return to the Staffing questions and record their name as the event-day lead.",
               "deadlineCode": "B2",
               "showWhen": {
                 "all": [
@@ -4167,7 +4694,7 @@
                   }
                 ]
               },
-              "source": "expanded",
+              "source": "refined",
               "responsibleArea": "Event Coordination",
               "defaultOwnerRoleId": "event-coordinator"
             },
@@ -4176,13 +4703,16 @@
               "type": "question",
               "answerType": "yesNo",
               "label": "Are there specific arrival, setup, registration, service, presentation or close-down jobs that must be allocated?",
+              "helpText": "This records what each person must do. The staffing and rota questions separately confirm who is attending and when.",
+              "example": "Staff the registration desk, meet an entertainer, manage a presentation, clear decorations or hand over to the closing keyholder.",
               "required": true,
-              "source": "expanded"
+              "source": "refined"
             },
             {
               "id": "roles-task",
               "type": "task",
               "title": "Create the event-day duty list and assign every named job to an individual",
+              "detail": "List each practical duty, when and where it happens, who owns it and who they report to. This duty list complements the staff rota rather than replacing it.",
               "deadlineCode": "B1",
               "showWhen": {
                 "all": [
@@ -4222,6 +4752,321 @@
               "source": "expanded",
               "responsibleArea": "Event Coordination",
               "defaultOwnerRoleId": "event-coordinator"
+            }
+          ]
+        },
+        {
+          "id": "staffing-cover-and-rotas",
+          "title": "Staffing levels and rotas",
+          "items": [
+            {
+              "id": "additional-event-staff-required",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will additional staff or volunteers be needed beyond the normal rota?",
+              "helpText": "Include extra people, longer shifts, earlier starts, later finishes or people temporarily covering a different role. Record detailed kitchen and bar demand in the Catering questions as well.",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "additional-event-staff-areas",
+              "type": "question",
+              "answerType": "multiChoice",
+              "label": "Which teams need additional or changed cover?",
+              "options": [
+                { "value": "clubhouse-front-of-house", "label": "Clubhouse / Front of House" },
+                { "value": "food-beverage", "label": "Kitchen, catering or bar" },
+                { "value": "golf-operations", "label": "Professional Shop / Golf Operations" },
+                { "value": "course", "label": "Greens / Course" },
+                { "value": "admissions-cash", "label": "Admissions or cash handling" },
+                { "value": "entertainment-technical", "label": "Entertainment or technical support" },
+                { "value": "cleaning-close-down", "label": "Cleaning or close-down" },
+                { "value": "security-stewarding", "label": "Security, door or stewarding" },
+                { "value": "organisers-volunteers", "label": "Organisers or volunteers" },
+                { "value": "other", "label": "Other" }
+              ],
+              "showWhen": {
+                "all": [
+                  { "questionId": "additional-event-staff-required", "operator": "equals", "value": true }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "additional-event-staff-details",
+              "type": "question",
+              "answerType": "text",
+              "label": "What additional or changed cover is expected, and during which times?",
+              "helpText": "Record enough detail to cost the change and turn it into named shifts.",
+              "example": "Two extra bar staff from 18:00–23:30 and two volunteers on arrivals from 18:30–19:30.",
+              "showWhen": {
+                "all": [
+                  { "questionId": "additional-event-staff-required", "operator": "equals", "value": true }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "arrange-additional-event-staff",
+              "type": "task",
+              "title": "Agree, cost and authorise the additional staffing or volunteer cover",
+              "detail": "Confirm the required headcount, roles, named people, shift times, breaks and handovers. Obtain approval for any additional hours or cost and record the estimate in Event Finances.",
+              "deadlineCode": "CD",
+              "showWhen": {
+                "all": [
+                  { "questionId": "additional-event-staff-required", "operator": "equals", "value": true }
+                ]
+              },
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator",
+              "source": "refined"
+            },
+            {
+              "id": "event-rotas-confirmed",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Have all affected staff rotas and volunteer schedules been updated and accepted for the event?",
+              "helpText": "Answer Yes only when named people, start and finish times, breaks, handovers and any additional hours have been confirmed.",
+              "example": "The normal rota may be used, but it still needs checking against the event timetable and duties.",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "confirm-event-rotas",
+              "type": "task",
+              "title": "Create or update the affected rotas and confirm that every shift has been accepted",
+              "detail": "Cover the event from first setup through final handover or lock-up, including start and finish times, breaks, service peaks and named responsibility for each shift. Then return to Staffing and mark the rota answer Yes.",
+              "deadlineCode": "B2",
+              "showWhen": {
+                "all": [
+                  { "questionId": "event-rotas-confirmed", "operator": "equals", "value": false }
+                ]
+              },
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator",
+              "source": "refined"
+            },
+            {
+              "id": "whole-event-cover-confirmed",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Does the confirmed cover run from first access and setup through final handover or lock-up?",
+              "helpText": "Check service peaks, breaks, shift handovers and close-down rather than only the advertised event start and finish times.",
+              "showWhen": {
+                "all": [
+                  { "questionId": "event-rotas-confirmed", "operator": "equals", "value": true }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "resolve-event-cover-gaps",
+              "type": "task",
+              "title": "Resolve the remaining gaps in setup, service, break, handover or close-down cover",
+              "detail": "Compare the confirmed rotas with the complete event timetable, assign the uncovered periods and then return to Staffing to confirm that whole-event cover is in place.",
+              "deadlineCode": "B1",
+              "showWhen": {
+                "all": [
+                  { "questionId": "whole-event-cover-confirmed", "operator": "equals", "value": false }
+                ]
+              },
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator",
+              "source": "refined"
+            },
+            {
+              "id": "staffing-contingency-confirmed",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Has fallback and escalation cover been agreed if a key person is absent or delayed?",
+              "helpText": "Consider the event lead, opening and closing keyholders, cash handlers, first aider and any role that cannot safely be left uncovered.",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "resolve-staffing-contingency",
+              "type": "task",
+              "title": "Agree replacement and escalation cover for critical staffing roles",
+              "detail": "Identify which roles cannot be left uncovered, nominate replacements or escalation contacts and make sure the event lead and affected teams know the arrangement.",
+              "deadlineCode": "B1",
+              "showWhen": {
+                "all": [
+                  { "questionId": "staffing-contingency-confirmed", "operator": "equals", "value": false }
+                ]
+              },
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator",
+              "source": "refined"
+            }
+          ]
+        },
+        {
+          "id": "staff-access-and-lock-up",
+          "title": "Opening, handover and lock-up",
+          "items": [
+            {
+              "id": "event-opening-arrangement",
+              "type": "question",
+              "answerType": "singleChoice",
+              "label": "What opening and early-access arrangement applies to this event?",
+              "helpText": "Consider staff setup, supplier deliveries and entertainer access before the club would normally be open.",
+              "options": [
+                { "value": "normal-opening-cover", "label": "Normal opening cover is sufficient" },
+                { "value": "special-opening-confirmed", "label": "Special early access is confirmed" },
+                { "value": "needs-arranging", "label": "Early access still needs arranging" }
+              ],
+              "showWhen": {
+                "all": [
+                  { "questionId": "clubhouse-involved", "operator": "equals", "value": true }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "event-opening-person",
+              "type": "question",
+              "answerType": "assignment",
+              "assignmentMode": "person",
+              "label": "Who will open the building and provide the early access?",
+              "helpText": "Choose an authorised person who has accepted responsibility for access and security.",
+              "showWhen": {
+                "all": [
+                  { "questionId": "event-opening-arrangement", "operator": "equals", "value": "special-opening-confirmed" }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "arrange-event-opening-cover",
+              "type": "task",
+              "title": "Arrange authorised early-opening and access cover",
+              "detail": "Confirm the required access time, nominate an authorised keyholder and then return to Staffing to record the confirmed person.",
+              "deadlineCode": "B2",
+              "showWhen": {
+                "all": [
+                  { "questionId": "event-opening-arrangement", "operator": "equals", "value": "needs-arranging" }
+                ]
+              },
+              "responsibleArea": "Clubhouse",
+              "defaultOwnerRoleId": "clubhouse",
+              "source": "refined"
+            },
+            {
+              "id": "provide-event-opening-access",
+              "type": "task",
+              "title": "Open the clubhouse and provide the agreed early access",
+              "detail": "Assign this duty to the person recorded as the opening keyholder. Open only the required areas, manage access and hand over to the normal duty team when they arrive.",
+              "deadlineCode": "DT",
+              "ownerFromQuestionId": "event-opening-person",
+              "showWhen": {
+                "all": [
+                  { "questionId": "event-opening-arrangement", "operator": "equals", "value": "special-opening-confirmed" }
+                ]
+              },
+              "responsibleArea": "Clubhouse",
+              "defaultOwnerRoleId": "clubhouse",
+              "staffBriefing": {
+                "phase": "before-event",
+                "audience": "Opening keyholder / Clubhouse",
+                "instruction": "Open the agreed clubhouse areas at the recorded time, manage early access and hand over securely to the normal duty team."
+              },
+              "source": "refined"
+            },
+            {
+              "id": "event-lock-up-arrangement",
+              "type": "question",
+              "answerType": "singleChoice",
+              "label": "What final closing and lock-up arrangement applies to this event?",
+              "helpText": "The answer must cover the period after guests leave while cash, equipment, cleaning or room close-down is still taking place.",
+              "options": [
+                { "value": "event-keyholder", "label": "The event keyholder will complete final lock-up" },
+                { "value": "handover-to-duty-closer", "label": "The event team will hand over to the later duty closer" },
+                { "value": "needs-arranging", "label": "Closing and lock-up still need arranging" }
+              ],
+              "showWhen": {
+                "all": [
+                  { "questionId": "clubhouse-involved", "operator": "equals", "value": true }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "event-lock-up-person",
+              "type": "question",
+              "answerType": "assignment",
+              "assignmentMode": "person",
+              "label": "Who has final responsibility for closing and locking up?",
+              "helpText": "Choose the authorised person who will remain until the event team has finished or accepted the formal handover.",
+              "showWhen": {
+                "all": [
+                  { "questionId": "event-lock-up-arrangement", "operator": "in", "value": ["event-keyholder", "handover-to-duty-closer"] }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "arrange-event-lock-up-cover",
+              "type": "task",
+              "title": "Arrange a named authorised closer and lock-up handover",
+              "detail": "Confirm who remains responsible after guests leave, how long close-down will take and who holds the keys or alarm authority. Then return to Staffing and record the arrangement and named person.",
+              "deadlineCode": "B2",
+              "showWhen": {
+                "all": [
+                  { "questionId": "event-lock-up-arrangement", "operator": "equals", "value": "needs-arranging" }
+                ]
+              },
+              "responsibleArea": "Clubhouse",
+              "defaultOwnerRoleId": "clubhouse",
+              "source": "refined"
+            },
+            {
+              "id": "complete-event-lock-up",
+              "type": "task",
+              "title": "Remain through close-down and complete the final clubhouse lock-up",
+              "detail": "Assign this duty to the person recorded as the closing keyholder. Confirm guests and staff have left, complete the agreed security checks, set the alarm where applicable and secure the building.",
+              "deadlineCode": "DT",
+              "ownerFromQuestionId": "event-lock-up-person",
+              "showWhen": {
+                "all": [
+                  { "questionId": "event-lock-up-arrangement", "operator": "equals", "value": "event-keyholder" }
+                ]
+              },
+              "responsibleArea": "Clubhouse",
+              "defaultOwnerRoleId": "clubhouse",
+              "staffBriefing": {
+                "phase": "after-event",
+                "audience": "Closing keyholder / Clubhouse",
+                "instruction": "Remain until event close-down is complete, complete the agreed security checks, set the alarm where applicable and lock the clubhouse."
+              },
+              "source": "refined"
+            },
+            {
+              "id": "handover-event-to-duty-closer",
+              "type": "task",
+              "title": "Complete the closing handover to the named duty closer",
+              "detail": "Tell the named closer what remains occupied or outstanding, transfer any keys, cash or incident information securely and obtain their acceptance of final lock-up responsibility.",
+              "deadlineCode": "DT",
+              "ownerFromQuestionId": "event-lock-up-person",
+              "showWhen": {
+                "all": [
+                  { "questionId": "event-lock-up-arrangement", "operator": "equals", "value": "handover-to-duty-closer" }
+                ]
+              },
+              "responsibleArea": "Clubhouse",
+              "defaultOwnerRoleId": "clubhouse",
+              "staffBriefing": {
+                "phase": "after-event",
+                "audience": "Event lead / Closing duty manager",
+                "instruction": "Complete a clear handover to the named duty closer, including occupied areas, outstanding work, keys, cash and any incident information."
+              },
+              "source": "refined"
             }
           ]
         }
@@ -4345,15 +5190,126 @@
               "id": "general-close-down-required",
               "type": "question",
               "answerType": "yesNo",
-              "label": "Will anything need to be reset, removed, returned or cleared after the event?",
+              "label": "Does anything already identified in this event plan, or anything else, need to be reset, removed, returned or cleared after the event?",
+              "helpText": "Review the arrangements already identified elsewhere in the plan. Answer Yes if any of them must be reversed or if any additional close-down work is needed.",
+              "planningContext": {
+                "title": "Relevant setup and end-of-event arrangements already recorded",
+                "description": "This is assembled automatically from the answers elsewhere in this event plan.",
+                "emptyText": "No temporary setup or end-of-event arrangement has been identified from the current answers yet.",
+                "falseAnswerWarning": "Earlier answers indicate that temporary arrangements exist. Before keeping No, confirm that they may remain in place or are already covered by routine departmental closing duties.",
+                "footerText": "Use this as the starting point for close-down. Existing specialist tasks remain in place and should be coordinated rather than duplicated.",
+                "fields": [
+                  { "questionId": "clubhouse-areas", "label": "Prepared rooms or areas" },
+                  { "questionId": "seated-dining", "label": "Dining setup", "trueText": "Seated dining and dining tables are planned" },
+                  { "questionId": "seating-setup-required", "label": "Seating", "trueText": "Event-specific seating will be laid out or rearranged" },
+                  { "questionId": "seating-layout", "label": "Seating layout" },
+                  { "questionId": "seating-layout-notes", "label": "Additional layout instructions" },
+                  { "questionId": "top-table-required", "label": "Top or board table", "trueText": "A top or board table will be set up" },
+                  { "questionId": "top-table-seat-count", "label": "Top-table seats" },
+                  { "questionId": "prize-table-required", "label": "Prize display", "trueText": "A prize or trophy table will be set up" },
+                  { "questionId": "special-table-covering", "label": "Table covering", "excludeValues": ["none"] },
+                  { "questionId": "special-table-covering-notes", "label": "Other table covering" },
+                  { "questionId": "room-theme", "label": "Room dressing", "trueText": "The room will be dressed or decorated for the event" },
+                  { "questionId": "decorations-removed", "label": "Decoration removal", "trueText": "Decorations are already marked for removal", "includeFalse": true, "falseText": "The current plan says decorations do not need removing" },
+                  { "questionId": "arrival-direction-signage", "label": "Arrival signage", "trueText": "Arrival or registration signage will be positioned" },
+                  { "questionId": "special-course-requirements", "label": "Temporary course setup" },
+                  { "questionId": "special-course-details", "label": "Course setup detail" },
+                  { "questionId": "screen-channel", "label": "Clubhouse screens", "trueText": "A specific channel or stream will be set up" },
+                  { "questionId": "entertainment-space-requirements", "label": "Entertainment space", "excludeValues": ["standard"] },
+                  { "questionId": "entertainment-technical-requirements", "label": "Technical equipment", "excludeValues": ["none"] },
+                  { "questionId": "external-food-supplier", "label": "Food supplier", "trueText": "An external food supplier will require a load-out or handover" },
+                  { "questionId": "external-entertainment-provider", "label": "Entertainer or supplier" },
+                  { "questionId": "food-prepared", "label": "Food service", "trueText": "Food preparation and service areas will have been used" },
+                  { "questionId": "catering-covers", "label": "Catering covers" },
+                  { "questionId": "bar-service-required", "label": "Bar service", "trueText": "Event-specific bar service is planned" },
+                  { "questionId": "printed-menus", "label": "Printed material", "trueText": "Printed menus will be used" },
+                  { "questionId": "vouchers-required", "label": "Vouchers", "trueText": "Food or drink vouchers will be issued" },
+                  { "questionId": "door-admission-process", "label": "Admission desk and materials" },
+                  { "questionId": "admission-cash-float", "label": "Cash handover", "trueText": "An admission cash float will require reconciliation and handover" },
+                  { "questionId": "prize-types", "label": "Prizes and trophies" },
+                  { "questionId": "event-lock-up-arrangement", "label": "Closing arrangement" },
+                  { "questionId": "event-lock-up-person", "label": "Final closing keyholder" },
+                  {
+                    "questionId": "additional-event-staff-areas",
+                    "label": "Close-down staffing",
+                    "showWhen": { "all": [{ "questionId": "additional-event-staff-areas", "operator": "contains", "value": "cleaning-close-down" }] }
+                  }
+                ]
+              },
               "required": true,
-              "source": "expanded"
+              "source": "refined"
+            },
+            {
+              "id": "close-down-actions",
+              "type": "question",
+              "answerType": "multiChoice",
+              "label": "Which areas, arrangements or materials need to be cleared, reset, returned or handed over?",
+              "helpText": "Select everything the close-down lead must coordinate, including work already represented by a specialist departmental task.",
+              "options": [
+                { "value": "rooms-furniture", "label": "Clubhouse rooms, furniture or seating" },
+                { "value": "tables-coverings", "label": "Dining, top or prize tables and coverings" },
+                { "value": "decorations-signage", "label": "Decorations, temporary signs or printed material" },
+                { "value": "course-equipment", "label": "Course signage, markers, temporary features, lighting or equipment" },
+                { "value": "technical-equipment", "label": "Screens, PA, microphones, cables or other technical equipment" },
+                { "value": "catering-waste", "label": "Kitchen, bar, food-service areas, supplier equipment or waste" },
+                { "value": "admissions-cash", "label": "Admission desk, cash, lists or registration material" },
+                { "value": "prizes-trophies", "label": "Prizes, trophies or presentation material" },
+                { "value": "supplier-load-out", "label": "External supplier or performer load-out and collection" },
+                { "value": "cleaning-recycling", "label": "Additional cleaning, rubbish or recycling" },
+                { "value": "other", "label": "Other close-down work" }
+              ],
+              "showWhen": { "all": [{ "questionId": "general-close-down-required", "operator": "equals", "value": true }] },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "close-down-plan-details",
+              "type": "question",
+              "answerType": "text",
+              "label": "What should the close-down team do with the selected items or areas?",
+              "helpText": "Record the required end state, storage location, collection or handover so that completion is unambiguous.",
+              "example": "Return chairs to the standard layout, put the club cloth back in the office and leave the hired PA ready for collection by 09:00.",
+              "showWhen": { "all": [{ "questionId": "general-close-down-required", "operator": "equals", "value": true }] },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "additional-close-down-required",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Is any additional clear-up or recovery work needed beyond reversing the arrangements identified above?",
+              "helpText": "Consider cleaning, rubbish, recycling, lost property, supplier collection, damaged equipment and anything that routine closing duties will not cover.",
+              "showWhen": { "all": [{ "questionId": "general-close-down-required", "operator": "equals", "value": true }] },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "additional-close-down-details",
+              "type": "question",
+              "answerType": "text",
+              "label": "What additional clear-up or recovery work is required?",
+              "showWhen": { "all": [{ "questionId": "additional-close-down-required", "operator": "equals", "value": true }] },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "close-down-lead",
+              "type": "question",
+              "answerType": "assignment",
+              "assignmentMode": "person",
+              "label": "Who will coordinate and sign off the close-down on the day?",
+              "helpText": "Choose the named person who will check the selected actions, coordinate departmental handovers and report anything still outstanding.",
+              "showWhen": { "all": [{ "questionId": "general-close-down-required", "operator": "equals", "value": true }] },
+              "required": true,
+              "source": "refined"
             },
             {
               "id": "general-close-down-task",
               "type": "task",
-              "title": "Assign the event close-down and confirm the clubhouse, course and equipment are returned to their normal state",
-              "deadlineCode": "A1",
+              "title": "Complete and sign off the agreed event close-down",
+              "detail": "Coordinate the selected actions and existing departmental tasks, confirm required handovers and collections, and record anything that could not be returned to its agreed end state.",
+              "deadlineCode": "DT",
+              "ownerFromQuestionId": "close-down-lead",
               "showWhen": {
                 "all": [
                   {
@@ -4363,13 +5319,26 @@
                   }
                 ]
               },
-              "source": "expanded",
-              "responsibleArea": "Golf Operations",
-              "defaultOwnerRoleId": "golf-manager",
+              "reviewSummary": {
+                "title": "Agreed close-down plan",
+                "instruction": "The named close-down lead coordinates the specialist teams and signs this off only when the selected actions and handovers are complete.",
+                "confirmLabel": "Sign off close-down",
+                "confirmedLabel": "Close-down completed and signed off",
+                "fields": [
+                  { "questionId": "close-down-actions", "label": "Scope", "emptyText": "Select what must be cleared, reset, returned or handed over" },
+                  { "questionId": "close-down-plan-details", "label": "Required end state", "emptyText": "Record what the close-down team must do" },
+                  { "questionId": "additional-close-down-required", "label": "Additional clear-up needed", "emptyText": "Confirm whether anything else is required" },
+                  { "questionId": "additional-close-down-details", "label": "Additional work", "notApplicableText": "No additional work identified" },
+                  { "questionId": "close-down-lead", "label": "Close-down lead", "emptyText": "Choose the person responsible on the day" }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Event Coordination",
+              "defaultOwnerRoleId": "event-coordinator",
               "staffBriefing": {
                 "phase": "after-event",
                 "audience": "Event close-down team",
-                "instruction": "Return the clubhouse, course and event equipment to their normal state and report anything outstanding to the event lead."
+                "instruction": "Follow the agreed close-down scope and end-state instructions, complete each departmental handover and report anything outstanding to the named close-down lead."
               }
             },
             {
@@ -4449,38 +5418,15 @@
               "defaultOwnerRoleId": "event-coordinator"
             },
             {
-              "id": "post-event-review",
-              "type": "question",
-              "answerType": "yesNo",
-              "label": "Should the organiser record what worked well and what should change next time?",
-              "required": true,
-              "source": "expanded"
-            },
-            {
-              "id": "review-task",
-              "type": "task",
-              "title": "Complete a short post-event review and update the playbook where a recurring issue or missing question was identified",
-              "deadlineCode": "A2",
-              "showWhen": {
-                "all": [
-                  {
-                    "questionId": "post-event-review",
-                    "operator": "equals",
-                    "value": true
-                  }
-                ]
-              },
-              "source": "expanded",
-              "responsibleArea": "Event Coordination",
-              "defaultOwnerRoleId": "event-coordinator"
-            },
-            {
               "id": "complete-retrospective",
               "type": "task",
               "title": "Complete the post-event retrospective and record financial and operational lessons",
+              "detail": "Record what went well, what did not go well and what should improve next time. Include the event's financial result and any operational learning that should be carried into a future event.",
               "deadlineCode": "A2",
               "responsibleArea": "Event Coordination",
               "defaultOwnerRoleId": "event-coordinator",
+              "actionView": "retrospective",
+              "actionLabel": "Open retrospective",
               "source": "expanded"
             }
           ]

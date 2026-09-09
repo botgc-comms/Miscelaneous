@@ -17,6 +17,13 @@ public interface IIntelligentGolfEventIntegration
         PlaybookEventIntegrationSnapshot eventSnapshot,
         bool force,
         CancellationToken cancellationToken);
+    Task<IntelligentGolfEventSynchroniseResult> CreateSeparateEventAsync(
+        PlaybookEventIntegrationSnapshot eventSnapshot,
+        CancellationToken cancellationToken);
+    Task<IntelligentGolfEventAdoptResult> AdoptExistingEventAsync(
+        PlaybookEventIntegrationSnapshot eventSnapshot,
+        int intelligentGolfEventId,
+        CancellationToken cancellationToken);
     Task<IntelligentGolfDiaryPublishResult> PublishDiaryAsync(
         MemberDiaryPublishRequest request,
         CancellationToken cancellationToken);
@@ -33,6 +40,7 @@ public sealed class IntelligentGolfEventIntegration(
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
     private readonly ConcurrentDictionary<string, SemaphoreSlim> _eventLocks = new(StringComparer.OrdinalIgnoreCase);
+    private readonly SemaphoreSlim _adoptionLock = new(1, 1);
 
     public async Task<bool> IsAvailableAsync(CancellationToken cancellationToken)
     {
@@ -46,6 +54,18 @@ public sealed class IntelligentGolfEventIntegration(
     public async Task<IntelligentGolfEventSynchroniseResult> SynchroniseEventAsync(
         PlaybookEventIntegrationSnapshot eventSnapshot,
         bool force,
+        CancellationToken cancellationToken) =>
+        await SynchroniseEventCoreAsync(eventSnapshot, force, false, cancellationToken);
+
+    public async Task<IntelligentGolfEventSynchroniseResult> CreateSeparateEventAsync(
+        PlaybookEventIntegrationSnapshot eventSnapshot,
+        CancellationToken cancellationToken) =>
+        await SynchroniseEventCoreAsync(eventSnapshot, true, true, cancellationToken);
+
+    private async Task<IntelligentGolfEventSynchroniseResult> SynchroniseEventCoreAsync(
+        PlaybookEventIntegrationSnapshot eventSnapshot,
+        bool force,
+        bool createNewWhenDateOccupied,
         CancellationToken cancellationToken)
     {
         ValidateSnapshot(eventSnapshot);
@@ -82,7 +102,8 @@ public sealed class IntelligentGolfEventIntegration(
                 attendees = Math.Max(0, eventSnapshot.Attendees),
                 groupId = eventSnapshot.GroupId,
                 groupName = eventSnapshot.GroupName,
-                descriptionHtml = PlainTextToHtml(eventSnapshot.Description)
+                descriptionHtml = PlainTextToHtml(eventSnapshot.Description),
+                createNewWhenDateOccupied
             });
             using var response = await SendAsync(message, cancellationToken);
             var result = await response.Content.ReadFromJsonAsync<IntelligentGolfEventSynchroniseResult>(JsonOptions, cancellationToken)
@@ -109,6 +130,29 @@ public sealed class IntelligentGolfEventIntegration(
         }
         catch (Exception exception) when (exception is not OperationCanceledException)
         {
+            if (exception is IntelligentGolfApiRequestException { RequiresPlannerMatch: true } matchException &&
+                matchException.Candidates.Count > 0)
+            {
+                await linkStore.SaveMatchRequiredAsync(
+                    eventSnapshot.EventId,
+                    matchException.EventDate ?? eventSnapshot.EventDate,
+                    matchException.Candidates,
+                    cancellationToken);
+                await RecordActivitySafelyAsync(new IntegrationActivityWrite
+                {
+                    Operation = "Match planner event",
+                    Outcome = "action-required",
+                    EventPlaybookEventId = eventSnapshot.EventId,
+                    EventName = eventSnapshot.Name,
+                    Stage = matchException.Stage,
+                    StatusCode = matchException.StatusCode,
+                    Message = matchException.Candidates.Count == 1
+                        ? "An Intelligent Golf planner entry already exists on this date. Choose whether to use it or create a separate entry."
+                        : $"{matchException.Candidates.Count} Intelligent Golf planner entries already exist on this date. Choose one to use or create a separate entry."
+                }, cancellationToken);
+                throw;
+            }
+
             if (exception is IntelligentGolfApiRequestException { IntelligentGolfEventId: > 0 } apiException)
             {
                 // The IG allocation and update are two separate operations. Retain the
@@ -149,6 +193,135 @@ public sealed class IntelligentGolfEventIntegration(
         }
     }
 
+    public async Task<IntelligentGolfEventAdoptResult> AdoptExistingEventAsync(
+        PlaybookEventIntegrationSnapshot eventSnapshot,
+        int intelligentGolfEventId,
+        CancellationToken cancellationToken)
+    {
+        ValidateSnapshot(eventSnapshot);
+        if (intelligentGolfEventId <= 0)
+            throw new ArgumentException("Choose a valid Intelligent Golf planner entry.", nameof(intelligentGolfEventId));
+
+        var eventLock = _eventLocks.GetOrAdd(eventSnapshot.EventId, _ => new SemaphoreSlim(1, 1));
+        var adoptionLockHeld = false;
+        var eventLockHeld = false;
+        try
+        {
+            await _adoptionLock.WaitAsync(cancellationToken);
+            adoptionLockHeld = true;
+            await eventLock.WaitAsync(cancellationToken);
+            eventLockHeld = true;
+            await EnsureAvailableAsync(cancellationToken);
+            var linkedPlaybookEventId = await linkStore.FindPlaybookEventIdByIntelligentGolfEventIdAsync(
+                intelligentGolfEventId,
+                cancellationToken);
+            if (!string.IsNullOrWhiteSpace(linkedPlaybookEventId) &&
+                !string.Equals(linkedPlaybookEventId, eventSnapshot.EventId, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new IntelligentGolfPlannerEventAlreadyLinkedException(intelligentGolfEventId);
+            }
+
+            using var message = CreateRequest(HttpMethod.Post, "api/event-planner/events/adopt");
+            message.Content = JsonContent.Create(new
+            {
+                eventPlaybookEventId = eventSnapshot.EventId,
+                intelligentGolfEventId,
+                eventDate = eventSnapshot.EventDate
+            });
+            using var response = await SendAsync(message, cancellationToken);
+            var result = await response.Content.ReadFromJsonAsync<IntelligentGolfEventAdoptResult>(JsonOptions, cancellationToken)
+                ?? throw new InvalidOperationException("The Event Playbook API did not confirm the adopted Intelligent Golf event ID.");
+            await linkStore.SaveEventAsync(
+                eventSnapshot.EventId,
+                result.IntelligentGolfEventId,
+                Fingerprint(eventSnapshot),
+                result.AdoptedAtUtc,
+                cancellationToken);
+            await RecordActivitySafelyAsync(new IntegrationActivityWrite
+            {
+                Operation = "Link existing planner event",
+                Outcome = "succeeded",
+                EventPlaybookEventId = eventSnapshot.EventId,
+                EventName = eventSnapshot.Name,
+                ExternalEventId = result.IntelligentGolfEventId,
+                Stage = "planner-event-adoption",
+                Message = $"Linked existing Intelligent Golf planner entry {result.IntelligentGolfEventId} without changing its existing configuration."
+            }, cancellationToken);
+            return result;
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            var requestException = exception as IntelligentGolfApiRequestException;
+            if (exception is IntelligentGolfPlannerEventAlreadyLinkedException linkedException)
+            {
+                await RecordActivitySafelyAsync(new IntegrationActivityWrite
+                {
+                    Operation = "Match planner event",
+                    Outcome = "action-required",
+                    EventPlaybookEventId = eventSnapshot.EventId,
+                    EventName = eventSnapshot.Name,
+                    ExternalEventId = linkedException.IntelligentGolfEventId,
+                    Stage = "planner-event-already-linked",
+                    Message = linkedException.Message
+                }, cancellationToken);
+                throw;
+            }
+
+            if (requestException is { RequiresPlannerMatch: true } && requestException.Candidates.Count > 0)
+            {
+                await linkStore.SaveMatchRequiredAsync(
+                    eventSnapshot.EventId,
+                    requestException.EventDate ?? eventSnapshot.EventDate,
+                    requestException.Candidates,
+                    cancellationToken);
+                await RecordActivitySafelyAsync(new IntegrationActivityWrite
+                {
+                    Operation = "Match planner event",
+                    Outcome = "action-required",
+                    EventPlaybookEventId = eventSnapshot.EventId,
+                    EventName = eventSnapshot.Name,
+                    Stage = requestException.Stage,
+                    StatusCode = requestException.StatusCode,
+                    Message = "The available Intelligent Golf planner entries changed before the selection was confirmed. Review the updated choices."
+                }, cancellationToken);
+                throw;
+            }
+
+            if (requestException is { RequiresPlannerMatch: true } &&
+                requestException.Candidates.Count == 0)
+            {
+                // IG revalidates the date immediately before adoption. If the
+                // selected entry has disappeared, discard the stale choice so
+                // the organiser is not trapped in an unresolvable dialog.
+                await linkStore.ClearMatchRequiredAsync(eventSnapshot.EventId, cancellationToken);
+            }
+
+            await linkStore.RecordFailureAsync(
+                eventSnapshot.EventId,
+                exception.Message,
+                requestException?.Stage ?? "planner-event-adoption",
+                requestException?.StatusCode,
+                cancellationToken);
+            await RecordActivitySafelyAsync(new IntegrationActivityWrite
+            {
+                Operation = "Link existing planner event",
+                Outcome = "failed",
+                EventPlaybookEventId = eventSnapshot.EventId,
+                EventName = eventSnapshot.Name,
+                ExternalEventId = intelligentGolfEventId,
+                Stage = requestException?.Stage ?? "planner-event-adoption",
+                StatusCode = requestException?.StatusCode,
+                Message = exception.Message
+            }, cancellationToken);
+            throw;
+        }
+        finally
+        {
+            if (eventLockHeld) eventLock.Release();
+            if (adoptionLockHeld) _adoptionLock.Release();
+        }
+    }
+
     public async Task<IntelligentGolfDiaryPublishResult> PublishDiaryAsync(
         MemberDiaryPublishRequest request,
         CancellationToken cancellationToken)
@@ -169,7 +342,9 @@ public sealed class IntelligentGolfEventIntegration(
 
         // This deliberately provisions the IG event when an older Playbook event
         // has no external link yet, then immediately uses that link for the diary.
-        var eventResult = await SynchroniseEventAsync(snapshot, true, cancellationToken);
+        // A linked event (including one deliberately adopted from IG) is left
+        // untouched unless its Playbook details have actually changed.
+        var eventResult = await SynchroniseEventAsync(snapshot, false, cancellationToken);
         try
         {
             var link = await linkStore.GetAsync(request.EventId, cancellationToken);
@@ -289,7 +464,9 @@ public sealed class IntelligentGolfEventIntegration(
             problem?.Stage,
             problem?.IntelligentGolfEventId,
             problem?.IntelligentGolfRecordId,
-            problem?.Retryable ?? true);
+            problem?.Retryable ?? true,
+            problem?.EventDate,
+            problem?.Candidates ?? []);
     }
 
     private static IntelligentGolfApiProblem? ExtractProblem(string raw)
@@ -305,6 +482,8 @@ public sealed class IntelligentGolfEventIntegration(
             var eventId = ReadInt(root, "intelligentGolfEventId");
             var recordId = ReadInt(root, "intelligentGolfRecordId");
             var retryable = ReadBool(root, "retryable");
+            var eventDate = ReadString(root, "eventDate");
+            var candidates = ReadCandidates(root);
             var message = detail;
             if (string.IsNullOrWhiteSpace(message)) message = error;
             if (string.IsNullOrWhiteSpace(message)) message = title;
@@ -314,7 +493,7 @@ public sealed class IntelligentGolfEventIntegration(
 
             return string.IsNullOrWhiteSpace(message)
                 ? null
-                : new IntelligentGolfApiProblem(message.Trim(), stage, eventId, recordId, retryable);
+                : new IntelligentGolfApiProblem(message.Trim(), stage, eventId, recordId, retryable, eventDate, candidates);
         }
         catch (JsonException)
         {
@@ -345,6 +524,26 @@ public sealed class IntelligentGolfEventIntegration(
         return value.ValueKind == JsonValueKind.String && bool.TryParse(value.GetString(), out var result)
             ? result
             : null;
+    }
+
+    private static IReadOnlyList<IntelligentGolfPlannerEventCandidate> ReadCandidates(JsonElement root)
+    {
+        if (!root.TryGetProperty("candidates", out var candidates) || candidates.ValueKind != JsonValueKind.Array)
+            return [];
+
+        var result = new List<IntelligentGolfPlannerEventCandidate>();
+        foreach (var candidate in candidates.EnumerateArray())
+        {
+            var id = ReadInt(candidate, "intelligentGolfEventId");
+            var name = ReadString(candidate, "name");
+            if (id is not > 0 || string.IsNullOrWhiteSpace(name)) continue;
+            result.Add(new IntelligentGolfPlannerEventCandidate
+            {
+                IntelligentGolfEventId = id.Value,
+                Name = name.Trim()
+            });
+        }
+        return result;
     }
 
     private static string PlainTextToHtml(string value)
@@ -407,7 +606,9 @@ public sealed class IntelligentGolfEventIntegration(
         string? Stage,
         int? IntelligentGolfEventId,
         int? IntelligentGolfRecordId,
-        bool? Retryable);
+        bool? Retryable,
+        string? EventDate,
+        IReadOnlyList<IntelligentGolfPlannerEventCandidate> Candidates);
 }
 
 public sealed class IntelligentGolfApiRequestException(
@@ -416,11 +617,25 @@ public sealed class IntelligentGolfApiRequestException(
     string? stage,
     int? intelligentGolfEventId,
     int? intelligentGolfRecordId,
-    bool retryable) : InvalidOperationException(message)
+    bool retryable,
+    string? eventDate,
+    IReadOnlyList<IntelligentGolfPlannerEventCandidate> candidates) : InvalidOperationException(message)
 {
     public int StatusCode { get; } = statusCode;
     public string? Stage { get; } = stage;
     public int? IntelligentGolfEventId { get; } = intelligentGolfEventId;
     public int? IntelligentGolfRecordId { get; } = intelligentGolfRecordId;
     public bool Retryable { get; } = retryable;
+    public string? EventDate { get; } = eventDate;
+    public IReadOnlyList<IntelligentGolfPlannerEventCandidate> Candidates { get; } = candidates;
+    public bool RequiresPlannerMatch =>
+        string.Equals(Stage, "planner-event-match-required", StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(Stage, "planner-event-match-expired", StringComparison.OrdinalIgnoreCase);
+}
+
+public sealed class IntelligentGolfPlannerEventAlreadyLinkedException(int intelligentGolfEventId)
+    : InvalidOperationException(
+        $"Intelligent Golf planner entry {intelligentGolfEventId} is already linked to another Event Playbook event.")
+{
+    public int IntelligentGolfEventId { get; } = intelligentGolfEventId;
 }

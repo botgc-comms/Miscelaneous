@@ -88,7 +88,7 @@ Web `appsettings.json` files and environment-specific variants are ignored by Gi
 
 ## Preserved Event Playbook functionality
 
-The integrated application retains all 98 item IDs from the original Playbook configuration, including:
+The integrated application retains existing event data and stable item IDs wherever their meaning remains valid, including:
 
 - master event questions;
 - Golf, Clubhouse, Catering, Communications, Presentation, Staffing, Safety and Close-down modules;
@@ -102,7 +102,7 @@ The integrated application retains all 98 item IDs from the original Playbook co
 - JSON and CSV export;
 - loading a Playbook JSON definition.
 
-The integrated configuration extends that original set rather than replacing it.
+The integrated configuration extends the original set. Where a question or task is deliberately replaced because its meaning changes, a versioned migration carries forward compatible answers, notes and learning references without treating old task completion as completion of stronger new work.
 
 ## Operational task extensions
 
@@ -199,11 +199,11 @@ Validation checks include:
 - advisory targets;
 - circular question visibility dependencies.
 
-Existing event records retain the Playbook version they were created against.
+Existing event records retain the Playbook version they were created against. Applied data-shape migrations are recorded separately on the event.
 
 ## Event catalogue, cloning and retrospectives
 
-The Event Catalogue retains event plans and allows a previous event to be cloned. The clone starts with the previous answers but creates a fresh operational task state.
+The Event Catalogue retains event plans and allows a previous event to be cloned. Previous answers are presented as subtle hints so each decision must be considered again, and the clone starts with a fresh operational task state.
 
 The Retrospective captures:
 

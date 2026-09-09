@@ -27,6 +27,7 @@ public interface IPosterSessionStore
         string outputId,
         Stream content,
         string contentType,
+        long maximumBytes,
         CancellationToken cancellationToken);
 }
 
@@ -167,9 +168,14 @@ public sealed class PrototypePersistenceStore : ISharedPlaybookStateStore, IPost
         string outputId,
         Stream content,
         string contentType,
+        long maximumBytes,
         CancellationToken cancellationToken)
     {
-        const long maximumArtworkBytes = 80L * 1024L * 1024L;
+        const long absoluteMaximumArtworkBytes = 80L * 1024L * 1024L;
+        if (maximumBytes <= 0 || maximumBytes > absoluteMaximumArtworkBytes)
+        {
+            throw new ArgumentOutOfRangeException(nameof(maximumBytes));
+        }
         var version = Guid.NewGuid().ToString("N");
         var path = PosterArtworkPath(key, outputId, version);
         var directory = Path.GetDirectoryName(path)!;
@@ -196,9 +202,10 @@ public sealed class PrototypePersistenceStore : ISharedPlaybookStateStore, IPost
                         var bytesRead = await content.ReadAsync(buffer, cancellationToken);
                         if (bytesRead == 0) break;
                         totalBytes += bytesRead;
-                        if (totalBytes > maximumArtworkBytes)
+                        if (totalBytes > maximumBytes)
                         {
-                            throw new InvalidDataException("Poster artwork exceeds the 80 MB storage limit.");
+                            throw new InvalidDataException(
+                                $"Poster artwork exceeds the {maximumBytes / (1024 * 1024)} MB storage limit.");
                         }
                         await stream.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken);
                     }
