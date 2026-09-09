@@ -25,6 +25,8 @@ public sealed class PosterSessionDocument
 
 public sealed class SavePosterSessionRequest
 {
+    public long ExpectedRevision { get; set; }
+
     public JsonElement Session { get; set; }
 }
 

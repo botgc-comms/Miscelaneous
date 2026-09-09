@@ -698,8 +698,17 @@ app.MapPut("/api/poster/session", async (
     {
         return Results.BadRequest(new { error = "Poster session must be a JSON object." });
     }
+    if (request.ExpectedRevision < 0)
+    {
+        return Results.BadRequest(new { error = "The expected poster-session revision cannot be negative." });
+    }
 
-    return Results.Ok(await store.SaveAsync(key.Trim(), request.Session, cancellationToken));
+    var result = await store.SaveAsync(
+        key.Trim(),
+        request.ExpectedRevision,
+        request.Session,
+        cancellationToken);
+    return result.Conflict ? Results.Conflict(result.Document) : Results.Ok(result.Document);
 });
 
 app.MapGet("/api/poster/artwork", async (

@@ -1,3 +1,9 @@
+import {
+    chooseNewestStoredSession,
+    conceptsForGeneration,
+    getSessionContentTimestamp
+} from './poster-session-state.js?v=20260909-latest-concepts-1';
+
 const sessions = new Map();
 const REFERENCE_LIBRARY_STORAGE_KEY = 'botgc-event-playbook-reference-library-v1';
 const MAX_AUTOMATIC_REFERENCES = 3;
@@ -36,6 +42,7 @@ function createSession(key, context) {
         initialised: false,
         hydrated: false,
         restoredFromStorage: false,
+        contentUpdatedAt: null,
         generationSnapshot: null,
         referenceSelection: null,
         persistTimer: null,
@@ -168,17 +175,20 @@ async function readServerSession(key) {
     return response.json();
 }
 
-async function writeServerSession(key, record) {
+async function writeServerSession(key, record, expectedRevision) {
     const response = await fetch(`/api/poster/session?key=${encodeURIComponent(key)}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ session: record })
+        body: JSON.stringify({ expectedRevision, session: record })
     });
     const document = await response.json();
+    if (response.status === 409) {
+        return { conflict: true, document };
+    }
     if (!response.ok) {
         throw new Error(document?.error ?? `Communications Centre shared session save failed (${response.status}).`);
     }
-    return document;
+    return { conflict: false, document };
 }
 
 function isInlineArtworkSource(value) {
@@ -231,9 +241,13 @@ async function persistCompletedArtwork(session, outputId, artworkSource) {
 
 async function persistConceptArtwork(session, concept, artworkSource) {
     if (!isInlineArtworkSource(artworkSource)) return artworkSource;
+    const generationId = concept.generationId ?? session.generationSnapshot?.id ?? null;
+    concept.generationId = generationId;
     try {
         const storedArtwork = await writeServerArtwork(session.key, concept.id, artworkSource);
-        concept.artworkSource = storedArtwork.url;
+        if (!generationId || (session.generationSnapshot?.id === generationId && session.concepts.includes(concept))) {
+            concept.artworkSource = storedArtwork.url;
+        }
         return storedArtwork.url;
     } catch (error) {
         console.warn(`Unable to persist ${concept.id}.`, error);
@@ -333,6 +347,7 @@ function serialiseSession(session, includeInlineArtwork = true) {
     const concepts = session.concepts.map(concept => ({
         id: concept.id,
         index: concept.index,
+        generationId: concept.generationId ?? session.generationSnapshot?.id ?? null,
         styleVariationId: concept.styleVariationId,
         artworkSource: includeInlineArtwork || !isInlineArtworkSource(concept.artworkSource)
             ? concept.artworkSource
@@ -357,8 +372,9 @@ function serialiseSession(session, includeInlineArtwork = true) {
 
     return {
         key: session.key,
-        schemaVersion: 9,
+        schemaVersion: 10,
         savedAt: new Date().toISOString(),
+        contentUpdatedAt: session.contentUpdatedAt,
         selectedStyleId: session.selectedStyleId,
         selectedOutputIds: [...session.selectedOutputIds],
         primaryArtworkDataUrl,
@@ -413,6 +429,9 @@ function serialiseSession(session, includeInlineArtwork = true) {
 
 function applyStoredSession(session, stored) {
     if (!stored || typeof stored !== 'object') return false;
+    session.contentUpdatedAt = typeof stored.contentUpdatedAt === 'string'
+        ? stored.contentUpdatedAt
+        : null;
     const storedGenerationWasInterrupted = stored.campaignStatus?.mode === 'generating'
         || stored.campaignStatus?.text === 'Generation interrupted';
 
@@ -473,14 +492,19 @@ function applyStoredSession(session, stored) {
             ? Object.entries(stored.failedOutputs).filter(([outputId, value]) => typeof outputId === 'string' && value && typeof value === 'object')
             : []
     );
+    const storedGenerationId = typeof stored.generationSnapshot?.id === 'string'
+        ? stored.generationSnapshot.id
+        : null;
     session.concepts = Array.isArray(stored.concepts)
-        ? stored.concepts
-            .filter(concept => /^concept-[1-3]$/.test(String(concept?.id ?? '')))
+        ? conceptsForGeneration(stored.concepts, storedGenerationId)
             .map((concept, index) => {
                 const artworkSource = isPersistedArtworkSource(concept.artworkSource) ? concept.artworkSource : null;
                 return {
                     id: concept.id,
                     index: Number.isFinite(concept.index) ? concept.index : index,
+                    generationId: typeof concept.generationId === 'string'
+                        ? concept.generationId
+                        : storedGenerationId,
                     styleVariationId: typeof concept.styleVariationId === 'string' ? concept.styleVariationId : null,
                     artworkSource,
                     status: artworkSource ? 'ready' : concept.status === 'failed' ? 'failed' : 'waiting',
@@ -778,7 +802,27 @@ function createGenerationContext(session, isRegeneration) {
 }
 
 async function hydrateSession(session) {
-    if (session.hydrated) return session.restoredFromStorage;
+    if (session.hydrated) {
+        if (session.isGenerating) return session.restoredFromStorage;
+
+        try {
+            const serverDocument = await readServerSession(session.key);
+            const serverRevision = Number(serverDocument?.revision) || 0;
+            if (serverDocument?.session && serverRevision > session.serverRevision) {
+                const currentRecord = serialiseSession(session, true);
+                const newest = chooseNewestStoredSession(serverDocument.session, currentRecord);
+                session.serverRevision = serverRevision;
+                if (newest === serverDocument.session) {
+                    replaceSessionFromStored(session, serverDocument.session);
+                    session.restoredFromStorage = true;
+                }
+            }
+        } catch (error) {
+            console.warn('Unable to refresh the shared Communications Centre session.', error);
+        }
+
+        return session.restoredFromStorage;
+    }
 
     let serverStored = null;
     let browserStored = null;
@@ -803,32 +847,29 @@ async function hydrateSession(session) {
     session.restoredFromStorage = applyStoredSession(session, stored);
     session.hydrated = true;
     if (session.restoredFromStorage && stored === browserStored && stored !== serverStored) {
-        scheduleSessionPersistence(session);
+        scheduleSessionPersistence(session, false);
     }
     return session.restoredFromStorage;
 }
 
-function chooseNewestStoredSession(serverStored, browserStored) {
-    if (!serverStored) return browserStored;
-    if (!browserStored) return serverStored;
+function replaceSessionFromStored(session, stored) {
+    const restored = createSession(session.key, session.context);
+    restored.config = session.config;
+    if (!applyStoredSession(restored, stored)) return false;
 
-    const serverSavedAt = Date.parse(serverStored.savedAt ?? '') || 0;
-    const browserSavedAt = Date.parse(browserStored.savedAt ?? '') || 0;
-    if (serverSavedAt !== browserSavedAt) {
-        return browserSavedAt > serverSavedAt ? browserStored : serverStored;
-    }
-
-    const countArtwork = stored => {
-        const generatedCount = stored?.artworkByOutput && typeof stored.artworkByOutput === 'object'
-            ? Object.values(stored.artworkByOutput).filter(isPersistedArtworkSource).length
-            : 0;
-        const conceptCount = Array.isArray(stored?.concepts)
-            ? stored.concepts.filter(concept => isPersistedArtworkSource(concept?.artworkSource)).length
-            : 0;
-        const sourceDesignCount = isPersistedArtworkSource(stored?.sourceDesign?.artworkSource) ? 1 : 0;
-        return generatedCount + conceptCount + sourceDesignCount;
-    };
-    return countArtwork(browserStored) > countArtwork(serverStored) ? browserStored : serverStored;
+    const persistenceChain = session.persistenceChain;
+    const persistTimer = session.persistTimer;
+    const serverRevision = session.serverRevision;
+    const initialised = session.initialised;
+    Object.assign(session, restored, {
+        persistenceChain,
+        persistTimer,
+        serverRevision,
+        initialised,
+        hydrated: true,
+        restoredFromStorage: true
+    });
+    return true;
 }
 
 async function persistSession(session) {
@@ -849,16 +890,43 @@ async function persistSession(session) {
             } catch (error) {
                 console.warn('Unable to update the browser-cached Communications Centre session.', error);
             }
-            const document = await writeServerSession(session.key, serverRecord);
-            session.serverRevision = Number(document.revision) || session.serverRevision;
+
+            let expectedRevision = session.serverRevision;
+            for (let attempt = 0; attempt < 3; attempt += 1) {
+                const result = await writeServerSession(session.key, serverRecord, expectedRevision);
+                if (!result.conflict) {
+                    session.serverRevision = Number(result.document.revision) || expectedRevision;
+                    return;
+                }
+
+                const currentDocument = result.document;
+                const currentRecord = currentDocument?.session;
+                session.serverRevision = Number(currentDocument?.revision) || expectedRevision;
+                if (chooseNewestStoredSession(currentRecord, serverRecord) !== serverRecord) {
+                    // Another tab or device has already saved newer campaign
+                    // work. Keep the current view stable, but never overwrite
+                    // that newer shared record with this stale snapshot.
+                    return;
+                }
+                expectedRevision = session.serverRevision;
+            }
+
+            throw new Error('The Communications Centre session changed repeatedly while it was being saved. Reopen the event to load the newest version.');
         })
         .catch(error => console.warn('Unable to save the shared Communications Centre session.', error));
 
     return session.persistenceChain;
 }
 
-function scheduleSessionPersistence(session) {
+function markSessionContentChanged(session, changedAt = new Date().toISOString()) {
+    if (!session) return;
+    if (getSessionContentTimestamp({ contentUpdatedAt: session.contentUpdatedAt }) >= Date.parse(changedAt)) return;
+    session.contentUpdatedAt = changedAt;
+}
+
+function scheduleSessionPersistence(session, contentChanged = true) {
     if (!session?.hydrated) return;
+    if (contentChanged) markSessionContentChanged(session);
     if (session.persistTimer) clearTimeout(session.persistTimer);
     session.persistTimer = setTimeout(() => persistSession(session), 750);
 }
@@ -1274,7 +1342,7 @@ async function initialise(session) {
     configureShareConnections(session);
     updateAutomaticReferenceSelection(session);
     restoreSessionToDom(session);
-    scheduleSessionPersistence(session);
+    scheduleSessionPersistence(session, false);
 }
 
 async function rebuildPersistedCanvases(session) {
@@ -1729,6 +1797,7 @@ async function produceUploadedDesign(session, outputsToRetry = null) {
 
     session.generationOrigin = 'uploaded-design';
     session.generationSnapshot = generationSnapshot;
+    markSessionContentChanged(session, generationSnapshot.generatedAt);
     session.concepts = [];
     session.selectedConceptId = null;
     session.referenceSelection = null;
@@ -1940,9 +2009,11 @@ async function generateConcepts(session, isRegeneration) {
     const generation = createGenerationContext(session, isRegeneration);
     const generationController = new AbortController();
     session.generationSnapshot = generation.snapshot;
+    markSessionContentChanged(session, generation.snapshot.generatedAt);
     session.concepts = generation.snapshot.conceptStyleVariationIds.map((styleVariationId, index) => ({
         id: `concept-${index + 1}`,
         index,
+        generationId: generation.snapshot.id,
         styleVariationId,
         artworkSource: null,
         status: 'waiting',

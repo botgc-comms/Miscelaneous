@@ -16,7 +16,11 @@ public interface ISharedPlaybookStateStore
 public interface IPosterSessionStore
 {
     Task<PosterSessionDocument?> GetAsync(string key, CancellationToken cancellationToken);
-    Task<PosterSessionDocument> SaveAsync(string key, JsonElement session, CancellationToken cancellationToken);
+    Task<(bool Conflict, PosterSessionDocument Document)> SaveAsync(
+        string key,
+        long expectedRevision,
+        JsonElement session,
+        CancellationToken cancellationToken);
     Task<PosterArtworkFile?> GetArtworkAsync(
         string key,
         string outputId,
@@ -111,8 +115,9 @@ public sealed class PrototypePersistenceStore : ISharedPlaybookStateStore, IPost
         }
     }
 
-    async Task<PosterSessionDocument> IPosterSessionStore.SaveAsync(
+    async Task<(bool Conflict, PosterSessionDocument Document)> IPosterSessionStore.SaveAsync(
         string key,
+        long expectedRevision,
         JsonElement session,
         CancellationToken cancellationToken)
     {
@@ -120,12 +125,23 @@ public sealed class PrototypePersistenceStore : ISharedPlaybookStateStore, IPost
         await _posterSessionGate.WaitAsync(cancellationToken);
         try
         {
-            var currentRevision = 0L;
+            PosterSessionDocument? current = null;
             if (File.Exists(path))
             {
                 await using var readStream = File.OpenRead(path);
-                var current = await JsonSerializer.DeserializeAsync<PosterSessionDocument>(readStream, _jsonOptions, cancellationToken);
-                currentRevision = current?.Revision ?? 0;
+                current = await JsonSerializer.DeserializeAsync<PosterSessionDocument>(readStream, _jsonOptions, cancellationToken);
+            }
+
+            var currentRevision = current?.Revision ?? 0;
+            if (expectedRevision != currentRevision)
+            {
+                return (true, current ?? new PosterSessionDocument
+                {
+                    Key = key,
+                    Revision = 0,
+                    UpdatedAtUtc = DateTimeOffset.MinValue,
+                    Session = JsonSerializer.SerializeToElement(new { })
+                });
             }
 
             var next = new PosterSessionDocument
@@ -136,7 +152,7 @@ public sealed class PrototypePersistenceStore : ISharedPlaybookStateStore, IPost
                 Session = session.Clone()
             };
             await WriteJsonAtomicallyAsync(path, next, cancellationToken);
-            return next;
+            return (false, next);
         }
         finally
         {
