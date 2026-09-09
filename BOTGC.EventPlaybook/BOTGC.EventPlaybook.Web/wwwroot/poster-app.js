@@ -810,7 +810,11 @@ async function hydrateSession(session) {
             const serverRevision = Number(serverDocument?.revision) || 0;
             if (serverDocument?.session && serverRevision > session.serverRevision) {
                 const currentRecord = serialiseSession(session, true);
-                const newest = chooseNewestStoredSession(serverDocument.session, currentRecord);
+                const newest = chooseNewestStoredSession(
+                    serverDocument.session,
+                    currentRecord,
+                    session.context?.cataloguePosterGenerationId
+                );
                 session.serverRevision = serverRevision;
                 if (newest === serverDocument.session) {
                     replaceSessionFromStored(session, serverDocument.session);
@@ -843,7 +847,11 @@ async function hydrateSession(session) {
         console.warn('Unable to restore the browser-cached Communications Centre session.', error);
     }
 
-    const stored = chooseNewestStoredSession(serverStored, browserStored);
+    const stored = chooseNewestStoredSession(
+        serverStored,
+        browserStored,
+        session.context?.cataloguePosterGenerationId
+    );
     session.restoredFromStorage = applyStoredSession(session, stored);
     session.hydrated = true;
     if (session.restoredFromStorage && stored === browserStored && stored !== serverStored) {
@@ -896,24 +904,32 @@ async function persistSession(session) {
                 const result = await writeServerSession(session.key, serverRecord, expectedRevision);
                 if (!result.conflict) {
                     session.serverRevision = Number(result.document.revision) || expectedRevision;
-                    return;
+                    return true;
                 }
 
                 const currentDocument = result.document;
                 const currentRecord = currentDocument?.session;
-                session.serverRevision = Number(currentDocument?.revision) || expectedRevision;
                 if (chooseNewestStoredSession(currentRecord, serverRecord) !== serverRecord) {
                     // Another tab or device has already saved newer campaign
-                    // work. Keep the current view stable, but never overwrite
-                    // that newer shared record with this stale snapshot.
-                    return;
+                    // work. Keep the stale revision as well as the current view:
+                    // any later save from this tab must conflict again until it
+                    // either reloads that work or creates a genuinely newer
+                    // generation of its own.
+                    return false;
                 }
-                expectedRevision = session.serverRevision;
+                const conflictRevision = Number(currentDocument?.revision);
+                expectedRevision = Number.isInteger(conflictRevision) && conflictRevision >= 0
+                    ? conflictRevision
+                    : expectedRevision;
+                session.serverRevision = expectedRevision;
             }
 
             throw new Error('The Communications Centre session changed repeatedly while it was being saved. Reopen the event to load the newest version.');
         })
-        .catch(error => console.warn('Unable to save the shared Communications Centre session.', error));
+        .catch(error => {
+            console.warn('Unable to save the shared Communications Centre session.', error);
+            return false;
+        });
 
     return session.persistenceChain;
 }
@@ -1831,6 +1847,7 @@ async function produceUploadedDesign(session, outputsToRetry = null) {
                 }
 
                 setProgressState(session, 'primary', 'active', `${completed} of ${outputs.length} ready · creating ${output.name}`);
+                let persistedArtworkSource = null;
                 try {
                     const generated = await generateUploadedDesignOutputWithAutomaticRetry(
                         generationSnapshot,
@@ -1843,8 +1860,8 @@ async function produceUploadedDesign(session, outputsToRetry = null) {
                     );
                     session.artworkByOutput.set(output.id, generated.dataUrl);
                     if (output.isPrimary) session.primaryArtworkDataUrl = generated.dataUrl;
-                    await composeOutput(session, output, generated.dataUrl, session.context);
-                    await persistCompletedArtwork(session, output.id, generated.dataUrl);
+                    await composeOutput(session, output, generated.dataUrl);
+                    persistedArtworkSource = await persistCompletedArtwork(session, output.id, generated.dataUrl);
                     session.failedOutputs.delete(output.id);
                     completed += 1;
                 } catch (error) {
@@ -1857,7 +1874,10 @@ async function produceUploadedDesign(session, outputsToRetry = null) {
                 setProgressState(session, 'primary', 'active', `${completed} of ${outputs.length} ready`);
                 setProgressState(session, 'compose', 'active', `${session.posterCanvases.size} ready`);
                 renderCampaignResults(session);
-                await persistSession(session);
+                const sharedSessionSaved = await persistSession(session);
+                if (sharedSessionSaved && persistedArtworkSource && !isInlineArtworkSource(persistedArtworkSource)) {
+                    notifyCatalogueArtworkReady(session, output, session.context);
+                }
             }
 
             const missingFormats = getMissingSourceDesignOutputs(session);
@@ -2160,18 +2180,21 @@ async function produceSelectedConcept(session) {
             session.artworkByOutput.set(primaryOutput.id, masterArtworkDataUrl);
 
             setProgressState(session, 'compose', 'active', 'Sizing');
-            await composeOutput(session, primaryOutput, masterArtworkDataUrl, generationContext);
+            await composeOutput(session, primaryOutput, masterArtworkDataUrl);
             renderCampaignResults(session);
             setProgressState(session, 'primary', 'complete', 'Complete');
             setProgressState(session, 'compose', 'active', 'Master ready');
-            await persistCompletedArtwork(session, primaryOutput.id, masterArtworkDataUrl);
+            const persistedPrimarySource = await persistCompletedArtwork(session, primaryOutput.id, masterArtworkDataUrl);
 
             const selectedOutputIds = new Set(generation.snapshot.selectedOutputIds);
             const variants = session.config.outputs.filter(output => selectedOutputIds.has(output.id) && !output.isPrimary);
             clearVariantArtwork(session);
             renderCampaignResults(session);
             setProgressState(session, 'variants', 'active', variants.length === 0 ? 'Not selected' : `0 of ${variants.length} ready`);
-            await persistSession(session);
+            const primarySessionSaved = await persistSession(session);
+            if (primarySessionSaved && !isInlineArtworkSource(persistedPrimarySource)) {
+                notifyCatalogueArtworkReady(session, primaryOutput, generationContext);
+            }
 
             const failures = await generateVariantBatch(
                 session,
@@ -2521,6 +2544,7 @@ async function generateVariantBatch(session, generation, outputs, masterArtworkD
 
     for (const output of outputs) {
         if (signal.aborted) throw createGenerationError('AbortError', 'Generation cancelled. Completed artwork has been kept.');
+        let persistedArtworkSource = null;
         try {
             const generatedVariant = await generateVariantWithAutomaticRetry(
                 generation,
@@ -2530,8 +2554,8 @@ async function generateVariantBatch(session, generation, outputs, masterArtworkD
                 session
             );
             session.artworkByOutput.set(output.id, generatedVariant.dataUrl);
-            await composeOutput(session, output, generatedVariant.dataUrl, generationContext);
-            await persistCompletedArtwork(session, output.id, generatedVariant.dataUrl);
+            await composeOutput(session, output, generatedVariant.dataUrl);
+            persistedArtworkSource = await persistCompletedArtwork(session, output.id, generatedVariant.dataUrl);
             session.failedOutputs.delete(output.id);
             completedVariants += 1;
         } catch (error) {
@@ -2544,7 +2568,10 @@ async function generateVariantBatch(session, generation, outputs, masterArtworkD
         setProgressState(session, 'variants', 'active', `${completedVariants} of ${allVariants.length} ready`);
         setProgressState(session, 'compose', 'active', `${session.posterCanvases.size} ready`);
         renderCampaignResults(session);
-        await persistSession(session);
+        const sharedSessionSaved = await persistSession(session);
+        if (sharedSessionSaved && persistedArtworkSource && !isInlineArtworkSource(persistedArtworkSource)) {
+            notifyCatalogueArtworkReady(session, output, generationContext);
+        }
     }
 
     return failures;
@@ -3133,9 +3160,16 @@ async function readApiResponse(response) {
     return body;
 }
 
-async function composeOutput(session, output, artworkDataUrl, generationContext) {
+async function composeOutput(session, output, artworkDataUrl) {
     const canvas = await createFinishedPoster(output, artworkDataUrl, session.form.includeClubBranding);
     session.posterCanvases.set(output.id, canvas);
+
+    return canvas;
+}
+
+function notifyCatalogueArtworkReady(session, output, generationContext) {
+    const canvas = session.posterCanvases.get(output.id);
+    if (!canvas) return;
 
     // Any completed campaign artwork can immediately provide a catalogue
     // thumbnail. A square campaign output is still preferred when one exists.
@@ -3144,6 +3178,7 @@ async function composeOutput(session, output, artworkDataUrl, generationContext)
             generationContext.onArtworkReady(createCatalogueThumbnail(canvas), {
                 outputId: output.id,
                 isSquare: output.width === output.height,
+                generationId: session.generationSnapshot?.id ?? null,
                 generatedAt: new Date().toISOString()
             });
         } catch (error) {
@@ -3153,13 +3188,16 @@ async function composeOutput(session, output, artworkDataUrl, generationContext)
 
     if (output.width === output.height && typeof generationContext?.onSquareArtworkReady === 'function') {
         try {
-            generationContext.onSquareArtworkReady(createCatalogueThumbnail(canvas));
+            generationContext.onSquareArtworkReady(createCatalogueThumbnail(canvas), {
+                outputId: output.id,
+                isSquare: true,
+                generationId: session.generationSnapshot?.id ?? null,
+                generatedAt: new Date().toISOString()
+            });
         } catch (error) {
             console.warn('Unable to store square catalogue artwork thumbnail.', error);
         }
     }
-
-    return canvas;
 }
 
 function createCatalogueThumbnail(sourceCanvas) {
@@ -4214,6 +4252,7 @@ async function sendToClubhouseScreens() {
             session.context.onArtworkPublished(createCatalogueThumbnail(bestCanvas), {
                 outputId: bestOutput.id,
                 isSquare: bestOutput.width === bestOutput.height,
+                generationId: session.generationSnapshot?.id ?? null,
                 generatedAt: new Date().toISOString()
             });
         }

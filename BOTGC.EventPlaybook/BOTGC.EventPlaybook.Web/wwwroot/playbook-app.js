@@ -3249,6 +3249,7 @@
           endTime: event.endTime,
           eventTypeId: event.intelligentGolfEventTypeId,
           expectedAttendees: event.expectedAttendees,
+          cataloguePosterGenerationId: event.cataloguePosterGenerationId,
           referenceLibrary: loadReferenceLibrary(),
           onArtworkReady: (thumbnailDataUrl, artworkInfo = {}) => {
             const target = state.events.find(item => item.id === event.id);
@@ -3264,16 +3265,18 @@
               target.cataloguePosterThumbnail = thumbnailDataUrl;
               target.cataloguePosterSourceOutputId = artworkInfo.outputId ?? null;
               target.cataloguePosterSourceIsSquare = incomingIsSquare;
+              target.cataloguePosterGenerationId = artworkInfo.generationId ?? null;
               target.cataloguePosterThumbnailMode = 'cover';
               target.posterUpdatedAt = artworkInfo.generatedAt ?? new Date().toISOString();
               saveState();
             }
           },
-          onSquareArtworkReady: thumbnailDataUrl => {
+          onSquareArtworkReady: (thumbnailDataUrl, artworkInfo = {}) => {
             const target = state.events.find(item => item.id === event.id);
             if (!target || !thumbnailDataUrl) return;
             target.cataloguePosterThumbnail = thumbnailDataUrl;
             target.cataloguePosterSourceIsSquare = true;
+            target.cataloguePosterGenerationId = artworkInfo.generationId ?? null;
             target.cataloguePosterThumbnailMode = 'cover';
             target.posterUpdatedAt = new Date().toISOString();
             saveState();
@@ -3284,6 +3287,7 @@
             target.publishedCataloguePosterThumbnail = thumbnailDataUrl;
             target.publishedCataloguePosterSourceOutputId = artworkInfo.outputId ?? null;
             target.publishedCataloguePosterSourceIsSquare = artworkInfo.isSquare === true;
+            target.publishedCataloguePosterGenerationId = artworkInfo.generationId ?? null;
             target.publishedCataloguePosterThumbnailMode = 'cover';
             target.posterPublishedAt = new Date().toISOString();
             saveState();

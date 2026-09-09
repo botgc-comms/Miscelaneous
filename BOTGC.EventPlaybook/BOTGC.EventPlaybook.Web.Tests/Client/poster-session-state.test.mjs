@@ -52,6 +52,13 @@ test('restoration rejects concepts belonging to a different batch', () => {
     assert.deepEqual(conceptsForGeneration(concepts, 'batch-2'), [concepts[1]]);
 });
 
+test('the catalogue generation identifies the matching saved studio session', () => {
+    const server = storedSession('batch-1', '2026-09-09T11:00:00.000Z');
+    const browser = storedSession('batch-2', '2026-09-09T10:00:00.000Z');
+
+    assert.equal(chooseNewestStoredSession(server, browser, 'batch-2'), browser);
+});
+
 test('legacy records use generation time instead of a later storage timestamp', () => {
     const legacy = storedSession('batch-1', '2026-09-09T09:00:00.000Z', {
         savedAt: '2026-09-09T12:00:00.000Z'

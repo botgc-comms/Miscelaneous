@@ -44,12 +44,18 @@ export function getSessionContentTimestamp(stored) {
         : parseTimestamp(stored.savedAt);
 }
 
-export function chooseNewestStoredSession(serverStored, browserStored) {
+export function chooseNewestStoredSession(serverStored, browserStored, preferredGenerationId = '') {
     if (!serverStored) return browserStored;
     if (!browserStored) return serverStored;
 
     const serverGenerationId = String(serverStored.generationSnapshot?.id ?? '');
     const browserGenerationId = String(browserStored.generationSnapshot?.id ?? '');
+    const preferredId = String(preferredGenerationId ?? '');
+    if (preferredId) {
+        if (serverGenerationId === preferredId && browserGenerationId !== preferredId) return serverStored;
+        if (browserGenerationId === preferredId && serverGenerationId !== preferredId) return browserStored;
+    }
+
     if (serverGenerationId && browserGenerationId && serverGenerationId !== browserGenerationId) {
         const serverGenerationTimestamp = parseTimestamp(serverStored.generationSnapshot?.generatedAt);
         const browserGenerationTimestamp = parseTimestamp(browserStored.generationSnapshot?.generatedAt);
