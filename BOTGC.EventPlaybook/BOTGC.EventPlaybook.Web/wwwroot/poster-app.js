@@ -599,6 +599,11 @@ function applyStoredSession(session, stored) {
             remoteId: String(stored.diaryPublication.remoteId),
             externalId: String(stored.diaryPublication.externalId ?? ''),
             operation: String(stored.diaryPublication.operation ?? 'saved'),
+            eventImageAttached: stored.diaryPublication.eventImageAttached === false
+                ? false
+                : stored.diaryPublication.eventImageAttached === true
+                    ? true
+                    : null,
             eventDate: String(stored.diaryPublication.eventDate ?? ''),
             updatedAt: String(stored.diaryPublication.updatedAt ?? '')
         };
@@ -1712,7 +1717,9 @@ function restoreSessionToDom(session) {
             shareHistory.push(`“${publication.mediaName}” is scheduled on ${publication.destinationName} from ${publication.startDate} to ${publication.endDate}. ${pushCopy}`);
         }
         if (session.diaryPublication) {
-            shareHistory.push(`The event is linked to the member diary for ${session.diaryPublication.eventDate}.`);
+            shareHistory.push(session.diaryPublication.eventImageAttached === false
+                ? `The event is in the member diary for ${session.diaryPublication.eventDate}, but its planner artwork still needs attaching.`
+                : `The event is linked to the member diary for ${session.diaryPublication.eventDate}.`);
         }
         if (shareHistory.length > 0) {
             elements.shareMessage.textContent = `${shareHistory.join(' ')} Sending again will update the existing destination item.`;
@@ -3152,6 +3159,10 @@ async function readApiResponse(response) {
         error.upstreamStatusCode = Number(body.upstreamStatusCode) > 0
             ? Number(body.upstreamStatusCode)
             : null;
+        error.memberDiaryPublished = body.memberDiaryPublished === true;
+        error.memberDiaryPublishedAtUtc = typeof body.memberDiaryPublishedAtUtc === 'string'
+            ? body.memberDiaryPublishedAtUtc
+            : null;
         error.traceId = typeof body.traceId === 'string' ? body.traceId : null;
         error.httpStatus = response.status;
         throw error;
@@ -3709,7 +3720,9 @@ function configureShareConnections(session) {
             elements.shareDiaryStatus.textContent = 'Connection setup required';
             elements.shareDiaryStatus.classList.remove('hidden');
         } else if (session.diaryPublication) {
-            elements.shareDiaryStatus.textContent = 'Already in the diary · send again to update';
+            elements.shareDiaryStatus.textContent = session.diaryPublication.eventImageAttached === false
+                ? 'Diary published · planner artwork needs retry'
+                : 'Already in the diary · send again to update';
             elements.shareDiaryStatus.classList.remove('hidden');
         } else {
             elements.shareDiaryStatus.classList.add('hidden');
@@ -3848,7 +3861,10 @@ function memberDiaryStageLabel(stage) {
         'member-diary-add': 'creating the member diary entry',
         'member-diary-add-response': 'reading the new member diary entry ID',
         'member-diary-initialisation': 'saving the initial member diary details',
-        'member-diary-update': 'saving the member diary HTML'
+        'member-diary-update': 'saving the member diary HTML',
+        'planner-event-image-upload': 'uploading the approved artwork to the Intelligent Golf planner',
+        'planner-event-image-save': 'attaching the uploaded artwork to the Intelligent Golf planner event',
+        'planner-event-image-contract': 'confirming the planner artwork attachment with the Event Playbook API'
     };
     return labels[stage] ?? null;
 }
@@ -3894,9 +3910,16 @@ async function openMemberDiaryDialog() {
         ? '<span></span><div><strong>Member diary connection ready</strong><small>If this event has not yet been created in Intelligent Golf, it will be created before the diary entry is published.</small></div>'
         : '<span></span><div><strong>Member diary connection unavailable</strong><small>An administrator must complete the server-side diary connection before this event can be added.</small></div>';
     elements.diaryDialogConfirm.disabled = !connection.configured;
-    elements.diaryDialogConfirm.textContent = session.diaryPublication ? 'Update member diary' : 'Add to member diary';
+    const eventImagePending = session.diaryPublication?.eventImageAttached === false;
+    elements.diaryDialogConfirm.textContent = eventImagePending
+        ? 'Retry planner artwork'
+        : session.diaryPublication
+            ? 'Update member diary'
+            : 'Add to member diary';
     if (connection.configured && session.diaryPublication) {
-        elements.diaryDialogMessage.textContent = 'This event is already linked to a diary entry. Saving again will update the existing entry.';
+        elements.diaryDialogMessage.textContent = eventImagePending
+            ? 'The member diary entry is already published. Trying again will resume the planner artwork attachment.'
+            : 'This event is already linked to a diary entry. Saving again will update the existing entry and planner artwork.';
     }
 
     elements.diaryDialog.showModal();
@@ -3923,11 +3946,16 @@ async function refreshMemberDiaryIntegrationStatus(session) {
         if (!response.ok) return;
         const status = await response.json();
         if (status.lastError) {
-            const record = status.plannerEntryId
-                ? `Planner entry ${status.plannerEntryId} has been allocated, but its details are not yet synchronised.`
-                : 'The planner entry has not been synchronised.';
             const failedStage = memberDiaryStageLabel(status.lastErrorStage);
             const stage = failedStage ? ` The last attempt failed while ${failedStage}.` : '';
+            const imageFailure = status.lastErrorStage === 'planner-event-image-upload' ||
+                status.lastErrorStage === 'planner-event-image-save' ||
+                status.lastErrorStage === 'planner-event-image-contract';
+            const record = imageFailure && status.diaryEntryId && status.diaryPublishedAtUtc
+                ? `Member diary entry ${status.diaryEntryId} is published, but its planner artwork still needs attaching.`
+                : status.plannerEntryId
+                    ? `Planner entry ${status.plannerEntryId} has been allocated, but its details are not yet synchronised.`
+                    : 'The planner entry has not been synchronised.';
             elements.diaryConnectionStatus.className = 'yodeck-connection-status unavailable';
             elements.diaryConnectionStatus.innerHTML = `<span></span><div><strong>Intelligent Golf needs attention</strong><small>${escapeHtml(record)} Publishing will retry the same entry.${escapeHtml(stage)} ${escapeHtml(status.lastError)}</small><a class="integration-diagnostics-link" href="/?view=plugins">View integration activity</a></div>`;
             return;
@@ -4026,8 +4054,12 @@ async function addToMemberDiary() {
 
     elements.shareDiaryButton.disabled = true;
     elements.diaryDialogConfirm.disabled = true;
-    elements.diaryDialogConfirm.textContent = session.diaryPublication ? 'Updating member diary…' : 'Adding to member diary…';
-    elements.diaryDialogMessage.textContent = 'Checking the Intelligent Golf event, then publishing the linked diary entry…';
+    elements.diaryDialogConfirm.textContent = session.diaryPublication?.eventImageAttached === false
+        ? 'Retrying planner artwork…'
+        : session.diaryPublication
+            ? 'Updating member diary…'
+            : 'Adding to member diary…';
+    elements.diaryDialogMessage.textContent = 'Publishing the linked diary entry, then attaching the approved artwork to its Intelligent Golf planner event…';
     elements.diaryDialogMessage.className = 'poster-publish-dialog-message working';
     elements.shareMessage.textContent = 'Saving this event to the member diary…';
 
@@ -4060,15 +4092,32 @@ async function addToMemberDiary() {
             remoteId: String(result.diaryEntryId),
             externalId: String(result.intelligentGolfEventId ?? ''),
             operation: String(result.operation ?? 'saved'),
+            eventImageAttached: result.eventImageAttached === true,
             eventDate: String(result.eventDate ?? session.form.eventDate),
             updatedAt: new Date().toISOString()
         };
-        elements.shareMessage.textContent = `“${session.form.diaryTitle}” is now advertised in the member diary for ${session.form.eventDate}. Sending it again will update the same entry.`;
+        elements.shareMessage.textContent = `“${session.form.diaryTitle}” is now advertised in the member diary and its approved artwork is attached to the Intelligent Golf planner event.`;
         configureShareConnections(session);
         setWorkflowStep(session, 4, true);
         await persistSession(session);
         elements.diaryDialog.close();
     } catch (error) {
+        if (error?.memberDiaryPublished && error?.intelligentGolfRecordId) {
+            session.diaryPublication = {
+                remoteId: String(error.intelligentGolfRecordId),
+                externalId: String(error.intelligentGolfEventId ?? ''),
+                operation: 'published-image-pending',
+                eventImageAttached: false,
+                eventDate: session.form.eventDate,
+                updatedAt: error.memberDiaryPublishedAtUtc || new Date().toISOString()
+            };
+            try {
+                await persistSession(session);
+            } catch {
+                // The server-side integration link remains authoritative.
+            }
+            configureShareConnections(session);
+        }
         const message = formatMemberDiaryFailure(error);
         elements.shareMessage.textContent = message;
         elements.diaryDialogMessage.textContent = message;

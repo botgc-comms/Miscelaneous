@@ -23,6 +23,7 @@ builder.Logging.AddSimpleConsole(options =>
 
 const string defaultImageModel = "gpt-image-2";
 const string defaultPromptModel = "gpt-5.6";
+const int maximumMemberDiaryArtworkBytes = 20 * 1024 * 1024;
 
 var openAiApiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY")?.Trim() ?? string.Empty;
 var openAiImageModel = Environment.GetEnvironmentVariable("OPENAI_IMAGE_MODEL")?.Trim();
@@ -1194,9 +1195,30 @@ app.MapPut("/api/poster/member-diary", async (
         return Results.BadRequest(new { error = "The booking or information link must be a complete http or https URL." });
     }
 
+    if (request.Artwork is null)
+    {
+        return Results.BadRequest(new { error = "Finished event artwork is required before publishing to the member diary." });
+    }
+
+    if (!TryDecodePngDataUrl(request.Artwork.DataUrl, out var artworkBytes, out var artworkError))
+    {
+        return Results.BadRequest(new
+        {
+            error = artworkError.Replace("digital-screen", "member diary", StringComparison.OrdinalIgnoreCase)
+        });
+    }
+
+    if (artworkBytes.Length > maximumMemberDiaryArtworkBytes)
+    {
+        return Results.BadRequest(new
+        {
+            error = "The member diary artwork is larger than the 20 MB upload limit."
+        });
+    }
+
     try
     {
-        var published = await intelligentGolfIntegration.PublishDiaryAsync(request, cancellationToken);
+        var published = await intelligentGolfIntegration.PublishDiaryAsync(request, artworkBytes, cancellationToken);
 
         return Results.Ok(new
         {
@@ -1204,6 +1226,7 @@ app.MapPut("/api/poster/member-diary", async (
             diaryEntryId = published.IntelligentGolfDiaryEntryId,
             intelligentGolfEventId = published.IntelligentGolfEventId,
             operation = published.Created ? "created" : "updated",
+            eventImageAttached = published.EventImageAttached,
             eventDate = request.EventDate
         });
     }
@@ -1224,6 +1247,8 @@ app.MapPut("/api/poster/member-diary", async (
                 ["intelligentGolfRecordId"] = exception.IntelligentGolfRecordId,
                 ["upstreamStatusCode"] = exception.StatusCode,
                 ["retryable"] = exception.Retryable,
+                ["memberDiaryPublished"] = exception.MemberDiaryPublished,
+                ["memberDiaryPublishedAtUtc"] = exception.MemberDiaryPublishedAtUtc,
                 ["eventDate"] = exception.EventDate,
                 ["candidates"] = exception.Candidates
             });

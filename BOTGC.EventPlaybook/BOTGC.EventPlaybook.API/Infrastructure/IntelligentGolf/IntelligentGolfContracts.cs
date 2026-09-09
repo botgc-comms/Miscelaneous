@@ -31,6 +31,10 @@ public interface IIntelligentGolfReportClient
 
 public interface IIntelligentGolfTransport
 {
+    Task<T> ExecuteExclusiveAsync<T>(
+        Func<CancellationToken, Task<T>> operation,
+        CancellationToken cancellationToken = default);
+
     Task<IntelligentGolfTransportResponse> GetResponseAsync(
         string path,
         CancellationToken cancellationToken = default);
@@ -49,13 +53,28 @@ public interface IIntelligentGolfTransport
         IReadOnlyCollection<KeyValuePair<string, string>> fields,
         CancellationToken cancellationToken = default);
 
+    Task<IntelligentGolfTransportResponse> PostMultipartResponseAsync(
+        string path,
+        IReadOnlyCollection<KeyValuePair<string, string>> fields,
+        IntelligentGolfMultipartFile file,
+        CancellationToken cancellationToken = default);
+
     Task<string> PostFormAsync(
         string path,
         IReadOnlyCollection<KeyValuePair<string, string>> fields,
         CancellationToken cancellationToken = default);
 }
 
-public sealed record IntelligentGolfTransportResponse(string Body, Uri? FinalUri);
+public sealed record IntelligentGolfTransportResponse(
+    string Body,
+    Uri? FinalUri,
+    bool SessionRefreshed = false);
+
+public sealed record IntelligentGolfMultipartFile(
+    string FieldName,
+    string FileName,
+    string ContentType,
+    byte[] Content);
 
 public interface IIntelligentGolfSession
 {

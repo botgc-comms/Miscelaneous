@@ -9,6 +9,7 @@ namespace BOTGC.EventPlaybook.API.Infrastructure.IntelligentGolf;
 public sealed class IntelligentGolfSession(
     IntelligentGolfLoginService loginService,
     IOptions<IntelligentGolfOptions> options,
+    IntelligentGolfSessionOperationGate operationGate,
     ILogger<IntelligentGolfSession> logger) : BackgroundService, IIntelligentGolfSession
 {
     private readonly SemaphoreSlim _loginGate = new(1, 1);
@@ -55,9 +56,16 @@ public sealed class IntelligentGolfSession(
         }
     }
 
-    public async Task<IntelligentGolfSessionGrant> AuthenticateAsync(
+    public Task<IntelligentGolfSessionGrant> AuthenticateAsync(
         IntelligentGolfCredentials credentials,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default) =>
+        operationGate.ExecuteAsync(
+            operationToken => AuthenticateCoreAsync(credentials, operationToken),
+            cancellationToken);
+
+    private async Task<IntelligentGolfSessionGrant> AuthenticateCoreAsync(
+        IntelligentGolfCredentials credentials,
+        CancellationToken cancellationToken)
     {
         var normalised = NormaliseCredentials(credentials);
         await _loginGate.WaitAsync(cancellationToken);
@@ -92,9 +100,16 @@ public sealed class IntelligentGolfSession(
         }
     }
 
-    public async Task EnsureAuthenticatedAsync(
+    public Task EnsureAuthenticatedAsync(
         bool forceRefresh = false,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default) =>
+        operationGate.ExecuteAsync(
+            operationToken => EnsureAuthenticatedCoreAsync(forceRefresh, operationToken),
+            cancellationToken);
+
+    private async Task EnsureAuthenticatedCoreAsync(
+        bool forceRefresh,
+        CancellationToken cancellationToken)
     {
         if (!forceRefresh && HasFreshSession())
         {

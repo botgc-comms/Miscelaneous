@@ -14,10 +14,14 @@ public sealed class IntelligentGolfMutationException(
     int? intelligentGolfEventId = null,
     int? intelligentGolfRecordId = null,
     string? responseDetail = null,
-    Exception? innerException = null) : Exception(message, innerException)
+    Exception? innerException = null,
+    bool memberDiaryPublished = false,
+    DateTimeOffset? memberDiaryPublishedAtUtc = null) : Exception(message, innerException)
 {
     public string Stage { get; } = stage;
     public int? IntelligentGolfEventId { get; } = intelligentGolfEventId;
     public int? IntelligentGolfRecordId { get; } = intelligentGolfRecordId;
     public string? ResponseDetail { get; } = responseDetail;
+    public bool MemberDiaryPublished { get; } = memberDiaryPublished;
+    public DateTimeOffset? MemberDiaryPublishedAtUtc { get; } = memberDiaryPublishedAtUtc;
 }

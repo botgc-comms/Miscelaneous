@@ -51,6 +51,7 @@ public sealed class IntelligentGolfDiaryPublishResult
     public int IntelligentGolfEventId { get; init; }
     public int IntelligentGolfDiaryEntryId { get; init; }
     public bool Created { get; init; }
+    public bool? EventImageAttached { get; init; }
     public DateTimeOffset PublishedAtUtc { get; init; }
 }
 

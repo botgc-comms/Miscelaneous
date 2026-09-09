@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 using HtmlAgilityPack;
 
@@ -7,8 +8,14 @@ namespace BOTGC.EventPlaybook.API.Infrastructure.IntelligentGolf;
 public sealed class IntelligentGolfTransport(
     IHttpClientFactory httpClientFactory,
     IIntelligentGolfSession session,
+    IntelligentGolfSessionOperationGate operationGate,
     ILogger<IntelligentGolfTransport> logger) : IIntelligentGolfTransport
 {
+    public Task<T> ExecuteExclusiveAsync<T>(
+        Func<CancellationToken, Task<T>> operation,
+        CancellationToken cancellationToken = default) =>
+        operationGate.ExecuteAsync(operation, cancellationToken);
+
     public Task<IntelligentGolfTransportResponse> GetResponseAsync(
         string path,
         CancellationToken cancellationToken = default) =>
@@ -36,6 +43,15 @@ public sealed class IntelligentGolfTransport(
         CancellationToken cancellationToken = default) =>
         SendResponseAsync(
             () => CreateFormRequest(path, fields),
+            cancellationToken);
+
+    public Task<IntelligentGolfTransportResponse> PostMultipartResponseAsync(
+        string path,
+        IReadOnlyCollection<KeyValuePair<string, string>> fields,
+        IntelligentGolfMultipartFile file,
+        CancellationToken cancellationToken = default) =>
+        SendResponseAsync(
+            () => CreateMultipartRequest(path, fields, file),
             cancellationToken);
 
     public Task<string> PostFormAsync(
@@ -72,6 +88,38 @@ public sealed class IntelligentGolfTransport(
         return request;
     }
 
+    private static HttpRequestMessage CreateMultipartRequest(
+        string path,
+        IReadOnlyCollection<KeyValuePair<string, string>> fields,
+        IntelligentGolfMultipartFile file)
+    {
+        var content = new MultipartFormDataContent();
+        foreach (var field in fields)
+        {
+            var fieldContent = new StringContent(field.Value, Encoding.UTF8);
+            // Match the browser uploader: its ordinary multipart fields do not
+            // declare a separate text/plain content type.
+            fieldContent.Headers.ContentType = null;
+            content.Add(fieldContent, field.Key);
+        }
+
+        var fileContent = new ByteArrayContent(file.Content);
+        fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+        content.Add(fileContent, file.FieldName, file.FileName);
+
+        var request = new HttpRequestMessage(HttpMethod.Post, path)
+        {
+            Content = content
+        };
+        if (path.Contains("requestType=ajax", StringComparison.OrdinalIgnoreCase) ||
+            path.Contains("ajaxaction=", StringComparison.OrdinalIgnoreCase))
+        {
+            request.Headers.TryAddWithoutValidation("X-Requested-With", "XMLHttpRequest");
+        }
+
+        return request;
+    }
+
     private static HttpRequestMessage CreateGetRequest(string path)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, path);
@@ -84,7 +132,14 @@ public sealed class IntelligentGolfTransport(
         return request;
     }
 
-    private async Task<IntelligentGolfTransportResponse> SendResponseAsync(
+    private Task<IntelligentGolfTransportResponse> SendResponseAsync(
+        Func<HttpRequestMessage> requestFactory,
+        CancellationToken cancellationToken) =>
+        operationGate.ExecuteAsync(
+            operationToken => SendResponseCoreAsync(requestFactory, operationToken),
+            cancellationToken);
+
+    private async Task<IntelligentGolfTransportResponse> SendResponseCoreAsync(
         Func<HttpRequestMessage> requestFactory,
         CancellationToken cancellationToken)
     {
@@ -93,7 +148,7 @@ public sealed class IntelligentGolfTransport(
         var firstResponse = await SendOnceAsync(requestFactory, cancellationToken);
         if (!firstResponse.RequiresLogin)
         {
-            return new IntelligentGolfTransportResponse(firstResponse.Body, firstResponse.FinalUri);
+            return new IntelligentGolfTransportResponse(firstResponse.Body, firstResponse.FinalUri, false);
         }
 
         logger.LogWarning("Intelligent Golf requested a new login; refreshing the shared session and retrying once.");
@@ -106,7 +161,7 @@ public sealed class IntelligentGolfTransport(
                 "Intelligent Golf still requires login after the shared session was refreshed.");
         }
 
-        return new IntelligentGolfTransportResponse(retryResponse.Body, retryResponse.FinalUri);
+        return new IntelligentGolfTransportResponse(retryResponse.Body, retryResponse.FinalUri, true);
     }
 
     private async Task<TransportResponse> SendOnceAsync(

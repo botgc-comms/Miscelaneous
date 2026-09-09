@@ -361,6 +361,11 @@ public sealed class EventPlannerEventMatchingTests
     {
         public List<TransportRequest> Requests { get; } = [];
 
+        public Task<T> ExecuteExclusiveAsync<T>(
+            Func<CancellationToken, Task<T>> operation,
+            CancellationToken cancellationToken = default) =>
+            operation(cancellationToken);
+
         public Task<IntelligentGolfTransportResponse> GetResponseAsync(
             string path,
             CancellationToken cancellationToken = default) =>
@@ -371,6 +376,13 @@ public sealed class EventPlannerEventMatchingTests
             IReadOnlyCollection<KeyValuePair<string, string>> fields,
             CancellationToken cancellationToken = default) =>
             Record(HttpMethod.Post, path, fields);
+
+        public Task<IntelligentGolfTransportResponse> PostMultipartResponseAsync(
+            string path,
+            IReadOnlyCollection<KeyValuePair<string, string>> fields,
+            IntelligentGolfMultipartFile file,
+            CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
 
         public Task<HtmlDocument> GetDocumentAsync(
             string path,

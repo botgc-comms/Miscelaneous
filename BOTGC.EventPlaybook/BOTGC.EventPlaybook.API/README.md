@@ -23,7 +23,7 @@ This is a standalone .NET 9 API for the event-planner integration with Intellige
 | `POST` | `/api/members/emails/test` | Send one test copy to an email address through IG. |
 | `POST` | `/api/members/emails/campaign` | Send one campaign to selected active members. The request uses club member numbers; the API resolves IG's internal recipient IDs server-side. |
 | `POST` | `/api/event-planner/events/synchronise` | Allocate an IG event when necessary and update its core name, date, time, type, attendance and description fields. |
-| `PUT` | `/api/event-planner/member-diary` | Create a diary entry when necessary, link it to the IG event, then update its complete HTML body. |
+| `PUT` | `/api/event-planner/member-diary` | Create or update the linked diary entry, upload the approved PNG, and attach it to the IG planner event. |
 | `GET` | `/api/members/{memberNumber}/diary` | Read the configured member diary page. |
 | `PUT` | `/api/members/{memberNumber}/diary` | Submit fields to the configured member diary update page. |
 | `GET` | `/api/members/{memberNumber}/planner` | Read the configured member planner page. |

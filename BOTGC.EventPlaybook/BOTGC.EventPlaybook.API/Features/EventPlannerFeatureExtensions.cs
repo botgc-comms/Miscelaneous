@@ -1,5 +1,7 @@
 using System.Globalization;
 using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using BOTGC.EventPlaybook.API.Features.MemberEmail;
@@ -73,13 +75,21 @@ public sealed record PublishPlannerDiaryRequest(
     string? EndTime,
     string? Venue,
     string BodyHtml,
-    IReadOnlyCollection<int>? TagIds);
+    IReadOnlyCollection<int>? TagIds,
+    string? PlannerDescriptionHtml,
+    PlannerEventArtwork Artwork);
+
+public sealed record PlannerEventArtwork(
+    string FileName,
+    string ContentType,
+    string Base64Data);
 
 public sealed record PublishPlannerDiaryResult(
     string EventPlaybookEventId,
     int IntelligentGolfEventId,
     int IntelligentGolfDiaryEntryId,
     bool Created,
+    bool EventImageAttached,
     DateTimeOffset PublishedAtUtc);
 
 public sealed record SynchronisePlannerEventCommand(
@@ -643,6 +653,7 @@ public sealed class PublishPlannerDiaryHandler(
     : IRequestHandler<PublishPlannerDiaryCommand, PublishPlannerDiaryResult>
 {
     private static readonly TimeSpan LinkLifetime = TimeSpan.FromDays(3650);
+    private const int MaximumArtworkBytes = 20 * 1024 * 1024;
 
     public async Task<PublishPlannerDiaryResult> Handle(
         PublishPlannerDiaryCommand command,
@@ -650,14 +661,15 @@ public sealed class PublishPlannerDiaryHandler(
     {
         var request = command.Request;
         Validate(request);
+        var artwork = DecodeArtwork(request.Artwork);
+        var diaryFingerprint = CreateDiaryFingerprint(request);
+        var artworkFingerprint = CreateArtworkFingerprint(artwork);
         var cacheKey = $"intelligent-golf:diary-link:{request.EventPlaybookEventId.Trim().ToLowerInvariant()}";
         var plannerCacheKey = $"intelligent-golf:diary-link:planner:{request.IntelligentGolfEventId}";
-        var diaryId = request.IntelligentGolfDiaryEntryId;
-        if (diaryId is null or <= 0)
-        {
-            diaryId = (await cache.GetAsync<ExternalDiaryLink>(cacheKey, cancellationToken))?.IntelligentGolfDiaryEntryId
-                      ?? (await cache.GetAsync<ExternalDiaryLink>(plannerCacheKey, cancellationToken))?.IntelligentGolfDiaryEntryId;
-        }
+        var link = await LoadDiaryLinkAsync(cacheKey, plannerCacheKey, cancellationToken);
+        var diaryId = request.IntelligentGolfDiaryEntryId is > 0
+            ? request.IntelligentGolfDiaryEntryId
+            : link?.IntelligentGolfDiaryEntryId;
 
         await using var diaryLock = await lockManager.AcquireAsync(
             $"intelligent-golf:member-diary:planner:{request.IntelligentGolfEventId}",
@@ -667,11 +679,12 @@ public sealed class PublishPlannerDiaryHandler(
             throw new TimeoutException("Another request is currently publishing this member diary entry. Try again shortly.");
         }
 
+        link = await LoadDiaryLinkAsync(cacheKey, plannerCacheKey, cancellationToken);
         if (diaryId is null or <= 0)
         {
-            diaryId = (await cache.GetAsync<ExternalDiaryLink>(cacheKey, cancellationToken))?.IntelligentGolfDiaryEntryId
-                      ?? (await cache.GetAsync<ExternalDiaryLink>(plannerCacheKey, cancellationToken))?.IntelligentGolfDiaryEntryId;
+            diaryId = link?.IntelligentGolfDiaryEntryId;
         }
+
         var created = diaryId is null or <= 0;
         if (created)
         {
@@ -706,7 +719,8 @@ public sealed class PublishPlannerDiaryHandler(
                     responseDetail: "Expected actions[].html to contain data-ajax-action=\"editdiary\" and data-ajax-data-inline-id.");
             }
 
-            await SaveDiaryLinksAsync(cacheKey, plannerCacheKey, diaryId.Value, cancellationToken);
+            link = new ExternalDiaryLink { IntelligentGolfDiaryEntryId = diaryId.Value };
+            await SaveDiaryLinksAsync(cacheKey, plannerCacheKey, link, cancellationToken);
             logger.LogInformation(
                 "Created Intelligent Golf diary entry {DiaryEntryId}, linked to event {IntelligentGolfEventId}.",
                 diaryId.Value,
@@ -719,16 +733,236 @@ public sealed class PublishPlannerDiaryHandler(
             throw new InvalidOperationException("The Intelligent Golf diary-entry ID was not resolved.");
         }
 
-        // Update the newly created or previously linked entry with the full HTML.
+        if (link?.IntelligentGolfDiaryEntryId != resolvedDiaryId)
+        {
+            link = new ExternalDiaryLink { IntelligentGolfDiaryEntryId = resolvedDiaryId };
+        }
+
+        var diaryAlreadyPublished = string.Equals(
+            link.DiaryFingerprint,
+            diaryFingerprint,
+            StringComparison.Ordinal);
+        var publishedAt = link.DiaryPublishedAtUtc ?? DateTimeOffset.UtcNow;
+        if (!diaryAlreadyPublished)
+        {
+            var fields = CreateDiaryFields(request, resolvedDiaryId);
+            IntelligentGolfTransportResponse diaryUpdateResponse;
+            try
+            {
+                diaryUpdateResponse = await transport.PostFormResponseAsync(
+                    "/diaryadmin.php?&requestType=ajax&ajaxaction=editnow",
+                    fields,
+                    cancellationToken);
+            }
+            catch (IntelligentGolfAuthenticationException)
+            {
+                throw;
+            }
+            catch (Exception exception) when (exception is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
+            {
+                throw new IntelligentGolfMutationException(
+                    "member-diary-update",
+                    $"Intelligent Golf diary entry {resolvedDiaryId} exists, but its HTML content could not be submitted.",
+                    request.IntelligentGolfEventId,
+                    resolvedDiaryId,
+                    exception.Message,
+                    exception);
+            }
+
+            var diaryRejection = IntelligentGolfMutationResponseInspector.FindRejection(diaryUpdateResponse.Body);
+            if (!string.IsNullOrWhiteSpace(diaryRejection))
+            {
+                logger.LogWarning(
+                    "Intelligent Golf rejected the HTML update for diary entry {DiaryEntryId}: {Rejection}",
+                    resolvedDiaryId,
+                    diaryRejection);
+                throw new IntelligentGolfMutationException(
+                    "member-diary-update",
+                    $"Intelligent Golf diary entry {resolvedDiaryId} exists, but Intelligent Golf rejected its HTML update.",
+                    request.IntelligentGolfEventId,
+                    resolvedDiaryId,
+                    diaryRejection);
+            }
+
+            publishedAt = DateTimeOffset.UtcNow;
+            link = new ExternalDiaryLink
+            {
+                IntelligentGolfDiaryEntryId = resolvedDiaryId,
+                DiaryFingerprint = diaryFingerprint,
+                DiaryPublishedAtUtc = publishedAt,
+                ArtworkFingerprint = link.ArtworkFingerprint
+            };
+            // Record that the diary HTML is already live before starting the
+            // separate image mutation, so a retry can resume at the failed step.
+            await SaveDiaryLinksAsync(cacheKey, plannerCacheKey, link, cancellationToken);
+        }
+
+        var imageAlreadyAttached = string.Equals(
+            link.ArtworkFingerprint,
+            artworkFingerprint,
+            StringComparison.Ordinal);
+        if (!imageAlreadyAttached)
+        {
+            await AttachEventImageAsync(request, resolvedDiaryId, publishedAt, artwork, cancellationToken);
+            link = new ExternalDiaryLink
+            {
+                IntelligentGolfDiaryEntryId = resolvedDiaryId,
+                DiaryFingerprint = diaryFingerprint,
+                DiaryPublishedAtUtc = publishedAt,
+                ArtworkFingerprint = artworkFingerprint
+            };
+            await SaveDiaryLinksAsync(cacheKey, plannerCacheKey, link, cancellationToken);
+        }
+
+        logger.LogInformation(
+            "{Operation} Intelligent Golf diary entry {DiaryEntryId} and attached its event artwork to planner entry {IntelligentGolfEventId}.",
+            created ? "Created and updated" : diaryAlreadyPublished ? "Retained" : "Updated",
+            resolvedDiaryId,
+            request.IntelligentGolfEventId);
+        return new PublishPlannerDiaryResult(
+            request.EventPlaybookEventId,
+            request.IntelligentGolfEventId,
+            resolvedDiaryId,
+            created,
+            true,
+            publishedAt);
+    }
+
+    private async Task AttachEventImageAsync(
+        PublishPlannerDiaryRequest request,
+        int diaryId,
+        DateTimeOffset diaryPublishedAtUtc,
+        ResolvedPlannerEventArtwork artwork,
+        CancellationToken cancellationToken)
+    {
+        await using var imageLock = await lockManager.AcquireAsync(
+            "intelligent-golf:event-image-upload-and-save",
+            cancellationToken);
+        if (!imageLock.IsAcquired)
+        {
+            throw CreateImageMutationException(
+                "planner-event-image-upload",
+                request,
+                diaryId,
+                diaryPublishedAtUtc,
+                "The member diary entry was published, but another planner image is currently being attached. Try again shortly.");
+        }
+
+        // Intelligent Golf keeps the uploaded file in its authenticated PHP
+        // session until eventdetailssave. Hold the shared session across both
+        // requests so no background login or other operation can replace it.
+        await transport.ExecuteExclusiveAsync(async operationToken =>
+        {
+            // If the save itself has to refresh the session, repeat the complete
+            // pair once rather than accepting a detached save response.
+            for (var attempt = 0; attempt < 2; attempt++)
+            {
+                IntelligentGolfTransportResponse uploadResponse;
+                try
+                {
+                    uploadResponse = await transport.PostMultipartResponseAsync(
+                        $"/event.php?eventid={request.IntelligentGolfEventId}&requestType=ajax&ajaxaction=eventimageupload",
+                        [
+                            new("name", artwork.FileName),
+                            new("undefined", "undefined")
+                        ],
+                        new IntelligentGolfMultipartFile(
+                            "file",
+                            artwork.FileName,
+                            "image/png",
+                            artwork.Content),
+                        operationToken);
+                }
+                catch (Exception exception) when (exception is not OperationCanceledException || !operationToken.IsCancellationRequested)
+                {
+                    throw CreateImageMutationException(
+                        "planner-event-image-upload",
+                        request,
+                        diaryId,
+                        diaryPublishedAtUtc,
+                        $"The member diary entry was published, but its artwork could not be uploaded to Intelligent Golf planner entry {request.IntelligentGolfEventId}.",
+                        exception.Message,
+                        exception);
+                }
+
+                var uploadRejection = IntelligentGolfMutationResponseInspector.FindRejection(uploadResponse.Body);
+                if (!string.IsNullOrWhiteSpace(uploadRejection))
+                {
+                    throw CreateImageMutationException(
+                        "planner-event-image-upload",
+                        request,
+                        diaryId,
+                        diaryPublishedAtUtc,
+                        "The member diary entry was published, but Intelligent Golf rejected its planner artwork upload.",
+                        uploadRejection);
+                }
+
+                IntelligentGolfTransportResponse saveResponse;
+                try
+                {
+                    saveResponse = await transport.PostFormResponseAsync(
+                        $"/event.php?eventid={request.IntelligentGolfEventId}&requestType=ajax&ajaxaction=eventdetailssave",
+                        [new("description", MemberEmailHtmlSanitizer.Sanitise(request.PlannerDescriptionHtml ?? string.Empty))],
+                        operationToken);
+                }
+                catch (Exception exception) when (exception is not OperationCanceledException || !operationToken.IsCancellationRequested)
+                {
+                    throw CreateImageMutationException(
+                        "planner-event-image-save",
+                        request,
+                        diaryId,
+                        diaryPublishedAtUtc,
+                        $"The member diary entry was published and its artwork was uploaded, but Intelligent Golf could not attach it to planner entry {request.IntelligentGolfEventId}.",
+                        exception.Message,
+                        exception);
+                }
+
+                if (saveResponse.SessionRefreshed)
+                {
+                    continue;
+                }
+
+                var saveRejection = IntelligentGolfMutationResponseInspector.FindRejection(saveResponse.Body);
+                if (!string.IsNullOrWhiteSpace(saveRejection))
+                {
+                    throw CreateImageMutationException(
+                        "planner-event-image-save",
+                        request,
+                        diaryId,
+                        diaryPublishedAtUtc,
+                        "The member diary entry was published and its artwork was uploaded, but Intelligent Golf rejected the request to attach it to the planner event.",
+                        saveRejection);
+                }
+
+                logger.LogInformation(
+                    "Uploaded {FileName} and attached it to Intelligent Golf planner entry {IntelligentGolfEventId}.",
+                    artwork.FileName,
+                    request.IntelligentGolfEventId);
+                return true;
+            }
+
+            throw CreateImageMutationException(
+                "planner-event-image-save",
+                request,
+                diaryId,
+                diaryPublishedAtUtc,
+                "The member diary entry was published, but Intelligent Golf refreshed its session while attaching the planner image. Try again.");
+        }, cancellationToken);
+    }
+
+    private static IReadOnlyCollection<KeyValuePair<string, string>> CreateDiaryFields(
+        PublishPlannerDiaryRequest request,
+        int diaryId)
+    {
         var fields = new List<KeyValuePair<string, string>>
         {
-            new("id", resolvedDiaryId.ToString(CultureInfo.InvariantCulture)),
+            new("id", diaryId.ToString(CultureInfo.InvariantCulture)),
             new("booking", request.IntelligentGolfEventId.ToString(CultureInfo.InvariantCulture)),
             new("warning", "0"),
             new("headline", request.Headline.Trim())
         };
-        var tagIds = request.TagIds?.Where(id => id > 0).Distinct().ToArray() ?? [1, 2, 3, 4];
-        fields.AddRange(tagIds.Select(id => new KeyValuePair<string, string>("tags[]", id.ToString(CultureInfo.InvariantCulture))));
+        fields.AddRange(NormaliseTagIds(request.TagIds).Select(
+            id => new KeyValuePair<string, string>("tags[]", id.ToString(CultureInfo.InvariantCulture))));
         fields.AddRange(
         [
             new("diarydate", request.DiaryDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)),
@@ -737,59 +971,29 @@ public sealed class PublishPlannerDiaryHandler(
             new("venue", request.Venue?.Trim() ?? "Clubhouse"),
             new("body", MemberEmailHtmlSanitizer.Sanitise(request.BodyHtml))
         ]);
-
-        IntelligentGolfTransportResponse diaryUpdateResponse;
-        try
-        {
-            diaryUpdateResponse = await transport.PostFormResponseAsync(
-                "/diaryadmin.php?&requestType=ajax&ajaxaction=editnow",
-                fields,
-                cancellationToken);
-        }
-        catch (IntelligentGolfAuthenticationException)
-        {
-            throw;
-        }
-        catch (Exception exception) when (exception is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
-        {
-            throw new IntelligentGolfMutationException(
-                "member-diary-update",
-                $"Intelligent Golf diary entry {resolvedDiaryId} exists, but its HTML content could not be submitted.",
-                request.IntelligentGolfEventId,
-                resolvedDiaryId,
-                exception.Message,
-                exception);
-        }
-
-        var diaryRejection = IntelligentGolfMutationResponseInspector.FindRejection(diaryUpdateResponse.Body);
-        if (!string.IsNullOrWhiteSpace(diaryRejection))
-        {
-            logger.LogWarning(
-                "Intelligent Golf rejected the HTML update for diary entry {DiaryEntryId}: {Rejection}",
-                resolvedDiaryId,
-                diaryRejection);
-            throw new IntelligentGolfMutationException(
-                "member-diary-update",
-                $"Intelligent Golf diary entry {resolvedDiaryId} exists, but Intelligent Golf rejected its HTML update.",
-                request.IntelligentGolfEventId,
-                resolvedDiaryId,
-                diaryRejection);
-        }
-        await SaveDiaryLinksAsync(cacheKey, plannerCacheKey, resolvedDiaryId, cancellationToken);
-
-        var publishedAt = DateTimeOffset.UtcNow;
-        logger.LogInformation(
-            "{Operation} Intelligent Golf diary entry {DiaryEntryId}, linked to event {IntelligentGolfEventId}.",
-            created ? "Created and updated" : "Updated",
-            resolvedDiaryId,
-            request.IntelligentGolfEventId);
-        return new PublishPlannerDiaryResult(
-            request.EventPlaybookEventId,
-            request.IntelligentGolfEventId,
-            resolvedDiaryId,
-            created,
-            publishedAt);
+        return fields;
     }
+
+    private static int[] NormaliseTagIds(IReadOnlyCollection<int>? tagIds) =>
+        (tagIds?.Where(id => id > 0).Distinct().Order().ToArray() ?? [1, 2, 3, 4]);
+
+    private static IntelligentGolfMutationException CreateImageMutationException(
+        string stage,
+        PublishPlannerDiaryRequest request,
+        int diaryId,
+        DateTimeOffset diaryPublishedAtUtc,
+        string message,
+        string? responseDetail = null,
+        Exception? innerException = null) =>
+        new(
+            stage,
+            message,
+            request.IntelligentGolfEventId,
+            diaryId,
+            responseDetail,
+            innerException,
+            memberDiaryPublished: true,
+            memberDiaryPublishedAtUtc: diaryPublishedAtUtc);
 
     private static void Validate(PublishPlannerDiaryRequest request)
     {
@@ -805,7 +1009,67 @@ public sealed class PublishPlannerDiaryHandler(
             throw new ArgumentException("The member diary headline cannot exceed 250 characters.");
         if (request.BodyHtml.Length > 200_000)
             throw new ArgumentException("The member diary HTML body is too large.");
+        if (request.Artwork is null)
+            throw new ArgumentException("Finished event artwork is required before publishing to the member diary.");
         SynchronisePlannerEventHandler.ValidateTimeRange(request.StartTime, request.EndTime);
+    }
+
+    private static ResolvedPlannerEventArtwork DecodeArtwork(PlannerEventArtwork artwork)
+    {
+        if (!string.Equals(artwork.ContentType?.Trim(), "image/png", StringComparison.OrdinalIgnoreCase))
+            throw new ArgumentException("The Intelligent Golf event artwork must be a PNG image.");
+
+        byte[] bytes;
+        try
+        {
+            bytes = Convert.FromBase64String(artwork.Base64Data?.Trim() ?? string.Empty);
+        }
+        catch (FormatException)
+        {
+            throw new ArgumentException("The Intelligent Golf event artwork contains invalid image data.");
+        }
+
+        if (bytes.Length == 0 || bytes.Length > MaximumArtworkBytes)
+            throw new ArgumentException("The Intelligent Golf event artwork is empty or larger than 20 MB.");
+
+        ReadOnlySpan<byte> pngSignature = [137, 80, 78, 71, 13, 10, 26, 10];
+        if (bytes.Length < pngSignature.Length || !bytes.AsSpan(0, pngSignature.Length).SequenceEqual(pngSignature))
+            throw new ArgumentException("The Intelligent Golf event artwork is not a valid PNG image.");
+
+        return new ResolvedPlannerEventArtwork(NormaliseArtworkFileName(artwork.FileName), bytes);
+    }
+
+    private static string NormaliseArtworkFileName(string? value)
+    {
+        var stem = Path.GetFileNameWithoutExtension(Path.GetFileName(value?.Trim() ?? string.Empty));
+        stem = Regex.Replace(stem, @"[^A-Za-z0-9._-]+", "-").Trim('-', '.', '_');
+        if (string.IsNullOrWhiteSpace(stem)) stem = "event-artwork";
+        if (stem.Length > 140) stem = stem[..140].TrimEnd('-', '.', '_');
+        return $"{stem}.png";
+    }
+
+    private static string CreateDiaryFingerprint(PublishPlannerDiaryRequest request)
+    {
+        var canonical = JsonSerializer.Serialize(new
+        {
+            Headline = request.Headline.Trim(),
+            DiaryDate = request.DiaryDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+            StartTime = request.StartTime?.Trim() ?? string.Empty,
+            EndTime = request.EndTime?.Trim() ?? string.Empty,
+            Venue = request.Venue?.Trim() ?? "Clubhouse",
+            BodyHtml = MemberEmailHtmlSanitizer.Sanitise(request.BodyHtml),
+            TagIds = NormaliseTagIds(request.TagIds)
+        });
+        return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(canonical)));
+    }
+
+    private static string CreateArtworkFingerprint(ResolvedPlannerEventArtwork artwork)
+    {
+        var fileNameBytes = Encoding.UTF8.GetBytes(artwork.FileName);
+        var combined = new byte[fileNameBytes.Length + 1 + artwork.Content.Length];
+        fileNameBytes.CopyTo(combined, 0);
+        artwork.Content.CopyTo(combined, fileNameBytes.Length + 1);
+        return Convert.ToHexString(SHA256.HashData(combined));
     }
 
     private static int? ExtractCreatedDiaryId(string raw)
@@ -861,18 +1125,32 @@ public sealed class PublishPlannerDiaryHandler(
         }
     }
 
+    private async Task<ExternalDiaryLink?> LoadDiaryLinkAsync(
+        string cacheKey,
+        string plannerCacheKey,
+        CancellationToken cancellationToken) =>
+        await cache.GetAsync<ExternalDiaryLink>(cacheKey, cancellationToken)
+        ?? await cache.GetAsync<ExternalDiaryLink>(plannerCacheKey, cancellationToken);
+
     private async Task SaveDiaryLinksAsync(
         string cacheKey,
         string plannerCacheKey,
-        int diaryId,
+        ExternalDiaryLink link,
         CancellationToken cancellationToken)
     {
-        var link = new ExternalDiaryLink(diaryId);
         await cache.SetAsync(cacheKey, link, LinkLifetime, cancellationToken);
         await cache.SetAsync(plannerCacheKey, link, LinkLifetime, cancellationToken);
     }
 
-    private sealed record ExternalDiaryLink(int IntelligentGolfDiaryEntryId);
+    private sealed class ExternalDiaryLink
+    {
+        public int IntelligentGolfDiaryEntryId { get; init; }
+        public string? DiaryFingerprint { get; init; }
+        public DateTimeOffset? DiaryPublishedAtUtc { get; init; }
+        public string? ArtworkFingerprint { get; init; }
+    }
+
+    private sealed record ResolvedPlannerEventArtwork(string FileName, byte[] Content);
 }
 
 internal static class IntelligentGolfMutationResponseInspector
@@ -1033,7 +1311,7 @@ public static class EventPlannerFeatureExtensions
                     Results.Ok(await mediator.Send(new PublishPlannerDiaryCommand(request), cancellationToken)))
             .WithName("PublishPlannerMemberDiary")
             .WithTags("Event planner")
-            .WithSummary("Create when necessary and update the Intelligent Golf member diary entry with HTML")
+            .WithSummary("Publish the Intelligent Golf member diary entry and attach its approved planner artwork")
             .Produces<PublishPlannerDiaryResult>();
 
         return endpoints;

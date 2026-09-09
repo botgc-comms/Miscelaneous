@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using BOTGC.EventPlaybook.Models;
 using BOTGC.EventPlaybook.Options;
 using Microsoft.Extensions.Options;
@@ -26,6 +27,7 @@ public interface IIntelligentGolfEventIntegration
         CancellationToken cancellationToken);
     Task<IntelligentGolfDiaryPublishResult> PublishDiaryAsync(
         MemberDiaryPublishRequest request,
+        byte[] artworkBytes,
         CancellationToken cancellationToken);
 }
 
@@ -39,6 +41,7 @@ public sealed class IntelligentGolfEventIntegration(
     ILogger<IntelligentGolfEventIntegration> logger) : IIntelligentGolfEventIntegration
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
+    private const int MaximumMemberDiaryArtworkBytes = 20 * 1024 * 1024;
     private readonly ConcurrentDictionary<string, SemaphoreSlim> _eventLocks = new(StringComparer.OrdinalIgnoreCase);
     private readonly SemaphoreSlim _adoptionLock = new(1, 1);
 
@@ -324,8 +327,16 @@ public sealed class IntelligentGolfEventIntegration(
 
     public async Task<IntelligentGolfDiaryPublishResult> PublishDiaryAsync(
         MemberDiaryPublishRequest request,
+        byte[] artworkBytes,
         CancellationToken cancellationToken)
     {
+        if (artworkBytes.Length == 0 || artworkBytes.Length > MaximumMemberDiaryArtworkBytes)
+        {
+            throw new ArgumentException(
+                "The member diary artwork is empty or larger than the 20 MB upload limit.",
+                nameof(artworkBytes));
+        }
+
         var snapshot = new PlaybookEventIntegrationSnapshot
         {
             EventId = request.EventId.Trim(),
@@ -360,11 +371,32 @@ public sealed class IntelligentGolfEventIntegration(
                 endTime = EmptyAsNull(request.EndTime),
                 venue = string.IsNullOrWhiteSpace(request.Venue) ? "Clubhouse" : request.Venue.Trim(),
                 bodyHtml = request.Description.Trim(),
-                tagIds = new[] { 1, 2, 3, 4 }
+                tagIds = new[] { 1, 2, 3, 4 },
+                plannerDescriptionHtml = PlainTextToHtml(snapshot.Description),
+                artwork = new
+                {
+                    fileName = BuildEventArtworkFileName(request),
+                    contentType = "image/png",
+                    base64Data = Convert.ToBase64String(artworkBytes)
+                }
             });
             using var response = await SendAsync(message, cancellationToken);
             var result = await response.Content.ReadFromJsonAsync<IntelligentGolfDiaryPublishResult>(JsonOptions, cancellationToken)
                 ?? throw new InvalidOperationException("The Event Playbook API did not return the member diary entry ID.");
+            if (result.EventImageAttached is not true)
+            {
+                throw new IntelligentGolfApiRequestException(
+                    "The member diary entry was published, but the Event Playbook API did not confirm that its artwork was attached to the Intelligent Golf planner event. Deploy the matching API version, then retry the planner artwork.",
+                    502,
+                    "planner-event-image-contract",
+                    result.IntelligentGolfEventId,
+                    result.IntelligentGolfDiaryEntryId,
+                    true,
+                    request.EventDate,
+                    [],
+                    memberDiaryPublished: true,
+                    memberDiaryPublishedAtUtc: result.PublishedAtUtc);
+            }
             await linkStore.SaveDiaryAsync(
                 request.EventId,
                 result.IntelligentGolfEventId,
@@ -381,15 +413,29 @@ public sealed class IntelligentGolfEventIntegration(
                 ExternalRecordId = result.IntelligentGolfDiaryEntryId,
                 Stage = result.Created ? "member-diary-create-and-update" : "member-diary-update",
                 Message = result.Created
-                    ? $"Created and updated member diary entry {result.IntelligentGolfDiaryEntryId}."
-                    : $"Updated member diary entry {result.IntelligentGolfDiaryEntryId}."
+                    ? $"Created and updated member diary entry {result.IntelligentGolfDiaryEntryId}, then attached its artwork to planner entry {result.IntelligentGolfEventId}."
+                    : $"Updated member diary entry {result.IntelligentGolfDiaryEntryId} and attached its artwork to planner entry {result.IntelligentGolfEventId}."
             }, cancellationToken);
             return result;
         }
         catch (Exception exception) when (exception is not OperationCanceledException)
         {
             var requestException = exception as IntelligentGolfApiRequestException;
-            if (requestException?.IntelligentGolfRecordId is > 0)
+            if (requestException is
+                {
+                    IntelligentGolfRecordId: > 0,
+                    MemberDiaryPublished: true,
+                    MemberDiaryPublishedAtUtc: not null
+                })
+            {
+                await linkStore.SaveDiaryAsync(
+                    request.EventId,
+                    requestException.IntelligentGolfEventId ?? eventResult.IntelligentGolfEventId,
+                    requestException.IntelligentGolfRecordId.Value,
+                    requestException.MemberDiaryPublishedAtUtc.Value,
+                    cancellationToken);
+            }
+            else if (requestException?.IntelligentGolfRecordId is > 0)
             {
                 await linkStore.SaveAllocatedDiaryAsync(
                     request.EventId,
@@ -414,10 +460,29 @@ public sealed class IntelligentGolfEventIntegration(
                 ExternalRecordId = requestException?.IntelligentGolfRecordId ?? failedLink?.IntelligentGolfDiaryEntryId,
                 Stage = requestException?.Stage ?? "member-diary-publish",
                 StatusCode = requestException?.StatusCode,
-                Message = exception.Message
+                Message = requestException?.MemberDiaryPublished == true
+                    ? $"Member diary entry {requestException.IntelligentGolfRecordId} was published, but its planner artwork was not attached. {exception.Message}"
+                    : exception.Message
             }, cancellationToken);
             throw;
         }
+    }
+
+    private static string BuildEventArtworkFileName(MemberDiaryPublishRequest request)
+    {
+        var eventSlug = Regex.Replace(request.EventName.Trim().ToLowerInvariant(), @"[^a-z0-9]+", "-")
+            .Trim('-');
+        if (string.IsNullOrWhiteSpace(eventSlug)) eventSlug = "event";
+        if (eventSlug.Length > 120) eventSlug = eventSlug[..120].TrimEnd('-');
+
+        var outputId = request.Artwork?.OutputId?.Trim().ToLowerInvariant() ?? string.Empty;
+        var suffix = outputId.Contains("social", StringComparison.Ordinal) ||
+                     outputId.Contains("square", StringComparison.Ordinal)
+            ? "social"
+            : outputId.Contains("a4", StringComparison.Ordinal)
+                ? "poster"
+                : "artwork";
+        return $"{eventSlug}-{suffix}.png";
     }
 
     private async Task EnsureAvailableAsync(CancellationToken cancellationToken)
@@ -466,7 +531,9 @@ public sealed class IntelligentGolfEventIntegration(
             problem?.IntelligentGolfRecordId,
             problem?.Retryable ?? true,
             problem?.EventDate,
-            problem?.Candidates ?? []);
+            problem?.Candidates ?? [],
+            problem?.MemberDiaryPublished ?? false,
+            problem?.MemberDiaryPublishedAtUtc);
     }
 
     private static IntelligentGolfApiProblem? ExtractProblem(string raw)
@@ -484,6 +551,8 @@ public sealed class IntelligentGolfEventIntegration(
             var retryable = ReadBool(root, "retryable");
             var eventDate = ReadString(root, "eventDate");
             var candidates = ReadCandidates(root);
+            var memberDiaryPublished = ReadBool(root, "memberDiaryPublished");
+            var memberDiaryPublishedAtUtc = ReadDateTimeOffset(root, "memberDiaryPublishedAtUtc");
             var message = detail;
             if (string.IsNullOrWhiteSpace(message)) message = error;
             if (string.IsNullOrWhiteSpace(message)) message = title;
@@ -493,7 +562,16 @@ public sealed class IntelligentGolfEventIntegration(
 
             return string.IsNullOrWhiteSpace(message)
                 ? null
-                : new IntelligentGolfApiProblem(message.Trim(), stage, eventId, recordId, retryable, eventDate, candidates);
+                : new IntelligentGolfApiProblem(
+                    message.Trim(),
+                    stage,
+                    eventId,
+                    recordId,
+                    retryable,
+                    eventDate,
+                    candidates,
+                    memberDiaryPublished,
+                    memberDiaryPublishedAtUtc);
         }
         catch (JsonException)
         {
@@ -525,6 +603,13 @@ public sealed class IntelligentGolfEventIntegration(
             ? result
             : null;
     }
+
+    private static DateTimeOffset? ReadDateTimeOffset(JsonElement root, string name) =>
+        root.TryGetProperty(name, out var value) &&
+        value.ValueKind == JsonValueKind.String &&
+        DateTimeOffset.TryParse(value.GetString(), out var result)
+            ? result
+            : null;
 
     private static IReadOnlyList<IntelligentGolfPlannerEventCandidate> ReadCandidates(JsonElement root)
     {
@@ -608,7 +693,9 @@ public sealed class IntelligentGolfEventIntegration(
         int? IntelligentGolfRecordId,
         bool? Retryable,
         string? EventDate,
-        IReadOnlyList<IntelligentGolfPlannerEventCandidate> Candidates);
+        IReadOnlyList<IntelligentGolfPlannerEventCandidate> Candidates,
+        bool? MemberDiaryPublished,
+        DateTimeOffset? MemberDiaryPublishedAtUtc);
 }
 
 public sealed class IntelligentGolfApiRequestException(
@@ -619,7 +706,9 @@ public sealed class IntelligentGolfApiRequestException(
     int? intelligentGolfRecordId,
     bool retryable,
     string? eventDate,
-    IReadOnlyList<IntelligentGolfPlannerEventCandidate> candidates) : InvalidOperationException(message)
+    IReadOnlyList<IntelligentGolfPlannerEventCandidate> candidates,
+    bool memberDiaryPublished = false,
+    DateTimeOffset? memberDiaryPublishedAtUtc = null) : InvalidOperationException(message)
 {
     public int StatusCode { get; } = statusCode;
     public string? Stage { get; } = stage;
@@ -628,6 +717,8 @@ public sealed class IntelligentGolfApiRequestException(
     public bool Retryable { get; } = retryable;
     public string? EventDate { get; } = eventDate;
     public IReadOnlyList<IntelligentGolfPlannerEventCandidate> Candidates { get; } = candidates;
+    public bool MemberDiaryPublished { get; } = memberDiaryPublished;
+    public DateTimeOffset? MemberDiaryPublishedAtUtc { get; } = memberDiaryPublishedAtUtc;
     public bool RequiresPlannerMatch =>
         string.Equals(Stage, "planner-event-match-required", StringComparison.OrdinalIgnoreCase) ||
         string.Equals(Stage, "planner-event-match-expired", StringComparison.OrdinalIgnoreCase);

@@ -78,6 +78,7 @@ public static class IntelligentGolfServiceCollectionExtensions
 
         services.AddSingleton<ICacheService, DistributedCacheService>();
         services.AddSingleton(new CookieContainer());
+        services.AddSingleton<IntelligentGolfSessionOperationGate>();
 
         services
             .AddHttpClient(HttpClientName, (provider, client) =>

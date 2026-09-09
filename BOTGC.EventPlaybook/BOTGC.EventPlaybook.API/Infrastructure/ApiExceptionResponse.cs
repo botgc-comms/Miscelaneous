@@ -48,6 +48,8 @@ public static class ApiExceptionResponse
                     ["stage"] = mutation.Stage,
                     ["intelligentGolfEventId"] = mutation.IntelligentGolfEventId,
                     ["intelligentGolfRecordId"] = mutation.IntelligentGolfRecordId,
+                    ["memberDiaryPublished"] = mutation.MemberDiaryPublished,
+                    ["memberDiaryPublishedAtUtc"] = mutation.MemberDiaryPublishedAtUtc,
                     ["retryable"] = true
                 }
                 : null;
