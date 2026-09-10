@@ -9,6 +9,8 @@ public static class ApiExceptionResponse
     public static async Task WriteAsync(HttpContext context)
     {
         var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
+        var deterministicLookupFailure = exception is IntelligentGolfMutationException lookupFailure &&
+            IsDeterministicPlannerLookupFailure(lookupFailure.Stage);
 
         var (status, title) = exception switch
         {
@@ -22,6 +24,8 @@ public static class ApiExceptionResponse
                 (StatusCodes.Status501NotImplemented, feature.Message),
             IntelligentGolfAuthenticationException =>
                 (StatusCodes.Status503ServiceUnavailable, "The Intelligent Golf session is unavailable."),
+            IntelligentGolfMutationException lookupException when deterministicLookupFailure =>
+                (StatusCodes.Status409Conflict, lookupException.Message),
             IntelligentGolfMutationException mutationException =>
                 (StatusCodes.Status502BadGateway, mutationException.Message),
             HttpRequestException =>
@@ -61,7 +65,7 @@ public static class ApiExceptionResponse
                     ["intelligentGolfRecordId"] = mutation.IntelligentGolfRecordId,
                     ["memberDiaryPublished"] = mutation.MemberDiaryPublished,
                     ["memberDiaryPublishedAtUtc"] = mutation.MemberDiaryPublishedAtUtc,
-                    ["retryable"] = true
+                    ["retryable"] = !deterministicLookupFailure
                 }
                 : null;
 
@@ -72,4 +76,8 @@ public static class ApiExceptionResponse
                 extensions: extensions)
             .ExecuteAsync(context);
     }
+
+    private static bool IsDeterministicPlannerLookupFailure(string stage) =>
+        string.Equals(stage, "planner-event-lookup-response", StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(stage, "planner-event-lookup-date-mismatch", StringComparison.OrdinalIgnoreCase);
 }

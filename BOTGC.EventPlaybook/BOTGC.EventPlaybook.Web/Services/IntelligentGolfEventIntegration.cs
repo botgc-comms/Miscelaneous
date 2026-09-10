@@ -24,6 +24,10 @@ public interface IIntelligentGolfEventIntegration
     Task<IntelligentGolfPlannerEventCandidatesResult> GetPlannerEventCandidatesAsync(
         PlaybookEventIntegrationSnapshot eventSnapshot,
         CancellationToken cancellationToken);
+    Task<IntelligentGolfPlannerEventLookupResult> LookupPlannerEventAsync(
+        PlaybookEventIntegrationSnapshot eventSnapshot,
+        int intelligentGolfEventId,
+        CancellationToken cancellationToken);
     Task<IntelligentGolfEventAdoptResult> AdoptExistingEventAsync(
         PlaybookEventIntegrationSnapshot eventSnapshot,
         int intelligentGolfEventId,
@@ -105,6 +109,63 @@ public sealed class IntelligentGolfEventIntegration(
                 })
                 .OrderBy(candidate => candidate.IntelligentGolfEventId)
                 .ToArray()
+        };
+    }
+
+    public async Task<IntelligentGolfPlannerEventLookupResult> LookupPlannerEventAsync(
+        PlaybookEventIntegrationSnapshot eventSnapshot,
+        int intelligentGolfEventId,
+        CancellationToken cancellationToken)
+    {
+        ValidateSnapshot(eventSnapshot);
+        if (intelligentGolfEventId <= 0)
+            throw new ArgumentException(
+                "The Intelligent Golf planner entry ID must be greater than zero.",
+                nameof(intelligentGolfEventId));
+
+        await EnsureAvailableAsync(cancellationToken);
+        using var message = CreateRequest(
+            HttpMethod.Get,
+            $"api/event-planner/events/lookup?eventDate={Uri.EscapeDataString(eventSnapshot.EventDate)}&intelligentGolfEventId={intelligentGolfEventId}");
+        using var response = await SendAsync(message, cancellationToken);
+        var result = await response.Content.ReadFromJsonAsync<IntelligentGolfPlannerEventLookupResult>(
+            JsonOptions,
+            cancellationToken)
+            ?? throw new InvalidOperationException(
+                "The Event Playbook API did not return the requested Intelligent Golf planner event.");
+        var candidate = result.Candidate
+            ?? throw new InvalidOperationException(
+                "The Event Playbook API did not return the requested Intelligent Golf planner event.");
+
+        if (candidate.IntelligentGolfEventId != intelligentGolfEventId)
+        {
+            throw new InvalidOperationException(
+                $"The Event Playbook API returned Intelligent Golf planner entry {candidate.IntelligentGolfEventId}, not the requested entry {intelligentGolfEventId}.");
+        }
+
+        if (string.IsNullOrWhiteSpace(result.EventDate))
+        {
+            throw new InvalidOperationException(
+                "The Event Playbook API did not confirm the date of the requested Intelligent Golf planner event.");
+        }
+
+        var eventDate = result.EventDate.Trim();
+        if (!string.Equals(eventDate, eventSnapshot.EventDate, StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException(
+                $"Intelligent Golf planner entry {intelligentGolfEventId} is for {eventDate}, not {eventSnapshot.EventDate}.");
+        }
+
+        return new IntelligentGolfPlannerEventLookupResult
+        {
+            EventDate = eventDate,
+            Candidate = new IntelligentGolfPlannerEventCandidate
+            {
+                IntelligentGolfEventId = intelligentGolfEventId,
+                Name = string.IsNullOrWhiteSpace(candidate.Name)
+                    ? $"Intelligent Golf event {intelligentGolfEventId}"
+                    : candidate.Name.Trim()
+            }
         };
     }
 
@@ -919,6 +980,9 @@ public sealed class IntelligentGolfApiRequestException(
         string.Equals(Stage, "planner-event-relink-target-unavailable", StringComparison.OrdinalIgnoreCase);
     public bool RequiresPlannerLinkRefresh =>
         string.Equals(Stage, "planner-event-relink-conflict", StringComparison.OrdinalIgnoreCase);
+    public bool RejectsPlannerTarget =>
+        string.Equals(Stage, "planner-event-lookup-response", StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(Stage, "planner-event-lookup-date-mismatch", StringComparison.OrdinalIgnoreCase);
 }
 
 public sealed class IntelligentGolfPlannerEventAlreadyLinkedException(int intelligentGolfEventId)

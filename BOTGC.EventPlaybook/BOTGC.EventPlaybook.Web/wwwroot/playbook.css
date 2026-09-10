@@ -5351,6 +5351,17 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(198,161,91,.22)!i
 .ig-planner-link-warning strong { color: var(--navy); font-size: .65rem; }
 .ig-planner-link-warning span { color: #5e655d; font-size: .59rem; line-height: 1.48; }
 .ig-planner-link-empty { margin: 4px 0 0; padding: 9px 10px; border-radius: 8px; color: var(--muted); background: #f4f7f6; font-size: .59rem; line-height: 1.4; }
+.ig-planner-entry-lookup { display: grid; gap: 10px; padding: 13px 14px; border: 1px solid var(--border); border-radius: 12px; background: #fff; }
+.ig-planner-entry-lookup>div:first-child { display: grid; gap: 3px; }
+.ig-planner-entry-lookup strong { color: var(--navy); font-size: .68rem; }
+.ig-planner-entry-lookup span { color: var(--muted); font-size: .59rem; line-height: 1.45; }
+.ig-planner-entry-lookup code { padding: 1px 3px; border-radius: 3px; color: #315b51; background: #edf4f1; font-size: .58rem; }
+.ig-planner-entry-lookup-controls { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 6px 8px; align-items: end; }
+.ig-planner-entry-lookup-controls label { grid-column: 1/-1; color: #4f6663; font-size: .57rem; font-weight: 900; letter-spacing: .045em; text-transform: uppercase; }
+.ig-planner-entry-lookup-controls input { min-width: 0; height: 39px; padding: 0 11px; border: 1px solid #b9cbc7; border-radius: 8px; color: var(--text); background: #fff; font: inherit; font-size: .68rem; }
+.ig-planner-entry-lookup-controls input:focus { border-color: var(--green); outline: 3px solid rgba(44,105,88,.12); }
+.ig-planner-entry-lookup-status { margin: 0; padding: 8px 10px; border-radius: 8px; color: #315b51; background: #eff7f3; font-size: .6rem; font-weight: 750; line-height: 1.4; }
+.ig-planner-entry-lookup-status.error { color: #8a342d; background: #fff4f2; }
 
 @media (max-width: 720px) {
   .ig-planner-match-banner { grid-template-columns: 34px minmax(0,1fr); }
@@ -5362,4 +5373,7 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(198,161,91,.22)!i
   .ig-planner-match-dialog .modal-actions>span { display: none; }
   .ig-planner-match-dialog .modal-actions .button { width: 100%; }
   .ig-planner-link-dialog .modal-actions { align-items: stretch; flex-direction: column; }
+  .ig-planner-entry-lookup-controls { grid-template-columns: 1fr; }
+  .ig-planner-entry-lookup-controls label { grid-column: auto; }
+  .ig-planner-entry-lookup-controls .button { width: 100%; }
 }

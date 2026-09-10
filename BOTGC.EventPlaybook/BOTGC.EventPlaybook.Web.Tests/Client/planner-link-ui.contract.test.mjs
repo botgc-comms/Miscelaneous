@@ -54,7 +54,7 @@ test('the relink dialog identifies the current entry and prevents conflicting ch
     assert.match(renderDialog, /linkedToAnotherPlaybookEvent/);
     assert.match(renderDialog, /disabled/);
     assert.match(renderDialog, /data-close-ig-planner-link/);
-    assert.match(renderDialog, /data-confirm-ig-planner-link disabled/);
+    assert.match(renderDialog, /data-confirm-ig-planner-link\$\{selectedAlternative \? '' : ' disabled'\}/);
     assert.match(renderDialog, /saved Event Playbook link, but it was not returned/);
     assert.match(renderDialog, /returned no planner entries for this date/);
 });
@@ -72,6 +72,25 @@ test('confirming a relink posts the chosen and expected current planner IDs', ()
     assert.match(saveLink, /intelligentGolfEventId/);
 });
 
+test('a known planner ID is verified read-only before it becomes selectable', () => {
+    const renderDialog = functionSource('renderIntelligentGolfPlannerLinkDialog');
+    const lookupEntry = functionSource('lookupIntelligentGolfPlannerEntry');
+
+    assert.match(renderDialog, /id="ig-planner-entry-id"/);
+    assert.match(renderDialog, /data-check-ig-planner-entry/);
+    assert.match(renderDialog, /number after <code>eventid=<\/code>/);
+    assert.match(
+        lookupEntry,
+        /\/api\/integrations\/intelligent-golf\/events\/\$\{encodeURIComponent\([^)]*\)\}\/planner-entry\/\$\{intelligentGolfEventId\}/
+    );
+    assert.match(lookupEntry, /method:\s*['"]GET['"]/i);
+    assert.match(lookupEntry, /cache:\s*['"]no-store['"]/);
+    assert.doesNotMatch(lookupEntry, /method:\s*['"](?:POST|PUT|PATCH|DELETE)['"]/i);
+    assert.match(lookupEntry, /verifiedId\s*!==\s*intelligentGolfEventId/);
+    assert.match(lookupEntry, /linkedToAnotherPlaybookEvent/);
+    assert.match(lookupEntry, /selectedPlannerEntryId:\s*available/);
+});
+
 test('the action, close control, candidate selection and confirmation are wired', () => {
     const bindEvents = functionSource('bindEvents');
 
@@ -79,6 +98,9 @@ test('the action, close control, candidate selection and confirmation are wired'
     assert.match(bindEvents, /openIntelligentGolfPlannerLinkDialog/);
     assert.match(bindEvents, /\[data-close-ig-planner-link\]/);
     assert.match(bindEvents, /input\[name="ig-planner-link-candidate"\]/);
+    assert.match(bindEvents, /#ig-planner-entry-id/);
+    assert.match(bindEvents, /\[data-check-ig-planner-entry\]/);
+    assert.match(bindEvents, /lookupIntelligentGolfPlannerEntry/);
     assert.match(bindEvents, /\[data-confirm-ig-planner-link\]/);
     assert.match(bindEvents, /Number\(selected\.value\)\s*===\s*currentPlannerEntryId/);
     assert.match(bindEvents, /saveIntelligentGolfPlannerLink/);

@@ -68,6 +68,12 @@ public sealed class IntelligentGolfPlannerEventCandidatesResult
     public IReadOnlyList<IntelligentGolfPlannerEventCandidate> Candidates { get; init; } = [];
 }
 
+public sealed class IntelligentGolfPlannerEventLookupResult
+{
+    public required string EventDate { get; init; }
+    public IntelligentGolfPlannerEventCandidate? Candidate { get; init; }
+}
+
 public sealed class IntelligentGolfEventRelinkResult
 {
     public required string EventPlaybookEventId { get; init; }

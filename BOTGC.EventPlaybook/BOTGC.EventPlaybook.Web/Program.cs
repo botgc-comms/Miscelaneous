@@ -514,6 +514,82 @@ app.MapGet("/api/integrations/intelligent-golf/events/{eventId}/planner-candidat
     }
 });
 
+app.MapGet("/api/integrations/intelligent-golf/events/{playbookEventId}/planner-entry/{igId:int}", async (
+    string playbookEventId,
+    int igId,
+    ISharedPlaybookStateStore stateStore,
+    IIntelligentGolfIntegrationLinkStore linkStore,
+    IIntelligentGolfEventIntegration intelligentGolfIntegration,
+    CancellationToken cancellationToken) =>
+{
+    var key = playbookEventId.Trim();
+    if (string.IsNullOrWhiteSpace(key))
+        return Results.BadRequest(new { error = "An Event Playbook event ID is required." });
+    if (igId <= 0)
+        return Results.BadRequest(new { error = "The Intelligent Golf planner entry ID must be greater than zero." });
+
+    var sharedState = await stateStore.GetAsync(cancellationToken);
+    if (!PlaybookEventChangePipeline.ReadEvents(sharedState.State).TryGetValue(key, out var snapshot))
+        return Results.NotFound(new { error = "The Event Playbook event could not be found in shared storage." });
+
+    try
+    {
+        var result = await intelligentGolfIntegration.LookupPlannerEventAsync(
+            snapshot,
+            igId,
+            cancellationToken);
+        var candidate = result.Candidate!;
+        var link = await linkStore.GetAsync(key, cancellationToken);
+        var owner = await linkStore.FindPlaybookEventIdByIntelligentGolfEventIdAsync(
+            candidate.IntelligentGolfEventId,
+            cancellationToken);
+
+        return Results.Ok(new
+        {
+            result.EventDate,
+            candidate = new
+            {
+                candidate.IntelligentGolfEventId,
+                candidate.Name,
+                current = link?.IntelligentGolfEventId == candidate.IntelligentGolfEventId,
+                linkedToAnotherPlaybookEvent = !string.IsNullOrWhiteSpace(owner) &&
+                    !string.Equals(owner, key, StringComparison.OrdinalIgnoreCase)
+            }
+        });
+    }
+    catch (IntelligentGolfApiRequestException exception)
+    {
+        var targetRejected = exception.RejectsPlannerTarget;
+        return Results.Problem(
+            title: targetRejected
+                ? "That Intelligent Golf planner event cannot be linked"
+                : "The Intelligent Golf planner event could not be checked",
+            detail: exception.Message,
+            statusCode: targetRejected
+                ? StatusCodes.Status409Conflict
+                : StatusCodes.Status502BadGateway,
+            extensions: new Dictionary<string, object?>
+            {
+                ["stage"] = exception.Stage,
+                ["upstreamStatusCode"] = exception.StatusCode,
+                ["retryable"] = exception.Retryable,
+                ["eventDate"] = exception.EventDate ?? snapshot.EventDate,
+                ["intelligentGolfEventId"] = exception.IntelligentGolfEventId ?? igId
+            });
+    }
+    catch (ArgumentException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
+    catch (InvalidOperationException exception)
+    {
+        return Results.Problem(
+            title: "The Intelligent Golf planner event could not be checked",
+            detail: exception.Message,
+            statusCode: StatusCodes.Status409Conflict);
+    }
+});
+
 app.MapPost("/api/integrations/intelligent-golf/events/{eventId}/planner-link", async (
     string eventId,
     RelinkIntelligentGolfPlannerEventRequest request,
@@ -580,12 +656,15 @@ app.MapPost("/api/integrations/intelligent-golf/events/{eventId}/planner-link", 
     }
     catch (IntelligentGolfApiRequestException exception)
     {
-        var refreshCandidates = exception.RequiresPlannerMatch;
+        var targetRejected = exception.RejectsPlannerTarget;
+        var refreshCandidates = exception.RequiresPlannerMatch || targetRejected;
         var refreshStatus = exception.RequiresPlannerLinkRefresh;
         return Results.Problem(
             title: refreshStatus
                 ? "The planner link has changed"
-                : "Intelligent Golf planner relinking failed",
+                : targetRejected
+                    ? "That Intelligent Golf planner event cannot be linked"
+                    : "Intelligent Golf planner relinking failed",
             detail: exception.Message,
             statusCode: refreshCandidates || refreshStatus
                 ? StatusCodes.Status409Conflict

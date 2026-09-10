@@ -2976,6 +2976,11 @@
     const candidates = Array.isArray(dialogState.candidates) ? dialogState.candidates : [];
     const currentPlannerEntryDiscovered = candidates.some(candidate =>
       candidate.intelligentGolfEventId === currentPlannerEntryId);
+    const selectedPlannerEntryId = Number(dialogState.selectedPlannerEntryId) || currentPlannerEntryId;
+    const selectedAlternative = candidates.some(candidate =>
+      candidate.intelligentGolfEventId === selectedPlannerEntryId &&
+      candidate.intelligentGolfEventId !== currentPlannerEntryId &&
+      !candidate.linkedToAnotherPlaybookEvent);
     const selectableAlternative = candidates.some(candidate =>
       !candidate.current && !candidate.linkedToAnotherPlaybookEvent);
     const diaryWarning = status?.diaryEntryId
@@ -3005,13 +3010,14 @@
               ${candidates.map(candidate => {
                 const unavailable = candidate.linkedToAnotherPlaybookEvent;
                 const current = candidate.current || candidate.intelligentGolfEventId === currentPlannerEntryId;
+                const selected = candidate.intelligentGolfEventId === selectedPlannerEntryId;
                 const details = current
                   ? 'currently linked'
                   : unavailable
                     ? 'already linked to another Playbook event'
                     : 'available to link';
                 return `<label class="ig-planner-match-candidate${current ? ' current' : ''}${unavailable ? ' unavailable' : ''}">
-                  <input type="radio" name="ig-planner-link-candidate" value="${candidate.intelligentGolfEventId}"${current ? ' checked' : ''}${unavailable ? ' disabled' : ''}>
+                  <input type="radio" name="ig-planner-link-candidate" value="${candidate.intelligentGolfEventId}"${selected ? ' checked' : ''}${unavailable ? ' disabled' : ''}>
                   <span><strong>${escapeHtml(candidate.name)}</strong><small>Intelligent Golf planner entry ${candidate.intelligentGolfEventId} · ${details}</small></span>
                 </label>`;
               }).join('')}
@@ -3021,6 +3027,18 @@
                   ? '<p class="ig-planner-link-empty">Intelligent Golf returned no planner entries for this date. The saved link could not be verified.</p>'
                   : '<p class="ig-planner-link-empty">No other available planner entries were found on this date.</p>'}
             </fieldset>`}
+        ${dialogState.loading ? '' : `<section class="ig-planner-entry-lookup" aria-labelledby="ig-planner-entry-lookup-heading">
+          <div>
+            <strong id="ig-planner-entry-lookup-heading">Know the planner entry ID?</strong>
+            <span>Open the event in Intelligent Golf and copy the number after <code>eventid=</code> from its address.</span>
+          </div>
+          <div class="ig-planner-entry-lookup-controls">
+            <label for="ig-planner-entry-id">Planner entry ID</label>
+            <input id="ig-planner-entry-id" type="number" min="1" step="1" inputmode="numeric" value="${escapeHtml(dialogState.lookupEntryId || '')}" placeholder="For example, 4423"${dialogState.lookupLoading ? ' disabled' : ''}>
+            <button class="button button-secondary" type="button" data-check-ig-planner-entry${dialogState.lookupLoading ? ' disabled' : ''}>${dialogState.lookupLoading ? 'Checking…' : 'Check entry'}</button>
+          </div>
+          <p class="ig-planner-entry-lookup-status${dialogState.lookupError ? ' error' : ''}" role="${dialogState.lookupError ? 'alert' : 'status'}"${dialogState.lookupError || dialogState.lookupMessage ? '' : ' hidden'}>${escapeHtml(dialogState.lookupError || dialogState.lookupMessage || '')}</p>
+        </section>`}
         <div class="ig-planner-link-warning">
           <strong>No Intelligent Golf entry will be edited or deleted</strong>
           <span>Future Event Playbook updates will be sent to the newly selected planner entry. ${escapeHtml(diaryWarning)}</span>
@@ -3031,7 +3049,7 @@
         <button class="button button-secondary" type="button" data-close-ig-planner-link>Cancel</button>
         <span></span>
         ${dialogState.error && !dialogState.loading ? '<button class="button button-secondary" type="button" data-retry-ig-planner-link>Try loading again</button>' : ''}
-        <button class="button button-primary" type="button" data-confirm-ig-planner-link disabled>Change linked event</button>
+        <button class="button button-primary" type="button" data-confirm-ig-planner-link${selectedAlternative ? '' : ' disabled'}>Change linked event</button>
       </div>
     </dialog>`;
   }
@@ -3079,6 +3097,11 @@
       eventDate: event.eventDate,
       currentPlannerEntryId: status.plannerEntryId,
       candidates: [],
+      selectedPlannerEntryId: status.plannerEntryId,
+      lookupEntryId: '',
+      lookupLoading: false,
+      lookupMessage: '',
+      lookupError: '',
       loading: true,
       error: ''
     };
@@ -3104,6 +3127,11 @@
         currentPlannerEntryId: loaded.currentPlannerEntryId,
         candidates: loaded.candidates,
         currentPlannerEntryDiscovered: loaded.currentPlannerEntryDiscovered,
+        selectedPlannerEntryId: loaded.currentPlannerEntryId,
+        lookupEntryId: '',
+        lookupLoading: false,
+        lookupMessage: '',
+        lookupError: '',
         loading: false,
         error: ''
       };
@@ -3122,6 +3150,96 @@
     render();
     showIntelligentGolfPlannerLinkDialog();
     return candidatesLoaded;
+  }
+
+  async function lookupIntelligentGolfPlannerEntry(dialog) {
+    const eventId = dialog?.dataset.plannerLinkEventId;
+    const entryInput = dialog?.querySelector('#ig-planner-entry-id');
+    const intelligentGolfEventId = Number(entryInput?.value) || 0;
+    if (!eventId || !intelligentGolfPlannerLinkDialogState || intelligentGolfEventId <= 0 ||
+        !Number.isInteger(intelligentGolfEventId)) {
+      if (intelligentGolfPlannerLinkDialogState) {
+        intelligentGolfPlannerLinkDialogState.lookupEntryId = entryInput?.value ?? '';
+        intelligentGolfPlannerLinkDialogState.lookupMessage = '';
+        intelligentGolfPlannerLinkDialogState.lookupError = 'Enter a valid Intelligent Golf planner entry ID.';
+        render();
+        showIntelligentGolfPlannerLinkDialog();
+      }
+      return false;
+    }
+
+    const requestToken = {};
+    intelligentGolfPlannerLinkRequest = requestToken;
+    intelligentGolfPlannerLinkDialogState = {
+      ...intelligentGolfPlannerLinkDialogState,
+      lookupEntryId: String(intelligentGolfEventId),
+      lookupLoading: true,
+      lookupMessage: '',
+      lookupError: ''
+    };
+    render();
+    showIntelligentGolfPlannerLinkDialog();
+
+    try {
+      const response = await fetch(`/api/integrations/intelligent-golf/events/${encodeURIComponent(eventId)}/planner-entry/${intelligentGolfEventId}`, {
+        method: 'GET',
+        cache: 'no-store'
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(result.detail || result.error || result.title || `Planner entry ${intelligentGolfEventId} could not be checked (${response.status}).`);
+      }
+      if (intelligentGolfPlannerLinkRequest !== requestToken ||
+          intelligentGolfPlannerLinkDialogState?.eventId !== eventId) return false;
+
+      const value = result.candidate ?? result;
+      const verifiedId = Number(value?.intelligentGolfEventId) || 0;
+      if (verifiedId !== intelligentGolfEventId) {
+        throw new Error(`Intelligent Golf returned planner entry ${verifiedId || 'without an ID'}, not ${intelligentGolfEventId}.`);
+      }
+      const candidate = {
+        intelligentGolfEventId: verifiedId,
+        name: String(value?.name ?? '').trim() || `Planner entry ${verifiedId}`,
+        current: value?.current === true || verifiedId === Number(intelligentGolfPlannerLinkDialogState.currentPlannerEntryId),
+        linkedToAnotherPlaybookEvent: value?.linkedToAnotherPlaybookEvent === true
+      };
+      const candidates = intelligentGolfPlannerLinkDialogState.candidates
+        .filter(existing => existing.intelligentGolfEventId !== verifiedId);
+      candidates.push(candidate);
+      candidates.sort((left, right) => left.intelligentGolfEventId - right.intelligentGolfEventId);
+      const available = !candidate.current && !candidate.linkedToAnotherPlaybookEvent;
+      intelligentGolfPlannerLinkDialogState = {
+        ...intelligentGolfPlannerLinkDialogState,
+        candidates,
+        selectedPlannerEntryId: available
+          ? candidate.intelligentGolfEventId
+          : intelligentGolfPlannerLinkDialogState.currentPlannerEntryId,
+        lookupLoading: false,
+        lookupMessage: candidate.current
+          ? `Planner entry ${verifiedId} is already the current link.`
+          : candidate.linkedToAnotherPlaybookEvent
+            ? `Planner entry ${verifiedId} belongs to another Event Playbook event and cannot be selected.`
+            : `Verified ${candidate.name} on this event date. It is ready to select.`,
+        lookupError: ''
+      };
+      return available;
+    } catch (error) {
+      if (intelligentGolfPlannerLinkRequest !== requestToken ||
+          intelligentGolfPlannerLinkDialogState?.eventId !== eventId) return false;
+      intelligentGolfPlannerLinkDialogState = {
+        ...intelligentGolfPlannerLinkDialogState,
+        lookupLoading: false,
+        lookupMessage: '',
+        lookupError: error.message || `Planner entry ${intelligentGolfEventId} could not be verified.`
+      };
+      return false;
+    } finally {
+      if (intelligentGolfPlannerLinkRequest === requestToken) intelligentGolfPlannerLinkRequest = null;
+      if (intelligentGolfPlannerLinkDialogState?.eventId === eventId) {
+        render();
+        showIntelligentGolfPlannerLinkDialog();
+      }
+    }
   }
 
   async function saveIntelligentGolfPlannerLink(dialog) {
@@ -7145,9 +7263,28 @@
       input.addEventListener('change', () => {
         const selected = plannerLinkDialog.querySelector('input[name="ig-planner-link-candidate"]:checked:not(:disabled)');
         const currentPlannerEntryId = Number(plannerLinkDialog.dataset.currentPlannerEntryId) || 0;
+        if (intelligentGolfPlannerLinkDialogState) {
+          intelligentGolfPlannerLinkDialogState.selectedPlannerEntryId = Number(selected?.value) || currentPlannerEntryId;
+        }
         const confirmButton = plannerLinkDialog.querySelector('[data-confirm-ig-planner-link]');
         if (confirmButton) confirmButton.disabled = !selected || Number(selected.value) === currentPlannerEntryId;
       });
+    });
+    const plannerEntryIdInput = plannerLinkDialog?.querySelector('#ig-planner-entry-id');
+    plannerEntryIdInput?.addEventListener('input', () => {
+      if (intelligentGolfPlannerLinkDialogState) {
+        intelligentGolfPlannerLinkDialogState.lookupEntryId = plannerEntryIdInput.value;
+        intelligentGolfPlannerLinkDialogState.lookupMessage = '';
+        intelligentGolfPlannerLinkDialogState.lookupError = '';
+      }
+    });
+    plannerEntryIdInput?.addEventListener('keydown', eventArgs => {
+      if (eventArgs.key !== 'Enter') return;
+      eventArgs.preventDefault();
+      plannerLinkDialog.querySelector('[data-check-ig-planner-entry]')?.click();
+    });
+    plannerLinkDialog?.querySelector('[data-check-ig-planner-entry]')?.addEventListener('click', () => {
+      lookupIntelligentGolfPlannerEntry(plannerLinkDialog);
     });
     plannerLinkDialog?.querySelector('[data-confirm-ig-planner-link]')?.addEventListener('click', () => {
       saveIntelligentGolfPlannerLink(plannerLinkDialog);

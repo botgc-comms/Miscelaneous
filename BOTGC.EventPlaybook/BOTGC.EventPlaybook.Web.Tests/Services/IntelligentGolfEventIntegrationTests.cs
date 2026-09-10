@@ -206,6 +206,83 @@ public sealed class IntelligentGolfEventIntegrationTests
     }
 
     [Fact]
+    public async Task LookupPlannerEventAsync_UsesReadOnlyPrivateApiAndNormalisesTheCandidate()
+    {
+        var scenario = new PrivateApiScenario(SynchronisedAt)
+        {
+            PlannerLookupCandidate = new IntelligentGolfPlannerEventCandidate
+            {
+                IntelligentGolfEventId = 4423,
+                Name = "  Marc Bolton  "
+            }
+        };
+        var integration = CreateIntegration(
+            scenario,
+            new RecordingLinkStore(),
+            new RecordingActivityStore());
+
+        var result = await integration.LookupPlannerEventAsync(
+            CreateSnapshot(),
+            4423,
+            CancellationToken.None);
+
+        Assert.Equal("2027-02-20", result.EventDate);
+        Assert.NotNull(result.Candidate);
+        Assert.Equal(4423, result.Candidate.IntelligentGolfEventId);
+        Assert.Equal("Marc Bolton", result.Candidate.Name);
+        var request = Assert.Single(scenario.Requests);
+        Assert.Equal(HttpMethod.Get, request.Method);
+        Assert.Equal("/api/event-planner/events/lookup", request.Path);
+        Assert.Equal(
+            "?eventDate=2027-02-20&intelligentGolfEventId=4423",
+            request.Uri.Query);
+    }
+
+    [Fact]
+    public async Task LookupPlannerEventAsync_WhenPrivateApiReturnsAnotherId_RejectsTheResponse()
+    {
+        var scenario = new PrivateApiScenario(SynchronisedAt)
+        {
+            PlannerLookupCandidate = new IntelligentGolfPlannerEventCandidate
+            {
+                IntelligentGolfEventId = 9999,
+                Name = "Wrong event"
+            }
+        };
+        var integration = CreateIntegration(
+            scenario,
+            new RecordingLinkStore(),
+            new RecordingActivityStore());
+
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            integration.LookupPlannerEventAsync(
+                CreateSnapshot(),
+                4423,
+                CancellationToken.None));
+
+        Assert.Contains("not the requested entry 4423", exception.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task LookupPlannerEventAsync_WhenIdIsNotPositive_DoesNotCallPrivateApi()
+    {
+        var scenario = new PrivateApiScenario(SynchronisedAt);
+        var integration = CreateIntegration(
+            scenario,
+            new RecordingLinkStore(),
+            new RecordingActivityStore());
+
+        var exception = await Assert.ThrowsAsync<ArgumentException>(() =>
+            integration.LookupPlannerEventAsync(
+                CreateSnapshot(),
+                0,
+                CancellationToken.None));
+
+        Assert.Contains("greater than zero", exception.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Empty(scenario.Requests);
+    }
+
+    [Fact]
     public async Task RelinkExistingEventAsync_WhenTargetBelongsToAnotherEvent_DoesNotCallPrivateApiOrChangeLink()
     {
         var scenario = new PrivateApiScenario(SynchronisedAt);
@@ -294,6 +371,36 @@ public sealed class IntelligentGolfEventIntegrationTests
         var link = await linkStore.GetAsync("event-123", CancellationToken.None);
         Assert.Equal(4713, link?.IntelligentGolfEventId);
         Assert.Equal("action-required", Assert.Single(activityStore.Activities).Outcome);
+    }
+
+    [Theory]
+    [InlineData("planner-event-lookup-response")]
+    [InlineData("planner-event-lookup-date-mismatch")]
+    public async Task RelinkExistingEventAsync_WhenVerifiedTargetIsRejected_PreservesNonRetryableConflict(
+        string stage)
+    {
+        var scenario = new PrivateApiScenario(SynchronisedAt)
+        {
+            RelinkFailureStage = stage
+        };
+        var linkStore = new RecordingLinkStore();
+        linkStore.Seed(CreateExistingLink());
+        var integration = CreateIntegration(scenario, linkStore, new RecordingActivityStore());
+
+        var exception = await Assert.ThrowsAsync<IntelligentGolfApiRequestException>(() =>
+            integration.RelinkExistingEventAsync(
+                CreateSnapshot(),
+                expectedIntelligentGolfEventId: 4713,
+                intelligentGolfEventId: 4733,
+                CancellationToken.None));
+
+        Assert.Equal(409, exception.StatusCode);
+        Assert.Equal(stage, exception.Stage);
+        Assert.True(exception.RejectsPlannerTarget);
+        Assert.False(exception.Retryable);
+        var link = await linkStore.GetAsync("event-123", CancellationToken.None);
+        Assert.Equal(4713, link?.IntelligentGolfEventId);
+        Assert.Equal(4963, link?.IntelligentGolfDiaryEntryId);
     }
 
     [Fact]
@@ -503,6 +610,7 @@ public sealed class IntelligentGolfEventIntegrationTests
         public bool PauseDiaryResponse { get; init; }
         public int PlannerEventId { get; set; } = 4743;
         public IReadOnlyList<IntelligentGolfPlannerEventCandidate> PlannerCandidates { get; init; } = [];
+        public IntelligentGolfPlannerEventCandidate? PlannerLookupCandidate { get; init; }
         private readonly TaskCompletionSource<bool> _diaryRequestStarted =
             new(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly TaskCompletionSource<bool> _releaseDiaryResponse =
@@ -540,6 +648,16 @@ public sealed class IntelligentGolfEventIntegrationTests
                 });
             }
 
+            if (request.Method == HttpMethod.Get &&
+                request.Path == "/api/event-planner/events/lookup")
+            {
+                return Json(HttpStatusCode.OK, new
+                {
+                    eventDate = "2027-02-20",
+                    candidate = PlannerLookupCandidate
+                });
+            }
+
             if (request.Method == HttpMethod.Post &&
                 request.Path == "/api/event-planner/events/relink")
             {
@@ -569,6 +687,20 @@ public sealed class IntelligentGolfEventIntegrationTests
                         stage = RelinkFailureStage,
                         expectedIntelligentGolfEventId = 4713,
                         currentIntelligentGolfEventId = 4720,
+                        retryable = false
+                    });
+                }
+
+                if (string.Equals(RelinkFailureStage, "planner-event-lookup-response", StringComparison.Ordinal) ||
+                    string.Equals(RelinkFailureStage, "planner-event-lookup-date-mismatch", StringComparison.Ordinal))
+                {
+                    return Json(HttpStatusCode.Conflict, new
+                    {
+                        title = "That Intelligent Golf planner event cannot be linked.",
+                        detail = "The selected planner entry could not be verified for this event date.",
+                        stage = RelinkFailureStage,
+                        eventDate = "2027-02-20",
+                        intelligentGolfEventId = 4733,
                         retryable = false
                     });
                 }
