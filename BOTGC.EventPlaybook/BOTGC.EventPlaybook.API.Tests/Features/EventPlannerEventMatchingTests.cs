@@ -530,10 +530,11 @@ public sealed class EventPlannerEventMatchingTests
 
     private const string DayViewHtml = """
         <div class="calendar-day">
-          <a href="/event.php?eventid=4713"><span>Club Event:</span> Marc Bolton</a>
-          <a href="/event.php?eventid=4733&amp;tab=overview">BOTGC Event Planner: A Night with Marc Bolton</a>
-          <a href="/event.php?eventid=4713">Marc Bolton</a>
-          <a href="/event.php?eventid=4900">Adjacent-day navigation event</a>
+          <a href="/eventadmin.php?group=-1&amp;booking=4713"><span>Club Event:</span> Marc Bolton</a>
+          <a href="/eventadmin.php?booking=4733&amp;group=-1">BOTGC Event Planner: A Night with Marc Bolton</a>
+          <a href="/event.php?tab=overview&amp;eventid=4713">Marc Bolton</a>
+          <a href="/eventadmin.php?group=-1&amp;booking=4900">Adjacent-day navigation event</a>
+          <a href="/eventadmin.php?group=-1&amp;booking=-1&amp;date=12-12-2026">Add Event</a>
           <a href="/competition.php?compid=22">Unrelated competition</a>
         </div>
         """;

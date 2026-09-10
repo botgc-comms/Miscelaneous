@@ -718,9 +718,13 @@ internal static class IntelligentGolfPlannerEventDiscovery
                     ? hrefMatch.Groups["single"].Value
                     : hrefMatch.Groups["bare"].Value;
             href = WebUtility.HtmlDecode(href);
+            // The planner links an existing booking through eventadmin.php and IG then
+            // redirects to event.php. Some views link directly to event.php, so support
+            // both real navigation shapes rather than assuming the redirect target is
+            // present in the planner markup.
             var eventIdMatch = Regex.Match(
                 href,
-                @"(?:^|/)event\.php\?[^#]*?\beventid=(?<id>\d+)(?:[&#]|$)",
+                @"(?:^|/)(?:event\.php\?[^#]*?\beventid|eventadmin\.php\?[^#]*?\bbooking)=(?<id>\d+)(?:[&#]|$)",
                 RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
             if (!eventIdMatch.Success ||
                 !int.TryParse(

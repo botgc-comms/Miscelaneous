@@ -45,6 +45,8 @@ test('the relink dialog identifies the current entry and prevents conflicting ch
     const renderDialog = functionSource('renderIntelligentGolfPlannerLinkDialog');
 
     assert.match(normaliseCandidates, /linkedToAnotherPlaybookEvent/);
+    assert.match(normaliseCandidates, /currentPlannerEntryDiscovered/);
+    assert.doesNotMatch(normaliseCandidates, /candidates\.unshift/);
     assert.match(renderDialog, /id="ig-planner-link-dialog"/);
     assert.match(renderDialog, /name="ig-planner-link-candidate"/);
     assert.match(renderDialog, /Currently linked/i);
@@ -53,6 +55,8 @@ test('the relink dialog identifies the current entry and prevents conflicting ch
     assert.match(renderDialog, /disabled/);
     assert.match(renderDialog, /data-close-ig-planner-link/);
     assert.match(renderDialog, /data-confirm-ig-planner-link disabled/);
+    assert.match(renderDialog, /saved Event Playbook link, but it was not returned/);
+    assert.match(renderDialog, /returned no planner entries for this date/);
 });
 
 test('confirming a relink posts the chosen and expected current planner IDs', () => {

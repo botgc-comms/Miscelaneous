@@ -305,19 +305,12 @@
         .filter(candidate => candidate.intelligentGolfEventId > 0)
       : [];
 
-    if (currentPlannerEntryId && !candidates.some(candidate => candidate.intelligentGolfEventId === currentPlannerEntryId)) {
-      candidates.unshift({
-        intelligentGolfEventId: currentPlannerEntryId,
-        name: `Planner entry ${currentPlannerEntryId}`,
-        current: true,
-        linkedToAnotherPlaybookEvent: false
-      });
-    }
-
     return {
       currentPlannerEntryId,
       eventDate: String(value?.eventDate ?? ''),
-      candidates
+      candidates,
+      currentPlannerEntryDiscovered: Boolean(currentPlannerEntryId) &&
+        candidates.some(candidate => candidate.intelligentGolfEventId === currentPlannerEntryId)
     };
   }
 
@@ -2981,6 +2974,8 @@
     const status = intelligentGolfEventStatuses.get(event.id);
     const currentPlannerEntryId = Number(dialogState.currentPlannerEntryId) || Number(status?.plannerEntryId) || 0;
     const candidates = Array.isArray(dialogState.candidates) ? dialogState.candidates : [];
+    const currentPlannerEntryDiscovered = candidates.some(candidate =>
+      candidate.intelligentGolfEventId === currentPlannerEntryId);
     const selectableAlternative = candidates.some(candidate =>
       !candidate.current && !candidate.linkedToAnotherPlaybookEvent);
     const diaryWarning = status?.diaryEntryId
@@ -2997,7 +2992,11 @@
           <span class="eyebrow">Event Playbook event</span>
           <h3>${escapeHtml(event.name)}</h3>
           <p>${escapeHtml(formatDate(dialogState.eventDate || event.eventDate))}</p>
-          <div><strong>Currently linked to planner entry ${currentPlannerEntryId}</strong><span>Selecting another entry changes only Event Playbook’s link.</span></div>
+          <div><strong>Currently linked to planner entry ${currentPlannerEntryId}</strong><span>${dialogState.loading
+            ? 'Checking this saved link against the Intelligent Golf planner…'
+            : currentPlannerEntryDiscovered
+              ? 'Selecting another entry changes only Event Playbook’s link.'
+              : 'This is the saved Event Playbook link, but it was not returned by the latest Intelligent Golf planner lookup.'}</span></div>
         </section>
         ${dialogState.loading
           ? '<div class="ig-planner-link-loading" role="status"><span aria-hidden="true"></span><div><strong>Checking the Intelligent Golf planner…</strong><p>Finding planner entries on this event date.</p></div></div>'
@@ -3016,7 +3015,11 @@
                   <span><strong>${escapeHtml(candidate.name)}</strong><small>Intelligent Golf planner entry ${candidate.intelligentGolfEventId} · ${details}</small></span>
                 </label>`;
               }).join('')}
-              ${selectableAlternative ? '' : '<p class="ig-planner-link-empty">No other available planner entries were found on this date.</p>'}
+              ${selectableAlternative
+                ? ''
+                : candidates.length === 0
+                  ? '<p class="ig-planner-link-empty">Intelligent Golf returned no planner entries for this date. The saved link could not be verified.</p>'
+                  : '<p class="ig-planner-link-empty">No other available planner entries were found on this date.</p>'}
             </fieldset>`}
         <div class="ig-planner-link-warning">
           <strong>No Intelligent Golf entry will be edited or deleted</strong>
@@ -3100,6 +3103,7 @@
         eventDate: loaded.eventDate || event.eventDate,
         currentPlannerEntryId: loaded.currentPlannerEntryId,
         candidates: loaded.candidates,
+        currentPlannerEntryDiscovered: loaded.currentPlannerEntryDiscovered,
         loading: false,
         error: ''
       };
