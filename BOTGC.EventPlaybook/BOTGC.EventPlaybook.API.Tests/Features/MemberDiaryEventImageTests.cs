@@ -21,6 +21,8 @@ public sealed class MemberDiaryEventImageTests
     {
         var transport = new RecordingTransport(call => call.Path switch
         {
+            var path when call.Method == HttpMethod.Get && path == $"/event.php?eventid={PlannerEventId}" =>
+                Response(EmptyDiarySectionHtml),
             var path when call.Method == HttpMethod.Get && path.Contains("ajaxaction=addtodiary", StringComparison.Ordinal) =>
                 Response(CreatedDiaryResponse),
             "/diaryadmin.php?&requestType=ajax&ajaxaction=editnow" => Response(string.Empty),
@@ -41,6 +43,7 @@ public sealed class MemberDiaryEventImageTests
         Assert.Equal(DiaryEntryId, result.IntelligentGolfDiaryEntryId);
         Assert.Collection(
             transport.Calls,
+            call => Assert.Equal($"/event.php?eventid={PlannerEventId}", call.Path),
             call => Assert.Contains("ajaxaction=addtodiary", call.Path, StringComparison.Ordinal),
             call => Assert.Equal("/diaryadmin.php?&requestType=ajax&ajaxaction=editnow", call.Path),
             call =>
@@ -74,6 +77,8 @@ public sealed class MemberDiaryEventImageTests
     {
         var transport = new RecordingTransport(call => call.Path switch
         {
+            var path when call.Method == HttpMethod.Get && path == $"/event.php?eventid={PlannerEventId}" =>
+                Response(EmptyDiarySectionHtml),
             var path when call.Method == HttpMethod.Get && path.Contains("ajaxaction=addtodiary", StringComparison.Ordinal) =>
                 Response(CreatedDiaryResponse),
             "/diaryadmin.php?&requestType=ajax&ajaxaction=editnow" =>
@@ -98,6 +103,8 @@ public sealed class MemberDiaryEventImageTests
     {
         var transport = new RecordingTransport(call => call.Path switch
         {
+            var path when call.Method == HttpMethod.Get && path == $"/event.php?eventid={PlannerEventId}" =>
+                Response(EmptyDiarySectionHtml),
             var path when call.Method == HttpMethod.Get && path.Contains("ajaxaction=addtodiary", StringComparison.Ordinal) =>
                 Response(CreatedDiaryResponse),
             "/diaryadmin.php?&requestType=ajax&ajaxaction=editnow" => Response(string.Empty),
@@ -129,6 +136,8 @@ public sealed class MemberDiaryEventImageTests
     {
         var transport = new RecordingTransport(call => call.Path switch
         {
+            var path when call.Method == HttpMethod.Get && path == $"/event.php?eventid={PlannerEventId}" =>
+                Response(EmptyDiarySectionHtml),
             var path when call.Method == HttpMethod.Get && path.Contains("ajaxaction=addtodiary", StringComparison.Ordinal) =>
                 Response(CreatedDiaryResponse),
             "/diaryadmin.php?&requestType=ajax&ajaxaction=editnow" => Response(string.Empty),
@@ -192,7 +201,7 @@ public sealed class MemberDiaryEventImageTests
 
         Assert.False(retry.Created);
         Assert.True(retry.EventImageAttached);
-        Assert.Single(transport.Calls, call => call.Path.Contains("ajaxaction=addtodiary", StringComparison.Ordinal));
+        Assert.DoesNotContain(transport.Calls, call => call.Path.Contains("ajaxaction=addtodiary", StringComparison.Ordinal));
         Assert.Single(transport.Calls, call => call.Path.Contains("ajaxaction=editnow", StringComparison.Ordinal));
         Assert.Equal(2, transport.Calls.Count(call => call.IsMultipart));
         Assert.Single(transport.Calls, call => call.Path.Contains("ajaxaction=eventdetailssave", StringComparison.Ordinal));
@@ -294,10 +303,13 @@ public sealed class MemberDiaryEventImageTests
     [Fact]
     public async Task Publish_WhenLinkedDiaryStillExists_KeepsTheCachedNoOpBehaviour()
     {
+        var plannerReadCount = 0;
         var transport = new RecordingTransport(call => call.Path switch
         {
             var path when call.Method == HttpMethod.Get && path == $"/event.php?eventid={PlannerEventId}" =>
-                Response("<div id=\"event_overview_diary\"><a data-ajax-action=\"editdiary\" data-ajax-data-inline-id=\"4963\">Edit</a></div>"),
+                Response(++plannerReadCount == 1
+                    ? EmptyDiarySectionHtml
+                    : "<div id=\"event_overview_diary\"><a data-ajax-action=\"editdiary\" data-ajax-data-inline-id=\"4963\">Edit</a></div>"),
             var path when call.Method == HttpMethod.Get && path.Contains("ajaxaction=addtodiary", StringComparison.Ordinal) =>
                 Response(CreatedDiaryResponse),
             "/diaryadmin.php?&requestType=ajax&ajaxaction=editnow" => Response(string.Empty),
@@ -325,17 +337,20 @@ public sealed class MemberDiaryEventImageTests
         Assert.Single(transport.Calls, call => call.Path.Contains("ajaxaction=editnow", StringComparison.Ordinal));
         Assert.Single(transport.Calls, call => call.IsMultipart);
         Assert.Single(transport.Calls, call => call.Path.Contains("ajaxaction=eventdetailssave", StringComparison.Ordinal));
-        Assert.Single(transport.Calls, call => call.Path == $"/event.php?eventid={PlannerEventId}");
+        Assert.Equal(2, transport.Calls.Count(call => call.Path == $"/event.php?eventid={PlannerEventId}"));
     }
 
     [Fact]
     public async Task Publish_WhenPlannerHasDifferentLinkedDiary_AdoptsItWithoutCreatingAnotherEntry()
     {
         const int replacementDiaryEntryId = 4999;
+        var plannerReadCount = 0;
         var transport = new RecordingTransport(call => call.Path switch
         {
             var path when call.Method == HttpMethod.Get && path == $"/event.php?eventid={PlannerEventId}" =>
-                Response("<div id='event_overview_diary'><a data-ajax-data-inline-id='4999' class='btn' data-ajax-method='get' data-ajax-action='editdiary'>Edit</a></div>"),
+                Response(++plannerReadCount == 1
+                    ? EmptyDiarySectionHtml
+                    : "<div id='event_overview_diary'><a data-ajax-data-inline-id='4999' class='btn' data-ajax-method='get' data-ajax-action='editdiary'>Edit</a></div>"),
             var path when call.Method == HttpMethod.Get && path.Contains("ajaxaction=addtodiary", StringComparison.Ordinal) =>
                 Response(CreatedDiaryResponse),
             "/diaryadmin.php?&requestType=ajax&ajaxaction=editnow" => Response(string.Empty),
@@ -389,15 +404,12 @@ public sealed class MemberDiaryEventImageTests
 
         var exception = await Assert.ThrowsAsync<IntelligentGolfMutationException>(() =>
             handler.Handle(
-                new PublishPlannerDiaryCommand(CreateRequest() with
-                {
-                    IntelligentGolfDiaryEntryId = DiaryEntryId
-                }),
+                new PublishPlannerDiaryCommand(CreateRequest()),
                 CancellationToken.None));
 
         Assert.Equal("member-diary-existence-check", exception.Stage);
         Assert.Equal(PlannerEventId, exception.IntelligentGolfEventId);
-        Assert.Equal(DiaryEntryId, exception.IntelligentGolfRecordId);
+        Assert.Null(exception.IntelligentGolfRecordId);
         var check = Assert.Single(transport.Calls);
         Assert.Equal(HttpMethod.Get, check.Method);
         Assert.Equal($"/event.php?eventid={PlannerEventId}", check.Path);
@@ -420,15 +432,12 @@ public sealed class MemberDiaryEventImageTests
 
         var exception = await Assert.ThrowsAsync<IntelligentGolfMutationException>(() =>
             handler.Handle(
-                new PublishPlannerDiaryCommand(CreateRequest() with
-                {
-                    IntelligentGolfDiaryEntryId = DiaryEntryId
-                }),
+                new PublishPlannerDiaryCommand(CreateRequest()),
                 CancellationToken.None));
 
         Assert.Equal("member-diary-existence-check", exception.Stage);
         Assert.Equal(PlannerEventId, exception.IntelligentGolfEventId);
-        Assert.Equal(DiaryEntryId, exception.IntelligentGolfRecordId);
+        Assert.Null(exception.IntelligentGolfRecordId);
         Assert.Contains("4963", exception.ResponseDetail, StringComparison.Ordinal);
         Assert.Contains("4999", exception.ResponseDetail, StringComparison.Ordinal);
         var check = Assert.Single(transport.Calls);
@@ -437,7 +446,7 @@ public sealed class MemberDiaryEventImageTests
     }
 
     [Fact]
-    public async Task Publish_WhenCallerOmitsCachedDiaryId_StillChecksTheAuthoritativePlannerPage()
+    public async Task Publish_WhenNoDiaryIdIsKnown_AdoptsTheTargetsExistingDiaryWithoutCreatingAnother()
     {
         var transport = new RecordingTransport(call => call.Path switch
         {
@@ -454,17 +463,14 @@ public sealed class MemberDiaryEventImageTests
         });
         var handler = CreateHandler(transport, new JsonCache());
 
-        await handler.Handle(
-            new PublishPlannerDiaryCommand(CreateRequest()),
-            CancellationToken.None);
-        var unchanged = await handler.Handle(
+        var published = await handler.Handle(
             new PublishPlannerDiaryCommand(CreateRequest()),
             CancellationToken.None);
 
-        Assert.False(unchanged.Created);
-        Assert.Equal(DiaryEntryId, unchanged.IntelligentGolfDiaryEntryId);
+        Assert.False(published.Created);
+        Assert.Equal(DiaryEntryId, published.IntelligentGolfDiaryEntryId);
         Assert.Single(transport.Calls, call => call.Path == $"/event.php?eventid={PlannerEventId}");
-        Assert.Single(transport.Calls, call => call.Path.Contains("ajaxaction=addtodiary", StringComparison.Ordinal));
+        Assert.DoesNotContain(transport.Calls, call => call.Path.Contains("ajaxaction=addtodiary", StringComparison.Ordinal));
         Assert.Single(transport.Calls, call => call.Path.Contains("ajaxaction=editnow", StringComparison.Ordinal));
         Assert.Single(transport.Calls, call => call.IsMultipart);
         Assert.Single(transport.Calls, call => call.Path.Contains("ajaxaction=eventdetailssave", StringComparison.Ordinal));
@@ -475,6 +481,8 @@ public sealed class MemberDiaryEventImageTests
     {
         var transport = new RecordingTransport(call => call.Path switch
         {
+            var path when call.Method == HttpMethod.Get && path == $"/event.php?eventid={PlannerEventId}" =>
+                Response(EmptyDiarySectionHtml),
             var path when call.Method == HttpMethod.Get && path.Contains("ajaxaction=addtodiary", StringComparison.Ordinal) =>
                 Response(CreatedDiaryResponse),
             "/diaryadmin.php?&requestType=ajax&ajaxaction=editnow" => Response(string.Empty),
@@ -500,6 +508,8 @@ public sealed class MemberDiaryEventImageTests
         var saveCount = 0;
         var transport = new RecordingTransport(call => call.Path switch
         {
+            var path when call.Method == HttpMethod.Get && path == $"/event.php?eventid={PlannerEventId}" =>
+                Response(EmptyDiarySectionHtml),
             var path when call.Method == HttpMethod.Get && path.Contains("ajaxaction=addtodiary", StringComparison.Ordinal) =>
                 Response(CreatedDiaryResponse),
             "/diaryadmin.php?&requestType=ajax&ajaxaction=editnow" => Response(string.Empty),
@@ -581,6 +591,9 @@ public sealed class MemberDiaryEventImageTests
 
     private const string CreatedDiaryResponse =
         "{\"actions\":[{\"type\":\"replace\",\"html\":\"<a data-ajax-action=\\\"editdiary\\\" data-ajax-data-inline-id=\\\"4963\\\">Edit</a>\"}]}";
+
+    private const string EmptyDiarySectionHtml =
+        "<div id=\"event_overview_diary\"><a data-ajax-action=\"addtodiary\">Add</a></div>";
 
     private sealed class RecordingTransport(
         Func<TransportCall, IntelligentGolfTransportResponse> responder) : IIntelligentGolfTransport

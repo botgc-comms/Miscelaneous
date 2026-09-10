@@ -35,6 +35,10 @@ public sealed record IntelligentGolfPlannerEventCandidate(
     int IntelligentGolfEventId,
     string Name);
 
+public sealed record PlannerEventCandidatesResult(
+    DateOnly EventDate,
+    IReadOnlyList<IntelligentGolfPlannerEventCandidate> Candidates);
+
 public sealed class IntelligentGolfPlannerMatchRequiredException(
     DateOnly eventDate,
     IReadOnlyList<IntelligentGolfPlannerEventCandidate> candidates,
@@ -54,6 +58,18 @@ public sealed class IntelligentGolfPlannerMatchRequiredException(
         "Choose one to adopt or explicitly create a separate event.";
 }
 
+public sealed class IntelligentGolfPlannerRelinkConflictException(
+    int expectedIntelligentGolfEventId,
+    int currentIntelligentGolfEventId)
+    : Exception(
+        $"This Event Playbook event is now linked to Intelligent Golf event {currentIntelligentGolfEventId}, " +
+        $"not the expected event {expectedIntelligentGolfEventId}. Refresh the event before trying again.")
+{
+    public string Stage { get; } = "planner-event-relink-conflict";
+    public int ExpectedIntelligentGolfEventId { get; } = expectedIntelligentGolfEventId;
+    public int CurrentIntelligentGolfEventId { get; } = currentIntelligentGolfEventId;
+}
+
 public sealed record AdoptPlannerEventRequest(
     string EventPlaybookEventId,
     DateOnly EventDate,
@@ -64,6 +80,19 @@ public sealed record AdoptPlannerEventResult(
     int IntelligentGolfEventId,
     bool Adopted,
     DateTimeOffset AdoptedAtUtc);
+
+public sealed record RelinkPlannerEventRequest(
+    string EventPlaybookEventId,
+    DateOnly EventDate,
+    int ExpectedIntelligentGolfEventId,
+    int IntelligentGolfEventId);
+
+public sealed record RelinkPlannerEventResult(
+    string EventPlaybookEventId,
+    int PreviousIntelligentGolfEventId,
+    int IntelligentGolfEventId,
+    bool Relinked,
+    DateTimeOffset RelinkedAtUtc);
 
 public sealed record PublishPlannerDiaryRequest(
     string EventPlaybookEventId,
@@ -95,8 +124,14 @@ public sealed record PublishPlannerDiaryResult(
 public sealed record SynchronisePlannerEventCommand(
     SynchronisePlannerEventRequest Request) : IRequest<SynchronisePlannerEventResult>;
 
+public sealed record ListPlannerEventCandidatesQuery(
+    DateOnly EventDate) : IRequest<PlannerEventCandidatesResult>;
+
 public sealed record AdoptPlannerEventCommand(
     AdoptPlannerEventRequest Request) : IRequest<AdoptPlannerEventResult>;
+
+public sealed record RelinkPlannerEventCommand(
+    RelinkPlannerEventRequest Request) : IRequest<RelinkPlannerEventResult>;
 
 public sealed record PublishPlannerDiaryCommand(
     PublishPlannerDiaryRequest Request) : IRequest<PublishPlannerDiaryResult>;
@@ -385,6 +420,24 @@ public sealed class SynchronisePlannerEventHandler(
     private sealed record ExternalEventLink(int IntelligentGolfEventId);
 }
 
+public sealed class ListPlannerEventCandidatesHandler(IIntelligentGolfTransport transport)
+    : IRequestHandler<ListPlannerEventCandidatesQuery, PlannerEventCandidatesResult>
+{
+    public async Task<PlannerEventCandidatesResult> Handle(
+        ListPlannerEventCandidatesQuery query,
+        CancellationToken cancellationToken)
+    {
+        if (query.EventDate == default)
+            throw new ArgumentException("The event date is required.");
+
+        var candidates = await IntelligentGolfPlannerEventDiscovery.FindByDateAsync(
+            transport,
+            query.EventDate,
+            cancellationToken);
+        return new PlannerEventCandidatesResult(query.EventDate, candidates);
+    }
+}
+
 public sealed class AdoptPlannerEventHandler(
     IIntelligentGolfTransport transport,
     ICacheService cache,
@@ -467,6 +520,109 @@ public sealed class AdoptPlannerEventHandler(
 
     private static string EventCacheKey(string eventPlaybookEventId) =>
         $"intelligent-golf:event-link:{eventPlaybookEventId.Trim().ToLowerInvariant()}";
+
+    private sealed record ExternalEventLink(int IntelligentGolfEventId);
+}
+
+public sealed class RelinkPlannerEventHandler(
+    IIntelligentGolfTransport transport,
+    ICacheService cache,
+    IDistributedLockManager lockManager,
+    ILogger<RelinkPlannerEventHandler> logger)
+    : IRequestHandler<RelinkPlannerEventCommand, RelinkPlannerEventResult>
+{
+    private static readonly TimeSpan LinkLifetime = TimeSpan.FromDays(3650);
+
+    public async Task<RelinkPlannerEventResult> Handle(
+        RelinkPlannerEventCommand command,
+        CancellationToken cancellationToken)
+    {
+        var request = command.Request;
+        if (string.IsNullOrWhiteSpace(request.EventPlaybookEventId))
+            throw new ArgumentException("The Event Playbook event ID is required.");
+        if (request.EventDate == default)
+            throw new ArgumentException("The event date is required.");
+        if (request.ExpectedIntelligentGolfEventId <= 0)
+            throw new ArgumentException("The current Intelligent Golf event ID is required.");
+        if (request.IntelligentGolfEventId <= 0)
+            throw new ArgumentException("A valid replacement Intelligent Golf event ID is required.");
+
+        var eventPlaybookEventId = request.EventPlaybookEventId.Trim();
+        var eventCacheKey = EventCacheKey(eventPlaybookEventId);
+        await using var relinkLock = await lockManager.AcquireAsync(
+            $"intelligent-golf:event-allocation:{eventPlaybookEventId.ToLowerInvariant()}",
+            cancellationToken);
+        if (!relinkLock.IsAcquired)
+        {
+            throw new TimeoutException(
+                "Another request is currently linking this Intelligent Golf event. Try again shortly.");
+        }
+
+        var existingLink = await cache.GetAsync<ExternalEventLink>(eventCacheKey, cancellationToken);
+        var alreadyPointsAtTarget = existingLink?.IntelligentGolfEventId == request.IntelligentGolfEventId;
+        if (!alreadyPointsAtTarget &&
+            existingLink?.IntelligentGolfEventId is > 0 &&
+            existingLink.IntelligentGolfEventId != request.ExpectedIntelligentGolfEventId)
+        {
+            throw new IntelligentGolfPlannerRelinkConflictException(
+                request.ExpectedIntelligentGolfEventId,
+                existingLink.IntelligentGolfEventId);
+        }
+
+        var candidates = await IntelligentGolfPlannerEventDiscovery.FindByDateAsync(
+            transport,
+            request.EventDate,
+            cancellationToken);
+        if (candidates.All(candidate => candidate.IntelligentGolfEventId != request.IntelligentGolfEventId))
+        {
+            throw new IntelligentGolfPlannerMatchRequiredException(
+                request.EventDate,
+                candidates,
+                "planner-event-relink-target-unavailable",
+                candidates.Count == 0
+                    ? $"Intelligent Golf event {request.IntelligentGolfEventId} is not present on {request.EventDate:yyyy-MM-dd}. Refresh the available events before choosing again."
+                    : "The Intelligent Golf events on this date have changed. Choose one of the refreshed events.");
+        }
+
+        if (alreadyPointsAtTarget)
+        {
+            return new RelinkPlannerEventResult(
+                eventPlaybookEventId,
+                request.IntelligentGolfEventId,
+                request.IntelligentGolfEventId,
+                false,
+                DateTimeOffset.UtcNow);
+        }
+
+        // The diary link is scoped to the old planner entry. Remove only the
+        // Playbook-event cache before changing the event link. Planner-scoped
+        // diary caches continue to describe their real Intelligent Golf records.
+        await cache.RemoveAsync(DiaryCacheKey(eventPlaybookEventId), cancellationToken);
+        await cache.SetAsync(
+            eventCacheKey,
+            new ExternalEventLink(request.IntelligentGolfEventId),
+            LinkLifetime,
+            cancellationToken);
+
+        var relinkedAt = DateTimeOffset.UtcNow;
+        logger.LogInformation(
+            "Re-linked Event Playbook event {EventPlaybookEventId} from Intelligent Golf event {PreviousIntelligentGolfEventId} to {IntelligentGolfEventId} without changing either planner entry.",
+            eventPlaybookEventId,
+            request.ExpectedIntelligentGolfEventId,
+            request.IntelligentGolfEventId);
+        return new RelinkPlannerEventResult(
+            eventPlaybookEventId,
+            request.ExpectedIntelligentGolfEventId,
+            request.IntelligentGolfEventId,
+            true,
+            relinkedAt);
+    }
+
+    private static string EventCacheKey(string eventPlaybookEventId) =>
+        $"intelligent-golf:event-link:{eventPlaybookEventId.Trim().ToLowerInvariant()}";
+
+    private static string DiaryCacheKey(string eventPlaybookEventId) =>
+        $"intelligent-golf:diary-link:{eventPlaybookEventId.Trim().ToLowerInvariant()}";
 
     private sealed record ExternalEventLink(int IntelligentGolfEventId);
 }
@@ -680,37 +836,43 @@ public sealed class PublishPlannerDiaryHandler(
             ? request.IntelligentGolfDiaryEntryId
             : link?.IntelligentGolfDiaryEntryId;
 
-        // An administrator can remove or replace the member diary entry directly
-        // in Intelligent Golf. Confirm every stored link against the planner page
-        // before trusting cached fingerprints; otherwise an unchanged publish can
-        // silently retain an ID which no longer exists.
-        if (diaryId is > 0)
+        // The target planner entry is authoritative. This also covers an event
+        // which has just been re-linked: its new planner may already have a diary
+        // entry even though no Playbook-event diary ID is cached yet.
+        var previousDiaryId = diaryId;
+        var linkedDiaryId = await FindLinkedDiaryIdAsync(request, previousDiaryId, cancellationToken);
+        if (linkedDiaryId != previousDiaryId)
         {
-            var staleDiaryId = diaryId.Value;
-            var linkedDiaryId = await FindLinkedDiaryIdAsync(request, staleDiaryId, cancellationToken);
-            if (linkedDiaryId != staleDiaryId)
-            {
-                diaryId = linkedDiaryId;
-                link = linkedDiaryId is > 0
-                    ? new ExternalDiaryLink { IntelligentGolfDiaryEntryId = linkedDiaryId.Value }
-                    : null;
+            diaryId = linkedDiaryId;
+            link = linkedDiaryId is > 0
+                ? new ExternalDiaryLink { IntelligentGolfDiaryEntryId = linkedDiaryId.Value }
+                : null;
 
-                if (link is not null)
+            if (link is not null)
+            {
+                await SaveDiaryLinksAsync(cacheKey, plannerCacheKey, link, cancellationToken);
+                if (previousDiaryId is > 0)
                 {
-                    await SaveDiaryLinksAsync(cacheKey, plannerCacheKey, link, cancellationToken);
                     logger.LogInformation(
                         "Re-linked Event Playbook event {EventPlaybookEventId} from stale diary entry {StaleDiaryEntryId} to Intelligent Golf diary entry {DiaryEntryId}.",
                         request.EventPlaybookEventId,
-                        staleDiaryId,
+                        previousDiaryId,
                         linkedDiaryId);
                 }
                 else
                 {
                     logger.LogInformation(
-                        "Intelligent Golf diary entry {StaleDiaryEntryId} is no longer linked to planner event {IntelligentGolfEventId}; a replacement will be created.",
-                        staleDiaryId,
+                        "Adopted existing Intelligent Golf diary entry {DiaryEntryId} from planner event {IntelligentGolfEventId}.",
+                        linkedDiaryId,
                         request.IntelligentGolfEventId);
                 }
+            }
+            else if (previousDiaryId is > 0)
+            {
+                logger.LogInformation(
+                    "Intelligent Golf diary entry {StaleDiaryEntryId} is no longer linked to planner event {IntelligentGolfEventId}; a replacement will be created.",
+                    previousDiaryId,
+                    request.IntelligentGolfEventId);
             }
         }
 
@@ -859,7 +1021,7 @@ public sealed class PublishPlannerDiaryHandler(
 
     private async Task<int?> FindLinkedDiaryIdAsync(
         PublishPlannerDiaryRequest request,
-        int expectedDiaryId,
+        int? expectedDiaryId,
         CancellationToken cancellationToken)
     {
         IntelligentGolfTransportResponse response;
@@ -877,7 +1039,9 @@ public sealed class PublishPlannerDiaryHandler(
         {
             throw new IntelligentGolfMutationException(
                 "member-diary-existence-check",
-                $"Event Playbook could not confirm whether diary entry {expectedDiaryId} is still linked to Intelligent Golf planner entry {request.IntelligentGolfEventId}.",
+                expectedDiaryId is > 0
+                    ? $"Event Playbook could not confirm whether diary entry {expectedDiaryId} is still linked to Intelligent Golf planner entry {request.IntelligentGolfEventId}."
+                    : $"Event Playbook could not check whether Intelligent Golf planner entry {request.IntelligentGolfEventId} already has a member diary entry.",
                 request.IntelligentGolfEventId,
                 expectedDiaryId,
                 exception.Message,
@@ -1482,6 +1646,15 @@ public static class EventPlannerFeatureExtensions
 
     public static IEndpointRouteBuilder MapEventPlannerEndpoints(this IEndpointRouteBuilder endpoints)
     {
+        endpoints.MapGet(
+                "/api/event-planner/events/candidates",
+                async (DateOnly eventDate, IMediator mediator, CancellationToken cancellationToken) =>
+                    Results.Ok(await mediator.Send(new ListPlannerEventCandidatesQuery(eventDate), cancellationToken)))
+            .WithName("ListPlannerEventCandidates")
+            .WithTags("Event planner")
+            .WithSummary("List Intelligent Golf planner events on an event date")
+            .Produces<PlannerEventCandidatesResult>();
+
         endpoints.MapPost(
                 "/api/event-planner/events/synchronise",
                 async (SynchronisePlannerEventRequest request, IMediator mediator, CancellationToken cancellationToken) =>
@@ -1500,6 +1673,16 @@ public static class EventPlannerFeatureExtensions
             .WithTags("Event planner")
             .WithSummary("Link an Event Playbook event to an existing same-day Intelligent Golf event without changing it")
             .Produces<AdoptPlannerEventResult>()
+            .ProducesProblem(StatusCodes.Status409Conflict);
+
+        endpoints.MapPost(
+                "/api/event-planner/events/relink",
+                async (RelinkPlannerEventRequest request, IMediator mediator, CancellationToken cancellationToken) =>
+                    Results.Ok(await mediator.Send(new RelinkPlannerEventCommand(request), cancellationToken)))
+            .WithName("RelinkPlannerEvent")
+            .WithTags("Event planner")
+            .WithSummary("Switch an Event Playbook event to another same-day Intelligent Golf planner event without changing either planner entry")
+            .Produces<RelinkPlannerEventResult>()
             .ProducesProblem(StatusCodes.Status409Conflict);
 
         endpoints.MapPut(

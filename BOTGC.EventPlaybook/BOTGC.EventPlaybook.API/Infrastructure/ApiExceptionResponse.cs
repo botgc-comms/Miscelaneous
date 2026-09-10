@@ -12,6 +12,8 @@ public static class ApiExceptionResponse
 
         var (status, title) = exception switch
         {
+            IntelligentGolfPlannerRelinkConflictException relinkConflict =>
+                (StatusCodes.Status409Conflict, relinkConflict.Message),
             IntelligentGolfPlannerMatchRequiredException matchRequired =>
                 (StatusCodes.Status409Conflict, matchRequired.Message),
             IntelligentGolfEmailSenderNotConfiguredException sender =>
@@ -34,7 +36,16 @@ public static class ApiExceptionResponse
 
         var mutation = exception as IntelligentGolfMutationException;
         var match = exception as IntelligentGolfPlannerMatchRequiredException;
-        var extensions = match is not null
+        var relinkException = exception as IntelligentGolfPlannerRelinkConflictException;
+        var extensions = relinkException is not null
+            ? new Dictionary<string, object?>
+            {
+                ["stage"] = relinkException.Stage,
+                ["expectedIntelligentGolfEventId"] = relinkException.ExpectedIntelligentGolfEventId,
+                ["currentIntelligentGolfEventId"] = relinkException.CurrentIntelligentGolfEventId,
+                ["retryable"] = false
+            }
+            : match is not null
             ? new Dictionary<string, object?>
             {
                 ["stage"] = match.Stage,

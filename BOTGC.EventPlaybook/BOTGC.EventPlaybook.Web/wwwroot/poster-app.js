@@ -1361,6 +1361,9 @@ async function initialise(session) {
     wireEvents(session);
     updateSourceDesignUi(session);
     configureShareConnections(session);
+    if (session.config?.memberDiary?.configured) {
+        refreshMemberDiaryIntegrationStatus(session);
+    }
     updateAutomaticReferenceSelection(session);
     restoreSessionToDom(session);
     scheduleSessionPersistence(session, false);
@@ -3936,6 +3939,38 @@ async function openMemberDiaryDialog() {
     }
 }
 
+function reconcileMemberDiaryPublication(session, status) {
+    const publication = session?.diaryPublication;
+    if (!publication) return false;
+
+    const linkedPlannerEntryId = Number(status?.plannerEntryId) || 0;
+    const linkedDiaryEntryId = Number(status?.diaryEntryId) || 0;
+    const publishedPlannerEntryId = Number(publication.externalId) || 0;
+    const publishedDiaryEntryId = Number(publication.remoteId) || 0;
+    const plannerChanged = linkedPlannerEntryId > 0 &&
+        publishedPlannerEntryId > 0 &&
+        linkedPlannerEntryId !== publishedPlannerEntryId;
+    const diaryChanged = linkedDiaryEntryId > 0 &&
+        publishedDiaryEntryId > 0 &&
+        linkedDiaryEntryId !== publishedDiaryEntryId;
+
+    if (linkedDiaryEntryId > 0 && !plannerChanged && !diaryChanged) return false;
+
+    session.diaryPublication = null;
+    scheduleSessionPersistence(session);
+    if (isSessionVisible(session)) {
+        configureShareConnections(session);
+        elements.diaryDialogConfirm.textContent = 'Add to member diary';
+        if (elements.diaryDialog?.open) {
+            elements.diaryDialogMessage.textContent = plannerChanged
+                ? 'The linked Intelligent Golf planner event has changed. Publishing will create the appropriate member diary entry for the newly linked event.'
+                : 'The previously saved member diary association is no longer current. Publishing will establish the appropriate entry for this planner event.';
+            elements.diaryDialogMessage.className = 'poster-publish-dialog-message';
+        }
+    }
+    return true;
+}
+
 async function refreshMemberDiaryIntegrationStatus(session) {
     const eventId = session.context?.eventId || session.key;
     if (!eventId || !elements.diaryConnectionStatus) return;
@@ -3946,6 +3981,8 @@ async function refreshMemberDiaryIntegrationStatus(session) {
         });
         if (!response.ok) return;
         const status = await response.json();
+        reconcileMemberDiaryPublication(session, status);
+        if (!isSessionVisible(session)) return;
         if (status.lastError) {
             const failedStage = memberDiaryStageLabel(status.lastErrorStage);
             const stage = failedStage ? ` The last attempt failed while ${failedStage}.` : '';

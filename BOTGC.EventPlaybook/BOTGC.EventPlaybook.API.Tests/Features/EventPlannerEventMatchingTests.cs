@@ -303,6 +303,178 @@ public sealed class EventPlannerEventMatchingTests
         Assert.Empty(problem.RootElement.GetProperty("candidates").EnumerateArray());
     }
 
+    [Fact]
+    public async Task ListCandidates_ReturnsSameDayPlannerEventsWithoutMutatingIntelligentGolf()
+    {
+        var transport = CreateDiscoveryTransport();
+        var handler = new ListPlannerEventCandidatesHandler(transport);
+
+        var result = await handler.Handle(
+            new ListPlannerEventCandidatesQuery(EventDate),
+            CancellationToken.None);
+
+        Assert.Equal(EventDate, result.EventDate);
+        Assert.Equal([4713, 4733], result.Candidates.Select(candidate => candidate.IntelligentGolfEventId));
+        Assert.All(transport.Requests, request => Assert.Equal(HttpMethod.Get, request.Method));
+    }
+
+    [Fact]
+    public async Task Relink_SwitchesToSameDayPlannerEventAndClearsOnlyEventScopedDiaryCache()
+    {
+        var transport = CreateDiscoveryTransport();
+        var cache = new JsonCache();
+        await SeedCacheAsync(cache, "intelligent-golf:event-link:event-123", new { IntelligentGolfEventId = 4733 });
+        await SeedCacheAsync(cache, "intelligent-golf:diary-link:event-123", new { IntelligentGolfDiaryEntryId = 4963 });
+        await SeedCacheAsync(cache, "intelligent-golf:diary-link:planner:4733", new { IntelligentGolfDiaryEntryId = 4963 });
+        await SeedCacheAsync(cache, "intelligent-golf:diary-link:planner:4713", new { IntelligentGolfDiaryEntryId = 4999 });
+        var handler = CreateRelinkHandler(transport, cache);
+
+        var result = await handler.Handle(
+            new RelinkPlannerEventCommand(
+                new RelinkPlannerEventRequest("event-123", EventDate, 4733, 4713)),
+            CancellationToken.None);
+
+        Assert.True(result.Relinked);
+        Assert.Equal(4733, result.PreviousIntelligentGolfEventId);
+        Assert.Equal(4713, result.IntelligentGolfEventId);
+        var cached = JsonDocument.Parse(cache.Values["intelligent-golf:event-link:event-123"]);
+        Assert.Equal(4713, cached.RootElement.GetProperty("intelligentGolfEventId").GetInt32());
+        Assert.DoesNotContain("intelligent-golf:diary-link:event-123", cache.Values.Keys);
+        Assert.Contains("intelligent-golf:diary-link:planner:4733", cache.Values.Keys);
+        Assert.Contains("intelligent-golf:diary-link:planner:4713", cache.Values.Keys);
+        Assert.All(transport.Requests, request => Assert.Equal(HttpMethod.Get, request.Method));
+    }
+
+    [Fact]
+    public async Task Relink_WhenApiAlreadyPointsAtTarget_IsIdempotentAndKeepsCurrentDiaryCache()
+    {
+        var transport = CreateDiscoveryTransport();
+        var cache = new JsonCache();
+        await SeedCacheAsync(cache, "intelligent-golf:event-link:event-123", new { IntelligentGolfEventId = 4713 });
+        await SeedCacheAsync(cache, "intelligent-golf:diary-link:event-123", new { IntelligentGolfDiaryEntryId = 4999 });
+        var handler = CreateRelinkHandler(transport, cache);
+
+        var result = await handler.Handle(
+            new RelinkPlannerEventCommand(
+                new RelinkPlannerEventRequest("event-123", EventDate, 4733, 4713)),
+            CancellationToken.None);
+
+        Assert.False(result.Relinked);
+        Assert.Equal(4713, result.IntelligentGolfEventId);
+        Assert.Contains("intelligent-golf:diary-link:event-123", cache.Values.Keys);
+        Assert.Contains(
+            transport.Requests,
+            request => request.Path == "/eventview.php?date=2026-12-12&view=day&subView=all");
+        Assert.All(transport.Requests, request => Assert.Equal(HttpMethod.Get, request.Method));
+    }
+
+    [Fact]
+    public async Task Relink_WhenApiAlreadyPointsAtTargetButItIsNoLongerOnTheDate_RejectsPartialRetry()
+    {
+        var transport = new RecordingTransport(request => request.Path switch
+        {
+            "/eventview.php?date=2026-12-12&view=day&subView=all" => Response("<html><body>No events</body></html>"),
+            _ => throw Unexpected(request)
+        });
+        var cache = new JsonCache();
+        await SeedCacheAsync(cache, "intelligent-golf:event-link:event-123", new { IntelligentGolfEventId = 4713 });
+        await SeedCacheAsync(cache, "intelligent-golf:diary-link:event-123", new { IntelligentGolfDiaryEntryId = 4999 });
+        var handler = CreateRelinkHandler(transport, cache);
+
+        var exception = await Assert.ThrowsAsync<IntelligentGolfPlannerMatchRequiredException>(() =>
+            handler.Handle(
+                new RelinkPlannerEventCommand(
+                    new RelinkPlannerEventRequest("event-123", EventDate, 4733, 4713)),
+                CancellationToken.None));
+
+        Assert.Equal("planner-event-relink-target-unavailable", exception.Stage);
+        var cached = JsonDocument.Parse(cache.Values["intelligent-golf:event-link:event-123"]);
+        Assert.Equal(4713, cached.RootElement.GetProperty("intelligentGolfEventId").GetInt32());
+        Assert.Contains("intelligent-golf:diary-link:event-123", cache.Values.Keys);
+        Assert.Single(transport.Requests);
+    }
+
+    [Fact]
+    public async Task Relink_WhenExpectedLinkIsStale_ReturnsConflictWithoutChangingAnyCache()
+    {
+        var transport = new RecordingTransport(request => throw Unexpected(request));
+        var cache = new JsonCache();
+        await SeedCacheAsync(cache, "intelligent-golf:event-link:event-123", new { IntelligentGolfEventId = 4800 });
+        await SeedCacheAsync(cache, "intelligent-golf:diary-link:event-123", new { IntelligentGolfDiaryEntryId = 4963 });
+        var handler = CreateRelinkHandler(transport, cache);
+
+        var exception = await Assert.ThrowsAsync<IntelligentGolfPlannerRelinkConflictException>(() =>
+            handler.Handle(
+                new RelinkPlannerEventCommand(
+                    new RelinkPlannerEventRequest("event-123", EventDate, 4733, 4713)),
+                CancellationToken.None));
+
+        Assert.Equal(4733, exception.ExpectedIntelligentGolfEventId);
+        Assert.Equal(4800, exception.CurrentIntelligentGolfEventId);
+        Assert.Contains("intelligent-golf:diary-link:event-123", cache.Values.Keys);
+        Assert.Empty(transport.Requests);
+
+        await using var services = new ServiceCollection()
+            .AddLogging()
+            .AddProblemDetails()
+            .BuildServiceProvider();
+        var context = new DefaultHttpContext { RequestServices = services };
+        context.Response.Body = new MemoryStream();
+        context.Features.Set<IExceptionHandlerFeature>(new ExceptionHandlerFeature { Error = exception });
+        await ApiExceptionResponse.WriteAsync(context);
+
+        Assert.Equal(StatusCodes.Status409Conflict, context.Response.StatusCode);
+        context.Response.Body.Position = 0;
+        using var problem = await JsonDocument.ParseAsync(context.Response.Body);
+        Assert.Equal("planner-event-relink-conflict", problem.RootElement.GetProperty("stage").GetString());
+        Assert.Equal(4733, problem.RootElement.GetProperty("expectedIntelligentGolfEventId").GetInt32());
+        Assert.Equal(4800, problem.RootElement.GetProperty("currentIntelligentGolfEventId").GetInt32());
+    }
+
+    [Fact]
+    public async Task Relink_WhenTargetIsNotOnEventDate_PreservesCurrentLinkAndDiaryCache()
+    {
+        var transport = new RecordingTransport(request => request.Path switch
+        {
+            "/eventview.php?date=2026-12-12&view=day&subView=all" => Response("<html><body>No events</body></html>"),
+            _ => throw Unexpected(request)
+        });
+        var cache = new JsonCache();
+        await SeedCacheAsync(cache, "intelligent-golf:event-link:event-123", new { IntelligentGolfEventId = 4733 });
+        await SeedCacheAsync(cache, "intelligent-golf:diary-link:event-123", new { IntelligentGolfDiaryEntryId = 4963 });
+        var handler = CreateRelinkHandler(transport, cache);
+
+        var exception = await Assert.ThrowsAsync<IntelligentGolfPlannerMatchRequiredException>(() =>
+            handler.Handle(
+                new RelinkPlannerEventCommand(
+                    new RelinkPlannerEventRequest("event-123", EventDate, 4733, 4713)),
+                CancellationToken.None));
+
+        Assert.Equal("planner-event-relink-target-unavailable", exception.Stage);
+        var cached = JsonDocument.Parse(cache.Values["intelligent-golf:event-link:event-123"]);
+        Assert.Equal(4733, cached.RootElement.GetProperty("intelligentGolfEventId").GetInt32());
+        Assert.Contains("intelligent-golf:diary-link:event-123", cache.Values.Keys);
+    }
+
+    [Fact]
+    public async Task Relink_WhenApiEventCacheIsEmpty_UsesExplicitExpectedLinkAndCompletes()
+    {
+        var transport = CreateDiscoveryTransport();
+        var cache = new JsonCache();
+        await SeedCacheAsync(cache, "intelligent-golf:diary-link:event-123", new { IntelligentGolfDiaryEntryId = 4963 });
+        var handler = CreateRelinkHandler(transport, cache);
+
+        var result = await handler.Handle(
+            new RelinkPlannerEventCommand(
+                new RelinkPlannerEventRequest("event-123", EventDate, 4733, 4713)),
+            CancellationToken.None);
+
+        Assert.True(result.Relinked);
+        var cached = JsonDocument.Parse(cache.Values["intelligent-golf:event-link:event-123"]);
+        Assert.Equal(4713, cached.RootElement.GetProperty("intelligentGolfEventId").GetInt32());
+        Assert.DoesNotContain("intelligent-golf:diary-link:event-123", cache.Values.Keys);
+    }
+
     private static SynchronisePlannerEventHandler CreateSynchroniseHandler(
         IIntelligentGolfTransport transport,
         ICacheService cache) =>
@@ -311,6 +483,28 @@ public sealed class EventPlannerEventMatchingTests
             cache,
             new AlwaysAcquiredLockManager(),
             NullLogger<SynchronisePlannerEventHandler>.Instance);
+
+    private static RelinkPlannerEventHandler CreateRelinkHandler(
+        IIntelligentGolfTransport transport,
+        ICacheService cache) =>
+        new(
+            transport,
+            cache,
+            new AlwaysAcquiredLockManager(),
+            NullLogger<RelinkPlannerEventHandler>.Instance);
+
+    private static RecordingTransport CreateDiscoveryTransport() =>
+        new(request => request.Path switch
+        {
+            "/eventview.php?date=2026-12-12&view=day&subView=all" => Response(DayViewHtml),
+            "/event.php?eventid=4713" => Response(SameDayEventPageHtml),
+            "/event.php?eventid=4733" => Response(SameDayEventPageWithReorderedAttributesHtml),
+            "/event.php?eventid=4900" => Response(AdjacentDayEventPageHtml),
+            _ => throw Unexpected(request)
+        });
+
+    private static Task SeedCacheAsync(JsonCache cache, string key, object value) =>
+        cache.SetAsync(key, value, TimeSpan.FromDays(1), CancellationToken.None);
 
     private static SynchronisePlannerEventRequest CreateSynchroniseRequest(
         bool createNewWhenDateOccupied = false) =>

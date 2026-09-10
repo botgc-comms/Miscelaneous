@@ -62,8 +62,29 @@ public sealed class IntelligentGolfEventAdoptResult
     public DateTimeOffset AdoptedAtUtc { get; init; }
 }
 
+public sealed class IntelligentGolfPlannerEventCandidatesResult
+{
+    public required string EventDate { get; init; }
+    public IReadOnlyList<IntelligentGolfPlannerEventCandidate> Candidates { get; init; } = [];
+}
+
+public sealed class IntelligentGolfEventRelinkResult
+{
+    public required string EventPlaybookEventId { get; init; }
+    public int PreviousIntelligentGolfEventId { get; init; }
+    public int IntelligentGolfEventId { get; init; }
+    public bool Relinked { get; init; }
+    public DateTimeOffset RelinkedAtUtc { get; init; }
+}
+
 public sealed class ResolveIntelligentGolfPlannerMatchRequest
 {
     public required string Action { get; init; }
     public int? IntelligentGolfEventId { get; init; }
+}
+
+public sealed class RelinkIntelligentGolfPlannerEventRequest
+{
+    public int ExpectedIntelligentGolfEventId { get; init; }
+    public int IntelligentGolfEventId { get; init; }
 }

@@ -21,8 +21,16 @@ public interface IIntelligentGolfEventIntegration
     Task<IntelligentGolfEventSynchroniseResult> CreateSeparateEventAsync(
         PlaybookEventIntegrationSnapshot eventSnapshot,
         CancellationToken cancellationToken);
+    Task<IntelligentGolfPlannerEventCandidatesResult> GetPlannerEventCandidatesAsync(
+        PlaybookEventIntegrationSnapshot eventSnapshot,
+        CancellationToken cancellationToken);
     Task<IntelligentGolfEventAdoptResult> AdoptExistingEventAsync(
         PlaybookEventIntegrationSnapshot eventSnapshot,
+        int intelligentGolfEventId,
+        CancellationToken cancellationToken);
+    Task<IntelligentGolfEventRelinkResult> RelinkExistingEventAsync(
+        PlaybookEventIntegrationSnapshot eventSnapshot,
+        int expectedIntelligentGolfEventId,
         int intelligentGolfEventId,
         CancellationToken cancellationToken);
     Task<IntelligentGolfDiaryPublishResult> PublishDiaryAsync(
@@ -64,6 +72,41 @@ public sealed class IntelligentGolfEventIntegration(
         PlaybookEventIntegrationSnapshot eventSnapshot,
         CancellationToken cancellationToken) =>
         await SynchroniseEventCoreAsync(eventSnapshot, true, true, cancellationToken);
+
+    public async Task<IntelligentGolfPlannerEventCandidatesResult> GetPlannerEventCandidatesAsync(
+        PlaybookEventIntegrationSnapshot eventSnapshot,
+        CancellationToken cancellationToken)
+    {
+        ValidateSnapshot(eventSnapshot);
+        await EnsureAvailableAsync(cancellationToken);
+        using var message = CreateRequest(
+            HttpMethod.Get,
+            $"api/event-planner/events/candidates?eventDate={Uri.EscapeDataString(eventSnapshot.EventDate)}");
+        using var response = await SendAsync(message, cancellationToken);
+        var result = await response.Content.ReadFromJsonAsync<IntelligentGolfPlannerEventCandidatesResult>(
+            JsonOptions,
+            cancellationToken)
+            ?? throw new InvalidOperationException("The Event Playbook API did not return the Intelligent Golf planner events on this date.");
+
+        return new IntelligentGolfPlannerEventCandidatesResult
+        {
+            EventDate = string.IsNullOrWhiteSpace(result.EventDate)
+                ? eventSnapshot.EventDate
+                : result.EventDate.Trim(),
+            Candidates = result.Candidates
+                .Where(candidate => candidate.IntelligentGolfEventId > 0)
+                .GroupBy(candidate => candidate.IntelligentGolfEventId)
+                .Select(group => new IntelligentGolfPlannerEventCandidate
+                {
+                    IntelligentGolfEventId = group.Key,
+                    Name = string.IsNullOrWhiteSpace(group.First().Name)
+                        ? $"Intelligent Golf event {group.Key}"
+                        : group.First().Name.Trim()
+                })
+                .OrderBy(candidate => candidate.IntelligentGolfEventId)
+                .ToArray()
+        };
+    }
 
     private async Task<IntelligentGolfEventSynchroniseResult> SynchroniseEventCoreAsync(
         PlaybookEventIntegrationSnapshot eventSnapshot,
@@ -325,6 +368,133 @@ public sealed class IntelligentGolfEventIntegration(
         }
     }
 
+    public async Task<IntelligentGolfEventRelinkResult> RelinkExistingEventAsync(
+        PlaybookEventIntegrationSnapshot eventSnapshot,
+        int expectedIntelligentGolfEventId,
+        int intelligentGolfEventId,
+        CancellationToken cancellationToken)
+    {
+        ValidateSnapshot(eventSnapshot);
+        if (expectedIntelligentGolfEventId <= 0)
+            throw new ArgumentException("The currently linked Intelligent Golf planner entry is required.", nameof(expectedIntelligentGolfEventId));
+        if (intelligentGolfEventId <= 0)
+            throw new ArgumentException("Choose a valid Intelligent Golf planner entry.", nameof(intelligentGolfEventId));
+
+        var eventLock = _eventLocks.GetOrAdd(eventSnapshot.EventId, _ => new SemaphoreSlim(1, 1));
+        var relinkLockHeld = false;
+        var eventLockHeld = false;
+        try
+        {
+            await _adoptionLock.WaitAsync(cancellationToken);
+            relinkLockHeld = true;
+            await eventLock.WaitAsync(cancellationToken);
+            eventLockHeld = true;
+            await EnsureAvailableAsync(cancellationToken);
+
+            var link = await linkStore.GetAsync(eventSnapshot.EventId, cancellationToken);
+            if (link?.IntelligentGolfEventId != expectedIntelligentGolfEventId)
+            {
+                throw new IntelligentGolfPlannerLinkChangedException(
+                    expectedIntelligentGolfEventId,
+                    link?.IntelligentGolfEventId);
+            }
+
+            if (intelligentGolfEventId == expectedIntelligentGolfEventId)
+            {
+                return new IntelligentGolfEventRelinkResult
+                {
+                    EventPlaybookEventId = eventSnapshot.EventId,
+                    PreviousIntelligentGolfEventId = expectedIntelligentGolfEventId,
+                    IntelligentGolfEventId = intelligentGolfEventId,
+                    Relinked = false,
+                    RelinkedAtUtc = link.EventSynchronisedAtUtc ?? link.UpdatedAtUtc
+                };
+            }
+
+            var linkedPlaybookEventId = await linkStore.FindPlaybookEventIdByIntelligentGolfEventIdAsync(
+                intelligentGolfEventId,
+                cancellationToken);
+            if (!string.IsNullOrWhiteSpace(linkedPlaybookEventId) &&
+                !string.Equals(linkedPlaybookEventId, eventSnapshot.EventId, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new IntelligentGolfPlannerEventAlreadyLinkedException(intelligentGolfEventId);
+            }
+
+            using var message = CreateRequest(HttpMethod.Post, "api/event-planner/events/relink");
+            message.Content = JsonContent.Create(new
+            {
+                eventPlaybookEventId = eventSnapshot.EventId,
+                eventDate = eventSnapshot.EventDate,
+                expectedIntelligentGolfEventId,
+                intelligentGolfEventId
+            });
+            using var response = await SendAsync(message, cancellationToken);
+            var result = await response.Content.ReadFromJsonAsync<IntelligentGolfEventRelinkResult>(
+                JsonOptions,
+                cancellationToken)
+                ?? throw new InvalidOperationException("The Event Playbook API did not confirm the new Intelligent Golf planner link.");
+            if (result.IntelligentGolfEventId != intelligentGolfEventId)
+            {
+                throw new InvalidOperationException(
+                    $"The Event Playbook API linked Intelligent Golf planner entry {result.IntelligentGolfEventId}, not the selected entry {intelligentGolfEventId}.");
+            }
+
+            var relinkedAtUtc = result.RelinkedAtUtc == default
+                ? DateTimeOffset.UtcNow
+                : result.RelinkedAtUtc;
+            await linkStore.RelinkEventAsync(
+                eventSnapshot.EventId,
+                expectedIntelligentGolfEventId,
+                intelligentGolfEventId,
+                Fingerprint(eventSnapshot),
+                relinkedAtUtc,
+                cancellationToken);
+            await RecordActivitySafelyAsync(new IntegrationActivityWrite
+            {
+                Operation = "Relink planner event",
+                Outcome = "succeeded",
+                EventPlaybookEventId = eventSnapshot.EventId,
+                EventName = eventSnapshot.Name,
+                ExternalEventId = intelligentGolfEventId,
+                Stage = "planner-event-relink",
+                Message = $"Changed the Intelligent Golf planner link from {expectedIntelligentGolfEventId} to {intelligentGolfEventId} without changing either planner entry."
+            }, cancellationToken);
+
+            return new IntelligentGolfEventRelinkResult
+            {
+                EventPlaybookEventId = eventSnapshot.EventId,
+                PreviousIntelligentGolfEventId = expectedIntelligentGolfEventId,
+                IntelligentGolfEventId = intelligentGolfEventId,
+                Relinked = true,
+                RelinkedAtUtc = relinkedAtUtc
+            };
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            var requestException = exception as IntelligentGolfApiRequestException;
+            await RecordActivitySafelyAsync(new IntegrationActivityWrite
+            {
+                Operation = "Relink planner event",
+                Outcome = exception is IntelligentGolfPlannerEventAlreadyLinkedException or IntelligentGolfPlannerLinkChangedException ||
+                          requestException is { RequiresPlannerMatch: true } or { RequiresPlannerLinkRefresh: true }
+                    ? "action-required"
+                    : "failed",
+                EventPlaybookEventId = eventSnapshot.EventId,
+                EventName = eventSnapshot.Name,
+                ExternalEventId = intelligentGolfEventId,
+                Stage = requestException?.Stage ?? "planner-event-relink",
+                StatusCode = requestException?.StatusCode,
+                Message = exception.Message
+            }, cancellationToken);
+            throw;
+        }
+        finally
+        {
+            if (eventLockHeld) eventLock.Release();
+            if (relinkLockHeld) _adoptionLock.Release();
+        }
+    }
+
     public async Task<IntelligentGolfDiaryPublishResult> PublishDiaryAsync(
         MemberDiaryPublishRequest request,
         byte[] artworkBytes,
@@ -356,14 +526,22 @@ public sealed class IntelligentGolfEventIntegration(
         // A linked event (including one deliberately adopted from IG) is left
         // untouched unless its Playbook details have actually changed.
         var eventResult = await SynchroniseEventAsync(snapshot, false, cancellationToken);
+        var eventLock = _eventLocks.GetOrAdd(snapshot.EventId, _ => new SemaphoreSlim(1, 1));
+        await eventLock.WaitAsync(cancellationToken);
+        var plannerEventId = eventResult.IntelligentGolfEventId;
         try
         {
             var link = await linkStore.GetAsync(request.EventId, cancellationToken);
+            // A relink may have completed after synchronisation released this
+            // event lock. Always publish to the durable current link, then keep
+            // the lock through the diary save so relinking cannot be overwritten
+            // by a late SaveDiaryAsync call for the previous planner entry.
+            plannerEventId = link?.IntelligentGolfEventId ?? plannerEventId;
             using var message = CreateRequest(HttpMethod.Put, "api/event-planner/member-diary");
             message.Content = JsonContent.Create(new
             {
                 eventPlaybookEventId = request.EventId.Trim(),
-                intelligentGolfEventId = eventResult.IntelligentGolfEventId,
+                intelligentGolfEventId = plannerEventId,
                 intelligentGolfDiaryEntryId = link?.IntelligentGolfDiaryEntryId,
                 headline = string.IsNullOrWhiteSpace(request.Title) ? request.EventName.Trim() : request.Title.Trim(),
                 diaryDate = request.EventDate.Trim(),
@@ -430,7 +608,7 @@ public sealed class IntelligentGolfEventIntegration(
             {
                 await linkStore.SaveDiaryAsync(
                     request.EventId,
-                    requestException.IntelligentGolfEventId ?? eventResult.IntelligentGolfEventId,
+                    requestException.IntelligentGolfEventId ?? plannerEventId,
                     requestException.IntelligentGolfRecordId.Value,
                     requestException.MemberDiaryPublishedAtUtc.Value,
                     cancellationToken);
@@ -439,7 +617,7 @@ public sealed class IntelligentGolfEventIntegration(
             {
                 await linkStore.SaveAllocatedDiaryAsync(
                     request.EventId,
-                    requestException.IntelligentGolfEventId ?? eventResult.IntelligentGolfEventId,
+                    requestException.IntelligentGolfEventId ?? plannerEventId,
                     requestException.IntelligentGolfRecordId.Value,
                     cancellationToken);
             }
@@ -456,7 +634,7 @@ public sealed class IntelligentGolfEventIntegration(
                 Outcome = "failed",
                 EventPlaybookEventId = request.EventId,
                 EventName = request.EventName,
-                ExternalEventId = eventResult.IntelligentGolfEventId,
+                ExternalEventId = plannerEventId,
                 ExternalRecordId = requestException?.IntelligentGolfRecordId ?? failedLink?.IntelligentGolfDiaryEntryId,
                 Stage = requestException?.Stage ?? "member-diary-publish",
                 StatusCode = requestException?.StatusCode,
@@ -465,6 +643,10 @@ public sealed class IntelligentGolfEventIntegration(
                     : exception.Message
             }, cancellationToken);
             throw;
+        }
+        finally
+        {
+            eventLock.Release();
         }
     }
 
@@ -533,7 +715,9 @@ public sealed class IntelligentGolfEventIntegration(
             problem?.EventDate,
             problem?.Candidates ?? [],
             problem?.MemberDiaryPublished ?? false,
-            problem?.MemberDiaryPublishedAtUtc);
+            problem?.MemberDiaryPublishedAtUtc,
+            problem?.ExpectedIntelligentGolfEventId,
+            problem?.CurrentIntelligentGolfEventId);
     }
 
     private static IntelligentGolfApiProblem? ExtractProblem(string raw)
@@ -548,6 +732,8 @@ public sealed class IntelligentGolfEventIntegration(
             var stage = ReadString(root, "stage");
             var eventId = ReadInt(root, "intelligentGolfEventId");
             var recordId = ReadInt(root, "intelligentGolfRecordId");
+            var expectedEventId = ReadInt(root, "expectedIntelligentGolfEventId");
+            var currentEventId = ReadInt(root, "currentIntelligentGolfEventId");
             var retryable = ReadBool(root, "retryable");
             var eventDate = ReadString(root, "eventDate");
             var candidates = ReadCandidates(root);
@@ -567,6 +753,8 @@ public sealed class IntelligentGolfEventIntegration(
                     stage,
                     eventId,
                     recordId,
+                    expectedEventId,
+                    currentEventId,
                     retryable,
                     eventDate,
                     candidates,
@@ -691,6 +879,8 @@ public sealed class IntelligentGolfEventIntegration(
         string? Stage,
         int? IntelligentGolfEventId,
         int? IntelligentGolfRecordId,
+        int? ExpectedIntelligentGolfEventId,
+        int? CurrentIntelligentGolfEventId,
         bool? Retryable,
         string? EventDate,
         IReadOnlyList<IntelligentGolfPlannerEventCandidate> Candidates,
@@ -708,7 +898,9 @@ public sealed class IntelligentGolfApiRequestException(
     string? eventDate,
     IReadOnlyList<IntelligentGolfPlannerEventCandidate> candidates,
     bool memberDiaryPublished = false,
-    DateTimeOffset? memberDiaryPublishedAtUtc = null) : InvalidOperationException(message)
+    DateTimeOffset? memberDiaryPublishedAtUtc = null,
+    int? expectedIntelligentGolfEventId = null,
+    int? currentIntelligentGolfEventId = null) : InvalidOperationException(message)
 {
     public int StatusCode { get; } = statusCode;
     public string? Stage { get; } = stage;
@@ -719,9 +911,14 @@ public sealed class IntelligentGolfApiRequestException(
     public IReadOnlyList<IntelligentGolfPlannerEventCandidate> Candidates { get; } = candidates;
     public bool MemberDiaryPublished { get; } = memberDiaryPublished;
     public DateTimeOffset? MemberDiaryPublishedAtUtc { get; } = memberDiaryPublishedAtUtc;
+    public int? ExpectedIntelligentGolfEventId { get; } = expectedIntelligentGolfEventId;
+    public int? CurrentIntelligentGolfEventId { get; } = currentIntelligentGolfEventId;
     public bool RequiresPlannerMatch =>
         string.Equals(Stage, "planner-event-match-required", StringComparison.OrdinalIgnoreCase) ||
-        string.Equals(Stage, "planner-event-match-expired", StringComparison.OrdinalIgnoreCase);
+        string.Equals(Stage, "planner-event-match-expired", StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(Stage, "planner-event-relink-target-unavailable", StringComparison.OrdinalIgnoreCase);
+    public bool RequiresPlannerLinkRefresh =>
+        string.Equals(Stage, "planner-event-relink-conflict", StringComparison.OrdinalIgnoreCase);
 }
 
 public sealed class IntelligentGolfPlannerEventAlreadyLinkedException(int intelligentGolfEventId)
@@ -729,4 +926,16 @@ public sealed class IntelligentGolfPlannerEventAlreadyLinkedException(int intell
         $"Intelligent Golf planner entry {intelligentGolfEventId} is already linked to another Event Playbook event.")
 {
     public int IntelligentGolfEventId { get; } = intelligentGolfEventId;
+}
+
+public sealed class IntelligentGolfPlannerLinkChangedException(
+    int expectedIntelligentGolfEventId,
+    int? actualIntelligentGolfEventId)
+    : InvalidOperationException(
+        actualIntelligentGolfEventId is > 0
+            ? $"This event is now linked to Intelligent Golf planner entry {actualIntelligentGolfEventId}, not the expected entry {expectedIntelligentGolfEventId}. Refresh the event before trying again."
+            : $"This event is no longer linked to the expected Intelligent Golf planner entry {expectedIntelligentGolfEventId}. Refresh the event before trying again.")
+{
+    public int ExpectedIntelligentGolfEventId { get; } = expectedIntelligentGolfEventId;
+    public int? ActualIntelligentGolfEventId { get; } = actualIntelligentGolfEventId;
 }

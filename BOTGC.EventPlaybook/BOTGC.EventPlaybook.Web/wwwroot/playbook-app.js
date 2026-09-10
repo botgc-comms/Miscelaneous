@@ -120,8 +120,12 @@
   const intelligentGolfEventStatuses = new Map();
   const intelligentGolfStatusRequests = new Map();
   const intelligentGolfStatusRefreshTimers = new Map();
+  let intelligentGolfStatusCacheEpoch = 0;
   const deferredIntelligentGolfMatches = new Set();
   const intelligentGolfResolutionNotices = new Map();
+  let intelligentGolfPlannerLinkDialogState = null;
+  let intelligentGolfPlannerLinkRequest = null;
+  let intelligentGolfPlannerLinkShouldRestoreFocus = false;
   let integrationActivityCache = null;
   let integrationActivityRequest = null;
   const DEFAULT_CLUB_BRANDING = Object.freeze({
@@ -228,10 +232,21 @@
   }
 
   function updatePluginCapabilities(value) {
+    const intelligentGolfEnabled = value?.intelligentGolf?.enabled === true;
+    const intelligentGolfChanged = pluginCapabilities.intelligentGolfEnabled !== intelligentGolfEnabled;
     pluginCapabilities = {
-      intelligentGolfEnabled: value?.intelligentGolf?.enabled === true,
+      intelligentGolfEnabled,
       mondayEnabled: value?.monday?.enabled === true
     };
+    if (intelligentGolfChanged) invalidateIntelligentGolfEventStatusCache();
+  }
+
+  function invalidateIntelligentGolfEventStatusCache() {
+    intelligentGolfStatusCacheEpoch += 1;
+    intelligentGolfEventStatuses.clear();
+    intelligentGolfStatusRequests.clear();
+    intelligentGolfStatusRefreshTimers.forEach(timer => window.clearTimeout(timer));
+    intelligentGolfStatusRefreshTimers.clear();
   }
 
   async function initialisePluginStatus() {
@@ -250,6 +265,7 @@
       available: value?.available === true,
       linked: value?.linked === true || Number(value?.plannerEntryId) > 0,
       plannerEntryId: Number(value?.plannerEntryId) || null,
+      diaryEntryId: Number(value?.diaryEntryId) || null,
       plannerMatchRequired: value?.plannerMatchRequired === true,
       plannerMatchEventDate: String(value?.plannerMatchEventDate ?? ''),
       plannerMatchCandidates: Array.isArray(value?.plannerMatchCandidates)
@@ -273,13 +289,46 @@
     return `${eventId}:${status.plannerMatchEventDate}:${status.plannerMatchCandidates.map(candidate => candidate.intelligentGolfEventId).join(',')}`;
   }
 
+  function normaliseIntelligentGolfPlannerCandidates(value, fallbackPlannerEntryId = null) {
+    const currentPlannerEntryId = Number(value?.currentPlannerEntryId) || Number(fallbackPlannerEntryId) || null;
+    const candidates = Array.isArray(value?.candidates)
+      ? value.candidates
+        .map(candidate => {
+          const intelligentGolfEventId = Number(candidate?.intelligentGolfEventId) || 0;
+          return {
+            intelligentGolfEventId,
+            name: String(candidate?.name ?? '').trim() || `Planner entry ${intelligentGolfEventId}`,
+            current: candidate?.current === true || intelligentGolfEventId === currentPlannerEntryId,
+            linkedToAnotherPlaybookEvent: candidate?.linkedToAnotherPlaybookEvent === true
+          };
+        })
+        .filter(candidate => candidate.intelligentGolfEventId > 0)
+      : [];
+
+    if (currentPlannerEntryId && !candidates.some(candidate => candidate.intelligentGolfEventId === currentPlannerEntryId)) {
+      candidates.unshift({
+        intelligentGolfEventId: currentPlannerEntryId,
+        name: `Planner entry ${currentPlannerEntryId}`,
+        current: true,
+        linkedToAnotherPlaybookEvent: false
+      });
+    }
+
+    return {
+      currentPlannerEntryId,
+      eventDate: String(value?.eventDate ?? ''),
+      candidates
+    };
+  }
+
   async function ensureIntelligentGolfEventStatus(eventId, force = false) {
     if (!pluginCapabilities.intelligentGolfEnabled || !eventId) return null;
     const cached = intelligentGolfEventStatuses.get(eventId);
     if (!force && cached &&
-        (cached.linked || cached.plannerMatchRequired || Date.now() - cached.checkedAt < 15000)) return cached;
+        ((cached.linked && cached.available) || cached.plannerMatchRequired || Date.now() - cached.checkedAt < 15000)) return cached;
     if (intelligentGolfStatusRequests.has(eventId)) return intelligentGolfStatusRequests.get(eventId);
 
+    const requestEpoch = intelligentGolfStatusCacheEpoch;
     const request = (async () => {
       try {
         const response = await fetch(`/api/integrations/intelligent-golf/events/${encodeURIComponent(eventId)}`, {
@@ -287,9 +336,13 @@
         });
         const result = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(result.error || `Intelligent Golf status could not be loaded (${response.status}).`);
+        if (requestEpoch !== intelligentGolfStatusCacheEpoch) return intelligentGolfEventStatuses.get(eventId) ?? null;
         const next = normaliseIntelligentGolfEventStatus(result);
         const previous = intelligentGolfEventStatuses.get(eventId);
         intelligentGolfEventStatuses.set(eventId, next);
+        if (next.linked && !next.available && !intelligentGolfStatusRefreshTimers.has(eventId)) {
+          scheduleIntelligentGolfStatusRefresh(eventId);
+        }
         const visibleChange = JSON.stringify({ ...previous, checkedAt: 0 }) !== JSON.stringify({ ...next, checkedAt: 0 });
         const interactionActive = document.querySelector('dialog[open]') ||
           document.activeElement?.matches?.('input, textarea, select, [contenteditable="true"]');
@@ -299,7 +352,7 @@
         console.warn('Unable to check the Intelligent Golf planner link.', error);
         return intelligentGolfEventStatuses.get(eventId) ?? null;
       } finally {
-        intelligentGolfStatusRequests.delete(eventId);
+        if (requestEpoch === intelligentGolfStatusCacheEpoch) intelligentGolfStatusRequests.delete(eventId);
       }
     })();
     intelligentGolfStatusRequests.set(eventId, request);
@@ -308,10 +361,11 @@
 
   function scheduleIntelligentGolfStatusRefresh(eventId) {
     if (!pluginCapabilities.intelligentGolfEnabled || !eventId) return;
-    if (intelligentGolfEventStatuses.get(eventId)?.linked) return;
+    const currentStatus = intelligentGolfEventStatuses.get(eventId);
+    if (currentStatus?.linked && currentStatus.available) return;
     const existing = intelligentGolfStatusRefreshTimers.get(eventId);
     if (existing) window.clearTimeout(existing);
-    intelligentGolfEventStatuses.delete(eventId);
+    if (!currentStatus?.linked) intelligentGolfEventStatuses.delete(eventId);
 
     // Bounded checks cover the debounced shared-state save and one slower IG
     // round trip without leaving a permanent browser polling loop behind.
@@ -319,7 +373,7 @@
     const check = async index => {
       await ensureIntelligentGolfEventStatus(eventId, true);
       const status = intelligentGolfEventStatuses.get(eventId);
-      if (status?.linked || status?.plannerMatchRequired || index >= delays.length - 1) {
+      if ((status?.linked && status.available) || status?.plannerMatchRequired || index >= delays.length - 1) {
         intelligentGolfStatusRefreshTimers.delete(eventId);
         return;
       }
@@ -2920,6 +2974,249 @@
     </dialog>`;
   }
 
+  function renderIntelligentGolfPlannerLinkDialog(event) {
+    const dialogState = intelligentGolfPlannerLinkDialogState;
+    if (!pluginCapabilities.intelligentGolfEnabled || !event || dialogState?.eventId !== event.id) return '';
+
+    const status = intelligentGolfEventStatuses.get(event.id);
+    const currentPlannerEntryId = Number(dialogState.currentPlannerEntryId) || Number(status?.plannerEntryId) || 0;
+    const candidates = Array.isArray(dialogState.candidates) ? dialogState.candidates : [];
+    const selectableAlternative = candidates.some(candidate =>
+      !candidate.current && !candidate.linkedToAnotherPlaybookEvent);
+    const diaryWarning = status?.diaryEntryId
+      ? `The saved association with member diary entry ${status.diaryEntryId} will be cleared. Publishing to the member diary again will establish the appropriate association for the newly linked planner event.`
+      : 'Any saved member diary association with the old planner event will be cleared.';
+
+    return `<dialog id="ig-planner-link-dialog" class="modal ig-planner-match-dialog ig-planner-link-dialog" data-planner-link-event-id="${escapeHtml(event.id)}" data-current-planner-entry-id="${currentPlannerEntryId}" aria-labelledby="ig-planner-link-heading"${dialogState.loading ? ' aria-busy="true"' : ''}>
+      <div class="modal-heading">
+        <div><span class="eyebrow">Intelligent Golf integration</span><h2 id="ig-planner-link-heading">Change linked planner event</h2><p>Choose a different Intelligent Golf planner entry for this Event Playbook event.</p></div>
+        <button class="icon-button" type="button" data-close-ig-planner-link aria-label="Close">×</button>
+      </div>
+      <div class="ig-planner-match-body">
+        <section class="ig-planner-match-summary">
+          <span class="eyebrow">Event Playbook event</span>
+          <h3>${escapeHtml(event.name)}</h3>
+          <p>${escapeHtml(formatDate(dialogState.eventDate || event.eventDate))}</p>
+          <div><strong>Currently linked to planner entry ${currentPlannerEntryId}</strong><span>Selecting another entry changes only Event Playbook’s link.</span></div>
+        </section>
+        ${dialogState.loading
+          ? '<div class="ig-planner-link-loading" role="status"><span aria-hidden="true"></span><div><strong>Checking the Intelligent Golf planner…</strong><p>Finding planner entries on this event date.</p></div></div>'
+          : `<fieldset class="ig-planner-match-candidates">
+              <legend>Choose the planner entry to use</legend>
+              ${candidates.map(candidate => {
+                const unavailable = candidate.linkedToAnotherPlaybookEvent;
+                const current = candidate.current || candidate.intelligentGolfEventId === currentPlannerEntryId;
+                const details = current
+                  ? 'currently linked'
+                  : unavailable
+                    ? 'already linked to another Playbook event'
+                    : 'available to link';
+                return `<label class="ig-planner-match-candidate${current ? ' current' : ''}${unavailable ? ' unavailable' : ''}">
+                  <input type="radio" name="ig-planner-link-candidate" value="${candidate.intelligentGolfEventId}"${current ? ' checked' : ''}${unavailable ? ' disabled' : ''}>
+                  <span><strong>${escapeHtml(candidate.name)}</strong><small>Intelligent Golf planner entry ${candidate.intelligentGolfEventId} · ${details}</small></span>
+                </label>`;
+              }).join('')}
+              ${selectableAlternative ? '' : '<p class="ig-planner-link-empty">No other available planner entries were found on this date.</p>'}
+            </fieldset>`}
+        <div class="ig-planner-link-warning">
+          <strong>No Intelligent Golf entry will be edited or deleted</strong>
+          <span>Future Event Playbook updates will be sent to the newly selected planner entry. ${escapeHtml(diaryWarning)}</span>
+        </div>
+        <div class="ig-planner-match-error" role="alert"${dialogState.error ? '' : ' hidden'}>${escapeHtml(dialogState.error || '')}</div>
+      </div>
+      <div class="modal-actions">
+        <button class="button button-secondary" type="button" data-close-ig-planner-link>Cancel</button>
+        <span></span>
+        ${dialogState.error && !dialogState.loading ? '<button class="button button-secondary" type="button" data-retry-ig-planner-link>Try loading again</button>' : ''}
+        <button class="button button-primary" type="button" data-confirm-ig-planner-link disabled>Change linked event</button>
+      </div>
+    </dialog>`;
+  }
+
+  function showIntelligentGolfPlannerLinkDialog() {
+    requestAnimationFrame(() => {
+      const dialog = document.getElementById('ig-planner-link-dialog');
+      const otherDialog = document.querySelector('dialog[open]');
+      if (!dialog || (otherDialog && otherDialog !== dialog)) return;
+      if (!dialog.open) dialog.showModal();
+      dialog.querySelector('input[name="ig-planner-link-candidate"]:checked')?.focus();
+    });
+  }
+
+  function restoreIntelligentGolfPlannerLinkFocus() {
+    if (!intelligentGolfPlannerLinkShouldRestoreFocus) return;
+    intelligentGolfPlannerLinkShouldRestoreFocus = false;
+    requestAnimationFrame(() => {
+      const target = document.querySelector('[data-action="change-ig-planner-link"]:not([disabled])') ??
+        document.querySelector('[data-action="manage-event-status"]');
+      target?.focus();
+    });
+  }
+
+  function closeIntelligentGolfPlannerLinkDialog(dialog, restoreFocus = true) {
+    intelligentGolfPlannerLinkRequest = null;
+    intelligentGolfPlannerLinkDialogState = null;
+    dialog?.close();
+    if (restoreFocus) restoreIntelligentGolfPlannerLinkFocus();
+  }
+
+  async function openIntelligentGolfPlannerLinkDialog(trigger = null) {
+    const event = getActiveEvent();
+    const status = event ? intelligentGolfEventStatuses.get(event.id) : null;
+    if (!event || !pluginCapabilities.intelligentGolfEnabled || !status?.linked || !status.available) return false;
+    if (trigger?.matches?.('[data-action="change-ig-planner-link"]')) {
+      intelligentGolfPlannerLinkShouldRestoreFocus = true;
+    }
+
+    const requestToken = {};
+    let candidatesLoaded = false;
+    intelligentGolfPlannerLinkRequest = requestToken;
+    intelligentGolfPlannerLinkDialogState = {
+      eventId: event.id,
+      eventDate: event.eventDate,
+      currentPlannerEntryId: status.plannerEntryId,
+      candidates: [],
+      loading: true,
+      error: ''
+    };
+    render();
+    showIntelligentGolfPlannerLinkDialog();
+
+    try {
+      const response = await fetch(`/api/integrations/intelligent-golf/events/${encodeURIComponent(event.id)}/planner-candidates`, {
+        method: 'GET',
+        cache: 'no-store'
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(result.detail || result.error || result.title || `Planner entries could not be loaded (${response.status}).`);
+      }
+      if (intelligentGolfPlannerLinkRequest !== requestToken) return false;
+
+      const loaded = normaliseIntelligentGolfPlannerCandidates(result, status.plannerEntryId);
+      if (!loaded.currentPlannerEntryId) throw new Error('The current Intelligent Golf planner link could not be confirmed.');
+      intelligentGolfPlannerLinkDialogState = {
+        eventId: event.id,
+        eventDate: loaded.eventDate || event.eventDate,
+        currentPlannerEntryId: loaded.currentPlannerEntryId,
+        candidates: loaded.candidates,
+        loading: false,
+        error: ''
+      };
+      candidatesLoaded = true;
+    } catch (error) {
+      if (intelligentGolfPlannerLinkRequest !== requestToken) return false;
+      intelligentGolfPlannerLinkDialogState = {
+        ...intelligentGolfPlannerLinkDialogState,
+        loading: false,
+        error: error.message || 'The Intelligent Golf planner entries could not be loaded.'
+      };
+    } finally {
+      if (intelligentGolfPlannerLinkRequest === requestToken) intelligentGolfPlannerLinkRequest = null;
+    }
+
+    render();
+    showIntelligentGolfPlannerLinkDialog();
+    return candidatesLoaded;
+  }
+
+  async function saveIntelligentGolfPlannerLink(dialog) {
+    const eventId = dialog?.dataset.plannerLinkEventId;
+    const expectedIntelligentGolfEventId = Number(dialog?.dataset.currentPlannerEntryId) || 0;
+    const selected = dialog?.querySelector('input[name="ig-planner-link-candidate"]:checked:not(:disabled)');
+    const intelligentGolfEventId = Number(selected?.value) || 0;
+    if (!eventId || !expectedIntelligentGolfEventId || !intelligentGolfEventId ||
+        intelligentGolfEventId === expectedIntelligentGolfEventId) return;
+
+    const errorBox = dialog.querySelector('.ig-planner-match-error');
+    if (errorBox) {
+      errorBox.hidden = true;
+      errorBox.textContent = '';
+    }
+    dialog.setAttribute('aria-busy', 'true');
+    const controls = [...dialog.querySelectorAll('button, input')];
+    controls.forEach(element => {
+      element.dataset.igPlannerLinkWasDisabled = element.disabled ? 'true' : 'false';
+      element.disabled = true;
+    });
+    const confirmButton = dialog.querySelector('[data-confirm-ig-planner-link]');
+    const originalLabel = confirmButton?.textContent ?? 'Change linked event';
+    if (confirmButton) confirmButton.textContent = 'Changing link…';
+
+    try {
+      const response = await fetch(`/api/integrations/intelligent-golf/events/${encodeURIComponent(eventId)}/planner-link`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ expectedIntelligentGolfEventId, intelligentGolfEventId })
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const error = new Error(result.detail || result.error || result.title || `The planner link could not be changed (${response.status}).`);
+        error.result = result;
+        throw error;
+      }
+
+      intelligentGolfResolutionNotices.set(eventId, {
+        tone: 'success',
+        message: result.message || `Intelligent Golf planner entry ${intelligentGolfEventId} is now linked.`
+      });
+      intelligentGolfPlannerLinkDialogState = null;
+      dialog.close();
+      intelligentGolfEventStatuses.delete(eventId);
+      await ensureIntelligentGolfEventStatus(eventId, true);
+      render();
+      restoreIntelligentGolfPlannerLinkFocus();
+    } catch (error) {
+      if (error.result?.refreshStatus === true) {
+        intelligentGolfResolutionNotices.set(eventId, {
+          tone: 'error',
+          message: error.message || 'The Intelligent Golf planner link changed while you were deciding. Review its current status and try again.'
+        });
+        intelligentGolfPlannerLinkDialogState = null;
+        dialog.close();
+        intelligentGolfEventStatuses.delete(eventId);
+        await ensureIntelligentGolfEventStatus(eventId, true);
+        render();
+        restoreIntelligentGolfPlannerLinkFocus();
+        return;
+      }
+      if (error.result?.refreshCandidates === true) {
+        const refreshMessage = error.message || 'The Intelligent Golf planner entries changed while you were deciding.';
+        closeIntelligentGolfPlannerLinkDialog(dialog, false);
+        const candidatesRefreshed = await openIntelligentGolfPlannerLinkDialog();
+        if (intelligentGolfPlannerLinkDialogState?.eventId === eventId) {
+          if (candidatesRefreshed) {
+            intelligentGolfPlannerLinkDialogState.error = `${refreshMessage} The available entries have been refreshed.`;
+            render();
+            showIntelligentGolfPlannerLinkDialog();
+          } else if (!intelligentGolfPlannerLinkDialogState.error) {
+            intelligentGolfPlannerLinkDialogState.error = refreshMessage;
+            render();
+            showIntelligentGolfPlannerLinkDialog();
+          }
+        }
+        return;
+      }
+      if (intelligentGolfPlannerLinkDialogState?.eventId === eventId) {
+        intelligentGolfPlannerLinkDialogState.error = error.message || 'The planner link could not be changed.';
+      }
+      if (errorBox) {
+        errorBox.hidden = false;
+        errorBox.textContent = error.message || 'The planner link could not be changed.';
+      }
+      dialog.removeAttribute('aria-busy');
+      controls.forEach(element => {
+        element.disabled = element.dataset.igPlannerLinkWasDisabled === 'true';
+        delete element.dataset.igPlannerLinkWasDisabled;
+      });
+      if (confirmButton) {
+        confirmButton.textContent = originalLabel;
+        const currentSelection = dialog.querySelector('input[name="ig-planner-link-candidate"]:checked:not(:disabled)');
+        confirmButton.disabled = !currentSelection || Number(currentSelection.value) === expectedIntelligentGolfEventId;
+      }
+    }
+  }
+
   function maybeOpenIntelligentGolfPlannerMatch(event) {
     if (!event) return;
     const status = intelligentGolfEventStatuses.get(event.id);
@@ -3039,6 +3336,7 @@
     const tasks = event ? getActiveTasks(event) : [];
     const doneTasks = tasks.filter(task => task.state.completed).length;
     const questionProgress = event ? getOverallQuestionProgress(event) : { total: 0, answered: 0, percent: 0 };
+    const intelligentGolfStatus = event ? intelligentGolfEventStatuses.get(event.id) : null;
 
     const currentModuleId = state.activeView.startsWith('module:')
       ? state.activeView.substring('module:'.length)
@@ -3168,7 +3466,13 @@
                     <strong>${escapeHtml(event.name || 'Untitled event')}</strong>
                     <small>${escapeHtml(event.eventDate ? formatDate(event.eventDate) : 'Date not set')} · ${escapeHtml(event.organiser || 'Organiser not assigned')}</small>
                   </div>
-                  <div class="hero-event-context-actions"><button type="button" data-action="manage-event-status">Manage status</button><button type="button" data-view="catalogue">Change event</button></div>
+                  <div class="hero-event-context-actions">
+                    ${pluginCapabilities.intelligentGolfEnabled && intelligentGolfStatus?.linked
+                      ? `<button type="button" data-action="change-ig-planner-link"${intelligentGolfStatus.available ? '' : ' disabled title="The Intelligent Golf connection is not currently available."'}>Change linked planner event</button>`
+                      : ''}
+                    <button type="button" data-action="manage-event-status">Manage status</button>
+                    <button type="button" data-view="catalogue">Change event</button>
+                  </div>
                 </section>`
                 : state.activeView === 'dashboard' ? `<section class="hero-event-context empty" aria-label="Global workspace">
                     <div class="hero-event-context-copy"><span>Global workspace</span><strong>No event workspace selected</strong><small>Your dashboard still includes assigned work from every active event.</small></div>
@@ -3224,6 +3528,7 @@
       <dialog id="event-summary-dialog" class="modal event-summary-dialog"><div id="event-summary-content"></div></dialog>
       ${renderEventStatusDialog(event)}
       ${renderIntelligentGolfPlannerMatchDialog(event)}
+      ${renderIntelligentGolfPlannerLinkDialog(event)}
       ${renderPluginDialogs()}
     `;
 
@@ -3239,7 +3544,7 @@
       maybeOpenIntelligentGolfPlannerMatch(event);
     }
     if (state.activeView === 'artwork' && event) {
-      import('./poster-app.js?v=20260910-deleted-diary-recovery-1')
+      import('./poster-app.js?v=20260910-planner-relink-reconcile-1')
         .then(module => module.mountPosterStudio({
           eventId: event.id,
           eventName: event.name,
@@ -6722,6 +7027,7 @@
 
       if (endpoint.endsWith('/intelligent-golf')) {
         pluginCapabilities.intelligentGolfEnabled = result.enabled === true;
+        invalidateIntelligentGolfEventStatusCache();
       } else if (endpoint.endsWith('/monday')) {
         pluginCapabilities.mondayEnabled = result.enabled === true;
       }
@@ -6814,6 +7120,33 @@
       button.addEventListener('click', () => resolveIntelligentGolfPlannerMatch(
         plannerMatchDialog,
         button.dataset.resolveIgPlannerMatch));
+    });
+
+    const plannerLinkDialog = document.getElementById('ig-planner-link-dialog');
+    document.querySelectorAll('[data-action="change-ig-planner-link"]').forEach(button => {
+      button.addEventListener('click', () => openIntelligentGolfPlannerLinkDialog(button));
+    });
+    plannerLinkDialog?.addEventListener('cancel', eventArgs => {
+      eventArgs.preventDefault();
+      closeIntelligentGolfPlannerLinkDialog(plannerLinkDialog);
+    });
+    plannerLinkDialog?.querySelectorAll('[data-close-ig-planner-link]').forEach(button => {
+      button.addEventListener('click', () => closeIntelligentGolfPlannerLinkDialog(plannerLinkDialog));
+    });
+    plannerLinkDialog?.querySelector('[data-retry-ig-planner-link]')?.addEventListener('click', () => {
+      closeIntelligentGolfPlannerLinkDialog(plannerLinkDialog, false);
+      openIntelligentGolfPlannerLinkDialog();
+    });
+    plannerLinkDialog?.querySelectorAll('input[name="ig-planner-link-candidate"]').forEach(input => {
+      input.addEventListener('change', () => {
+        const selected = plannerLinkDialog.querySelector('input[name="ig-planner-link-candidate"]:checked:not(:disabled)');
+        const currentPlannerEntryId = Number(plannerLinkDialog.dataset.currentPlannerEntryId) || 0;
+        const confirmButton = plannerLinkDialog.querySelector('[data-confirm-ig-planner-link]');
+        if (confirmButton) confirmButton.disabled = !selected || Number(selected.value) === currentPlannerEntryId;
+      });
+    });
+    plannerLinkDialog?.querySelector('[data-confirm-ig-planner-link]')?.addEventListener('click', () => {
+      saveIntelligentGolfPlannerLink(plannerLinkDialog);
     });
 
     const brandingForm = document.getElementById('club-branding-form');

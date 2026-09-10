@@ -42,6 +42,13 @@ public interface IIntelligentGolfIntegrationLinkStore
     Task<string?> FindPlaybookEventIdByIntelligentGolfEventIdAsync(
         int intelligentGolfEventId,
         CancellationToken cancellationToken);
+    Task<IntelligentGolfIntegrationLink> RelinkEventAsync(
+        string eventId,
+        int expectedIntelligentGolfEventId,
+        int intelligentGolfEventId,
+        string fingerprint,
+        DateTimeOffset relinkedAtUtc,
+        CancellationToken cancellationToken);
 }
 
 public sealed class IntelligentGolfIntegrationLinkStore : IIntelligentGolfIntegrationLinkStore
@@ -179,6 +186,64 @@ public sealed class IntelligentGolfIntegrationLinkStore : IIntelligentGolfIntegr
             var document = await LoadAsync(cancellationToken);
             return document.Events.Values.FirstOrDefault(link =>
                 link.IntelligentGolfEventId == intelligentGolfEventId)?.EventPlaybookEventId;
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    public async Task<IntelligentGolfIntegrationLink> RelinkEventAsync(
+        string eventId,
+        int expectedIntelligentGolfEventId,
+        int intelligentGolfEventId,
+        string fingerprint,
+        DateTimeOffset relinkedAtUtc,
+        CancellationToken cancellationToken)
+    {
+        var key = eventId.Trim();
+        if (string.IsNullOrWhiteSpace(key))
+            throw new ArgumentException("The Event Playbook event ID is required.", nameof(eventId));
+        if (expectedIntelligentGolfEventId <= 0)
+            throw new ArgumentException("The current Intelligent Golf planner entry ID is required.", nameof(expectedIntelligentGolfEventId));
+        if (intelligentGolfEventId <= 0)
+            throw new ArgumentException("The new Intelligent Golf planner entry ID is required.", nameof(intelligentGolfEventId));
+        if (string.IsNullOrWhiteSpace(fingerprint))
+            throw new ArgumentException("The event fingerprint is required.", nameof(fingerprint));
+
+        await _gate.WaitAsync(cancellationToken);
+        try
+        {
+            var document = await LoadAsync(cancellationToken);
+            if (!document.Events.TryGetValue(key, out var link) ||
+                link.IntelligentGolfEventId != expectedIntelligentGolfEventId)
+            {
+                throw new IntelligentGolfPlannerLinkChangedException(
+                    expectedIntelligentGolfEventId,
+                    link?.IntelligentGolfEventId);
+            }
+
+            if (intelligentGolfEventId == expectedIntelligentGolfEventId)
+                return Clone(link);
+
+            var owner = document.Events.Values.FirstOrDefault(candidate =>
+                !string.Equals(candidate.EventPlaybookEventId, key, StringComparison.OrdinalIgnoreCase) &&
+                candidate.IntelligentGolfEventId == intelligentGolfEventId);
+            if (owner is not null)
+                throw new IntelligentGolfPlannerEventAlreadyLinkedException(intelligentGolfEventId);
+
+            link.IntelligentGolfEventId = intelligentGolfEventId;
+            link.IntelligentGolfDiaryEntryId = null;
+            link.DiaryPublishedAtUtc = null;
+            link.LastEventFingerprint = fingerprint.Trim();
+            link.EventSynchronisedAtUtc = relinkedAtUtc;
+            link.LastError = null;
+            link.LastErrorStage = null;
+            link.LastErrorStatusCode = null;
+            ClearPendingMatch(link);
+            link.UpdatedAtUtc = DateTimeOffset.UtcNow;
+            await SaveAsync(document, cancellationToken);
+            return Clone(link);
         }
         finally
         {
