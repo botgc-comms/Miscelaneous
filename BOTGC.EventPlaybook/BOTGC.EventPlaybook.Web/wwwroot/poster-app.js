@@ -3860,6 +3860,7 @@ function memberDiaryStageLabel(stage) {
         'member-diary-allocation-response': 'reading the new member diary entry ID',
         'member-diary-add': 'creating the member diary entry',
         'member-diary-add-response': 'reading the new member diary entry ID',
+        'member-diary-existence-check': 'checking whether the linked member diary entry still exists',
         'member-diary-initialisation': 'saving the initial member diary details',
         'member-diary-update': 'saving the member diary HTML',
         'planner-event-image-upload': 'uploading the approved artwork to the Intelligent Golf planner',

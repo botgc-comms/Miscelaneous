@@ -170,6 +170,8 @@ public sealed class MemberDiaryEventImageTests
         var firstUpload = true;
         var transport = new RecordingTransport(call => call.Path switch
         {
+            var path when call.Method == HttpMethod.Get && path == $"/event.php?eventid={PlannerEventId}" =>
+                Response("<div id='event_overview_diary'><a data-ajax-action='editdiary' data-ajax-data-inline-id='4963'>Edit</a></div>"),
             var path when call.Method == HttpMethod.Get && path.Contains("ajaxaction=addtodiary", StringComparison.Ordinal) =>
                 Response(CreatedDiaryResponse),
             "/diaryadmin.php?&requestType=ajax&ajaxaction=editnow" => Response(string.Empty),
@@ -201,6 +203,271 @@ public sealed class MemberDiaryEventImageTests
             firstUpload = false;
             throw new HttpRequestException("Upload unavailable.");
         }
+    }
+
+    [Fact]
+    public async Task Publish_WhenLinkedDiaryWasDeleted_RecreatesAndRelinksItBeforeUpdating()
+    {
+        var addCount = 0;
+        var transport = new RecordingTransport(call => call.Path switch
+        {
+            var path when call.Method == HttpMethod.Get && path == $"/event.php?eventid={PlannerEventId}" =>
+                Response("<div id=\"event_overview_diary\"><a data-ajax-action=\"addtodiary\">Add</a></div>"),
+            var path when call.Method == HttpMethod.Get && path.Contains("ajaxaction=addtodiary", StringComparison.Ordinal) =>
+                Response(++addCount == 1
+                    ? CreatedDiaryResponse
+                    : CreatedDiaryResponse.Replace("4963", "4999", StringComparison.Ordinal)),
+            "/diaryadmin.php?&requestType=ajax&ajaxaction=editnow" => Response(string.Empty),
+            var path when call.IsMultipart && path.Contains("ajaxaction=eventimageupload", StringComparison.Ordinal) =>
+                Response(string.Empty),
+            var path when call.Method == HttpMethod.Post && path.Contains("ajaxaction=eventdetailssave", StringComparison.Ordinal) =>
+                Response(string.Empty),
+            _ => throw Unexpected(call)
+        });
+        var cache = new JsonCache();
+        var handler = CreateHandler(transport, cache);
+
+        var first = await handler.Handle(
+            new PublishPlannerDiaryCommand(CreateRequest()),
+            CancellationToken.None);
+        var recovered = await handler.Handle(
+            new PublishPlannerDiaryCommand(CreateRequest() with
+            {
+                IntelligentGolfDiaryEntryId = first.IntelligentGolfDiaryEntryId
+            }),
+            CancellationToken.None);
+
+        Assert.True(recovered.Created);
+        Assert.Equal(4999, recovered.IntelligentGolfDiaryEntryId);
+        Assert.Equal(2, transport.Calls.Count(call => call.Path.Contains("ajaxaction=addtodiary", StringComparison.Ordinal)));
+        Assert.Equal(2, transport.Calls.Count(call => call.Path.Contains("ajaxaction=editnow", StringComparison.Ordinal)));
+        Assert.Equal(2, transport.Calls.Count(call => call.IsMultipart));
+        Assert.Equal(2, transport.Calls.Count(call => call.Path.Contains("ajaxaction=eventdetailssave", StringComparison.Ordinal)));
+        Assert.Collection(
+            transport.Calls.TakeLast(5),
+            call => Assert.Equal($"/event.php?eventid={PlannerEventId}", call.Path),
+            call => Assert.Contains("ajaxaction=addtodiary", call.Path, StringComparison.Ordinal),
+            call => Assert.Contains("ajaxaction=editnow", call.Path, StringComparison.Ordinal),
+            call => Assert.Contains("ajaxaction=eventimageupload", call.Path, StringComparison.Ordinal),
+            call => Assert.Contains("ajaxaction=eventdetailssave", call.Path, StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task Publish_WhenDiarySectionIsEmpty_DoesNotAdoptAnUnrelatedEditControl()
+    {
+        const int replacementDiaryEntryId = 4999;
+        var transport = new RecordingTransport(call => call.Path switch
+        {
+            var path when call.Method == HttpMethod.Get && path == $"/event.php?eventid={PlannerEventId}" =>
+                Response(
+                    "<div id='event_overview_diary'><a data-ajax-action='addtodiary'>Add</a></div>" +
+                    "<div id='unrelated'><a data-ajax-action='editdiary' data-ajax-data-inline-id='8888'>Edit unrelated</a></div>"),
+            var path when call.Method == HttpMethod.Get && path.Contains("ajaxaction=addtodiary", StringComparison.Ordinal) =>
+                Response(CreatedDiaryResponse.Replace("4963", "4999", StringComparison.Ordinal)),
+            "/diaryadmin.php?&requestType=ajax&ajaxaction=editnow" => Response(string.Empty),
+            var path when call.IsMultipart && path.Contains("ajaxaction=eventimageupload", StringComparison.Ordinal) =>
+                Response(string.Empty),
+            var path when call.Method == HttpMethod.Post && path.Contains("ajaxaction=eventdetailssave", StringComparison.Ordinal) =>
+                Response(string.Empty),
+            _ => throw Unexpected(call)
+        });
+        var handler = CreateHandler(transport, new JsonCache());
+
+        var recovered = await handler.Handle(
+            new PublishPlannerDiaryCommand(CreateRequest() with
+            {
+                IntelligentGolfDiaryEntryId = DiaryEntryId
+            }),
+            CancellationToken.None);
+
+        Assert.True(recovered.Created);
+        Assert.Equal(replacementDiaryEntryId, recovered.IntelligentGolfDiaryEntryId);
+        var edit = Assert.Single(
+            transport.Calls,
+            call => call.Path.Contains("ajaxaction=editnow", StringComparison.Ordinal));
+        Assert.Contains(
+            edit.Fields!,
+            field => field.Key == "id" && field.Value == replacementDiaryEntryId.ToString());
+        Assert.DoesNotContain(edit.Fields!, field => field.Value == "8888");
+    }
+
+    [Fact]
+    public async Task Publish_WhenLinkedDiaryStillExists_KeepsTheCachedNoOpBehaviour()
+    {
+        var transport = new RecordingTransport(call => call.Path switch
+        {
+            var path when call.Method == HttpMethod.Get && path == $"/event.php?eventid={PlannerEventId}" =>
+                Response("<div id=\"event_overview_diary\"><a data-ajax-action=\"editdiary\" data-ajax-data-inline-id=\"4963\">Edit</a></div>"),
+            var path when call.Method == HttpMethod.Get && path.Contains("ajaxaction=addtodiary", StringComparison.Ordinal) =>
+                Response(CreatedDiaryResponse),
+            "/diaryadmin.php?&requestType=ajax&ajaxaction=editnow" => Response(string.Empty),
+            var path when call.IsMultipart && path.Contains("ajaxaction=eventimageupload", StringComparison.Ordinal) =>
+                Response(string.Empty),
+            var path when call.Method == HttpMethod.Post && path.Contains("ajaxaction=eventdetailssave", StringComparison.Ordinal) =>
+                Response(string.Empty),
+            _ => throw Unexpected(call)
+        });
+        var handler = CreateHandler(transport, new JsonCache());
+
+        var first = await handler.Handle(
+            new PublishPlannerDiaryCommand(CreateRequest()),
+            CancellationToken.None);
+        var unchanged = await handler.Handle(
+            new PublishPlannerDiaryCommand(CreateRequest() with
+            {
+                IntelligentGolfDiaryEntryId = first.IntelligentGolfDiaryEntryId
+            }),
+            CancellationToken.None);
+
+        Assert.False(unchanged.Created);
+        Assert.Equal(DiaryEntryId, unchanged.IntelligentGolfDiaryEntryId);
+        Assert.Single(transport.Calls, call => call.Path.Contains("ajaxaction=addtodiary", StringComparison.Ordinal));
+        Assert.Single(transport.Calls, call => call.Path.Contains("ajaxaction=editnow", StringComparison.Ordinal));
+        Assert.Single(transport.Calls, call => call.IsMultipart);
+        Assert.Single(transport.Calls, call => call.Path.Contains("ajaxaction=eventdetailssave", StringComparison.Ordinal));
+        Assert.Single(transport.Calls, call => call.Path == $"/event.php?eventid={PlannerEventId}");
+    }
+
+    [Fact]
+    public async Task Publish_WhenPlannerHasDifferentLinkedDiary_AdoptsItWithoutCreatingAnotherEntry()
+    {
+        const int replacementDiaryEntryId = 4999;
+        var transport = new RecordingTransport(call => call.Path switch
+        {
+            var path when call.Method == HttpMethod.Get && path == $"/event.php?eventid={PlannerEventId}" =>
+                Response("<div id='event_overview_diary'><a data-ajax-data-inline-id='4999' class='btn' data-ajax-method='get' data-ajax-action='editdiary'>Edit</a></div>"),
+            var path when call.Method == HttpMethod.Get && path.Contains("ajaxaction=addtodiary", StringComparison.Ordinal) =>
+                Response(CreatedDiaryResponse),
+            "/diaryadmin.php?&requestType=ajax&ajaxaction=editnow" => Response(string.Empty),
+            var path when call.IsMultipart && path.Contains("ajaxaction=eventimageupload", StringComparison.Ordinal) =>
+                Response(string.Empty),
+            var path when call.Method == HttpMethod.Post && path.Contains("ajaxaction=eventdetailssave", StringComparison.Ordinal) =>
+                Response(string.Empty),
+            _ => throw Unexpected(call)
+        });
+        var handler = CreateHandler(transport, new JsonCache());
+
+        var first = await handler.Handle(
+            new PublishPlannerDiaryCommand(CreateRequest()),
+            CancellationToken.None);
+        var recovered = await handler.Handle(
+            new PublishPlannerDiaryCommand(CreateRequest() with
+            {
+                IntelligentGolfDiaryEntryId = first.IntelligentGolfDiaryEntryId
+            }),
+            CancellationToken.None);
+
+        Assert.False(recovered.Created);
+        Assert.Equal(replacementDiaryEntryId, recovered.IntelligentGolfDiaryEntryId);
+        Assert.Single(transport.Calls, call => call.Path.Contains("ajaxaction=addtodiary", StringComparison.Ordinal));
+        Assert.Equal(2, transport.Calls.Count(call => call.Path.Contains("ajaxaction=editnow", StringComparison.Ordinal)));
+        Assert.Equal(2, transport.Calls.Count(call => call.IsMultipart));
+        Assert.Equal(2, transport.Calls.Count(call => call.Path.Contains("ajaxaction=eventdetailssave", StringComparison.Ordinal)));
+
+        var replacementEdit = transport.Calls.Last(call => call.Path.Contains("ajaxaction=editnow", StringComparison.Ordinal));
+        Assert.Contains(
+            replacementEdit.Fields!,
+            field => field.Key == "id" && field.Value == replacementDiaryEntryId.ToString());
+        Assert.Collection(
+            transport.Calls.TakeLast(4),
+            call => Assert.Equal($"/event.php?eventid={PlannerEventId}", call.Path),
+            call => Assert.Contains("ajaxaction=editnow", call.Path, StringComparison.Ordinal),
+            call => Assert.Contains("ajaxaction=eventimageupload", call.Path, StringComparison.Ordinal),
+            call => Assert.Contains("ajaxaction=eventdetailssave", call.Path, StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task Publish_WhenPlannerDiarySectionCannotBeRecognised_DoesNotRiskAnyMutation()
+    {
+        var transport = new RecordingTransport(call => call.Path switch
+        {
+            var path when call.Method == HttpMethod.Get && path == $"/event.php?eventid={PlannerEventId}" =>
+                Response("<html><body><h1>Unexpected planner response</h1></body></html>"),
+            _ => throw Unexpected(call)
+        });
+        var handler = CreateHandler(transport, new JsonCache());
+
+        var exception = await Assert.ThrowsAsync<IntelligentGolfMutationException>(() =>
+            handler.Handle(
+                new PublishPlannerDiaryCommand(CreateRequest() with
+                {
+                    IntelligentGolfDiaryEntryId = DiaryEntryId
+                }),
+                CancellationToken.None));
+
+        Assert.Equal("member-diary-existence-check", exception.Stage);
+        Assert.Equal(PlannerEventId, exception.IntelligentGolfEventId);
+        Assert.Equal(DiaryEntryId, exception.IntelligentGolfRecordId);
+        var check = Assert.Single(transport.Calls);
+        Assert.Equal(HttpMethod.Get, check.Method);
+        Assert.Equal($"/event.php?eventid={PlannerEventId}", check.Path);
+    }
+
+    [Fact]
+    public async Task Publish_WhenPlannerHasMultipleLinkedDiaries_DoesNotRiskAnyMutation()
+    {
+        var transport = new RecordingTransport(call => call.Path switch
+        {
+            var path when call.Method == HttpMethod.Get && path == $"/event.php?eventid={PlannerEventId}" =>
+                Response(
+                    "<div id='event_overview_diary'>" +
+                    "<a data-ajax-action='editdiary' data-ajax-data-inline-id='4963'>Edit first</a>" +
+                    "<a data-ajax-data-inline-id='4999' data-ajax-action='editdiary'>Edit second</a>" +
+                    "</div>"),
+            _ => throw Unexpected(call)
+        });
+        var handler = CreateHandler(transport, new JsonCache());
+
+        var exception = await Assert.ThrowsAsync<IntelligentGolfMutationException>(() =>
+            handler.Handle(
+                new PublishPlannerDiaryCommand(CreateRequest() with
+                {
+                    IntelligentGolfDiaryEntryId = DiaryEntryId
+                }),
+                CancellationToken.None));
+
+        Assert.Equal("member-diary-existence-check", exception.Stage);
+        Assert.Equal(PlannerEventId, exception.IntelligentGolfEventId);
+        Assert.Equal(DiaryEntryId, exception.IntelligentGolfRecordId);
+        Assert.Contains("4963", exception.ResponseDetail, StringComparison.Ordinal);
+        Assert.Contains("4999", exception.ResponseDetail, StringComparison.Ordinal);
+        var check = Assert.Single(transport.Calls);
+        Assert.Equal(HttpMethod.Get, check.Method);
+        Assert.Equal($"/event.php?eventid={PlannerEventId}", check.Path);
+    }
+
+    [Fact]
+    public async Task Publish_WhenCallerOmitsCachedDiaryId_StillChecksTheAuthoritativePlannerPage()
+    {
+        var transport = new RecordingTransport(call => call.Path switch
+        {
+            var path when call.Method == HttpMethod.Get && path == $"/event.php?eventid={PlannerEventId}" =>
+                Response("<div id='event_overview_diary'><a data-ajax-action='editdiary' data-ajax-data-inline-id='4963'>Edit</a></div>"),
+            var path when call.Method == HttpMethod.Get && path.Contains("ajaxaction=addtodiary", StringComparison.Ordinal) =>
+                Response(CreatedDiaryResponse),
+            "/diaryadmin.php?&requestType=ajax&ajaxaction=editnow" => Response(string.Empty),
+            var path when call.IsMultipart && path.Contains("ajaxaction=eventimageupload", StringComparison.Ordinal) =>
+                Response(string.Empty),
+            var path when call.Method == HttpMethod.Post && path.Contains("ajaxaction=eventdetailssave", StringComparison.Ordinal) =>
+                Response(string.Empty),
+            _ => throw Unexpected(call)
+        });
+        var handler = CreateHandler(transport, new JsonCache());
+
+        await handler.Handle(
+            new PublishPlannerDiaryCommand(CreateRequest()),
+            CancellationToken.None);
+        var unchanged = await handler.Handle(
+            new PublishPlannerDiaryCommand(CreateRequest()),
+            CancellationToken.None);
+
+        Assert.False(unchanged.Created);
+        Assert.Equal(DiaryEntryId, unchanged.IntelligentGolfDiaryEntryId);
+        Assert.Single(transport.Calls, call => call.Path == $"/event.php?eventid={PlannerEventId}");
+        Assert.Single(transport.Calls, call => call.Path.Contains("ajaxaction=addtodiary", StringComparison.Ordinal));
+        Assert.Single(transport.Calls, call => call.Path.Contains("ajaxaction=editnow", StringComparison.Ordinal));
+        Assert.Single(transport.Calls, call => call.IsMultipart);
+        Assert.Single(transport.Calls, call => call.Path.Contains("ajaxaction=eventdetailssave", StringComparison.Ordinal));
     }
 
     [Fact]

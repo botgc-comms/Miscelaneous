@@ -666,10 +666,6 @@ public sealed class PublishPlannerDiaryHandler(
         var artworkFingerprint = CreateArtworkFingerprint(artwork);
         var cacheKey = $"intelligent-golf:diary-link:{request.EventPlaybookEventId.Trim().ToLowerInvariant()}";
         var plannerCacheKey = $"intelligent-golf:diary-link:planner:{request.IntelligentGolfEventId}";
-        var link = await LoadDiaryLinkAsync(cacheKey, plannerCacheKey, cancellationToken);
-        var diaryId = request.IntelligentGolfDiaryEntryId is > 0
-            ? request.IntelligentGolfDiaryEntryId
-            : link?.IntelligentGolfDiaryEntryId;
 
         await using var diaryLock = await lockManager.AcquireAsync(
             $"intelligent-golf:member-diary:planner:{request.IntelligentGolfEventId}",
@@ -679,10 +675,43 @@ public sealed class PublishPlannerDiaryHandler(
             throw new TimeoutException("Another request is currently publishing this member diary entry. Try again shortly.");
         }
 
-        link = await LoadDiaryLinkAsync(cacheKey, plannerCacheKey, cancellationToken);
-        if (diaryId is null or <= 0)
+        var link = await LoadDiaryLinkAsync(cacheKey, plannerCacheKey, cancellationToken);
+        var diaryId = request.IntelligentGolfDiaryEntryId is > 0
+            ? request.IntelligentGolfDiaryEntryId
+            : link?.IntelligentGolfDiaryEntryId;
+
+        // An administrator can remove or replace the member diary entry directly
+        // in Intelligent Golf. Confirm every stored link against the planner page
+        // before trusting cached fingerprints; otherwise an unchanged publish can
+        // silently retain an ID which no longer exists.
+        if (diaryId is > 0)
         {
-            diaryId = link?.IntelligentGolfDiaryEntryId;
+            var staleDiaryId = diaryId.Value;
+            var linkedDiaryId = await FindLinkedDiaryIdAsync(request, staleDiaryId, cancellationToken);
+            if (linkedDiaryId != staleDiaryId)
+            {
+                diaryId = linkedDiaryId;
+                link = linkedDiaryId is > 0
+                    ? new ExternalDiaryLink { IntelligentGolfDiaryEntryId = linkedDiaryId.Value }
+                    : null;
+
+                if (link is not null)
+                {
+                    await SaveDiaryLinksAsync(cacheKey, plannerCacheKey, link, cancellationToken);
+                    logger.LogInformation(
+                        "Re-linked Event Playbook event {EventPlaybookEventId} from stale diary entry {StaleDiaryEntryId} to Intelligent Golf diary entry {DiaryEntryId}.",
+                        request.EventPlaybookEventId,
+                        staleDiaryId,
+                        linkedDiaryId);
+                }
+                else
+                {
+                    logger.LogInformation(
+                        "Intelligent Golf diary entry {StaleDiaryEntryId} is no longer linked to planner event {IntelligentGolfEventId}; a replacement will be created.",
+                        staleDiaryId,
+                        request.IntelligentGolfEventId);
+                }
+            }
         }
 
         var created = diaryId is null or <= 0;
@@ -826,6 +855,58 @@ public sealed class PublishPlannerDiaryHandler(
             created,
             true,
             publishedAt);
+    }
+
+    private async Task<int?> FindLinkedDiaryIdAsync(
+        PublishPlannerDiaryRequest request,
+        int expectedDiaryId,
+        CancellationToken cancellationToken)
+    {
+        IntelligentGolfTransportResponse response;
+        try
+        {
+            response = await transport.GetResponseAsync(
+                $"/event.php?eventid={request.IntelligentGolfEventId}",
+                cancellationToken);
+        }
+        catch (IntelligentGolfAuthenticationException)
+        {
+            throw;
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
+        {
+            throw new IntelligentGolfMutationException(
+                "member-diary-existence-check",
+                $"Event Playbook could not confirm whether diary entry {expectedDiaryId} is still linked to Intelligent Golf planner entry {request.IntelligentGolfEventId}.",
+                request.IntelligentGolfEventId,
+                expectedDiaryId,
+                exception.Message,
+                exception);
+        }
+
+        var discovery = DiscoverDiaryLinks(response.Body);
+        if (!discovery.DiarySectionRecognised)
+        {
+            throw new IntelligentGolfMutationException(
+                "member-diary-existence-check",
+                $"Event Playbook could not recognise the member diary section on Intelligent Golf planner entry {request.IntelligentGolfEventId}, so it did not risk creating a duplicate entry.",
+                request.IntelligentGolfEventId,
+                expectedDiaryId,
+                "Expected the event_overview_diary section on the planner page.");
+        }
+
+        if (discovery.LinkedIds.Count > 1)
+        {
+            throw new IntelligentGolfMutationException(
+                "member-diary-existence-check",
+                $"Intelligent Golf planner entry {request.IntelligentGolfEventId} returned more than one linked member diary entry, so Event Playbook did not change any of them.",
+                request.IntelligentGolfEventId,
+                expectedDiaryId,
+                string.Join(", ", discovery.LinkedIds));
+        }
+
+        var id = discovery.LinkedIds.SingleOrDefault();
+        return id > 0 ? id : null;
     }
 
     private async Task AttachEventImageAsync(
@@ -1074,55 +1155,167 @@ public sealed class PublishPlannerDiaryHandler(
 
     private static int? ExtractCreatedDiaryId(string raw)
     {
+        var discovery = DiscoverDiaryLinks(raw);
+        return discovery.AllIds.Count == 1 ? discovery.AllIds.Single() : null;
+    }
+
+    private static DiaryLinkDiscovery DiscoverDiaryLinks(string raw)
+    {
+        var htmlFragments = new List<string>();
+        var diarySectionFragments = new List<string>();
+        var diarySectionRecognised = false;
         try
         {
             using var response = JsonDocument.Parse(raw);
-            if (!response.RootElement.TryGetProperty("actions", out var actions) ||
-                actions.ValueKind != JsonValueKind.Array)
+            if (response.RootElement.TryGetProperty("actions", out var actions) &&
+                actions.ValueKind == JsonValueKind.Array)
             {
-                return null;
+                foreach (var action in actions.EnumerateArray())
+                {
+                    if (action.TryGetProperty("selector", out var selector) &&
+                        selector.ValueKind == JsonValueKind.String &&
+                        string.Equals(selector.GetString(), "#event_overview_diary", StringComparison.OrdinalIgnoreCase))
+                    {
+                        diarySectionRecognised = true;
+                        if (action.TryGetProperty("html", out var selectedHtml) &&
+                            selectedHtml.ValueKind == JsonValueKind.String)
+                        {
+                            diarySectionFragments.Add(selectedHtml.GetString() ?? string.Empty);
+                        }
+                    }
+
+                    if (action.TryGetProperty("html", out var htmlElement) &&
+                        htmlElement.ValueKind == JsonValueKind.String)
+                    {
+                        var html = htmlElement.GetString() ?? string.Empty;
+                        htmlFragments.Add(html);
+                        var sections = ExtractDiarySectionFragments(html);
+                        if (sections.Count > 0)
+                        {
+                            diarySectionRecognised = true;
+                            diarySectionFragments.AddRange(sections);
+                        }
+                    }
+                }
+            }
+        }
+        catch (JsonException)
+        {
+            htmlFragments.Add(raw);
+            var sections = ExtractDiarySectionFragments(raw);
+            if (sections.Count > 0)
+            {
+                diarySectionRecognised = true;
+                diarySectionFragments.AddRange(sections);
+            }
+        }
+
+        return new DiaryLinkDiscovery(
+            diarySectionRecognised,
+            ExtractDiaryIds(diarySectionFragments),
+            ExtractDiaryIds(htmlFragments));
+    }
+
+    private static IReadOnlyCollection<string> ExtractDiarySectionFragments(string html)
+    {
+        var tags = Regex.Matches(
+            html,
+            @"<\s*(?<closing>/)?\s*(?<name>[a-z][a-z0-9]*)\b(?<attributes>[^>]*)>",
+            RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant);
+        var sections = new List<string>();
+
+        for (var index = 0; index < tags.Count; index++)
+        {
+            var openingTag = tags[index];
+            if (openingTag.Groups["closing"].Success ||
+                !string.Equals(
+                    ReadHtmlAttribute(openingTag.Groups["attributes"].Value, "id"),
+                    "event_overview_diary",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
             }
 
-            var ids = new HashSet<int>();
-            foreach (var action in actions.EnumerateArray())
+            var elementName = openingTag.Groups["name"].Value;
+            var depth = 1;
+            for (var candidateIndex = index + 1; candidateIndex < tags.Count; candidateIndex++)
             {
-                if (!action.TryGetProperty("html", out var htmlElement) ||
-                    htmlElement.ValueKind != JsonValueKind.String)
+                var candidate = tags[candidateIndex];
+                if (!string.Equals(candidate.Groups["name"].Value, elementName, StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }
 
-                var html = htmlElement.GetString() ?? string.Empty;
-                foreach (Match tagMatch in Regex.Matches(html, @"<[^>]+>", RegexOptions.Singleline))
+                if (candidate.Groups["closing"].Success)
                 {
-                    var tag = tagMatch.Value;
-                    if (!Regex.IsMatch(
-                            tag,
-                            @"\bdata-ajax-action\s*=\s*(['""])editdiary\1",
-                            RegexOptions.IgnoreCase))
-                    {
-                        continue;
-                    }
+                    depth--;
+                }
+                else if (!candidate.Groups["attributes"].Value.TrimEnd().EndsWith("/", StringComparison.Ordinal))
+                {
+                    depth++;
+                }
 
-                    var idMatch = Regex.Match(
-                        tag,
-                        @"\bdata-ajax-data-inline-id\s*=\s*(['""])(\d+)\1",
-                        RegexOptions.IgnoreCase);
-                    if (idMatch.Success &&
-                        int.TryParse(idMatch.Groups[2].Value, NumberStyles.None, CultureInfo.InvariantCulture, out var id) &&
-                        id > 0)
-                    {
-                        ids.Add(id);
-                    }
+                if (depth != 0) continue;
+
+                sections.Add(html.Substring(
+                    openingTag.Index,
+                    candidate.Index + candidate.Length - openingTag.Index));
+                index = candidateIndex;
+                break;
+            }
+        }
+
+        return sections;
+    }
+
+    private static IReadOnlyCollection<int> ExtractDiaryIds(IEnumerable<string> htmlFragments)
+    {
+        var ids = new HashSet<int>();
+        foreach (var html in htmlFragments)
+        {
+            foreach (Match tagMatch in Regex.Matches(
+                         html,
+                         @"<[a-z][^>]*>",
+                         RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant))
+            {
+                var tag = tagMatch.Value;
+                if (!string.Equals(
+                        ReadHtmlAttribute(tag, "data-ajax-action"),
+                        "editdiary",
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                if (int.TryParse(
+                        ReadHtmlAttribute(tag, "data-ajax-data-inline-id"),
+                        NumberStyles.None,
+                        CultureInfo.InvariantCulture,
+                        out var id) &&
+                    id > 0)
+                {
+                    ids.Add(id);
                 }
             }
+        }
 
-            return ids.Count == 1 ? ids.Single() : null;
-        }
-        catch (JsonException)
-        {
-            return null;
-        }
+        return ids.Order().ToArray();
+    }
+
+    private static string? ReadHtmlAttribute(string tag, string attributeName)
+    {
+        var match = Regex.Match(
+            tag,
+            $@"(?:^|\s){Regex.Escape(attributeName)}\s*=\s*(?:""(?<double>[^""]*)""|'(?<single>[^']*)'|(?<bare>[^\s>]+))",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        if (!match.Success) return null;
+
+        var value = match.Groups["double"].Success
+            ? match.Groups["double"].Value
+            : match.Groups["single"].Success
+                ? match.Groups["single"].Value
+                : match.Groups["bare"].Value;
+        return WebUtility.HtmlDecode(value).Trim();
     }
 
     private async Task<ExternalDiaryLink?> LoadDiaryLinkAsync(
@@ -1151,6 +1344,10 @@ public sealed class PublishPlannerDiaryHandler(
     }
 
     private sealed record ResolvedPlannerEventArtwork(string FileName, byte[] Content);
+    private sealed record DiaryLinkDiscovery(
+        bool DiarySectionRecognised,
+        IReadOnlyCollection<int> LinkedIds,
+        IReadOnlyCollection<int> AllIds);
 }
 
 internal static class IntelligentGolfMutationResponseInspector

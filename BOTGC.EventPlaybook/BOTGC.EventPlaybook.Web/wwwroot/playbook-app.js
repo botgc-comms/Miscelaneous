@@ -3239,7 +3239,7 @@
       maybeOpenIntelligentGolfPlannerMatch(event);
     }
     if (state.activeView === 'artwork' && event) {
-      import('./poster-app.js?v=20260909-ig-event-image-1')
+      import('./poster-app.js?v=20260910-deleted-diary-recovery-1')
         .then(module => module.mountPosterStudio({
           eventId: event.id,
           eventName: event.name,
