@@ -11,6 +11,8 @@ public sealed class RegisterCompletionLinkRequest
     public string? AssigneeEmail { get; init; }
     public string? DueDate { get; init; }
     public List<TaskLearningInsightSnapshot> LearningInsights { get; init; } = [];
+    public bool PreserveLearningInsights { get; init; }
+    public bool CanCompleteFromLink { get; init; } = true;
 }
 
 public sealed class TaskCompletionRecord
@@ -24,6 +26,7 @@ public sealed class TaskCompletionRecord
     public string? AssigneeEmail { get; set; }
     public string? DueDate { get; set; }
     public List<TaskLearningInsightSnapshot> LearningInsights { get; set; } = [];
+    public bool CanCompleteFromLink { get; set; } = true;
     public DateTimeOffset RegisteredAtUtc { get; init; }
     public DateTimeOffset? CompletedAtUtc { get; set; }
     public string? CompletionNotes { get; set; }

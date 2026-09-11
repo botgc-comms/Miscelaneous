@@ -42,7 +42,11 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
                 existing.Assignee = request.Assignee;
                 existing.AssigneeEmail = request.AssigneeEmail;
                 existing.DueDate = request.DueDate;
-                existing.LearningInsights = request.LearningInsights ?? [];
+                existing.CanCompleteFromLink = request.CanCompleteFromLink;
+                if (!request.PreserveLearningInsights)
+                {
+                    existing.LearningInsights = request.LearningInsights ?? [];
+                }
                 await SaveAsync(records, cancellationToken);
                 return existing;
             }
@@ -58,6 +62,7 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
                 AssigneeEmail = request.AssigneeEmail,
                 DueDate = request.DueDate,
                 LearningInsights = request.LearningInsights ?? [],
+                CanCompleteFromLink = request.CanCompleteFromLink,
                 RegisteredAtUtc = DateTimeOffset.UtcNow
             };
 
@@ -95,6 +100,11 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
             if (record is null)
             {
                 return null;
+            }
+
+            if (!record.CanCompleteFromLink)
+            {
+                return record;
             }
 
             record.CompletedAtUtc = DateTimeOffset.UtcNow;

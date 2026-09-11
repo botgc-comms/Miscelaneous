@@ -127,31 +127,34 @@ Contacts do not need an existing platform identity. The directory supports emplo
 
 People and shared-mailbox records can be deleted when no current or historical event uses them, either directly or through a routed role. Event-linked records are protected and identify the events retaining them. Deleting an otherwise-unused contact also clears any directory role route that pointed to it.
 
-### Assignment notifications
+### Task notifications and email alerts
 
-When a task receives an owner, an assignment notification is created automatically. Due-soon reminders and overdue notifications are also generated automatically.
-
-The current ASP.NET Core notification endpoint writes messages to:
+When a task receives an owner, an assignment notification is created automatically. The current assignment-notification endpoint writes those messages to:
 
 ```text
 App_Data/notification-outbox.jsonl
 ```
 
-That is an intentional development provider. It gives the Club email and/or Monday integration a clean replacement point without pretending that an external delivery contract has already been agreed.
+That remains an intentional development provider for immediate assignment events and gives the future Monday integration a clean replacement point.
+
+Deadline alerts are live email. From 08:00 Europe/London each day, Event Playbook sends each recipient one combined digest rather than one message per task:
+
+- the task owner is emailed exactly two calendar days before the due date and again on the due date;
+- an incomplete overdue task is emailed to its owner every day;
+- every overdue task is also included in the event organiser's daily digest, including overdue tasks that do not yet have an owner;
+- when the owner and organiser use the same email address, the task appears only once in that person's digest.
+
+Delivery uses the sender configured in the enabled **Intelligent Golf** plugin. People, role contacts, shared role mailboxes and event organisers therefore need a current email address in **People & Roles**. Failed deliveries remain eligible for a 30-minute same-day retry; a persistent daily ledger prevents a successfully delivered digest being sent twice after a restart. Safe success and failure summaries appear in **Integration activity** without exposing addresses, completion tokens or email bodies.
 
 ### Secure completion links
 
-Assigned tasks receive a completion token registered server-side. A recipient can use:
+Active dated tasks receive a high-entropy completion token registered server-side. A recipient can use:
 
 ```text
 /complete.html?token=...
 ```
 
-to view the task and explicitly mark it complete without requiring an IG account. Completion state is persisted under `App_Data` and synchronised back into the event task board when the organiser next opens the Playbook.
-
-### Escalation
-
-Tasks approaching their due date create reminders. Overdue tasks create an owner notification and a separate escalation addressed to the event organiser.
+to view the task and explicitly mark it complete without requiring an IG account. Tasks whose completion is gated by required planning answers instead link to their authenticated task card until those answers are present. Reopening or reassigning a task invalidates its previous completion link. Completion state is persisted under `App_Data` and synchronised back into the event task board when the organiser next opens the Playbook.
 
 ## Derived operational facts and advisories
 

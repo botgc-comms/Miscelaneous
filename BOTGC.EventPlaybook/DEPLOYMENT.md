@@ -70,6 +70,8 @@ The member-diary workflow uses the private API's authenticated Intelligent Golf 
 
 The in-app **Plugin administration** page manages the Intelligent Golf club-site login (site URL, member ID, member PIN/password and administrator password), the member-email sender identity (sender member number, display name and email address), and a Monday.com personal API token with optional workspace and board IDs. Each plugin has an administrator-controlled on/off switch. Turning Intelligent Golf on sends the credentials and sender settings from the Web server to the private API over Render's internal network, protected by `X-Api-Key`. The API validates the login against IG, keeps its authenticated cookie session and sender settings in memory, and returns a four-hour opaque session token to the Web server; secrets and tokens are never returned to the browser. Turning a module off retains its settings, while turning it on is rejected until login configuration and live authentication succeed. The plugin settings live in `App_Data/plugin-settings.json`; login secrets are encrypted, while the non-secret sender identity is available to administrators in the plugin screen. Leave a secret field blank when updating other settings to retain it. **Remove credentials** deletes all stored settings for that plugin. Monday.com task synchronisation remains the next adapter to be implemented.
 
+The Web service evaluates task email alerts from 08:00 Europe/London and retries failed recipient digests every 30 minutes for the rest of that local day. It sends one digest per recipient at due-minus-two calendar days, on the due date and on every overdue day; overdue work is also included in the event organiser's digest. The Intelligent Golf plugin must be enabled and fully configured, including its sender identity. Loading the updated Playbook once after deployment materialises the alert schedule and completion links for existing events; subsequent event, task, contact and deadline changes refresh it automatically.
+
 ## Local password-protected testing
 
 PowerShell:
@@ -90,7 +92,7 @@ This deployment is now suitable for lightweight, shared prototype testing:
 - Communications Centre settings and every generated artwork format are saved per event under `App_Data/poster-sessions`;
 - artwork embedded in generated member emails is stored under `App_Data/MemberEmailArtwork`, so links in sent emails survive restarts and redeployments;
 - browser `localStorage` and IndexedDB remain local caches, so a temporary network failure does not immediately discard the tester's work;
-- task completion records, the notification development outbox and development-login cookie encryption keys also live under `App_Data`;
+- task completion records, the notification development outbox, the daily task-email delivery ledger and development-login cookie encryption keys also live under `App_Data`;
 - encrypted plugin credentials live in `App_Data/plugin-settings.json`, with their Data Protection keys in `App_Data/DataProtection-Keys`;
 - the administrator-only integration activity view is backed by `App_Data/integration-activity.json` and retains the latest 500 safe operation summaries without credentials, cookies or submitted request bodies;
 - the club name and uploaded crest configured in **Playbook Administration** live under `App_Data/branding` and are reused by the navigation, shared pages and Communications Centre;

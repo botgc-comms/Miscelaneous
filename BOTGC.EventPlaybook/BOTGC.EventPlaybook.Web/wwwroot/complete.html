@@ -53,6 +53,16 @@
         return;
       }
 
+      if (task.canCompleteFromLink === false) {
+        const taskPath = `/?view=tasks&event=${encodeURIComponent(task.eventId)}&task=${encodeURIComponent(task.taskId)}`;
+        content.innerHTML = `
+          <span class="eyebrow completion-eyebrow">${escapeHtml(task.eventName)}</span>
+          <h2>${escapeHtml(task.taskTitle)}</h2>
+          <p>This task needs information to be completed in Event Playbook before it can be confirmed.</p>
+          <a class="button button-primary" href="${escapeHtml(taskPath)}">Open task in Event Playbook</a>`;
+        return;
+      }
+
       content.innerHTML = `
         <span class="eyebrow completion-eyebrow">${escapeHtml(task.eventName)}</span>
         <h2>${escapeHtml(task.taskTitle)}</h2>

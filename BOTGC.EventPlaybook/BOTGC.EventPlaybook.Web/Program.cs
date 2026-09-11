@@ -119,6 +119,11 @@ builder.Services.AddSingleton<IMemberEmailComposer, MemberEmailComposer>();
 builder.Services.AddSingleton<IMemberDiaryComposer, MemberDiaryComposer>();
 builder.Services.AddSingleton<IMemberEmailArtworkStore, MemberEmailArtworkStore>();
 builder.Services.AddSingleton<ITaskCompletionRegistry, TaskCompletionRegistry>();
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<ITaskAlertDeliveryLedger, TaskAlertDeliveryLedger>();
+builder.Services.AddSingleton<ITaskAlertEmailSender, IntelligentGolfTaskAlertEmailSender>();
+builder.Services.AddSingleton<ITaskEmailAlertDispatcher, TaskEmailAlertDispatcher>();
+builder.Services.AddHostedService<TaskEmailAlertBackgroundService>();
 builder.Services.AddSingleton<IFeedbackStore, FeedbackStore>();
 builder.Services.AddSingleton<IRetrospectiveAnalysisService, RetrospectiveAnalysisService>();
 builder.Services.AddSingleton<IEventBriefingService, EventBriefingService>();
@@ -173,8 +178,12 @@ if (!string.IsNullOrWhiteSpace(demoPassword))
                            path.StartsWithSegments("/feedback.html") ||
                            path.StartsWithSegments("/feedback.css") ||
                            path.StartsWithSegments("/feedback.js") ||
+                           path.StartsWithSegments("/complete.html") ||
+                           path.StartsWithSegments("/complete.css") ||
+                           path.StartsWithSegments("/playbook.css") ||
                            path.StartsWithSegments("/assets") ||
                            path.StartsWithSegments("/api/feedback/public") ||
+                           IsPublicTaskCompletionPath(context.Request) ||
                            path.StartsWithSegments("/api/poster/member-email/artwork") ||
                            path.StartsWithSegments("/health");
 
@@ -1845,7 +1854,13 @@ app.MapPost("/api/tasks/completion-links/{token}/complete", async (
     CancellationToken cancellationToken) =>
 {
     var record = await registry.CompleteAsync(token, request.Notes, cancellationToken);
-    return record is null ? Results.NotFound() : Results.Ok(record);
+    if (record is null) return Results.NotFound();
+    return !record.CanCompleteFromLink && record.CompletedAtUtc is null
+        ? Results.Conflict(new
+        {
+            error = "This task requires information in Event Playbook before it can be completed."
+        })
+        : Results.Ok(record);
 });
 
 app.MapGet("/api/tasks/events/{eventId}/completions", async (
@@ -1866,6 +1881,26 @@ static bool PasswordMatches(string suppliedPassword, string configuredPassword)
     var suppliedHash = SHA256.HashData(Encoding.UTF8.GetBytes(suppliedPassword));
     var configuredHash = SHA256.HashData(Encoding.UTF8.GetBytes(configuredPassword));
     return CryptographicOperations.FixedTimeEquals(suppliedHash, configuredHash);
+}
+
+static bool IsPublicTaskCompletionPath(HttpRequest request)
+{
+    var segments = request.Path.Value?
+        .Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        ?? [];
+    if (segments.Length < 4 ||
+        !string.Equals(segments[0], "api", StringComparison.OrdinalIgnoreCase) ||
+        !string.Equals(segments[1], "tasks", StringComparison.OrdinalIgnoreCase) ||
+        !string.Equals(segments[2], "completion-links", StringComparison.OrdinalIgnoreCase) ||
+        !Guid.TryParse(segments[3], out _))
+    {
+        return false;
+    }
+
+    return (HttpMethods.IsGet(request.Method) && segments.Length == 4) ||
+           (HttpMethods.IsPost(request.Method) &&
+            segments.Length == 5 &&
+            string.Equals(segments[4], "complete", StringComparison.OrdinalIgnoreCase));
 }
 
 static void ValidatePosterArtworkId(string outputId, IPosterConfigurationService posterConfiguration)

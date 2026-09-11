@@ -102,6 +102,9 @@
   let sharedStateSaveInFlight = false;
   let sharedStateSavePending = false;
   let applyingSharedState = false;
+  const completionLinkRegistrationSignatures = new Map();
+  const completionLinkRegistrationRequests = new Map();
+  let taskBoardDeepLinkTarget = null;
   const feedbackCache = new Map();
   const feedbackRequests = new Set();
   const briefingGenerationRequests = new Map();
@@ -166,6 +169,7 @@
           deletedRoleIds: [],
           contacts: [],
           referenceLibrary: [],
+          taskAlertSchedule: null,
           notificationOutbox: [],
           adminDraftItems: [],
           adminDraftAdvisories: [],
@@ -188,6 +192,7 @@
         deletedRoleIds: Array.isArray(parsed.deletedRoleIds) ? [...new Set(parsed.deletedRoleIds.filter(Boolean).map(String))] : [],
         contacts: Array.isArray(parsed.contacts) ? parsed.contacts : [],
         referenceLibrary: Array.isArray(parsed.referenceLibrary) ? parsed.referenceLibrary : loadLegacyReferenceLibrary(),
+        taskAlertSchedule: parsed.taskAlertSchedule && typeof parsed.taskAlertSchedule === 'object' ? parsed.taskAlertSchedule : null,
         notificationOutbox: Array.isArray(parsed.notificationOutbox) ? parsed.notificationOutbox : [],
         adminDraftItems: Array.isArray(parsed.adminDraftItems) ? parsed.adminDraftItems : [],
         adminDraftAdvisories: Array.isArray(parsed.adminDraftAdvisories) ? parsed.adminDraftAdvisories : [],
@@ -208,6 +213,7 @@
         deletedRoleIds: [],
         contacts: [],
         referenceLibrary: [],
+        taskAlertSchedule: null,
         notificationOutbox: [],
         adminDraftItems: [],
         events: []
@@ -703,15 +709,95 @@
     if (sharedStateReady && !applyingSharedState) scheduleSharedStateSave();
   }
 
+  function normaliseTaskAlertSchedule(value) {
+    const candidate = value && typeof value === 'object' ? value : {};
+    return {
+      generatedAtUtc: typeof candidate.generatedAtUtc === 'string' ? candidate.generatedAtUtc : null,
+      publicBaseUrl: typeof candidate.publicBaseUrl === 'string' ? candidate.publicBaseUrl : '',
+      tasks: Array.isArray(candidate.tasks)
+        ? candidate.tasks.filter(task => task && typeof task === 'object').map(task => ({
+            eventId: String(task.eventId ?? ''),
+            eventName: String(task.eventName ?? ''),
+            eventDate: String(task.eventDate ?? ''),
+            taskId: String(task.taskId ?? ''),
+            taskTitle: String(task.taskTitle ?? ''),
+            dueDate: String(task.dueDate ?? ''),
+            assigneeName: String(task.assigneeName ?? ''),
+            assigneeEmail: String(task.assigneeEmail ?? ''),
+            organiserName: String(task.organiserName ?? ''),
+            organiserEmail: String(task.organiserEmail ?? ''),
+            completionToken: String(task.completionToken ?? ''),
+            completionPath: String(task.completionPath ?? ''),
+            canCompleteFromLink: task.canCompleteFromLink !== false,
+            taskPath: String(task.taskPath ?? '')
+          }))
+        : []
+    };
+  }
+
+  function materialiseTaskAlertSchedule(registerLinks = sharedStateReady) {
+    const projectedTasks = [];
+    const publicBaseUrl = location.origin;
+
+    if (playbook) {
+      for (const event of state.events ?? []) {
+        normaliseAnswers(event);
+        normaliseMilestoneDates(event);
+        const lifecycle = normaliseEventLifecycle(event);
+        if (event.closedAt || lifecycle.status === 'completed') continue;
+
+        const organiser = assignmentRecipient(event.organiserRef ?? event.organiser, event);
+        for (const task of getActiveTasks(event)) {
+          if (task.state.completed === true || task.state.status === 'completed' || !isValidIsoDate(task.dueDate)) continue;
+
+          task.state.completionToken ||= crypto.randomUUID();
+          const completionToken = task.state.completionToken;
+          if (registerLinks) ensureCompletionLinkRegistration(event, task.item, task.state, task.dueDate);
+
+          const assigneeReference = taskAssignmentReference(task.state);
+          const assignee = assignmentRecipient(assigneeReference ?? task.state.assignee, event);
+          projectedTasks.push({
+            eventId: event.id,
+            eventName: event.name,
+            eventDate: event.eventDate,
+            taskId: task.item.id,
+            taskTitle: task.item.title,
+            dueDate: task.dueDate,
+            assigneeName: assignee.name || task.state.assignee || '',
+            assigneeEmail: assignee.email || legacyTaskAssigneeEmail(task.state, assigneeReference) || '',
+            organiserName: organiser.name || event.organiser || '',
+            organiserEmail: organiser.email || '',
+            completionToken,
+            completionPath: `/complete.html?token=${encodeURIComponent(completionToken)}`,
+            canCompleteFromLink: !taskCompletionControl(task.item, event, task.state).blocked,
+            taskPath: `/?view=tasks&event=${encodeURIComponent(event.id)}&task=${encodeURIComponent(task.item.id)}`
+          });
+        }
+      }
+    }
+
+    const content = { publicBaseUrl, tasks: projectedTasks };
+    const previous = normaliseTaskAlertSchedule(state.taskAlertSchedule);
+    const unchanged = previous.generatedAtUtc && valuesEqual(
+      { publicBaseUrl: previous.publicBaseUrl, tasks: previous.tasks },
+      content);
+    const next = unchanged
+      ? previous
+      : { generatedAtUtc: new Date().toISOString(), ...content };
+    state.taskAlertSchedule = next;
+    return structuredClone(next);
+  }
+
   function emptySharedState() {
     return {
-      schemaVersion: 5,
+      schemaVersion: 6,
       deadlineOffsets: {},
       directoryInitialised: false,
       roles: [],
       deletedRoleIds: [],
       contacts: [],
       referenceLibrary: [],
+      taskAlertSchedule: normaliseTaskAlertSchedule(null),
       events: []
     };
   }
@@ -727,7 +813,7 @@
       : [];
     const contacts = Array.isArray(candidate.contacts) ? structuredClone(candidate.contacts) : [];
     return {
-      schemaVersion: 5,
+      schemaVersion: 6,
       deadlineOffsets: candidate.deadlineOffsets && typeof candidate.deadlineOffsets === 'object'
         ? structuredClone(candidate.deadlineOffsets)
         : {},
@@ -736,11 +822,13 @@
       deletedRoleIds,
       contacts,
       referenceLibrary: Array.isArray(candidate.referenceLibrary) ? structuredClone(candidate.referenceLibrary) : [],
+      taskAlertSchedule: normaliseTaskAlertSchedule(candidate.taskAlertSchedule),
       events: Array.isArray(candidate.events) ? structuredClone(candidate.events) : []
     };
   }
 
   function getSharedStateSnapshot() {
+    const taskAlertSchedule = materialiseTaskAlertSchedule();
     return normaliseSharedState({
       deadlineOffsets: state.deadlineOffsets,
       directoryInitialised: state.directoryInitialised,
@@ -748,6 +836,7 @@
       deletedRoleIds: state.deletedRoleIds,
       contacts: state.contacts,
       referenceLibrary: state.referenceLibrary,
+      taskAlertSchedule,
       events: state.events
     });
   }
@@ -807,13 +896,14 @@
     const local = normaliseSharedState(localValue);
     const remote = normaliseSharedState(remoteValue);
     return {
-      schemaVersion: 5,
+      schemaVersion: 6,
       deadlineOffsets: mergeChangedValue(base.deadlineOffsets, local.deadlineOffsets, remote.deadlineOffsets),
       directoryInitialised: Boolean(mergeChangedValue(base.directoryInitialised, local.directoryInitialised, remote.directoryInitialised)),
       roles: mergeEntitiesById(base.roles, local.roles, remote.roles),
       deletedRoleIds: [...new Set([...local.deletedRoleIds, ...remote.deletedRoleIds])],
       contacts: mergeEntitiesById(base.contacts, local.contacts, remote.contacts),
       referenceLibrary: mergeEntitiesById(base.referenceLibrary, local.referenceLibrary, remote.referenceLibrary),
+      taskAlertSchedule: mergeChangedValue(base.taskAlertSchedule, local.taskAlertSchedule, remote.taskAlertSchedule),
       events: mergeEntitiesById(base.events, local.events, remote.events)
     };
   }
@@ -827,6 +917,7 @@
     state.deletedRoleIds = shared.deletedRoleIds;
     state.contacts = shared.contacts;
     state.referenceLibrary = shared.referenceLibrary;
+    state.taskAlertSchedule = shared.taskAlertSchedule;
     state.events = shared.events;
     const admissionPlanningMigrated = migrateAdmissionPlanningState();
     const admissionPricingMigrated = migrateAdmissionPricingState();
@@ -1400,7 +1491,7 @@
         task.state.escalatedAt = null;
       }
       if (task.state.completionToken) {
-        void registerCompletionLink(event, task.item, task.state, task.dueDate);
+        ensureCompletionLinkRegistration(event, task.item, task.state, task.dueDate);
       }
     }
 
@@ -1841,15 +1932,18 @@
       const organiserContact = event.organiserRef?.kind === 'person'
         ? contactById(event.organiserRef.id)
         : state.contacts.find(contact => contact.active !== false && contact.type === 'person' && contact.name.toLocaleLowerCase() === event.organiser.toLocaleLowerCase());
-      return organiserContact ?? { id: 'event-organiser', name: event.organiser, email: '', roleIds: ['event-coordinator'], active: true };
+      return organiserContact && organiserContact.active !== false && organiserContact.canReceiveTasks !== false
+        ? organiserContact
+        : { id: 'event-organiser', name: event.organiser, email: '', roleIds: ['event-coordinator'], active: true };
     }
 
     const role = roleById(roleId);
     const linkedContact = role?.ownerContactId ? contactById(role.ownerContactId) : null;
-    if (linkedContact?.active !== false) return linkedContact;
+    if (linkedContact && linkedContact.active !== false && linkedContact.canReceiveTasks !== false) return linkedContact;
     if (role?.mailboxEmail) return { id: `role-mailbox-${role.id}`, type: 'mailbox', name: role.name, email: role.mailboxEmail, roleIds: [role.id], active: true };
 
-    const contact = state.contacts.find(candidate => candidate.active !== false && Array.isArray(candidate.roleIds) && candidate.roleIds.includes(roleId));
+    const contact = state.contacts.find(candidate => candidate.active !== false && candidate.canReceiveTasks !== false &&
+      Array.isArray(candidate.roleIds) && candidate.roleIds.includes(roleId));
     if (contact) return contact;
 
     return role?.fallbackRoleId ? contactForRole(role.fallbackRoleId, event, visited) : null;
@@ -1890,7 +1984,12 @@
     const reference = assignmentReference(value);
     if (reference?.kind === 'person') {
       const contact = contactById(reference.id);
-      return contact ? { name: contact.name, email: contact.email ?? '' } : { name: '', email: '' };
+      return contact
+        ? {
+            name: contact.name,
+            email: contact.active !== false && contact.canReceiveTasks !== false ? (contact.email ?? '') : ''
+          }
+        : { name: '', email: '' };
     }
     if (reference?.kind === 'role') {
       const role = roleById(reference.id);
@@ -2023,6 +2122,7 @@
     const previousKey = `${taskState.assignmentKind ?? 'legacy'}:${taskState.assignmentId ?? taskState.assignee ?? ''}`;
     const resolved = assignmentReference(reference);
     if (!resolved) {
+      if (taskState.assignee || taskState.assignmentId) rotateTaskCompletionLink(taskState);
       taskState.assignmentKind = null;
       taskState.assignmentId = null;
       taskState.assignee = '';
@@ -2042,7 +2142,10 @@
     updateTeam(event, recipient.name || taskState.assignee);
 
     const nextKey = `${resolved.kind}:${resolved.id}`;
-    if (taskState.assignee && previousKey.toLocaleLowerCase() !== nextKey.toLocaleLowerCase()) queueNotification(event, item, 'assignment');
+    if (previousKey.toLocaleLowerCase() !== nextKey.toLocaleLowerCase()) {
+      rotateTaskCompletionLink(taskState);
+      if (taskState.assignee) queueNotification(event, item, 'assignment');
+    }
     return taskState;
   }
 
@@ -2059,8 +2162,9 @@
     taskState.assignedBy = assignedBy;
     updateTeam(event, taskState.assignee);
 
-    if (taskState.assignee && previous.toLocaleLowerCase() !== taskState.assignee.toLocaleLowerCase()) {
-      queueNotification(event, item, 'assignment');
+    if (previous.toLocaleLowerCase() !== taskState.assignee.toLocaleLowerCase()) {
+      rotateTaskCompletionLink(taskState);
+      if (taskState.assignee) queueNotification(event, item, 'assignment');
     }
     return taskState;
   }
@@ -2072,12 +2176,14 @@
     const existing = state.notificationOutbox.find(notification => notification.eventId === event.id && notification.taskId === item.id && notification.type === type && notification.status !== 'sent');
     if (existing) return existing;
 
-    const token = crypto.randomUUID();
+    const token = taskState.completionToken || crypto.randomUUID();
     const isEscalation = type === 'escalation';
     const taskRecipient = assignmentRecipient(taskAssignmentReference(taskState) ?? taskState.assignee, event);
     const organiserRecipient = assignmentRecipient(event.organiserRef ?? event.organiser, event);
     const recipientName = isEscalation ? (organiserRecipient.name || event.organiser || 'Event Coordinator') : (taskRecipient.name || taskState.assignee || '');
-    const recipientEmail = isEscalation ? organiserRecipient.email : (taskRecipient.email || taskState.assigneeEmail || contactEmailByName(taskState.assignee));
+    const recipientEmail = isEscalation
+      ? organiserRecipient.email
+      : (taskRecipient.email || legacyTaskAssigneeEmail(taskState, taskAssignmentReference(taskState)));
     const notification = {
       id: crypto.randomUUID(),
       eventId: event.id,
@@ -2094,7 +2200,7 @@
     state.notificationOutbox.push(notification);
     taskState.completionToken = token;
     taskState.notificationStatus = 'queued';
-    registerCompletionLink(event, item, taskState, dueDate);
+    ensureCompletionLinkRegistration(event, item, taskState, dueDate);
     dispatchNotification(notification, taskState);
     saveState();
     return notification;
@@ -2117,33 +2223,51 @@
     }
   }
 
-  async function registerCompletionLink(event, item, taskState, dueDate) {
+  function ensureCompletionLinkRegistration(event, item, taskState, dueDate) {
     if (!taskState.completionToken) return;
+    const completionToken = taskState.completionToken;
     const recipient = assignmentRecipient(taskAssignmentReference(taskState) ?? taskState.assignee, event);
+    const signature = JSON.stringify({
+      token: completionToken,
+      eventId: event.id,
+      eventName: event.name,
+      taskId: item.id,
+      taskTitle: item.title,
+      assignee: taskState.assignee ?? recipient.name ?? '',
+      assigneeEmail: recipient.email || legacyTaskAssigneeEmail(taskState, taskAssignmentReference(taskState)),
+      dueDate,
+      canCompleteFromLink: !taskCompletionControl(item, event, taskState).blocked,
+      learningInsights: priorLearningForItem(event, item).map(insight => ({
+        summary: insight.summary,
+        sourceEventName: insight.sourceEventName,
+        sourceEventDate: insight.sourceEventDate,
+        evidenceCount: Number(insight.evidenceCount || 0),
+        sourceType: insight.sourceType
+      }))
+    });
+    if (completionLinkRegistrationSignatures.get(completionToken) === signature ||
+        completionLinkRegistrationRequests.has(completionToken)) return;
+
+    const request = registerCompletionLink(JSON.parse(signature))
+      .then(registered => {
+        if (registered) completionLinkRegistrationSignatures.set(completionToken, signature);
+      })
+      .finally(() => completionLinkRegistrationRequests.delete(completionToken));
+    completionLinkRegistrationRequests.set(completionToken, request);
+  }
+
+  async function registerCompletionLink(payload) {
     try {
-      await fetch('/api/tasks/completion-links', {
+      const response = await fetch('/api/tasks/completion-links', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          token: taskState.completionToken,
-          eventId: event.id,
-          eventName: event.name,
-          taskId: item.id,
-          taskTitle: item.title,
-          assignee: taskState.assignee ?? recipient.name ?? '',
-          assigneeEmail: recipient.email || taskState.assigneeEmail || contactEmailByName(taskState.assignee),
-          dueDate,
-          learningInsights: priorLearningForItem(event, item).map(insight => ({
-            summary: insight.summary,
-            sourceEventName: insight.sourceEventName,
-            sourceEventDate: insight.sourceEventDate,
-            evidenceCount: Number(insight.evidenceCount || 0),
-            sourceType: insight.sourceType
-          }))
-        })
+        body: JSON.stringify(payload)
       });
+      if (!response.ok) throw new Error(`Completion link registration failed (${response.status}).`);
+      return true;
     } catch (error) {
       console.warn('Could not register completion link.', error);
+      return false;
     }
   }
 
@@ -2167,6 +2291,7 @@
           }
           if (!itemIndex.has(record.taskId)) continue;
           const taskState = ensureTaskState(event, record.taskId);
+          if (!taskState.completionToken || taskState.completionToken !== record.token) continue;
           taskState.completed = true;
           taskState.status = 'completed';
           taskState.completedAt = record.completedAtUtc ?? taskState.completedAt;
@@ -2181,13 +2306,35 @@
 
   function contactEmailByName(name) {
     if (!name) return '';
-    return state.contacts.find(contact => contact.name.toLocaleLowerCase() === String(name).toLocaleLowerCase())?.email ?? '';
+    return state.contacts.find(contact => contact.active !== false && contact.canReceiveTasks !== false &&
+      contact.name.toLocaleLowerCase() === String(name).toLocaleLowerCase())?.email ?? '';
+  }
+
+  function legacyTaskAssigneeEmail(taskState, resolvedReference = taskAssignmentReference(taskState)) {
+    if (resolvedReference || taskState?.assignmentKind || taskState?.assignmentId) return '';
+    const name = String(taskState?.assignee ?? '').trim().toLocaleLowerCase();
+    const cachedEmail = String(taskState?.assigneeEmail ?? '').trim().toLocaleLowerCase();
+    if (!name) return '';
+    const matchesKnownContact = (state.contacts ?? []).some(contact =>
+      String(contact.name ?? '').trim().toLocaleLowerCase() === name ||
+      (cachedEmail && String(contact.email ?? '').trim().toLocaleLowerCase() === cachedEmail));
+    return matchesKnownContact ? '' : String(taskState?.assigneeEmail ?? '').trim();
+  }
+
+  function rotateTaskCompletionLink(taskState) {
+    const previousToken = taskState?.completionToken;
+    if (previousToken) {
+      completionLinkRegistrationSignatures.delete(previousToken);
+      completionLinkRegistrationRequests.delete(previousToken);
+    }
+    taskState.completionToken = crypto.randomUUID();
   }
 
   function markTaskComplete(event, item, completed) {
     const taskState = ensureTaskState(event, item.id);
     const review = taskReviewState(item, event);
     if (completed && review && !review.ready) return false;
+    if (!completed && taskState.completed === true) rotateTaskCompletionLink(taskState);
     taskState.completed = Boolean(completed);
     taskState.status = completed ? 'completed' : 'open';
     taskState.completedAt = completed ? new Date().toISOString() : null;
@@ -2302,36 +2449,6 @@
 
   function interpolateMessage(message, facts) {
     return String(message ?? '').replace(/\{([^}]+)\}/g, (_, key) => facts[key] ?? '—');
-  }
-
-  function taskTimingStatus(task) {
-    if (task.state.completed) return 'completed';
-    if (!task.dueDate) return 'undated';
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const due = new Date(`${task.dueDate}T00:00:00`);
-    const days = Math.ceil((due - today) / 86400000);
-    if (days < 0) return 'overdue';
-    if (days <= 2) return 'due-soon';
-    return 'on-track';
-  }
-
-  function processReminderRules(event, tasks) {
-    for (const task of tasks) {
-      const taskState = task.state;
-      if (!taskState.assignee || taskState.completed || !task.dueDate) continue;
-      const timing = taskTimingStatus(task);
-      if (timing === 'due-soon' && !taskState.lastReminderAt) {
-        queueNotification(event, task.item, 'reminder');
-        taskState.lastReminderAt = new Date().toISOString();
-      }
-      if (timing === 'overdue' && !taskState.escalatedAt) {
-        queueNotification(event, task.item, 'overdue');
-        queueNotification(event, task.item, 'escalation');
-        taskState.escalatedAt = new Date().toISOString();
-      }
-    }
-    saveState();
   }
 
   function cloneEvent(sourceEvent) {
@@ -2621,6 +2738,7 @@
           const taskState = event.taskState?.[item.id];
           if (!taskState || (!taskState.completed && !taskState.reviewSignature)) continue;
           const wasConfirmed = taskState.completed === true;
+          if (wasConfirmed) rotateTaskCompletionLink(taskState);
           taskState.completed = false;
           taskState.status = 'open';
           taskState.completedAt = null;
@@ -2636,6 +2754,7 @@
     if (!review || taskState.completed !== true) return review;
     const answersChanged = Boolean(taskState.reviewSignature && taskState.reviewSignature !== review.signature);
     if (!review.ready || answersChanged) {
+      rotateTaskCompletionLink(taskState);
       taskState.completed = false;
       taskState.status = 'open';
       taskState.completedAt = null;
@@ -3655,6 +3774,7 @@
     `;
 
     bindEvents();
+    focusTaskBoardDeepLink();
     if (state.activeView === 'plugins') {
       ensurePluginSettingsLoaded();
       ensureIntegrationActivityLoaded();
@@ -4992,6 +5112,43 @@
     return `Due in ${days} days`;
   }
 
+  function applyRequestedTaskDeepLink(params) {
+    if (params.get('view') !== 'tasks') return false;
+    const eventId = params.get('event');
+    const taskId = params.get('task');
+    if (!eventId || !taskId) return false;
+
+    const event = state.events.find(candidate => candidate.id === eventId);
+    if (!event || event.closedAt || normaliseEventLifecycle(event).status === 'completed') return false;
+    const task = getActiveTasks(event).find(candidate => candidate.item.id === taskId);
+    if (!task) return false;
+
+    state.activeEventId = event.id;
+    state.activeView = 'tasks';
+    state.taskBoardMode = 'overview';
+    state.taskBoardHorizon = taskHorizon(task);
+    taskBoardDeepLinkTarget = { eventId: event.id, taskId: task.item.id };
+    return true;
+  }
+
+  function focusTaskBoardDeepLink() {
+    if (!taskBoardDeepLinkTarget || state.activeView !== 'tasks' ||
+        state.activeEventId !== taskBoardDeepLinkTarget.eventId) return;
+    const card = [...document.querySelectorAll('[data-task-card-id]')]
+      .find(candidate => candidate.dataset.taskCardId === taskBoardDeepLinkTarget.taskId);
+    if (!card) return;
+
+    taskBoardDeepLinkTarget = null;
+    card.dataset.taskDeepLinkTarget = 'true';
+    card.setAttribute('tabindex', '-1');
+    const details = card.querySelector('.task-card-manage');
+    if (details) details.open = true;
+    window.requestAnimationFrame(() => {
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      card.focus({ preventScroll: true });
+    });
+  }
+
   function taskHorizonDefinition(horizon, tasks) {
     const overdue = tasks.filter(task => (taskDaysUntilDue(task) ?? 0) < 0).length;
     const definitions = {
@@ -5047,7 +5204,6 @@
       normaliseAnswers(event);
       normaliseMilestoneDates(event);
       const tasks = getActiveTasks(event);
-      processReminderRules(event, tasks);
       for (const task of tasks) {
         if (taskBelongsToPerson(task, event, person)) records.push({ task, event });
       }
@@ -5230,7 +5386,6 @@
   }
 
   function renderTaskBoard(event, tasks) {
-    processReminderRules(event, tasks);
     const mode = state.taskBoardMode === 'overview' ? 'overview' : 'mine';
     const people = taskBoardPeople();
     const person = resolveTaskBoardPerson(event);
@@ -5331,7 +5486,7 @@
     const priorLearning = priorLearningForItem(event, item);
     const completionControl = taskCompletionControl(item, event, taskState);
     return `
-      <article class="task-card timing-${escapeHtml(horizon)} ${taskState.completed ? 'completed' : ''} ${selected ? 'selected' : ''}">
+      <article class="task-card timing-${escapeHtml(horizon)} ${taskState.completed ? 'completed' : ''} ${selected ? 'selected' : ''}" data-task-card-id="${escapeHtml(item.id)}">
         ${taskState.completed
           ? `<div class="task-card-selection-status completed" title="Task completed" aria-label="Task completed"><span aria-hidden="true">✓</span></div>`
           : `<label class="task-card-check ${completionControl.blocked ? 'blocked' : ''}" title="${escapeHtml(completionControl.blocked ? completionControl.title : `Select ${item.title}`)}">
@@ -8982,6 +9137,7 @@
         }
       }
       await syncServerCompletions();
+      if (applyRequestedTaskDeepLink(params)) saveState();
       render();
     })
     .catch(error => {
