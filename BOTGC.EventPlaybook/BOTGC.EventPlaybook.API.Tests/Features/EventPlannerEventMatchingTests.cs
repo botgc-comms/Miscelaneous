@@ -14,6 +14,8 @@ namespace BOTGC.EventPlaybook.API.Tests.Features;
 public sealed class EventPlannerEventMatchingTests
 {
     private static readonly DateOnly EventDate = new(2026, 12, 12);
+    private const string DisplayMonthPath =
+        "/eventview.php?date=12-12-2026&view=month&subView=all&organise=event&requestType=ajax&ajaxaction=displaymonthtable";
     private static readonly IIntelligentGolfSession Session =
         new AuthenticatedSession("https://www.botgc.co.uk/");
 
@@ -22,7 +24,7 @@ public sealed class EventPlannerEventMatchingTests
     {
         var transport = new RecordingTransport(request => request.Path switch
         {
-            "/eventview.php?date=12-12-2026&view=month&subView=all" => Response(MonthViewHtml),
+            DisplayMonthPath => Response(DisplayMonthResponse(TargetDayPlannerHtml, AdjacentDayPlannerHtml)),
             "/event.php?eventid=4713" => Response(SameDayEventPageHtml),
             "/event.php?eventid=4733" => Response(SameDayEventPageWithReorderedAttributesHtml),
             "/event.php?eventid=4900" => Response(AdjacentDayEventPageHtml),
@@ -47,11 +49,12 @@ public sealed class EventPlannerEventMatchingTests
                 Assert.Equal(4733, candidate.IntelligentGolfEventId);
                 Assert.Equal("A Night with Marc Bolton", candidate.Name);
             });
-        Assert.Equal(4, transport.Requests.Count);
-        Assert.Contains(transport.Requests, request => request.Path == "/event.php?eventid=4900");
+        Assert.Equal(3, transport.Requests.Count);
+        AssertDisplayMonthRequest(transport.Requests[0]);
+        Assert.DoesNotContain(transport.Requests, request => request.Path == "/event.php?eventid=4900");
         Assert.DoesNotContain(transport.Requests, request =>
             request.Path.StartsWith("/eventadmin.php", StringComparison.Ordinal));
-        Assert.DoesNotContain(transport.Requests, request => request.Method == HttpMethod.Post);
+        Assert.Single(transport.Requests, request => request.Method == HttpMethod.Post);
         Assert.Empty(cache.Values);
     }
 
@@ -92,7 +95,7 @@ public sealed class EventPlannerEventMatchingTests
     {
         var transport = new RecordingTransport(request => request.Path switch
         {
-            "/eventview.php?date=12-12-2026&view=month&subView=all" => Response(MonthViewHtml),
+            DisplayMonthPath => Response(DisplayMonthResponse(TargetDayPlannerHtml, AdjacentDayPlannerHtml)),
             "/event.php?eventid=4713" => Response(SameDayEventPageHtml),
             "/event.php?eventid=4733" => Response(SameDayEventPageWithReorderedAttributesHtml),
             "/event.php?eventid=4900" => Response(AdjacentDayEventPageHtml),
@@ -113,8 +116,9 @@ public sealed class EventPlannerEventMatchingTests
         Assert.True(result.Adopted);
         Assert.Equal("event-123", result.EventPlaybookEventId);
         Assert.Equal(4713, result.IntelligentGolfEventId);
-        Assert.Equal(4, transport.Requests.Count);
-        Assert.DoesNotContain(transport.Requests, request => request.Method == HttpMethod.Post);
+        Assert.Equal(3, transport.Requests.Count);
+        AssertDisplayMonthRequest(transport.Requests[0]);
+        Assert.Single(transport.Requests, request => request.Method == HttpMethod.Post);
         Assert.DoesNotContain(transport.Requests, request =>
             request.Path.StartsWith("/eventadmin.php", StringComparison.Ordinal));
 
@@ -173,8 +177,8 @@ public sealed class EventPlannerEventMatchingTests
     {
         var transport = new RecordingTransport(request =>
         {
-            if (request.Path == "/eventview.php?date=12-12-2026&view=month&subView=all")
-                return Response("<html><body>No events</body></html>");
+            if (request.Path == DisplayMonthPath)
+                return Response(DisplayMonthResponse(string.Empty));
             if (request.Path == "/eventadmin.php?group=-1&booking=-1&date=12-12-2026&")
                 return Response(string.Empty, "https://www.botgc.co.uk/eventadmin.php?group=-1&booking=4801");
             if (request.Path == "/event.php?eventid=4801") return Response("<html></html>");
@@ -196,8 +200,9 @@ public sealed class EventPlannerEventMatchingTests
         Assert.True(result.Allocated);
         Assert.Equal(4801, result.IntelligentGolfEventId);
         Assert.Equal(
-            "/eventview.php?date=12-12-2026&view=month&subView=all",
+            DisplayMonthPath,
             transport.Requests[0].Path);
+        AssertDisplayMonthRequest(transport.Requests[0]);
         Assert.Equal(
             "/eventadmin.php?group=-1&booking=-1&date=12-12-2026&",
             transport.Requests[1].Path);
@@ -207,7 +212,7 @@ public sealed class EventPlannerEventMatchingTests
     public async Task Synchronise_WhenMonthViewRequestFails_DoesNotAllocate()
     {
         var transport = new RecordingTransport(request =>
-            request.Path == "/eventview.php?date=12-12-2026&view=month&subView=all"
+            request.Path == DisplayMonthPath
                 ? throw new HttpRequestException("The planner month could not be read.")
                 : throw Unexpected(request));
         var cache = new JsonCache();
@@ -219,7 +224,7 @@ public sealed class EventPlannerEventMatchingTests
         Assert.Equal("planner-event-discovery", exception.Stage);
         Assert.DoesNotContain(transport.Requests, request =>
             request.Path.StartsWith("/eventadmin.php", StringComparison.Ordinal));
-        Assert.DoesNotContain(transport.Requests, request => request.Method == HttpMethod.Post);
+        AssertDisplayMonthRequest(Assert.Single(transport.Requests));
         Assert.Empty(cache.Values);
     }
 
@@ -228,8 +233,8 @@ public sealed class EventPlannerEventMatchingTests
     {
         var transport = new RecordingTransport(request => request.Path switch
         {
-            "/eventview.php?date=12-12-2026&view=month&subView=all" =>
-                Response("<a href=\"/event.php?eventid=4713\">Club Event: Marc Bolton</a>"),
+            DisplayMonthPath =>
+                Response(DisplayMonthResponse("<a href=\"eventadmin.php?group=135&amp;booking=4713\">Club Event: Marc Bolton</a>")),
             "/event.php?eventid=4713" => throw new HttpRequestException("The candidate page could not be read."),
             _ => throw Unexpected(request)
         });
@@ -241,7 +246,7 @@ public sealed class EventPlannerEventMatchingTests
         Assert.Equal("planner-event-lookup-request", exception.Stage);
         Assert.DoesNotContain(transport.Requests, request =>
             request.Path.StartsWith("/eventadmin.php", StringComparison.Ordinal));
-        Assert.DoesNotContain(transport.Requests, request => request.Method == HttpMethod.Post);
+        Assert.Single(transport.Requests, request => request.Method == HttpMethod.Post);
     }
 
     [Fact]
@@ -249,8 +254,8 @@ public sealed class EventPlannerEventMatchingTests
     {
         var transport = new RecordingTransport(request => request.Path switch
         {
-            "/eventview.php?date=12-12-2026&view=month&subView=all" =>
-                Response("<a href=\"/event.php?eventid=4713\">Club Event: Marc Bolton</a>"),
+            DisplayMonthPath =>
+                Response(DisplayMonthResponse("<a href=\"eventadmin.php?group=135&amp;booking=4713\">Club Event: Marc Bolton</a>")),
             "/event.php?eventid=4713" => Response("<input name=\"date\" value=\"not-a-date\">"),
             _ => throw Unexpected(request)
         });
@@ -263,7 +268,7 @@ public sealed class EventPlannerEventMatchingTests
         Assert.Equal("planner-event-lookup-response", exception.Stage);
         Assert.DoesNotContain(transport.Requests, request =>
             request.Path.StartsWith("/eventadmin.php", StringComparison.Ordinal));
-        Assert.DoesNotContain(transport.Requests, request => request.Method == HttpMethod.Post);
+        Assert.Single(transport.Requests, request => request.Method == HttpMethod.Post);
         Assert.Empty(cache.Values);
     }
 
@@ -272,7 +277,7 @@ public sealed class EventPlannerEventMatchingTests
     {
         var transport = new RecordingTransport(request => request.Path switch
         {
-            "/eventview.php?date=12-12-2026&view=month&subView=all" => Response("<html><body>No events</body></html>"),
+            DisplayMonthPath => Response(DisplayMonthResponse(string.Empty)),
             _ => throw Unexpected(request)
         });
         var handler = new AdoptPlannerEventHandler(
@@ -319,7 +324,58 @@ public sealed class EventPlannerEventMatchingTests
 
         Assert.Equal(EventDate, result.EventDate);
         Assert.Equal([4713, 4733], result.Candidates.Select(candidate => candidate.IntelligentGolfEventId));
-        Assert.All(transport.Requests, request => Assert.Equal(HttpMethod.Get, request.Method));
+        AssertDisplayMonthRequest(transport.Requests[0]);
+        Assert.All(transport.Requests.Skip(1), request => Assert.Equal(HttpMethod.Get, request.Method));
+    }
+
+    [Fact]
+    public async Task ListCandidates_RecognisesAnEmptyRequestedDay()
+    {
+        var transport = new RecordingTransport(request => request.Path switch
+        {
+            DisplayMonthPath => Response(DisplayMonthResponse(string.Empty, AdjacentDayPlannerHtml)),
+            _ => throw Unexpected(request)
+        });
+        var handler = new ListPlannerEventCandidatesHandler(transport, Session);
+
+        var result = await handler.Handle(
+            new ListPlannerEventCandidatesQuery(EventDate),
+            CancellationToken.None);
+
+        Assert.Empty(result.Candidates);
+        AssertDisplayMonthRequest(Assert.Single(transport.Requests));
+    }
+
+    [Fact]
+    public async Task ListCandidates_RejectsUnrecognisedResponsesInsteadOfTreatingThemAsEmpty()
+    {
+        var responses = new[]
+        {
+            "not-json",
+            JsonSerializer.Serialize(new
+            {
+                actions = new[] { new { type = "replacecontent", html = "<table id='monthtabledisplay'></table>", selector = "#somewhereElse" } }
+            }),
+            JsonSerializer.Serialize(new
+            {
+                actions = new[] { new { type = "replacecontent", html = "<table id='monthtabledisplay'><td data-date='11-12-2026'></td></table>", selector = "#myPlannerDisplay" } }
+            })
+        };
+
+        foreach (var response in responses)
+        {
+            var transport = new RecordingTransport(request => request.Path switch
+            {
+                DisplayMonthPath => Response(response),
+                _ => throw Unexpected(request)
+            });
+            var handler = new ListPlannerEventCandidatesHandler(transport, Session);
+
+            var exception = await Assert.ThrowsAsync<IntelligentGolfMutationException>(() =>
+                handler.Handle(new ListPlannerEventCandidatesQuery(EventDate), CancellationToken.None));
+            Assert.Equal("planner-event-discovery-response", exception.Stage);
+            AssertDisplayMonthRequest(Assert.Single(transport.Requests));
+        }
     }
 
     [Fact]
@@ -327,8 +383,14 @@ public sealed class EventPlannerEventMatchingTests
     {
         var transport = new RecordingTransport(request => request.Path switch
         {
-            "/eventview.php?date=12-12-2026&view=month&subView=all" =>
-                Response("<a href='/event.php?eventid=4423'>Calendar label</a>"),
+            DisplayMonthPath => Response(DisplayMonthResponse("""
+                <div class="planner-event event">
+                  <a href="eventadmin.php?group=135&amp;booking=4423">Club Event : Marc Bolton
+                    <span class="icons"><i class="fa fa-ticket">icon text must not become part of the name</i></span>
+                    <div class="event-itinerary">itinerary text must not become part of the name</div>
+                  </a>
+                </div>
+                """, "<a href=\"eventadmin.php?group=151&amp;booking=4745\">Wrong-day event</a>")),
             "/event.php?eventid=4423" => Response(
                 KnownPlannerBookingDetailsHtml,
                 "https://www.botgc.co.uk/event.php?eventid=4423"),
@@ -343,7 +405,9 @@ public sealed class EventPlannerEventMatchingTests
         var candidate = Assert.Single(result.Candidates);
         Assert.Equal(4423, candidate.IntelligentGolfEventId);
         Assert.Equal("Marc Bolton", candidate.Name);
-        Assert.All(transport.Requests, request => Assert.Equal(HttpMethod.Get, request.Method));
+        AssertDisplayMonthRequest(transport.Requests[0]);
+        Assert.Equal(HttpMethod.Get, transport.Requests[1].Method);
+        Assert.DoesNotContain(transport.Requests, request => request.Path == "/event.php?eventid=4745");
     }
 
     [Fact]
@@ -778,12 +842,56 @@ public sealed class EventPlannerEventMatchingTests
     private static RecordingTransport CreateDiscoveryTransport() =>
         new(request => request.Path switch
         {
-            "/eventview.php?date=12-12-2026&view=month&subView=all" => Response(MonthViewHtml),
+            DisplayMonthPath => Response(DisplayMonthResponse(TargetDayPlannerHtml, AdjacentDayPlannerHtml)),
             "/event.php?eventid=4713" => Response(SameDayEventPageHtml),
             "/event.php?eventid=4733" => Response(SameDayEventPageWithReorderedAttributesHtml),
             "/event.php?eventid=4900" => Response(AdjacentDayEventPageHtml),
             _ => throw Unexpected(request)
         });
+
+    private static void AssertDisplayMonthRequest(TransportRequest request)
+    {
+        Assert.Equal(HttpMethod.Post, request.Method);
+        Assert.Equal(DisplayMonthPath, request.Path);
+        Assert.Equal(
+            [
+                new KeyValuePair<string, string>("date", "12-12-2026"),
+                new KeyValuePair<string, string>("view", "month"),
+                new KeyValuePair<string, string>("subView", "all"),
+                new KeyValuePair<string, string>("organise", "event")
+            ],
+            request.Fields);
+    }
+
+    private static string DisplayMonthResponse(
+        string targetDayHtml,
+        string adjacentDayHtml = "")
+    {
+        var html = $$"""
+            <style>.planner-event { display: block; }</style>
+            <table class="eventviewTable eventviewTableMonth filter-all" id="monthtabledisplay">
+              <tbody>
+                <tr>
+                  <td data-date="11-12-2026"><div class="events">{{adjacentDayHtml}}</div></td>
+                  <td class="currentDate" data-date="12-12-2026"><div class="events">{{targetDayHtml}}</div></td>
+                  <td data-date="13-12-2026"><div class="events"></div></td>
+                </tr>
+              </tbody>
+            </table>
+            """;
+        return JsonSerializer.Serialize(new
+        {
+            actions = new[]
+            {
+                new
+                {
+                    type = "replacecontent",
+                    html,
+                    selector = "#myPlannerDisplay"
+                }
+            }
+        });
+    }
 
     private static Task SeedCacheAsync(ICacheService cache, string key, object value) =>
         cache.SetAsync(key, value, TimeSpan.FromDays(1), CancellationToken.None);
@@ -810,14 +918,20 @@ public sealed class EventPlannerEventMatchingTests
     private static Exception Unexpected(TransportRequest request) =>
         new Xunit.Sdk.XunitException($"Unexpected Intelligent Golf request: {request.Method} {request.Path}");
 
-    private const string MonthViewHtml = """
-        <div class="calendar-day">
-          <a href="/eventadmin.php?group=-1&amp;booking=4713"><span>Club Event:</span> Marc Bolton</a>
-          <a href="/eventadmin.php?booking=4733&amp;group=-1">BOTGC Event Planner: A Night with Marc Bolton</a>
-          <a href="/event.php?tab=overview&amp;eventid=4713">Marc Bolton</a>
-          <a href="/eventadmin.php?group=-1&amp;booking=4900">Adjacent-day navigation event</a>
-          <a href="/eventadmin.php?group=-1&amp;booking=-1&amp;date=12-12-2026">Add Event</a>
-          <a href="/competition.php?compid=22">Unrelated competition</a>
+    private const string TargetDayPlannerHtml = """
+        <div class="planner-event event">
+          <a href="eventadmin.php?group=-1&amp;booking=4713">Club Event: Marc Bolton<span class="icons"></span></a>
+        </div>
+        <div class="planner-event event">
+          <a href="/eventadmin.php?booking=4733&amp;group=-1">BOTGC Event Planner: A Night with Marc Bolton<div class="event-itinerary"></div></a>
+        </div>
+        <a href="eventadmin.php?group=-1&amp;booking=-1&amp;date=12-12-2026">Add Event</a>
+        <a href="/competition.php?compid=22">Unrelated competition</a>
+        """;
+
+    private const string AdjacentDayPlannerHtml = """
+        <div class="planner-event event">
+          <a href="eventadmin.php?group=-1&amp;booking=4900">Adjacent-day navigation event</a>
         </div>
         """;
 

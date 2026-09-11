@@ -86,6 +86,43 @@ public sealed class IntelligentGolfTransportMultipartTests
         Assert.Equal("description=", Encoding.UTF8.GetString(request.Body));
     }
 
+    [Fact]
+    public async Task PostForm_DisplayMonthTable_UsesTheNonAjaxMonthViewAsReferrer()
+    {
+        var handler = new RecordingHandler();
+        var client = new HttpClient(handler);
+        var transport = new IntelligentGolfTransport(
+            new SingleClientFactory(client),
+            new AuthenticatedSession("https://www.botgc.co.uk/"),
+            new IntelligentGolfSessionOperationGate(),
+            NullLogger<IntelligentGolfTransport>.Instance);
+
+        await transport.PostFormResponseAsync(
+            "/eventview.php?date=12-12-2026&view=month&subView=all&organise=event&requestType=ajax&ajaxaction=displaymonthtable",
+            [
+                new("date", "12-12-2026"),
+                new("view", "month"),
+                new("subView", "all"),
+                new("organise", "event")
+            ],
+            CancellationToken.None);
+
+        var request = Assert.Single(handler.Requests);
+        Assert.Equal(HttpMethod.Post, request.Method);
+        Assert.Equal(
+            "https://www.botgc.co.uk/eventview.php?date=12-12-2026&view=month&subView=all&organise=event&requestType=ajax&ajaxaction=displaymonthtable",
+            request.Uri.ToString());
+        Assert.Equal("XMLHttpRequest", Assert.Single(request.RequestedWith));
+        Assert.Equal("*/*", Assert.Single(request.Accept));
+        Assert.Equal("https://www.botgc.co.uk", request.Origin);
+        Assert.Equal(
+            "https://www.botgc.co.uk/eventview.php?date=12-12-2026&view=month&subView=all&organise=event",
+            request.Referrer?.ToString());
+        Assert.Equal(
+            "date=12-12-2026&view=month&subView=all&organise=event",
+            Encoding.UTF8.GetString(request.Body));
+    }
+
     private static int FindDisposition(string body, string fieldName)
     {
         var quoted = body.IndexOf($"name=\"{fieldName}\"", StringComparison.Ordinal);

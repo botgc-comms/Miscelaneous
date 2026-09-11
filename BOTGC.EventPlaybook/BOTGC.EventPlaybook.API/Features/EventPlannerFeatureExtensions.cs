@@ -1041,42 +1041,29 @@ internal static class IntelligentGolfPlannerEventDiscovery
     {
         try
         {
-            // Reproduce the native IG planner request captured from its month view.
-            // The day view used previously is not part of the observed IG workflow
-            // and can return a valid page without any calendar entries.
             var date = eventDate.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture);
-            var response = await transport.GetResponseAsync(
-                $"/eventview.php?date={date}&view=month&subView=all",
+            var response = await transport.PostFormResponseAsync(
+                $"/eventview.php?date={date}&view=month&subView=all&organise=event&requestType=ajax&ajaxaction=displaymonthtable",
+                [
+                    new KeyValuePair<string, string>("date", date),
+                    new KeyValuePair<string, string>("view", "month"),
+                    new KeyValuePair<string, string>("subView", "all"),
+                    new KeyValuePair<string, string>("organise", "event")
+                ],
                 cancellationToken);
-            var candidates = Parse(response.Body);
+            var candidates = Parse(response.Body, eventDate);
             if (candidates.Count == 0) return candidates;
 
             var matching = new List<IntelligentGolfPlannerEventCandidate>(candidates.Count);
             foreach (var candidate in candidates)
             {
-                try
-                {
-                    var verifiedCandidate = await IntelligentGolfPlannerEventLookup.FindByIdAsync(
-                        transport,
-                        intelligentGolfBaseUrl,
-                        eventDate,
-                        candidate.IntelligentGolfEventId,
-                        cancellationToken);
-                    matching.Add(verifiedCandidate);
-                }
-                catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
-                {
-                    throw;
-                }
-                catch (IntelligentGolfMutationException exception) when (
-                    string.Equals(
-                        exception.Stage,
-                        "planner-event-lookup-date-mismatch",
-                        StringComparison.OrdinalIgnoreCase))
-                {
-                    // Month views contain entries from neighbouring dates. A detail page that
-                    // authoritatively identifies a different date is not a same-day candidate.
-                }
+                var verifiedCandidate = await IntelligentGolfPlannerEventLookup.FindByIdAsync(
+                    transport,
+                    intelligentGolfBaseUrl,
+                    eventDate,
+                    candidate.IntelligentGolfEventId,
+                    cancellationToken);
+                matching.Add(verifiedCandidate);
             }
 
             return matching;
@@ -1103,32 +1090,59 @@ internal static class IntelligentGolfPlannerEventDiscovery
         }
     }
 
-    internal static IReadOnlyList<IntelligentGolfPlannerEventCandidate> Parse(string raw)
+    internal static IReadOnlyList<IntelligentGolfPlannerEventCandidate> Parse(
+        string raw,
+        DateOnly eventDate)
     {
-        if (string.IsNullOrWhiteSpace(raw)) return [];
+        var html = ExtractMonthHtml(raw);
+        if (html is null)
+        {
+            throw DiscoveryResponseFailure(
+                eventDate,
+                "The response was not the expected Intelligent Golf displaymonthtable JSON action.");
+        }
+
+        var monthTable = Regex.Matches(
+                html,
+                @"<table\b(?<attributes>[^>]*)>(?<content>.*?)</table\s*>",
+                RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant)
+            .Cast<Match>()
+            .FirstOrDefault(match => string.Equals(
+                ReadAttribute(match.Groups["attributes"].Value, "id"),
+                "monthtabledisplay",
+                StringComparison.OrdinalIgnoreCase));
+        if (monthTable is null)
+        {
+            throw DiscoveryResponseFailure(
+                eventDate,
+                "The response did not contain Intelligent Golf's monthtabledisplay table.");
+        }
+
+        var expectedDate = eventDate.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture);
+        var targetCell = Regex.Matches(
+                monthTable.Groups["content"].Value,
+                @"<td\b(?<attributes>[^>]*)>(?<content>.*?)</td\s*>",
+                RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant)
+            .Cast<Match>()
+            .FirstOrDefault(match => string.Equals(
+                ReadAttribute(match.Groups["attributes"].Value, "data-date"),
+                expectedDate,
+                StringComparison.OrdinalIgnoreCase));
+        if (targetCell is null)
+        {
+            throw DiscoveryResponseFailure(
+                eventDate,
+                $"The returned month table did not contain the requested date {expectedDate}.");
+        }
 
         var candidates = new Dictionary<int, string>();
         foreach (Match anchorMatch in Regex.Matches(
-                     raw,
+                     targetCell.Groups["content"].Value,
                      @"<a\b(?<attributes>[^>]*)>(?<content>.*?)</a\s*>",
                      RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant))
         {
-            var hrefMatch = Regex.Match(
-                anchorMatch.Groups["attributes"].Value,
-                "\\bhref\\s*=\\s*(?:\"(?<double>[^\"]*)\"|'(?<single>[^']*)'|(?<bare>[^\\s>]+))",
-                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
-            if (!hrefMatch.Success) continue;
-
-            var href = hrefMatch.Groups["double"].Success
-                ? hrefMatch.Groups["double"].Value
-                : hrefMatch.Groups["single"].Success
-                    ? hrefMatch.Groups["single"].Value
-                    : hrefMatch.Groups["bare"].Value;
-            href = WebUtility.HtmlDecode(href);
-            // The planner links an existing booking through eventadmin.php and IG then
-            // redirects to event.php. Some views link directly to event.php, so support
-            // both real navigation shapes rather than assuming the redirect target is
-            // present in the planner markup.
+            var href = WebUtility.HtmlDecode(
+                ReadAttribute(anchorMatch.Groups["attributes"].Value, "href") ?? string.Empty);
             var eventIdMatch = Regex.Match(
                 href,
                 @"(?:^|/)(?:event\.php\?[^#]*?\beventid|eventadmin\.php\?[^#]*?\bbooking)=(?<id>\d+)(?:[&#]|$)",
@@ -1144,8 +1158,14 @@ internal static class IntelligentGolfPlannerEventDiscovery
                 continue;
             }
 
+            var nameContent = anchorMatch.Groups["content"].Value;
+            var metadataStart = Regex.Match(
+                nameContent,
+                @"<(?:span|div)\b",
+                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+            if (metadataStart.Success) nameContent = nameContent[..metadataStart.Index];
             var name = Regex.Replace(
-                anchorMatch.Groups["content"].Value,
+                nameContent,
                 @"<[^>]+>",
                 " ",
                 RegexOptions.Singleline | RegexOptions.CultureInvariant);
@@ -1155,6 +1175,7 @@ internal static class IntelligentGolfPlannerEventDiscovery
                     " ",
                     RegexOptions.CultureInvariant)
                 .Trim();
+            name = Regex.Replace(name, @"\s+:\s+", ": ", RegexOptions.CultureInvariant);
             if (string.IsNullOrWhiteSpace(name)) name = $"Intelligent Golf event {eventId}";
 
             if (!candidates.TryGetValue(eventId, out var existingName) || name.Length > existingName.Length)
@@ -1167,33 +1188,51 @@ internal static class IntelligentGolfPlannerEventDiscovery
             .ToArray();
     }
 
-    internal static DateOnly? ParseEventDate(string raw)
+    private static string? ExtractMonthHtml(string raw)
     {
         if (string.IsNullOrWhiteSpace(raw)) return null;
 
-        foreach (Match inputMatch in Regex.Matches(
-                     raw,
-                     @"<input\b(?<attributes>[^>]*)>",
-                     RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant))
+        try
         {
-            var attributes = inputMatch.Groups["attributes"].Value;
-            var name = ReadAttribute(attributes, "name");
-            if (!string.Equals(name, "date", StringComparison.OrdinalIgnoreCase)) continue;
-
-            var value = ReadAttribute(attributes, "value");
-            if (DateOnly.TryParseExact(
-                    value,
-                    "dd/MM/yyyy",
-                    CultureInfo.InvariantCulture,
-                    DateTimeStyles.None,
-                    out var eventDate))
+            using var document = JsonDocument.Parse(raw);
+            if (document.RootElement.ValueKind != JsonValueKind.Object ||
+                !document.RootElement.TryGetProperty("actions", out var actions) ||
+                actions.ValueKind != JsonValueKind.Array)
             {
-                return eventDate;
+                return null;
             }
+
+            foreach (var action in actions.EnumerateArray())
+            {
+                if (action.ValueKind != JsonValueKind.Object ||
+                    !action.TryGetProperty("type", out var type) ||
+                    !string.Equals(type.GetString(), "replacecontent", StringComparison.OrdinalIgnoreCase) ||
+                    !action.TryGetProperty("selector", out var selector) ||
+                    !string.Equals(selector.GetString(), "#myPlannerDisplay", StringComparison.Ordinal) ||
+                    !action.TryGetProperty("html", out var actionHtml) ||
+                    actionHtml.ValueKind != JsonValueKind.String)
+                {
+                    continue;
+                }
+
+                return actionHtml.GetString();
+            }
+        }
+        catch (JsonException)
+        {
+            return null;
         }
 
         return null;
     }
+
+    private static IntelligentGolfMutationException DiscoveryResponseFailure(
+        DateOnly eventDate,
+        string responseDetail) =>
+        new(
+            "planner-event-discovery-response",
+            $"Intelligent Golf planner events on {eventDate:yyyy-MM-dd} could not be read from the month response.",
+            responseDetail: responseDetail);
 
     private static string? ReadAttribute(string attributes, string attributeName)
     {

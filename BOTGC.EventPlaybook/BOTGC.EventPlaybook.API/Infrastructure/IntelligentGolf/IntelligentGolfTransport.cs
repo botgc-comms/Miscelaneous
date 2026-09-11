@@ -269,8 +269,34 @@ public sealed class IntelligentGolfTransport(
                 builder.Query = $"eventid={eventId.Groups[1].Value}";
             }
         }
+        else if (requestUri.AbsolutePath.EndsWith("/eventview.php", StringComparison.OrdinalIgnoreCase) &&
+                 TryGetQueryParameter(requestUri.Query, "ajaxaction", out var ajaxAction) &&
+                 ajaxAction.Equals("displaymonthtable", StringComparison.OrdinalIgnoreCase))
+        {
+            string[] monthViewParameterNames = ["date", "view", "subView", "organise"];
+            var monthViewParameters = new List<string>(monthViewParameterNames.Length);
+            foreach (var parameterName in monthViewParameterNames)
+            {
+                if (TryGetQueryParameter(requestUri.Query, parameterName, out var value))
+                {
+                    monthViewParameters.Add($"{parameterName}={value}");
+                }
+            }
+
+            builder.Query = string.Join("&", monthViewParameters);
+        }
 
         return builder.Uri;
+    }
+
+    private static bool TryGetQueryParameter(string query, string name, out string value)
+    {
+        var match = System.Text.RegularExpressions.Regex.Match(
+            query,
+            $@"(?:^|[?&]){System.Text.RegularExpressions.Regex.Escape(name)}=([^&]*)(?:&|$)",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+        value = match.Success ? match.Groups[1].Value : string.Empty;
+        return match.Success;
     }
 
     private static HtmlDocument ParseDocument(string raw)
