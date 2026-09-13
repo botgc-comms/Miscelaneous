@@ -19,7 +19,13 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/select';
-import { blankCard, points, confirmationProblems } from '../server/scoring.mjs';
+import {
+  blankCard,
+  points,
+  confirmationProblems,
+  pairSummary,
+  teamName,
+} from '../server/scoring.mjs';
 type Pair = {
   club: string;
   colour: string;
@@ -51,6 +57,12 @@ type Settings = {
   revision: number;
 };
 type Row = {
+  key: string;
+  team: string;
+  colour: string;
+  players: string[];
+  unlabelled: boolean;
+  cardIds: string[];
   club: string;
   pairs: number;
   points: number;
@@ -168,7 +180,7 @@ export default function Home() {
           name: 'read_sixes_standings',
           title: 'Read Golf Sixes standings',
           description:
-            'Read confirmed club totals and scorecard progress. Drafts are excluded.',
+            'Read confirmed team totals and scorecard progress. Drafts are excluded.',
           inputSchema: {
             type: 'object',
             properties: {},
@@ -240,6 +252,7 @@ export default function Home() {
           body: JSON.stringify({ image, slot }),
         });
         setDraft(result.card);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         setDirty(false);
         await refresh();
       } catch (e: any) {
@@ -257,14 +270,20 @@ export default function Home() {
     await run(async () => {
       const { card } = await api(`/api/cards/${draft.id}`, {
         method: 'PUT',
-        body: JSON.stringify({ ...draft, status, reviewed: status === 'confirmed' }),
+        body: JSON.stringify({
+          ...draft,
+          status,
+          reviewed: status === 'confirmed',
+        }),
       });
-      setDraft(card);
+      setDraft(status === 'confirmed' ? null : card);
       setDirty(false);
       await refresh();
+      if (status === 'confirmed')
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       setMessage(
         status === 'confirmed'
-          ? 'Scorecard confirmed. Club totals have been updated.'
+          ? `Card ${card.slot} confirmed. Team standings updated.`
           : 'Draft saved. It will count after confirmation.',
       );
     }, 'Saving…');
@@ -295,6 +314,27 @@ export default function Home() {
         </span>
         <span className="event-tag">JUNIOR FINAL</span>
       </header>
+      {busy && (
+        <div className="notice status" role="status">
+          <span className="spinner" />
+          {busy}
+          {busy.startsWith('Reading') && (
+            <p className="muted">
+              Keep this page open. Handwriting can take a minute to read.
+            </p>
+          )}
+        </div>
+      )}
+      {error && (
+        <div className="notice error" role="alert">
+          {error}
+        </div>
+      )}
+      {message && (
+        <div className="notice success" role="status">
+          {message}
+        </div>
+      )}
       {auth === false ? (
         <section className="panel settings">
           <h1>Matchday scoring</h1>
@@ -344,7 +384,9 @@ export default function Home() {
               <p className="eyebrow">MATCHDAY SCORING</p>
               <h1>
                 {state.settings.title === 'Junior Golf Sixes Final'
-                  ? 'Every shot counts.'
+                  ? draft
+                    ? 'Check your card'
+                    : 'Junior Sixes Final'
                   : state.settings.title}
               </h1>
               <p>
@@ -423,8 +465,9 @@ export default function Home() {
                 />
               </label>
               <p className="muted">
-                Colours are kept for identifying pairs. All colours count
-                towards their club's total. Tied points share a rank.
+                Each club and colour is a separate team. Matching team labels
+                combine; different colours stay separate. Tied points share a
+                rank.
               </p>
               <p className="muted">
                 Scoring: 1 stroke = 10 points, 2 = 9, through 10 = 1. Scores
@@ -451,7 +494,7 @@ export default function Home() {
               </Button>
             </section>
           ) : draft ? (
-            <section className="panel">
+            <section className="panel review-panel">
               <div className="section-heading">
                 <h2>
                   Card {draft.slot}{' '}
@@ -474,116 +517,186 @@ export default function Home() {
                 </Button>
               </div>
               <div className="review">
-                {draft.photo && draft.status === 'draft' && (
-                  <Button
-                    variant="outline"
-                    className="mb-4"
-                    disabled={!!busy || dirty}
-                    onClick={() =>
-                      run(async () => {
-                        const result = await api(
-                          `/api/cards/${draft.id}/scan`,
-                          {
-                            method: 'POST',
-                            body: JSON.stringify({ revision: draft.revision }),
-                          },
-                        );
-                        setDraft(result.card);
-                        await refresh();
-                      }, 'Reading scorecard…')
-                    }
-                  >
-                    Read saved photo again
-                  </Button>
-                )}
                 <p className="muted mb-4">
-                  Check the team, players and six strokes, then tap Confirm. Points are calculated automatically.
+                  Check the team names and strokes. Points are automatic.
                 </p>
                 {draft.photo && (
-                  <a href={draft.photo} target="_blank" rel="noreferrer">
-                    <img
-                      className="photo"
-                      src={draft.photo}
-                      alt={`Original scorecard ${draft.slot}; tap to enlarge`}
-                    />
-                  </a>
+                  <details className="source-photo">
+                    <summary>
+                      <Camera size={18} /> View original scorecard
+                    </summary>
+                    <a href={draft.photo} target="_blank" rel="noreferrer">
+                      <img
+                        className="photo"
+                        src={draft.photo}
+                        alt={`Original scorecard ${draft.slot}`}
+                      />
+                    </a>
+                    {draft.status === 'draft' && (
+                      <Button
+                        variant="outline"
+                        disabled={!!busy || dirty}
+                        onClick={() =>
+                          run(async () => {
+                            const result = await api(
+                              `/api/cards/${draft.id}/scan`,
+                              {
+                                method: 'POST',
+                                body: JSON.stringify({
+                                  revision: draft.revision,
+                                }),
+                              },
+                            );
+                            setDraft(result.card);
+                            await refresh();
+                          }, 'Reading scorecard…')
+                        }
+                      >
+                        Read photo again
+                      </Button>
+                    )}
+                  </details>
                 )}
                 {draft.notes && (
-                  <div className="notice">
-                    <strong>Reader notes</strong>
+                  <details className="reader-notes">
+                    <summary>Photo reader notes</summary>
                     <p>{draft.notes}</p>
-                  </div>
+                  </details>
                 )}
                 <datalist id="clubs">
                   {knownClubs.map((c) => (
                     <option key={c} value={c} />
                   ))}
                 </datalist>
-                <div className="grid">
-                  {draft.pairs.map((pair, i) => (
-                    <section className="pair" key={i}>
-                      <h3>Team {i + 1}</h3>
-                      <div className="field-stack">
-                        <label className="field">
-                          Club
-                          <input
-                            list="clubs"
-                            value={pair.club}
-                            maxLength={100}
-                            onChange={(e) =>
-                              patchPair(i, { club: e.target.value })
-                            }
-                            placeholder="Club name"
-                          />
-                        </label>
-                        <label className="field">
-                          Team / colour (optional)
-                          <input
-                            value={pair.colour}
-                            maxLength={100}
-                            onChange={(e) =>
-                              patchPair(i, { colour: e.target.value })
-                            }
-                            placeholder="e.g. Orange"
-                          />
-                        </label>
-                        <label className="field">
-                          Players
-                          <input
-                            value={pair.players}
-                            maxLength={200}
-                            onChange={(e) =>
-                              patchPair(i, { players: e.target.value })
-                            }
-                            placeholder="Pair names"
-                          />
-                        </label>
-                      </div>
-                      <div className="score-row score-head"><span>Hole</span><span>Strokes</span><span>Points</span></div>
-                      {pair.strokes.map((s,h)=>(
-                        <div className="score-row" key={h}>
-                          <strong>{h+1}</strong>
-                          <input aria-label={`Team ${i+1}, hole ${h+1}, strokes`} type="number" inputMode="numeric" min="1" max="10" value={s??''} onChange={e=>patchPair(i,{strokes:pair.strokes.map((v,j)=>h===j?num(e.target.value):v)})}/>
-                          <span className="expected">{points(s)??'—'}</span>
+                <div className="review-teams">
+                  {draft.pairs.map((pair, i) => {
+                    const total = pairSummary(pair);
+                    return (
+                      <section className="pair" key={i}>
+                        <div className="team-heading">
+                          <h3>{teamName(pair) || `Team ${i + 1}`}</h3>
+                          <span className="team-total">
+                            {total.points ?? '—'} <small>pts</small>
+                          </span>
                         </div>
-                      ))}
-                      <div className="pair-total">
-                        <span>Calculated points</span>
-                        <strong>
-                          {pair.strokes.every((s) => points(s) !== null)
-                            ? pair.strokes.reduce<number>(
-                                (n, s) => n + (points(s) ?? 0),
-                                0,
-                              )
-                            : 'Incomplete'}
-                        </strong>
-                      </div>
-                    </section>
-                  ))}
+                        <div className="team-fields">
+                          <label className="field">
+                            Club
+                            <input
+                              list="clubs"
+                              value={pair.club}
+                              maxLength={100}
+                              onChange={(e) =>
+                                patchPair(i, { club: e.target.value })
+                              }
+                              placeholder="Club"
+                            />
+                          </label>
+                          <label className="field">
+                            Team / colour
+                            <input
+                              value={pair.colour}
+                              maxLength={100}
+                              onChange={(e) =>
+                                patchPair(i, { colour: e.target.value })
+                              }
+                              placeholder="e.g. Green"
+                            />
+                          </label>
+                          <label className="field players-field">
+                            Players
+                            <input
+                              value={pair.players}
+                              maxLength={200}
+                              onChange={(e) =>
+                                patchPair(i, { players: e.target.value })
+                              }
+                              placeholder="Player names"
+                            />
+                          </label>
+                        </div>
+                        <div className="hole-grid">
+                          {pair.strokes.map((score, h) => {
+                            const expected = points(score),
+                              written = pair.writtenPoints?.[h],
+                              mismatch =
+                                expected !== null &&
+                                Number.isInteger(written) &&
+                                written !== expected;
+                            return (
+                              <label
+                                className={`hole ${mismatch ? 'mismatch' : ''}`}
+                                key={h}
+                              >
+                                <span>Hole {h + 1}</span>
+                                <input
+                                  aria-label={`Team ${i + 1}, hole ${h + 1}, strokes`}
+                                  type="number"
+                                  inputMode="numeric"
+                                  min="1"
+                                  max="10"
+                                  value={score ?? ''}
+                                  onFocus={(e) => e.target.select()}
+                                  onChange={(e) =>
+                                    patchPair(i, {
+                                      strokes: pair.strokes.map((v, j) =>
+                                        h === j ? num(e.target.value) : v,
+                                      ),
+                                    })
+                                  }
+                                />
+                                <small>{expected ?? '—'} pts</small>
+                              </label>
+                            );
+                          })}
+                        </div>
+                        <div className="points-check">
+                          <Check size={16} />
+                          <span>
+                            {total.complete
+                              ? `${total.gross} gross strokes → ${total.points} points`
+                              : 'Enter all six strokes to calculate the total'}
+                          </span>
+                        </div>
+                        {total.warnings.length > 0 && (
+                          <details className="points-warning" open>
+                            <summary>
+                              {total.warnings.length} difference
+                              {total.warnings.length === 1 ? '' : 's'} on the
+                              paper card
+                            </summary>
+                            <ul>
+                              {total.warnings.map(
+                                (warning: string, j: number) => (
+                                  <li key={j}>{warning}</li>
+                                ),
+                              )}
+                            </ul>
+                            <p>
+                              We use the calculated points. Correct a stroke
+                              above if the photo was read incorrectly.
+                            </p>
+                          </details>
+                        )}
+                      </section>
+                    );
+                  })}
                 </div>
-                {problems.length > 0 && <div className="notice"><strong>To confirm this card:</strong><ul>{problems.map((problem:string,i:number)=><li key={i}>{problem}</li>)}</ul></div>}
-                <p className="muted mt-4 mb-4">Points and totals are calculated from strokes. Tap Confirm to record this card.</p>
-                <div className="actions">
+                {problems.length > 0 && (
+                  <div className="notice">
+                    <strong>To confirm this card:</strong>
+                    <ul>
+                      {problems.map((problem: string, i: number) => (
+                        <li key={i}>{problem}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                <p className="muted mt-4 mb-4">
+                  Points and totals are calculated from strokes. Tap Confirm to
+                  record this card.
+                </p>
+                <div className="actions confirm-bar">
                   <Button
                     variant="outline"
                     disabled={!!busy}
@@ -597,13 +710,13 @@ export default function Home() {
                   >
                     <Check size={18} />{' '}
                     {draft.status === 'confirmed'
-                      ? 'Update confirmed card'
-                      : 'Confirm & update leaderboard'}
+                      ? 'Save changes'
+                      : 'Confirm scorecard'}
                   </Button>
                 </div>
                 {draft.status === 'confirmed' && (
                   <p className="muted mt-3">
-                    Saving as a draft removes this card from club totals until
+                    Saving as a draft removes this card from team totals until
                     it is confirmed again.
                   </p>
                 )}
@@ -614,12 +727,8 @@ export default function Home() {
             <>
               <section className="capture">
                 <div>
-                  <Camera size={30} />
-                  <h2>Record a scorecard</h2>
-                  <p>
-                    Photograph the whole card, then check the three pairs before
-                    saving.
-                  </p>
+                  <h2>Add scorecard</h2>
+                  <p>Take a photo, check the strokes, confirm.</p>
                   <div className="card-picker">
                     <label htmlFor="card-slot">Card number</label>
                     <Select
@@ -709,7 +818,7 @@ export default function Home() {
               <section className="panel">
                 <div className="section-heading">
                   <h2>
-                    <Trophy size={21} /> Club leaderboard
+                    <Trophy size={21} /> Team leaderboard
                   </h2>
                   <span>
                     {counts?.confirmed === state.settings.expectedCards
@@ -719,13 +828,16 @@ export default function Home() {
                 </div>
                 {state.leaderboard.length ? (
                   state.leaderboard.map((r) => (
-                    <div className="club-row" key={r.club}>
+                    <div className="club-row" key={r.key}>
                       <span className="rank">{r.rank ?? '—'}</span>
                       <div>
-                        <strong>{r.club}</strong>
+                        <strong>{r.team}</strong>
                         <small>
-                          {r.pairs} / {state.settings.pairsPerClub} pairs ·{' '}
-                          {r.pairs ? r.strokes + ' strokes' : 'Awaiting scores'}
+                          {r.players.join(' · ') || 'Players not entered'}
+                          <br />
+                          {r.pairs
+                            ? `${r.strokes} gross strokes · ${r.pairs} pair${r.pairs === 1 ? '' : 's'}`
+                            : 'Awaiting confirmed scores'}
                         </small>
                       </div>
                       <span className="points">
@@ -737,15 +849,13 @@ export default function Home() {
                 ) : (
                   <div className="empty">
                     <Flag size={32} />
-                    <h3>The final starts here</h3>
-                    <p>
-                      Clubs and standings will appear as you record the cards.
-                    </p>
+                    <h3>Ready for the first card</h3>
+                    <p>Team standings appear as you confirm scorecards.</p>
                   </div>
                 )}
                 <p className="muted px-6 py-4">
-                  All team colours combined by club. Most points leads; tied
-                  totals share a rank.
+                  Each team colour ranked separately. Highest points leads; ties
+                  share a rank.
                 </p>
               </section>
               <section className="panel">
@@ -823,27 +933,6 @@ export default function Home() {
             </>
           )}
         </>
-      )}
-      {busy && (
-        <div className="notice status" role="status">
-          <span className="spinner" />
-          {busy}
-          {busy.startsWith('Reading') && (
-            <p className="muted">
-              Keep this page open. Handwriting can take a minute to read.
-            </p>
-          )}
-        </div>
-      )}
-      {error && (
-        <div className="notice error" role="alert">
-          {error}
-        </div>
-      )}
-      {message && (
-        <div className="notice success" role="status">
-          {message}
-        </div>
       )}
     </main>
   );

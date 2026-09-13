@@ -96,7 +96,10 @@ test('API protects data, validates cards, persists edits and rejects stale write
     saved.pairs.forEach((p, i) => {
       p.club = ['Ashbourne', 'Ashbourne', 'Chevin'][i];
       p.colour = ['Orange', 'Black', 'Green'][i];
-      p.pairNumber = null; p.writtenPoints=Array(6).fill(99);p.writtenTotal=999;p.writtenStrokesTotal=999;
+      p.pairNumber = null;
+      p.writtenPoints = Array(6).fill(99);
+      p.writtenTotal = 999;
+      p.writtenStrokesTotal = 999;
       p.strokes = Array(6).fill(5);
     });
     saved.status = 'confirmed';
@@ -106,20 +109,26 @@ test('API protects data, validates cards, persists edits and rejects stale write
     saved = result.body.card;
     let state = (await req('/api/state')).body;
     assert.equal(state.leaderboard[0].club, 'Ashbourne');
-    assert.equal(state.leaderboard[0].points, 72);
-    assert.equal(state.leaderboard[0].pairs, 2);
+    assert.equal(state.leaderboard.length, 3);
+    assert.ok(state.leaderboard.some((r) => r.team === 'Ashbourne Orange'));
+    assert.ok(state.leaderboard.some((r) => r.team === 'Ashbourne Black'));
+    assert.equal(state.leaderboard[0].points, 36);
+    assert.equal(state.leaderboard[0].pairs, 1);
     assert.equal(
       (await req('/api/cards/' + c.id, 'PUT', { ...saved, revision: 1 })).res
         .status,
       409,
     );
     const other = blankCard(1);
-    assert.equal((await req('/api/cards/' + other.id, 'PUT', other)).res.status,409);
+    assert.equal(
+      (await req('/api/cards/' + other.id, 'PUT', other)).res.status,
+      409,
+    );
     saved.pairs[0].strokes = Array(6).fill(1);
     result = await req('/api/cards/' + c.id, 'PUT', saved);
     assert.equal(result.res.status, 200);
     saved = result.body.card;
-    assert.equal((await req('/api/state')).body.leaderboard[0].points, 96);
+    assert.equal((await req('/api/state')).body.leaderboard[0].points, 60);
     const cross = await fetch(url + '/api/settings', {
       method: 'PUT',
       headers: {
@@ -134,7 +143,7 @@ test('API protects data, validates cards, persists edits and rejects stale write
     ({ child, url } = await boot());
     state = (await req('/api/state')).body;
     assert.equal(state.cards.length, 1);
-    assert.equal(state.leaderboard[0].points, 96);
+    assert.equal(state.leaderboard[0].points, 60);
     saved.status = 'draft';
     assert.equal(
       (await req('/api/cards/' + c.id, 'PUT', saved)).res.status,

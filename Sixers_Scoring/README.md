@@ -1,6 +1,6 @@
 # Junior Golf Sixes Final
 
-Phone-friendly scorecard photographs, human review, strokes-to-points checks, and a combined club leaderboard. All colours contribute to their club total. Each card has three pairs and six holes. Defaults: six cards, six clubs, three pairs per club; change counts and club names in Event setup.
+Phone-friendly scorecard photographs, human review, strokes-to-points checks, and a team leaderboard. Each club-and-colour team is ranked separately. Each card has three pairs and six holes. Defaults: six cards, six clubs, three pairs per club; change counts and club names in Event setup.
 
 ## Run locally
 
@@ -31,14 +31,14 @@ SQLite scores, edit history and original photos are stored together under `DATA_
 ## Matchday flow
 
 - Set club spellings and the expected number of cards/pairs in Event setup.
-- Take a photo or upload an existing image; one photo represents one scorecard.
+- Take a photo or upload an existing image; one photo represents one scorecard. The original photo is expandable during review.
 - Check the club, team colour, players and the six strokes. No pair number is required.
 - Enter or correct the six strokes for each pair. The original image remains available for comparison.
 - 1 stroke scores 10 points, through 10 strokes scoring 1 point. Blanks remain blank. Scores beyond this printed range are rejected until the event rule is clarified.
-- Points and totals are calculated automatically from strokes. Written points and totals are retained as scan evidence and never block confirmation.
-- Save incomplete cards as drafts. Tap Confirm to add a complete card to the leaderboard. No extra checkbox is required.
+- Points and totals are calculated automatically from strokes. Written points and totals are compared with calculated results and differences appear beside the team. They never block confirmation: the leaderboard always uses calculated points.
+- Save incomplete cards as drafts. Tap the sticky Confirm button to save and return directly to the leaderboard. No extra checkbox is required.
 - Reopen a saved card with Edit. Saving changes replaces its previous contribution. Saving a confirmed card as a draft removes its contribution until re-confirmed.
-- Club totals combine every colour. Equal totals share a rank; no unconfirmed tie-break rule is applied. Standings refresh every 20 seconds.
+- Each club-and-colour team has its own total. Missing team colours stay separate rather than being combined by club. Equal totals share a rank; no unconfirmed tie-break rule is applied. Standings refresh every 20 seconds.
 - Backup downloads score data and edit history as JSON; original photos remain on the server disk. The JSON export is a readable backup, not an in-app restore file.
 
 Identical photo bytes and reused card numbers are rejected. Multiple pairs and colours from the same club are allowed. Concurrent edits use revision checks to avoid silent overwrites. Confirmation is enforced on the server as well as the screen.
