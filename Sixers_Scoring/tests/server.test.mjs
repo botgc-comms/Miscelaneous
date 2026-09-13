@@ -1,3 +1,5 @@
+import { DatabaseSync } from 'node:sqlite';
+import { writeFile, access } from 'node:fs/promises';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
@@ -175,6 +177,86 @@ test('API protects data, validates cards, persists edits and rejects stale write
     const backup = (await req('/api/export')).body;
     assert.equal(backup.cards.length, 1);
     assert.equal(backup.history.length, 4);
+    let current = (await req('/api/state')).body.cards[0];
+    current.status = 'confirmed';
+    current = (await req('/api/cards/' + current.id, 'PUT', current)).body.card;
+    const fixtureDb = new DatabaseSync(path.join(dataPath, 'scores.sqlite'));
+    await writeFile(
+      path.join(dataPath, 'photos', 'delete-fixture.jpeg'),
+      Buffer.from([255, 216, 255, 217]),
+    );
+    fixtureDb
+      .prepare('UPDATE cards SET photo=?,hash=? WHERE id=?')
+      .run('delete-fixture.jpeg', 'delete-fixture-hash', current.id);
+    fixtureDb.close();
+    const savedCookie = cookie;
+    cookie = '';
+    assert.equal(
+      (
+        await req('/api/cards/' + current.id, 'DELETE', {
+          revision: current.revision,
+        })
+      ).res.status,
+      401,
+    );
+    cookie = savedCookie;
+    assert.equal(
+      (
+        await req('/api/cards/' + current.id, 'DELETE', {
+          revision: current.revision - 1,
+        })
+      ).res.status,
+      409,
+    );
+    assert.equal((await req('/api/state')).body.cards.length, 1);
+    assert.equal(
+      (
+        await req('/api/cards/' + current.id, 'DELETE', {
+          revision: current.revision,
+        })
+      ).res.status,
+      200,
+    );
+    let deletedState = (await req('/api/state')).body;
+    assert.equal(deletedState.cards.length, 0);
+    assert.equal(deletedState.leaderboard.length, 0);
+    assert.equal(
+      deletedState.league.rows.find((r) => r.colour === 'Orange').total,
+      10.5,
+    );
+    assert.equal(deletedState.league.provisional, true);
+    assert.equal((await req('/api/photos/' + current.id)).res.status, 404);
+    await assert.rejects(
+      access(path.join(dataPath, 'photos', 'delete-fixture.jpeg')),
+      { code: 'ENOENT' },
+    );
+    assert.equal(
+      (await req('/api/cards/' + current.id, 'PUT', current)).res.status,
+      409,
+    );
+    assert.equal(
+      (
+        await req('/api/cards/' + current.id, 'DELETE', {
+          revision: current.revision,
+        })
+      ).res.status,
+      404,
+    );
+    await stop(child);
+    ({ child, url } = await boot());
+    assert.equal((await req('/api/state')).body.cards.length, 0);
+    const replacement = blankCard(1);
+    assert.equal(
+      (await req('/api/cards/' + replacement.id, 'PUT', replacement)).res
+        .status,
+      200,
+    );
+    const deletedHistory = (await req('/api/export')).body.history;
+    assert.ok(
+      deletedHistory.some(
+        (entry) => JSON.parse(entry.json).status === 'deleted',
+      ),
+    );
   } finally {
     await stop(child);
   }

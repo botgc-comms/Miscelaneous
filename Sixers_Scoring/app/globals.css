@@ -943,3 +943,41 @@ button:disabled {
     padding-right: 12px;
   }
 }
+.delete-card-button {
+  color: #aa2d20;
+  min-height: 44px;
+}
+.delete-card-button:hover {
+  background: #fff0eb;
+}
+.delete-confirm {
+  background: #b52f23;
+  color: white;
+  min-height: 46px;
+}
+.delete-confirm:hover {
+  background: #952317;
+}
+.delete-team-list {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #52695e;
+}
+.review-heading-actions {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.card-row-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 3px;
+  flex-shrink: 0;
+}
+.card-row > div:first-child {
+  min-width: 0;
+}
+.card-row p {
+  overflow-wrap: anywhere;
+}

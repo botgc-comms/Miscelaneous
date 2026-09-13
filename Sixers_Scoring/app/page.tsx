@@ -12,6 +12,7 @@ import {
   ChevronLeft,
 } from 'lucide-react';
 import LeagueBoard from './league';
+import DeleteCard from './delete-card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import {
@@ -27,6 +28,7 @@ import {
   confirmationProblems,
   pairSummary,
   teamName,
+  leaderboard,
 } from '../server/scoring.mjs';
 type Pair = {
   club: string;
@@ -137,8 +139,16 @@ export default function Home() {
     [clubsText, setClubsText] = useState(''),
     [slot, setSlot] = useState(1),
     [view, setView] = useState<'main' | 'settings'>('main');
-  const [boardView,setBoardView]=useState(window.location.hash.startsWith('#league=')?'league':'match');
-  useEffect(()=>{const openLeague=()=>{if(window.location.hash.startsWith('#league='))setBoardView('league');};window.addEventListener('hashchange',openLeague);return()=>window.removeEventListener('hashchange',openLeague);},[]);
+  const [boardView, setBoardView] = useState(
+    window.location.hash.startsWith('#league=') ? 'league' : 'match',
+  );
+  useEffect(() => {
+    const openLeague = () => {
+      if (window.location.hash.startsWith('#league=')) setBoardView('league');
+    };
+    window.addEventListener('hashchange', openLeague);
+    return () => window.removeEventListener('hashchange', openLeague);
+  }, []);
   const camera = useRef<HTMLInputElement>(null),
     upload = useRef<HTMLInputElement>(null),
     draftRef = useRef<Card | null>(null);
@@ -273,6 +283,29 @@ export default function Home() {
         throw e;
       }
     }, 'Reading scorecard…');
+  }
+  async function afterDelete(card: Card) {
+    setDraft((current) => (current?.id === card.id ? null : current));
+    setDirty(false);
+    setError('');
+    setState((current) => {
+      if (!current) return current;
+      const remaining = current.cards.filter((c) => c.id !== card.id);
+      return {
+        ...current,
+        cards: remaining,
+        leaderboard: leaderboard(remaining, current.settings),
+      };
+    });
+    setMessage(`Card ${card.slot} deleted. Both leaderboards updated.`);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    try {
+      await refresh();
+    } catch {
+      setError(
+        'Card deleted, but the latest standings could not be refreshed. Please refresh the page.',
+      );
+    }
   }
   async function save(status: 'draft' | 'confirmed') {
     if (!draft) return;
@@ -511,19 +544,28 @@ export default function Home() {
                     · {draft.status === 'confirmed' ? 'Confirmed' : 'Draft'}
                   </span>
                 </h2>
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    if (dirty && !window.confirm('Discard unsaved changes?'))
-                      return;
-                    setDraft(null);
-                    setDirty(false);
-                    setError('');
-                    setMessage('');
-                  }}
-                >
-                  <ChevronLeft size={16} /> Back
-                </Button>
+                <div className="review-heading-actions">
+                  {draft.revision > 0 && (
+                    <DeleteCard
+                      card={draft}
+                      onDeleted={afterDelete}
+                      disabled={!!busy}
+                    />
+                  )}
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      if (dirty && !window.confirm('Discard unsaved changes?'))
+                        return;
+                      setDraft(null);
+                      setDirty(false);
+                      setError('');
+                      setMessage('');
+                    }}
+                  >
+                    <ChevronLeft size={16} /> Back
+                  </Button>
+                </div>
               </div>
               <div className="review">
                 <p className="muted mb-4">
@@ -826,7 +868,7 @@ export default function Home() {
               )}
               <Tabs
                 value={boardView}
-                onValueChange={value=>setBoardView(String(value))}
+                onValueChange={(value) => setBoardView(String(value))}
                 className="leaderboard-tabs"
               >
                 <TabsList className="board-tabs">
@@ -911,13 +953,20 @@ export default function Home() {
                             : 'Needs review'}
                         </span>
                       </div>
-                      <Button
-                        variant="outline"
-                        disabled={!!busy}
-                        onClick={() => openCard(c)}
-                      >
-                        Edit
-                      </Button>
+                      <div className="card-row-buttons">
+                        <Button
+                          variant="outline"
+                          disabled={!!busy}
+                          onClick={() => openCard(c)}
+                        >
+                          Edit
+                        </Button>
+                        <DeleteCard
+                          card={c}
+                          onDeleted={afterDelete}
+                          disabled={!!busy}
+                        />
+                      </div>
                     </div>
                   ))
                 ) : (

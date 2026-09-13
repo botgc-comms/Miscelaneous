@@ -58,3 +58,7 @@ The League tab shows points before the event, today's match award, and the updat
 Match positions award 6, 5, 4, 3, 2, and 1 league points; later positions award zero. Ties average the points for all occupied positions: two tied first get 5.5 each, three tied first get 5 each, and two tied fifth get 1.5 each. Drafts do not receive an award. Awards remain provisional until all expected scorecards are confirmed.
 
 Totals are always recalculated as the starting score plus the current match award, so editing or re-confirming a card never adds the award a second time. A club with a single uncoloured team in the official starting standings (such as Burton) uses that team identity across its cards; clubs with multiple team colours remain separate. Starting standings must be saved into the app, not committed as event data to the source repository.
+
+## Delete a scorecard
+
+Use **Delete** beside a card's Edit button, or open the card and use Delete in its header. The confirmation identifies the card and teams. Deleting removes its active scores and photo, frees the card number for reuse, and recalculates match standings and today's league awards. Starting league points stay unchanged. An audit entry remains in the score-data backup. A card changed on another device must be reopened before it can be deleted.
