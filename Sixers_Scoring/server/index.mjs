@@ -13,7 +13,6 @@ import { fileURLToPath } from 'node:url';
 import {
   blankCard,
   validateCard,
-  checkDuplicates,
   leaderboard,
   DEFAULT_SETTINGS,
   validateSettings,
@@ -104,7 +103,6 @@ function saveCard(id, raw, revision, photo, hash) {
         new Error('This card changed elsewhere. Reopen it before saving.'),
         { status: 409 },
       );
-    checkDuplicates({ ...card, id }, cards());
     const rev = (old?.revision ?? 0) + 1;
     db.prepare(
       'INSERT INTO cards (id,slot,json,revision,photo,hash) VALUES (?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET slot=excluded.slot,json=excluded.json,revision=excluded.revision,photo=excluded.photo,hash=excluded.hash',

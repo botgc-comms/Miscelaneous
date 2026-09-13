@@ -5,7 +5,7 @@ import {
   blankCard,
   validateCard,
   issues,
-  checkDuplicates,
+  confirmationProblems,
   leaderboard,
   DEFAULT_SETTINGS,
 } from '../server/scoring.mjs';
@@ -39,7 +39,7 @@ test('written points and both total columns are independently checked', () => {
   c.pairs[0].writtenTotal = 60;
   c.pairs[0].writtenStrokesTotal = 60;
   assert.equal(issues(c).length, 3);
-  assert.throws(() => validateCard(c), /Resolve/);
+  assert.doesNotThrow(() => validateCard(c));
   c.pairs[0].writtenPoints[0] = 10;
   c.pairs[0].writtenTotal = 41;
   c.pairs[0].writtenStrokesTotal = 25;
@@ -71,22 +71,26 @@ test('editing replaces scores instead of appending and changes ranking', () => {
   assert.equal(rows[1].rank, 2);
   assert.equal(rows[2].rank, 2);
 });
-test('duplicate club/pair assignments are rejected across colours and cards', () => {
-  const a = card(),
-    b = card(2);
-  b.pairs[0].club = ' ashbourne ';
-  b.pairs[0].pairNumber = 1;
-  b.pairs[0].colour = 'Black';
-  assert.throws(() => checkDuplicates(b, [a]), /already assigned/);
-  assert.doesNotThrow(() => checkDuplicates(a, [a]));
+test('scanned scores confirm without pair numbers, written scores or a checkbox',()=>{
+ const c=card(); c.reviewed=false;
+ c.pairs.forEach(p=>{p.pairNumber=null;p.writtenPoints=Array(6).fill(99);p.writtenTotal=999;p.writtenStrokesTotal=999;});
+ assert.deepEqual(confirmationProblems(c),[]);
+ const saved=validateCard(c);assert.equal(saved.reviewed,true);
+ assert.equal(leaderboard([saved])[0].points,41);
+ c.pairs.forEach(p=>{delete p.writtenPoints;delete p.writtenTotal;delete p.writtenStrokesTotal;});
+ assert.doesNotThrow(()=>validateCard(c));
 });
-test('integer bounds and review check enforced server-side', () => {
+test('confirmation explains the exact missing club and hole',()=>{
+ const c=card();c.pairs[1].club='';c.pairs[2].strokes[3]=null;
+ assert.deepEqual(confirmationProblems(c),['Team 2: enter the club.','Team 3: enter strokes from 1 to 10 for hole 4.']);
+});
+test('integer bounds enforced server-side', () => {
   const a = card();
   a.pairs[0].strokes[0] = 11;
   assert.throws(() => validateCard(a), /whole numbers/);
   a.pairs[0].strokes[0] = 1;
   a.reviewed = false;
-  assert.throws(() => validateCard(a), /Review/);
+  assert.equal(validateCard(a).reviewed,true);
 });
 test('known clubs appear awaiting results without a rank', () => {
   const rows = leaderboard([], { ...DEFAULT_SETTINGS, clubs: ['Ashbourne'] });

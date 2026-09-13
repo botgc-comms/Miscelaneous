@@ -58,42 +58,34 @@ export function validateCard(raw) {
     slot: raw.slot,
     status: raw.status,
     notes: text(raw.notes, 2500),
-    reviewed: raw.reviewed === true,
+    reviewed: raw.status === 'confirmed' || raw.reviewed === true,
     pairs: raw.pairs.map((p) => {
       if (
         !p ||
         !Array.isArray(p.strokes) ||
-        p.strokes.length !== 6 ||
-        !Array.isArray(p.writtenPoints) ||
-        p.writtenPoints.length !== 6
+        p.strokes.length !== 6
       )
         throw new Error('Each pair must have six holes.');
       const pair = {
         club: text(p.club),
         colour: text(p.colour),
         players: text(p.players, 200),
-        pairNumber: score(p.pairNumber, 30),
+        pairNumber: Number.isInteger(p.pairNumber) ? p.pairNumber : null,
         strokes: p.strokes.map((v) => score(v, raw.status === 'draft' ? 99 : 10, raw.status === 'draft' ? 0 : 1)),
-        writtenPoints: p.writtenPoints.map((v) => score(v, 99, 0)),
-        writtenTotal: score(p.writtenTotal, 999, 0),
-        writtenStrokesTotal: score(p.writtenStrokesTotal, 999, 0),
+        writtenPoints: Array.from({length:6},(_,i)=>Number.isInteger(p.writtenPoints?.[i]) ? p.writtenPoints[i] : null),
+        writtenTotal: Number.isInteger(p.writtenTotal) ? p.writtenTotal : null,
+        writtenStrokesTotal: Number.isInteger(p.writtenStrokesTotal) ? p.writtenStrokesTotal : null,
       };
       if (
         raw.status === 'confirmed' &&
-        (!pair.club || !pair.pairNumber || pair.strokes.some((v) => v === null))
+        (!pair.club || pair.strokes.some((v) => v === null))
       )
         throw new Error(
-          'Every pair needs a club, pair number and all six strokes before confirming.',
+          'Every pair needs a club and all six strokes before confirming.',
         );
       return pair;
     }),
   };
-  if (raw.status === 'confirmed' && !card.reviewed)
-    throw new Error('Review all three pairs before confirming.');
-  if (raw.status === 'confirmed' && issues(card).length)
-    throw new Error(
-      'Resolve the highlighted points or totals before confirming.',
-    );
   return card;
 }
 export function issues(card) {
@@ -125,18 +117,16 @@ export function issues(card) {
     return result;
   });
 }
-export function checkDuplicates(card, others) {
-  const seen = new Set();
-  for (const c of [...others.filter((c) => c.id !== card.id), card])
-    for (const p of c.pairs) {
-      if (!p.club || !p.pairNumber) continue;
-      const key = nameKey(p.club) + '|' + p.pairNumber;
-      if (seen.has(key))
-        throw new Error(
-          `${p.club} pair ${p.pairNumber} is already assigned. Choose the correct pair number or edit its existing card.`,
-        );
-      seen.add(key);
-    }
+// Confirmation is based only on the team and strokes. Printed points and
+// totals are retained as source evidence, never as a barrier to saving.
+export function confirmationProblems(card) {
+  return card.pairs.flatMap((pair, i) => {
+    const problems = [];
+    if (!pair.club.trim()) problems.push(`Team ${i + 1}: enter the club.`);
+    const holes = pair.strokes.flatMap((s, h) => points(s) === null ? [h + 1] : []);
+    if (holes.length) problems.push(`Team ${i + 1}: enter strokes from 1 to 10 for hole${holes.length > 1 ? 's' : ''} ${holes.join(', ')}.`);
+    return problems;
+  });
 }
 export function leaderboard(cards, settings = DEFAULT_SETTINGS) {
   const clubs = new Map(

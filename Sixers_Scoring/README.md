@@ -32,16 +32,16 @@ SQLite scores, edit history and original photos are stored together under `DATA_
 
 - Set club spellings and the expected number of cards/pairs in Event setup.
 - Take a photo or upload an existing image; one photo represents one scorecard.
-- Check club, colour, players and a unique pair number within each club.
+- Check the club, team colour, players and the six strokes. No pair number is required.
 - Enter or correct the six strokes for each pair. The original image remains available for comparison.
 - 1 stroke scores 10 points, through 10 strokes scoring 1 point. Blanks remain blank. Scores beyond this printed range are rejected until the event rule is clarified.
-- Written points and totals are compared with calculated values. Review mismatches, then correct strokes or accept the calculated points and totals.
-- Save incomplete cards as drafts. Only complete, reviewed, confirmed cards contribute to the leaderboard.
+- Points and totals are calculated automatically from strokes. Written points and totals are retained as scan evidence and never block confirmation.
+- Save incomplete cards as drafts. Tap Confirm to add a complete card to the leaderboard. No extra checkbox is required.
 - Reopen a saved card with Edit. Saving changes replaces its previous contribution. Saving a confirmed card as a draft removes its contribution until re-confirmed.
 - Club totals combine every colour. Equal totals share a rank; no unconfirmed tie-break rule is applied. Standings refresh every 20 seconds.
 - Backup downloads score data and edit history as JSON; original photos remain on the server disk. The JSON export is a readable backup, not an in-app restore file.
 
-Identical photo bytes, reused card numbers and duplicate club/pair assignments are rejected. Concurrent edits use revision checks to avoid silent overwrites. Confirmation is enforced on the server as well as the screen.
+Identical photo bytes and reused card numbers are rejected. Multiple pairs and colours from the same club are allowed. Concurrent edits use revision checks to avoid silent overwrites. Confirmation is enforced on the server as well as the screen.
 
 ## Verification
 

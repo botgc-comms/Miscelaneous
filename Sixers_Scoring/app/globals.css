@@ -545,3 +545,6 @@ textarea {
 .hidden {
   display: none;
 }
+
+/* One stroke entry per hole; points are automatic. */
+.score-row { grid-template-columns: 38px minmax(70px,1fr) 65px; }

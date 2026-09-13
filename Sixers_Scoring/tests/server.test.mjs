@@ -96,11 +96,11 @@ test('API protects data, validates cards, persists edits and rejects stale write
     saved.pairs.forEach((p, i) => {
       p.club = ['Ashbourne', 'Ashbourne', 'Chevin'][i];
       p.colour = ['Orange', 'Black', 'Green'][i];
-      p.pairNumber = i === 1 ? 2 : 1;
+      p.pairNumber = null; p.writtenPoints=Array(6).fill(99);p.writtenTotal=999;p.writtenStrokesTotal=999;
       p.strokes = Array(6).fill(5);
     });
     saved.status = 'confirmed';
-    saved.reviewed = true;
+    saved.reviewed = false;
     result = await req('/api/cards/' + c.id, 'PUT', saved);
     assert.equal(result.res.status, 200);
     saved = result.body.card;
@@ -113,13 +113,8 @@ test('API protects data, validates cards, persists edits and rejects stale write
         .status,
       409,
     );
-    const other = blankCard(2);
-    other.pairs[0].club = 'ASHBOURNE';
-    other.pairs[0].pairNumber = 1;
-    assert.match(
-      (await req('/api/cards/' + other.id, 'PUT', other)).body.error,
-      /already assigned/,
-    );
+    const other = blankCard(1);
+    assert.equal((await req('/api/cards/' + other.id, 'PUT', other)).res.status,409);
     saved.pairs[0].strokes = Array(6).fill(1);
     result = await req('/api/cards/' + c.id, 'PUT', saved);
     assert.equal(result.res.status, 200);

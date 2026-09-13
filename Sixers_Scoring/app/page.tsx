@@ -19,8 +19,7 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { blankCard, points, issues } from '../server/scoring.mjs';
+import { blankCard, points, confirmationProblems } from '../server/scoring.mjs';
 type Pair = {
   club: string;
   colour: string;
@@ -258,7 +257,7 @@ export default function Home() {
     await run(async () => {
       const { card } = await api(`/api/cards/${draft.id}`, {
         method: 'PUT',
-        body: JSON.stringify({ ...draft, status }),
+        body: JSON.stringify({ ...draft, status, reviewed: status === 'confirmed' }),
       });
       setDraft(card);
       setDirty(false);
@@ -270,41 +269,14 @@ export default function Home() {
       );
     }, 'Saving…');
   }
-  function correctPoints() {
-    if (!draft) return;
-    setDraft({
-      ...draft,
-      reviewed: false,
-      pairs: draft.pairs.map((p) => ({
-        ...p,
-        writtenPoints: p.strokes.map((s, i) => points(s) ?? p.writtenPoints[i]),
-        writtenTotal: p.strokes.every((s) => points(s) !== null)
-          ? p.strokes.reduce<number>((n, s) => n + (points(s) ?? 0), 0)
-          : p.writtenTotal,
-        writtenStrokesTotal: p.strokes.every((s) => points(s) !== null)
-          ? p.strokes.reduce<number>((n, s) => n + (s ?? 0), 0)
-          : p.writtenStrokesTotal,
-      })),
-    });
-    setDirty(true);
-  }
   const counts = state
     ? {
         confirmed: state.cards.filter((c) => c.status === 'confirmed').length,
         total: state.cards.length,
       }
     : null;
-  const warnings = draft ? issues(draft) : [];
-  const canConfirm =
-    draft &&
-    draft.reviewed &&
-    draft.pairs.every(
-      (p) =>
-        p.club.trim() &&
-        p.pairNumber &&
-        p.strokes.every((s) => points(s) !== null),
-    ) &&
-    !warnings.length;
+  const problems = draft ? confirmationProblems(draft) : [];
+  const canConfirm = draft && !problems.length;
   const knownClubs = state
     ? [
         ...new Set([
@@ -525,8 +497,7 @@ export default function Home() {
                   </Button>
                 )}
                 <p className="muted mb-4">
-                  Match each column to the photo. Pair numbers identify each
-                  club's pairs across all cards; colours can differ.
+                  Check the team, players and six strokes, then tap Confirm. Points are calculated automatically.
                 </p>
                 {draft.photo && (
                   <a href={draft.photo} target="_blank" rel="noreferrer">
@@ -551,7 +522,7 @@ export default function Home() {
                 <div className="grid">
                   {draft.pairs.map((pair, i) => (
                     <section className="pair" key={i}>
-                      <h3>Column {i + 1}</h3>
+                      <h3>Team {i + 1}</h3>
                       <div className="field-stack">
                         <label className="field">
                           Club
@@ -566,7 +537,7 @@ export default function Home() {
                           />
                         </label>
                         <label className="field">
-                          Colour / team label
+                          Team / colour (optional)
                           <input
                             value={pair.colour}
                             maxLength={100}
@@ -587,74 +558,15 @@ export default function Home() {
                             placeholder="Pair names"
                           />
                         </label>
-                        <label className="field">
-                          Pair number within club
-                          <input
-                            type="number"
-                            inputMode="numeric"
-                            min="1"
-                            max="30"
-                            value={pair.pairNumber ?? ''}
-                            onChange={(e) =>
-                              patchPair(i, { pairNumber: num(e.target.value) })
-                            }
-                            placeholder="1, 2 or 3"
-                          />
-                        </label>
                       </div>
-                      <div className="score-row score-head">
-                        <span>Hole</span>
-                        <span>Strokes</span>
-                        <span>Written pts</span>
-                        <span>Correct</span>
-                      </div>
-                      {pair.strokes.map((s, h) => {
-                        const expected = points(s),
-                          bad =
-                            pair.writtenPoints[h] !== null &&
-                            expected !== null &&
-                            pair.writtenPoints[h] !== expected;
-                        return (
-                          <div
-                            className={`score-row ${bad ? 'bad' : ''}`}
-                            key={h}
-                          >
-                            <strong>{h + 1}</strong>
-                            <input
-                              aria-label={`Column ${i + 1}, hole ${h + 1}, strokes`}
-                              type="number"
-                              inputMode="numeric"
-                              min="1"
-                              max="10"
-                              value={s ?? ''}
-                              onChange={(e) =>
-                                patchPair(i, {
-                                  strokes: pair.strokes.map((v, j) =>
-                                    h === j ? num(e.target.value) : v,
-                                  ),
-                                })
-                              }
-                            />
-                            <input
-                              aria-label={`Column ${i + 1}, hole ${h + 1}, written points`}
-                              type="number"
-                              inputMode="numeric"
-                              min="1"
-                              max="10"
-                              value={pair.writtenPoints[h] ?? ''}
-                              onChange={(e) =>
-                                patchPair(i, {
-                                  writtenPoints: pair.writtenPoints.map(
-                                    (v, j) =>
-                                      h === j ? num(e.target.value) : v,
-                                  ),
-                                })
-                              }
-                            />
-                            <span className="expected">{expected ?? '—'}</span>
-                          </div>
-                        );
-                      })}
+                      <div className="score-row score-head"><span>Hole</span><span>Strokes</span><span>Points</span></div>
+                      {pair.strokes.map((s,h)=>(
+                        <div className="score-row" key={h}>
+                          <strong>{h+1}</strong>
+                          <input aria-label={`Team ${i+1}, hole ${h+1}, strokes`} type="number" inputMode="numeric" min="1" max="10" value={s??''} onChange={e=>patchPair(i,{strokes:pair.strokes.map((v,j)=>h===j?num(e.target.value):v)})}/>
+                          <span className="expected">{points(s)??'—'}</span>
+                        </div>
+                      ))}
                       <div className="pair-total">
                         <span>Calculated points</span>
                         <strong>
@@ -666,74 +578,11 @@ export default function Home() {
                             : 'Incomplete'}
                         </strong>
                       </div>
-                      <div className="field-stack mt-4">
-                        <label className="field">
-                          Written points total
-                          <input
-                            type="number"
-                            inputMode="numeric"
-                            min="1"
-                            max="60"
-                            value={pair.writtenTotal ?? ''}
-                            onChange={(e) =>
-                              patchPair(i, {
-                                writtenTotal: num(e.target.value),
-                              })
-                            }
-                          />
-                        </label>
-                        <label className="field">
-                          Written strokes total
-                          <input
-                            type="number"
-                            inputMode="numeric"
-                            min="1"
-                            max="60"
-                            value={pair.writtenStrokesTotal ?? ''}
-                            onChange={(e) =>
-                              patchPair(i, {
-                                writtenStrokesTotal: num(e.target.value),
-                              })
-                            }
-                          />
-                        </label>
-                      </div>
                     </section>
                   ))}
                 </div>
-                {warnings.length > 0 && (
-                  <div className="notice">
-                    <strong>
-                      {warnings.length} points / total checks need attention
-                    </strong>
-                    <ul>
-                      {warnings.map((w: string, i: number) => (
-                        <li key={i}>{w}</li>
-                      ))}
-                    </ul>
-                    <Button variant="outline" onClick={correctPoints}>
-                      Use calculated points and totals
-                    </Button>
-                  </div>
-                )}
-                <p className="muted mt-4">
-                  Blank written points are allowed: totals always come from
-                  strokes. Only complete, confirmed cards count on the
-                  leaderboard.
-                </p>
-                <label className="review-check">
-                  <Checkbox
-                    checked={draft.reviewed}
-                    onCheckedChange={(v) => {
-                      setDraft({ ...draft, reviewed: v === true });
-                      setDirty(true);
-                    }}
-                  />
-                  <span>
-                    I have checked all three clubs, pair numbers and strokes
-                    against the card.
-                  </span>
-                </label>
+                {problems.length > 0 && <div className="notice"><strong>To confirm this card:</strong><ul>{problems.map((problem:string,i:number)=><li key={i}>{problem}</li>)}</ul></div>}
+                <p className="muted mt-4 mb-4">Points and totals are calculated from strokes. Tap Confirm to record this card.</p>
                 <div className="actions">
                   <Button
                     variant="outline"
