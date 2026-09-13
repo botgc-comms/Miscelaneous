@@ -22,6 +22,7 @@ export default function LeagueBoard({
     [error, setError] = useState(''),
     [saved, setSaved] = useState(false);
   useEffect(() => {
+    function readImport(){
     if (!window.location.hash.startsWith('#league=')) return;
     try {
       const imported = JSON.parse(
@@ -58,7 +59,11 @@ export default function LeagueBoard({
     } catch (e: any) {
       setError(e.message);
     }
-  }, []);
+    }
+    readImport();
+    window.addEventListener('hashchange',readImport);
+    return ()=>window.removeEventListener('hashchange',readImport);
+  }, [settings.revision]);
   function edit() {
     setEntries(
       league.rows.map((r: Entry) => ({

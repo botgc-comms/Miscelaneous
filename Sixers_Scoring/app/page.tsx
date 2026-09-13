@@ -137,6 +137,8 @@ export default function Home() {
     [clubsText, setClubsText] = useState(''),
     [slot, setSlot] = useState(1),
     [view, setView] = useState<'main' | 'settings'>('main');
+  const [boardView,setBoardView]=useState(window.location.hash.startsWith('#league=')?'league':'match');
+  useEffect(()=>{const openLeague=()=>{if(window.location.hash.startsWith('#league='))setBoardView('league');};window.addEventListener('hashchange',openLeague);return()=>window.removeEventListener('hashchange',openLeague);},[]);
   const camera = useRef<HTMLInputElement>(null),
     upload = useRef<HTMLInputElement>(null),
     draftRef = useRef<Card | null>(null);
@@ -823,11 +825,8 @@ export default function Home() {
                 </div>
               )}
               <Tabs
-                defaultValue={
-                  window.location.hash.startsWith('#league=')
-                    ? 'league'
-                    : 'match'
-                }
+                value={boardView}
+                onValueChange={value=>setBoardView(String(value))}
                 className="leaderboard-tabs"
               >
                 <TabsList className="board-tabs">
