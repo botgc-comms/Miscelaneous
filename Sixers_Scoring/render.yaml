@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: junior-golf-sixes
+    runtime: docker
+    rootDir: Sixers_Scoring
+    region: frankfurt
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    numInstances: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATA_PATH
+        value: /var/data
+      - key: APP_PASSWORD
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-5.6-terra
+    disk:
+      name: sixes-scores
+      mountPath: /var/data
+      sizeGB: 1
+
