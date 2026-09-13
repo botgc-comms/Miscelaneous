@@ -14,6 +14,7 @@ import {
   blankCard,
   validateCard,
   leaderboard,
+  leagueLeaderboard,
   DEFAULT_SETTINGS,
   validateSettings,
 } from './scoring.mjs';
@@ -91,7 +92,7 @@ const cards = () =>
   db.prepare('SELECT * FROM cards ORDER BY slot').all().map(rowCard);
 const setting = () => {
   const s = db.prepare('SELECT * FROM settings WHERE id=1').get();
-  return { ...JSON.parse(s.json), revision: s.revision };
+  return { ...DEFAULT_SETTINGS, ...JSON.parse(s.json), revision: s.revision };
 };
 function saveCard(id, raw, revision, photo, hash) {
   const card = validateCard(raw);
@@ -208,13 +209,21 @@ const server = http.createServer(async (req, res) => {
         cards: all,
         settings,
         leaderboard: leaderboard(all, settings),
+        league: leagueLeaderboard(all, settings),
         scannerAvailable: !!process.env.OPENAI_API_KEY,
       });
       return;
     }
-    if (url.pathname === '/api/settings' && req.method === 'PUT') {
+    if (
+      ['/api/settings', '/api/league'].includes(url.pathname) &&
+      req.method === 'PUT'
+    ) {
       const raw = await body(req),
-        s = validateSettings(raw);
+        s = validateSettings(
+          url.pathname === '/api/league'
+            ? { ...setting(), leagueStandings: raw.entries }
+            : { ...setting(), ...raw },
+        );
       const result = db
         .prepare(
           'UPDATE settings SET json=?,revision=revision+1 WHERE id=1 AND revision=?',

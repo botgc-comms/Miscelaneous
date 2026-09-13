@@ -50,3 +50,11 @@ Identical photo bytes and reused card numbers are rejected. Multiple pairs and c
 The supplied labelled blank card was successfully read with the live OpenAI API: Ashbourne Orange, Ashbourne Black and Chevin Green were identified, and all 18 blank stroke fields stayed blank. Filled-in handwriting must still be reviewed on the day.
 
 An optional, feature-detected WebMCP tool reads standings from the same API. It does not change results. No supported WebMCP validation context was available during implementation.
+
+## League standings
+
+The League tab shows points before the event, today's match award, and the updated total. Enter prior scores with **Enter current standings**. Unknown starting scores remain blank; zero is only used when entered explicitly. All league standings are stored on the server and included in the JSON backup.
+
+Match positions award 6, 5, 4, 3, 2, and 1 league points; later positions award zero. Ties average the points for all occupied positions: two tied first get 5.5 each, three tied first get 5 each, and two tied fifth get 1.5 each. Drafts do not receive an award. Awards remain provisional until all expected scorecards are confirmed.
+
+Totals are always recalculated as the starting score plus the current match award, so editing or re-confirming a card never adds the award a second time. A club with a single uncoloured team in the official starting standings (such as Burton) uses that team identity across its cards; clubs with multiple team colours remain separate. Starting standings must be saved into the app, not committed as event data to the source repository.

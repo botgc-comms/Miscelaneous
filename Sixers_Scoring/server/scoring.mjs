@@ -6,6 +6,7 @@ export const DEFAULT_SETTINGS = {
   expectedClubs: 6,
   pairsPerClub: 3,
   clubs: [],
+  leagueStandings: [],
 };
 export function points(strokes) {
   return Number.isInteger(strokes) && strokes >= 1 && strokes <= 10
@@ -181,27 +182,37 @@ export function teamName(pair) {
     colour = pair.colour.trim();
   return colour ? `${club} ${colour}` : club;
 }
-export function leaderboard(cards) {
+export function leaderboard(cards, settings = {}) {
   const teams = new Map();
   for (const card of cards) {
     card.pairs.forEach((pair, index) => {
       if (!pair.club.trim()) return;
       // Missing team labels must never silently merge two teams from one club.
-      const key = nameKey(pair.colour)
-        ? JSON.stringify([nameKey(pair.club), nameKey(pair.colour)])
-        : JSON.stringify([nameKey(pair.club), card.id, index]);
+      const clubEntries = (settings.leagueStandings ?? []).filter(
+        (entry) => nameKey(entry.club) === nameKey(pair.club),
+      );
+      const official =
+        clubEntries.length === 1 &&
+        (!nameKey(clubEntries[0].colour) || !nameKey(pair.colour))
+          ? clubEntries[0]
+          : pair;
+      const knownSingle = official !== pair;
+      const key =
+        nameKey(official.colour) || knownSingle
+          ? JSON.stringify([nameKey(official.club), nameKey(official.colour)])
+          : JSON.stringify([nameKey(pair.club), card.id, index]);
       if (!teams.has(key))
         teams.set(key, {
           key,
-          club: pair.club.trim(),
-          colour: pair.colour.trim(),
-          team: teamName(pair),
+          club: official.club.trim(),
+          colour: official.colour.trim(),
+          team: teamName(official),
           players: [],
           pairs: 0,
           points: 0,
           strokes: 0,
           cardIds: [],
-          unlabelled: !nameKey(pair.colour),
+          unlabelled: !nameKey(official.colour) && !knownSingle,
         });
       const row = teams.get(key);
       if (pair.players.trim() && !row.players.includes(pair.players.trim()))
@@ -227,6 +238,92 @@ export function leaderboard(cards) {
     return { ...row, rank: row.pairs ? rank : null };
   });
 }
+export function leagueAwards(matchRows) {
+  const ranked = matchRows
+    .filter((row) => row.pairs > 0)
+    .slice()
+    .sort((a, b) => b.points - a.points);
+  const awards = new Map();
+  for (let first = 0; first < ranked.length;) {
+    let end = first + 1;
+    while (end < ranked.length && ranked[end].points === ranked[first].points)
+      end++;
+    let pool = 0;
+    for (let place = first; place < end; place++)
+      pool += Math.max(6 - place, 0);
+    for (let i = first; i < end; i++)
+      awards.set(ranked[i].key, pool / (end - first));
+    first = end;
+  }
+  return awards;
+}
+export function leagueLeaderboard(cards, settings = {}) {
+  const match = leaderboard(cards, settings),
+    awards = leagueAwards(match);
+  const entries = settings.leagueStandings ?? [];
+  const rows = entries.map((entry) => ({
+    ...entry,
+    key: JSON.stringify([nameKey(entry.club), nameKey(entry.colour)]),
+    team: teamName(entry),
+    today: 0,
+    matchRank: null,
+    total: entry.startingPoints,
+    rank: null,
+  }));
+  for (const team of match) {
+    const sameName = match.filter(
+      (other) =>
+        nameKey(other.club) === nameKey(team.club) &&
+        nameKey(other.colour) === nameKey(team.colour),
+    );
+    const baseKey = JSON.stringify([nameKey(team.club), nameKey(team.colour)]);
+    let row =
+      sameName.length === 1
+        ? rows.find((entry) => entry.key === baseKey)
+        : undefined;
+    if (!row) {
+      row = {
+        key: team.key,
+        club: team.club,
+        colour: team.colour,
+        team: team.team,
+        startingPoints: null,
+        today: null,
+        total: null,
+        rank: null,
+        matchRank: null,
+      };
+      rows.push(row);
+    }
+    row.today = awards.get(team.key) ?? null;
+    row.matchRank = team.rank;
+    row.total =
+      row.startingPoints === null
+        ? null
+        : row.startingPoints + (row.today ?? 0);
+  }
+  rows.sort(
+    (a, b) =>
+      (b.total ?? -Infinity) - (a.total ?? -Infinity) ||
+      a.team.localeCompare(b.team),
+  );
+  const startingComplete =
+    rows.length > 0 && rows.every((row) => row.startingPoints !== null);
+  let rank = 0;
+  for (let i = 0; i < rows.length; i++) {
+    if (i === 0 || rows[i].total !== rows[i - 1].total) rank = i + 1;
+    rows[i].rank = startingComplete ? rank : null;
+  }
+  const confirmed = cards.filter((card) => card.status === 'confirmed').length;
+  return {
+    rows,
+    startingComplete,
+    provisional:
+      confirmed !==
+        (settings.expectedCards ?? DEFAULT_SETTINGS.expectedCards) ||
+      cards.some((card) => card.status !== 'confirmed'),
+  };
+}
 export function validateSettings(raw) {
   const out = { ...DEFAULT_SETTINGS };
   for (const key of ['title', 'venue', 'date']) out[key] = text(raw[key]);
@@ -243,5 +340,36 @@ export function validateSettings(raw) {
       raw.clubs.map((c) => [nameKey(c), text(c)]).filter(([k]) => k),
     ).values(),
   ];
+  if (
+    !Array.isArray(raw.leagueStandings ?? []) ||
+    (raw.leagueStandings ?? []).length > 100
+  )
+    throw new Error('Enter up to 100 league teams.');
+  const seen = new Set();
+  out.leagueStandings = (raw.leagueStandings ?? []).map((entry) => {
+    if (!entry || typeof entry !== 'object')
+      throw new Error('Invalid league team.');
+    const club = text(entry.club),
+      colour = text(entry.colour),
+      startingPoints = entry.startingPoints;
+    if (!club) throw new Error('Each league team needs a club.');
+    if (
+      startingPoints !== null &&
+      (typeof startingPoints !== 'number' ||
+        !Number.isFinite(startingPoints) ||
+        startingPoints < 0 ||
+        startingPoints > 100000)
+    )
+      throw new Error(
+        'Starting league points must be a non-negative number, or blank if unknown.',
+      );
+    const key = JSON.stringify([nameKey(club), nameKey(colour)]);
+    if (seen.has(key))
+      throw new Error(
+        `${teamName({ club, colour })} is listed twice. Use the team colour to distinguish teams.`,
+      );
+    seen.add(key);
+    return { club, colour, startingPoints };
+  });
   return out;
 }

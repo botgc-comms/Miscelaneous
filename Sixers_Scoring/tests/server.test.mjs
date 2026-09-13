@@ -139,10 +139,32 @@ test('API protects data, validates cards, persists edits and rejects stale write
       body: '{}',
     });
     assert.equal(cross.status, 403);
+    const leagueSettings = (await req('/api/state')).body.settings;
+    const leagueBody = {
+      revision: leagueSettings.revision,
+      entries: [
+        { club: 'Ashbourne', colour: 'Orange', startingPoints: 10.5 },
+        { club: 'Ashbourne', colour: 'Black', startingPoints: 20 },
+        { club: 'Chevin', colour: 'Green', startingPoints: 30 },
+      ],
+    };
+    assert.equal((await req('/api/league', 'PUT', leagueBody)).res.status, 200);
+    assert.equal((await req('/api/league', 'PUT', leagueBody)).res.status, 409);
+    assert.equal(
+      (await req('/api/state')).body.league.rows.find(
+        (r) => r.colour === 'Orange',
+      ).total,
+      16.5,
+    );
     await stop(child);
     ({ child, url } = await boot());
     state = (await req('/api/state')).body;
     assert.equal(state.cards.length, 1);
+    assert.equal(state.settings.leagueStandings.length, 3);
+    assert.equal(
+      state.league.rows.find((r) => r.colour === 'Orange').total,
+      16.5,
+    );
     assert.equal(state.leaderboard[0].points, 60);
     saved.status = 'draft';
     assert.equal(

@@ -11,6 +11,8 @@ import {
   Save,
   ChevronLeft,
 } from 'lucide-react';
+import LeagueBoard from './league';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -36,7 +38,7 @@ type Pair = {
   writtenTotal: number | null;
   writtenStrokesTotal: number | null;
 };
-type Card = {
+export type Card = {
   id: string;
   slot: number;
   revision: number;
@@ -46,7 +48,12 @@ type Card = {
   pairs: Pair[];
   photo?: string | null;
 };
-type Settings = {
+export type Settings = {
+  leagueStandings?: {
+    club: string;
+    colour: string;
+    startingPoints: number | null;
+  }[];
   title: string;
   venue: string;
   date: string;
@@ -815,49 +822,71 @@ export default function Home() {
                   save scores manually now.
                 </div>
               )}
-              <section className="panel">
-                <div className="section-heading">
-                  <h2>
-                    <Trophy size={21} /> Team leaderboard
-                  </h2>
-                  <span>
-                    {counts?.confirmed === state.settings.expectedCards
-                      ? 'All cards confirmed'
-                      : 'Provisional standings'}
-                  </span>
-                </div>
-                {state.leaderboard.length ? (
-                  state.leaderboard.map((r) => (
-                    <div className="club-row" key={r.key}>
-                      <span className="rank">{r.rank ?? '—'}</span>
-                      <div>
-                        <strong>{r.team}</strong>
-                        <small>
-                          {r.players.join(' · ') || 'Players not entered'}
-                          <br />
-                          {r.pairs
-                            ? `${r.strokes} gross strokes · ${r.pairs} pair${r.pairs === 1 ? '' : 's'}`
-                            : 'Awaiting confirmed scores'}
-                        </small>
-                      </div>
-                      <span className="points">
-                        {r.pairs ? r.points : '—'}
-                        <small>points</small>
+              <Tabs
+                defaultValue={
+                  window.location.hash.startsWith('#league=')
+                    ? 'league'
+                    : 'match'
+                }
+                className="leaderboard-tabs"
+              >
+                <TabsList className="board-tabs">
+                  <TabsTrigger value="match">This match</TabsTrigger>
+                  <TabsTrigger value="league">League</TabsTrigger>
+                </TabsList>
+                <TabsContent value="match">
+                  <section className="panel">
+                    <div className="section-heading">
+                      <h2>
+                        <Trophy size={21} /> Match leaderboard
+                      </h2>
+                      <span>
+                        {counts?.confirmed === state.settings.expectedCards
+                          ? 'All cards confirmed'
+                          : 'Provisional standings'}
                       </span>
                     </div>
-                  ))
-                ) : (
-                  <div className="empty">
-                    <Flag size={32} />
-                    <h3>Ready for the first card</h3>
-                    <p>Team standings appear as you confirm scorecards.</p>
-                  </div>
-                )}
-                <p className="muted px-6 py-4">
-                  Each team colour ranked separately. Highest points leads; ties
-                  share a rank.
-                </p>
-              </section>
+                    {state.leaderboard.length ? (
+                      state.leaderboard.map((r) => (
+                        <div className="club-row" key={r.key}>
+                          <span className="rank">{r.rank ?? '—'}</span>
+                          <div>
+                            <strong>{r.team}</strong>
+                            <small>
+                              {r.players.join(' · ') || 'Players not entered'}
+                              <br />
+                              {r.pairs
+                                ? `${r.strokes} gross strokes · ${r.pairs} pair${r.pairs === 1 ? '' : 's'}`
+                                : 'Awaiting confirmed scores'}
+                            </small>
+                          </div>
+                          <span className="points">
+                            {r.pairs ? r.points : '—'}
+                            <small>points</small>
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="empty">
+                        <Flag size={32} />
+                        <h3>Ready for the first card</h3>
+                        <p>Team standings appear as you confirm scorecards.</p>
+                      </div>
+                    )}
+                    <p className="muted px-6 py-4">
+                      Each team colour ranked separately. Highest points leads;
+                      ties share a rank.
+                    </p>
+                  </section>
+                </TabsContent>
+                <TabsContent value="league">
+                  <LeagueBoard
+                    cards={state.cards}
+                    settings={state.settings}
+                    onSaved={refresh}
+                  />
+                </TabsContent>
+              </Tabs>
               <section className="panel">
                 <div className="section-heading">
                   <h2>Scorecards</h2>
