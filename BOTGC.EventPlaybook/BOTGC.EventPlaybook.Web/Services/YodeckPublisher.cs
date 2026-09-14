@@ -74,6 +74,62 @@ public sealed class YodeckPublisher(
         }
     }
 
+    public async Task<YodeckTakeDownResult> TakeDownAsync(
+        YodeckTakeDownCommand command,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (!IsConfigured)
+            {
+                throw new InvalidOperationException(
+                    "Clubhouse screen sharing is not configured. Ask an administrator to complete the server connection settings.");
+            }
+
+            await _publishGate.WaitAsync(cancellationToken);
+            try
+            {
+                var result = await RemoveFromPlaylistAsync(command, cancellationToken);
+                await RecordActivitySafelyAsync(new IntegrationActivityWrite
+                {
+                    Integration = "Yodeck",
+                    Operation = "Take down clubhouse screens",
+                    Outcome = "succeeded",
+                    EventPlaybookEventId = command.EventId,
+                    EventName = command.EventName,
+                    ExternalRecordId = result.RetainedMediaIds.Count > 0
+                        ? ToActivityRecordId(result.RetainedMediaIds[0])
+                        : null,
+                    Stage = "screen-push-confirmed",
+                    Message = result.RemovedPlaylistEntries > 0
+                        ? $"Removed {result.RemovedPlaylistEntries} event artwork entr{(result.RemovedPlaylistEntries == 1 ? "y" : "ies")} from the {result.PlaylistName} playlist; retained {result.RetainedMediaIds.Count} media library item{(result.RetainedMediaIds.Count == 1 ? string.Empty : "s")}; Yodeck confirmed the screen push."
+                        : $"The {result.PlaylistName} playlist was already clear of this event artwork; retained {result.RetainedMediaIds.Count} media library item{(result.RetainedMediaIds.Count == 1 ? string.Empty : "s")}; Yodeck confirmed the screen push."
+                });
+                return result;
+            }
+            finally
+            {
+                _publishGate.Release();
+            }
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            var requestFailure = FindRequestFailure(exception);
+            await RecordActivitySafelyAsync(new IntegrationActivityWrite
+            {
+                Integration = "Yodeck",
+                Operation = "Take down clubhouse screens",
+                Outcome = "failed",
+                EventPlaybookEventId = command.EventId,
+                EventName = command.EventName,
+                Stage = requestFailure?.Stage ?? (IsConfigured ? "screen-take-down" : "configuration"),
+                StatusCode = requestFailure?.StatusCode,
+                Message = exception.Message
+            });
+            throw;
+        }
+    }
+
     private async Task<YodeckPublishResult> UpsertAsync(
         YodeckPublishCommand command,
         CancellationToken cancellationToken)
@@ -164,6 +220,109 @@ public sealed class YodeckPublisher(
             FileExtension = mediaUpload.FileExtension,
             ImageWidth = command.ImageWidth,
             ImageHeight = command.ImageHeight,
+            ScreenPushRequested = true,
+            ScreenPushConfirmed = screenPush.Confirmed,
+            ScreenPushStatus = screenPush.Status,
+            ScreenCount = screenPush.ScreenCount
+        };
+    }
+
+    private async Task<YodeckTakeDownResult> RemoveFromPlaylistAsync(
+        YodeckTakeDownCommand command,
+        CancellationToken cancellationToken)
+    {
+        var playlist = await GetPlaylistAsync(cancellationToken);
+        var playlistName = ReadString(playlist, "name") ?? _options.PlaylistName;
+        var workspaceId = ReadNestedInt64(playlist, "workspace", "id");
+        var eventTag = BuildEventTag(command.EventId);
+        var matchingMedia = await FindEventMediaAsync(
+            command.EventId,
+            eventTag,
+            workspaceId,
+            cancellationToken);
+        var matchingMediaIds = matchingMedia
+            .Select(item => ReadInt64(item, "id"))
+            .OfType<long>()
+            .Where(id => id > 0)
+            .Distinct()
+            .ToHashSet();
+
+        // The media search can span multiple Yodeck pages. Re-read the
+        // playlist immediately before patching so concurrent external edits
+        // are preserved rather than replaced by the older snapshot.
+        playlist = await GetPlaylistAsync(cancellationToken);
+        if (command.KnownMediaId is > 0 &&
+            !matchingMediaIds.Contains(command.KnownMediaId.Value) &&
+            PlaylistContainsMedia(playlist, command.KnownMediaId.Value))
+        {
+            var knownMedia = await GetMediaByIdIfPresentAsync(command.KnownMediaId.Value, cancellationToken);
+            if (knownMedia is null ||
+                (!HasTag(knownMedia, eventTag) && !MatchesEventDescription(knownMedia, command.EventId)))
+            {
+                throw new InvalidOperationException(
+                    $"Yodeck media {command.KnownMediaId.Value} is still in the Clubhouse rotation but could not be verified as artwork for this Event Playbook event, so it was not removed.");
+            }
+
+            matchingMediaIds.Add(command.KnownMediaId.Value);
+        }
+
+        if (matchingMediaIds.Count == 0)
+        {
+            var knownMediaIsAbsentFromPlaylist = command.KnownMediaId is > 0 &&
+                !PlaylistContainsMedia(playlist, command.KnownMediaId.Value);
+            if (!knownMediaIsAbsentFromPlaylist)
+            {
+                throw new InvalidOperationException(
+                    "Event Playbook could not identify this event's Yodeck media, so it cannot safely claim that the artwork was taken down. No playlist or media library item was changed.");
+            }
+        }
+
+        var retainedMediaIds = matchingMediaIds.OrderBy(id => id).ToList();
+
+        PlaylistRemovalResult playlistUpdate;
+        ScreenPushResult screenPush;
+        var failedPhase = "update the Clubhouse screen rotation";
+        try
+        {
+            playlistUpdate = await RemovePlaylistEntriesAsync(
+                playlist,
+                matchingMediaIds,
+                cancellationToken);
+
+            // Push even when the playlist was already clear. A previous attempt
+            // may have patched the playlist but failed before screens received it.
+            failedPhase = "push the changes to the screens";
+            screenPush = await PushScreensAsync(cancellationToken);
+        }
+        catch (Exception exception)
+        {
+            logger.LogError(
+                exception,
+                "Yodeck take-down failed for event {EventId}.",
+                command.EventId);
+            throw new InvalidOperationException(
+                $"The screen service could not {failedPhase}. No Event Playbook media library files were deleted. " +
+                $"{exception.Message} Try again: Event Playbook will remove the same playlist entries and push the screens again.",
+                exception);
+        }
+
+        logger.LogInformation(
+            "Took down event {EventId} from Yodeck playlist {PlaylistId}; playlist changed: {PlaylistChanged}; entries removed: {EntriesRemoved}; retained media: {RetainedMediaCount}; screen push: {PushStatus} ({ScreenCount} affected screens reported).",
+            command.EventId,
+            _options.PlaylistId,
+            playlistUpdate.Changed,
+            playlistUpdate.EntriesRemoved,
+            retainedMediaIds.Count,
+            screenPush.Status,
+            screenPush.ScreenCount);
+
+        return new YodeckTakeDownResult
+        {
+            PlaylistId = _options.PlaylistId,
+            PlaylistName = playlistName,
+            PlaylistWasChanged = playlistUpdate.Changed,
+            RemovedPlaylistEntries = playlistUpdate.EntriesRemoved,
+            RetainedMediaIds = retainedMediaIds,
             ScreenPushRequested = true,
             ScreenPushConfirmed = screenPush.Confirmed,
             ScreenPushStatus = screenPush.Status,
@@ -274,12 +433,18 @@ public sealed class YodeckPublisher(
         var exactTaggedMatches = taggedMedia
             .Where(item => HasTag(item, eventTag) || MatchesEventDescription(item, eventId))
             .ToList();
-        if (exactTaggedMatches.Count > 0) return exactTaggedMatches;
 
         // Media created by earlier Event Playbook versions did not have the
-        // per-event tag, but did record the event ID in the description.
+        // per-event tag, but did record the event ID in the description. Always
+        // union these results so a tagged item cannot hide a legacy duplicate.
         var legacyMedia = await GetMediaByTagAsync("event-playbook", workspaceId, cancellationToken);
-        return legacyMedia.Where(item => MatchesEventDescription(item, eventId)).ToList();
+        return exactTaggedMatches
+            .Concat(legacyMedia.Where(item => MatchesEventDescription(item, eventId)))
+            .Select(item => new { Item = item, Id = ReadInt64(item, "id") })
+            .Where(candidate => candidate.Id is > 0)
+            .GroupBy(candidate => candidate.Id!.Value)
+            .Select(group => group.First().Item)
+            .ToList();
     }
 
     private async Task<List<JsonObject>> GetMediaByTagAsync(
@@ -304,6 +469,23 @@ public sealed class YodeckPublisher(
         }
 
         return results;
+    }
+
+    private async Task<JsonObject?> GetMediaByIdIfPresentAsync(
+        long mediaId,
+        CancellationToken cancellationToken)
+    {
+        using var response = await SendYodeckAsync(
+            HttpMethod.Get,
+            $"media/{mediaId}",
+            content: null,
+            cancellationToken);
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+
+        return await ReadObjectAsync(response, "retrieve the known event artwork", cancellationToken);
     }
 
     private static JsonObject? SelectCanonicalMedia(
@@ -571,6 +753,50 @@ public sealed class YodeckPublisher(
         return new PlaylistUpdateResult(true, duplicateEntriesRemoved);
     }
 
+    private async Task<PlaylistRemovalResult> RemovePlaylistEntriesAsync(
+        JsonObject playlist,
+        IReadOnlySet<long> matchingMediaIds,
+        CancellationToken cancellationToken)
+    {
+        var items = new JsonArray();
+        var entriesRemoved = 0;
+
+        if (playlist["items"] is JsonArray existingItems)
+        {
+            foreach (var existing in existingItems.OfType<JsonObject>())
+            {
+                var normalised = NormalisePlaylistItem(existing);
+                if (normalised is null) continue;
+
+                var itemType = ReadString(normalised, "type");
+                var itemId = ReadInt64(normalised, "id");
+                if (string.Equals(itemType, "media", StringComparison.OrdinalIgnoreCase) &&
+                    itemId is { } id &&
+                    matchingMediaIds.Contains(id))
+                {
+                    entriesRemoved += 1;
+                    continue;
+                }
+
+                items.Add(normalised);
+            }
+        }
+
+        if (entriesRemoved == 0)
+        {
+            return new PlaylistRemovalResult(false, 0);
+        }
+
+        using var content = JsonContent.Create(new JsonObject { ["items"] = items });
+        using var response = await SendYodeckAsync(
+            HttpMethod.Patch,
+            $"playlists/{_options.PlaylistId}",
+            content,
+            cancellationToken);
+        await EnsureSuccessAsync(response, "remove the event artwork from the Clubhouse screen rotation", cancellationToken);
+        return new PlaylistRemovalResult(true, entriesRemoved);
+    }
+
     private async Task<ScreenPushResult> PushScreensAsync(CancellationToken cancellationToken)
     {
         var payload = new JsonObject
@@ -703,6 +929,11 @@ public sealed class YodeckPublisher(
         return result;
     }
 
+    private static bool PlaylistContainsMedia(JsonObject playlist, long mediaId) =>
+        playlist["items"] is JsonArray items && items.OfType<JsonObject>().Any(item =>
+            string.Equals(ReadString(item, "type"), "media", StringComparison.OrdinalIgnoreCase) &&
+            ReadInt64(item, "id") == mediaId);
+
     private async Task<JsonObject> ReadObjectAsync(
         HttpResponseMessage response,
         string action,
@@ -819,6 +1050,8 @@ public sealed class YodeckPublisher(
     }
 
     private sealed record PlaylistUpdateResult(bool Changed, int DuplicateEntriesRemoved);
+
+    private sealed record PlaylistRemovalResult(bool Changed, int EntriesRemoved);
 
     private sealed record MediaUploadResult(string Status, string Source, string FileExtension);
 

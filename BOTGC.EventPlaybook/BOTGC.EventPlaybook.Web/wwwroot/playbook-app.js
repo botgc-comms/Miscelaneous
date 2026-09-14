@@ -3786,7 +3786,7 @@
       maybeOpenIntelligentGolfPlannerMatch(event);
     }
     if (state.activeView === 'artwork' && event) {
-      import('./poster-app.js?v=20260910-planner-relink-reconcile-1')
+      import('./poster-app.js?v=20260914-screen-take-down-1')
         .then(module => module.mountPosterStudio({
           eventId: event.id,
           eventName: event.name,
@@ -4208,7 +4208,10 @@
           <article class="share-action-card">
             <span class="share-action-icon">▣</span>
             <div><h3>Clubhouse screens</h3><p>Choose when the digital-screen artwork should appear around the clubhouse.</p><span id="shareScreensStatus" class="share-action-status hidden"></span></div>
-            <button id="shareScreensButton" class="button button-gold" type="button">Send to clubhouse screens</button>
+            <div class="share-action-buttons">
+              <button id="shareScreensButton" class="button button-gold" type="button">Send to clubhouse screens</button>
+              <button id="takeDownScreensButton" class="button button-secondary hidden" type="button">Take down</button>
+            </div>
           </article>
           <article id="shareEmailCard" class="share-action-card">
             <span class="share-action-icon">✉</span>

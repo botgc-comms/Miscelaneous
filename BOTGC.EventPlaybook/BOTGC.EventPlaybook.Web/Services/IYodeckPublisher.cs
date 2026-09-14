@@ -9,4 +9,8 @@ public interface IYodeckPublisher
     Task<YodeckPublishResult> PublishAsync(
         YodeckPublishCommand command,
         CancellationToken cancellationToken);
+
+    Task<YodeckTakeDownResult> TakeDownAsync(
+        YodeckTakeDownCommand command,
+        CancellationToken cancellationToken);
 }

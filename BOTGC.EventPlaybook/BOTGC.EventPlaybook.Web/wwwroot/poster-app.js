@@ -372,7 +372,7 @@ function serialiseSession(session, includeInlineArtwork = true) {
 
     return {
         key: session.key,
-        schemaVersion: 10,
+        schemaVersion: 11,
         savedAt: new Date().toISOString(),
         contentUpdatedAt: session.contentUpdatedAt,
         selectedStyleId: session.selectedStyleId,
@@ -582,7 +582,11 @@ function applyStoredSession(session, stored) {
     }
     if (stored.screenPublishOperation && typeof stored.screenPublishOperation === 'object') {
         const storedStatus = String(stored.screenPublishOperation.status ?? '');
+        const storedAction = stored.screenPublishOperation.action === 'take-down'
+            ? 'take-down'
+            : 'publish';
         session.screenPublishOperation = {
+            action: storedAction,
             status: storedStatus === 'sending' ? 'failed' : storedStatus,
             mediaName: String(stored.screenPublishOperation.mediaName ?? ''),
             startDate: String(stored.screenPublishOperation.startDate ?? ''),
@@ -590,7 +594,9 @@ function applyStoredSession(session, stored) {
             startedAt: String(stored.screenPublishOperation.startedAt ?? ''),
             updatedAt: String(stored.screenPublishOperation.updatedAt ?? ''),
             error: storedStatus === 'sending'
-                ? 'The previous background send was interrupted when the page closed. Try again; the existing Yodeck item will be updated rather than duplicated.'
+                ? storedAction === 'take-down'
+                    ? 'The previous background take-down was interrupted when the page closed. The artwork may still be in the Clubhouse rotation. Try taking it down again; its media file will remain in the Yodeck library.'
+                    : 'The previous background send was interrupted when the page closed. Try again; the existing Yodeck item will be updated rather than duplicated.'
                 : String(stored.screenPublishOperation.error ?? '')
         };
     }
@@ -1250,6 +1256,7 @@ export async function mountPosterStudio(context = {}) {
         regenerateButton: document.querySelector('#regenerateButton'),
         sharePanel: document.querySelector('#sharePanel'),
         shareScreensButton: document.querySelector('#shareScreensButton'),
+        takeDownScreensButton: document.querySelector('#takeDownScreensButton'),
         shareScreensStatus: document.querySelector('#shareScreensStatus'),
         shareEmailButton: document.querySelector('#shareEmailButton'),
         shareEmailCard: document.querySelector('#shareEmailCard'),
@@ -1545,6 +1552,7 @@ function wireEvents(session) {
     });
     elements.cancelGenerationButton.addEventListener('click', () => cancelGeneration(session));
     elements.shareScreensButton.addEventListener('click', openScreenShareDialog);
+    elements.takeDownScreensButton?.addEventListener('click', () => void takeDownFromClubhouseScreens());
     elements.shareEmailButton.addEventListener('click', openMemberEmailDialog);
     elements.sharePrintButton?.addEventListener('click', openPrintDialog);
     elements.shareDiaryButton?.addEventListener('click', openMemberDiaryDialog);
@@ -1749,22 +1757,56 @@ function renderScreenPublishState(session) {
     if (!isSessionVisible(session) || !elements.shareScreensButton) return;
 
     const operation = session.screenPublishOperation;
+    const operationAction = operation?.action === 'take-down' ? 'take-down' : 'publish';
     const status = elements.shareScreensStatus;
     const isSending = session.isPublishingScreens || operation?.status === 'sending';
+    const isTakingDown = isSending && operationAction === 'take-down';
+    const takeDownFailed = operation?.status === 'failed' && operationAction === 'take-down';
+    const publishFailed = operation?.status === 'failed' && operationAction === 'publish';
+    const canTakeDown = Boolean(session.screenPublication) || publishFailed || takeDownFailed || isTakingDown;
+
+    if (elements.takeDownScreensButton) {
+        elements.takeDownScreensButton.classList.toggle('hidden', !canTakeDown);
+        elements.takeDownScreensButton.disabled = isSending;
+        elements.takeDownScreensButton.textContent = isTakingDown
+            ? 'Taking down…'
+            : takeDownFailed
+                ? 'Try taking down again'
+                : 'Take down';
+    }
+
     if (isSending) {
         elements.shareScreensButton.disabled = true;
-        elements.shareScreensButton.textContent = 'Sending…';
+        elements.shareScreensButton.textContent = isTakingDown
+            ? session.screenPublication ? 'Update clubhouse screens' : 'Send to clubhouse screens'
+            : 'Sending…';
         if (status) {
-            status.textContent = 'Sending in background…';
+            status.textContent = isTakingDown
+                ? 'Taking down in background…'
+                : 'Sending in background…';
             status.className = 'share-action-status sending';
         }
         if (elements.shareMessage) {
-            elements.shareMessage.textContent = 'Artwork is being sent to the clubhouse screens in the background. You can continue working elsewhere in Event Playbook.';
+            elements.shareMessage.textContent = isTakingDown
+                ? 'Artwork is being removed from the Clubhouse rotation and the change is being pushed to the screens in the background. Its media file will remain in the Yodeck library. You can continue working elsewhere in Event Playbook.'
+                : 'Artwork is being sent to the clubhouse screens in the background. You can continue working elsewhere in Event Playbook.';
         }
         return;
     }
 
     elements.shareScreensButton.disabled = false;
+    if (takeDownFailed) {
+        elements.shareScreensButton.textContent = session.screenPublication
+            ? 'Update clubhouse screens'
+            : 'Send to clubhouse screens';
+        if (status) {
+            status.textContent = 'Could not take down · try again';
+            status.className = 'share-action-status failed';
+        }
+        if (elements.shareMessage) elements.shareMessage.textContent = operation.error;
+        return;
+    }
+
     if (operation?.status === 'failed') {
         elements.shareScreensButton.textContent = 'Try again';
         if (status) {
@@ -1772,6 +1814,18 @@ function renderScreenPublishState(session) {
             status.className = 'share-action-status failed';
         }
         if (elements.shareMessage) elements.shareMessage.textContent = operation.error;
+        return;
+    }
+
+    if (operation?.status === 'succeeded' && operationAction === 'take-down') {
+        elements.shareScreensButton.textContent = 'Send to clubhouse screens';
+        if (status) {
+            status.textContent = 'Taken down · push completed';
+            status.className = 'share-action-status';
+        }
+        if (elements.shareMessage) {
+            elements.shareMessage.textContent = 'The artwork was removed from the Clubhouse rotation and the screen push completed. Its media file remains in the Yodeck library and can be published again.';
+        }
         return;
     }
 
@@ -4171,6 +4225,8 @@ function openScreenShareDialog() {
     const session = activeSession;
     if (!session || !elements.publishDialog) return;
     if (session.isPublishingScreens || session.screenPublishOperation?.status === 'sending') return;
+    const previousPublishFailed = session.screenPublishOperation?.status === 'failed'
+        && session.screenPublishOperation?.action !== 'take-down';
 
     const primaryOutput = getPrimaryOutput(session);
     const primaryCanvas = primaryOutput ? session.posterCanvases.get(primaryOutput.id) : null;
@@ -4195,7 +4251,7 @@ function openScreenShareDialog() {
     elements.yodeckEndDate.value = eventDate;
     elements.publishDialogMessage.textContent = '';
     elements.publishDialogMessage.className = 'poster-publish-dialog-message';
-    elements.publishDialogConfirm.textContent = session.screenPublishOperation?.status === 'failed'
+    elements.publishDialogConfirm.textContent = previousPublishFailed
         ? 'Try sending again'
         : session.screenPublication
             ? 'Update clubhouse screens'
@@ -4211,7 +4267,7 @@ function openScreenShareDialog() {
     if (screenConnection.configured && session.screenPublication) {
         elements.publishDialogMessage.textContent = 'This event already has a clubhouse-screen item. Sending again will replace its image, name, tags and dates without adding another playlist entry.';
     }
-    if (screenConnection.configured && session.screenPublishOperation?.status === 'failed') {
+    if (screenConnection.configured && previousPublishFailed) {
         elements.publishDialogMessage.textContent = session.screenPublishOperation.error;
         elements.publishDialogMessage.className = 'poster-publish-dialog-message error';
     }
@@ -4271,6 +4327,7 @@ async function sendToClubhouseScreens() {
 
     session.isPublishingScreens = true;
     session.screenPublishOperation = {
+        action: 'publish',
         status: 'sending',
         mediaName: session.form.publishMediaName,
         startDate,
@@ -4347,6 +4404,76 @@ async function sendToClubhouseScreens() {
         setWorkflowStep(session, 4, true);
     } catch (error) {
         const message = error instanceof Error ? error.message : 'The artwork could not be sent to the clubhouse screens.';
+        session.screenPublishOperation = {
+            ...session.screenPublishOperation,
+            status: 'failed',
+            updatedAt: new Date().toISOString(),
+            error: message
+        };
+    } finally {
+        session.isPublishingScreens = false;
+        renderScreenPublishState(session);
+        await persistSession(session);
+    }
+}
+
+async function takeDownFromClubhouseScreens() {
+    const session = activeSession;
+    if (!session || session.isPublishingScreens || session.screenPublishOperation?.status === 'sending') return;
+
+    const previousTakeDownFailed = session.screenPublishOperation?.status === 'failed'
+        && session.screenPublishOperation?.action === 'take-down';
+    const previousPublishFailed = session.screenPublishOperation?.status === 'failed'
+        && session.screenPublishOperation?.action !== 'take-down';
+    const publication = session.screenPublication;
+    if (!publication && !previousPublishFailed && !previousTakeDownFailed) return;
+
+    const mediaName = publication?.mediaName
+        || session.screenPublishOperation?.mediaName
+        || getCampaignEventName(session);
+    const confirmed = window.confirm(
+        `Take “${mediaName}” down from the clubhouse screens? This removes it from the Clubhouse rotation and pushes the change to the screens. The media file will remain in the Yodeck library so it can be published again.`
+    );
+    if (!confirmed) return;
+
+    const now = new Date().toISOString();
+    session.isPublishingScreens = true;
+    session.screenPublishOperation = {
+        action: 'take-down',
+        status: 'sending',
+        mediaName,
+        startDate: publication?.startDate ?? '',
+        endDate: publication?.endDate ?? '',
+        startedAt: now,
+        updatedAt: now,
+        error: ''
+    };
+    renderScreenPublishState(session);
+    void persistSession(session);
+
+    try {
+        const response = await fetch('/api/poster/take-down', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                eventId: session.context?.eventId || session.key,
+                eventName: getCampaignEventName(session),
+                mediaId: publication?.mediaId ?? null
+            })
+        });
+        await readApiResponse(response);
+
+        session.screenPublication = null;
+        session.screenPublishOperation = {
+            ...session.screenPublishOperation,
+            status: 'succeeded',
+            updatedAt: new Date().toISOString(),
+            error: ''
+        };
+    } catch (error) {
+        const message = error instanceof Error
+            ? error.message
+            : 'The artwork could not be taken down from the clubhouse screens.';
         session.screenPublishOperation = {
             ...session.screenPublishOperation,
             status: 'failed',

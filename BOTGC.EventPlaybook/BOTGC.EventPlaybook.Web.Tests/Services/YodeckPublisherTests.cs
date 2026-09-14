@@ -276,12 +276,319 @@ public sealed class YodeckPublisherTests
         Assert.Contains("push ended with status 'failed'", activity.Message, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public async Task TakeDownAsync_RemovesEveryTaggedAndLegacyEventEntryWhilePreservingUnrelatedOrder()
+    {
+        var taggedMedia = Media(80, "local", "2026-09-07T12:00:00Z");
+        taggedMedia["description"] = "Current artwork without an event ID in its description.";
+        var legacyMedia = Media(81, "local", "2026-09-06T12:00:00Z");
+        legacyMedia["tags"] = new JsonArray("event-playbook");
+        var unrelatedMedia = Media(82, "local", "2026-09-05T12:00:00Z");
+        unrelatedMedia["description"] = "Event Playbook event id: another-event. Unrelated artwork.";
+        unrelatedMedia["tags"] = new JsonArray("event-playbook");
+
+        var scenario = new YodeckScenario
+        {
+            TaggedMedia = [taggedMedia],
+            LegacyMedia = [taggedMedia.DeepClone().AsObject(), legacyMedia, unrelatedMedia],
+            PlaylistItems =
+            [
+                PlaylistItem(42, 1),
+                PlaylistItem(80, 2),
+                SubplaylistItem(700, 3),
+                PlaylistItem(81, 4),
+                PlaylistItem(80, 5),
+                PlaylistItem(99, 6)
+            ]
+        };
+        var activityStore = new RecordingIntegrationActivityStore();
+        var publisher = CreatePublisher(scenario, activityStore);
+
+        var result = await publisher.TakeDownAsync(CreateTakeDownCommand(), CancellationToken.None);
+
+        Assert.True(result.PlaylistWasChanged);
+        Assert.Equal(3, result.RemovedPlaylistEntries);
+        Assert.Equal([80L, 81L], result.RetainedMediaIds);
+        Assert.True(result.ScreenPushRequested);
+        Assert.True(result.ScreenPushConfirmed);
+        Assert.Equal("completed", result.ScreenPushStatus);
+        Assert.Equal(2, result.ScreenCount);
+
+        var mediaQueries = scenario.Requests
+            .Where(request => request.Method == HttpMethod.Get && request.Path == "/api/v2/media")
+            .ToList();
+        Assert.Equal(2, mediaQueries.Count);
+        Assert.Contains(mediaQueries, request =>
+            request.Uri.Query.Contains("tags=event-playbook-event-123", StringComparison.Ordinal));
+        Assert.Contains(mediaQueries, request =>
+            request.Uri.Query.Contains("tags=event-playbook&", StringComparison.Ordinal));
+
+        var playlistPatch = Assert.Single(scenario.Requests, request =>
+            request.Method == HttpMethod.Patch && request.Path == "/api/v2/playlists/77");
+        Assert.Equal(
+            [(42L, "media"), (700L, "subplaylist"), (99L, "media")],
+            ReadPlaylistItems(playlistPatch));
+
+        var patchIndex = scenario.Requests.IndexOf(playlistPatch);
+        var pushIndex = scenario.IndexOf(HttpMethod.Post, "/api/v2/screens/push");
+        Assert.True(patchIndex < pushIndex, "The playlist must be patched before screens are pushed.");
+        AssertNoMediaMutationRequests(scenario);
+
+        var activity = Assert.Single(activityStore.Activities);
+        Assert.Equal("Yodeck", activity.Integration);
+        Assert.Equal("Take down clubhouse screens", activity.Operation);
+        Assert.Equal("succeeded", activity.Outcome);
+        Assert.Equal("event-123", activity.EventPlaybookEventId);
+        Assert.Equal("Sunday Lunch", activity.EventName);
+        Assert.Equal(80, activity.ExternalRecordId);
+        Assert.Equal("screen-push-confirmed", activity.Stage);
+        Assert.Null(activity.StatusCode);
+        Assert.Contains("Removed 3 event artwork entries", activity.Message, StringComparison.Ordinal);
+        Assert.Contains("retained 2 media library items", activity.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task TakeDownAsync_WhenPlaylistIsAlreadyClear_DoesNotPatchButStillPushesScreens()
+    {
+        var existingMedia = Media(80, "local", "2026-09-07T12:00:00Z");
+        var scenario = new YodeckScenario
+        {
+            TaggedMedia = [existingMedia],
+            LegacyMedia = [existingMedia.DeepClone().AsObject()],
+            PlaylistItems = [PlaylistItem(42, 1)]
+        };
+        var activityStore = new RecordingIntegrationActivityStore();
+        var publisher = CreatePublisher(scenario, activityStore);
+
+        var result = await publisher.TakeDownAsync(CreateTakeDownCommand(), CancellationToken.None);
+
+        Assert.False(result.PlaylistWasChanged);
+        Assert.Equal(0, result.RemovedPlaylistEntries);
+        Assert.Equal([80L], result.RetainedMediaIds);
+        Assert.DoesNotContain(scenario.Requests, request =>
+            request.Method == HttpMethod.Patch && request.Path == "/api/v2/playlists/77");
+        Assert.Contains(scenario.Requests, request =>
+            request.Method == HttpMethod.Post && request.Path == "/api/v2/screens/push");
+        Assert.True(result.ScreenPushConfirmed);
+        AssertNoMediaMutationRequests(scenario);
+
+        var activity = Assert.Single(activityStore.Activities);
+        Assert.Equal("succeeded", activity.Outcome);
+        Assert.Contains("already clear", activity.Message, StringComparison.Ordinal);
+        Assert.Contains("retained 1 media library item", activity.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task TakeDownAsync_WhenScreenPushFails_RecordsFailureWithoutDeletingMedia()
+    {
+        var existingMedia = Media(80, "local", "2026-09-07T12:00:00Z");
+        var scenario = new YodeckScenario
+        {
+            TaggedMedia = [existingMedia],
+            LegacyMedia = [existingMedia.DeepClone().AsObject()],
+            PlaylistItems = [PlaylistItem(80, 1), PlaylistItem(42, 2)],
+            PushStatuses = new Queue<string>(["failed"])
+        };
+        var activityStore = new RecordingIntegrationActivityStore();
+        var publisher = CreatePublisher(scenario, activityStore);
+
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            publisher.TakeDownAsync(CreateTakeDownCommand(), CancellationToken.None));
+
+        Assert.Contains("push the changes to the screens", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("No Event Playbook media library files were deleted", exception.Message, StringComparison.Ordinal);
+        Assert.Equal([42L], scenario.PlaylistItems.Select(item => item["id"]!.GetValue<long>()).ToList());
+        AssertNoMediaMutationRequests(scenario);
+
+        var playlistPatchIndex = scenario.IndexOf(HttpMethod.Patch, "/api/v2/playlists/77");
+        var pushIndex = scenario.IndexOf(HttpMethod.Post, "/api/v2/screens/push");
+        Assert.True(playlistPatchIndex >= 0);
+        Assert.True(playlistPatchIndex < pushIndex);
+
+        var activity = Assert.Single(activityStore.Activities);
+        Assert.Equal("Yodeck", activity.Integration);
+        Assert.Equal("Take down clubhouse screens", activity.Operation);
+        Assert.Equal("failed", activity.Outcome);
+        Assert.Equal("screen-take-down", activity.Stage);
+        Assert.Null(activity.StatusCode);
+        Assert.Contains("No Event Playbook media library files were deleted", activity.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task TakeDownAsync_WhenUnconfigured_RecordsConfigurationFailureWithoutCallingYodeck()
+    {
+        var scenario = new YodeckScenario();
+        var activityStore = new RecordingIntegrationActivityStore();
+        var publisher = CreatePublisher(
+            scenario,
+            activityStore,
+            new YodeckOptions
+            {
+                ApiBaseUrl = "https://app.yodeck.test/api/v2/",
+                PlaylistId = 77,
+                PlaylistName = "Clubhouse"
+            });
+
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            publisher.TakeDownAsync(CreateTakeDownCommand(), CancellationToken.None));
+
+        Assert.Contains("not configured", exception.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Empty(scenario.Requests);
+        var activity = Assert.Single(activityStore.Activities);
+        Assert.Equal("Take down clubhouse screens", activity.Operation);
+        Assert.Equal("failed", activity.Outcome);
+        Assert.Equal("configuration", activity.Stage);
+        Assert.Null(activity.StatusCode);
+    }
+
+    [Fact]
+    public async Task TakeDownAsync_WithKnownMediaId_VerifiesOwnershipAndRemovesItWhenSearchesAreEmpty()
+    {
+        var knownMedia = Media(80, "local", "2026-09-07T12:00:00Z");
+        var scenario = new YodeckScenario
+        {
+            TaggedMedia = [],
+            LegacyMedia = [],
+            KnownMediaById = { [80] = knownMedia },
+            PlaylistItems =
+            [
+                PlaylistItem(42, 1),
+                PlaylistItem(80, 2),
+                PlaylistItem(80, 3),
+                PlaylistItem(99, 4)
+            ]
+        };
+        var publisher = CreatePublisher(scenario);
+
+        var result = await publisher.TakeDownAsync(
+            CreateTakeDownCommand(knownMediaId: 80),
+            CancellationToken.None);
+
+        Assert.True(result.PlaylistWasChanged);
+        Assert.Equal(2, result.RemovedPlaylistEntries);
+        Assert.Equal([80L], result.RetainedMediaIds);
+        Assert.Contains(scenario.Requests, request =>
+            request.Method == HttpMethod.Get && request.Path == "/api/v2/media/80");
+        var playlistPatch = Assert.Single(scenario.Requests, request =>
+            request.Method == HttpMethod.Patch && request.Path == "/api/v2/playlists/77");
+        Assert.Equal([42L, 99L], ReadPlaylistMediaIds(playlistPatch));
+        Assert.Contains(scenario.Requests, request =>
+            request.Method == HttpMethod.Post && request.Path == "/api/v2/screens/push");
+        AssertNoMediaMutationRequests(scenario);
+    }
+
+    [Fact]
+    public async Task TakeDownAsync_WithKnownMediaIdThatBelongsToAnotherEvent_RejectsWithoutMutationOrPush()
+    {
+        var unrelatedMedia = Media(80, "local", "2026-09-07T12:00:00Z");
+        unrelatedMedia["description"] = "Event Playbook event id: another-event. Unrelated artwork.";
+        unrelatedMedia["tags"] = new JsonArray("event-playbook", "event-playbook-another-event");
+        var scenario = new YodeckScenario
+        {
+            TaggedMedia = [],
+            LegacyMedia = [],
+            KnownMediaById = { [80] = unrelatedMedia },
+            PlaylistItems = [PlaylistItem(80, 1), PlaylistItem(42, 2)]
+        };
+        var activityStore = new RecordingIntegrationActivityStore();
+        var publisher = CreatePublisher(scenario, activityStore);
+
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            publisher.TakeDownAsync(
+                CreateTakeDownCommand(knownMediaId: 80),
+                CancellationToken.None));
+
+        Assert.Contains("could not be verified", exception.Message, StringComparison.Ordinal);
+        Assert.Contains(scenario.Requests, request =>
+            request.Method == HttpMethod.Get && request.Path == "/api/v2/media/80");
+        Assert.DoesNotContain(scenario.Requests, request =>
+            request.Method == HttpMethod.Patch && request.Path == "/api/v2/playlists/77");
+        Assert.DoesNotContain(scenario.Requests, request =>
+            request.Method == HttpMethod.Post && request.Path == "/api/v2/screens/push");
+        AssertNoMediaMutationRequests(scenario);
+
+        var activity = Assert.Single(activityStore.Activities);
+        Assert.Equal("failed", activity.Outcome);
+        Assert.Equal("screen-take-down", activity.Stage);
+        Assert.Contains("could not be verified", activity.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task TakeDownAsync_WithNoKnownOrDiscoveredMedia_RejectsRatherThanReportingFalseSuccess()
+    {
+        var scenario = new YodeckScenario
+        {
+            TaggedMedia = [],
+            LegacyMedia = [],
+            PlaylistItems = [PlaylistItem(42, 1)]
+        };
+        var activityStore = new RecordingIntegrationActivityStore();
+        var publisher = CreatePublisher(scenario, activityStore);
+
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            publisher.TakeDownAsync(CreateTakeDownCommand(), CancellationToken.None));
+
+        Assert.Contains("could not identify this event's Yodeck media", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("cannot safely claim", exception.Message, StringComparison.Ordinal);
+        Assert.DoesNotContain(scenario.Requests, request =>
+            request.Method == HttpMethod.Patch && request.Path == "/api/v2/playlists/77");
+        Assert.DoesNotContain(scenario.Requests, request =>
+            request.Method == HttpMethod.Post && request.Path == "/api/v2/screens/push");
+        AssertNoMediaMutationRequests(scenario);
+
+        var activity = Assert.Single(activityStore.Activities);
+        Assert.Equal("failed", activity.Outcome);
+        Assert.Equal("screen-take-down", activity.Stage);
+        Assert.Contains("cannot safely claim", activity.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task TakeDownAsync_RefetchesPlaylistAfterMediaSearchesAndUsesLatestSnapshot()
+    {
+        var existingMedia = Media(80, "local", "2026-09-07T12:00:00Z");
+        var scenario = new YodeckScenario
+        {
+            TaggedMedia = [existingMedia],
+            LegacyMedia = [existingMedia.DeepClone().AsObject()],
+            PlaylistSnapshots = new Queue<IReadOnlyList<JsonObject>>(
+            [
+                [PlaylistItem(80, 1), PlaylistItem(42, 2)],
+                [PlaylistItem(99, 1), SubplaylistItem(700, 2), PlaylistItem(80, 3), PlaylistItem(42, 4)]
+            ])
+        };
+        var publisher = CreatePublisher(scenario);
+
+        var result = await publisher.TakeDownAsync(CreateTakeDownCommand(), CancellationToken.None);
+
+        Assert.True(result.PlaylistWasChanged);
+        Assert.Equal(1, result.RemovedPlaylistEntries);
+        var playlistReads = scenario.Requests
+            .Select((request, index) => new { Request = request, Index = index })
+            .Where(item => item.Request.Method == HttpMethod.Get && item.Request.Path == "/api/v2/playlists/77")
+            .ToList();
+        Assert.Equal(2, playlistReads.Count);
+        var mediaSearches = scenario.Requests
+            .Select((request, index) => new { Request = request, Index = index })
+            .Where(item => item.Request.Method == HttpMethod.Get && item.Request.Path == "/api/v2/media")
+            .ToList();
+        Assert.Equal(2, mediaSearches.Count);
+        Assert.True(playlistReads[0].Index < mediaSearches[0].Index);
+        Assert.True(mediaSearches[^1].Index < playlistReads[1].Index);
+
+        var playlistPatch = Assert.Single(scenario.Requests, request =>
+            request.Method == HttpMethod.Patch && request.Path == "/api/v2/playlists/77");
+        Assert.Equal(
+            [(99L, "media"), (700L, "subplaylist"), (42L, "media")],
+            ReadPlaylistItems(playlistPatch));
+    }
+
     private static YodeckPublisher CreatePublisher(
         YodeckScenario scenario,
-        IIntegrationActivityStore? activityStore = null) =>
+        IIntegrationActivityStore? activityStore = null,
+        YodeckOptions? yodeckOptions = null) =>
         new(
             new FakeHttpClientFactory(scenario.Handler),
-            Microsoft.Extensions.Options.Options.Create(new YodeckOptions
+            Microsoft.Extensions.Options.Options.Create(yodeckOptions ?? new YodeckOptions
             {
                 ApiBaseUrl = "https://app.yodeck.test/api/v2/",
                 ApiToken = "secret-token",
@@ -304,6 +611,13 @@ public sealed class YodeckPublisherTests
         ImageBytes = PngBytes,
         ImageWidth = 2160,
         ImageHeight = 3840
+    };
+
+    private static YodeckTakeDownCommand CreateTakeDownCommand(long? knownMediaId = null) => new()
+    {
+        EventId = "event-123",
+        EventName = "Sunday Lunch",
+        KnownMediaId = knownMediaId
     };
 
     private static JsonObject Media(
@@ -334,6 +648,15 @@ public sealed class YodeckPublisherTests
         ["type"] = "media"
     };
 
+    private static JsonObject SubplaylistItem(long id, long priority) => new()
+    {
+        ["id"] = id,
+        ["priority"] = priority,
+        ["max_time"] = 120,
+        ["max_items"] = 8,
+        ["type"] = "subplaylist"
+    };
+
     private static List<long> ReadPlaylistMediaIds(CapturedRequest request)
     {
         var body = JsonNode.Parse(request.TextBody!)!.AsObject();
@@ -344,11 +667,35 @@ public sealed class YodeckPublisherTests
             .ToList();
     }
 
+    private static List<(long Id, string Type)> ReadPlaylistItems(CapturedRequest request)
+    {
+        var body = JsonNode.Parse(request.TextBody!)!.AsObject();
+        return body["items"]!.AsArray()
+            .OfType<JsonObject>()
+            .Select(item => (
+                item["id"]!.GetValue<long>(),
+                item["type"]!.GetValue<string>()))
+            .ToList();
+    }
+
+    private static void AssertNoMediaMutationRequests(YodeckScenario scenario) =>
+        Assert.DoesNotContain(scenario.Requests, request =>
+            request.Path.StartsWith("/api/v2/media", StringComparison.Ordinal) &&
+            request.Method != HttpMethod.Get);
+
     private sealed class YodeckScenario
     {
         public List<JsonObject> ExistingMedia { get; init; } = [];
 
+        public List<JsonObject>? TaggedMedia { get; init; }
+
+        public List<JsonObject>? LegacyMedia { get; init; }
+
+        public Dictionary<long, JsonObject?> KnownMediaById { get; init; } = [];
+
         public List<JsonObject> PlaylistItems { get; init; } = [];
+
+        public Queue<IReadOnlyList<JsonObject>> PlaylistSnapshots { get; init; } = [];
 
         public Queue<string> PushStatuses { get; init; } = new(["completed"]);
 
@@ -378,13 +725,7 @@ public sealed class YodeckPublisherTests
         {
             var response = (request.Method.Method, request.Path) switch
             {
-                ("GET", "/api/v2/playlists/77") => Json(new JsonObject
-                {
-                    ["id"] = 77,
-                    ["name"] = "Clubhouse",
-                    ["workspace"] = new JsonObject { ["id"] = 9L },
-                    ["items"] = new JsonArray(PlaylistItems.Select(item => item.DeepClone()).ToArray())
-                }),
+                ("GET", "/api/v2/playlists/77") => Playlist(),
                 ("GET", "/api/v2/media/tags") => Json(new JsonObject
                 {
                     ["results"] = new JsonArray(
@@ -394,11 +735,7 @@ public sealed class YodeckPublisherTests
                         Tag("sunday-lunch")),
                     ["next"] = null
                 }),
-                ("GET", "/api/v2/media") => Json(new JsonObject
-                {
-                    ["results"] = new JsonArray(ExistingMedia.Select(item => item.DeepClone()).ToArray()),
-                    ["next"] = null
-                }),
+                ("GET", "/api/v2/media") => MediaSearch(request),
                 ("POST", "/api/v2/media") => Json(Media(91, "local", "2026-09-07T13:00:00Z"), HttpStatusCode.Created),
                 ("PATCH", var path) when path.StartsWith("/api/v2/media/", StringComparison.Ordinal) =>
                     UpdateMedia(request, path),
@@ -412,7 +749,7 @@ public sealed class YodeckPublisherTests
                         ["status"] = MediaStatuses.Count > 1 ? MediaStatuses.Dequeue() : MediaStatuses.Peek()
                     }),
                 ("GET", var path) when path.StartsWith("/api/v2/media/", StringComparison.Ordinal) =>
-                    Json(UploadedMedia(ParseMediaId(path))),
+                    MediaById(path),
                 ("PATCH", "/api/v2/playlists/77") => UpdatePlaylist(request),
                 ("GET", "/api/v2/screens") => Json(new JsonObject
                 {
@@ -450,6 +787,50 @@ public sealed class YodeckPublisherTests
         }
 
         private static JsonObject Tag(string name) => new() { ["name"] = name };
+
+        private HttpResponseMessage Playlist()
+        {
+            var source = PlaylistSnapshots.Count switch
+            {
+                > 1 => PlaylistSnapshots.Dequeue(),
+                1 => PlaylistSnapshots.Peek(),
+                _ => PlaylistItems
+            };
+            return Json(new JsonObject
+            {
+                ["id"] = 77,
+                ["name"] = "Clubhouse",
+                ["workspace"] = new JsonObject { ["id"] = 9L },
+                ["items"] = new JsonArray(source.Select(item => item.DeepClone()).ToArray())
+            });
+        }
+
+        private HttpResponseMessage MediaSearch(CapturedRequest request)
+        {
+            var source = request.Uri.Query.Contains(
+                "tags=event-playbook-event-123",
+                StringComparison.Ordinal)
+                ? TaggedMedia ?? ExistingMedia
+                : LegacyMedia ?? ExistingMedia;
+            return Json(new JsonObject
+            {
+                ["results"] = new JsonArray(source.Select(item => item.DeepClone()).ToArray()),
+                ["next"] = null
+            });
+        }
+
+        private HttpResponseMessage MediaById(string path)
+        {
+            var mediaId = ParseMediaId(path);
+            if (!KnownMediaById.TryGetValue(mediaId, out var media))
+            {
+                return Json(UploadedMedia(mediaId));
+            }
+
+            return media is null
+                ? new HttpResponseMessage(HttpStatusCode.NotFound)
+                : Json(media.DeepClone().AsObject());
+        }
 
         private HttpResponseMessage UpdateMedia(CapturedRequest request, string path)
         {
