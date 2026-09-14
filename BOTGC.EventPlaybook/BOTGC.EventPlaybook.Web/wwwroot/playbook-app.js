@@ -42,6 +42,14 @@
 
   const CHANGE_RESPONSE_STATUSES = new Set(['cancelled', 'postponed']);
 
+  const FOOD_SERVICE_REVIEW_TASK_IDS_V36 = Object.freeze([
+    'external-food-service-liaison-task',
+    'food-staff-task',
+    'food-service-readiness-task',
+    'event-day-food-service-task'
+  ]);
+  const LEGACY_FOOD_REVIEW_COMPLETION_PROVENANCE = 'pre-v3.6-food-review';
+
   const FINANCE_CATEGORIES = Object.freeze({
     income: ['Ticket sales', 'Bar sales', 'Catering sales', 'Sponsorship', 'Donations', 'Other income'],
     expense: ['Additional staffing', 'Food and stock', 'Entertainment', 'Prizes and trophies', 'Equipment and hire', 'Marketing', 'Supplier costs', 'Other expense']
@@ -680,6 +688,36 @@
     return changed;
   }
 
+  function migrateFoodServiceReviewCompletionState() {
+    if (!FOOD_SERVICE_REVIEW_TASK_IDS_V36.every(taskId => itemIndex.has(taskId))) return false;
+
+    let changed = false;
+    for (const event of state.events ?? []) {
+      event.dataMigrations = event.dataMigrations && typeof event.dataMigrations === 'object'
+        ? event.dataMigrations
+        : {};
+      if (event.dataMigrations.foodServiceReviewCompletionV36 === true) continue;
+
+      const recordedVersion = String(event.playbookVersion ?? '').trim();
+      const eventVersion = Number.parseFloat(recordedVersion);
+      // createEvent has always recorded the current playbook version. A persisted
+      // event with no version therefore also predates the v3.6 review summaries.
+      const isPreV36Event = !recordedVersion || (Number.isFinite(eventVersion) && eventVersion < 3.6);
+      if (isPreV36Event && event.taskState && typeof event.taskState === 'object') {
+        for (const taskId of FOOD_SERVICE_REVIEW_TASK_IDS_V36) {
+          const taskState = event.taskState[taskId];
+          if (taskState?.completed === true && !taskState.reviewSignature) {
+            taskState.reviewCompletionProvenance = LEGACY_FOOD_REVIEW_COMPLETION_PROVENANCE;
+          }
+        }
+      }
+
+      event.dataMigrations.foodServiceReviewCompletionV36 = true;
+      changed = true;
+    }
+    return changed;
+  }
+
   function migratePlaybookMilestoneCodes(candidate) {
     const copy = structuredClone(candidate);
     const remap = { B5: 'B4', A7: 'A2' };
@@ -921,7 +959,8 @@
     state.events = shared.events;
     const admissionPlanningMigrated = migrateAdmissionPlanningState();
     const admissionPricingMigrated = migrateAdmissionPricingState();
-    const admissionStateMigrated = admissionPlanningMigrated || admissionPricingMigrated;
+    const foodServiceReviewMigrated = migrateFoodServiceReviewCompletionState();
+    const eventStateMigrated = admissionPlanningMigrated || admissionPricingMigrated || foodServiceReviewMigrated;
     if (state.activeEventId && !state.events.some(event => event.id === state.activeEventId)) {
       state.activeEventId = null;
       state.activeView = 'catalogue';
@@ -934,7 +973,7 @@
       console.warn('The shared Image Library is too large for the browser cache. Server storage remains authoritative.', error);
     }
     applyingSharedState = false;
-    if (admissionStateMigrated && sharedStateReady) scheduleSharedStateSave(100);
+    if (eventStateMigrated && sharedStateReady) scheduleSharedStateSave(100);
   }
 
   function scheduleSharedStateSave(delay = 450) {
@@ -1395,7 +1434,11 @@
         history: []
       },
       playbookVersion: playbook?.schemaVersion ?? '1.0',
-      dataMigrations: { admissionPlanningV34: true, admissionPricingV35: true },
+      dataMigrations: {
+        admissionPlanningV34: true,
+        admissionPricingV35: true,
+        foodServiceReviewCompletionV36: true
+      },
       sourceEventId: null,
       eventSeriesId: id,
       learningInsights: [],
@@ -2271,6 +2314,28 @@
     }
   }
 
+  function applyServerTaskCompletion(event, item, taskState, record) {
+    const review = taskReviewState(item, event);
+    if (review && !review.ready) {
+      // This server completion was submitted against an answer set that cannot
+      // currently complete the reviewed task. Rotate the token so it cannot be
+      // accepted later merely because somebody subsequently supplies answers.
+      rotateTaskCompletionLink(taskState);
+      return false;
+    }
+
+    delete taskState.reviewCompletionProvenance;
+    taskState.completed = true;
+    taskState.status = 'completed';
+    taskState.completedAt = record.completedAtUtc ?? taskState.completedAt ?? new Date().toISOString();
+    if (review) {
+      taskState.reviewSignature = review.signature;
+      taskState.reviewInvalidatedAt = null;
+    }
+    if (record.completionNotes) taskState.notes = record.completionNotes;
+    return true;
+  }
+
   async function syncServerCompletions() {
     for (const event of state.events) {
       try {
@@ -2289,13 +2354,11 @@
             }
             continue;
           }
-          if (!itemIndex.has(record.taskId)) continue;
+          const indexed = itemIndex.get(record.taskId);
+          if (!indexed) continue;
           const taskState = ensureTaskState(event, record.taskId);
           if (!taskState.completionToken || taskState.completionToken !== record.token) continue;
-          taskState.completed = true;
-          taskState.status = 'completed';
-          taskState.completedAt = record.completedAtUtc ?? taskState.completedAt;
-          if (record.completionNotes) taskState.notes = record.completionNotes;
+          applyServerTaskCompletion(event, indexed.item, taskState, record);
         }
       } catch (error) {
         console.warn('Could not synchronise task completions.', error);
@@ -2335,6 +2398,7 @@
     const review = taskReviewState(item, event);
     if (completed && review && !review.ready) return false;
     if (!completed && taskState.completed === true) rotateTaskCompletionLink(taskState);
+    delete taskState.reviewCompletionProvenance;
     taskState.completed = Boolean(completed);
     taskState.status = completed ? 'completed' : 'open';
     taskState.completedAt = completed ? new Date().toISOString() : null;
@@ -2739,6 +2803,7 @@
           if (!taskState || (!taskState.completed && !taskState.reviewSignature)) continue;
           const wasConfirmed = taskState.completed === true;
           if (wasConfirmed) rotateTaskCompletionLink(taskState);
+          delete taskState.reviewCompletionProvenance;
           taskState.completed = false;
           taskState.status = 'open';
           taskState.completedAt = null;
@@ -2752,9 +2817,19 @@
   function reconcileTaskReviewCompletion(item, event, taskState) {
     const review = taskReviewState(item, event);
     if (!review || taskState.completed !== true) return review;
-    const answersChanged = Boolean(taskState.reviewSignature && taskState.reviewSignature !== review.signature);
+
+    // Only the v3.6 migration may grandfather a completion created before these
+    // food tasks gained review summaries. An unsigned current/server completion
+    // must still be reconciled and cannot masquerade as legacy work.
+    const isGrandfatheredFoodCompletion =
+      taskState.reviewCompletionProvenance === LEGACY_FOOD_REVIEW_COMPLETION_PROVENANCE &&
+      !taskState.reviewSignature;
+    if (isGrandfatheredFoodCompletion) return review;
+
+    const answersChanged = taskState.reviewSignature !== review.signature;
     if (!review.ready || answersChanged) {
       rotateTaskCompletionLink(taskState);
+      delete taskState.reviewCompletionProvenance;
       taskState.completed = false;
       taskState.status = 'open';
       taskState.completedAt = null;
@@ -9092,6 +9167,7 @@
       indexPlaybook();
       migrateAdmissionPlanningState();
       migrateAdmissionPricingState();
+      migrateFoodServiceReviewCompletionState();
       state.activeView = 'module:start';
       saveState();
       render();
@@ -9106,6 +9182,7 @@
       validatePlaybook(candidate);
       playbook = candidate;
       indexPlaybook();
+      migrateFoodServiceReviewCompletionState();
       await initialiseClubBranding();
       await initialiseAccessSession();
       await initialisePluginStatus();
@@ -9113,6 +9190,7 @@
       migrateMilestoneState();
       migrateAdmissionPlanningState();
       migrateAdmissionPricingState();
+      migrateFoodServiceReviewCompletionState();
       initialiseOperationalState();
       const params = new URLSearchParams(location.search);
       const requestedView = params.get('view');

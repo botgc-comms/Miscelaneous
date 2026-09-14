@@ -25,9 +25,9 @@ public sealed class RetrospectiveAnalysisService(
 
     private static readonly Dictionary<string, string[]> ModuleSignals = new(StringComparer.OrdinalIgnoreCase)
     {
-        ["catering"] = ["bar", "buffet", "cater", "catering", "chef", "chili", "chilli", "curry", "diet", "dietary", "drink", "food", "kitchen", "meal", "menu", "mild", "potato", "rice", "spicy", "staffing", "vegetarian", "vegan"],
+        ["catering"] = ["bain-marie", "bar", "buffet", "cater", "catering", "chef", "chili", "chilli", "curry", "diet", "dietary", "drink", "food", "kitchen", "meal", "menu", "mild", "potato", "rice", "self-service", "serve", "service-point", "spicy", "supervise", "vegetarian", "vegan"],
         ["communications"] = ["advert", "advertising", "communication", "email", "member", "message", "promotion", "publicity", "signage"],
-        ["golf"] = ["competition", "course", "golf", "green", "handicap", "hole", "marshal", "score", "tee"],
+        ["golf"] = ["competition", "course", "golf", "green", "handicap", "hole", "marshal", "result", "score", "tee"],
         ["clubhouse"] = ["av", "decoration", "layout", "room", "screen", "seating", "table"],
         ["entertainment"] = ["act", "band", "comedian", "dance", "dj", "entertainment", "host", "lighting", "magician", "microphone", "music", "performer", "playlist", "sound", "speaker"],
         ["admission"] = ["admission", "booking", "cash", "door", "entry", "guest list", "payment", "price", "refund", "ticket"],
@@ -36,6 +36,82 @@ public sealed class RetrospectiveAnalysisService(
         ["safety"] = ["contingency", "hazard", "risk", "safe", "safety", "weather"],
         ["close-down"] = ["clear", "close", "follow-up", "remove", "reset", "return"]
     };
+
+    private static readonly Dictionary<string, string> TermAliases = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["apps"] = "app",
+        ["assigned"] = "assign",
+        ["assigning"] = "assign",
+        ["attendees"] = "attendee",
+        ["catered"] = "cater",
+        ["catering"] = "cater",
+        ["children"] = "child",
+        ["cleared"] = "clear",
+        ["clearing"] = "clear",
+        ["connections"] = "connectivity",
+        ["connected"] = "connectivity",
+        ["connection"] = "connectivity",
+        ["dependent"] = "depend",
+        ["dependencies"] = "depend",
+        ["dependency"] = "depend",
+        ["depends"] = "depend",
+        ["devices"] = "device",
+        ["juniors"] = "junior",
+        ["meals"] = "meal",
+        ["networks"] = "network",
+        ["operated"] = "operate",
+        ["operates"] = "operate",
+        ["operating"] = "operate",
+        ["prepared"] = "prepare",
+        ["preparing"] = "prepare",
+        ["results"] = "result",
+        ["returned"] = "return",
+        ["returning"] = "return",
+        ["scored"] = "score",
+        ["scores"] = "score",
+        ["scoring"] = "score",
+        ["served"] = "serve",
+        ["server"] = "serve",
+        ["servers"] = "serve",
+        ["serves"] = "serve",
+        ["serving"] = "serve",
+        ["staffed"] = "staff",
+        ["staffing"] = "staff",
+        ["supervised"] = "supervise",
+        ["supervises"] = "supervise",
+        ["supervising"] = "supervise",
+        ["supervision"] = "supervise",
+        ["supervisor"] = "supervise",
+        ["supervisors"] = "supervise",
+        ["technological"] = "technology",
+        ["technologies"] = "technology",
+        ["winners"] = "result",
+        ["winner"] = "result",
+        ["wi-fi"] = "wifi"
+    };
+
+    private static readonly string[] FoodContextTerms =
+        ["bain", "bain-marie", "buffet", "cater", "food", "hot-food", "kitchen", "meal"];
+
+    private static readonly string[] FoodServiceTerms =
+        ["adult", "attendee", "help", "operate", "self-service", "serve", "service", "service-point", "staff", "supervise"];
+
+    private static readonly string[] ServiceMethodTerms =
+        ["arrangement", "bain", "bain-marie", "buffet", "handed-out", "method", "pre-portioned", "receive", "self-service", "service-point", "table-service"];
+
+    private static readonly string[] ServiceOwnershipTerms =
+        ["adult", "assign", "nobody", "operate", "owner", "person", "responsibility", "responsible", "serve", "somebody", "staff", "supervise"];
+
+    private static readonly string[] JuniorTerms = ["child", "junior"];
+
+    private static readonly string[] CloseDownTerms =
+        ["clear", "close", "remove", "reset", "return"];
+
+    private static readonly string[] ResultTerms =
+        ["calculate", "leaderboard", "result", "score"];
+
+    private static readonly string[] TechnologyDependencyTerms =
+        ["app", "battery", "charge", "connectivity", "device", "fallback", "hotspot", "internet", "login", "manual", "mobile", "network", "offline", "online", "paper", "power", "software", "system", "technology", "wifi"];
 
     private readonly OpenAiOptions _options = options.Value;
 
@@ -305,19 +381,119 @@ public sealed class RetrospectiveAnalysisService(
 
     private static int MatchScore(HashSet<string> segmentTerms, RetrospectiveTaskContext task)
     {
-        var taskTerms = Terms($"{task.ItemType} {task.Title} {task.Detail} {task.ModuleTitle} {task.SectionTitle}");
-        var score = segmentTerms.Intersect(taskTerms, StringComparer.OrdinalIgnoreCase).Count() * 2;
+        var taskTerms = Terms($"{task.Id} {task.ItemType} {task.Title} {task.Detail} {task.ModuleId} {task.ModuleTitle} {task.SectionId} {task.SectionTitle}");
+        var isNonFoodCloseDownLesson = ContainsAny(segmentTerms, CloseDownTerms)
+            && !ContainsAny(segmentTerms, FoodContextTerms);
+        if (isNonFoodCloseDownLesson && IsFoodServicePlanningItem(task, taskTerms)) return 0;
+
+        var sharedTerms = segmentTerms.Intersect(taskTerms, StringComparer.OrdinalIgnoreCase).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var isUnscopedTechnologyLesson = ContainsAny(segmentTerms, TechnologyDependencyTerms)
+            && !ContainsAny(segmentTerms, ResultTerms);
+        var isGolfResultsTechnologyItem = task.ModuleId.Equals("golf", StringComparison.OrdinalIgnoreCase)
+            && ContainsAny(taskTerms, ResultTerms)
+            && ContainsAny(taskTerms, TechnologyDependencyTerms);
+        if (isUnscopedTechnologyLesson && isGolfResultsTechnologyItem)
+        {
+            sharedTerms.RemoveWhere(term => TechnologyDependencyTerms.Contains(term, StringComparer.OrdinalIgnoreCase));
+        }
+
+        var score = sharedTerms.Count * 2;
         if (ModuleSignals.TryGetValue(task.ModuleId, out var signals))
         {
             score += signals.Count(signal => segmentTerms.Contains(signal));
         }
+
+        score += FoodServiceMatchScore(segmentTerms, task, taskTerms);
+        score += GolfResultsTechnologyMatchScore(segmentTerms, task, taskTerms);
         return score + (task.Completed && score > 0 ? 1 : 0);
     }
 
-    private static HashSet<string> Terms(string? value) => Regex.Matches((value ?? string.Empty).ToLowerInvariant(), "[a-z][a-z'-]{2,}")
-        .Select(match => match.Value.Trim('\'', '-'))
-        .Where(term => term.Length >= 3 && !IgnoredWords.Contains(term))
-        .ToHashSet(StringComparer.OrdinalIgnoreCase);
+    private static int FoodServiceMatchScore(
+        HashSet<string> evidenceTerms,
+        RetrospectiveTaskContext task,
+        HashSet<string> planningItemTerms)
+    {
+        var hasSpecificServiceEquipment = ContainsAny(evidenceTerms, ["bain", "bain-marie", "buffet", "hot-food"]);
+        var hasFoodContext = ContainsAny(evidenceTerms, FoodContextTerms);
+        var hasServiceContext = ContainsAny(evidenceTerms, FoodServiceTerms);
+        var involvesJuniors = ContainsAny(evidenceTerms, JuniorTerms);
+        var isFoodServiceLesson = hasSpecificServiceEquipment
+            || (hasFoodContext && hasServiceContext)
+            || (involvesJuniors && ContainsAny(evidenceTerms, ["self-service", "serve", "service-point"]));
+        if (!isFoodServiceLesson || !task.ModuleId.Equals("catering", StringComparison.OrdinalIgnoreCase)) return 0;
+
+        if (!IsFoodServicePlanningItem(task, planningItemTerms)) return 0;
+
+        var score = 10;
+        var describesServiceMethod = ContainsAny(evidenceTerms, ServiceMethodTerms);
+        var describesServiceOwnership = ContainsAny(evidenceTerms, ServiceOwnershipTerms);
+
+        if (describesServiceMethod && ContainsAny(planningItemTerms, ["arrangement", "method", "receive"])) score += 8;
+        if (describesServiceOwnership && ContainsAny(planningItemTerms, ["assign", "operate", "owner", "responsibility", "responsible", "supervise"])) score += 8;
+        if (involvesJuniors && ContainsAny(planningItemTerms, ["safe", "serve", "supervise"])) score += 3;
+        if (describesServiceMethod && task.Id.Equals("food-service-arrangement", StringComparison.OrdinalIgnoreCase)) score += 18;
+        if (describesServiceOwnership && task.Id.Equals("food-service-owner", StringComparison.OrdinalIgnoreCase)) score += 18;
+
+        // This remains the best legacy target when an older event does not expose the
+        // newer service-arrangement and owner questions in its candidate list.
+        if (task.Id.Equals("event-day-food-service-task", StringComparison.OrdinalIgnoreCase)) score += 5;
+
+        return score;
+    }
+
+    private static bool IsFoodServicePlanningItem(
+        RetrospectiveTaskContext task,
+        HashSet<string> planningItemTerms) =>
+        task.ModuleId.Equals("catering", StringComparison.OrdinalIgnoreCase)
+        && ContainsAny(planningItemTerms, ["food", "meal", "cater"])
+        && ContainsAny(planningItemTerms, ["arrangement", "operate", "owner", "receive", "serve", "service", "staff", "supervise"]);
+
+    private static int GolfResultsTechnologyMatchScore(
+        HashSet<string> evidenceTerms,
+        RetrospectiveTaskContext task,
+        HashSet<string> planningItemTerms)
+    {
+        if (!ContainsAny(evidenceTerms, ResultTerms)
+            || !ContainsAny(evidenceTerms, TechnologyDependencyTerms)
+            || !task.ModuleId.Equals("golf", StringComparison.OrdinalIgnoreCase)
+            || !ContainsAny(planningItemTerms, ["result", "score"]))
+        {
+            return 0;
+        }
+
+        var score = 10;
+        if (ContainsAny(planningItemTerms, TechnologyDependencyTerms)) score += 10;
+        if (ContainsAny(planningItemTerms, ["fallback", "prepare", "readiness", "test"])) score += 6;
+        if (task.ItemType.Equals("task", StringComparison.OrdinalIgnoreCase)) score += 3;
+        return score;
+    }
+
+    private static HashSet<string> Terms(string? value)
+    {
+        var terms = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var normalizedValue = Regex.Replace(
+            (value ?? string.Empty).ToLowerInvariant(),
+            "[\u00ad\u2010-\u2015\u2212]",
+            "-");
+        foreach (Match match in Regex.Matches(normalizedValue, "[a-z][a-z'-]{2,}"))
+        {
+            var rawTerm = match.Value.Trim('\'', '-');
+            AddTerm(rawTerm);
+            foreach (var component in rawTerm.Split(['-', '\''], StringSplitOptions.RemoveEmptyEntries))
+            {
+                AddTerm(component);
+            }
+        }
+
+        return terms;
+
+        void AddTerm(string term)
+        {
+            if (term.Length < 3 || IgnoredWords.Contains(term)) return;
+            terms.Add(term);
+            if (TermAliases.TryGetValue(term, out var alias)) terms.Add(alias);
+        }
+    }
 
     private static bool ContainsAny(HashSet<string> values, IEnumerable<string> candidates) => candidates.Any(values.Contains);
 

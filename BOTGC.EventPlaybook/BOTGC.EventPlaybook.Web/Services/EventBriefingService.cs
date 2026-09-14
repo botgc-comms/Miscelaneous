@@ -18,6 +18,17 @@ public sealed class EventBriefingService(
     IOptions<OpenAiOptions> options,
     ILogger<EventBriefingService> logger) : IEventBriefingService
 {
+    private const string FoodServiceArrangementQuestionId = "food-service-arrangement";
+    private const string FoodServiceArrangementOtherQuestionId = "food-service-arrangement-other";
+    private const string FoodServiceOwnerQuestionId = "food-service-owner";
+    private const string FoodServiceSelfServiceRiskQuestionId = "food-service-self-service-risk";
+    private const string FoodServiceSelfServiceSupervisorQuestionId = "food-service-self-service-supervisor";
+    private const string ResultsTechnologyDependentQuestionId = "golf-results-technology-dependent";
+    private const string ResultsTechnologyPlanQuestionId = "golf-results-technology-plan";
+    private const int MaximumKeyFacts = 10;
+    private const int MaximumPreparationActions = 18;
+    private const int MaximumEventDayActions = 18;
+    private const int MaximumImportantNotes = 12;
     private readonly OpenAiOptions _options = options.Value;
 
     public async Task<EventBriefingResult> GenerateAsync(
@@ -76,6 +87,9 @@ public sealed class EventBriefingService(
                 "Preparation means immediate setup and shift readiness shortly before guests arrive, not planning work performed days or weeks earlier. Event-day means service and delivery while the event is running. Afterwards means close-down and immediate reconciliation.",
                 "Each staff action must name the team or role that needs it and give a direct practical instruction. Do not include project deadlines, task completion labels or instructions to prepare the briefing itself.",
                 "The staff introduction should summarise what staff need to know about the event. Where supplied, include covers, meal choices, food-service and bar timings, room use and the event start and finish.",
+                "Always state a recorded food-service arrangement and the named person responsible for operating or supervising it. For an 'other' arrangement, use its supplied description rather than the generic option label. Do not treat a statement that no additional catering staff are needed as proof that food is self-service.",
+                "If self-service will involve juniors or hot-holding equipment, the event-day instruction must explicitly name the recorded adult supervisor. If none is recorded, identify that as an immediate operational uncertainty.",
+                "Where scoring or results depend on technology, state the recorded setup and fallback in both the preparation and event-day briefing.",
                 "Put only unresolved facts that could affect immediate setup, service, safety or close-down in importantNotes. Do not copy general planning decisions, future organiser actions or deadlines into the staff notice. Do not conceal operational uncertainty.",
                 "Do not mention AI, the Playbook, question identifiers, JSON or the process used to create the briefing."
             }
@@ -186,7 +200,7 @@ public sealed class EventBriefingService(
             {
                 throw new InvalidOperationException("The AI briefing service returned an empty response. Try again in a moment.");
             }
-            return BuildResult(generated, fallback, _options.PromptModel);
+            return BuildResult(generated, fallback, cleanRequest.Answers, _options.PromptModel);
         }
         catch (InvalidOperationException)
         {
@@ -294,10 +308,11 @@ public sealed class EventBriefingService(
     private static EventBriefingResult BuildResult(
         GeneratedBriefing generated,
         EventBriefingResult fallback,
+        IReadOnlyCollection<EventBriefingAnswer> answers,
         string model)
     {
         var staff = generated.StaffBriefing;
-        return new EventBriefingResult
+        var result = new EventBriefingResult
         {
             Mode = "openai",
             Model = model,
@@ -318,6 +333,13 @@ public sealed class EventBriefingService(
                     ImportantNotes = CleanList(staff.ImportantNotes, fallback.StaffBriefing.ImportantNotes, 12)
                 }
         };
+        AddOperationalFacts(answers, result.KeyInformation);
+        AddOperationalStaffActions(
+            answers,
+            result.StaffBriefing.Preparation,
+            result.StaffBriefing.EventDay,
+            result.StaffBriefing.ImportantNotes);
+        return result;
     }
 
     private static EventBriefingResult BuildFallback(EventBriefingRequest request)
@@ -329,6 +351,7 @@ public sealed class EventBriefingService(
         AddFact(facts, "Status", request.Status);
         if (request.ExpectedAttendees > 0) AddFact(facts, "Expected attendance", request.ExpectedAttendees.ToString(CultureInfo.InvariantCulture));
         AddPlannerCateringFacts(request.Answers, facts);
+        AddOperationalFacts(request.Answers, facts);
 
         var sections = request.Answers
             .GroupBy(answer => answer.Module, StringComparer.OrdinalIgnoreCase)
@@ -354,6 +377,7 @@ public sealed class EventBriefingService(
             .ToList();
         var important = new List<string>();
         if (!string.IsNullOrWhiteSpace(request.StatusReason)) important.Insert(0, $"Status note: {request.StatusReason}");
+        AddOperationalStaffActions(request.Answers, preparation, eventDay, important);
 
         return new EventBriefingResult
         {
@@ -463,6 +487,239 @@ public sealed class EventBriefingService(
         }
     }
 
+    private static void AddOperationalFacts(
+        IReadOnlyCollection<EventBriefingAnswer> answers,
+        List<EventBriefingFact> facts)
+    {
+        var operationalFacts = new List<EventBriefingFact>();
+        AddFact(operationalFacts, "Food service arrangement", FoodServiceArrangement(answers));
+        AddFact(operationalFacts, "Food service lead", Answer(answers, FoodServiceOwnerQuestionId));
+
+        var selfServiceRisk = Answer(answers, FoodServiceSelfServiceRiskQuestionId);
+        if (!string.IsNullOrWhiteSpace(selfServiceRisk))
+        {
+            var supervisor = Answer(answers, FoodServiceSelfServiceSupervisorQuestionId);
+            var safeguard = IsAffirmative(selfServiceRisk)
+                ? string.IsNullOrWhiteSpace(supervisor)
+                    ? "Adult supervision required — supervisor not yet named"
+                    : $"Adult supervision required — {supervisor}"
+                : "No additional junior or hot-holding risk recorded";
+            AddFact(operationalFacts, "Self-service safeguard", safeguard);
+        }
+
+        var technologyDependency = Answer(answers, ResultsTechnologyDependentQuestionId);
+        if (IsAffirmative(technologyDependency))
+        {
+            var technologyPlan = Answer(answers, ResultsTechnologyPlanQuestionId);
+            var technologyFact = string.IsNullOrWhiteSpace(technologyPlan)
+                ? "Required — tested setup and fallback not yet recorded"
+                : technologyPlan;
+            AddFact(operationalFacts, "Scoring technology and fallback", technologyFact);
+        }
+
+        var operationalLabels = operationalFacts
+            .Select(fact => fact.Label)
+            .Append("Food service arrangement")
+            .Append("Food service lead")
+            .Append("Self-service safeguard")
+            .Append("Scoring technology dependency")
+            .Append("Scoring technology and fallback")
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        facts.RemoveAll(fact => operationalLabels.Contains(fact.Label));
+        var ordinaryFactLimit = Math.Max(0, MaximumKeyFacts - operationalFacts.Count);
+        if (facts.Count > ordinaryFactLimit) facts.RemoveRange(ordinaryFactLimit, facts.Count - ordinaryFactLimit);
+        facts.AddRange(operationalFacts.Take(MaximumKeyFacts));
+    }
+
+    private static void AddOperationalStaffActions(
+        IReadOnlyCollection<EventBriefingAnswer> answers,
+        List<StaffBriefingAction> preparation,
+        List<StaffBriefingAction> eventDay,
+        List<string> importantNotes)
+    {
+        var serviceArrangement = FoodServiceArrangement(answers);
+        var serviceOwner = Answer(answers, FoodServiceOwnerQuestionId);
+        var selfServiceRisk = IsAffirmative(Answer(answers, FoodServiceSelfServiceRiskQuestionId));
+        var selfServiceSupervisor = Answer(answers, FoodServiceSelfServiceSupervisorQuestionId);
+        var externallyProvided = Answer(answers, "external-food-supplier").Equals("Yes", StringComparison.OrdinalIgnoreCase);
+        var cateringAudience = externallyProvided ? "Supplier liaison / Front of House" : "Kitchen & Catering";
+
+        if (!string.IsNullOrWhiteSpace(serviceArrangement)
+            || !string.IsNullOrWhiteSpace(serviceOwner)
+            || selfServiceRisk)
+        {
+            var serviceInstruction = new List<string>();
+            if (!string.IsNullOrWhiteSpace(serviceArrangement))
+            {
+                serviceInstruction.Add($"Use the agreed food-service arrangement: {serviceArrangement}.");
+            }
+            if (!string.IsNullOrWhiteSpace(serviceOwner))
+            {
+                serviceInstruction.Add($"{serviceOwner} is responsible for operating or supervising the service.");
+            }
+            if (selfServiceRisk && !string.IsNullOrWhiteSpace(selfServiceSupervisor))
+            {
+                serviceInstruction.Add($"{selfServiceSupervisor} is the named adult supervisor for the self-service area involving juniors or hot-holding equipment.");
+            }
+            AddFoodServiceDetails(answers, serviceInstruction);
+            ConsolidateStaffAction(
+                eventDay,
+                IsFoodServiceAction,
+                IsSupersededFoodServiceInstruction,
+                cateringAudience,
+                string.Join(" ", serviceInstruction));
+        }
+
+        if (!string.IsNullOrWhiteSpace(serviceArrangement) && string.IsNullOrWhiteSpace(serviceOwner))
+        {
+            InsertUnique(importantNotes, $"Food service is recorded as {serviceArrangement}, but nobody has been named to operate or supervise it.");
+        }
+        if (IsOtherFoodServiceArrangement(Answer(answers, FoodServiceArrangementQuestionId))
+            && string.IsNullOrWhiteSpace(Answer(answers, FoodServiceArrangementOtherQuestionId)))
+        {
+            InsertUnique(importantNotes, "An alternative food-service arrangement was selected, but its operating detail has not been recorded.");
+        }
+        if (selfServiceRisk && string.IsNullOrWhiteSpace(selfServiceSupervisor))
+        {
+            InsertUnique(importantNotes, "The self-service arrangement involves juniors or hot-holding equipment, but no named adult supervisor has been recorded.");
+        }
+
+        var technologyDependent = IsAffirmative(Answer(answers, ResultsTechnologyDependentQuestionId));
+        var technologyPlan = Answer(answers, ResultsTechnologyPlanQuestionId);
+        if (technologyDependent && !string.IsNullOrWhiteSpace(technologyPlan))
+        {
+            ConsolidateStaffAction(
+                preparation,
+                IsScoringOrResultsAction,
+                IsSupersededScoringInstruction,
+                "Golf Operations",
+                $"Before scoring begins, test the complete scoring and results setup and make the agreed fallback ready: {technologyPlan}.");
+            ConsolidateStaffAction(
+                eventDay,
+                IsScoringOrResultsAction,
+                IsSupersededScoringInstruction,
+                "Golf Operations",
+                $"Collect scores, calculate and produce the final result using the agreed setup; if it is unavailable, follow the recorded fallback: {technologyPlan}.");
+        }
+        else if (technologyDependent)
+        {
+            InsertUnique(importantNotes, "Scoring or results depend on technology, but no tested setup and fallback plan has been recorded.");
+        }
+
+        TrimTo(preparation, MaximumPreparationActions);
+        TrimTo(eventDay, MaximumEventDayActions);
+        TrimTo(importantNotes, MaximumImportantNotes);
+    }
+
+    private static string FoodServiceArrangement(IReadOnlyCollection<EventBriefingAnswer> answers)
+    {
+        var arrangement = Answer(answers, FoodServiceArrangementQuestionId);
+        if (!IsOtherFoodServiceArrangement(arrangement)) return arrangement;
+        var other = Answer(answers, FoodServiceArrangementOtherQuestionId);
+        return string.IsNullOrWhiteSpace(other) ? arrangement : other;
+    }
+
+    private static bool IsOtherFoodServiceArrangement(string value) =>
+        value.Equals("other", StringComparison.OrdinalIgnoreCase)
+        || value.Equals("Other service arrangement", StringComparison.OrdinalIgnoreCase);
+
+    private static void AddFoodServiceDetails(
+        IReadOnlyCollection<EventBriefingAnswer> answers,
+        List<string> instructions)
+    {
+        var covers = Answer(answers, "catering-covers");
+        var menu = Answer(answers, "agreed-menu-choices");
+        var mealTime = Answer(answers, "meal-service-time");
+        var dietary = Answer(answers, "dietary-requirements-summary");
+        if (!string.IsNullOrWhiteSpace(covers)) instructions.Add($"Prepare service for {covers}.");
+        if (!string.IsNullOrWhiteSpace(menu)) instructions.Add($"Serve the agreed menu: {menu}.");
+        if (!string.IsNullOrWhiteSpace(mealTime)) instructions.Add($"Begin food service at {mealTime}.");
+        if (!string.IsNullOrWhiteSpace(dietary)) instructions.Add($"Follow the recorded dietary and alternative-meal requirements: {dietary}.");
+    }
+
+    private static bool IsFoodServiceAction(StaffBriefingAction action)
+    {
+        var audience = action.Audience;
+        var instruction = action.Instruction;
+        var cateringAudience = audience.Contains("Kitchen", StringComparison.OrdinalIgnoreCase)
+            || audience.Contains("Catering", StringComparison.OrdinalIgnoreCase)
+            || audience.Contains("Food", StringComparison.OrdinalIgnoreCase)
+            || audience.Contains("Supplier", StringComparison.OrdinalIgnoreCase)
+            || audience.Contains("Front of House", StringComparison.OrdinalIgnoreCase);
+        var foodInstruction = instruction.Contains("food", StringComparison.OrdinalIgnoreCase)
+            || instruction.Contains("meal", StringComparison.OrdinalIgnoreCase)
+            || instruction.Contains("menu", StringComparison.OrdinalIgnoreCase)
+            || instruction.Contains("catering service", StringComparison.OrdinalIgnoreCase)
+            || instruction.Contains("service arrangement", StringComparison.OrdinalIgnoreCase)
+            || instruction.Contains("bain-marie", StringComparison.OrdinalIgnoreCase)
+            || instruction.Contains("buffet", StringComparison.OrdinalIgnoreCase);
+        return cateringAudience && foodInstruction;
+    }
+
+    private static bool IsScoringOrResultsAction(StaffBriefingAction action)
+    {
+        var operationalAudience = action.Audience.Contains("Golf", StringComparison.OrdinalIgnoreCase)
+            || action.Audience.Contains("Scoring", StringComparison.OrdinalIgnoreCase)
+            || action.Audience.Contains("Results", StringComparison.OrdinalIgnoreCase)
+            || action.Audience.Contains("Professional Shop", StringComparison.OrdinalIgnoreCase);
+        var scoringInstruction = action.Instruction.Contains("scor", StringComparison.OrdinalIgnoreCase)
+            || action.Instruction.Contains("result", StringComparison.OrdinalIgnoreCase)
+            || action.Instruction.Contains("fallback", StringComparison.OrdinalIgnoreCase);
+        return operationalAudience && scoringInstruction;
+    }
+
+    private static bool IsSupersededFoodServiceInstruction(string instruction) =>
+        instruction.Equals(
+            "The named food-service owner operates or supervises the recorded service arrangement, keeps the required serving positions covered, and serves the agreed meal choices at the recorded time, including confirmed dietary alternatives.",
+            StringComparison.OrdinalIgnoreCase);
+
+    private static bool IsSupersededScoringInstruction(string instruction) =>
+        instruction.Equals(
+            "Before scoring begins, check the intended device, login, power and primary and alternative connections, and keep the agreed offline or paper fallback ready.",
+            StringComparison.OrdinalIgnoreCase)
+        || instruction.Equals(
+            "Collect scores, calculate the results and have the final result ready for the presentation.",
+            StringComparison.OrdinalIgnoreCase);
+
+    private static void ConsolidateStaffAction(
+        List<StaffBriefingAction> actions,
+        Func<StaffBriefingAction, bool> concernMatcher,
+        Func<string, bool> isSupersededInstruction,
+        string fallbackAudience,
+        string instruction)
+    {
+        var matching = actions.Where(concernMatcher).ToList();
+        var audience = matching.FirstOrDefault()?.Audience ?? fallbackAudience;
+        var notes = new List<string>();
+        var additionalInstructions = new List<string>();
+        foreach (var action in matching)
+        {
+            var (body, eventSpecificNote) = SplitEventSpecificNote(action.Instruction);
+            if (!string.IsNullOrWhiteSpace(eventSpecificNote)) notes.Add(eventSpecificNote);
+            if (!string.IsNullOrWhiteSpace(body)
+                && !body.Equals(instruction, StringComparison.OrdinalIgnoreCase)
+                && !isSupersededInstruction(body)) additionalInstructions.Add(body);
+        }
+        actions.RemoveAll(action => concernMatcher(action));
+        var combined = new[] { instruction }
+            .Concat(notes.Distinct(StringComparer.OrdinalIgnoreCase))
+            .Concat(additionalInstructions.Distinct(StringComparer.OrdinalIgnoreCase));
+        actions.Insert(0, new StaffBriefingAction
+        {
+            Audience = audience,
+            Instruction = TrimTo(string.Join(" ", combined), 1_500)
+        });
+    }
+
+    private static (string Body, string EventSpecificNote) SplitEventSpecificNote(string instruction)
+    {
+        const string marker = "Event-specific note:";
+        var index = instruction.IndexOf(marker, StringComparison.OrdinalIgnoreCase);
+        return index < 0
+            ? (instruction.Trim(), string.Empty)
+            : (instruction[..index].Trim(), instruction[index..].Trim());
+    }
+
     private static string StaffInstruction(EventBriefingTask task)
     {
         var instruction = Prefer(task.StaffBriefingInstruction, task.Title);
@@ -514,6 +771,21 @@ public sealed class EventBriefingService(
     {
         if (!string.IsNullOrWhiteSpace(value)) facts.Add(new EventBriefingFact { Label = label, Value = value });
     }
+
+    private static void InsertUnique(List<string> values, string value)
+    {
+        values.RemoveAll(existing => existing.Equals(value, StringComparison.OrdinalIgnoreCase));
+        values.Insert(0, value);
+    }
+
+    private static void TrimTo<T>(List<T> values, int maximum)
+    {
+        if (values.Count > maximum) values.RemoveRange(maximum, values.Count - maximum);
+    }
+
+    private static bool IsAffirmative(string value) =>
+        value.Equals("Yes", StringComparison.OrdinalIgnoreCase)
+        || value.Equals("True", StringComparison.OrdinalIgnoreCase);
 
     private static List<EventBriefingFact> CleanFacts(
         List<EventBriefingFact>? values,
