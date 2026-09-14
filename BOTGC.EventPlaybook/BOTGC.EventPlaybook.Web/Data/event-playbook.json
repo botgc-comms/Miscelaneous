@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "3.5",
+  "schemaVersion": "3.6",
   "id": "botgc-event-playbook",
   "title": "Event Playbook",
   "description": "A data-driven event planning guide that turns answers into dated, assignable tasks, operational advisories and reusable event knowledge.",
@@ -1050,6 +1050,86 @@
               "label": "Will results need to be calculated, published or announced on the day?",
               "required": true,
               "source": "refined"
+            },
+            {
+              "id": "golf-results-technology-dependent",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will collecting scores or producing the result depend on an app, device, online service or network connection?",
+              "helpText": "Choose Yes whenever an essential part of score collection, calculation, publication or presentation could be prevented by a device, account, power or connectivity failure.",
+              "example": "Using an app to record winners or calculate the final result requires a tested device, login and connection, even if paper cards are also collected.",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "golf-results-required",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "golf-results-technology-plan",
+              "type": "question",
+              "answerType": "text",
+              "label": "What technology will be used and what is the working fallback if it is unavailable?",
+              "helpText": "Record the app or service, intended device and operator, required login, power arrangements, how connectivity will be tested in the venue under expected load, an alternative connection, offline or paper score capture and a manual calculation or announcement fallback.",
+              "example": "Professional Shop tablet using the scoring app; login checked; charger ready; test clubhouse Wi-Fi and mobile data; retain paper cards and a manual results sheet.",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "golf-results-technology-dependent",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "prepare-golf-results-technology",
+              "type": "task",
+              "title": "Test the golf-results technology and prepare a working fallback",
+              "detail": "Test the complete scoring and results workflow using the intended device and user account in the venue. Confirm login access, battery or power, connectivity under expected event load, an independent alternative connection, offline or paper score capture and a workable manual calculation and announcement fallback.",
+              "deadlineCode": "B2",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "golf-results-required",
+                    "operator": "equals",
+                    "value": true
+                  },
+                  {
+                    "questionId": "golf-results-technology-dependent",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Golf Operations",
+              "defaultOwnerRoleId": "professional-shop",
+              "reviewSummary": {
+                "title": "Golf-results technology and fallback",
+                "instruction": "Confirm the complete workflow has been tested and that the recorded fallback can produce a result without the primary device, service or connection.",
+                "confirmLabel": "Confirm technology and fallback",
+                "confirmedLabel": "Technology and fallback confirmed",
+                "fields": [
+                  {
+                    "questionId": "golf-results-technology-plan",
+                    "label": "Technology and fallback plan",
+                    "emptyText": "Record and test the complete technology and fallback plan"
+                  }
+                ]
+              },
+              "staffBriefing": {
+                "phase": "before-event",
+                "audience": "Golf Operations",
+                "instruction": "Before scoring begins, check the intended device, login, power and primary and alternative connections, and keep the agreed offline or paper fallback ready."
+              }
             },
             {
               "id": "results-task",
@@ -3247,8 +3327,9 @@
               "id": "external-food-service-liaison-task",
               "type": "task",
               "title": "Provide event-day liaison for the external food supplier",
-              "detail": "Be the supplier's named club contact during setup and service, coordinate with the bar and front-of-house teams, and resolve or escalate operational problems.",
+              "detail": "Be the named club owner for the recorded service arrangement during supplier setup and service, coordinate with the bar and front-of-house teams, and resolve or escalate operational problems.",
               "deadlineCode": "DT",
+              "ownerFromQuestionId": "food-service-owner",
               "showWhen": {
                 "all": [
                   {
@@ -3278,10 +3359,55 @@
               "source": "refined",
               "responsibleArea": "Food & Beverage",
               "defaultOwnerRoleId": "food-beverage-manager",
+              "reviewSummary": {
+                "title": "External food-service ownership",
+                "instruction": "The named club owner confirms how guests will receive the food and supervises the supplier's delivery of that arrangement.",
+                "confirmLabel": "Confirm supplier service",
+                "confirmedLabel": "Supplier service confirmed",
+                "fields": [
+                  {
+                    "questionId": "catering-covers",
+                    "label": "Covers"
+                  },
+                  {
+                    "questionId": "agreed-menu-choices",
+                    "label": "Menu"
+                  },
+                  {
+                    "questionId": "meal-service-time",
+                    "label": "Service time"
+                  },
+                  {
+                    "questionId": "dietary-requirements-summary",
+                    "label": "Dietary and allergen requirements"
+                  },
+                  {
+                    "questionId": "food-service-arrangement",
+                    "label": "Service arrangement"
+                  },
+                  {
+                    "questionId": "food-service-arrangement-other",
+                    "label": "Other service arrangement"
+                  },
+                  {
+                    "questionId": "food-service-owner",
+                    "label": "Named club service owner",
+                    "emptyText": "Choose the person or role responsible on the day"
+                  },
+                  {
+                    "questionId": "food-service-self-service-risk",
+                    "label": "Juniors or hot-holding equipment involved"
+                  },
+                  {
+                    "questionId": "food-service-self-service-supervisor",
+                    "label": "Named adult supervisor"
+                  }
+                ]
+              },
               "staffBriefing": {
                 "phase": "event-day",
                 "audience": "Supplier liaison / Front of House",
-                "instruction": "Act as the external food supplier's club contact throughout setup and service, confirm the recorded covers, menu, service time and dietary requirements, and coordinate any changes with the event lead."
+                "instruction": "The named food-service owner acts as the external supplier's club contact throughout setup and the recorded service arrangement, confirms the covers, menu, service time and dietary requirements, and coordinates any changes with the event lead."
               }
             },
             {
@@ -3293,47 +3419,6 @@
                 "all": [
                   {
                     "questionId": "external-food-supplier",
-                    "operator": "equals",
-                    "value": true
-                  }
-                ]
-              },
-              "source": "pdf",
-              "responsibleArea": "Food & Beverage",
-              "defaultOwnerRoleId": "food-beverage-manager"
-            },
-            {
-              "id": "additional-food-staff",
-              "type": "question",
-              "answerType": "yesNo",
-              "label": "Will we need additional staff to assist with food preparation or serving?",
-              "showWhen": {
-                "all": [
-                  {
-                    "questionId": "food-prepared",
-                    "operator": "equals",
-                    "value": true
-                  },
-                  {
-                    "questionId": "external-food-supplier",
-                    "operator": "equals",
-                    "value": false
-                  }
-                ]
-              },
-              "required": true,
-              "source": "pdf"
-            },
-            {
-              "id": "food-staff-task",
-              "type": "task",
-              "title": "Coordinate roles and shifts for additional food preparation or serving staff",
-              "deadlineCode": "B3",
-              "detail": "Confirm schedules, specific roles and any required training or briefing for additional helpers working in the kitchen.",
-              "showWhen": {
-                "all": [
-                  {
-                    "questionId": "additional-food-staff",
                     "operator": "equals",
                     "value": true
                   }
@@ -3433,6 +3518,200 @@
               "source": "refined"
             },
             {
+              "id": "food-service-arrangement",
+              "type": "question",
+              "answerType": "singleChoice",
+              "label": "How will attendees receive the food?",
+              "helpText": "Choose the principal service arrangement. For a buffet, hot-food station or other service point, state whether it will be staffed rather than assuming guests will serve themselves.",
+              "example": "Food for juniors from a hot-food station should normally be recorded as a staffed service point, with a named person or role responsible for operating or supervising it.",
+              "options": [
+                {
+                  "value": "table-service",
+                  "label": "Table service"
+                },
+                {
+                  "value": "staffed-service-point",
+                  "label": "Staffed buffet, hot-food station or service point"
+                },
+                {
+                  "value": "self-service",
+                  "label": "Self-service buffet or service point"
+                },
+                {
+                  "value": "pre-portioned-collection",
+                  "label": "Pre-portioned or individually handed-out food"
+                },
+                {
+                  "value": "external-supplier-service",
+                  "label": "Service managed by the external food supplier"
+                },
+                {
+                  "value": "other",
+                  "label": "Other service arrangement"
+                }
+              ],
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "food-prepared",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "food-service-arrangement-other",
+              "type": "question",
+              "answerType": "text",
+              "label": "Describe the food-service arrangement",
+              "helpText": "Explain how attendees will receive the food and whether a server or supervisor must remain at the service point.",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "food-service-arrangement",
+                    "operator": "equals",
+                    "value": "other"
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "food-service-self-service-risk",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will juniors use the self-service arrangement, or will it involve hot-holding equipment?",
+              "helpText": "Choose Yes if either condition applies. A named adult must then supervise the service point; do not assume children can safely serve themselves or that hot food can be left unattended.",
+              "example": "A self-service buffet used by juniors, or any self-service point using a bain-marie or another heated unit, requires a named adult supervisor.",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "food-service-arrangement",
+                    "operator": "equals",
+                    "value": "self-service"
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "food-service-self-service-supervisor",
+              "type": "question",
+              "answerType": "assignment",
+              "assignmentMode": "person",
+              "label": "Which named adult will supervise the self-service area?",
+              "helpText": "Choose the adult who will remain responsible while the service point is in use and will prevent unsafe or unsuitable self-service.",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "food-service-self-service-risk",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "food-service-owner",
+              "type": "question",
+              "answerType": "assignment",
+              "assignmentMode": "personOrRole",
+              "label": "Who is the club's accountable person or role for operating or supervising food service on the day?",
+              "helpText": "Choose a named person where possible, or the responsible club role. They own an internal service and provide oversight and liaison when the service is managed by an external supplier. This ownership is required even when the normal rota is sufficient.",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "food-prepared",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "additional-food-staff",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Will the normal rota need additional or changed cover to prepare, serve or supervise the food?",
+              "helpText": "Include earlier starts, longer shifts, a staffed service point or a role that cannot be left unattended. Answer No only when the normal rota provides enough cover; a named food-service owner is still required.",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "food-prepared",
+                    "operator": "equals",
+                    "value": true
+                  },
+                  {
+                    "questionId": "external-food-supplier",
+                    "operator": "equals",
+                    "value": false
+                  }
+                ]
+              },
+              "required": true,
+              "source": "pdf"
+            },
+            {
+              "id": "food-staff-task",
+              "type": "task",
+              "title": "Coordinate additional or changed roles and shifts for food preparation, service and supervision",
+              "deadlineCode": "B3",
+              "detail": "Confirm schedules, service-point cover, specific preparation, serving and supervision duties, and any required training or briefing for the additional or changed rota.",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "additional-food-staff",
+                    "operator": "equals",
+                    "value": true
+                  }
+                ]
+              },
+              "reviewSummary": {
+                "title": "Food-service rota and cover",
+                "instruction": "Confirm the rota covers the recorded service arrangement, named ownership and any required adult supervision.",
+                "confirmLabel": "Confirm food-service cover",
+                "confirmedLabel": "Food-service cover confirmed",
+                "fields": [
+                  {
+                    "questionId": "food-service-arrangement",
+                    "label": "Service arrangement"
+                  },
+                  {
+                    "questionId": "food-service-arrangement-other",
+                    "label": "Other service arrangement"
+                  },
+                  {
+                    "questionId": "food-service-owner",
+                    "label": "Named service owner"
+                  },
+                  {
+                    "questionId": "food-service-self-service-risk",
+                    "label": "Juniors or hot-holding equipment involved"
+                  },
+                  {
+                    "questionId": "food-service-self-service-supervisor",
+                    "label": "Named adult supervisor"
+                  },
+                  {
+                    "questionId": "additional-food-staff",
+                    "label": "Additional or changed rota cover required"
+                  }
+                ]
+              },
+              "source": "pdf",
+              "responsibleArea": "Food & Beverage",
+              "defaultOwnerRoleId": "food-beverage-manager"
+            },
+            {
               "id": "dietary-requirements-summary",
               "type": "question",
               "answerType": "text",
@@ -3453,7 +3732,8 @@
             {
               "id": "food-service-readiness-task",
               "type": "task",
-              "title": "Complete the kitchen and food-service setup for the agreed menu",
+              "title": "Complete the kitchen and food-service setup for the agreed menu and service arrangement",
+              "detail": "Set up the kitchen and service area for the recorded covers, menu, timing and service method. Confirm that the named service owner has accepted responsibility and that every serving or supervision position is covered.",
               "deadlineCode": "B1",
               "showWhen": {
                 "all": [
@@ -3484,17 +3764,64 @@
               "source": "refined",
               "responsibleArea": "Food & Beverage",
               "defaultOwnerRoleId": "food-beverage-manager",
+              "reviewSummary": {
+                "title": "Food-service setup and ownership",
+                "instruction": "The named food-service owner checks that the preparation and service setup supports the recorded service method before confirming readiness.",
+                "confirmLabel": "Confirm food-service readiness",
+                "confirmedLabel": "Food-service readiness confirmed",
+                "fields": [
+                  {
+                    "questionId": "catering-covers",
+                    "label": "Covers"
+                  },
+                  {
+                    "questionId": "agreed-menu-choices",
+                    "label": "Menu"
+                  },
+                  {
+                    "questionId": "meal-service-time",
+                    "label": "Service time"
+                  },
+                  {
+                    "questionId": "dietary-requirements-summary",
+                    "label": "Dietary and allergen requirements"
+                  },
+                  {
+                    "questionId": "food-service-arrangement",
+                    "label": "Service arrangement"
+                  },
+                  {
+                    "questionId": "food-service-arrangement-other",
+                    "label": "Other service arrangement"
+                  },
+                  {
+                    "questionId": "food-service-owner",
+                    "label": "Named service owner",
+                    "emptyText": "Choose the person or role responsible on the day"
+                  },
+                  {
+                    "questionId": "food-service-self-service-risk",
+                    "label": "Juniors or hot-holding equipment involved"
+                  },
+                  {
+                    "questionId": "food-service-self-service-supervisor",
+                    "label": "Named adult supervisor"
+                  }
+                ]
+              },
               "staffBriefing": {
                 "phase": "before-event",
                 "audience": "Kitchen & Catering",
-                "instruction": "Complete food preparation and service setup for the recorded covers, menu choices, service time and dietary requirements."
+                "instruction": "The named food-service owner completes preparation and service setup for the recorded service arrangement, covers, menu choices, service time and dietary requirements, and confirms every serving or supervision position is covered."
               }
             },
             {
               "id": "event-day-food-service-task",
               "type": "task",
-              "title": "Prepare and serve the agreed event menu",
+              "title": "Operate the agreed food service and serve the event menu",
+              "detail": "The named service owner operates or supervises the recorded service arrangement, keeps every required serving position covered and ensures guests receive the agreed menu safely at the recorded time.",
               "deadlineCode": "DT",
+              "ownerFromQuestionId": "food-service-owner",
               "showWhen": {
                 "all": [
                   {
@@ -3524,10 +3851,55 @@
               "source": "refined",
               "responsibleArea": "Food & Beverage",
               "defaultOwnerRoleId": "food-beverage-manager",
+              "reviewSummary": {
+                "title": "Event-day food service",
+                "instruction": "The named food-service owner confirms the recorded method was operated and supervised throughout service.",
+                "confirmLabel": "Sign off food service",
+                "confirmedLabel": "Food service completed",
+                "fields": [
+                  {
+                    "questionId": "catering-covers",
+                    "label": "Covers"
+                  },
+                  {
+                    "questionId": "agreed-menu-choices",
+                    "label": "Menu"
+                  },
+                  {
+                    "questionId": "meal-service-time",
+                    "label": "Service time"
+                  },
+                  {
+                    "questionId": "dietary-requirements-summary",
+                    "label": "Dietary and allergen requirements"
+                  },
+                  {
+                    "questionId": "food-service-arrangement",
+                    "label": "Service arrangement"
+                  },
+                  {
+                    "questionId": "food-service-arrangement-other",
+                    "label": "Other service arrangement"
+                  },
+                  {
+                    "questionId": "food-service-owner",
+                    "label": "Named service owner",
+                    "emptyText": "Choose the person or role responsible on the day"
+                  },
+                  {
+                    "questionId": "food-service-self-service-risk",
+                    "label": "Juniors or hot-holding equipment involved"
+                  },
+                  {
+                    "questionId": "food-service-self-service-supervisor",
+                    "label": "Named adult supervisor"
+                  }
+                ]
+              },
               "staffBriefing": {
                 "phase": "event-day",
                 "audience": "Kitchen & Catering",
-                "instruction": "Prepare and serve the agreed meal choices at the recorded service time, including the confirmed dietary alternatives."
+                "instruction": "The named food-service owner operates or supervises the recorded service arrangement, keeps the required serving positions covered, and serves the agreed meal choices at the recorded time, including confirmed dietary alternatives."
               }
             },
             {

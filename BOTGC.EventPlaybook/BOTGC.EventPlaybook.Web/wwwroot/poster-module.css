@@ -749,6 +749,14 @@
     grid-column: 1 / -1;
     align-self: end;
     justify-self: start;
+}.poster-studio .share-action-buttons{
+    display: flex;
+    grid-column: 1 / -1;
+    align-self: end;
+    flex-wrap: wrap;
+    gap: 8px;
+}.poster-studio .share-action-buttons .button{
+    grid-column: auto;
 }.poster-studio .share-action-status{
     display: inline-flex;
     margin-top: 9px;

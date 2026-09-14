@@ -215,6 +215,45 @@ public sealed class YodeckPublishResult
     public required int ScreenCount { get; init; }
 }
 
+public sealed class TakeDownRequest
+{
+    public required string EventId { get; init; }
+
+    public required string EventName { get; init; }
+
+    public long? MediaId { get; init; }
+}
+
+public sealed class YodeckTakeDownCommand
+{
+    public required string EventId { get; init; }
+
+    public required string EventName { get; init; }
+
+    public long? KnownMediaId { get; init; }
+}
+
+public sealed class YodeckTakeDownResult
+{
+    public required long PlaylistId { get; init; }
+
+    public required string PlaylistName { get; init; }
+
+    public required bool PlaylistWasChanged { get; init; }
+
+    public required int RemovedPlaylistEntries { get; init; }
+
+    public required IReadOnlyList<long> RetainedMediaIds { get; init; }
+
+    public required bool ScreenPushRequested { get; init; }
+
+    public required bool ScreenPushConfirmed { get; init; }
+
+    public required string ScreenPushStatus { get; init; }
+
+    public required int ScreenCount { get; init; }
+}
+
 public sealed class MemberDiaryPublishRequest
 {
     public required string EventId { get; init; }

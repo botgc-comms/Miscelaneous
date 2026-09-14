@@ -1380,6 +1380,60 @@ app.MapPost("/api/poster/publish", async (
     }
 });
 
+app.MapPost("/api/poster/take-down", async (
+    TakeDownRequest request,
+    IYodeckPublisher yodeckPublisher,
+    CancellationToken cancellationToken) =>
+{
+    if (string.IsNullOrWhiteSpace(request.EventId) ||
+        string.IsNullOrWhiteSpace(request.EventName))
+    {
+        return Results.BadRequest(new { error = "Event ID and event name are required to take artwork down from the clubhouse screens." });
+    }
+
+    if (request.MediaId is <= 0)
+    {
+        return Results.BadRequest(new { error = "The clubhouse-screen media ID must be a positive number." });
+    }
+
+    try
+    {
+        var result = await yodeckPublisher.TakeDownAsync(new YodeckTakeDownCommand
+        {
+            EventId = request.EventId.Trim(),
+            EventName = request.EventName.Trim(),
+            KnownMediaId = request.MediaId
+        }, cancellationToken);
+
+        return Results.Ok(new
+        {
+            success = true,
+            eventName = request.EventName,
+            clubhouseScreens = new
+            {
+                destinationName = result.PlaylistName,
+                operation = "taken-down",
+                playlistChanged = result.PlaylistWasChanged,
+                removedPlaylistEntries = result.RemovedPlaylistEntries,
+                mediaRetained = true,
+                retainedMediaCount = result.RetainedMediaIds.Count,
+                pushRequested = result.ScreenPushRequested,
+                pushConfirmed = result.ScreenPushConfirmed,
+                pushStatus = result.ScreenPushStatus,
+                screenCount = result.ScreenCount
+            }
+        });
+    }
+    catch (InvalidOperationException exception)
+    {
+        return Results.Problem(
+            exception.Message,
+            statusCode: yodeckPublisher.IsConfigured
+                ? StatusCodes.Status502BadGateway
+                : StatusCodes.Status503ServiceUnavailable);
+    }
+});
+
 app.MapPost("/api/poster/member-diary/draft", async (
     MemberDiaryDraftRequest draft,
     HttpRequest httpRequest,

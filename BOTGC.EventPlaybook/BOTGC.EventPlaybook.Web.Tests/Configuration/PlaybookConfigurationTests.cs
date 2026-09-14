@@ -18,7 +18,7 @@ public sealed class PlaybookConfigurationTests
 
         using var document = JsonDocument.Parse(dataJson);
         var root = document.RootElement;
-        Assert.Equal("3.5", root.GetProperty("schemaVersion").GetString());
+        Assert.Equal("3.6", root.GetProperty("schemaVersion").GetString());
 
         var closeDownQuestion = FindItem(root, "general-close-down-required");
         var context = closeDownQuestion.GetProperty("planningContext");
@@ -161,6 +161,172 @@ public sealed class PlaybookConfigurationTests
         Assert.False(ContainsItem(root, "admission-price-details"));
         Assert.False(ContainsItem(root, "complimentary-admission"));
         Assert.False(ContainsItem(root, "complimentary-admission-details"));
+    }
+
+    [Fact]
+    public void FoodServiceAndGolfResultsCaptureOperationalOwnershipAndResilience()
+    {
+        var solutionRoot = FindSolutionRoot();
+        var dataPath = Path.Combine(solutionRoot, "BOTGC.EventPlaybook.Web", "Data", "event-playbook.json");
+        var publicPath = Path.Combine(solutionRoot, "BOTGC.EventPlaybook.Web", "wwwroot", "event-playbook.json");
+        var dataJson = File.ReadAllText(dataPath);
+
+        Assert.Equal(dataJson, File.ReadAllText(publicPath));
+
+        using var document = JsonDocument.Parse(dataJson);
+        var root = document.RootElement;
+
+        var serviceArrangement = FindItem(root, "food-service-arrangement");
+        Assert.Equal("singleChoice", serviceArrangement.GetProperty("answerType").GetString());
+        Assert.True(serviceArrangement.GetProperty("required").GetBoolean());
+        Assert.True(ContainsCondition(serviceArrangement.GetProperty("showWhen"), "food-prepared", "equals", true));
+        var serviceOptions = serviceArrangement.GetProperty("options")
+            .EnumerateArray()
+            .Select(option => option.GetProperty("value").GetString())
+            .ToArray();
+        Assert.Contains("staffed-service-point", serviceOptions);
+        Assert.Contains("self-service", serviceOptions);
+        Assert.Contains("table-service", serviceOptions);
+
+        var otherArrangement = FindItem(root, "food-service-arrangement-other");
+        Assert.Equal("text", otherArrangement.GetProperty("answerType").GetString());
+        Assert.True(otherArrangement.GetProperty("required").GetBoolean());
+        Assert.True(ContainsCondition(otherArrangement.GetProperty("showWhen"), "food-service-arrangement", "equals", "other"));
+
+        var selfServiceRisk = FindItem(root, "food-service-self-service-risk");
+        Assert.Equal("yesNo", selfServiceRisk.GetProperty("answerType").GetString());
+        Assert.True(selfServiceRisk.GetProperty("required").GetBoolean());
+        Assert.True(ContainsCondition(selfServiceRisk.GetProperty("showWhen"), "food-service-arrangement", "equals", "self-service"));
+        Assert.Contains("juniors", selfServiceRisk.GetProperty("label").GetString(), StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("hot-holding", selfServiceRisk.GetProperty("label").GetString(), StringComparison.OrdinalIgnoreCase);
+
+        var selfServiceSupervisor = FindItem(root, "food-service-self-service-supervisor");
+        Assert.Equal("assignment", selfServiceSupervisor.GetProperty("answerType").GetString());
+        Assert.Equal("person", selfServiceSupervisor.GetProperty("assignmentMode").GetString());
+        Assert.True(selfServiceSupervisor.GetProperty("required").GetBoolean());
+        Assert.True(ContainsCondition(selfServiceSupervisor.GetProperty("showWhen"), "food-service-self-service-risk", "equals", true));
+
+        var serviceOwner = FindItem(root, "food-service-owner");
+        Assert.Equal("assignment", serviceOwner.GetProperty("answerType").GetString());
+        Assert.Equal("personOrRole", serviceOwner.GetProperty("assignmentMode").GetString());
+        Assert.True(serviceOwner.GetProperty("required").GetBoolean());
+        Assert.True(ContainsCondition(serviceOwner.GetProperty("showWhen"), "food-prepared", "equals", true));
+
+        var additionalCover = FindItem(root, "additional-food-staff");
+        Assert.Contains("normal rota", additionalCover.GetProperty("label").GetString());
+        Assert.Contains("serve or supervise", additionalCover.GetProperty("label").GetString());
+
+        var cateringModule = FindModule(root, "catering");
+        var menuItems = cateringModule.GetProperty("sections")
+            .EnumerateArray()
+            .Single(section => section.GetProperty("id").GetString() == "menu")
+            .GetProperty("items")
+            .EnumerateArray()
+            .Select(item => item.GetProperty("id").GetString())
+            .ToList();
+        Assert.Equal(menuItems.IndexOf("food-service-arrangement") + 1, menuItems.IndexOf("food-service-arrangement-other"));
+        Assert.True(menuItems.IndexOf("food-service-self-service-risk") < menuItems.IndexOf("food-service-self-service-supervisor"));
+        Assert.True(menuItems.IndexOf("food-service-self-service-supervisor") < menuItems.IndexOf("food-service-owner"));
+        Assert.True(menuItems.IndexOf("food-service-owner") < menuItems.IndexOf("additional-food-staff"));
+        Assert.True(menuItems.IndexOf("additional-food-staff") < menuItems.IndexOf("food-staff-task"));
+
+        var commonFoodReviewFields = new[]
+        {
+            "catering-covers",
+            "agreed-menu-choices",
+            "meal-service-time",
+            "dietary-requirements-summary",
+            "food-service-arrangement",
+            "food-service-arrangement-other",
+            "food-service-owner",
+            "food-service-self-service-risk",
+            "food-service-self-service-supervisor"
+        };
+        foreach (var taskId in new[]
+        {
+            "external-food-service-liaison-task",
+            "food-service-readiness-task",
+            "event-day-food-service-task"
+        })
+        {
+            var task = FindItem(root, taskId);
+            var visibility = task.GetProperty("showWhen");
+            Assert.True(ReferencesQuestion(visibility, "food-prepared"));
+            Assert.True(ReferencesQuestion(visibility, "catering-covers"));
+            Assert.True(ReferencesQuestion(visibility, "agreed-menu-choices"));
+            Assert.True(ReferencesQuestion(visibility, "meal-service-time"));
+            foreach (var newQuestionId in new[]
+            {
+                "food-service-arrangement",
+                "food-service-arrangement-other",
+                "food-service-owner",
+                "food-service-self-service-risk",
+                "food-service-self-service-supervisor"
+            })
+            {
+                Assert.False(ReferencesQuestion(visibility, newQuestionId));
+            }
+
+            var reviewFieldIds = task.GetProperty("reviewSummary").GetProperty("fields")
+                .EnumerateArray()
+                .Select(field => field.GetProperty("questionId").GetString())
+                .ToArray();
+            foreach (var fieldId in commonFoodReviewFields)
+            {
+                Assert.Contains(fieldId, reviewFieldIds);
+            }
+            Assert.Contains("named food-service owner", task.GetProperty("staffBriefing").GetProperty("instruction").GetString(), StringComparison.OrdinalIgnoreCase);
+        }
+
+        Assert.Equal("food-service-owner", FindItem(root, "external-food-service-liaison-task").GetProperty("ownerFromQuestionId").GetString());
+        Assert.False(FindItem(root, "food-service-readiness-task").TryGetProperty("ownerFromQuestionId", out _));
+        Assert.Equal("food-service-owner", FindItem(root, "event-day-food-service-task").GetProperty("ownerFromQuestionId").GetString());
+
+        var foodStaffTask = FindItem(root, "food-staff-task");
+        Assert.False(foodStaffTask.TryGetProperty("ownerFromQuestionId", out _));
+        var staffReviewFields = foodStaffTask.GetProperty("reviewSummary").GetProperty("fields")
+            .EnumerateArray()
+            .Select(field => field.GetProperty("questionId").GetString())
+            .ToArray();
+        foreach (var fieldId in new[]
+        {
+            "food-service-arrangement",
+            "food-service-arrangement-other",
+            "food-service-owner",
+            "food-service-self-service-risk",
+            "food-service-self-service-supervisor",
+            "additional-food-staff"
+        })
+        {
+            Assert.Contains(fieldId, staffReviewFields);
+        }
+
+        var technologyDependency = FindItem(root, "golf-results-technology-dependent");
+        Assert.Equal("yesNo", technologyDependency.GetProperty("answerType").GetString());
+        Assert.True(technologyDependency.GetProperty("required").GetBoolean());
+        Assert.True(ContainsCondition(technologyDependency.GetProperty("showWhen"), "golf-results-required", "equals", true));
+
+        var technologyPlan = FindItem(root, "golf-results-technology-plan");
+        Assert.Equal("text", technologyPlan.GetProperty("answerType").GetString());
+        Assert.True(technologyPlan.GetProperty("required").GetBoolean());
+        Assert.True(ContainsCondition(technologyPlan.GetProperty("showWhen"), "golf-results-technology-dependent", "equals", true));
+
+        var readinessTask = FindItem(root, "prepare-golf-results-technology");
+        Assert.Equal("B2", readinessTask.GetProperty("deadlineCode").GetString());
+        Assert.True(ContainsCondition(readinessTask.GetProperty("showWhen"), "golf-results-required", "equals", true));
+        Assert.True(ContainsCondition(readinessTask.GetProperty("showWhen"), "golf-results-technology-dependent", "equals", true));
+        var readinessDetail = readinessTask.GetProperty("detail").GetString();
+        foreach (var requirement in new[] { "login", "power", "expected event load", "alternative connection", "paper", "manual calculation" })
+        {
+            Assert.Contains(requirement, readinessDetail, StringComparison.OrdinalIgnoreCase);
+        }
+        Assert.Contains(
+            readinessTask.GetProperty("reviewSummary").GetProperty("fields").EnumerateArray(),
+            field => field.GetProperty("questionId").GetString() == "golf-results-technology-plan");
+
+        var resultsTask = FindItem(root, "results-task");
+        Assert.Equal("B1", resultsTask.GetProperty("deadlineCode").GetString());
+        Assert.False(resultsTask.TryGetProperty("reviewSummary", out _));
     }
 
     private static bool ContainsItem(JsonElement root, string itemId)
