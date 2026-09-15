@@ -1,3 +1,4 @@
+import { publicOrigin } from '@/lib/server';
 import {
   context,
   mutate,
@@ -52,7 +53,7 @@ export async function POST(req: Request) {
         throw e;
       }
       return json({
-        link: `${new URL(req.url).origin}/?join=${token}`,
+        link: `${publicOrigin(req)}/?join=${token}`,
         emailReady: emailReady(),
         id: result.state.invites.at(-1)?.id,
       });
@@ -79,7 +80,7 @@ export async function POST(req: Request) {
       if (!(await saveCAS(c.row, c.state)))
         throw new AppError('Another change arrived. Please try again.', 409);
     }
-    const link = `${new URL(req.url).origin}/?join=${token}`;
+    const link = `${publicOrigin(req)}/?join=${token}`;
     if (b.type === 'send') {
       if (!i.email)
         throw new AppError(
@@ -108,3 +109,4 @@ export async function POST(req: Request) {
     return failure(e);
   }
 }
+

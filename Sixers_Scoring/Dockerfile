@@ -8,6 +8,7 @@ RUN npm run build:render
 FROM node:24-bookworm-slim
 WORKDIR /app
 ENV NODE_ENV=production PORT=10000 DATA_DIR=/var/data/golfsixes-league GOLFSIXES_TARGET=node
+ENV GOLFSIXES_PUBLIC_ORIGIN=https://junior-golf-sixes.onrender.com
 COPY --from=build /app/package*.json ./
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist

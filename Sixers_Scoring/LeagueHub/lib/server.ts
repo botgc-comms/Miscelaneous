@@ -287,8 +287,15 @@ export async function createWorkspace(name: string) {
     .run();
   return snapshot(await context(id));
 }
+export function publicOrigin(req: Request) {
+  const config = env as unknown as Record<string, string>;
+  return config.GOLFSIXES_RUNTIME === 'node' && config.GOLFSIXES_PUBLIC_ORIGIN
+    ? new URL(config.GOLFSIXES_PUBLIC_ORIGIN).origin
+    : new URL(req.url).origin;
+}
 export function sameOrigin(req: Request) {
   const origin = req.headers.get('origin');
-  if (origin && origin !== new URL(req.url).origin)
+  const expected = publicOrigin(req);
+  if (origin && origin !== expected)
     throw new AppError('Cross-site requests are not allowed.', 403);
 }
