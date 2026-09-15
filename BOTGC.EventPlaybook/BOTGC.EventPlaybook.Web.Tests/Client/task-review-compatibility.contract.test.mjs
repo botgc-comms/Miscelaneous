@@ -223,6 +223,7 @@ test('a new task cannot be completed until its review is ready', () => {
   const taskState = { completed: false, status: 'open' };
   const markComplete = compileFunction('markTaskComplete', {
     ensureTaskState: () => taskState,
+    isTaskExpired: () => false,
     taskReviewState: () => ({ ready: false, signature: 'missing-answer' }),
     rotateTaskCompletionLink: () => assert.fail('A blocked completion must not rotate its link.')
   });

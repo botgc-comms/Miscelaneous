@@ -23,6 +23,8 @@ public sealed class ScheduledTaskAlert
 
     public required DateOnly DueDate { get; init; }
 
+    public DateOnly? ExpiresOn { get; init; }
+
     public string? AssigneeName { get; init; }
 
     public string? AssigneeEmail { get; init; }

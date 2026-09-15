@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "3.6",
+  "schemaVersion": "3.7",
   "id": "botgc-event-playbook",
   "title": "Event Playbook",
   "description": "A data-driven event planning guide that turns answers into dated, assignable tasks, operational advisories and reusable event knowledge.",
@@ -289,8 +289,8 @@
               "answerType": "assignment",
               "assignmentMode": "personOrRole",
               "label": "Who owns the single authoritative message if the event changes?",
-              "helpText": "This person coordinates the wording and audience so operational and member messages do not conflict.",
-              "required": true,
+              "helpText": "Choose a person or role when member or participant communications are planned. Event Playbook will require an owner before a cancellation or postponement update is issued.",
+              "required": false,
               "source": "refined"
             },
             {
@@ -298,6 +298,7 @@
               "type": "question",
               "answerType": "multiChoice",
               "label": "What could cause the event to be cancelled, postponed or placed at risk?",
+              "helpText": "Leave this blank when there is no special trigger beyond the organiser's normal judgement. Otherwise select only the conditions that need an explicit decision before the event can proceed.",
               "options": [
                 { "value": "attendance", "label": "Insufficient bookings or attendance" },
                 { "value": "weather", "label": "Weather or course conditions" },
@@ -307,7 +308,7 @@
                 { "value": "organiser", "label": "Organiser decision or availability" },
                 { "value": "other", "label": "Other event-specific trigger" }
               ],
-              "required": true,
+              "required": false,
               "source": "refined"
             },
             {
@@ -330,7 +331,8 @@
               "id": "event-affected-areas",
               "type": "question",
               "answerType": "multiChoice",
-              "label": "Which teams or commitments must be checked before the event status changes?",
+              "label": "Who needs to receive the event go-ahead or a later status change?",
+              "helpText": "Select the affected teams or contacts. Event Playbook resolves these choices to the named people and shows the recipients before the decision owner sends the update. Leave this blank if nobody beyond the decision owner needs an internal update.",
               "options": [
                 { "value": "food-beverage", "label": "Food & Beverage staffing or orders" },
                 { "value": "clubhouse", "label": "Clubhouse rooms or service" },
@@ -341,60 +343,25 @@
                 { "value": "admission", "label": "Ticket sales, admission payments or refunds" },
                 { "value": "staffing", "label": "Other staff or volunteers" }
               ],
-              "required": true,
-              "source": "refined"
-            },
-            {
-              "id": "additional-operational-commitments",
-              "type": "question",
-              "answerType": "yesNo",
-              "label": "Will extra staffing, purchasing or supplier commitments be made specifically for this event?",
-              "allowDontKnow": true,
-              "dontKnowTask": {
-                "id": "decide-operational-commitments",
-                "title": "Decide whether the event requires extra staffing, purchasing or supplier commitments",
-                "detail": "Consult the affected department leads and record what will become difficult or costly to reverse.",
-                "deadlineCode": "B3",
-                "responsibleArea": "Event Coordination",
-                "defaultOwnerRoleId": "event-coordinator",
-                "source": "refined"
-              },
-              "required": true,
-              "source": "refined"
-            },
-            {
-              "id": "member-communications-sent",
-              "type": "question",
-              "answerType": "yesNo",
-              "label": "Have members or participants already been told that this event is proceeding?",
-              "allowDontKnow": true,
-              "dontKnowTask": {
-                "id": "check-event-communications-already-sent",
-                "title": "Check whether any event communications have already been sent or scheduled",
-                "detail": "Check member email, organiser messages, clubhouse screens, booking confirmations and social channels.",
-                "deadlineCode": "CD",
-                "responsibleArea": "Communications",
-                "defaultOwnerRoleId": "communications",
-                "source": "refined"
-              },
-              "required": true,
+              "required": false,
               "source": "refined"
             },
             {
               "id": "agree-event-viability-control",
               "type": "task",
-              "title": "Review and confirm the event's go/no-go plan",
-              "detail": "Check the recorded decision owner, communications owner, viability triggers, optional attendance threshold and affected teams. Correct anything that is missing or wrong, then confirm the plan.",
+              "title": "Decision owner: review and accept the event decision criteria",
+              "detail": "The named decision owner should review the recorded trigger points and notification recipients, correct anything that is wrong and explicitly accept responsibility for making the event decision.",
               "deadlineCode": "B3",
+              "expiresAfterDeadlineCode": "DT",
               "responsibleArea": "Event Coordination",
-              "defaultOwnerRoleId": "event-coordinator",
+              "ownerFromQuestionId": "event-decision-owner",
               "actionView": "module:event-control",
               "actionLabel": "Review Event control answers",
               "reviewSummary": {
-                "title": "Current go/no-go plan",
-                "instruction": "The Event Coordinator reviews these answers. Reassign this task only if someone else will perform the check.",
-                "confirmLabel": "Confirm go/no-go plan",
-                "confirmedLabel": "Go/no-go plan confirmed",
+                "title": "Event decision responsibility",
+                "instruction": "The named decision owner reviews these answers and accepts responsibility for the decision. Reassign this task only by changing the recorded decision owner.",
+                "confirmLabel": "Accept decision responsibility",
+                "confirmedLabel": "Decision responsibility accepted",
                 "fields": [
                   {
                     "questionId": "event-decision-owner",
@@ -404,12 +371,14 @@
                   {
                     "questionId": "event-communications-owner",
                     "label": "Change communications owner",
-                    "emptyText": "Choose who will issue the authoritative update"
+                    "required": false,
+                    "emptyText": "No separate communications owner is needed"
                   },
                   {
                     "questionId": "event-viability-triggers",
-                    "label": "Go/no-go triggers",
-                    "emptyText": "Record what could stop or place the event at risk"
+                    "label": "Special decision triggers",
+                    "required": false,
+                    "emptyText": "No special trigger beyond normal organiser judgement"
                   },
                   {
                     "questionId": "event-minimum-attendance",
@@ -420,18 +389,9 @@
                   },
                   {
                     "questionId": "event-affected-areas",
-                    "label": "Teams and commitments to check",
-                    "emptyText": "Select the affected teams or commitments"
-                  },
-                  {
-                    "questionId": "additional-operational-commitments",
-                    "label": "Extra commitments planned",
-                    "emptyText": "Confirm whether extra commitments will be made"
-                  },
-                  {
-                    "questionId": "member-communications-sent",
-                    "label": "Members already told it is proceeding",
-                    "emptyText": "Confirm whether communications have already been sent"
+                    "label": "People who must receive the decision",
+                    "required": false,
+                    "emptyText": "Nobody beyond the decision owner needs an internal update"
                   }
                 ]
               },
@@ -440,54 +400,34 @@
             {
               "id": "confirm-event-before-commitments",
               "type": "task",
-              "title": "Confirm the event is proceeding before additional staffing, purchasing, suppliers or publicity are firmly committed",
-              "detail": "The decision owner should mark the event Confirmed or At risk and tell affected department leads before irreversible commitments are made.",
+              "title": "Confirm the event go-ahead and notify the affected leads",
+              "detail": "Open the event-status decision, check the named recipients and apply Confirmed. Event Playbook records who made the decision and queues one internal update for each affected lead.",
               "deadlineCode": "CD",
+              "expiresAfterDeadlineCode": "DT",
               "responsibleArea": "Event Coordination",
-              "defaultOwnerRoleId": "event-coordinator",
-              "source": "refined"
-            },
-            {
-              "id": "confirm-fb-before-commitment",
-              "type": "task",
-              "title": "Give Food & Beverage an explicit event go-ahead before arranging extra cover, ordering stock or messaging members",
-              "detail": "F&B should work from the current Playbook status rather than a separate organiser conversation.",
-              "deadlineCode": "CD",
-              "showWhen": { "all": [{ "questionId": "catering-involved", "operator": "equals", "value": true }] },
-              "responsibleArea": "Event Coordination",
-              "defaultOwnerRoleId": "event-coordinator",
-              "source": "refined"
-            },
-            {
-              "id": "confirm-communications-before-promotion",
-              "type": "task",
-              "title": "Confirm the event status and agreed wording before sending or scheduling member promotion",
-              "detail": "All departments and the organiser should use the same approved event status and communications owner.",
-              "deadlineCode": "CD",
-              "showWhen": { "all": [{ "questionId": "communications-involved", "operator": "equals", "value": true }] },
-              "responsibleArea": "Communications",
-              "defaultOwnerRoleId": "communications",
-              "source": "refined"
-            },
-            {
-              "id": "final-event-go-no-go",
-              "type": "task",
-              "title": "Record the final go/no-go decision and confirm it with every operational lead",
-              "detail": "Do not rely on silence as confirmation. Mark the event Confirmed, At risk, Postponed or Cancelled in the Playbook.",
-              "deadlineCode": "GO",
-              "responsibleArea": "Event Coordination",
-              "defaultOwnerRoleId": "event-coordinator",
+              "ownerFromQuestionId": "event-decision-owner",
+              "completionMode": "event-status-decision",
+              "canCompleteFromLink": false,
+              "actionView": "event-status",
+              "actionLabel": "Confirm event is going ahead",
+              "actionStatus": "confirmed",
               "source": "refined"
             },
             {
               "id": "resolve-at-risk-event",
               "type": "task",
-              "title": "Resolve the at-risk event decision and issue one status update",
-              "detail": "Review the recorded risk with the decision owner and either confirm, postpone or cancel the event.",
+              "title": "Resolve the at-risk event and notify the affected leads",
+              "detail": "Review the recorded risk with the decision owner, choose Confirmed, Postponed or Cancelled and issue one authoritative status update to the named recipients.",
               "deadlineCode": "GO",
+              "expiresAfterDeadlineCode": "DT",
               "showWhen": { "all": [{ "eventField": "lifecycle.status", "operator": "equals", "value": "at-risk" }] },
               "responsibleArea": "Event Coordination",
-              "defaultOwnerRoleId": "event-coordinator",
+              "ownerFromQuestionId": "event-decision-owner",
+              "completionMode": "event-status-decision",
+              "canCompleteFromLink": false,
+              "actionView": "event-status",
+              "actionLabel": "Resolve event status",
+              "actionStatus": "confirmed",
               "source": "refined"
             }
           ]

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Globalization;
 using BOTGC.EventPlaybook.Models;
 
 namespace BOTGC.EventPlaybook.Services;
@@ -14,6 +15,7 @@ public interface ITaskCompletionRegistry
 public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
 {
     private readonly string _path;
+    private readonly TimeProvider _timeProvider;
     private readonly SemaphoreSlim _gate = new(1, 1);
     private readonly JsonSerializerOptions _jsonOptions = new(JsonSerializerDefaults.Web)
     {
@@ -21,10 +23,16 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
     };
 
     public TaskCompletionRegistry(IWebHostEnvironment environment)
+        : this(environment, TimeProvider.System)
+    {
+    }
+
+    public TaskCompletionRegistry(IWebHostEnvironment environment, TimeProvider timeProvider)
     {
         var directory = Path.Combine(environment.ContentRootPath, "App_Data");
         Directory.CreateDirectory(directory);
         _path = Path.Combine(directory, "task-completions.json");
+        _timeProvider = timeProvider;
     }
 
     public async Task<TaskCompletionRecord> RegisterAsync(RegisterCompletionLinkRequest request, CancellationToken cancellationToken)
@@ -42,6 +50,7 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
                 existing.Assignee = request.Assignee;
                 existing.AssigneeEmail = request.AssigneeEmail;
                 existing.DueDate = request.DueDate;
+                existing.ExpiresOn = request.ExpiresOn;
                 existing.CanCompleteFromLink = request.CanCompleteFromLink;
                 if (!request.PreserveLearningInsights)
                 {
@@ -61,6 +70,7 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
                 Assignee = request.Assignee,
                 AssigneeEmail = request.AssigneeEmail,
                 DueDate = request.DueDate,
+                ExpiresOn = request.ExpiresOn,
                 LearningInsights = request.LearningInsights ?? [],
                 CanCompleteFromLink = request.CanCompleteFromLink,
                 RegisteredAtUtc = DateTimeOffset.UtcNow
@@ -82,7 +92,9 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
         try
         {
             var records = await LoadAsync(cancellationToken);
-            return records.SingleOrDefault(x => string.Equals(x.Token, token, StringComparison.Ordinal));
+            var record = records.SingleOrDefault(x => string.Equals(x.Token, token, StringComparison.Ordinal));
+            ApplyExpiry(record);
+            return record;
         }
         finally
         {
@@ -102,6 +114,7 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
                 return null;
             }
 
+            ApplyExpiry(record);
             if (!record.CanCompleteFromLink)
             {
                 return record;
@@ -149,5 +162,24 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
     {
         await using var stream = File.Create(_path);
         await JsonSerializer.SerializeAsync(stream, records, _jsonOptions, cancellationToken);
+    }
+
+    private void ApplyExpiry(TaskCompletionRecord? record)
+    {
+        if (record is null || record.CompletedAtUtc is not null ||
+            !DateOnly.TryParseExact(
+                record.ExpiresOn,
+                "yyyy-MM-dd",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out var expiresOn))
+        {
+            return;
+        }
+
+        if (TaskEmailAlertDispatcher.GetLondonDate(_timeProvider) > expiresOn)
+        {
+            record.CanCompleteFromLink = false;
+        }
     }
 }

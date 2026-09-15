@@ -97,6 +97,58 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task RunOnceAsync_SkipsTasksAfterTheirConfiguredExpiryButKeepsThemActionableOnTheCutoffDate()
+    {
+        var sender = new RecordingEmailSender();
+        var registry = new RecordingCompletionRegistry();
+        var dispatcher = CreateDispatcher(
+            State(
+                Alert("expired", "Expired decision", "2026-09-08", "alice@example.com", "Alice", "organiser@example.com", expiresOn: "2026-09-10"),
+                Alert("cutoff-today", "Decision valid today", "2026-09-09", "alice@example.com", "Alice", "organiser@example.com", expiresOn: "2026-09-11")),
+            registry,
+            sender);
+
+        var result = await dispatcher.RunOnceAsync(Today, CancellationToken.None);
+
+        Assert.Equal(1, result.CandidateTaskCount);
+        Assert.Single(registry.RegisteredTokens);
+        var message = Assert.Single(sender.Messages, item => item.RecipientEmail == "alice@example.com");
+        Assert.Contains("Decision valid today", message.BodyHtml);
+        Assert.DoesNotContain("Expired decision", message.BodyHtml);
+    }
+
+    [Fact]
+    public async Task CompletionRegistry_RejectsAnIncompleteTaskAfterItsExpiryDate()
+    {
+        Directory.CreateDirectory(_contentRoot);
+        var registry = new TaskCompletionRegistry(
+            new TestWebHostEnvironment(_contentRoot),
+            new FixedTimeProvider(new DateTimeOffset(2026, 9, 12, 8, 0, 0, TimeSpan.Zero)));
+        var token = Guid.NewGuid().ToString("D");
+        await registry.RegisterAsync(
+            new RegisterCompletionLinkRequest
+            {
+                Token = token,
+                EventId = "event-1",
+                EventName = "Autumn Event",
+                TaskId = "go-no-go",
+                TaskTitle = "Confirm the event decision",
+                DueDate = "2026-09-10",
+                ExpiresOn = "2026-09-11"
+            },
+            CancellationToken.None);
+
+        var loaded = await registry.GetAsync(token, CancellationToken.None);
+        var completion = await registry.CompleteAsync(token, "Too late", CancellationToken.None);
+
+        Assert.NotNull(loaded);
+        Assert.False(loaded!.CanCompleteFromLink);
+        Assert.NotNull(completion);
+        Assert.False(completion!.CanCompleteFromLink);
+        Assert.Null(completion.CompletedAtUtc);
+    }
+
+    [Fact]
     public async Task RunOnceAsync_DoesNotMarkFailureAndRetriesOnTheSameDay()
     {
         var ledger = new InMemoryDeliveryLedger();
@@ -376,7 +428,8 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
         string? organiserEmail,
         string eventName = "Autumn Event",
         Guid? token = null,
-        bool canCompleteFromLink = true) =>
+        bool canCompleteFromLink = true,
+        string? expiresOn = null) =>
         new(
             "event-1",
             eventName,
@@ -389,7 +442,8 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
             "Event Organiser",
             organiserEmail,
             $"/complete.html?token={(token ?? DeterministicToken(taskId)):D}",
-            canCompleteFromLink);
+            canCompleteFromLink,
+            expiresOn);
 
     private static Guid DeterministicToken(string value)
     {
@@ -417,7 +471,8 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
         string? OrganiserName,
         string? OrganiserEmail,
         string CompletionPath,
-        bool CanCompleteFromLink = true);
+        bool CanCompleteFromLink = true,
+        string? ExpiresOn = null);
 
     private sealed class StubSharedStateStore(JsonElement state) : ISharedPlaybookStateStore
     {
@@ -494,6 +549,7 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
                     Assignee = request.Assignee,
                     AssigneeEmail = request.AssigneeEmail,
                     DueDate = request.DueDate,
+                    ExpiresOn = request.ExpiresOn,
                     RegisteredAtUtc = DateTimeOffset.UtcNow,
                     CompletedAtUtc = CompletedTokens.Contains(request.Token) ? DateTimeOffset.UtcNow : null
                 };

@@ -123,6 +123,7 @@ builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<ITaskAlertDeliveryLedger, TaskAlertDeliveryLedger>();
 builder.Services.AddSingleton<ITaskAlertEmailSender, IntelligentGolfTaskAlertEmailSender>();
 builder.Services.AddSingleton<ITaskEmailAlertDispatcher, TaskEmailAlertDispatcher>();
+builder.Services.AddSingleton<IEventStatusNotificationService, EventStatusNotificationService>();
 builder.Services.AddHostedService<TaskEmailAlertBackgroundService>();
 builder.Services.AddSingleton<IFeedbackStore, FeedbackStore>();
 builder.Services.AddSingleton<IRetrospectiveAnalysisService, RetrospectiveAnalysisService>();
@@ -1882,6 +1883,30 @@ app.MapPost("/api/tasks/notifications", async (System.Text.Json.JsonElement payl
     });
 });
 
+app.MapPost("/api/events/status-notifications", async (
+    EventStatusNotificationRequest request,
+    HttpRequest httpRequest,
+    IEventStatusNotificationService notifications,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var publicScheme = httpRequest.Headers["X-Forwarded-Proto"].FirstOrDefault() ?? httpRequest.Scheme;
+        var publicBaseUri = new Uri($"{publicScheme}://{httpRequest.Host}{httpRequest.PathBase}/", UriKind.Absolute);
+        return Results.Ok(await notifications.SendAsync(request, publicBaseUri, cancellationToken));
+    }
+    catch (ArgumentException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
+    catch (InvalidOperationException exception)
+    {
+        return Results.Problem(
+            exception.Message,
+            statusCode: StatusCodes.Status503ServiceUnavailable);
+    }
+});
+
 
 app.MapPost("/api/tasks/completion-links", async (
     RegisterCompletionLinkRequest request,
@@ -1905,14 +1930,19 @@ app.MapPost("/api/tasks/completion-links/{token}/complete", async (
     string token,
     CompleteTaskRequest request,
     ITaskCompletionRegistry registry,
+    TimeProvider timeProvider,
     CancellationToken cancellationToken) =>
 {
     var record = await registry.CompleteAsync(token, request.Notes, cancellationToken);
     if (record is null) return Results.NotFound();
+    var expired = DateOnly.TryParse(record.ExpiresOn, out var expiresOn) &&
+                  TaskEmailAlertDispatcher.GetLondonDate(timeProvider) > expiresOn;
     return !record.CanCompleteFromLink && record.CompletedAtUtc is null
         ? Results.Conflict(new
         {
-            error = "This task requires information in Event Playbook before it can be completed."
+            error = expired
+                ? "This task has expired because its event cutoff has passed."
+                : "This task requires information in Event Playbook before it can be completed."
         })
         : Results.Ok(record);
 });

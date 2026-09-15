@@ -224,6 +224,7 @@ public sealed class TaskEmailAlertDispatcher(
             var candidateTaskCount = 0;
             foreach (var task in schedule.Tasks)
             {
+                if (task.ExpiresOn is { } expiresOn && londonDate > expiresOn) continue;
                 var daysUntilDue = task.DueDate.DayNumber - londonDate.DayNumber;
                 if (daysUntilDue is not (2 or 0) && daysUntilDue >= 0) continue;
 
@@ -247,6 +248,7 @@ public sealed class TaskEmailAlertDispatcher(
                             Assignee = task.AssigneeName,
                             AssigneeEmail = task.AssigneeEmail,
                             DueDate = task.DueDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                            ExpiresOn = task.ExpiresOn?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
                             PreserveLearningInsights = true,
                             CanCompleteFromLink = task.CanCompleteFromLink
                         },
@@ -552,6 +554,7 @@ public static class TaskAlertScheduleReader
         var taskId = ReadString(element, "taskId", 200);
         var taskTitle = ReadString(element, "taskTitle", 1_000);
         var dueDateValue = ReadString(element, "dueDate", 20);
+        var expiresOnValue = ReadString(element, "expiresOn", 20);
         var completionPath = ReadString(element, "completionPath", 500);
         if (eventId is null || eventName is null || taskId is null || taskTitle is null ||
             !DateOnly.TryParseExact(
@@ -565,6 +568,21 @@ public static class TaskAlertScheduleReader
             return false;
         }
 
+        DateOnly? expiresOn = null;
+        if (expiresOnValue is not null)
+        {
+            if (!DateOnly.TryParseExact(
+                    expiresOnValue,
+                    "yyyy-MM-dd",
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.None,
+                    out var parsedExpiry))
+            {
+                return false;
+            }
+            expiresOn = parsedExpiry;
+        }
+
         task = new ScheduledTaskAlert
         {
             EventId = eventId,
@@ -573,6 +591,7 @@ public static class TaskAlertScheduleReader
             TaskId = taskId,
             TaskTitle = taskTitle,
             DueDate = dueDate,
+            ExpiresOn = expiresOn,
             AssigneeName = ReadString(element, "assigneeName", 300),
             AssigneeEmail = ReadString(element, "assigneeEmail", 500),
             OrganiserName = ReadString(element, "organiserName", 300),

@@ -18,7 +18,7 @@ public sealed class PlaybookConfigurationTests
 
         using var document = JsonDocument.Parse(dataJson);
         var root = document.RootElement;
-        Assert.Equal("3.6", root.GetProperty("schemaVersion").GetString());
+        Assert.Equal("3.7", root.GetProperty("schemaVersion").GetString());
 
         var closeDownQuestion = FindItem(root, "general-close-down-required");
         var context = closeDownQuestion.GetProperty("planningContext");
@@ -329,6 +329,99 @@ public sealed class PlaybookConfigurationTests
         Assert.False(resultsTask.TryGetProperty("reviewSummary", out _));
     }
 
+    [Fact]
+    public void EventControlUsesOneActionableGoAheadInsteadOfPassiveDepartmentDuplicates()
+    {
+        var solutionRoot = FindSolutionRoot();
+        var dataPath = Path.Combine(solutionRoot, "BOTGC.EventPlaybook.Web", "Data", "event-playbook.json");
+        var publicPath = Path.Combine(solutionRoot, "BOTGC.EventPlaybook.Web", "wwwroot", "event-playbook.json");
+        var dataJson = File.ReadAllText(dataPath);
+
+        Assert.Equal(dataJson, File.ReadAllText(publicPath));
+
+        using var document = JsonDocument.Parse(dataJson);
+        var root = document.RootElement;
+        Assert.Equal("3.7", root.GetProperty("schemaVersion").GetString());
+
+        foreach (var retiredId in new[]
+        {
+            "additional-operational-commitments",
+            "decide-operational-commitments",
+            "member-communications-sent",
+            "check-event-communications-already-sent",
+            "confirm-fb-before-commitment",
+            "confirm-communications-before-promotion",
+            "final-event-go-no-go"
+        })
+        {
+            Assert.DoesNotContain($"\"id\": \"{retiredId}\"", dataJson, StringComparison.Ordinal);
+        }
+
+        var commitmentTasks = FindModule(root, "event-control").GetProperty("sections")
+            .EnumerateArray()
+            .Single(section => section.GetProperty("id").GetString() == "viability-control")
+            .GetProperty("items")
+            .EnumerateArray()
+            .Where(item => item.GetProperty("type").GetString() == "task" &&
+                item.TryGetProperty("deadlineCode", out var deadline) && deadline.GetString() == "CD")
+            .Select(item => item.GetProperty("id").GetString())
+            .ToArray();
+        Assert.Equal(new[] { "confirm-event-before-commitments" }, commitmentTasks);
+
+        var triggers = FindItem(root, "event-viability-triggers");
+        Assert.False(triggers.GetProperty("required").GetBoolean());
+        Assert.Contains("Leave this blank", triggers.GetProperty("helpText").GetString(), StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("normal judgement", triggers.GetProperty("helpText").GetString(), StringComparison.OrdinalIgnoreCase);
+
+        var communicationsOwner = FindItem(root, "event-communications-owner");
+        Assert.False(communicationsOwner.GetProperty("required").GetBoolean());
+        Assert.Contains("when member or participant communications are planned", communicationsOwner.GetProperty("helpText").GetString(), StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("require an owner", communicationsOwner.GetProperty("helpText").GetString(), StringComparison.OrdinalIgnoreCase);
+
+        var recipients = FindItem(root, "event-affected-areas");
+        Assert.False(recipients.GetProperty("required").GetBoolean());
+        Assert.Contains("receive the event go-ahead", recipients.GetProperty("label").GetString(), StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("named people", recipients.GetProperty("helpText").GetString(), StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(
+            new[] { "food-beverage", "clubhouse", "golf", "communications", "suppliers", "entertainment", "admission", "staffing" },
+            recipients.GetProperty("options").EnumerateArray().Select(option => option.GetProperty("value").GetString()).ToArray());
+
+        var acceptance = FindItem(root, "agree-event-viability-control");
+        Assert.Contains("accept", acceptance.GetProperty("title").GetString(), StringComparison.OrdinalIgnoreCase);
+        Assert.Equal("event-decision-owner", acceptance.GetProperty("ownerFromQuestionId").GetString());
+        Assert.Equal("DT", acceptance.GetProperty("expiresAfterDeadlineCode").GetString());
+        Assert.Equal("Accept decision responsibility", acceptance.GetProperty("reviewSummary").GetProperty("confirmLabel").GetString());
+        var acceptanceFieldIds = acceptance.GetProperty("reviewSummary").GetProperty("fields")
+            .EnumerateArray()
+            .Select(field => field.GetProperty("questionId").GetString())
+            .ToArray();
+        Assert.Contains("event-decision-owner", acceptanceFieldIds);
+        Assert.Contains("event-communications-owner", acceptanceFieldIds);
+        Assert.Contains("event-viability-triggers", acceptanceFieldIds);
+        Assert.Contains("event-minimum-attendance", acceptanceFieldIds);
+        Assert.Contains("event-affected-areas", acceptanceFieldIds);
+        Assert.DoesNotContain("additional-operational-commitments", acceptanceFieldIds);
+        Assert.DoesNotContain("member-communications-sent", acceptanceFieldIds);
+
+        var goAhead = FindItem(root, "confirm-event-before-commitments");
+        Assert.Equal("event-decision-owner", goAhead.GetProperty("ownerFromQuestionId").GetString());
+        Assert.Equal("event-status-decision", goAhead.GetProperty("completionMode").GetString());
+        Assert.False(goAhead.GetProperty("canCompleteFromLink").GetBoolean());
+        Assert.Equal("event-status", goAhead.GetProperty("actionView").GetString());
+        Assert.Equal("confirmed", goAhead.GetProperty("actionStatus").GetString());
+        Assert.Equal("DT", goAhead.GetProperty("expiresAfterDeadlineCode").GetString());
+        Assert.False(goAhead.TryGetProperty("showWhen", out _));
+
+        var atRisk = FindItem(root, "resolve-at-risk-event");
+        Assert.Equal("event-decision-owner", atRisk.GetProperty("ownerFromQuestionId").GetString());
+        Assert.Equal("event-status-decision", atRisk.GetProperty("completionMode").GetString());
+        Assert.False(atRisk.GetProperty("canCompleteFromLink").GetBoolean());
+        Assert.Equal("event-status", atRisk.GetProperty("actionView").GetString());
+        Assert.Equal("confirmed", atRisk.GetProperty("actionStatus").GetString());
+        Assert.Equal("DT", atRisk.GetProperty("expiresAfterDeadlineCode").GetString());
+        Assert.True(ContainsEventFieldCondition(atRisk.GetProperty("showWhen"), "lifecycle.status", "equals", "at-risk"));
+    }
+
     private static bool ContainsItem(JsonElement root, string itemId)
     {
         foreach (var module in root.GetProperty("modules").EnumerateArray())
@@ -458,6 +551,42 @@ public sealed class PlaybookConfigurationTests
         }
 
         return condition.TryGetProperty("not", out var negated) && ContainsOperator(negated, questionId, operation);
+    }
+
+    private static bool ContainsEventFieldCondition(
+        JsonElement condition,
+        string eventField,
+        string operation,
+        string expectedValue)
+    {
+        if (condition.ValueKind != JsonValueKind.Object)
+        {
+            return false;
+        }
+
+        if (condition.TryGetProperty("eventField", out var field) &&
+            field.GetString() == eventField &&
+            condition.TryGetProperty("operator", out var candidateOperation) &&
+            candidateOperation.GetString() == operation &&
+            condition.TryGetProperty("value", out var value) &&
+            value.ValueKind == JsonValueKind.String &&
+            value.GetString() == expectedValue)
+        {
+            return true;
+        }
+
+        foreach (var propertyName in new[] { "all", "any" })
+        {
+            if (condition.TryGetProperty(propertyName, out var collection) &&
+                collection.EnumerateArray().Any(candidate =>
+                    ContainsEventFieldCondition(candidate, eventField, operation, expectedValue)))
+            {
+                return true;
+            }
+        }
+
+        return condition.TryGetProperty("not", out var negated) &&
+            ContainsEventFieldCondition(negated, eventField, operation, expectedValue);
     }
 
     private static bool ContainsNegatedAllValues(JsonElement condition, string questionId, IEnumerable<string?> expectedValues)
