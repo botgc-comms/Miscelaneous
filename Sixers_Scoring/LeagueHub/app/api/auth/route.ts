@@ -10,7 +10,7 @@ export async function GET() {
     const u = await currentIdentity();
     return json({
       user: u ? { name: u.displayName, email: u.email } : null,
-      emailReady: emailReady(),
+      emailReady: !previewMode() && emailReady(),
       sitesSignIn: sitesSignInAvailable(),
       privatePreview: previewMode(),
     });
@@ -22,6 +22,7 @@ export async function POST(req: Request) {
   try {
     sameOrigin(req);
     const a: any = await req.json();
+    requireThat(!previewMode() || a.type === 'preview' || a.type === 'logout', 'Use the private preview password to sign in.', 403);
     if (a.type === 'preview') {
       const config = env as unknown as Record<string, string>;
       requireThat(previewMode() && !!config.APP_PASSWORD, 'Private preview access is not configured.', 503);
