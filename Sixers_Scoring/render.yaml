@@ -14,6 +14,10 @@ services:
         value: production
       - key: DATA_PATH
         value: /var/data
+      - key: PRIVATE_PREVIEW
+        value: 'true'
+      - key: DATA_DIR
+        value: /var/data/golfsixes-league
       - key: APP_PASSWORD
         sync: false
       - key: OPENAI_API_KEY
@@ -24,4 +28,5 @@ services:
       name: sixes-scores
       mountPath: /var/data
       sizeGB: 1
+
 
