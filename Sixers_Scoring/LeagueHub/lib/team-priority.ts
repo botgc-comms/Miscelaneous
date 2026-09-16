@@ -171,9 +171,9 @@ export function teamPriority(
           : selected.length < needed
             ? 'Choose players for the next fixture'
             : confirmed < selected.length
-              ? 'Check family confirmations'
+              ? 'Ask families to confirm their child can still play'
               : 'Your team is ready for the next fixture',
-      detail: `${daysUntil > 7 ? 'No urgent fixture task yet. ' : daysUntil > 0 ? `${daysUntil} days to go. ` : ''}${available} available · ${selected.length} of ${needed} selected · ${confirmed} confirmed`,
+      detail: `${daysUntil > 7 ? 'No urgent fixture task yet. ' : daysUntil > 0 ? `${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} to go. ` : ''}${available} available · ${selected.length} of ${needed} selected · ${confirmed} confirmed`,
       action: unavailable
         ? 'Update the line-up'
         : selected.length < needed

@@ -2,7 +2,7 @@
 import { useRef, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { teamPriority } from '@/lib/team-priority';
-import { type Team } from '@/lib/model';
+import { canHost, type Team } from '@/lib/model';
 import { Cap } from './parent-portal';
 import { TeamRoster } from './team-roster';
 import { OrganiserFixtures } from './organiser-fixtures';
@@ -50,8 +50,15 @@ export function OrganiserPriorities({
               <div className="team-priority-identity">
                 <Cap color={team.color} label={`${team.cap} caps`} size={40} />
                 <div>
-                  <h2 id={`priority-${team.id}`}>{team.name}</h2>
+                  <h2 id={`priority-${team.id}`}>
+                    {fixture && p.target === 'preparation'
+                      ? `${dateLabel(fixture.date)} · ${tools.s.clubs.find((c) => c.id === fixture.clubId)?.name || fixture.name}`
+                      : team.name}
+                  </h2>
                   <p>
+                    {fixture && p.target === 'preparation'
+                      ? `${team.name} · `
+                      : ''}
                     {league.name} · {league.year}
                   </p>
                 </div>
@@ -63,14 +70,13 @@ export function OrganiserPriorities({
                   {p.stage}
                 </span>
                 <h3>{p.title}</h3>
-                {fixture &&
-                  (p.target === 'preparation' || p.target === 'roster') && (
-                    <p className="team-priority-fixture">
-                      {dateLabel(fixture.date)} ·{' '}
-                      {tools.s.clubs.find((c) => c.id === fixture.clubId)
-                        ?.name || fixture.name}
-                    </p>
-                  )}
+                {fixture && p.target === 'roster' && (
+                  <p className="team-priority-fixture">
+                    {dateLabel(fixture.date)} ·{' '}
+                    {tools.s.clubs.find((c) => c.id === fixture.clubId)?.name ||
+                      fixture.name}
+                  </p>
+                )}
                 <p>{p.detail}</p>
               </div>
               <button
@@ -90,6 +96,23 @@ export function OrganiserPriorities({
                 {p.action}
                 <ArrowRight size={17} />
               </button>
+              {fixture &&
+                p.target === 'preparation' &&
+                canHost(tools.s, tools.me, fixture) && (
+                  <div className="team-priority-host">
+                    <p>
+                      <strong>You’re hosting this fixture.</strong> Organise
+                      starting holes, tee times and joining instructions for
+                      every team.
+                    </p>
+                    <button
+                      className="btn"
+                      onClick={() => openFixture(fixture.id)}
+                    >
+                      Manage the hosted fixture <ArrowRight size={17} />
+                    </button>
+                  </div>
+                )}
             </section>
           );
         })}

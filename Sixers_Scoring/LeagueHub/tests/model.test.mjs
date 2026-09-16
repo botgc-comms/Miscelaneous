@@ -422,7 +422,7 @@ test('fixture priority advances from selection to confirmations and flags change
   }));
   assert.equal(
     teamPriority(s, team, '2027-06-25').title,
-    'Check family confirmations',
+    'Ask families to confirm their child can still play',
   );
   s.fixtureConfirmations = f.pairs.flatMap((p) =>
     p.players.map((playerId) => ({

@@ -66,7 +66,9 @@ export function FixtureDetail({
       ? 'score'
       : f.status === 'completed'
         ? 'results'
-        : 'details',
+        : me.role === 'organiser'
+          ? 'pairings'
+          : 'details',
   );
   const [error, setError] = useState('');
   const run = async (type: string) => {
@@ -154,10 +156,40 @@ export function FixtureDetail({
               ? 'Review every team’s pairs, allocate starting holes and tee times, and share arrival details and directions with everyone.'
               : 'Choose your club’s players and pairs. The host will organise starting holes, tee times and joining instructions.'}
           </p>
+          {host && (
+            <div className="host-progress">
+              <span>
+                <strong>
+                  {
+                    f.teamIds.filter(
+                      (id) =>
+                        f.pairs.filter((p) => p.teamId === id).length ===
+                        l.pairs,
+                    ).length
+                  }{' '}
+                  of {f.teamIds.length}
+                </strong>{' '}
+                teams selected
+              </span>
+              <span>
+                <strong>
+                  {
+                    f.pairs.filter((p) =>
+                      f.slots.some((slot) => slot.id === p.slotId),
+                    ).length
+                  }{' '}
+                  of {f.pairs.length}
+                </strong>{' '}
+                pairs allocated a start
+              </span>
+            </div>
+          )}
           <div className="row wrap">
-            <button className="btn" onClick={() => setTab('pairings')}>
-              {host ? 'Review all teams' : 'Choose my players'}
-            </button>
+            {tab !== 'pairings' && (
+              <button className="btn" onClick={() => setTab('pairings')}>
+                {host ? 'Review all teams' : 'Choose my players'}
+              </button>
+            )}
             {host && (
               <>
                 <button className="btn" onClick={() => setTab('starts')}>
@@ -339,7 +371,6 @@ function Lineups({ f, tools }: { f: Fixture; tools: AppTools }) {
             ← {hosting ? 'All participating teams' : 'My teams'}
           </button>
         )}
-        <h2>{team.name}</h2>
         <TeamLineup key={`${f.id}-${tid}`} f={f} tid={tid} tools={tools} />
       </div>
     );

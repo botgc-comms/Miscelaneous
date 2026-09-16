@@ -5,6 +5,7 @@ import {
   rosterEligible,
   selectionConfirmed,
   points,
+  canHost,
   type Team,
 } from '@/lib/model';
 import { TeamLineup } from './fixture-detail';
@@ -105,9 +106,12 @@ export function OrganiserFixtures({
               : 'UPCOMING FIXTURE'}{' '}
           · {league.name}
         </span>
-        <h2>{s.clubs.find((c) => c.id === f.clubId)?.name || f.name}</h2>
+        <h2>
+          {dateLabel(f.date)} ·{' '}
+          {s.clubs.find((c) => c.id === f.clubId)?.name || f.name}
+        </h2>
         <p>
-          {dateLabel(f.date)} · Arrive {f.arrival} · Start {f.start}
+          Arrive {f.arrival} · Start {f.start}
         </p>
         <div className="preparation-numbers">
           <span>
@@ -134,7 +138,9 @@ export function OrganiserFixtures({
           </span>
         </div>
         <button className="text-link" onClick={() => openFixture(f.id)}>
-          Fixture details
+          {canHost(s, tools.me, f)
+            ? 'Manage the hosted fixture'
+            : 'Fixture details'}
           {f.status === 'live' ? ' & live results' : ' & starting slots'} →
         </button>
         {!!updates.length && (

@@ -58,6 +58,7 @@ import { demoUser } from '@/lib/demo';
 import {
   emptyState,
   canOrg,
+  canHost,
   canLeague,
   leagueHasTeamSpace,
   leagueStandings,
@@ -330,6 +331,15 @@ export default function LeagueApp() {
   };
   const manage = me.role !== 'parent';
   const admin = me.role === 'admin';
+  const needsHostingAvailability = s.leagues.some(
+    (l) =>
+      l.year === Number(season) &&
+      !l.fixturesConfirmedAt &&
+      s.teams.some(
+        (t) =>
+          !t.withdrawnAt && t.leagueId === l.id && me.orgIds.includes(t.orgId),
+      ),
+  );
   const confirmClubFirst =
     me.role === 'organiser' &&
     s.clubs.some((c) => me.orgIds.includes(c.orgId) && !c.confirmedAt);
@@ -389,7 +399,9 @@ export default function LeagueApp() {
               ...(!confirmClubFirst
                 ? ([
                     [Users, 'My club'],
-                    [CalendarDays, 'Our availability'],
+                    ...(needsHostingAvailability
+                      ? [[CalendarDays, 'Our availability']]
+                      : []),
                   ] as [typeof Flag, string][])
                 : []),
               ...(!confirmClubFirst &&
@@ -1245,6 +1257,13 @@ export default function LeagueApp() {
                                   : 'Tee times'}{' '}
                                 {f.start} · {f.teamIds.length} teams
                               </small>
+                              {me.role === 'organiser' && (
+                                <span className="fixture-duty">
+                                  {canHost(s, me, f)
+                                    ? 'You’re hosting · Organise all teams and starting times'
+                                    : 'Away fixture · Choose your team’s players'}
+                                </span>
+                              )}
                             </div>
                             <Badge status={f.status} />
                             <ArrowUpRight size={20} />

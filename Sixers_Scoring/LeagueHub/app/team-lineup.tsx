@@ -1,6 +1,13 @@
 'use client';
 import { useState, type DragEvent } from 'react';
-import { GripVertical, X, Undo2 } from 'lucide-react';
+import { GripVertical, X, Undo2, Plus } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import {
   availabilityFor,
   participation,
@@ -51,6 +58,8 @@ export function TeamLineup({
   const [over, setOver] = useState('');
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
+  const [adding, setAdding] = useState<LineupDestination | null>(null);
+  const [search, setSearch] = useState('');
   const editing = canManageTeam(s, me, tid) && f.status === 'scheduled';
   // Polling updates availability immediately; untouched selections follow the saved state.
   const board = dirty ? draft : savedDraft;
@@ -75,6 +84,11 @@ export function TeamLineup({
     setPicked('');
     setError('');
     setNotice('Draft updated. Submit when you’re ready to notify families.');
+  }
+  function addPlayer(destination: LineupDestination) {
+    setPicked('');
+    setSearch('');
+    setAdding(destination);
   }
   function move(id: string, destination: LineupDestination) {
     if (!editing || busy || !id) return;
@@ -201,8 +215,8 @@ export function TeamLineup({
       {editing && (
         <div className="selection-toolbar">
           <p>
-            Drag a name into a pair or reserves. On your phone, tap a name, then
-            a place.
+            Add players to each pair. Drag names between pairs to swap them, or
+            tap a name and then its new place.
           </p>
           <button
             className="btn"
@@ -255,60 +269,25 @@ export function TeamLineup({
         </p>
       )}
       <div className={`selection-layout ${editing ? '' : 'is-readonly'}`}>
-        {editing && (
-          <div
-            className={`selection-pool ${over === 'pool' ? 'is-over' : ''}`}
-            {...target('pool', 'pool')}
-          >
-            <h3>Choose your players</h3>
-            {(
-              [
-                ['yes', 'Available'],
-                ['unconfirmed', 'No reply yet'],
-                ['unsure', 'Not sure yet'],
-              ] as const
-            ).map(([status, title]) => {
-              const players = pool.filter(
-                (p) => availabilityFor(s, f, p.id) === status,
-              );
-              return players.length ? (
-                <div className="selection-group" key={status}>
-                  <h4>
-                    {title} <span>{players.length}</span>
-                  </h4>
-                  {players.map((p) => playerButton(p))}
-                </div>
-              ) : null;
-            })}
-            {!pool.some((p) => availabilityFor(s, f, p.id) !== 'no') && (
-              <p className="muted">
-                No more players to choose. All eligible players are assigned or
-                unavailable.
-              </p>
-            )}
-            {!!unavailable.length && (
-              <details className="selection-unavailable">
-                <summary>Unavailable ({unavailable.length})</summary>
-                {unavailable.map((p) => (
-                  <div key={p.id} className="selection-unavailable-name">
-                    <ChildName
-                      player={p}
-                      workspace={tools.workspace}
-                      view={tools.view}
-                      size={24}
-                    />
-                    <span>Can’t play</span>
-                  </div>
-                ))}
-              </details>
-            )}
-          </div>
-        )}
         <div className="selection-places">
           <div className="selection-pairs">
             {board.pairs.map((pair, i) => (
               <section className="selection-pair" key={i}>
-                <h3>Pair {i + 1}</h3>
+                <header className="selection-pair-heading">
+                  <h3>Pair {i + 1}</h3>
+                  {editing && pair.some((id) => !id) && (
+                    <button
+                      className="btn small"
+                      disabled={busy}
+                      aria-label={`Add player to pair ${i + 1}`}
+                      onClick={() =>
+                        addPlayer({ pair: i, slot: pair[0] ? 1 : 0 })
+                      }
+                    >
+                      <Plus size={16} /> Add player
+                    </button>
+                  )}
+                </header>
                 {[0, 1].map((j) => {
                   const id = pair[j];
                   const player = s.players.find((p) => p.id === id);
@@ -339,17 +318,17 @@ export function TeamLineup({
                           onClick={() =>
                             picked
                               ? move(picked, { pair: i, slot: j })
-                              : setNotice(
-                                  'Choose a name from the player list first.',
-                                )
+                              : addPlayer({ pair: i, slot: j })
                           }
                           aria-label={`Pair ${i + 1}, player ${j + 1}: empty place`}
                         >
                           {picked
                             ? `Place ${name(picked)} here`
-                            : 'Drop a player here'}
+                            : editing
+                              ? 'Add player'
+                              : 'Not selected'}
                           <small>
-                            {picked ? '' : 'or tap a name, then here'}
+                            {picked || !editing ? '' : 'or drop a name here'}
                           </small>
                         </button>
                       )}
@@ -366,26 +345,22 @@ export function TeamLineup({
             <h3>
               Reserves <span>{board.reserves.length}</span>
             </h3>
-            {board.reserves.map((id) => {
-              const p = s.players.find((p) => p.id === id);
-              return p ? playerButton(p, true) : null;
-            })}
+            <div className="selection-reserve-list">
+              {board.reserves.map((id) => {
+                const p = s.players.find((p) => p.id === id);
+                return p ? playerButton(p, true) : null;
+              })}
+            </div>
             {editing && (
               <button
-                className="selection-empty"
+                className="btn"
                 disabled={busy}
                 onClick={() =>
-                  picked
-                    ? move(picked, 'reserves')
-                    : setNotice(
-                        'Choose a name from the player list, then tap Add to reserves.',
-                      )
+                  picked ? move(picked, 'reserves') : addPlayer('reserves')
                 }
               >
-                {picked
-                  ? `Add ${name(picked)} to reserves`
-                  : 'Drop reserves here'}
-                <small>{picked ? '' : 'or tap a name, then here'}</small>
+                <Plus size={16} />{' '}
+                {picked ? `Add ${name(picked)} to reserves` : 'Add reserve'}
               </button>
             )}
             {!editing && !board.reserves.length && (
@@ -398,7 +373,7 @@ export function TeamLineup({
         <div className="selection-submit">
           <span>
             {count} of {league.pairs * 2} players · {board.reserves.length}{' '}
-            reserves
+            {board.reserves.length === 1 ? 'reserve' : 'reserves'}
           </span>
           <div className="row wrap">
             {dirty && (
@@ -443,6 +418,96 @@ export function TeamLineup({
           </div>
         </div>
       )}
+      <Dialog
+        open={adding !== null && editing}
+        onOpenChange={(open) => {
+          if (!open) setAdding(null);
+        }}
+      >
+        <DialogContent className="selection-player-picker">
+          <DialogHeader>
+            <DialogTitle>
+              {adding && typeof adding === 'object'
+                ? `Add a player to pair ${adding.pair + 1}`
+                : 'Add a reserve'}
+            </DialogTitle>
+            <DialogDescription>
+              Available players are shown first. Choosing a name updates your
+              draft only.
+            </DialogDescription>
+          </DialogHeader>
+          <label className="field">
+            Find a player
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Player name"
+            />
+          </label>
+          <div className="selection-picker-list">
+            {(
+              [
+                ['yes', 'Available'],
+                ['unconfirmed', 'No reply yet'],
+                ['unsure', 'Not sure yet'],
+              ] as const
+            ).map(([status, title]) => {
+              const players = pool.filter(
+                (p) =>
+                  availabilityFor(s, f, p.id) === status &&
+                  p.name.toLowerCase().includes(search.toLowerCase()),
+              );
+              return players.length ? (
+                <section className="selection-group" key={status}>
+                  <h4>
+                    {title} <span>{players.length}</span>
+                  </h4>
+                  {players.map((p) => (
+                    <button
+                      key={p.id}
+                      className="selection-picker-player"
+                      disabled={busy}
+                      onClick={() => {
+                        if (adding) {
+                          move(p.id, adding);
+                          setAdding(null);
+                        }
+                      }}
+                    >
+                      <ChildName
+                        player={p}
+                        workspace={tools.workspace}
+                        view={tools.view}
+                        size={32}
+                      />
+                      <span>
+                        {participation(s, f, p.id).played} played{' '}
+                        <Plus size={16} />
+                      </span>
+                    </button>
+                  ))}
+                </section>
+              ) : null;
+            })}
+            {!pool.some(
+              (p) =>
+                availabilityFor(s, f, p.id) !== 'no' &&
+                p.name.toLowerCase().includes(search.toLowerCase()),
+            ) && (
+              <p className="muted">
+                No unassigned players match. You can move a selected player or
+                reserve to another pair on the team board.
+              </p>
+            )}
+          </div>
+          {!!unavailable.length && (
+            <p className="muted">
+              {unavailable.length} unavailable{' '}
+              {unavailable.length === 1 ? 'player is' : 'players are'} excluded.
+            </p>
+          )}
+        </DialogContent>
+      </Dialog>
       {canManageTeam(s, me, tid) && (
         <details className="lineup-roster">
           <summary>Availability & family replies</summary>

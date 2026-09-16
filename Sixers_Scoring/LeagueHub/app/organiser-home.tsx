@@ -689,7 +689,23 @@ export function OrganiserHome({
             </section>
           ) : (
             <>
-              {availabilityOnly ? (
+              {availabilityOnly && !setup ? (
+                <section className="card setup-panel">
+                  <h2>The fixture list is published.</h2>
+                  <p className="mt-3">
+                    Hosting dates have been agreed. Contact your Foundation
+                    administrator if a fixture date needs to change. You can
+                    update joining instructions for fixtures you host from the
+                    fixture itself.
+                  </p>
+                  <button
+                    className="btn primary mt-4"
+                    onClick={() => openLeague(team.leagueId)}
+                  >
+                    View fixtures
+                  </button>
+                </section>
+              ) : availabilityOnly ? (
                 <section className="card setup-panel">
                   <h2>When could you host a match?</h2>
                   <p>
