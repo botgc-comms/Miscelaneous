@@ -112,6 +112,7 @@ export function eventEmails(
               : 'admin',
         workspace,
       });
+      if (n.supportTicketId) q.set('ticket', n.supportTicketId);
       return [
         {
           id: `event:${workspace}:${n.id}`,
@@ -135,10 +136,17 @@ export function eventEmails(
                 n.text,
               )
             : {
-                subject: 'An update from GolfSixes League',
-                heading: 'Your season update',
+                subject: n.supportTicketId
+                  ? 'Your GolfSixes support request has an update'
+                  : 'An update from GolfSixes League',
+                heading: n.supportTicketId
+                  ? 'Support request updated'
+                  : 'Your season update',
                 paragraphs: [`Hello ${m.name.split(' ')[0]},`, n.text],
-                action: { label: 'View update', url: origin + '/?' + q },
+                action: {
+                  label: n.supportTicketId ? 'Read and reply' : 'View update',
+                  url: origin + '/?' + q,
+                },
               },
         },
       ];

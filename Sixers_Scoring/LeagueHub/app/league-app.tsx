@@ -1,5 +1,6 @@
 'use client';
 import { InvitationList } from './invitations';
+import { SupportCentre } from './support-centre';
 import { ChildAvatar } from './child-avatar';
 import { AdminAssistant } from './admin-assistant';
 import { LoginHelpQueue } from './login-help-queue';
@@ -31,6 +32,7 @@ import {
   Search,
   BookOpen,
   ChartNoAxesCombined,
+  MessageCircle,
 } from 'lucide-react';
 import {
   SidebarProvider,
@@ -137,6 +139,7 @@ export default function LeagueApp() {
   const [leagueScope, setLeagueScope] = useState('mine');
   const [addingClub, setAddingClub] = useState(false);
   const [fixtureId, setFixtureId] = useState('');
+  const [supportTicketId, setSupportTicketId] = useState('');
   const [editor, setEditor] = useState<Editor | null>(null);
   const [busy, setBusy] = useState(false);
   const [ready, setReady] = useState(false);
@@ -160,6 +163,10 @@ export default function LeagueApp() {
     if (q.get('fixture')) {
       setFixtureId(q.get('fixture')!);
       setPage('Fixtures');
+    }
+    if (q.get('ticket')) {
+      setSupportTicketId(q.get('ticket')!);
+      setPage('Support & reports');
     }
     setBoot(true);
   }, []);
@@ -254,7 +261,7 @@ export default function LeagueApp() {
         if (!response.ok) throw new Error(result.error);
         applyReply(result);
         setNotice(
-          action.type === 'fixture-plan-suggest'
+          ['fixture-plan-suggest', 'support-read'].includes(action.type)
             ? ''
             : action.type === 'score'
               ? 'Score saved and shared.'
@@ -344,7 +351,10 @@ export default function LeagueApp() {
     me.role === 'organiser' &&
     s.clubs.some((c) => me.orgIds.includes(c.orgId) && !c.confirmedAt);
   useEffect(() => {
-    if (confirmClubFirst) {
+    if (
+      confirmClubFirst &&
+      !new URLSearchParams(location.search).has('ticket')
+    ) {
       setPage('Overview');
       setFixtureId('');
     }
@@ -388,6 +398,7 @@ export default function LeagueApp() {
           items: [
             [Users, 'Players & families'],
             [ShieldCheck, 'People & access'],
+            [MessageCircle, 'Support & reports'],
           ],
         },
       ]
@@ -396,6 +407,7 @@ export default function LeagueApp() {
           {
             items: [
               [LayoutDashboard, 'Overview'],
+              [MessageCircle, 'Support & reports'],
               ...(!confirmClubFirst
                 ? ([
                     [Users, 'My club'],
@@ -580,6 +592,8 @@ export default function LeagueApp() {
                         isActive={page === label}
                         onClick={() => {
                           if (label === 'Teams & players') setReviewTeam('');
+                          if (label === 'Support & reports')
+                            setSupportTicketId('');
                           setPage(label);
                           setFixtureId('');
                           setSearch('');
@@ -590,6 +604,11 @@ export default function LeagueApp() {
                           {me.role === 'organiser' && label === 'Overview'
                             ? 'Home'
                             : label}
+                          {label === 'Support & reports' &&
+                            !!s.notifications?.some(
+                              (n) => n.supportTicketId && !n.readAt,
+                            ) &&
+                            ' · New'}
                         </span>
                       </AppNavButton>
                     </SidebarMenuItem>
@@ -787,6 +806,13 @@ export default function LeagueApp() {
               />
             ) : (
               <>
+                {page === 'Support & reports' && me.role !== 'parent' && (
+                  <SupportCentre
+                    key={data.workspace + me.id + supportTicketId}
+                    tools={tools}
+                    initialTicket={supportTicketId}
+                  />
+                )}
                 {page === 'Teams & players' && (
                   <FamilyReview
                     key={reviewTeam}

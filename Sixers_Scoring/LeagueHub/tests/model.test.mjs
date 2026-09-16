@@ -8,6 +8,7 @@ const output = path.resolve('work/tests');
 await mkdir(output, { recursive: true });
 for (const name of [
   'model',
+  'support',
   'demo-data',
   'season-emails',
   'email-template',
@@ -40,6 +41,7 @@ for (const name of [
       },
     })
     .outputText.replace("from './model'", "from './model.mjs'")
+    .replace("from './support'", "from './support.mjs'")
     .replace("from './club-images'", "from './club-images.mjs'")
     .replace("from './test-families'", "from './test-families.mjs'")
     .replace("from './league-map'", "from './league-map.mjs'")
@@ -75,6 +77,195 @@ const { suggestFixtures, planningKey } = await import(
   pathToFileURL(path.join(output, 'season-planning.mjs'))
 );
 const admin = demoUser;
+const { eventEmails } = await import(
+  pathToFileURL(path.join(output, 'season-emails.mjs'))
+);
+const { incidentReportHtml } = await import(
+  pathToFileURL(path.join(output, 'support.mjs'))
+);
+function supportSetup() {
+  const s = demoState();
+  const org = s.members.find((m) => m.id === 'demo-organiser');
+  const team = s.teams.find((t) => org.orgIds.includes(t.orgId));
+  const league = s.leagues.find((l) => l.id === team.leagueId);
+  league.adminId = admin.id;
+  const assistant = {
+    id: 'support-assistant',
+    name: 'Assigned assistant',
+    email: 'assistant@example.invalid',
+    role: 'league-admin',
+    orgIds: [],
+    leagueIds: [],
+  };
+  const outsider = {
+    ...assistant,
+    id: 'other-admin',
+    email: 'other@example.invalid',
+  };
+  s.members.push(assistant, outsider);
+  league.assistantId = assistant.id;
+  const action = {
+    type: 'support-create',
+    kind: 'support',
+    orgId: team.orgId,
+    leagueId: league.id,
+    subject: 'Fixture help',
+    message: 'Please help with our starting slots.',
+  };
+  return { s, org, assistant, outsider, action };
+}
+test('support routes to assigned admins, keeps a conversation and resolves/reopens', () => {
+  const { s, org, assistant, action } = supportSetup();
+  let next = applyAction(s, org, action);
+  const ticketId = next.supportTickets[0].id;
+  assert.equal(s.supportTickets?.length || 0, 0);
+  assert.deepEqual(
+    next.notifications
+      .filter((n) => n.supportTicketId === ticketId)
+      .map((n) => n.recipient)
+      .sort(),
+    [admin.id, assistant.id].sort(),
+  );
+  assert.ok(projectState(next, org).members.some((m) => m.id === assistant.id));
+  next = applyAction(next, assistant, {
+    type: 'support-reply',
+    ticketId,
+    message: 'Here is how to do it.',
+    authorId: 'spoof',
+  });
+  assert.equal(next.supportTickets[0].status, 'waiting');
+  assert.equal(next.supportTickets[0].messages.at(-1).authorId, assistant.id);
+  next = applyAction(next, org, { type: 'support-read', ticketId });
+  assert.ok(
+    next.notifications
+      .filter((n) => n.recipient === org.id && n.supportTicketId === ticketId)
+      .every((n) => n.readAt),
+  );
+  next = applyAction(next, org, {
+    type: 'support-status',
+    ticketId,
+    status: 'resolved',
+  });
+  assert.equal(next.supportTickets[0].status, 'resolved');
+  next = applyAction(next, org, {
+    type: 'support-reply',
+    ticketId,
+    message: 'One more question',
+  });
+  assert.equal(next.supportTickets[0].status, 'open');
+});
+test('support excludes parents, unrelated admins, other organisers and revoked club memberships', () => {
+  const { s, org, assistant, outsider, action } = supportSetup();
+  const next = applyAction(s, org, { ...action, organiserId: outsider.id });
+  const ticket = next.supportTickets[0];
+  assert.equal(ticket.organiserId, org.id);
+  for (const m of [
+    s.members.find((m) => m.role === 'parent'),
+    outsider,
+    { ...org, id: 'same-club-other' },
+    { ...org, orgIds: [] },
+  ]) {
+    assert.equal(projectState(next, m).supportTickets.length, 0);
+    for (const type of ['support-read', 'support-reply', 'support-status'])
+      assert.throws(() =>
+        applyAction(next, m, {
+          type,
+          ticketId: ticket.id,
+          message: 'No',
+          status: 'resolved',
+        }),
+      );
+  }
+  assert.equal(projectState(next, assistant).supportTickets.length, 1);
+  assert.equal(projectState(next, admin).supportTickets.length, 1);
+  assert.throws(() =>
+    applyAction(s, org, {
+      ...action,
+      orgId: s.orgs.find((o) => !org.orgIds.includes(o.id)).id,
+    }),
+  );
+  assert.throws(() =>
+    applyAction(s, outsider, { ...action, organiserId: org.id }),
+  );
+});
+test('incident fields are validated and private details never enter notification emails or general activity', () => {
+  const { s, org, action } = supportSetup();
+  const incident = {
+    involved: 'Sensitive person <script>alert(1)</script>',
+    handledBy: 'QA responder',
+    date: '2026-09-16',
+    venue: 'QA venue',
+    location: 'QA green',
+    nature: 'Private injury details',
+    before: 'Private events before',
+    after: 'Private first aid action',
+  };
+  const report = {
+    ...action,
+    kind: 'incident',
+    incident,
+    message: '',
+    subject: 'Private incident title',
+  };
+  assert.throws(() =>
+    applyAction(s, org, {
+      ...report,
+      incident: { ...incident, date: '2026-02-30' },
+    }),
+  );
+  assert.throws(() =>
+    applyAction(s, org, { ...report, incident: { ...incident, nature: '' } }),
+  );
+  const next = applyAction(s, org, report),
+    ticket = next.supportTickets[0];
+  const emails = eventEmails(
+    s,
+    next,
+    'test-workspace',
+    'https://example.invalid',
+  );
+  assert.equal(emails.length, 2);
+  for (const email of emails) {
+    assert.equal(
+      new URL(email.message.action.url).searchParams.get('ticket'),
+      ticket.id,
+    );
+    assert.equal(email.message.action.label, 'Read and reply');
+  }
+  assert.doesNotMatch(
+    JSON.stringify([emails, next.activity]),
+    /Sensitive person|Private injury|Private incident title/,
+  );
+  const html = incidentReportHtml(ticket, 'QA <club>');
+  assert.ok(html.includes('&lt;script&gt;'));
+  assert.ok(html.includes('Welfare officer signature'));
+  assert.ok(!html.includes('<script>'));
+});
+test('Foundation admins can initiate support and requests without assigned league staff have a fallback', () => {
+  const { s, org, action } = supportSetup();
+  const next = applyAction(s, admin, { ...action, organiserId: org.id });
+  assert.equal(next.supportTickets[0].status, 'waiting');
+  assert.ok(
+    next.notifications.some(
+      (n) =>
+        n.recipient === org.id &&
+        n.supportTicketId === next.supportTickets[0].id,
+    ),
+  );
+  const general = applyAction(s, org, { ...action, leagueId: '' });
+  assert.ok(
+    general.notifications.some(
+      (n) => n.recipient === admin.id && n.supportTicketId,
+    ),
+  );
+  s.members = s.members.filter(
+    (m) => !['admin', 'league-admin'].includes(m.role),
+  );
+  assert.throws(
+    () => applyAction(s, org, { ...action, leagueId: '' }),
+    /administrator must be assigned/,
+  );
+});
 test('test organisers are additive, club-scoped, repeatable and admin-only', () => {
   const before = demoState();
   const club = before.clubs[0];

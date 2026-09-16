@@ -1,4 +1,9 @@
 import { clubWebsite } from './club-images';
+import {
+  applySupportAction,
+  canReadSupport,
+  type SupportTicket,
+} from './support';
 import { addTestFamilies, addTestOrganisers } from './test-families';
 import {
   planningKey,
@@ -168,6 +173,7 @@ export type Invite = {
   revoked: boolean;
 };
 export type State = {
+  supportTickets?: SupportTicket[];
   demoSandbox?: boolean;
   demoToday?: string;
   hostingOffers?: HostingOffer[];
@@ -245,6 +251,7 @@ export type Availability = {
 };
 export type Reserve = { fixtureId: string; teamId: string; playerId: string };
 export type Notice = {
+  supportTicketId?: string;
   id: string;
   recipient: string;
   text: string;
@@ -583,6 +590,7 @@ export function projectState(s: State, m: Member): State {
   );
   return {
     ...s,
+    supportTickets: s.supportTickets?.filter((t) => canReadSupport(s, m, t)),
     hostingOffers: s.hostingOffers?.filter(
       (o) =>
         canLeague(m, o.leagueId) ||
@@ -656,6 +664,11 @@ export function projectState(s: State, m: Member): State {
       .filter(
         (p) =>
           p.id === m.id ||
+          (p.role !== 'parent' &&
+            s.leagues.some(
+              (l) =>
+                ids.includes(l.id) && [l.adminId, l.assistantId].includes(p.id),
+            )) ||
           (['admin', 'league-admin'].includes(m.role) &&
             ['admin', 'league-admin'].includes(p.role)) ||
           (p.role !== 'parent' &&
@@ -840,6 +853,8 @@ export function applyAction(
   a: Action,
   now = new Date().toISOString(),
 ): State {
+  if (a.type.startsWith('support-'))
+    return applySupportAction(source, m, a, now);
   if (
     [
       'enrollment-transfer',

@@ -6,6 +6,7 @@ import './fixture-preparation.css';
 import './roster-layout.css';
 import './admin-assistant.css';
 import './season-setup.css';
+import './support.css';
 export const metadata: Metadata = {
   title: 'GolfSixes League | Your season, together',
   description: 'Junior leagues, clubs, teams, fixtures and shared scorecards.',
