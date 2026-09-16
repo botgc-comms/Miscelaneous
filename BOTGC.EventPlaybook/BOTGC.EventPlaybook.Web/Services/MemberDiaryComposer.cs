@@ -50,11 +50,13 @@ public sealed class MemberDiaryComposer(
             additionalCreativeInstructions = EmptyAsNull(request.AdditionalInstructions),
             price = EmptyAsNull(request.Price),
             bookingUrl = EmptyAsNull(request.BookingUrl),
+            planningContext = request.PlanningContext,
             artworkUrl,
             requirements = new[]
             {
                 "Return a JSON object with exactly two string properties: title and bodyHtml.",
                 "Use only supplied facts; do not invent times, prices, booking arrangements or benefits.",
+                "Use relevant admission-planning facts when explaining how members register, reserve or pay. Preserve the supplied prices, dates, capacity, table-booking requirement and public booking instructions exactly; omit facts that are absent or not relevant.",
                 "Use friendly British English suitable for the club member diary.",
                 "Make the title clear and concise; do not prefix it with the word Event.",
                 "The bodyHtml must be a self-contained HTML fragment using simple headings, paragraphs, strong text, lists, links and the supplied image only.",
@@ -153,12 +155,15 @@ public sealed class MemberDiaryComposer(
             : string.IsNullOrWhiteSpace(request.EndTime)
                 ? $" from {request.StartTime.Trim()}"
                 : $" from {request.StartTime.Trim()} to {request.EndTime.Trim()}";
-        var price = string.IsNullOrWhiteSpace(request.Price)
+        var displayPrice = MemberCommunicationsFallbackHtml.ResolvePrice(request.Price, request.PlanningContext);
+        var price = string.IsNullOrWhiteSpace(displayPrice)
             ? string.Empty
-            : $"<p><strong>{HtmlEncoder.Default.Encode(request.Price.Trim())}</strong></p>";
-        var booking = string.IsNullOrWhiteSpace(request.BookingUrl)
+            : $"<p><strong>{HtmlEncoder.Default.Encode(displayPrice)}</strong></p>";
+        var safeBookingUrl = MemberCommunicationsFallbackHtml.SafeBookingUrl(request.BookingUrl);
+        var planning = MemberCommunicationsFallbackHtml.BuildPlanningSection(request.PlanningContext, safeBookingUrl);
+        var booking = string.IsNullOrWhiteSpace(safeBookingUrl) || planning.BookingUrlRendered
             ? string.Empty
-            : $"<p><a href=\"{HtmlEncoder.Default.Encode(request.BookingUrl.Trim())}\">Book or find out more</a></p>";
+            : $"<p><a href=\"{HtmlEncoder.Default.Encode(safeBookingUrl)}\">Book or find out more</a></p>";
         return new MemberDiaryDraftResult
         {
             Title = request.EventName.Trim(),
@@ -169,6 +174,7 @@ public sealed class MemberDiaryComposer(
                   <p><strong>{HtmlEncoder.Default.Encode(date + time)}</strong></p>
                   {price}
                   <p>{description}</p>
+                  {planning.Html}
                   {booking}
                   <p>{HtmlEncoder.Default.Encode(clubName)}</p>
                 </div>

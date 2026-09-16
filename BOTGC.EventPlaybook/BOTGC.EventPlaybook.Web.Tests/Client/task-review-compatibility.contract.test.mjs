@@ -28,7 +28,7 @@ function compileFunction(name, dependencies = {}) {
 }
 
 test('the operational-controls client script uses its release cache key', () => {
-  assert.match(indexSource, /playbook-app\.js\?v=20260914-operational-controls-1/);
+  assert.match(indexSource, /playbook-app\.js\?v=20260916-admission-status-controls-2/);
 });
 
 test('food review provenance is migrated before task reconciliation and server completion sync', () => {

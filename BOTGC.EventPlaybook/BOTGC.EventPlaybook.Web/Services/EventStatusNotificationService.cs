@@ -26,6 +26,7 @@ public sealed class EventStatusNotificationService : IEventStatusNotificationSer
         };
 
     private readonly IIntelligentGolfMemberCommunicationsClient _communications;
+    private readonly IIntegrationActivityStore _activityStore;
     private readonly ILogger<EventStatusNotificationService> _logger;
     private readonly string _ledgerPath;
     private readonly SemaphoreSlim _gate = new(1, 1);
@@ -36,10 +37,12 @@ public sealed class EventStatusNotificationService : IEventStatusNotificationSer
 
     public EventStatusNotificationService(
         IIntelligentGolfMemberCommunicationsClient communications,
+        IIntegrationActivityStore activityStore,
         IWebHostEnvironment environment,
         ILogger<EventStatusNotificationService> logger)
     {
         _communications = communications;
+        _activityStore = activityStore;
         _logger = logger;
         var directory = Path.Combine(environment.ContentRootPath, "App_Data");
         Directory.CreateDirectory(directory);
@@ -64,7 +67,27 @@ public sealed class EventStatusNotificationService : IEventStatusNotificationSer
             throw new ArgumentException("Only Confirmed, At risk, Postponed or Cancelled decisions can notify operational leads.", nameof(request));
         }
 
-        var recipients = NormaliseRecipients(request.Recipients);
+        List<NormalisedRecipient> recipients;
+        try
+        {
+            recipients = NormaliseRecipients(request.Recipients);
+        }
+        catch (ArgumentException)
+        {
+            await RecordActivitySafelyAsync(
+                new IntegrationActivityWrite
+                {
+                    Operation = "Send operational event status",
+                    Outcome = "failed",
+                    EventPlaybookEventId = eventId,
+                    EventName = eventName,
+                    Stage = "event-status-notification",
+                    Message = $"The {statusLabel.ToLowerInvariant()} operational status update was not sent. Cause: At least one operational lead email address is invalid."
+                },
+                CancellationToken.None);
+            throw;
+        }
+
         if (recipients.Count == 0)
         {
             return new EventStatusNotificationResult
@@ -148,7 +171,7 @@ public sealed class EventStatusNotificationService : IEventStatusNotificationSer
                 if (ledgerChanged) await SaveLedgerAsync(ledger, cancellationToken);
             }
 
-            return new EventStatusNotificationResult
+            var response = new EventStatusNotificationResult
             {
                 NotificationId = notificationId,
                 RequestedRecipientCount = recipients.Count,
@@ -157,14 +180,39 @@ public sealed class EventStatusNotificationService : IEventStatusNotificationSer
                 PendingRecipientCount = deliveryResults.Count(delivery => delivery.Status == "pending"),
                 Deliveries = deliveryResults
             };
+            await RecordActivitySafelyAsync(
+                new IntegrationActivityWrite
+                {
+                    Operation = "Send operational event status",
+                    Outcome = response.PendingRecipientCount == 0 ? "succeeded" : "action-required",
+                    EventPlaybookEventId = eventId,
+                    EventName = eventName,
+                    Stage = "event-status-notification",
+                    Message = response.PendingRecipientCount == 0
+                        ? $"Recorded the {statusLabel.ToLowerInvariant()} decision and delivered its operational update to {response.SentRecipientCount + response.AlreadySentRecipientCount} recipient{(response.SentRecipientCount + response.AlreadySentRecipientCount == 1 ? string.Empty : "s")} (including previously delivered recipients)."
+                        : $"Recorded the {statusLabel.ToLowerInvariant()} decision, but {response.PendingRecipientCount} operational recipient{(response.PendingRecipientCount == 1 ? string.Empty : "s")} remain pending."
+                },
+                cancellationToken);
+            return response;
         }
         catch (Exception exception) when (exception is not OperationCanceledException)
         {
             _logger.LogWarning(
-                exception,
-                "The {Status} notification for Event Playbook event {EventId} remains pending.",
+                "The {Status} notification for Event Playbook event {EventId} remains pending. {Failure}",
                 status,
-                eventId);
+                eventId,
+                DescribeFailure(exception));
+            await RecordActivitySafelyAsync(
+                new IntegrationActivityWrite
+                {
+                    Operation = "Send operational event status",
+                    Outcome = "failed",
+                    EventPlaybookEventId = eventId,
+                    EventName = eventName,
+                    Stage = "event-status-notification",
+                    Message = $"The {statusLabel.ToLowerInvariant()} operational status update could not be delivered and remains eligible for retry. Cause: {DescribeFailure(exception)}"
+                },
+                cancellationToken);
             throw;
         }
         finally
@@ -273,12 +321,76 @@ public sealed class EventStatusNotificationService : IEventStatusNotificationSer
         File.Move(temporaryPath, _ledgerPath, true);
     }
 
+    private async Task RecordActivitySafelyAsync(
+        IntegrationActivityWrite activity,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _activityStore.RecordAsync(activity, cancellationToken);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception exception)
+        {
+            _logger.LogWarning(
+                "Operational event-status activity could not be recorded. {Failure}",
+                DescribeFailure(exception));
+        }
+    }
+
     private static string Required(string? value, string name, int maximumLength)
     {
         var cleaned = value?.Trim() ?? string.Empty;
         if (string.IsNullOrWhiteSpace(cleaned)) throw new ArgumentException($"The {name} is required.");
         if (cleaned.Length > maximumLength) throw new ArgumentException($"The {name} is too long.");
         return cleaned;
+    }
+
+    private static string DescribeFailure(Exception exception)
+    {
+        var message = exception.Message;
+        if (message.Contains("Event Playbook API connection", StringComparison.OrdinalIgnoreCase) &&
+            message.Contains("not configured", StringComparison.OrdinalIgnoreCase))
+        {
+            return "The Event Playbook API connection is not configured.";
+        }
+        if (message.Contains("Intelligent Golf plugin", StringComparison.OrdinalIgnoreCase) &&
+            message.Contains("configured", StringComparison.OrdinalIgnoreCase))
+        {
+            return "The Intelligent Golf plugin is not configured or switched on.";
+        }
+        if (message.Contains("Intelligent Golf email sender", StringComparison.OrdinalIgnoreCase) &&
+            message.Contains("configured", StringComparison.OrdinalIgnoreCase))
+        {
+            return "The Intelligent Golf email sender is not configured.";
+        }
+        if (message.Contains("did not respond in time", StringComparison.OrdinalIgnoreCase))
+        {
+            return "The Event Playbook API did not respond in time.";
+        }
+        if (message.Contains("could not be reached", StringComparison.OrdinalIgnoreCase))
+        {
+            return "The Event Playbook API could not be reached.";
+        }
+        if (message.Contains("could not be authorised", StringComparison.OrdinalIgnoreCase))
+        {
+            return "The member communications request could not be authorised.";
+        }
+        if (message.Contains("did not return an email delivery result", StringComparison.OrdinalIgnoreCase))
+        {
+            return "The Event Playbook API did not return an email delivery result.";
+        }
+
+        return exception switch
+        {
+            JsonException => "The Event Playbook API returned an unreadable email delivery result.",
+            IOException or UnauthorizedAccessException => "The local delivery record could not be saved.",
+            HttpRequestException => "The email delivery service could not be reached.",
+            _ => "The email delivery service failed unexpectedly."
+        };
     }
 
     private static string? Limit(string? value, int maximumLength) =>

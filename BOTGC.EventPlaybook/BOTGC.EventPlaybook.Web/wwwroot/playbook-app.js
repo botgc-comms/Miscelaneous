@@ -605,6 +605,10 @@
   }
 
   function migrateAdmissionPricingState() {
+    // v3.8 restored admission-price-details as the authoritative planning
+    // answer. The v3.5 migration moved that legacy answer into task notes, so
+    // it must not run against the restored question and delete current data.
+    if (itemIndex.has('admission-price-details')) return false;
     if (!itemIndex.has('admission-free-categories') || !itemIndex.has('set-admission-prices-task')) return false;
 
     let changed = false;
@@ -740,6 +744,179 @@
       changed = true;
     }
     return changed;
+  }
+
+  function migrateAdmissionModelV38() {
+    const configuredVersion = Number.parseFloat(playbook?.schemaVersion ?? '0');
+    if (!Number.isFinite(configuredVersion) || configuredVersion < 3.8 ||
+        !itemIndex.has('admission-arrangements') || !itemIndex.has('admission-price-details')) return false;
+
+    let changed = false;
+    const retiredQuestionIds = [
+      'booking-registration-instructions',
+      'booking-confirmation-process'
+    ];
+    const retiredTaskIds = [
+      'set-admission-prices-task',
+      'approve-admission-offer-task'
+    ];
+    const targetItemRemap = {
+      'booking-registration-instructions': 'admission-public-instructions',
+      'booking-confirmation-process': 'configure-ticket-sales-task',
+      'set-admission-prices-task': 'admission-price-details',
+      'approve-admission-offer-task': 'configure-ticket-sales-task'
+    };
+    const usableText = value => typeof value === 'string' && value.trim() ? value.trim() : '';
+    const appendUniqueText = (existing, value, label) => {
+      const cleaned = usableText(value);
+      if (!cleaned) return usableText(existing);
+      const next = label ? `${label}: ${cleaned}` : cleaned;
+      const current = usableText(existing);
+      if (!current) return next;
+      return current.includes(cleaned) ? current : `${current}\n\n${next}`;
+    };
+    const migrateArrangement = record => {
+      if (!record || typeof record !== 'object') return false;
+      const previous = record['admission-arrangements'];
+      let needsReview = false;
+      if (Array.isArray(previous)) {
+        if (previous.includes('entry-payment') || previous.includes('paid-entry')) {
+          record['admission-arrangements'] = 'paid-entry';
+        } else if (previous.includes('limited-place-booking')) {
+          record['admission-arrangements'] = 'limited-place-booking';
+        } else if (previous.includes('attendance-registration')) {
+          record['admission-arrangements'] = 'attendance-registration';
+        } else if (previous.includes('advance-booking')) {
+          if (hasRecordedQuestionValue(record['admission-capacity'])) {
+            record['admission-arrangements'] = 'limited-place-booking';
+          } else {
+            // The retired answer covered both finite reservations and simple
+            // attendance estimates. Without a recorded capacity, choosing one
+            // silently would change the event's meaning, so require review.
+            delete record['admission-arrangements'];
+            needsReview = true;
+          }
+        } else {
+          delete record['admission-arrangements'];
+        }
+      } else if (previous === 'entry-payment') {
+        record['admission-arrangements'] = 'paid-entry';
+      } else if (previous === 'advance-booking') {
+        if (hasRecordedQuestionValue(record['admission-capacity'])) {
+          record['admission-arrangements'] = 'limited-place-booking';
+        } else {
+          delete record['admission-arrangements'];
+          needsReview = true;
+        }
+      }
+      return needsReview;
+    };
+
+    for (const event of state.events ?? []) {
+      event.dataMigrations = event.dataMigrations && typeof event.dataMigrations === 'object'
+        ? event.dataMigrations
+        : {};
+      if (event.dataMigrations.admissionModelV38 === true) continue;
+
+      const before = JSON.stringify({
+        answers: event.answers,
+        clonedAnswerHints: event.clonedAnswerHints,
+        questionMeta: event.questionMeta,
+        taskState: event.taskState,
+        dataMigrations: event.dataMigrations,
+        learningInsights: event.learningInsights,
+        retrospectiveTaskAnalysis: event.retrospective?.taskAnalysis
+      });
+
+      event.answers = event.answers && typeof event.answers === 'object' ? event.answers : {};
+      event.taskState = event.taskState && typeof event.taskState === 'object' ? event.taskState : {};
+      const answerArrangementNeedsReview = migrateArrangement(event.answers);
+      const hintArrangementNeedsReview = migrateArrangement(event.clonedAnswerHints);
+      const arrangementNeedsReview = answerArrangementNeedsReview || hintArrangementNeedsReview;
+
+      const legacyPriceTask = event.taskState['set-admission-prices-task'];
+      const legacyComplimentary = event.answers['complimentary-admission'];
+      const legacyComplimentaryDetails = event.answers['complimentary-admission-details'];
+      const legacyComplimentaryHint = event.clonedAnswerHints?.['complimentary-admission'];
+      const legacyComplimentaryDetailsHint = event.clonedAnswerHints?.['complimentary-admission-details'];
+      if (!Object.prototype.hasOwnProperty.call(event.answers, 'admission-free-entry') &&
+          typeof legacyComplimentary === 'boolean') {
+        event.answers['admission-free-entry'] = legacyComplimentary;
+      }
+      if (event.clonedAnswerHints && typeof event.clonedAnswerHints === 'object' &&
+          !Object.prototype.hasOwnProperty.call(event.clonedAnswerHints, 'admission-free-entry') &&
+          typeof legacyComplimentaryHint === 'boolean') {
+        event.clonedAnswerHints['admission-free-entry'] = legacyComplimentaryHint;
+      }
+
+      let priceDetails = usableText(event.answers['admission-price-details']);
+      priceDetails = appendUniqueText(priceDetails, legacyPriceTask?.notes, 'Previously recorded ticket prices');
+      priceDetails = appendUniqueText(priceDetails, legacyComplimentaryDetails, 'Previously recorded complimentary or discounted entry');
+      if (priceDetails) event.answers['admission-price-details'] = priceDetails;
+      if (event.clonedAnswerHints && typeof event.clonedAnswerHints === 'object') {
+        let priceHint = usableText(event.clonedAnswerHints['admission-price-details']);
+        priceHint = appendUniqueText(priceHint, legacyComplimentaryDetailsHint, 'Previous complimentary or discounted entry');
+        if (priceHint) event.clonedAnswerHints['admission-price-details'] = priceHint;
+      }
+
+      const previousProcessDetails = [
+        ['Previously recorded attendee instructions', event.answers['booking-registration-instructions']],
+        ['Previously recorded confirmation process', event.answers['booking-confirmation-process']]
+      ];
+      const configureTask = event.taskState['configure-ticket-sales-task'] ?? {};
+      if (arrangementNeedsReview) {
+        configureTask.notes = appendUniqueText(
+          configureTask.notes,
+          'Previous admission planning information included advance booking without a recorded capacity. Review whether this event needs attendance-only registration or a limited-place reservation.',
+          'Admission arrangement needs review');
+      }
+      for (const [label, value] of previousProcessDetails) {
+        configureTask.notes = appendUniqueText(configureTask.notes, value, label);
+      }
+      const retiredApproval = event.taskState['approve-admission-offer-task'];
+      configureTask.notes = appendUniqueText(configureTask.notes, retiredApproval?.notes, 'Previous admission review note');
+      if (usableText(configureTask.notes)) event.taskState['configure-ticket-sales-task'] = configureTask;
+
+      for (const questionId of retiredQuestionIds) {
+        delete event.answers[questionId];
+        if (event.clonedAnswerHints && typeof event.clonedAnswerHints === 'object') delete event.clonedAnswerHints[questionId];
+        if (event.questionMeta && typeof event.questionMeta === 'object') delete event.questionMeta[questionId];
+      }
+      delete event.answers['complimentary-admission'];
+      delete event.answers['complimentary-admission-details'];
+      if (event.clonedAnswerHints && typeof event.clonedAnswerHints === 'object') {
+        delete event.clonedAnswerHints['complimentary-admission'];
+        delete event.clonedAnswerHints['complimentary-admission-details'];
+      }
+      for (const taskId of retiredTaskIds) delete event.taskState[taskId];
+
+      for (const insight of event.learningInsights ?? []) {
+        if (!Array.isArray(insight.targetItemIds)) continue;
+        insight.targetItemIds = [...new Set(insight.targetItemIds.map(itemId => targetItemRemap[itemId] ?? itemId))];
+      }
+      for (const proposal of event.retrospective?.taskAnalysis?.proposals ?? []) {
+        if (proposal.targetItemId && targetItemRemap[proposal.targetItemId]) {
+          proposal.targetItemId = targetItemRemap[proposal.targetItemId];
+        }
+      }
+
+      event.dataMigrations.admissionModelV38 = true;
+      const after = JSON.stringify({
+        answers: event.answers,
+        clonedAnswerHints: event.clonedAnswerHints,
+        questionMeta: event.questionMeta,
+        taskState: event.taskState,
+        dataMigrations: event.dataMigrations,
+        learningInsights: event.learningInsights,
+        retrospectiveTaskAnalysis: event.retrospective?.taskAnalysis
+      });
+      if (before !== after) changed = true;
+    }
+
+    const previousOutboxLength = state.notificationOutbox?.length ?? 0;
+    state.notificationOutbox = (state.notificationOutbox ?? [])
+      .filter(notification => !retiredTaskIds.includes(notification.taskId));
+    return changed || state.notificationOutbox.length !== previousOutboxLength;
   }
 
   function migrateEventControlStateV37() {
@@ -1048,10 +1225,11 @@
     state.taskAlertSchedule = shared.taskAlertSchedule;
     state.events = shared.events;
     const admissionPlanningMigrated = migrateAdmissionPlanningState();
+    const admissionModelMigrated = migrateAdmissionModelV38();
     const admissionPricingMigrated = migrateAdmissionPricingState();
     const foodServiceReviewMigrated = migrateFoodServiceReviewCompletionState();
     const eventControlMigrated = migrateEventControlStateV37();
-    const eventStateMigrated = admissionPlanningMigrated || admissionPricingMigrated || foodServiceReviewMigrated || eventControlMigrated;
+    const eventStateMigrated = admissionPlanningMigrated || admissionModelMigrated || admissionPricingMigrated || foodServiceReviewMigrated || eventControlMigrated;
     if (state.activeEventId && !state.events.some(event => event.id === state.activeEventId)) {
       state.activeEventId = null;
       state.activeView = 'catalogue';
@@ -1505,6 +1683,7 @@
       createdAt: now,
       closedAt: null,
       answers: organiserName ? { 'event-decision-owner': resolvedOrganiserRef ?? organiserName } : {},
+      questionMeta: {},
       taskState: {},
       team: organiserName ? [organiserName] : [],
       advisoryOverrides: {},
@@ -1529,6 +1708,7 @@
       dataMigrations: {
         admissionPlanningV34: true,
         admissionPricingV35: true,
+        admissionModelV38: true,
         foodServiceReviewCompletionV36: true,
         eventControlV37: true
       },
@@ -1684,6 +1864,7 @@
     event.lifecycle.memberUpdate ??= '';
     event.lifecycle.interestedParties = Array.isArray(event.lifecycle.interestedParties) ? event.lifecycle.interestedParties : [];
     event.lifecycle.history = Array.isArray(event.lifecycle.history) ? event.lifecycle.history : [];
+    event.lifecycle.resolvedFromAtRisk = event.lifecycle.resolvedFromAtRisk === true;
     event.startTime = typeof event.startTime === 'string' ? event.startTime : '';
     event.endTime = typeof event.endTime === 'string' ? event.endTime : '';
     event.intelligentGolfEventTypeId = Number(event.intelligentGolfEventTypeId) || 0;
@@ -1698,11 +1879,6 @@
         !Object.prototype.hasOwnProperty.call(clonedHints, 'event-decision-owner') &&
         event.lifecycle.decisionOwner) {
       event.answers['event-decision-owner'] = event.lifecycle.decisionOwnerRef ?? event.lifecycle.decisionOwner;
-    }
-    if (!event.answers['event-communications-owner'] &&
-        !Object.prototype.hasOwnProperty.call(clonedHints, 'event-communications-owner') &&
-        event.lifecycle.communicationsOwner) {
-      event.answers['event-communications-owner'] = event.lifecycle.communicationsOwnerRef ?? event.lifecycle.communicationsOwner;
     }
     return event.lifecycle;
   }
@@ -1735,6 +1911,7 @@
     }
     if (event) {
       event.answers ??= {};
+      normaliseQuestionMeta(event);
       event.taskState ??= {};
       event.team ??= [];
       event.advisoryOverrides ??= {};
@@ -1770,6 +1947,39 @@
     }
 
     return event.answers[questionId];
+  }
+
+  function normaliseQuestionMeta(event) {
+    if (!event || !event.questionMeta || typeof event.questionMeta !== 'object' || Array.isArray(event.questionMeta)) {
+      if (event) event.questionMeta = {};
+      return event?.questionMeta ?? {};
+    }
+
+    for (const [questionId, meta] of Object.entries(event.questionMeta)) {
+      if (!meta || typeof meta !== 'object' || meta.notRelevant !== true) {
+        delete event.questionMeta[questionId];
+      }
+    }
+    return event.questionMeta;
+  }
+
+  function isQuestionNotRelevant(event, questionId) {
+    return event?.questionMeta?.[questionId]?.notRelevant === true;
+  }
+
+  function clearQuestionNotRelevant(event, questionId) {
+    if (!isQuestionNotRelevant(event, questionId)) return false;
+    delete event.questionMeta[questionId];
+    return true;
+  }
+
+  function hasRecordedQuestionValue(value) {
+    if (value === undefined || value === null || value === '') return false;
+    if (Array.isArray(value)) return value.length > 0;
+    if (typeof value === 'object') {
+      return Object.values(value).some(entry => entry !== undefined && entry !== null && entry !== '');
+    }
+    return true;
   }
 
   function conditionMatches(condition, event) {
@@ -1832,7 +2042,7 @@
 
   function hasPaidAdmissionCategories(event) {
     const arrangements = getQuestionValue('admission-arrangements', event);
-    if (!Array.isArray(arrangements) || !arrangements.includes('entry-payment')) return false;
+    if (arrangements !== 'paid-entry') return false;
     const hasFreeEntry = getQuestionValue('admission-free-entry', event);
     if (hasFreeEntry === false) return true;
     if (hasFreeEntry !== true) return false;
@@ -1902,21 +2112,35 @@
   }
 
   function normaliseAnswers(event) {
+    const questionMeta = normaliseQuestionMeta(event);
+    for (const questionId of Object.keys(questionMeta)) {
+      const indexed = itemIndex.get(questionId);
+      if (!indexed || indexed.item.type !== 'question' || indexed.item.required !== false) {
+        delete questionMeta[questionId];
+      }
+    }
     let changed = true;
     let loops = 0;
     while (changed && loops < 20) {
       changed = false;
       loops += 1;
       for (const module of playbook.modules) {
-        if (!isModuleActive(module, event)) {
-          continue;
-        }
+        const moduleActive = isModuleActive(module, event);
         for (const section of module.sections) {
           for (const item of section.items) {
-            if (item.type !== 'question' || item.bind) {
-              continue;
+            if (item.type !== 'question') continue;
+
+            const visible = moduleActive && isItemVisible(item, event);
+            const notRelevant = questionMeta[item.id]?.notRelevant === true;
+            const invalidNotRelevant = item.required !== false || hasRecordedQuestionValue(getQuestionValue(item.id, event));
+            if ((!visible || invalidNotRelevant) && notRelevant) {
+              delete questionMeta[item.id];
+              changed = true;
             }
-            if (!isItemVisible(item, event) && Object.prototype.hasOwnProperty.call(event.answers, item.id)) {
+
+            // Preserve answers in an inactive module, as before, but discard an
+            // answer when the question's own visibility rule makes it stale.
+            if (moduleActive && !item.bind && !visible && Object.prototype.hasOwnProperty.call(event.answers, item.id)) {
               delete event.answers[item.id];
               changed = true;
             }
@@ -1940,6 +2164,11 @@
     return true;
   }
 
+  function isQuestionComplete(item, event) {
+    return isAnsweredValue(getQuestionValue(item.id, event)) ||
+      (item.required === false && isQuestionNotRelevant(event, item.id));
+  }
+
   function moduleProgress(module, event) {
     if (!isModuleActive(module, event)) {
       return { active: false, answered: 0, total: 0, percent: 0 };
@@ -1948,13 +2177,13 @@
     const questions = [];
     for (const section of module.sections) {
       for (const item of section.items) {
-        if (item.type === 'question' && item.required !== false && isItemVisible(item, event)) {
+        if (item.type === 'question' && isItemVisible(item, event)) {
           questions.push(item);
         }
       }
     }
 
-    const answered = questions.filter(item => isAnsweredValue(getQuestionValue(item.id, event))).length;
+    const answered = questions.filter(item => isQuestionComplete(item, event)).length;
     const total = questions.length;
     return {
       active: true,
@@ -2376,7 +2605,7 @@
   }
 
   function ensureCompletionLinkRegistration(event, item, taskState, dueDate) {
-    if (!taskState.completionToken || item.canCompleteFromLink === false || item.completionMode === 'event-status-decision') return;
+    if (!taskState.completionToken) return;
     const completionToken = taskState.completionToken;
     const recipient = assignmentRecipient(taskAssignmentReference(taskState) ?? taskState.assignee, event);
     const expiresOn = getTaskExpiryDate(item, event);
@@ -2636,6 +2865,7 @@
     const copy = createEvent(`${sourceEvent.name} (Copy)`, sourceEvent.organiser, '', sourceEvent.description ?? '', {}, structuredClone(sourceEvent.organiserRef ?? null));
     copy.clonedAnswerHints = collectCloneAnswerHints(sourceEvent);
     copy.answers = {};
+    copy.questionMeta = {};
     copy.team = structuredClone(sourceEvent.team ?? []);
     copy.sourceEventId = sourceEvent.id;
     copy.eventSeriesId = sourceEvent.eventSeriesId ?? sourceEvent.id;
@@ -2789,6 +3019,12 @@
     return `${parts.year}-${parts.month}-${parts.day}`;
   }
 
+  function clubIsoDateFromTimestamp(value) {
+    if (!value) return '';
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? String(value).substring(0, 10) : currentClubIsoDate(date);
+  }
+
   function isTaskExpired(item, event, taskState = null, expiresOn = getTaskExpiryDate(item, event)) {
     if (taskState?.completed === true || !isValidIsoDate(expiresOn)) return false;
     return currentClubIsoDate() > expiresOn;
@@ -2878,6 +3114,36 @@
     return String(value ?? '').trim();
   }
 
+  function buildCommunicationsPlanningContext(event) {
+    const fields = [
+      ['registrationMode', 'admission-arrangements'],
+      ['freeEntry', 'admission-free-entry'],
+      ['freeEntryCategories', 'admission-free-categories'],
+      ['ticketPriceDetails', 'admission-price-details'],
+      ['paymentTiming', 'admission-payment-timing'],
+      ['maximumPlaces', 'admission-capacity'],
+      ['bookingRoutes', 'ticket-sales-methods'],
+      ['guestTableBooking', 'guest-table-booking'],
+      ['bookingOpens', 'ticket-sales-open-date'],
+      ['bookingCloses', 'ticket-sales-close-date'],
+      ['publicBookingInstructions', 'admission-public-instructions']
+    ];
+
+    return Object.fromEntries(fields.flatMap(([propertyName, questionId]) => {
+      const indexed = itemIndex.get(questionId);
+      const question = indexed?.item;
+      if (!question || question.type !== 'question' ||
+          !isModuleActive(indexed.module, event) || !isItemVisible(question, event)) {
+        return [];
+      }
+
+      const value = getQuestionValue(questionId, event);
+      if (!isAnsweredValue(value)) return [];
+      const answer = formatBriefingAnswer(question, value);
+      return answer ? [[propertyName, answer]] : [];
+    }));
+  }
+
   function taskReviewState(item, event) {
     const review = item?.reviewSummary;
     if (!review || !Array.isArray(review.fields) || !event) return null;
@@ -2886,7 +3152,8 @@
       const question = itemIndex.get(field.questionId)?.item;
       const visible = Boolean(question && isItemVisible(question, event));
       const value = question ? getQuestionValue(field.questionId, event) : undefined;
-      const hasAnswer = Boolean(question && isAnsweredValue(value) && (
+      const notRelevant = Boolean(question && question.required === false && isQuestionNotRelevant(event, field.questionId));
+      const hasAnswer = notRelevant || Boolean(question && isAnsweredValue(value) && (
         question.answerType !== 'assignment' || assignmentDisplay(value, '').trim()
       ));
       const required = field.required === undefined
@@ -2902,6 +3169,8 @@
         ? 'Question unavailable'
         : !visible
           ? (field.notApplicableText || 'Not applicable')
+          : notRelevant
+            ? (field.notApplicableText || 'Not relevant')
           : hasAnswer
             ? (unselectedOptionLabels
               ? (unselectedOptionLabels.join(', ') || field.allSelectedText || 'None')
@@ -2911,6 +3180,7 @@
         questionId: field.questionId,
         label: field.label || question?.label || field.questionId,
         visible,
+        notRelevant,
         required,
         missing,
         answer
@@ -2989,11 +3259,15 @@
   function eventStatusDecisionIsSatisfied(item, event) {
     if (item?.completionMode !== 'event-status-decision') return false;
     const lifecycle = normaliseEventLifecycle(event);
-    if (lifecycle.status === 'provisional') return false;
-    if (item.id === 'resolve-at-risk-event' && lifecycle.status === 'at-risk') return false;
+    if (item.id === 'confirm-event-before-commitments' && lifecycle.status !== 'confirmed') return false;
+    if (item.id === 'resolve-at-risk-event' &&
+        !['postponed', 'cancelled'].includes(lifecycle.status) &&
+        !(lifecycle.status === 'confirmed' && lifecycle.resolvedFromAtRisk === true)) return false;
+    if (!['confirm-event-before-commitments', 'resolve-at-risk-event'].includes(item.id) &&
+        lifecycle.status === 'provisional') return false;
 
     const expiresOn = getTaskExpiryDate(item, event);
-    const decisionDate = localDateFromTimestamp(lifecycle.statusChangedAt);
+    const decisionDate = clubIsoDateFromTimestamp(lifecycle.statusChangedAt);
     if (isValidIsoDate(expiresOn) && currentClubIsoDate() > expiresOn &&
         (!isValidIsoDate(decisionDate) || decisionDate > expiresOn)) return false;
 
@@ -3029,15 +3303,23 @@
     const completed = taskState.completed === true;
     const expiresOn = getTaskExpiryDate(item, event);
     const expired = isTaskExpired(item, event, taskState, expiresOn);
-    const actionRequired = item.completionMode === 'event-status-decision' && !completed && !expired;
-    const blocked = expired || actionRequired || Boolean(review && !completed && !review.ready);
+    const statusManaged = item.completionMode === 'event-status-decision';
+    const actionRequired = statusManaged && !completed && !expired;
+    const blocked = expired || statusManaged || Boolean(review && !completed && !review.ready);
     return {
       review,
       blocked,
       expired,
       expiresOn,
+      statusManaged,
       actionRequired,
-      title: completed
+      title: statusManaged
+        ? completed
+          ? 'Completion is controlled by the recorded event-status decision'
+          : expired
+            ? `This task expired after ${formatDate(expiresOn)} and no longer needs action`
+            : 'Use the event-status action to record the decision and notify the affected leads'
+        : completed
         ? (review ? 'Reopen the confirmed plan' : 'Mark task open')
         : expired
           ? `This task expired after ${formatDate(expiresOn)} and no longer needs action`
@@ -3046,7 +3328,9 @@
         : blocked
           ? `Complete ${review.missing.length} missing Event control answer${review.missing.length === 1 ? '' : 's'} first`
           : (review?.config.confirmLabel || 'Mark task complete'),
-      label: completed
+      label: statusManaged
+        ? completed ? 'Recorded' : expired ? 'Expired' : 'Use status'
+        : completed
         ? (review ? 'Confirmed' : 'Complete')
         : expired
           ? 'Expired'
@@ -3076,7 +3360,7 @@
         <span class="task-review-summary-status">${completed ? '✓ ' : ''}${escapeHtml(statusText)}</span>
       </header>
       <dl class="task-review-summary-grid">
-        ${review.fields.map(field => `<div class="task-review-summary-field ${field.missing ? 'missing' : ''} ${field.visible ? '' : 'not-applicable'}">
+        ${review.fields.map(field => `<div class="task-review-summary-field ${field.missing ? 'missing' : ''} ${field.visible && !field.notRelevant ? '' : 'not-applicable'}">
           <dt>${escapeHtml(field.label)}</dt>
           <dd>${escapeHtml(field.answer)}</dd>
         </div>`).join('')}
@@ -3105,6 +3389,16 @@
         for (const item of section.items) {
           if (item.type !== 'question' || !isItemVisible(item, event)) continue;
           const value = getQuestionValue(item.id, event);
+          if (item.required === false && isQuestionNotRelevant(event, item.id)) {
+            answers.push({
+              questionId: item.id,
+              module: module.title,
+              section: section.title,
+              question: item.label,
+              answer: 'Not relevant'
+            });
+            continue;
+          }
           if (value === undefined || value === null || value === '' || (Array.isArray(value) && value.length === 0)) continue;
           const answer = formatBriefingAnswer(item, value);
           if (!answer) continue;
@@ -4064,7 +4358,7 @@
       maybeOpenIntelligentGolfPlannerMatch(event);
     }
     if (state.activeView === 'artwork' && event) {
-      import('./poster-app.js?v=20260914-screen-take-down-1')
+      import('./poster-app.js?v=20260916-admission-context-1')
         .then(module => module.mountPosterStudio({
           eventId: event.id,
           eventName: event.name,
@@ -4074,6 +4368,7 @@
           endTime: event.endTime,
           eventTypeId: event.intelligentGolfEventTypeId,
           expectedAttendees: event.expectedAttendees,
+          planningContext: buildCommunicationsPlanningContext(event),
           cataloguePosterGenerationId: event.cataloguePosterGenerationId,
           referenceLibrary: loadReferenceLibrary(),
           onArtworkReady: (thumbnailDataUrl, artworkInfo = {}) => {
@@ -4840,7 +5135,7 @@
       recipients: structuredClone(targets.recipients),
       missingEmail: structuredClone(targets.missingEmail),
       targetSignature: eventStatusNotificationTargetSignature(targets),
-      deliveryStatus: targets.recipients.length ? 'pending' : 'no-email',
+      deliveryStatus: targets.recipients.length ? 'pending' : targets.missingEmail.length ? 'no-email' : 'not-required',
       requestedRecipientCount: targets.recipients.length,
       sentRecipientCount: 0,
       alreadySentRecipientCount: 0,
@@ -4851,7 +5146,12 @@
     };
   }
 
-  function eventStatusNotificationFeedback(notification) {
+  function eventStatusNotificationTargetsChanged(event, notification) {
+    if (!event || !notification || notification.deliveryStatus === 'legacy-recorded') return false;
+    return eventStatusNotificationTargetSignature(eventStatusNotificationTargets(event)) !== notification.targetSignature;
+  }
+
+  function eventStatusNotificationFeedback(notification, targetsChanged = false) {
     if (!notification) return '';
     const sent = Number(notification.sentRecipientCount || 0) + Number(notification.alreadySentRecipientCount || 0);
     const pending = Number(notification.pendingRecipientCount || 0);
@@ -4861,6 +5161,12 @@
     }
     if (notification.deliveryStatus === 'expired') {
       return 'The event date has passed, so this old operational update will not be sent.';
+    }
+    if (targetsChanged) {
+      return 'The affected leads or their email details have changed since this status was last processed. Retry the update so the current recipients are recorded and any newly added people are emailed.';
+    }
+    if (notification.deliveryStatus === 'not-required') {
+      return 'The decision is recorded. No operational teams were selected, so no internal status email was required.';
     }
     if (notification.deliveryStatus === 'sending') {
       return `Sending the recorded status to ${notification.requestedRecipientCount} operational lead${notification.requestedRecipientCount === 1 ? '' : 's'}…${missing ? ` ${missing} selected lead${missing === 1 ? ' has' : 's have'} no email address.` : ''}`;
@@ -4879,24 +5185,31 @@
     return `The decision is recorded, but its operational update is still pending.${notification.error ? ` ${notification.error}` : ''}${missing ? ` ${missing} selected lead${missing === 1 ? ' has' : 's have'} no email address.` : ''}`;
   }
 
-  function renderEventStatusNotification(notification, eventId = '') {
+  function renderEventStatusNotification(notification, event = null) {
     if (!notification) return '';
-    const retryable = ['pending', 'partial', 'failed', 'no-email'].includes(notification.deliveryStatus);
-    const tone = ['sent', 'legacy-recorded'].includes(notification.deliveryStatus)
+    const targetsChanged = eventStatusNotificationTargetsChanged(event, notification);
+    const retryable = !['sending', 'legacy-recorded', 'expired'].includes(notification.deliveryStatus) &&
+      (targetsChanged || ['pending', 'partial', 'failed'].includes(notification.deliveryStatus) ||
+        (notification.deliveryStatus === 'no-email' && (notification.missingEmail?.length ?? 0) > 0));
+    const tone = !targetsChanged && ['sent', 'legacy-recorded', 'not-required'].includes(notification.deliveryStatus)
       ? 'success'
       : notification.deliveryStatus === 'sending'
         ? 'progress'
         : 'warning';
     return `<div class="event-status-notification ${tone}" role="status">
-      <div><strong>Operational status update</strong><span>${escapeHtml(eventStatusNotificationFeedback(notification))}</span></div>
-      ${retryable ? `<button class="button button-secondary" type="button" data-retry-event-status-notification="${escapeHtml(eventId)}">Retry update</button>` : ''}
+      <div><strong>Operational status update</strong><span>${escapeHtml(eventStatusNotificationFeedback(notification, targetsChanged))}</span></div>
+      ${retryable ? `<button class="button button-secondary" type="button" data-retry-event-status-notification="${escapeHtml(event?.id ?? '')}">Retry update</button>` : ''}
     </div>`;
   }
 
   async function dispatchEventStatusNotification(event) {
     const lifecycle = normaliseEventLifecycle(event);
     const notification = lifecycle.statusNotification;
-    if (!notification || ['sending', 'sent', 'legacy-recorded'].includes(notification.deliveryStatus)) return;
+    if (!notification) return;
+    const targets = eventStatusNotificationTargets(event);
+    const targetsChanged = eventStatusNotificationTargetSignature(targets) !== notification.targetSignature;
+    if (['sending', 'legacy-recorded'].includes(notification.deliveryStatus) ||
+        (['sent', 'not-required'].includes(notification.deliveryStatus) && !targetsChanged)) return;
     if (isValidIsoDate(event.eventDate) && currentClubIsoDate() > event.eventDate) {
       notification.deliveryStatus = 'expired';
       notification.pendingRecipientCount = 0;
@@ -4906,7 +5219,6 @@
       return;
     }
 
-    const targets = eventStatusNotificationTargets(event);
     notification.recipients = structuredClone(targets.recipients);
     notification.missingEmail = structuredClone(targets.missingEmail);
     notification.targetSignature = eventStatusNotificationTargetSignature(targets);
@@ -4914,7 +5226,8 @@
     notification.pendingRecipientCount = targets.recipients.length;
     notification.error = '';
     if (!targets.recipients.length) {
-      notification.deliveryStatus = 'no-email';
+      notification.deliveryStatus = targets.missingEmail.length ? 'no-email' : 'not-required';
+      notification.completedAt = targets.missingEmail.length ? null : new Date().toISOString();
       saveState();
       render();
       return;
@@ -4991,7 +5304,7 @@
           <div><span>Communications owner</span><strong>${escapeHtml(lifecycle.communicationsOwner || 'Not assigned')}</strong></div>
         </div>
         ${CHANGE_RESPONSE_STATUSES.has(lifecycle.status) && lifecycle.memberUpdate ? `<div class="event-authoritative-message"><span>Authoritative member update</span><p>${escapeHtml(lifecycle.memberUpdate)}</p></div>` : ''}
-        ${renderEventStatusNotification(lifecycle.statusNotification, event.id)}
+        ${renderEventStatusNotification(lifecycle.statusNotification, event)}
         <button class="button button-primary" type="button" data-action="manage-event-status">Manage event status</button>
       </section>`;
   }
@@ -5237,12 +5550,13 @@
         : undefined;
     const pending = value === 'dont-know';
     const answered = isAnsweredValue(value);
+    const notRelevant = item.required === false && isQuestionNotRelevant(event, item.id);
     return `
-      <article class="flow-item question-item ${answered ? 'answered' : ''} ${pending ? 'pending-decision' : ''}" data-item-id="${item.id}">
+      <article class="flow-item question-item ${answered ? 'answered' : ''} ${pending ? 'pending-decision' : ''} ${notRelevant ? 'not-relevant' : ''}" data-item-id="${item.id}">
         <div class="flow-rail question-flow-rail">
           <span class="type-badge question-badge">Question</span>
-          <span class="question-state-mark">${pending ? '…' : answered ? '✓' : '?'}</span>
-          <small>${pending ? 'Pending' : answered ? 'Answered' : 'Decision'}</small>
+          <span class="question-state-mark">${notRelevant ? '—' : pending ? '…' : answered ? '✓' : '?'}</span>
+          <small>${notRelevant ? 'Not relevant' : pending ? 'Pending' : answered ? 'Answered' : 'Decision'}</small>
         </div>
         <div class="flow-body question-flow-body">
           <div class="question-label-row">
@@ -5255,6 +5569,13 @@
           ${renderDerivedContextForQuestion(item.id, event)}
           ${renderPriorLearning(event, item)}
           ${renderAnswerControl(item, value, priorHint)}
+          ${item.required === false ? `
+            <div class="optional-question-resolution">
+              <span>If this does not apply to this event, mark it complete without supplying an answer.</span>
+              <button type="button" class="choice-button not-relevant-choice ${notRelevant ? 'selected' : ''}" data-question-not-relevant="${escapeHtml(item.id)}" aria-pressed="${notRelevant ? 'true' : 'false'}">
+                ${notRelevant ? '✓ Not relevant' : 'Not relevant'}
+              </button>
+            </div>` : ''}
           ${renderAdvisoriesForQuestion(item.id, event)}
         </div>
       </article>
@@ -5385,6 +5706,7 @@
   function renderTaskWorkspaceAction(item, event) {
     if (!item.actionView || !item.actionLabel) return '';
     if (item.actionView === 'event-status' || item.actionType === 'manage-event-status') {
+      if (item.completionMode === 'event-status-decision' && eventStatusDecisionIsSatisfied(item, event)) return '';
       return `<button type="button" class="button button-primary task-workspace-action" data-task-manage-event-status="${escapeHtml(event?.id ?? '')}" data-event-status-prefill="${escapeHtml(item.actionStatus || 'confirmed')}">${escapeHtml(item.actionLabel)}</button>`;
     }
     return `<button type="button" class="button button-secondary task-workspace-action" data-task-workspace-view="${escapeHtml(item.actionView)}" data-task-workspace-event-id="${escapeHtml(event?.id ?? '')}">${escapeHtml(item.actionLabel)}</button>`;
@@ -5392,14 +5714,30 @@
 
   function renderTaskStatusDecisionDelivery(item, event) {
     if (item?.completionMode !== 'event-status-decision') return '';
+    const taskState = event.taskState?.[item.id] ?? {};
+    const expired = isTaskExpired(item, event, taskState);
     const notification = event.lifecycle?.statusNotification;
     if (!notification) {
-      return '<div class="task-status-delivery pending"><strong>Decision still needed</strong><span>Use the status action to record the decision and notify the selected operational leads.</span></div>';
+      return expired
+        ? '<div class="task-status-delivery pending"><strong>Decision record expired</strong><span>No decision was recorded before the event cutoff; this task is retained as read-only history.</span></div>'
+        : '<div class="task-status-delivery pending"><strong>Decision still needed</strong><span>Use the status action to record the decision and notify the selected operational leads.</span></div>';
     }
-    const retryable = ['pending', 'partial', 'failed', 'no-email'].includes(notification.deliveryStatus);
-    const tone = ['sent', 'legacy-recorded'].includes(notification.deliveryStatus) ? 'success' : 'pending';
+    const targetsChanged = eventStatusNotificationTargetsChanged(event, notification);
+    const awaitingFinalDecision = item.id === 'resolve-at-risk-event' && event.lifecycle?.status === 'at-risk';
+    const retryable = !expired && !['sending', 'legacy-recorded', 'expired'].includes(notification.deliveryStatus) &&
+      (targetsChanged || ['pending', 'partial', 'failed'].includes(notification.deliveryStatus) ||
+        (notification.deliveryStatus === 'no-email' && (notification.missingEmail?.length ?? 0) > 0));
+    const tone = !expired && !targetsChanged && !awaitingFinalDecision &&
+      ['sent', 'legacy-recorded', 'not-required'].includes(notification.deliveryStatus) ? 'success' : 'pending';
+    const heading = expired
+      ? 'Decision notification retained'
+      : awaitingFinalDecision
+        ? 'At-risk update recorded; final decision still needed'
+        : tone === 'success'
+          ? 'Decision and notification recorded'
+          : 'Decision recorded; notification needs attention';
     return `<div class="task-status-delivery ${tone}">
-      <div><strong>${tone === 'success' ? 'Decision and notification recorded' : 'Decision recorded; notification needs attention'}</strong><span>${escapeHtml(eventStatusNotificationFeedback(notification))}</span></div>
+      <div><strong>${heading}</strong><span>${escapeHtml(eventStatusNotificationFeedback(notification, targetsChanged))}</span></div>
       ${retryable ? `<button type="button" class="button button-secondary" data-retry-event-status-notification="${escapeHtml(event.id)}">Retry update</button>` : ''}
     </div>`;
   }
@@ -5444,6 +5782,8 @@
             </div>
             ${expired
               ? `<div class="complete-toggle task-expired-control" title="${escapeHtml(completionControl.title)}"><span aria-hidden="true">—</span><small>Expired</small></div>`
+              : completionControl.statusManaged
+                ? `<div class="complete-toggle task-status-control" title="${escapeHtml(completionControl.title)}"><span aria-hidden="true">${taskState.completed ? '✓' : '!'}</span><small>${escapeHtml(completionControl.label)}</small></div>`
               : `<label class="complete-toggle task-complete-control ${completionControl.blocked ? 'blocked' : ''}" title="${escapeHtml(completionControl.title)}">
                   <input type="checkbox" data-task-complete="${item.id}" ${taskState.completed ? 'checked' : ''} ${completionControl.blocked ? 'disabled' : ''}>
                   <span></span><small>${escapeHtml(completionControl.label)}</small>
@@ -5454,7 +5794,7 @@
           <div class="task-inline-meta">
             ${item.responsibleArea ? `<span class="area-chip">${escapeHtml(item.responsibleArea)}</span>` : ''}
             ${staffBriefingPhaseLabel(item) ? `<span class="staff-duty-chip">Staff duty · ${escapeHtml(staffBriefingPhaseLabel(item))}</span>` : ''}
-            ${item.reviewSummary ? '' : renderTaskWorkspaceAction(item, event)}
+            ${!expired && !item.reviewSummary ? renderTaskWorkspaceAction(item, event) : ''}
             ${expired
               ? `<div class="assignee-compact task-expired-owner"><span class="assignee-compact-label">Owner at expiry</span><strong>${escapeHtml(taskState.assignee || (item.defaultOwnerRoleId ? roleById(item.defaultOwnerRoleId)?.name : '') || 'Not assigned')}</strong></div>`
               : `<div class="assignee-compact">
@@ -5736,10 +6076,12 @@
     const completionControl = taskCompletionControl(item, event, taskState);
     return `
       <article class="task-card dashboard-task-card event-tone-${eventTone} timing-${escapeHtml(horizon)} ${artwork ? 'has-event-artwork' : ''} ${taskState.completed ? 'completed' : ''}">
-        <label class="task-card-check ${completionControl.blocked ? 'blocked' : ''}" title="${escapeHtml(completionControl.title)}">
-          <input type="checkbox" data-dashboard-task-complete="${escapeHtml(item.id)}" data-dashboard-event-id="${escapeHtml(event.id)}" ${taskState.completed ? 'checked' : ''} ${completionControl.blocked ? 'disabled' : ''}>
-          <span></span>
-        </label>
+        ${completionControl.statusManaged
+          ? `<div class="task-card-selection-status ${taskState.completed ? 'completed' : 'status-managed'}" title="${escapeHtml(completionControl.title)}" aria-label="${escapeHtml(completionControl.title)}"><span aria-hidden="true">${taskState.completed ? '✓' : '!'}</span></div>`
+          : `<label class="task-card-check ${completionControl.blocked ? 'blocked' : ''}" title="${escapeHtml(completionControl.title)}">
+              <input type="checkbox" data-dashboard-task-complete="${escapeHtml(item.id)}" data-dashboard-event-id="${escapeHtml(event.id)}" ${taskState.completed ? 'checked' : ''} ${completionControl.blocked ? 'disabled' : ''}>
+              <span></span>
+            </label>`}
         <div class="task-card-content">
           ${artwork ? `<span class="dashboard-event-artwork" aria-hidden="true"><img src="${escapeHtml(artwork)}" alt="" loading="lazy" decoding="async"></span>` : ''}
           <div class="dashboard-task-card-body">
@@ -6016,6 +6358,8 @@
             ? '<div class="task-card-primary-actions task-expired-message"><span>This task is retained for the event record; no action is required.</span></div>'
             : completionControl.actionRequired
               ? `<div class="task-card-primary-actions">${renderTaskWorkspaceAction(item, event)}</div>`
+            : completionControl.statusManaged
+              ? '<div class="task-card-primary-actions task-status-managed-message"><span>Completion follows the recorded event status and delivery result.</span></div>'
             : `<div class="task-card-primary-actions">
                 <button type="button" class="button ${taskState.completed ? 'button-secondary' : 'button-primary'}" data-task-completion-action="${escapeHtml(item.id)}" data-task-target-completed="${taskState.completed ? 'false' : 'true'}" ${completionControl.blocked ? 'disabled' : ''} title="${escapeHtml(completionControl.title)}">${taskState.completed ? 'Reopen task' : 'Complete task'}</button>
               </div>`}
@@ -6382,7 +6726,7 @@
             moduleTitle: module.title,
             sectionId: section.id,
             sectionTitle: section.title,
-            completed: isAnsweredValue(getQuestionValue(item.id, event))
+            completed: isQuestionComplete(item, event)
           });
         }
       }
@@ -7393,6 +7737,7 @@
     }
 
     if (event.clonedAnswerHints) delete event.clonedAnswerHints[questionId];
+    if (hasRecordedQuestionValue(value)) clearQuestionNotRelevant(event, questionId);
     if (indexed.item.bind === 'eventDate') {
       reanchorEventDate(event, value);
     } else {
@@ -7423,6 +7768,37 @@
     }
     saveState();
     render();
+  }
+
+  function setQuestionNotRelevant(event, questionId, notRelevant) {
+    const indexed = itemIndex.get(questionId);
+    if (!indexed || indexed.item.type !== 'question' || indexed.item.required !== false) return false;
+
+    const questionMeta = normaliseQuestionMeta(event);
+    if (notRelevant) {
+      questionMeta[questionId] = { notRelevant: true };
+      if (indexed.item.bind === 'eventDate') {
+        reanchorEventDate(event, '');
+      } else {
+        delete event.answers[questionId];
+      }
+      if (questionId === 'event-communications-owner') {
+        event.lifecycle ??= {};
+        event.lifecycle.communicationsOwnerRef = null;
+        event.lifecycle.communicationsOwner = '';
+      }
+      if (event.clonedAnswerHints) delete event.clonedAnswerHints[questionId];
+      const decisionTask = buildDontKnowTask(indexed.item);
+      if (decisionTask) delete event.taskState[decisionTask.id];
+    } else {
+      delete questionMeta[questionId];
+    }
+
+    invalidateTaskReviewConfirmations(event, questionId);
+    normaliseAnswers(event);
+    saveState();
+    render();
+    return true;
   }
 
   function updateTeam(event, name) {
@@ -7504,7 +7880,8 @@
     if (!EVENT_STATUS_DEFINITIONS[nextStatus] || !decisionOwnerRef || (needsReason && !reason) || (requiresCommunicationsOwner && !communicationsOwnerRef)) return false;
 
     const now = new Date().toISOString();
-    const statusChanged = nextStatus !== lifecycle.status;
+    const previousStatus = lifecycle.status;
+    const statusChanged = nextStatus !== previousStatus;
     const statusNotification = statusChanged && NOTIFIABLE_EVENT_STATUSES.has(nextStatus)
       ? createEventStatusNotification(event, nextStatus, now)
       : null;
@@ -7530,7 +7907,11 @@
     }
 
     lifecycle.status = nextStatus;
-    if (changed) lifecycle.statusChangedAt = now;
+    if (statusChanged) {
+      lifecycle.statusChangedAt = now;
+      lifecycle.resolvedFromAtRisk = previousStatus === 'at-risk' &&
+        ['confirmed', 'postponed', 'cancelled'].includes(nextStatus);
+    }
     lifecycle.decisionOwner = decisionOwner;
     lifecycle.decisionOwnerRef = decisionOwnerRef;
     lifecycle.communicationsOwner = communicationsOwner;
@@ -8333,6 +8714,17 @@
       });
     });
 
+    document.querySelectorAll('[data-question-not-relevant]').forEach(element => {
+      element.addEventListener('click', () => {
+        const event = getActiveEvent();
+        if (!event) return;
+        setQuestionNotRelevant(
+          event,
+          element.dataset.questionNotRelevant,
+          element.getAttribute('aria-pressed') !== 'true');
+      });
+    });
+
     document.querySelectorAll('[data-question-input]').forEach(element => {
       element.addEventListener('input', () => {
         const event = getActiveEvent();
@@ -8344,6 +8736,22 @@
         delete element.dataset.priorAnswerHint;
         if (indexed.item.bind === 'eventDate') return;
         event.answers[element.dataset.questionInput] = element.value;
+        if (hasRecordedQuestionValue(element.value)) {
+          const clearedNotRelevant = clearQuestionNotRelevant(event, element.dataset.questionInput);
+          if (clearedNotRelevant) {
+            const questionCard = element.closest('.question-item');
+            questionCard?.classList.remove('not-relevant');
+            questionCard?.classList.add('answered');
+            const stateMark = questionCard?.querySelector('.question-state-mark');
+            const stateLabel = questionCard?.querySelector('.question-flow-rail small');
+            if (stateMark) stateMark.textContent = '✓';
+            if (stateLabel) stateLabel.textContent = 'Answered';
+            const notRelevantButton = questionCard?.querySelector('[data-question-not-relevant]');
+            notRelevantButton?.classList.remove('selected');
+            notRelevantButton?.setAttribute('aria-pressed', 'false');
+            if (notRelevantButton) notRelevantButton.textContent = 'Not relevant';
+          }
+        }
         invalidateTaskReviewConfirmations(event, element.dataset.questionInput);
         saveState();
       });
@@ -9548,6 +9956,7 @@
         lifecycle: structuredClone(event.lifecycle),
         deadlineOffsets: Object.fromEntries(playbook.deadlineCodes.map(code => [code.code, getDeadlineOffset(code.code, event)])),
         answers: event.answers,
+        questionMeta: structuredClone(event.questionMeta ?? {}),
         previousAnswerHints: structuredClone(event.clonedAnswerHints ?? {}),
         finances: structuredClone(normaliseEventFinances(event)),
         financeSummary: financeTotals(event),
@@ -9631,6 +10040,7 @@
       localStorage.setItem(STORAGE_TEMPLATE, JSON.stringify(candidate));
       indexPlaybook();
       migrateAdmissionPlanningState();
+      migrateAdmissionModelV38();
       migrateAdmissionPricingState();
       migrateFoodServiceReviewCompletionState();
       migrateEventControlStateV37();
@@ -9656,6 +10066,7 @@
       await initialiseSharedState();
       migrateMilestoneState();
       migrateAdmissionPlanningState();
+      migrateAdmissionModelV38();
       migrateAdmissionPricingState();
       migrateFoodServiceReviewCompletionState();
       migrateEventControlStateV37();

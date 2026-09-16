@@ -23,6 +23,13 @@ let studioDatabasePromise = null;
 let elements = {};
 let currentContext = {};
 
+function clonePlanningContext(value) {
+    const source = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+    return Object.fromEntries(Object.entries(source)
+        .filter(([, entry]) => typeof entry === 'string' && entry.trim())
+        .map(([key, entry]) => [key, entry.trim()]));
+}
+
 function createSession(key, context) {
     return {
         key,
@@ -54,6 +61,7 @@ function createSession(key, context) {
             eventName: (context?.eventName ?? '').trim(),
             eventDate: context?.eventDate ?? '',
             description: context?.description ?? '',
+            planningContext: clonePlanningContext(context?.planningContext),
             includeDate: true,
             includePrice: false,
             includeClubBranding: false,
@@ -390,6 +398,7 @@ function serialiseSession(session, includeInlineArtwork = true) {
             eventName: form.eventName,
             eventDate: form.eventDate,
             description: form.description,
+            planningContext: clonePlanningContext(form.planningContext),
             includeDate: form.includeDate,
             includePrice: form.includePrice,
             includeClubBranding: form.includeClubBranding,
@@ -447,6 +456,7 @@ function applyStoredSession(session, stored) {
     for (const field of stringFields) {
         if (typeof storedForm[field] === 'string') session.form[field] = storedForm[field];
     }
+    session.form.planningContext = clonePlanningContext(storedForm.planningContext);
     if (typeof storedForm.includeDate === 'boolean') session.form.includeDate = storedForm.includeDate;
     if (typeof storedForm.includePrice === 'boolean') session.form.includePrice = storedForm.includePrice;
     if (typeof storedForm.includeClubBranding === 'boolean') session.form.includeClubBranding = storedForm.includeClubBranding;
@@ -754,6 +764,7 @@ function cloneGenerationForm(form) {
         eventName: form.eventName,
         eventDate: form.eventDate,
         description: form.description,
+        planningContext: clonePlanningContext(form.planningContext),
         includeDate: form.includeDate,
         includePrice: form.includePrice,
         includeClubBranding: form.includeClubBranding,
@@ -793,6 +804,7 @@ function applyGenerationSnapshot(session, snapshot) {
     for (const field of stringFields) {
         if (typeof snapshot.form[field] === 'string') session.form[field] = snapshot.form[field];
     }
+    session.form.planningContext = clonePlanningContext(snapshot.form.planningContext);
     for (const field of ['includeDate', 'includePrice', 'includeClubBranding', 'useLibraryReferences']) {
         if (typeof snapshot.form[field] === 'boolean') session.form[field] = snapshot.form[field];
     }
@@ -1074,6 +1086,7 @@ function buildReferenceSelectionRequest(session, library) {
         eventName: form.eventName || session.customEventName || 'Current event',
         eventDate: form.eventDate,
         description: form.description,
+        planningContext: form.planningContext,
         additionalInstructions: form.additionalInstructions,
         includeDate: form.includeDate,
         includePrice: form.includePrice,
@@ -1635,6 +1648,13 @@ function wireEvents(session) {
 
 function synchroniseSelectedEventContext(session, seedBrief = false) {
     const context = session.context ?? {};
+    const previousPlannedPrice = String(session.form.planningContext?.ticketPriceDetails ?? '').trim();
+    const existingPrice = String(session.form.price ?? '').trim();
+    session.form.planningContext = clonePlanningContext(context.planningContext);
+    const plannedPrice = session.form.planningContext.ticketPriceDetails;
+    if (!existingPrice || (previousPlannedPrice && existingPrice === previousPlannedPrice)) {
+        session.form.price = plannedPrice ?? '';
+    }
     const contextEventName = typeof context.eventName === 'string' ? context.eventName.trim() : '';
     const catalogueEvent = session.config?.events?.find(event =>
         contextEventName && event.name.toLocaleLowerCase() === contextEventName.toLocaleLowerCase()
@@ -1663,7 +1683,7 @@ function synchroniseSelectedEventContext(session, seedBrief = false) {
         session.form.description = typeof context.description === 'string' && context.description.trim()
             ? context.description
             : catalogueEvent?.description ?? session.form.description;
-        session.form.price = catalogueEvent?.defaultPrice ?? session.form.price;
+        session.form.price ||= catalogueEvent?.defaultPrice ?? '';
     }
 }
 
@@ -2357,6 +2377,7 @@ async function generateConcept(generation, concept, signal, safetyRecoveryAttemp
         styleVariationId: concept.styleVariationId,
         eventDate: form.eventDate,
         description: form.description,
+        planningContext: form.planningContext,
         includeDate: form.includeDate,
         includePrice: form.includePrice,
         includeClubBranding: form.includeClubBranding,
@@ -2448,6 +2469,7 @@ async function generatePrimary(generation, isRegeneration, signal, safetyRecover
             styleVariationId: generation.snapshot.styleVariationId,
             eventDate: form.eventDate,
             description: form.description,
+            planningContext: form.planningContext,
             includeDate: form.includeDate,
             includePrice: form.includePrice,
             includeClubBranding: form.includeClubBranding,
@@ -2574,6 +2596,7 @@ async function generateVariant(generation, output, masterArtworkDataUrl, signal)
             outputId: output.id,
             eventDate: form.eventDate,
             description: form.description,
+            planningContext: form.planningContext,
             primaryArtworkDataUrl: masterArtworkDataUrl,
             includeDate: form.includeDate,
             includePrice: form.includePrice,
@@ -3568,6 +3591,7 @@ async function generateMemberEmailDraft(session) {
                 eventName: getCampaignEventName(session),
                 eventDate: session.form.eventDate,
                 description: session.form.description,
+                planningContext: session.form.planningContext,
                 additionalInstructions: session.form.additionalInstructions || null,
                 price: session.form.includePrice ? session.form.price : null,
                 artwork: {
@@ -4081,6 +4105,7 @@ async function generateMemberDiaryDraft(session) {
                 eventName: getCampaignEventName(session),
                 eventDate: session.form.eventDate,
                 description: session.form.description,
+                planningContext: session.form.planningContext,
                 additionalInstructions: session.form.additionalInstructions || null,
                 price: session.form.includePrice ? session.form.price : null,
                 startTime: session.form.diaryStartTime || session.context?.startTime || null,
