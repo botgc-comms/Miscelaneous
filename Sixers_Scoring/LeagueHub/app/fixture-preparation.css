@@ -593,3 +593,155 @@
   gap: 12px 24px;
   margin: 12px 0;
 }
+.start-settings {
+  display: grid;
+  gap: 22px;
+}
+.start-settings header p {
+  margin-top: 6px;
+}
+.start-format {
+  border: 0;
+  padding: 0;
+  min-width: 0;
+}
+.start-format legend {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.start-format > div {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  background: #edf3ef;
+  border-radius: 10px;
+}
+.start-format button {
+  min-height: 44px;
+  padding: 8px 18px;
+  border-radius: 7px;
+  color: #45665c;
+  font-weight: 600;
+}
+.start-format button[aria-pressed='true'] {
+  background: #fff;
+  color: #086c59;
+  box-shadow: 0 1px 4px #163c3020;
+}
+.start-format button:focus-visible {
+  outline: 2px solid #087b62;
+  outline-offset: 2px;
+}
+.start-settings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+  gap: 18px;
+  align-items: start;
+}
+.start-settings footer {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 20px;
+  border-top: 1px solid #dce6e1;
+}
+.start-settings footer p {
+  margin-top: 6px;
+  max-width: 650px;
+}
+.start-settings footer .btn {
+  flex-shrink: 0;
+}
+.start-slot > header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.start-slot > header > span {
+  margin-left: auto;
+  font-size: 13px;
+}
+.start-slot .icon-btn {
+  width: 32px;
+  height: 32px;
+}
+.start-slot-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.start-slot-fields label:only-child {
+  grid-column: 1 / -1;
+}
+.starting-allocations .slot-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  align-items: start;
+}
+.starting-allocations .slot-pair {
+  margin-top: 16px;
+  padding-top: 16px;
+}
+.start-pair-team {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.start-pair-team strong {
+  font-size: 14px;
+}
+.start-pair-children {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0 0 32px;
+}
+.start-pair-children .child-name {
+  min-width: 0;
+}
+.start-pair-children .child-name > span:last-child {
+  overflow-wrap: anywhere;
+}
+.start-slot-warning {
+  color: #92520c;
+  background: #fff4dc;
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 12px;
+  font-size: 13px;
+}
+.start-moves > summary {
+  cursor: pointer;
+  font-size: 17px;
+  font-weight: 600;
+}
+.start-moves > p {
+  margin: 12px 0;
+}
+.start-save {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+}
+@media (max-width: 600px) {
+  .start-settings footer,
+  .start-save {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .start-settings footer .btn {
+    width: 100%;
+  }
+  .start-slot-fields {
+    grid-template-columns: 1fr;
+  }
+  .start-format > div {
+    display: flex;
+  }
+  .start-format button {
+    flex: 1;
+    padding: 8px;
+  }
+}

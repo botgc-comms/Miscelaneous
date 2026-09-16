@@ -47,8 +47,7 @@ import {
   type Member,
 } from '@/lib/model';
 import JoinTeam from './join-team';
-import { FixtureConversation } from './fixture-conversation';
-import { selectionConfirmed, selectionKey } from '@/lib/model';
+import { ParentFixtureCard, HostInstructions } from './parent-fixture-card';
 import {
   readJourney,
   rememberJourney,
@@ -571,221 +570,24 @@ export default function ParentPortal() {
       </section>
     );
   }
-  function EventCard({
-    event,
-    compact = false,
-  }: {
-    event: (typeof events)[number];
-    compact?: boolean;
-  }) {
-    const { season, f, kids } = event,
-      club = season.state.clubs.find((c) => c.id === f.clubId);
-    const playing = kids.filter((p) =>
-      f.pairs.some((pair) => pair.players.includes(p.id)),
-    );
-    const chosen = playing.length > 0;
-    const compactCard = compact && !chosen;
+  function renderEvent(event: (typeof events)[number]) {
+    const { season, f, kids } = event;
     return (
-      <section
-        className={`family-fixture${compactCard ? ' family-availability-card' : ''}${chosen ? ' family-playing-card' : ''}`}
-      >
-        {chosen && (
-          <div className="family-playing-banner">
-            <Check size={22} aria-hidden="true" />
-            <div>
-              <span>THE TEAM HAS BEEN ANNOUNCED</span>
-              <h2>
-                {playing.map((p) => p.name.split(' ')[0]).join(' & ')}{' '}
-                {playing.length === 1 ? 'is' : 'are'} playing!
-              </h2>
-            </div>
-          </div>
-        )}
-        {!compact && !chosen && (
-          <ClubImage
-            club={club}
-            workspace={season.workspace}
-            className="fixture-course-image"
-          />
-        )}
-        <div className="family-fixture-top">
-          <div className="date-tile">
-            <strong>{f.date.slice(8)}</strong>
-            <span>
-              {new Date(f.date + 'T12:00:00').toLocaleDateString('en-GB', {
-                month: 'short',
-              })}
-            </span>
-          </div>
-          <div>
-            <span className="eyebrow">
-              {f.status === 'live' ? '● LIVE NOW' : dateLabel(f.date)}
-            </span>
-            <h2>{club?.name || f.name}</h2>
-            <p>
-              Arrive {f.arrival} · Start {f.start} ·{' '}
-              {f.format === 'shotgun' ? 'Shotgun start' : 'Tee times'}
-            </p>
-            {!event.published && f.status === 'scheduled' && (
-              <span className="badge amber">Provisional date</span>
-            )}
-          </div>
-          <button
-            className="text-link"
-            onClick={() => openFixture(season, f, chosen)}
-          >
-            {chosen ? 'Host instructions & directions' : 'Fixture details'}
-            <ChevronRight size={16} />
-          </button>
-        </div>
-        {kids.map((p) => {
-          const pair = f.pairs.find((q) => q.players.includes(p.id));
-          const reserve = season.state.reserves?.some(
-            (r) => r.fixtureId === f.id && r.playerId === p.id,
-          );
-          const av = season.state.availability?.find(
-            (a) => a.fixtureId === f.id && a.playerId === p.id,
-          );
-          const partner = pair?.players
-            .filter((id) => id !== p.id)
-            .map(
-              (id) =>
-                season.state.players.find((p) => p.id === id)?.name ||
-                'Partner to be confirmed',
-            )
-            .join(' & ');
-          const team =
-            season.state.teams.find((t) => t.id === pair?.teamId) ||
-            regs(p).find(
-              (r) =>
-                r.season.workspace === season.workspace &&
-                r.e.status === 'approved' &&
-                f.teamIds.includes(r.e.teamId),
-            )?.team;
-          return (
-            <div className="family-fixture-child" key={p.id}>
-              <div className="row">
-                <Cap
-                  color={team?.color || '#71926a'}
-                  label={`${team?.cap || 'Team'} cap`}
-                  size={34}
-                />
-                <div>
-                  <strong>
-                    <ChildName player={p} short />
-                  </strong>
-                  <p>
-                    {pair
-                      ? `${team?.name || 'Your team'} · ${team?.cap || 'Team'} caps${partner ? ' · Paired with ' + partner : ' · Partner to be confirmed'}`
-                      : reserve
-                        ? 'Reserve · We’ll let you know if a place opens up'
-                        : av?.status === 'no'
-                          ? 'Not available for this one'
-                          : av?.status === 'yes'
-                            ? 'Available · Waiting for team selection'
-                            : chosen
-                              ? 'Not selected yet · Can they play?'
-                              : 'Can they play?'}
-                  </p>
-                </div>
-                {compactCard && !av && !pair && !reserve && (
-                  <span className="badge amber">Please respond</span>
-                )}
-
-                {reserve && <span className="badge amber">Reserve</span>}
-              </div>
-              {pair?.slotId && (
-                <p className="family-starting-slot">
-                  Starting group:{' '}
-                  {f.slots.find((slot) => slot.id === pair.slotId)?.label ||
-                    'Your organiser will confirm the starting group'}
-                </p>
-              )}
-              {f.status === 'scheduled' && !pair && !reserve && (
-                <div
-                  className="availability-buttons"
-                  aria-label={`${p.name} availability`}
-                >
-                  {[
-                    ['yes', '✓ Available'],
-                    ['unsure', 'Not sure yet'],
-                    ['no', 'Can’t make it'],
-                  ].map(([value, label]) => (
-                    <button
-                      key={value}
-                      disabled={busy}
-                      aria-pressed={av?.status === value}
-                      className={av?.status === value ? 'active' : ''}
-                      onClick={() => void availability(season, f, p, value)}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              )}
-              {f.status === 'live' && pair && (
-                <button
-                  className="btn primary mt-4"
-                  onClick={() => openFixture(season, f)}
-                >
-                  Open our scorecard
-                  <ArrowRight size={16} />
-                </button>
-              )}
-              {f.status === 'scheduled' && pair && (
-                <div className="family-selection-actions">
-                  {selectionConfirmed(season.state, f, p.id) ? (
-                    <span className="family-confirmed-reply">
-                      <Check size={16} /> You’ve confirmed they can play
-                    </span>
-                  ) : (
-                    <button
-                      className="btn primary"
-                      disabled={busy}
-                      onClick={async () => {
-                        try {
-                          await act(season, {
-                            type: 'fixture-confirm',
-                            fixtureId: f.id,
-                            playerId: p.id,
-                            selection: selectionKey(f, p.id),
-                          });
-                        } catch (e) {
-                          setError((e as Error).message);
-                        }
-                      }}
-                    >
-                      Confirm {p.name.split(' ')[0]} can play
-                    </button>
-                  )}
-                </div>
-              )}
-              {f.status === 'scheduled' && (pair || reserve) && (
-                <button
-                  className="text-link family-withdraw"
-                  disabled={busy}
-                  onClick={() => void availability(season, f, p, 'no')}
-                >
-                  {p.name.split(' ')[0]} can no longer play
-                </button>
-              )}
-              {team && !compact && (
-                <FixtureConversation
-                  s={season.state}
-                  fixtureId={f.id}
-                  teamId={pair?.teamId || team.id}
-                  playerId={p.id}
-                  busy={busy}
-                  send={(a) => act(season, a)}
-                  parent
-                />
-              )}
-            </div>
-          );
-        })}
-      </section>
+      <ParentFixtureCard
+        key={season.workspace + f.id}
+        s={season.state}
+        f={f}
+        kids={kids}
+        published={event.published}
+        detail={screen === 'fixture'}
+        busy={busy}
+        send={(a) => act(season, a)}
+        availability={(p, value) => void availability(season, f, p, value)}
+        open={() => openFixture(season, f)}
+      />
     );
   }
+
   const activeSeason =
     fixture &&
     data?.seasons.find((s) => s.workspace === fixture.season.workspace);
@@ -936,16 +738,8 @@ export default function ParentPortal() {
                   </section>
                 ) : (
                   <>
-                    {live.map((e) => (
-                      <EventCard key={e.season.workspace + e.f.id} event={e} />
-                    ))}
-                    {selected.map((e) => (
-                      <EventCard
-                        key={e.season.workspace + e.f.id}
-                        event={e}
-                        compact
-                      />
-                    ))}
+                    {live.map((e) => renderEvent(e))}
+                    {selected.map((e) => renderEvent(e))}
                     {joined && other.length > 0 && (
                       <details
                         className="family-other-fixtures"
@@ -967,13 +761,7 @@ export default function ParentPortal() {
                           Tell your club organiser when your children can play.
                           Available does not mean selected.
                         </p>
-                        {other.map((e) => (
-                          <EventCard
-                            key={e.season.workspace + e.f.id}
-                            event={e}
-                            compact
-                          />
-                        ))}
+                        {other.map((e) => renderEvent(e))}
                       </details>
                     )}
                     {joined && !upcoming.length && !live.length && (
@@ -1076,9 +864,7 @@ export default function ParentPortal() {
             {screen === 'fixtures' && (
               <>
                 <h1 className="mb-7">All their upcoming fixtures.</h1>
-                {upcoming.map((e) => (
-                  <EventCard key={e.season.workspace + e.f.id} event={e} />
-                ))}
+                {upcoming.map((e) => renderEvent(e))}
               </>
             )}
             {screen === 'updates' && (
@@ -1142,29 +928,31 @@ export default function ParentPortal() {
                   <ArrowLeft size={16} />
                   Back to our fixtures
                 </button>
-                <div className="parent-greeting">
-                  <ClubImage
-                    club={activeSeason.state.clubs.find(
-                      (c) => c.id === activeFixture.clubId,
-                    )}
-                    workspace={activeSeason.workspace}
-                  />
-                  <span className="eyebrow">
-                    {dateLabel(activeFixture.date)}
-                  </span>
-                  <h1>
-                    {activeSeason.state.clubs.find(
-                      (c) => c.id === activeFixture.clubId,
-                    )?.name || activeFixture.name}
-                  </h1>
-                  <p>
-                    Arrive {activeFixture.arrival} · Play {activeFixture.start}{' '}
-                    ·{' '}
-                    {activeFixture.format === 'shotgun'
-                      ? 'Shotgun start'
-                      : 'Tee times'}
-                  </p>
-                </div>
+                {activeFixture.status !== 'scheduled' && (
+                  <div className="parent-greeting">
+                    <ClubImage
+                      club={activeSeason.state.clubs.find(
+                        (c) => c.id === activeFixture.clubId,
+                      )}
+                      workspace={activeSeason.workspace}
+                    />
+                    <span className="eyebrow">
+                      {dateLabel(activeFixture.date)}
+                    </span>
+                    <h1>
+                      {activeSeason.state.clubs.find(
+                        (c) => c.id === activeFixture.clubId,
+                      )?.name || activeFixture.name}
+                    </h1>
+                    <p>
+                      Arrive {activeFixture.arrival} · Play{' '}
+                      {activeFixture.start} ·{' '}
+                      {activeFixture.format === 'shotgun'
+                        ? 'Shotgun start'
+                        : 'Tee times'}
+                    </p>
+                  </div>
+                )}
                 {activeFixture.status === 'live' ||
                 activeFixture.status === 'completed' ? (
                   <Scorecards
@@ -1173,81 +961,29 @@ export default function ParentPortal() {
                     tools={tools(activeSeason)}
                   />
                 ) : (
-                  <EventCard
-                    event={{
-                      season: activeSeason,
-                      f: activeFixture,
-                      published: !!activeSeason.state.leagues.find(
-                        (l) => l.id === activeFixture.leagueId,
-                      )?.fixturesConfirmedAt,
-                      kids: children.filter((p) =>
-                        regs(p).some(
-                          (r) =>
-                            r.season.workspace === activeSeason.workspace &&
-                            r.e.status === 'approved' &&
-                            activeFixture.teamIds.includes(r.e.teamId),
-                        ),
+                  renderEvent({
+                    season: activeSeason,
+                    f: activeFixture,
+                    published: !!activeSeason.state.leagues.find(
+                      (l) => l.id === activeFixture.leagueId,
+                    )?.fixturesConfirmedAt,
+                    kids: children.filter((p) =>
+                      regs(p).some(
+                        (r) =>
+                          r.season.workspace === activeSeason.workspace &&
+                          r.e.status === 'approved' &&
+                          activeFixture.teamIds.includes(r.e.teamId),
                       ),
-                    }}
+                    ),
+                  })
+                )}
+                {activeFixture.status !== 'scheduled' && (
+                  <HostInstructions
+                    s={activeSeason.state}
+                    f={activeFixture}
+                    id="fixture-host-instructions"
                   />
                 )}
-                <div className="family-children mt-6">
-                  <section
-                    className="card"
-                    id="fixture-host-instructions"
-                    tabIndex={-1}
-                  >
-                    <h2>Instructions from the host</h2>
-                    <p className="mt-3">
-                      <strong>
-                        {
-                          activeSeason.state.clubs.find(
-                            (c) => c.id === activeFixture.clubId,
-                          )?.name
-                        }
-                      </strong>
-                    </p>
-                    <p className="muted mt-3">
-                      {activeFixture.instructions ||
-                        'The host has not added extra instructions yet. Please check again before travelling.'}
-                    </p>
-                    <p className="muted mt-3">
-                      {
-                        activeSeason.state.clubs.find(
-                          (c) => c.id === activeFixture.clubId,
-                        )?.address
-                      }{' '}
-                      {
-                        activeSeason.state.clubs.find(
-                          (c) => c.id === activeFixture.clubId,
-                        )?.postcode
-                      }
-                    </p>
-                    <p className="muted mt-3">
-                      {activeFixture.registration
-                        ? 'Please register on arrival.'
-                        : 'Meet at the welcome briefing.'}
-                    </p>
-                  </section>
-                  <section className="card">
-                    <h2>Food & little details</h2>
-                    <p className="muted mt-3">
-                      {activeFixture.foodBefore ||
-                        'No food arranged before play.'}
-                    </p>
-                    <p className="muted mt-3">
-                      {activeFixture.foodAfter ||
-                        'No food arranged after play.'}
-                    </p>
-                    <p className="muted mt-3">
-                      {
-                        activeSeason.state.clubs.find(
-                          (c) => c.id === activeFixture.clubId,
-                        )?.instructions
-                      }
-                    </p>
-                  </section>
-                </div>
               </>
             )}
             <footer className="family-footer">
