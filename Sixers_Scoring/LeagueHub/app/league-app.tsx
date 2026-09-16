@@ -22,6 +22,7 @@ import {
   Clock,
   ArrowUpRight,
   ChevronRight,
+  ChevronDown,
   MapPin,
   Link,
   Mail,
@@ -52,6 +53,7 @@ import {
   TableHead,
   TableCell,
 } from '@/components/ui/table';
+import { londonDay } from '@/lib/team-priority';
 import { demoUser } from '@/lib/demo';
 import {
   emptyState,
@@ -140,7 +142,7 @@ export default function LeagueApp() {
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState('upcoming');
   const [join, setJoin] = useState('');
   const [inviteInfo, setInviteInfo] = useState<any>(null);
   const generation = useRef(0);
@@ -319,7 +321,7 @@ export default function LeagueApp() {
       ),
     );
     setFixtureId('');
-    setFilter('all');
+    setFilter('upcoming');
     setPage(target);
   };
   const openTeam = (id: string) => {
@@ -608,21 +610,63 @@ export default function LeagueApp() {
           <header className="topbar">
             <div className="row">
               <SidebarTrigger />
-              {data.workspaces.length > 1 ? (
-                <Pick
-                  label="League administration"
-                  value={data.workspace}
-                  onChange={switchWorkspace}
-                  options={data.workspaces.map((w) => ({
-                    value: w.id,
-                    label: w.name,
-                  }))}
-                />
-              ) : (
-                <strong className="topbar-product-name">
-                  GolfSixes<span> League</span>
-                </strong>
-              )}
+              <details className="workspace-picker" key={data.workspace}>
+                <summary>
+                  <span>
+                    <small>Workspace{data.demo ? ' · demo' : ''}</small>
+                    <strong>{data.workspaceName}</strong>
+                  </span>
+                  <ChevronDown size={16} />
+                </summary>
+                <div className="workspace-picker-panel">
+                  <p className="muted">
+                    A workspace contains its own clubs, leagues and people.
+                  </p>
+                  {data.workspaces.length > 1 && !data.demo && (
+                    <Pick
+                      label="Switch workspace"
+                      value={data.workspace}
+                      onChange={switchWorkspace}
+                      options={data.workspaces.map((w) => ({
+                        value: w.id,
+                        label: w.name,
+                      }))}
+                    />
+                  )}
+                  {admin && (
+                    <button
+                      className="btn"
+                      onClick={(e) => {
+                        e.currentTarget
+                          .closest('details')
+                          ?.removeAttribute('open');
+                        edit('rename-workspace', { name: data.workspaceName });
+                      }}
+                    >
+                      Rename workspace
+                    </button>
+                  )}
+                  {admin && (
+                    <button
+                      className="btn"
+                      disabled={data.demo}
+                      title={
+                        data.demo
+                          ? 'Return to the live service to create a workspace.'
+                          : undefined
+                      }
+                      onClick={(e) => {
+                        e.currentTarget
+                          .closest('details')
+                          ?.removeAttribute('open');
+                        edit('create-workspace');
+                      }}
+                    >
+                      Create a new workspace
+                    </button>
+                  )}
+                </div>
+              </details>
             </div>
             <div className="row">
               {data.canSwitchRoles ? (
@@ -1122,6 +1166,7 @@ export default function LeagueApp() {
                         value={filter}
                         onChange={setFilter}
                         options={[
+                          'upcoming',
                           'all',
                           'scheduled',
                           'live',
@@ -1130,11 +1175,13 @@ export default function LeagueApp() {
                         ].map((v) => ({
                           value: v,
                           label:
-                            v === 'all'
-                              ? 'All fixtures'
-                              : v === 'scheduled'
-                                ? 'Upcoming'
-                                : v[0].toUpperCase() + v.slice(1),
+                            v === 'upcoming'
+                              ? 'Upcoming fixtures'
+                              : v === 'all'
+                                ? 'All fixtures'
+                                : v === 'scheduled'
+                                  ? 'Scheduled (all dates)'
+                                  : v[0].toUpperCase() + v.slice(1),
                         }))}
                       />
                     </div>
@@ -1164,7 +1211,12 @@ export default function LeagueApp() {
                       )}
                     <div className="fixture-list">
                       {fixtures
-                        .filter((f) => filter === 'all' || f.status === filter)
+                        .filter((f) =>
+                          filter === 'upcoming'
+                            ? ['scheduled', 'live'].includes(f.status) &&
+                              f.date >= (s.demoToday || londonDay())
+                            : filter === 'all' || f.status === filter,
+                        )
                         .map((f) => (
                           <button
                             className="fixture-row"
@@ -1199,8 +1251,11 @@ export default function LeagueApp() {
                           </button>
                         ))}
                     </div>
-                    {!fixtures.filter(
-                      (f) => filter === 'all' || f.status === filter,
+                    {!fixtures.filter((f) =>
+                      filter === 'upcoming'
+                        ? ['scheduled', 'live'].includes(f.status) &&
+                          f.date >= (s.demoToday || londonDay())
+                        : filter === 'all' || f.status === filter,
                     ).length && (
                       <Empty title="No fixtures here yet">
                         Try another status, or add a fixture to the season.

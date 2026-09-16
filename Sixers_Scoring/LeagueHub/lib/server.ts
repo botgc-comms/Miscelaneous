@@ -308,14 +308,14 @@ export async function hash(value: string) {
     .map((v) => v.toString(16).padStart(2, '0'))
     .join('');
 }
-export async function createWorkspace(name: string) {
+export async function createWorkspace(name: string, workspace?: string) {
   const u = await user();
   if (u.demoWorkspace)
     throw new AppError(
       'Return to the live service before creating a workspace.',
       403,
     );
-  const existing = await context();
+  const existing = await context(workspace);
   if (existing.me.role !== 'admin')
     throw new AppError('Foundation administrator access is required.', 403);
   if (typeof name !== 'string' || !name.trim() || name.length > 100)
@@ -344,6 +344,26 @@ export async function createWorkspace(name: string) {
     )
     .run();
   return snapshot(await context(id));
+}
+export async function renameWorkspace(
+  workspace: string | undefined,
+  view: string | undefined,
+  name: string,
+) {
+  const c = await context(workspace, view);
+  if (c.me.role !== 'admin')
+    throw new AppError('Foundation administrator access is required.', 403);
+  if (typeof name !== 'string' || !name.trim() || name.trim().length > 100)
+    throw new AppError('Enter a workspace name (up to 100 characters).');
+  const result = await db()
+    .prepare(
+      'UPDATE workspaces SET name=?,revision=revision+1,updated=? WHERE id=? AND revision=?',
+    )
+    .bind(name.trim(), new Date().toISOString(), c.row.id, c.row.revision)
+    .run();
+  if (!result.meta.changes)
+    throw new AppError('This workspace changed. Refresh and try again.', 409);
+  return snapshot(await context(c.row.id, view));
 }
 export function publicOrigin(req: Request) {
   const config = env as unknown as Record<string, string>;

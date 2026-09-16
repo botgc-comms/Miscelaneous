@@ -40,7 +40,8 @@ export default function FamilyReview({
   );
   const [leagueId, setLeague] = useState('all'),
     [query, setQuery] = useState(''),
-    [expanded, setExpanded] = useState(initialTeamId);
+    [expanded, setExpanded] = useState(initialTeamId),
+    [focused, setFocused] = useState(initialTeamId);
   const leagues = s.leagues.filter(
     (l) => String(l.year) === year && teams.some((t) => t.leagueId === l.id),
   );
@@ -52,6 +53,26 @@ export default function FamilyReview({
         .toLowerCase()
         .includes(query.trim().toLowerCase()),
   );
+  const focusedTeam = teams.find((t) => t.id === focused);
+  if (focusedTeam)
+    return (
+      <div className="team-directory">
+        <button className="text-link mb-5" onClick={() => setFocused('')}>
+          ← All teams & players
+        </button>
+        <div className="page-heading">
+          <div>
+            <h1>{focusedTeam.name}</h1>
+            <p>
+              {s.orgs.find((o) => o.id === focusedTeam.orgId)?.name} ·{' '}
+              {s.leagues.find((l) => l.id === focusedTeam.leagueId)?.name} ·{' '}
+              {focusedTeam.cap} caps
+            </p>
+          </div>
+        </div>
+        <TeamRoster teamId={focusedTeam.id} tools={tools} embedded />
+      </div>
+    );
   return (
     <div className="team-directory">
       <div className="page-heading">

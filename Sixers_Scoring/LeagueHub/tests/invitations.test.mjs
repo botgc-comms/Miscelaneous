@@ -321,3 +321,12 @@ test('header logos outrank footer branding; lazy images, entities and escaped st
   );
   assert.equal(structured[0].url, 'https://club.co.uk/crest.svg');
 });
+
+test('club-named header SVGs are candidates even when nothing says logo', () => {
+  const results = logoCandidates(
+    '<header><img src="/Bondhay Golf Club White.svg"><img src="/sponsor.svg"><img src="https://bondhaygolfclub.com/sponsor-other.svg"></header>',
+    'https://bondhaygolfclub.com/',
+  );
+  assert.equal(results.length, 1);
+  assert.ok(results[0].url.includes('Bondhay%20Golf%20Club%20White.svg'));
+});

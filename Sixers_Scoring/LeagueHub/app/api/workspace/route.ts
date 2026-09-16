@@ -5,6 +5,7 @@ import {
   json,
   failure,
   createWorkspace,
+  renameWorkspace,
   hash,
   sameOrigin,
 } from '@/lib/server';
@@ -34,7 +35,9 @@ export async function POST(req: Request) {
     const a = body.action;
     if (!a || typeof a.type !== 'string') throw new AppError('Invalid action.');
     if (a.type === 'create-workspace')
-      return json(await createWorkspace(a.name));
+      return json(await createWorkspace(a.name, body.workspace));
+    if (a.type === 'rename-workspace')
+      return json(await renameWorkspace(body.workspace, body.view, a.name));
     if (a.type === 'fixture-plan-suggest') {
       const c = await context(body.workspace, body.view);
       requireThat(

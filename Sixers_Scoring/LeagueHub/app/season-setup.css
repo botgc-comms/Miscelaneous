@@ -720,3 +720,124 @@ details.setup-panel > summary {
     justify-self: start;
   }
 }
+.league-teams-disclosure {
+  margin-top: 20px;
+}
+.league-teams-disclosure > summary {
+  cursor: pointer;
+  padding: 12px 0;
+  font-weight: 700;
+  color: #173e37;
+}
+.league-teams-disclosure > summary span {
+  font-weight: 400;
+  font-size: 13px;
+  color: #59736a;
+  margin-left: 10px;
+}
+.league-summary {
+  container-type: inline-size;
+}
+.league-summary .league-teams-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 310px), 1fr));
+  gap: 12px;
+  margin-top: 6px;
+}
+.league-teams-grid .league-team-row {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) 30px;
+  gap: 10px;
+  padding: 16px 12px;
+  border: 1px solid #e0e9e4;
+  border-radius: 10px;
+  align-items: start;
+}
+.league-teams-grid .league-team-row > svg {
+  width: 32px;
+}
+.league-teams-grid .league-team-actions {
+  display: contents;
+}
+.league-teams-grid .league-team-delete {
+  grid-column: 3;
+  grid-row: 1;
+}
+.league-teams-grid .league-team-actions .btn,
+.league-teams-grid .league-team-actions small {
+  grid-column: 2 / 4;
+  grid-row: 2;
+  justify-self: start;
+}
+.league-teams-grid .registration-progress {
+  flex-wrap: wrap;
+}
+.workspace-picker {
+  position: relative;
+  min-width: 0;
+}
+.workspace-picker > summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.workspace-picker > summary small {
+  display: block;
+  font-size: 11px;
+  color: #657c73;
+  font-weight: 400;
+}
+.workspace-picker > summary > span {
+  min-width: 0;
+}
+.workspace-picker > summary strong {
+  display: block;
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.workspace-picker > summary > svg {
+  flex-shrink: 0;
+}
+.workspace-picker-panel {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 0;
+  z-index: 30;
+  display: grid;
+  gap: 12px;
+  padding: 20px;
+  width: min(340px, calc(100vw - 80px));
+  border: 1px solid #d8e5de;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 12px 36px #163e3720;
+}
+.fixture-team-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 14px;
+}
+.fixture-team-overview .card {
+  padding: 20px;
+}
+.fixture-team-overview ul {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0;
+  padding: 0;
+  list-style: none;
+}
+.fixture-responsibility {
+  margin: 0 0 24px;
+  padding: 16px 20px;
+  background: #edf5ef;
+  border-radius: 12px;
+}
+.fixture-responsibility p {
+  margin: 6px 0 12px;
+  color: #4c675d;
+}

@@ -38,6 +38,8 @@ import {
 } from './widgets';
 import {
   canOrg,
+  canManageTeam,
+  capOrder,
   canHost,
   canLeague,
   readiness,
@@ -138,12 +140,46 @@ export function FixtureDetail({
           {error}
         </p>
       )}
+      {f.status === 'scheduled' && (
+        <section className="fixture-responsibility">
+          <strong>
+            {host
+              ? me.role === 'admin'
+                ? 'You’re managing the whole fixture'
+                : 'Your club is hosting this fixture'
+              : 'Your club is visiting'}
+          </strong>
+          <p>
+            {host
+              ? 'Review every team’s pairs, allocate starting holes and tee times, and share arrival details and directions with everyone.'
+              : 'Choose your club’s players and pairs. The host will organise starting holes, tee times and joining instructions.'}
+          </p>
+          <div className="row wrap">
+            <button className="btn" onClick={() => setTab('pairings')}>
+              {host ? 'Review all teams' : 'Choose my players'}
+            </button>
+            {host && (
+              <>
+                <button className="btn" onClick={() => setTab('starts')}>
+                  Allocate starts
+                </button>
+                <button
+                  className="text-link"
+                  onClick={() => edit('fixture', f)}
+                >
+                  Edit joining instructions
+                </button>
+              </>
+            )}
+          </div>
+        </section>
+      )}
       <Tabs value={tab} onValueChange={(v) => setTab(String(v))}>
         <TabsList className="tab-list" variant="line">
           {[
             ['details', 'Match details'],
             ['pairings', 'Team selection'],
-            ['starts', 'Starting slots'],
+            ['starts', 'Starting allocations'],
             ['score', 'Scorecards'],
             ['results', 'Results'],
           ].map(([id, name]) => (
@@ -285,34 +321,90 @@ export function FixtureDetail({
   );
 }
 function Lineups({ f, tools }: { f: Fixture; tools: AppTools }) {
-  const { s, me, act, busy } = tools;
-  const teams = s.teams.filter((t) => f.teamIds.includes(t.id));
-  const [tid, setTid] = useState(
-    teams.find((t) => canOrg(s, me, t.orgId))?.id || teams[0]?.id || '',
-  );
-  const t = teams.find((t) => t.id === tid);
-  if (!t) return <Empty title="No participating teams" />;
+  const { s, me } = tools;
+  const hosting = canHost(s, me, f);
+  const teams = s.teams
+    .filter(
+      (t) =>
+        f.teamIds.includes(t.id) && (hosting || canManageTeam(s, me, t.id)),
+    )
+    .sort(capOrder);
+  const [tid, setTid] = useState(hosting ? '' : teams[0]?.id || '');
+  const team = teams.find((t) => t.id === tid);
+  if (team)
+    return (
+      <div className="stack">
+        {(hosting || teams.length > 1) && (
+          <button className="text-link self-start" onClick={() => setTid('')}>
+            ← {hosting ? 'All participating teams' : 'My teams'}
+          </button>
+        )}
+        <h2>{team.name}</h2>
+        <TeamLineup key={`${f.id}-${tid}`} f={f} tid={tid} tools={tools} />
+      </div>
+    );
   return (
     <div className="stack">
-      <div className="row wrap">
-        <Pick
-          label="Team"
-          value={tid}
-          onChange={setTid}
-          options={teams.map((t) => ({ value: t.id, label: t.name }))}
-        />
-        <span className="muted">
-          Each child can play for one team per fixture.
-        </span>
+      <div>
+        <h2>{hosting ? 'All participating teams' : 'My teams'}</h2>
+        <p className="muted mt-2">
+          {hosting
+            ? 'Each club submits its players and pairs. Allocate all submitted pairs to starting holes and tee times in Starting allocations.'
+            : 'Choose your players and publish the pairs for the hosting organiser.'}
+        </p>
       </div>
-      <TeamLineup key={`${f.id}-${tid}`} f={f} tid={tid} tools={tools} />
+      <div className="fixture-team-overview">
+        {teams.map((t) => {
+          const pairs = f.pairs.filter((p) => p.teamId === t.id);
+          const expected = s.leagues.find((l) => l.id === f.leagueId)!.pairs;
+          return (
+            <section className="card" key={t.id}>
+              <div className="row">
+                <Dot color={t.color} />
+                <h3>{t.name}</h3>
+              </div>
+              <p className="muted mt-2">
+                {pairs.length === expected
+                  ? 'Selection submitted'
+                  : 'Awaiting complete selection'}{' '}
+                · {pairs.length} of {expected} pairs
+              </p>
+              <ul>
+                {pairs.map((p) => (
+                  <li key={p.id}>
+                    {p.players
+                      .map(
+                        (id) =>
+                          s.players.find((v) => v.id === id)?.name || 'Player',
+                      )
+                      .join(' & ')}
+                  </li>
+                ))}
+              </ul>
+              {canManageTeam(s, me, t.id) && (
+                <button className="btn" onClick={() => setTid(t.id)}>
+                  {pairs.length ? 'Review team selection' : 'Choose players'}
+                </button>
+              )}
+            </section>
+          );
+        })}
+      </div>
     </div>
   );
 }
 function StartingSlots({ f, tools }: { f: Fixture; tools: AppTools }) {
   const { s, me, busy, act } = tools;
   const allowed = canHost(s, me, f) && f.status === 'scheduled';
-  const [slots, setSlots] = useState<Slot[]>(structuredClone(f.slots));
+  const [slots, setSlots] = useState<Slot[]>(
+    f.slots.map((slot) => ({
+      ...slot,
+      startHole:
+        slot.startHole || Number(slot.label.match(/hole\s+(\d+)/i)?.[1]) || 1,
+      startTime:
+        slot.startTime || slot.label.match(/\b\d{2}:\d{2}\b/)?.[0] || f.start,
+    })),
+  );
   const [assign, setAssign] = useState<Record<string, string>>(
     Object.fromEntries(f.pairs.map((p) => [p.id, p.slotId])),
   );
@@ -333,6 +425,14 @@ function StartingSlots({ f, tools }: { f: Fixture; tools: AppTools }) {
       label:
         f.format === 'shotgun'
           ? `Hole ${(i % s.leagues.find((l) => l.id === f.leagueId)!.holes) + 1}${i >= s.leagues.find((l) => l.id === f.leagueId)!.holes ? ' B' : ''}`
+          : `${String(Math.floor((start[0] * 60 + start[1] + i * 10) / 60) % 24).padStart(2, '0')}:${String((start[0] * 60 + start[1] + i * 10) % 60).padStart(2, '0')}`,
+      startHole:
+        f.format === 'shotgun'
+          ? (i % s.leagues.find((l) => l.id === f.leagueId)!.holes) + 1
+          : 1,
+      startTime:
+        f.format === 'shotgun'
+          ? f.start
           : `${String(Math.floor((start[0] * 60 + start[1] + i * 10) / 60) % 24).padStart(2, '0')}:${String((start[0] * 60 + start[1] + i * 10) % 60).padStart(2, '0')}`,
       capacity: i === n - 1 && f.pairs.length % 2 ? 3 : 2,
     }));
@@ -383,13 +483,28 @@ function StartingSlots({ f, tools }: { f: Fixture; tools: AppTools }) {
                 {allowed ? (
                   <div className="form-grid">
                     <Field
-                      label={
-                        f.format === 'shotgun' ? 'Starting hole' : 'Tee time'
+                      label="Starting hole"
+                      type="number"
+                      min={1}
+                      max={36}
+                      value={slot.startHole || 1}
+                      onChange={(v) =>
+                        setSlots((old) =>
+                          old.map((s, j) =>
+                            j === i ? { ...s, startHole: Number(v) } : s,
+                          ),
+                        )
                       }
-                      value={slot.label}
-                      onChange={(label) =>
-                        setSlots((v) =>
-                          v.map((s, j) => (i === j ? { ...s, label } : s)),
+                    />
+                    <Field
+                      label="Tee time"
+                      type="time"
+                      value={slot.startTime || f.start}
+                      onChange={(v) =>
+                        setSlots((old) =>
+                          old.map((s, j) =>
+                            j === i ? { ...s, startTime: v } : s,
+                          ),
                         )
                       }
                     />
@@ -464,6 +579,8 @@ function StartingSlots({ f, tools }: { f: Fixture; tools: AppTools }) {
                         f.format === 'shotgun'
                           ? `Hole ${v.length + 1}`
                           : `Extra tee time ${v.length + 1}`,
+                      startHole: f.format === 'shotgun' ? v.length + 1 : 1,
+                      startTime: f.start,
                       capacity: 2,
                     },
                   ])
@@ -488,9 +605,9 @@ function StartingSlots({ f, tools }: { f: Fixture; tools: AppTools }) {
                       onChange={(v) =>
                         setAssign((old) => ({ ...old, [p.id]: v }))
                       }
-                      options={slots.map((v) => ({
+                      options={slots.map((v, i) => ({
                         value: v.id,
-                        label: v.label,
+                        label: `${v.startTime || f.start} · Hole ${v.startHole || 1} · Group ${i + 1}`,
                       }))}
                     />
                   </div>
@@ -509,7 +626,10 @@ function StartingSlots({ f, tools }: { f: Fixture; tools: AppTools }) {
                     await act({
                       type: 'slots',
                       fixtureId: f.id,
-                      slots,
+                      slots: slots.map((slot, i) => ({
+                        ...slot,
+                        label: `${slot.startTime || f.start} · Hole ${slot.startHole || 1} · Group ${i + 1}`,
+                      })),
                       assignments: assign,
                     });
                     setError('');

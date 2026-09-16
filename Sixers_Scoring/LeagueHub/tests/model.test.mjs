@@ -3167,3 +3167,95 @@ test('selected child withdrawal alerts their own club organiser rather than the 
       .pairs.some((p) => p.players.includes(pid)),
   );
 });
+
+test('host allocates every visiting pair, visitors cannot alter starts, and tee times retain their holes', () => {
+  const s = demoState();
+  const f = s.fixtures.find((f) => f.id === 'fixture-4');
+  const hostOrg = s.clubs.find((c) => c.id === f.clubId).orgId;
+  const host = { ...organiser(), id: 'hosting-organiser', orgIds: [hostOrg] };
+  const visiting = {
+    ...organiser(),
+    orgIds: [s.orgs.find((o) => o.id !== hostOrg).id],
+  };
+  const action = {
+    type: 'slots',
+    fixtureId: f.id,
+    slots: [
+      {
+        id: 'slot-test',
+        label: '14:10 · Hole 3',
+        startTime: '14:10',
+        startHole: 3,
+        capacity: 2,
+      },
+    ],
+    assignments: {},
+  };
+  assert.equal(canHost(s, host, f), true);
+  assert.equal(canHost(s, visiting, f), false);
+  assert.throws(
+    () => applyAction(s, visiting, action),
+    /permission|authoris|access/i,
+  );
+  for (const member of [host, admin]) {
+    const next = applyAction(s, member, action);
+    assert.equal(
+      next.fixtures.find((x) => x.id === f.id).slots[0].startHole,
+      3,
+    );
+    assert.equal(
+      next.fixtures.find((x) => x.id === f.id).slots[0].startTime,
+      '14:10',
+    );
+  }
+  assert.throws(() =>
+    applyAction(s, host, {
+      ...action,
+      slots: [{ ...action.slots[0], startHole: 0 }],
+    }),
+  );
+  assert.throws(() =>
+    applyAction(s, host, {
+      ...action,
+      slots: [{ ...action.slots[0], startTime: '27:99' }],
+    }),
+  );
+});
+
+test('invitation rights allow Foundation admins all roles and organisers only their own clubs', () => {
+  const s = demoState();
+  const base = {
+    type: 'invite',
+    email: 'new@example.com',
+    hash: 'invitation-hash',
+    orgIds: ['org-0'],
+    leagueIds: ['surrey'],
+  };
+  for (const role of ['admin', 'league-admin', 'organiser', 'parent'])
+    assert.ok(
+      applyAction(s, admin, { ...base, role }).invites.some(
+        (i) => i.role === role && i.email === base.email,
+      ),
+    );
+  for (const role of ['organiser', 'parent'])
+    assert.ok(
+      applyAction(s, organiser(), { ...base, role }).invites.some(
+        (i) => i.role === role && i.email === base.email,
+      ),
+    );
+  assert.throws(() => applyAction(s, organiser(), { ...base, role: 'admin' }));
+  assert.throws(() =>
+    applyAction(s, organiser(), {
+      ...base,
+      role: 'organiser',
+      orgIds: ['org-1'],
+    }),
+  );
+  assert.throws(() =>
+    applyAction(
+      s,
+      { ...organiser(), role: 'parent' },
+      { ...base, role: 'parent' },
+    ),
+  );
+});

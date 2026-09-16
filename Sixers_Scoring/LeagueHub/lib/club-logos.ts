@@ -11,6 +11,9 @@ export function logoPageProblem(html: string) {
   return null;
 }
 export function logoCandidates(html: string, website: string) {
+  const clubStem = (website.match(/^https?:\/\/(?:www\.)?([^./]+)/i)?.[1] || '')
+    .toLowerCase()
+    .replace(/golf|club|[^a-z0-9]/g, '');
   const found = new Map<
     string,
     { url: string; label: string; score: number }
@@ -76,7 +79,18 @@ export function logoCandidates(html: string, website: string) {
         attrs.src,
       ].filter(Boolean);
       for (const src of sources)
-        if (/logo|brand|crest|badge/i.test(label + ' ' + src)) {
+        if (
+          /logo|brand|crest|badge/i.test(label + ' ' + src) ||
+          (header &&
+            clubStem.length >= 4 &&
+            /\.svg(?:[?#]|$)/i.test(src) &&
+            src
+              .toLowerCase()
+              .replace(/^(?:https?:)?\/\/[^/]+/i, '')
+              .replace(/%[a-f0-9]{2}/g, '')
+              .replace(/[^a-z0-9]/g, '')
+              .includes(clubStem))
+        ) {
           const score =
             (logo ? 140 : /logo|crest/i.test(label) ? 100 : 70) +
             (header ? 20 : 0) -

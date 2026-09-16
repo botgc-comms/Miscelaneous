@@ -269,155 +269,171 @@ export function SeasonHome({
                     <strong>Next step</strong>
                     {nextStep}
                   </p>
-                  <div className="season-team-list">
-                    {leagueTeams.map((t) => {
-                      const registered = (s.enrollments || []).filter(
-                        (e) => e.teamId === t.id && e.status === 'approved',
-                      ).length;
-                      const waiting = (s.enrollments || []).filter(
-                        (e) => e.teamId === t.id && e.status === 'pending',
-                      ).length;
-                      const target = l.squadSize || 12;
-                      return (
-                        <div
-                          className="season-team-row league-team-row"
-                          key={t.id}
-                        >
-                          <Cap
-                            color={t.color}
-                            label={`${t.cap} cap`}
-                            size={40}
-                          />
-                          <div>
-                            {canEdit ? (
-                              <button
-                                className="league-team-name"
-                                onClick={() => openTeam(t.id)}
-                                aria-label={`View players for ${t.name}`}
-                              >
-                                {t.name}
-                              </button>
-                            ) : (
-                              <strong>{t.name}</strong>
-                            )}
-                            <p>
-                              {s.orgs.find((o) => o.id === t.orgId)?.name} ·{' '}
-                              {t.cap} caps
-                            </p>
-                            {canEdit && (
-                              <div className="registration-progress">
-                                <Progress
-                                  value={registered}
-                                  max={target}
-                                  aria-label={`${t.name}: ${registered} of ${target} players registered`}
-                                  style={{ color: t.color }}
-                                />
-                                <span>
-                                  {registered} of {target} registered
-                                  {waiting ? ` · ${waiting} applying` : ''}
-                                </span>
+                  <details
+                    className="league-teams-disclosure"
+                    key={`${l.id}-${registrationOpen && !allFull}`}
+                    open={registrationOpen && !allFull}
+                  >
+                    <summary>
+                      {leagueTeams.length} teams{' '}
+                      <span>
+                        {registrationOpen
+                          ? allFull
+                            ? 'All teams full'
+                            : 'Player registration in progress'
+                          : 'Registration closed'}
+                      </span>
+                    </summary>
+                    <div className="season-team-list league-teams-grid">
+                      {leagueTeams.map((t) => {
+                        const registered = (s.enrollments || []).filter(
+                          (e) => e.teamId === t.id && e.status === 'approved',
+                        ).length;
+                        const waiting = (s.enrollments || []).filter(
+                          (e) => e.teamId === t.id && e.status === 'pending',
+                        ).length;
+                        const target = l.squadSize || 12;
+                        return (
+                          <div
+                            className="season-team-row league-team-row"
+                            key={t.id}
+                          >
+                            <Cap
+                              color={t.color}
+                              label={`${t.cap} cap`}
+                              size={40}
+                            />
+                            <div>
+                              {canEdit ? (
+                                <button
+                                  className="league-team-name"
+                                  onClick={() => openTeam(t.id)}
+                                  aria-label={`View players for ${t.name}`}
+                                >
+                                  {t.name}
+                                </button>
+                              ) : (
+                                <strong>{t.name}</strong>
+                              )}
+                              <p>
+                                {s.orgs.find((o) => o.id === t.orgId)?.name} ·{' '}
+                                {t.cap} caps
+                              </p>
+                              {canEdit && (
+                                <div className="registration-progress">
+                                  <Progress
+                                    value={registered}
+                                    max={target}
+                                    aria-label={`${t.name}: ${registered} of ${target} players registered`}
+                                    style={{ color: t.color }}
+                                  />
+                                  <span>
+                                    {registered} of {target} registered
+                                    {waiting ? ` · ${waiting} applying` : ''}
+                                  </span>
+                                </div>
+                              )}
+                              <div className="team-entry-control">
+                                <small className="muted">
+                                  {t.enrollmentOpen === false ||
+                                  !leagueAcceptsRegistrations(l)
+                                    ? 'Registration closed'
+                                    : registered >= target
+                                      ? 'Team full · registration open'
+                                      : 'Registration open'}
+                                </small>
+                                {canEdit &&
+                                  (waiting && t.enrollmentOpen !== false ? (
+                                    <button
+                                      className="team-entry-link"
+                                      onClick={() => openTeam(t.id)}
+                                    >
+                                      Review applications to close
+                                    </button>
+                                  ) : (
+                                    <button
+                                      className="team-entry-link"
+                                      disabled={
+                                        busy ||
+                                        (t.enrollmentOpen === false &&
+                                          !leagueAcceptsRegistrations(l))
+                                      }
+                                      aria-label={`${t.enrollmentOpen === false ? 'Reopen' : 'Close'} registration for ${t.name}`}
+                                      title={
+                                        t.enrollmentOpen === false &&
+                                        !leagueAcceptsRegistrations(l)
+                                          ? 'Allow parents to enter children in League settings first.'
+                                          : undefined
+                                      }
+                                      onClick={() =>
+                                        tools.act({
+                                          type: 'team-directory',
+                                          teamId: t.id,
+                                          open: t.enrollmentOpen === false,
+                                        })
+                                      }
+                                    >
+                                      {t.enrollmentOpen === false
+                                        ? 'Reopen registration'
+                                        : 'Close registration'}
+                                    </button>
+                                  ))}
                               </div>
-                            )}
-                            <div className="team-entry-control">
-                              <small className="muted">
-                                {t.enrollmentOpen === false ||
-                                !leagueAcceptsRegistrations(l)
-                                  ? 'Registration closed'
-                                  : registered >= target
-                                    ? 'Team full · registration open'
-                                    : 'Registration open'}
-                              </small>
+                            </div>
+                            <div className="league-team-actions">
                               {canEdit &&
-                                (waiting && t.enrollmentOpen !== false ? (
-                                  <button
-                                    className="team-entry-link"
-                                    onClick={() => openTeam(t.id)}
-                                  >
-                                    Review applications to close
-                                  </button>
+                                leagueTeams.find((v) => v.orgId === t.orgId)
+                                  ?.id === t.id &&
+                                !s.members.some(
+                                  (m) =>
+                                    (m.role === 'organiser' &&
+                                      m.orgIds.includes(t.orgId)) ||
+                                    organiserClubs(m).includes(t.orgId),
+                                ) &&
+                                (s.invites.some(
+                                  (i) =>
+                                    i.role === 'organiser' &&
+                                    i.orgIds.includes(t.orgId) &&
+                                    !i.acceptedAt &&
+                                    !i.revoked &&
+                                    Date.parse(i.expires) > Date.now(),
+                                ) ? (
+                                  <small className="muted">
+                                    Organiser invitation pending
+                                  </small>
                                 ) : (
                                   <button
-                                    className="team-entry-link"
-                                    disabled={
-                                      busy ||
-                                      (t.enrollmentOpen === false &&
-                                        !leagueAcceptsRegistrations(l))
-                                    }
-                                    aria-label={`${t.enrollmentOpen === false ? 'Reopen' : 'Close'} registration for ${t.name}`}
-                                    title={
-                                      t.enrollmentOpen === false &&
-                                      !leagueAcceptsRegistrations(l)
-                                        ? 'Allow parents to enter children in League settings first.'
-                                        : undefined
-                                    }
+                                    className="btn small"
                                     onClick={() =>
-                                      tools.act({
-                                        type: 'team-directory',
-                                        teamId: t.id,
-                                        open: t.enrollmentOpen === false,
+                                      edit('invite', {
+                                        role: 'organiser',
+                                        orgIds: [t.orgId],
                                       })
                                     }
                                   >
-                                    {t.enrollmentOpen === false
-                                      ? 'Reopen registration'
-                                      : 'Close registration'}
+                                    Invite junior organiser
                                   </button>
                                 ))}
+                              {canEdit && (
+                                <button
+                                  className="league-icon-button league-team-delete"
+                                  disabled={busy}
+                                  onClick={() => setRemoveTeam(t.id)}
+                                  aria-label={`Remove ${t.name} from ${l.name}`}
+                                  title="Remove team from league"
+                                >
+                                  <Trash2 size={18} />
+                                </button>
+                              )}
                             </div>
                           </div>
-                          <div className="league-team-actions">
-                            {canEdit &&
-                              leagueTeams.find((v) => v.orgId === t.orgId)
-                                ?.id === t.id &&
-                              !s.members.some(
-                                (m) =>
-                                  (m.role === 'organiser' &&
-                                    m.orgIds.includes(t.orgId)) ||
-                                  organiserClubs(m).includes(t.orgId),
-                              ) &&
-                              (s.invites.some(
-                                (i) =>
-                                  i.role === 'organiser' &&
-                                  i.orgIds.includes(t.orgId) &&
-                                  !i.acceptedAt &&
-                                  !i.revoked &&
-                                  Date.parse(i.expires) > Date.now(),
-                              ) ? (
-                                <small className="muted">
-                                  Organiser invitation pending
-                                </small>
-                              ) : (
-                                <button
-                                  className="btn small"
-                                  onClick={() =>
-                                    edit('invite', {
-                                      role: 'organiser',
-                                      orgIds: [t.orgId],
-                                    })
-                                  }
-                                >
-                                  Invite junior organiser
-                                </button>
-                              ))}
-                            {canEdit && (
-                              <button
-                                className="league-icon-button league-team-delete"
-                                disabled={busy}
-                                onClick={() => setRemoveTeam(t.id)}
-                                aria-label={`Remove ${t.name} from ${l.name}`}
-                                title="Remove team from league"
-                              >
-                                <Trash2 size={18} />
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                    {!leagueTeams.length && (
-                      <p className="muted">No teams assigned yet.</p>
-                    )}
-                  </div>
+                        );
+                      })}
+                      {!leagueTeams.length && (
+                        <p className="muted">No teams assigned yet.</p>
+                      )}
+                    </div>
+                  </details>
                   <div className="row wrap mt-5">
                     <button
                       className="btn primary"

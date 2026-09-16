@@ -114,7 +114,13 @@ export type Pair = {
   players: string[];
   slotId: string;
 };
-export type Slot = { id: string; label: string; capacity: number };
+export type Slot = {
+  id: string;
+  label: string;
+  capacity: number;
+  startHole?: number;
+  startTime?: string;
+};
 export type Score = {
   strokes: number;
   version: number;
@@ -1874,6 +1880,14 @@ export function applyAction(
         }),
       );
       note = `Submitted ${t.name} pairings`;
+      notify(
+        s,
+        s.members
+          .filter((person) => person.id !== m.id && canHost(s, person, f))
+          .map((person) => person.id),
+        `${t.name} has submitted its pairs for ${f.name}. Review the players and allocate their starting holes and tee times.`,
+        f.id,
+      );
       s.reserves = s.reserves?.filter(
         (r) => r.fixtureId !== f.id || !ids.includes(r.playerId),
       );
@@ -1897,7 +1911,21 @@ export function applyAction(
         id: typeof v.id === 'string' ? v.id : id(),
         label: text(v.label, 'Slot label', 50),
         capacity: integer(v.capacity, 2, 4, 'Pairs per slot'),
+        ...(v.startHole !== undefined
+          ? { startHole: integer(v.startHole, 1, 36, 'Starting hole') }
+          : {}),
+        ...(v.startTime !== undefined
+          ? { startTime: text(v.startTime, 'Tee time', 5) }
+          : {}),
       }));
+      requireThat(
+        slots.every(
+          (v) =>
+            v.startTime === undefined ||
+            /^([01]\d|2[0-3]):[0-5]\d$/.test(v.startTime),
+        ),
+        'Enter a valid tee time.',
+      );
       requireThat(
         unique(slots.map((v) => v.id)) && unique(slots.map((v) => v.label)),
         'Slots must have unique labels.',

@@ -177,6 +177,7 @@ function GeneralEditDialog({
     profile: 'Your contact details',
     member: 'Manage access',
     'create-workspace': 'Create your league workspace',
+    'rename-workspace': 'Rename workspace',
   };
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -256,6 +257,7 @@ function GeneralEditDialog({
               'player',
               'profile',
               'create-workspace',
+              'rename-workspace',
             ].includes(k) &&
               field(
                 'name',
