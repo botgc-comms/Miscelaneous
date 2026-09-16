@@ -604,6 +604,7 @@ export default function LeagueApp() {
           </SidebarFooter>
         </Sidebar>
         <div className="workspace">
+          <div id="service-tools-slot" />
           <header className="topbar">
             <div className="row">
               <SidebarTrigger />

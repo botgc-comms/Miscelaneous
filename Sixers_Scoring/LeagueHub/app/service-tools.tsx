@@ -1,7 +1,17 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import './account.css';
 export function ServiceTools() {
+  const [toolbarSlot, setToolbarSlot] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    const locateToolbar = () =>
+      setToolbarSlot(document.getElementById('service-tools-slot'));
+    locateToolbar();
+    const observer = new MutationObserver(locateToolbar);
+    observer.observe(document.body, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, []);
   const [auth, setAuth] = useState<any>(null),
     [demo, setDemo] = useState<any>(null),
     [date, setDate] = useState(''),
@@ -49,13 +59,17 @@ export function ServiceTools() {
     demo?.fixtures?.find(
       (f: any) => f.date > (date || new Date().toISOString().slice(0, 10)),
     ) || demo?.fixtures?.[0];
-  return (
+  const controls = (
     <details
       className={'service-tools' + (demo?.active ? ' demo' : '')}
       open={demo?.active || undefined}
     >
       <summary>
-        {demo?.active ? 'Demo mode · no emails are sent' : 'My account'}
+        {demo?.active
+          ? 'Demo & time travel · no emails are sent'
+          : demo?.available
+            ? 'My account · Demo & time travel'
+            : 'My account'}
         {demo?.active && date ? ' · ' + date : ''}
       </summary>
       <div className="service-tools-panel">
@@ -85,7 +99,7 @@ export function ServiceTools() {
               </select>
             </label>
             <label className="field">
-              <span>Demo date</span>
+              <span>Time travel — demo date</span>
               <input
                 type="date"
                 value={date}
@@ -132,7 +146,7 @@ export function ServiceTools() {
                 disabled={busy}
                 onClick={() => void act({ type: 'enter' })}
               >
-                Open demo mode
+                Open demo & time travel
               </button>
             )}
             {auth.googleReady && (
@@ -191,4 +205,5 @@ export function ServiceTools() {
       </div>
     </details>
   );
+  return toolbarSlot ? createPortal(controls, toolbarSlot) : controls;
 }
