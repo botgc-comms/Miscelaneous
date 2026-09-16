@@ -154,6 +154,10 @@ export default function LeagueApp() {
     );
     setWorkspace(q.get('workspace') || readJourney()?.workspace || '');
     setJoin(q.get('join') || '');
+    if (q.get('fixture')) {
+      setFixtureId(q.get('fixture')!);
+      setPage('Fixtures');
+    }
     setBoot(true);
   }, []);
   const applyReply = useCallback((r: Reply) => {

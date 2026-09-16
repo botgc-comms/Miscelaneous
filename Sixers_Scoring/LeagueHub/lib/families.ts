@@ -26,7 +26,7 @@ export async function ownedWorkspaces(uid: string) {
   return (
     await db()
       .prepare(
-        "SELECT * FROM workspaces WHERE demo=0 AND EXISTS (SELECT 1 FROM json_each(workspaces.data,'$.members') m WHERE json_extract(m.value,'$.id')=?)",
+        "SELECT * FROM workspaces WHERE (demo=0 OR demo=2) AND EXISTS (SELECT 1 FROM json_each(workspaces.data,'$.members') m WHERE json_extract(m.value,'$.id')=?)",
       )
       .bind(uid)
       .all<Row>()
@@ -109,7 +109,7 @@ export async function familyContext(_demo = false, _stage = 'ready') {
       member,
       row,
       family,
-      demo: false,
+      demo: !!u.demoWorkspace,
       stage: 'ready',
     };
   }
@@ -210,6 +210,9 @@ export async function parentSnapshot(demo = false, stage = 'ready') {
   const c = await familyContext(demo, stage);
   const synced = await syncFamily(c);
   const rows = await ownedWorkspaces(c.u.userId);
+  const demoSession = c.u.demoWorkspace
+    ? await (await import('./demo-session')).activeDemo()
+    : null;
   const seasons = rows.map((row) => {
     const s = upgradeState(JSON.parse(row.data));
     return {
@@ -218,12 +221,22 @@ export async function parentSnapshot(demo = false, stage = 'ready') {
       demo: !!row.demo,
       revision: row.revision,
       me: c.member,
-      state: projectState(s, c.member),
+      state: {
+        ...projectState(s, c.member),
+        demoToday: demoSession?.session.today || undefined,
+      },
       workspaces: [],
     };
   });
   const catalogRows = (
-    await db().prepare('SELECT * FROM workspaces WHERE demo=0').all<Row>()
+    await db()
+      .prepare(
+        c.u.demoWorkspace
+          ? 'SELECT * FROM workspaces WHERE id=? AND demo=2'
+          : 'SELECT * FROM workspaces WHERE demo=0',
+      )
+      .bind(...(c.u.demoWorkspace ? [c.u.demoWorkspace] : []))
+      .all<Row>()
   ).results;
   const directory = catalogRows.flatMap((row) => {
     const s = JSON.parse(row.data) as State;
@@ -314,7 +327,13 @@ export async function requestTeam(a: any, demo = false, stage = 'ready') {
       .bind(a.workspace)
       .first<Row>();
     requireThat(row, 'Team not found.', 404);
-    requireThat(!row.demo, 'This team is not available for registration.', 403);
+    requireThat(
+      c.u.demoWorkspace
+        ? row.id === c.u.demoWorkspace && row.demo === 2
+        : !row.demo,
+      'This team is not available for registration.',
+      403,
+    );
     const s = upgradeState(JSON.parse(row.data));
     const team = s.teams.find((t) => t.id === a.teamId);
     requireThat(team, 'Team not found.', 404);

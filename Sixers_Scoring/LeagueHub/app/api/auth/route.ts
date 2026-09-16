@@ -1,10 +1,14 @@
+import { accountAction } from '@/lib/accounts';
+import { googleReady } from '@/lib/google-auth';
 import { currentIdentity, digest, sitesSignInAvailable } from '@/lib/identity';
 import { cookies } from 'next/headers';
 import { db, json, failure, sameOrigin } from '@/lib/server';
 import { AppError, requireThat } from '@/lib/model';
 import { emailReady, limit, sendLoginCode } from '@/lib/email';
 import { env } from 'cloudflare:workers';
-const previewMode = () => !sitesSignInAvailable() && (env as unknown as Record<string, string>).PRIVATE_PREVIEW === 'true';
+const previewMode = () =>
+  !sitesSignInAvailable() &&
+  (env as unknown as Record<string, string>).PRIVATE_PREVIEW === 'true';
 export async function GET() {
   try {
     const u = await currentIdentity();
@@ -13,6 +17,7 @@ export async function GET() {
       emailReady: !previewMode() && emailReady(),
       sitesSignIn: sitesSignInAvailable(),
       privatePreview: previewMode(),
+      googleReady: !previewMode() && googleReady(),
     });
   } catch (e) {
     return failure(e);
@@ -21,21 +26,75 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     sameOrigin(req);
-    const a: any = await req.json();
-    requireThat(!previewMode() || a.type === 'preview' || a.type === 'logout', 'Use the private preview password to sign in.', 403);
+    requireThat(
+      Number(req.headers.get('content-length') || 0) <= 8000,
+      'This request is too large.',
+      413,
+    );
+    const raw = await req.text();
+    requireThat(raw.length <= 8000, 'This request is too large.', 413);
+    const a: any = JSON.parse(raw);
+    if (a.type !== 'logout') await limit('auth-global', 120, 60);
+    requireThat(
+      !previewMode() || a.type === 'preview' || a.type === 'logout',
+      'Use the private preview password to sign in.',
+      403,
+    );
+    if (!previewMode()) {
+      const result = await accountAction(a);
+      if (result) return result;
+    }
     if (a.type === 'preview') {
       const config = env as unknown as Record<string, string>;
-      requireThat(previewMode() && !!config.APP_PASSWORD, 'Private preview access is not configured.', 503);
+      requireThat(
+        previewMode() && !!config.APP_PASSWORD,
+        'Private preview access is not configured.',
+        503,
+      );
       await limit('private-preview-login', 20, 600);
-      requireThat(typeof a.password === 'string' && a.password.length <= 300 && await digest(a.password) === await digest(config.APP_PASSWORD), 'The preview password is incorrect.', 401);
-      const row = await db().prepare('SELECT owner,data FROM workspaces ORDER BY updated DESC LIMIT 1').first<{owner: string; data: string}>();
-      requireThat(row, 'Your data is still being transferred. Please try again shortly.', 503);
-      const owner = JSON.parse(row.data).members.find((m: any) => m.id === row.owner && m.role === 'admin');
-      requireThat(owner, 'The preview administrator has not been configured.', 503);
+      requireThat(
+        typeof a.password === 'string' &&
+          a.password.length <= 300 &&
+          (await digest(a.password)) === (await digest(config.APP_PASSWORD)),
+        'The preview password is incorrect.',
+        401,
+      );
+      const row = await db()
+        .prepare(
+          'SELECT owner,data FROM workspaces ORDER BY updated DESC LIMIT 1',
+        )
+        .first<{ owner: string; data: string }>();
+      requireThat(
+        row,
+        'Your data is still being transferred. Please try again shortly.',
+        503,
+      );
+      const owner = JSON.parse(row.data).members.find(
+        (m: any) => m.id === row.owner && m.role === 'admin',
+      );
+      requireThat(
+        owner,
+        'The preview administrator has not been configured.',
+        503,
+      );
       const token = crypto.randomUUID() + crypto.randomUUID();
-      await db().prepare('INSERT INTO sessions(hash,email,name,user_id,expires) VALUES (?,?,?,?,?)').bind(await digest(token), owner.email, owner.name, owner.id, new Date(Date.now() + 12 * 3600000).toISOString()).run();
+      await db()
+        .prepare(
+          "INSERT INTO sessions(hash,email,name,user_id,expires,method) VALUES (?,?,?,?,?,'preview')",
+        )
+        .bind(
+          await digest(token),
+          owner.email,
+          owner.name,
+          owner.id,
+          new Date(Date.now() + 12 * 3600000).toISOString(),
+        )
+        .run();
       const response = json({ ok: true });
-      response.headers.append('Set-Cookie', `golfsixes_session=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=43200`);
+      response.headers.append(
+        'Set-Cookie',
+        `golfsixes_session=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=43200`,
+      );
       return response;
     }
     if (a.type === 'logout') {
@@ -126,7 +185,7 @@ export async function POST(req: Request) {
       const inserted = await db().batch([
         db()
           .prepare(
-            'INSERT INTO sessions(hash,email,name,user_id,expires) SELECT ?,email,name,?,? FROM auth_challenges WHERE id=? AND hash=?',
+            "INSERT INTO sessions(hash,email,name,user_id,expires,method) SELECT ?,email,name,?,?,'email' FROM auth_challenges WHERE id=? AND hash=?",
           )
           .bind(
             hash,

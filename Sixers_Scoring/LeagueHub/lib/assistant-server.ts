@@ -49,7 +49,7 @@ export type AssistantJob = {
 };
 export async function adminContext(workspace: string, view?: string) {
   const c = await context(workspace, view);
-  if (c.me.role !== 'admin' || c.row.demo)
+  if (c.me.role !== 'admin' || c.row.demo === 1)
     throw new AppError('Foundation administrator access is required.', 403);
   return c;
 }
@@ -481,6 +481,35 @@ export async function decideAssistantJob(
       )
       .bind(JSON.stringify(j), j.id, workspace, stamp),
   ];
+  if (!c.row.demo && !undo) {
+    const { eventEmails } = await import('./season-emails');
+    const { env } = await import('cloudflare:workers');
+    const origin =
+      (env as unknown as Record<string, string>).GOLFSIXES_PUBLIC_ORIGIN ||
+      'https://golfsixesleague.co.uk';
+    for (const email of eventEmails(c.state, next, c.row.id, origin)) {
+      // The job's unique update stamp proves this transaction actually applied.
+      statements.push(
+        db()
+          .prepare(
+            'INSERT OR IGNORE INTO email_outbox(id,workspace,recipient,payload,status,available_at,created_at) SELECT ?,?,?,?,?,?,? WHERE EXISTS(SELECT 1 FROM workspaces WHERE id=? AND updated=?)',
+          )
+          .bind(
+            email.id,
+            c.row.id,
+            email.recipient,
+            JSON.stringify(email.message),
+            /@example\.(invalid|com|org|net)$/.test(email.recipient)
+              ? 'suppressed'
+              : 'queued',
+            new Date().toISOString(),
+            new Date().toISOString(),
+            c.row.id,
+            stamp,
+          ),
+      );
+    }
+  }
   const result = await db().batch(statements);
   if (!result[0].meta.changes)
     throw new AppError(

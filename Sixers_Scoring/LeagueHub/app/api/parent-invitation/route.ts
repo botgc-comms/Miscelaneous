@@ -1,4 +1,4 @@
-import { context, json, failure, sameOrigin } from '@/lib/server';
+import { context, json, failure, sameOrigin, publicOrigin } from '@/lib/server';
 import {
   requireThat,
   canManageTeam,
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     );
     await limit(`parent-invite:${c.me.id}:${c.row.id}`, 30, 3600);
     const club = c.state.orgs.find((o) => o.id === team.orgId)!;
-    const link = new URL('/', req.url);
+    const link = new URL('/', publicOrigin(req));
     link.search = new URLSearchParams({
       role: 'parent',
       joinWorkspace: c.row.id,

@@ -20,6 +20,32 @@ export async function registrationSnapshot() {
       emailReady: emailReady(),
       sitesSignIn: sitesSignInAvailable(),
     };
+  const { activeDemo } = await import('./demo-session');
+  const demo = await activeDemo();
+  if (demo)
+    return {
+      user: {
+        name: demo.actor.name,
+        email: demo.actor.email,
+        phone: demo.actor.phone,
+      },
+      demo: true,
+      parentRegistered: true,
+      emailReady: false,
+      sitesSignIn: false,
+      memberships: [
+        {
+          workspace: demo.row.id,
+          name: demo.row.name,
+          role: demo.actor.role,
+          orgIds: demo.actor.orgIds,
+          organiserOrgIds: demo.actor.orgIds,
+        },
+      ],
+      organisations: [],
+      foundations: [],
+      requests: [],
+    };
   await unifyOwnedRecords(u);
   const records = (
     await db().prepare('SELECT * FROM workspaces WHERE demo=0').all<Row>()

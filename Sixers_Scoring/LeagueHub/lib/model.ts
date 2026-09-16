@@ -162,6 +162,8 @@ export type Invite = {
   revoked: boolean;
 };
 export type State = {
+  demoSandbox?: boolean;
+  demoToday?: string;
   hostingOffers?: HostingOffer[];
   fixtureConfirmations?: {
     fixtureId: string;
@@ -2137,7 +2139,12 @@ export function applyAction(
       finalise: 'results are confirmed',
       reopen: 'results are being reviewed',
     };
-    notify(s, recipients, `${f.name}: ${label[a.type]}.`, f.id);
+    notify(
+      s,
+      [...recipients, ...f.teamIds.flatMap((t) => teamManagers(s, t))],
+      `${f.name}: ${label[a.type]}.`,
+      f.id,
+    );
   }
   if (a.type === 'fixture' && a.id) {
     const fixture = s.fixtures.find((f) => f.id === a.id)!;

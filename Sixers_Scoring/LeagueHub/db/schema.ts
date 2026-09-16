@@ -52,6 +52,7 @@ export const authChallenges = sqliteTable('auth_challenges', {
   attempts: integer('attempts').notNull().default(0),
 });
 export const sessions = sqliteTable('sessions', {
+  method: text('method').notNull().default('legacy'),
   hash: text('hash').primaryKey(),
   email: text('email').notNull(),
   name: text('name').notNull(),
@@ -63,3 +64,45 @@ export const rateLimits = sqliteTable('rate_limits', {
   count: integer('count').notNull(),
   expires: integer('expires').notNull(),
 });
+
+export const accounts = sqliteTable('accounts', {
+  email: text('email').primaryKey(),
+  userId: text('user_id').notNull().unique(),
+  name: text('name').notNull(),
+  passwordHash: text('password_hash'),
+  googleSub: text('google_sub').unique(),
+  verifiedAt: text('verified_at').notNull(),
+});
+export const accountChallenges = sqliteTable('account_challenges', {
+  id: text('id').primaryKey(),
+  email: text('email').notNull(),
+  kind: text('kind').notNull(),
+  payload: text('payload').notNull(),
+  hash: text('hash').notNull(),
+  expires: text('expires').notNull(),
+  attempts: integer('attempts').notNull().default(0),
+});
+export const demoSessions = sqliteTable('demo_sessions', {
+  sessionHash: text('session_hash').primaryKey(),
+  owner: text('owner').notNull(),
+  workspace: text('workspace').notNull(),
+  actor: text('actor').notNull(),
+  today: text('today'),
+});
+export const emailOutbox = sqliteTable(
+  'email_outbox',
+  {
+    id: text('id').primaryKey(),
+    workspace: text('workspace'),
+    recipient: text('recipient').notNull(),
+    payload: text('payload').notNull(),
+    status: text('status').notNull().default('queued'),
+    attempts: integer('attempts').notNull().default(0),
+    availableAt: text('available_at').notNull(),
+    createdAt: text('created_at').notNull(),
+    sentAt: text('sent_at'),
+    providerId: text('provider_id'),
+    error: text('error'),
+  },
+  (t) => [index('email_outbox_pending').on(t.status, t.availableAt)],
+);

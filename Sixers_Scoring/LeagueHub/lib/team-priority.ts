@@ -16,7 +16,11 @@ export function londonDay(now = new Date()) {
 }
 
 /** A team's next task is derived from its own registration and fixture records. */
-export function teamPriority(s: State, t: Team, today = londonDay()) {
+export function teamPriority(
+  s: State,
+  t: Team,
+  today = s.demoToday || londonDay(),
+) {
   const league = s.leagues.find((l) => l.id === t.leagueId)!;
   const registered = s.players.filter((p) =>
     rosterEligible(s, p.id, t.id),

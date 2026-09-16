@@ -8,6 +8,10 @@ const output = path.resolve('work/tests');
 await mkdir(output, { recursive: true });
 for (const name of [
   'model',
+  'demo-data',
+  'season-emails',
+  'email-template',
+  'passwords',
   'season-planning',
   'invitations',
   'club-logos',

@@ -1,3 +1,4 @@
+import { editDemoData } from './demo-data';
 import {
   AppError,
   applyAction,
@@ -75,6 +76,7 @@ export type Proposal = {
   reset?: boolean;
 };
 const allowed = new Set([
+  'demo-records',
   'club-import',
   'club',
   'league',
@@ -88,6 +90,9 @@ const allowed = new Set([
 export function assistantContext(s: State) {
   // Include operational identities, but keep contact details, care notes, photos and invitation secrets local.
   return {
+    ...(s.demoSandbox
+      ? { demoMode: true, demoDate: s.demoToday, demoRecords: s }
+      : {}),
     leagues: s.leagues,
     participants: s.players.map(({ id, name, orgId, parentId, handicap }) => ({
       id,
@@ -277,6 +282,8 @@ export function applyProposal(s: State, me: Member, p: Proposal): State {
         'Review a workspace reset separately from other changes.',
       );
     const next = emptyState();
+    next.demoSandbox = s.demoSandbox;
+    next.demoToday = s.demoToday;
     next.members = s.members
       .filter((m) => m.role === 'admin' && !m.id.startsWith('demo-'))
       .map((m) => ({
@@ -298,6 +305,10 @@ export function applyProposal(s: State, me: Member, p: Proposal): State {
   }
   let next = structuredClone(s);
   for (const c of p.changes) {
+    if (c.action.type === 'demo-records') {
+      next = editDemoData(next, me, c.action);
+      continue;
+    }
     if (!allowed.has(c.action.type))
       throw new AppError('This change is not supported by the assistant.');
     if (

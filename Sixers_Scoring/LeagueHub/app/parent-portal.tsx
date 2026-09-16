@@ -1,4 +1,5 @@
 'use client';
+import { AccountSignIn } from './account-sign-in';
 import { ClubImage } from './club-image';
 import { GenderField } from './gender-field';
 import { ChildAvatar, ChildName } from './child-avatar';
@@ -262,6 +263,20 @@ export default function ParentPortal() {
       setBusy(false);
     }
   }
+  const openedDeepLink = useRef(false);
+  useEffect(() => {
+    if (!data || openedDeepLink.current) return;
+    const id = new URLSearchParams(location.search).get('fixture');
+    if (!id) return;
+    const season = data.seasons.find((s) =>
+      s.state.fixtures.some((f) => f.id === id),
+    );
+    if (season) {
+      openedDeepLink.current = true;
+      setFixture({ season, id });
+      setScreen('fixture');
+    }
+  }, [data]);
   const children = data?.family.children || [];
   const regs = (p: Player) =>
     (data?.seasons || [])
@@ -290,7 +305,7 @@ export default function ParentPortal() {
   const events = familyFixtures(data?.seasons || [], children);
   const { upcoming, selected, other, live } = parentFixtureSections(
     events,
-    londonDay(),
+    data?.seasons?.[0]?.state.demoToday || londonDay(),
   );
   const published = upcoming.filter((e) => e.published);
   const repliesNeeded = (list: typeof events) =>
@@ -321,7 +336,8 @@ export default function ParentPortal() {
             season.state.fixtures.some(
               (f) =>
                 f.id === n.fixtureId &&
-                f.date >= londonDay() &&
+                f.date >=
+                  (data?.seasons?.[0]?.state.demoToday || londonDay()) &&
                 !['completed', 'cancelled'].includes(f.status),
             ),
         )
@@ -1333,116 +1349,18 @@ function EmailSignIn({
   auth: any;
   onDone: () => Promise<void>;
 }) {
-  const [email, setEmail] = useState(''),
-    [name, setName] = useState(''),
-    [code, setCode] = useState(''),
-    [challenge, setChallenge] = useState(''),
-    [error, setError] = useState(''),
-    [busy, setBusy] = useState(false);
   return (
     <section className="parent-login">
       <span className="eyebrow">WELCOME, PARENT OR GUARDIAN</span>
-      <h1>
-        Your family’s season
-        <br />
-        starts with you.
-      </h1>
-      <p>
-        New here or coming back? Enter your email and we’ll send you a sign-in
-        code. No password to remember.
-      </p>
-      <form
-        className="stack mt-7"
-        onSubmit={async (e) => {
-          e.preventDefault();
-          setBusy(true);
-          setError('');
-          try {
-            if (challenge) {
-              await request('/api/auth', { type: 'verify', challenge, code });
-              await onDone();
-            } else {
-              const r = await request('/api/auth', {
-                type: 'start',
-                email,
-                name,
-              });
-              setChallenge(r.challenge);
-            }
-          } catch (e) {
-            setError((e as Error).message);
-          } finally {
-            setBusy(false);
-          }
-        }}
-      >
-        {challenge ? (
-          <Field
-            label="Six-digit code"
-            value={code}
-            onChange={setCode}
-            required
-          />
-        ) : (
-          <>
-            <Field label="Your name" value={name} onChange={setName} />
-            <Field
-              label="Email address"
-              type="email"
-              value={email}
-              onChange={setEmail}
-              required
-            />
-          </>
-        )}
-        {error && (
-          <p role="alert" className="error">
-            {error}
-          </p>
-        )}
-        <button className="btn primary" disabled={busy || !auth.emailReady}>
-          {busy
-            ? 'One moment…'
-            : challenge
-              ? 'Verify & continue'
-              : 'Send my sign-in code'}
-          <ArrowRight size={17} />
-        </button>
-        {challenge && (
-          <button
-            type="button"
-            className="text-link"
-            onClick={() => setChallenge('')}
-          >
-            Use a different email or request a new code
-          </button>
-        )}
-      </form>
-      {!auth.emailReady && (
-        <p className="notice mt-5">
-          Email sign-in is not connected yet. Please contact your administrator.
-        </p>
-      )}
-      {auth.user ? (
-        <button className="btn mt-5" onClick={() => void onDone()}>
-          Continue as {auth.user.name}
-          <ArrowRight size={16} />
-        </button>
-      ) : auth.sitesSignIn !== false ? (
-        <a
-          className="btn mt-5"
-          href={`/signin-with-chatgpt?return_to=${encodeURIComponent(typeof location === 'undefined' ? '/?role=parent' : location.pathname + location.search)}`}
-          target="_top"
-        >
-          Continue with ChatGPT for this private review
-        </a>
-      ) : null}
+      <h1>Your family’s season</h1>
+      <AccountSignIn onDone={onDone} />
       <a className="text-link mt-5 block" href="/?role=parent&help=1">
         Having trouble signing in? Ask my organiser
       </a>
     </section>
   );
 }
+
 function ChildWizard({
   child,
   revision,

@@ -15,6 +15,11 @@ for (const name of ['assistant-plan', 'assistant-server']) {
       },
     })
     .outputText.replace(
+      "await import('./season-emails')",
+      '({eventEmails:()=>[]})',
+    )
+    .replace("await import('cloudflare:workers')", '({env:{}})')
+    .replace(
       /from '\.\/(.*?)'/g,
       (_, n) =>
         `from './${n === 'server' ? 'assistant-test-server' : n === 'assistant-provider' ? 'assistant-test-provider' : n}.mjs'`,

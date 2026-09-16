@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Flag, ArrowRight } from 'lucide-react';
 import { Field, Pick, CheckField } from './widgets';
+import { AccountSignIn } from './account-sign-in';
 import { LoginHelp } from './login-help';
 import { rememberedEmail, rememberEmail } from '@/lib/remembered-login';
 
@@ -128,7 +129,7 @@ export default function RegistrationGate({
     history.replaceState({}, '', location.pathname + '?' + q);
     setReady(true);
   }
-  if (ready) return <>{children}</>;
+  if (ready || data?.demo) return <>{children}</>;
   const matching = (data?.organisations || [])
     .filter((o: any) =>
       o.name.toLowerCase().includes(search.trim().toLowerCase()),
@@ -232,128 +233,15 @@ export default function RegistrationGate({
           ) : (
             <>
               {!data.user || anotherEmail ? (
-                <>
-                  <p className="muted mt-3">
-                    {challenge
-                      ? 'Enter the code sent to your email.'
-                      : 'We’ll email you a sign-in code. No password to remember.'}
-                  </p>
-                  <form
-                    className="stack mt-5"
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      void run(async () => {
-                        if (challenge) {
-                          await request('/api/auth', {
-                            type: 'verify',
-                            challenge,
-                            code,
-                          });
-                          if (role === 'parent')
-                            rememberEmail(remember ? email : '');
-                          setName('');
-                          setPhone('');
-                          await refresh();
-                          setAnotherEmail(false);
-                          setChallenge('');
-                        } else {
-                          const result = await request('/api/auth', {
-                            type: 'start',
-                            email,
-                            name,
-                          });
-                          setChallenge(result.challenge);
-                        }
-                      });
-                    }}
-                  >
-                    {challenge ? (
-                      <label className="field">
-                        <span>Six-digit email code</span>
-                        <input
-                          value={code}
-                          onChange={(e) =>
-                            setCode(
-                              e.target.value.replace(/\D/g, '').slice(0, 6),
-                            )
-                          }
-                          inputMode="numeric"
-                          autoComplete="one-time-code"
-                          maxLength={6}
-                          pattern="[0-9]{6}"
-                          required
-                        />
-                      </label>
-                    ) : (
-                      <label className="field">
-                        <span>Email address</span>
-                        <input
-                          type="email"
-                          name="email"
-                          autoComplete="email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          required
-                        />
-                      </label>
-                    )}
-                    {role === 'parent' && (
-                      <CheckField
-                        checked={remember}
-                        onChange={(v) => {
-                          setRemember(v);
-                          if (!v) rememberEmail('');
-                        }}
-                      >
-                        Remember my email on this device
-                      </CheckField>
-                    )}
-                    <p className="muted">
-                      Email sign-in lasts up to 30 days on this browser.
-                      Remember your email only on a device you trust.
-                    </p>
-                    <button
-                      className="btn primary"
-                      disabled={busy || !data.emailReady}
-                    >
-                      {challenge ? 'Verify email' : 'Send email code'}
-                    </button>
-                    {challenge && (
-                      <button
-                        className="text-link"
-                        type="button"
-                        onClick={() => {
-                          setChallenge('');
-                          setCode('');
-                        }}
-                      >
-                        Request a new code
-                      </button>
-                    )}
-                  </form>
-                  {!data.emailReady && (
-                    <p className="notice mt-4">
-                      Email sign-in is not connected yet. Please contact your
-                      administrator.
-                    </p>
-                  )}
-                  {data.user ? (
-                    <button
-                      className="btn mt-4"
-                      onClick={() => setAnotherEmail(false)}
-                    >
-                      Use {data.user.email}
-                    </button>
-                  ) : data.sitesSignIn !== false ? (
-                    <a
-                      className="btn mt-4"
-                      target="_top"
-                      href={`/signin-with-chatgpt?return_to=${encodeURIComponent(location.pathname + location.search)}`}
-                    >
-                      Continue with ChatGPT
-                    </a>
-                  ) : null}
-                </>
+                <AccountSignIn
+                  initialMode={mode}
+                  onDone={async () => {
+                    setName('');
+                    setPhone('');
+                    await refresh();
+                    setAnotherEmail(false);
+                  }}
+                />
               ) : (
                 <>
                   <p className="muted mt-3">{data.user.email}</p>
@@ -565,7 +453,7 @@ export default function RegistrationGate({
                   </button>
                 </>
               )}
-              {!inviteToken && (
+              {!inviteToken && data.user && !anotherEmail && (
                 <button
                   className="text-link auth-secondary-link"
                   onClick={() => {

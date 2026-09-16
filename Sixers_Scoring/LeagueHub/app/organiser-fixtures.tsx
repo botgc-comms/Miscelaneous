@@ -21,12 +21,14 @@ export function OrganiserFixtures({
   openFixture: (id: string) => void;
 }) {
   const { s } = tools;
-  const today = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Europe/London',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).format(new Date());
+  const today =
+    s.demoToday ||
+    new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Europe/London',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(new Date());
   const fixtures = s.fixtures
     .filter(
       (f) =>

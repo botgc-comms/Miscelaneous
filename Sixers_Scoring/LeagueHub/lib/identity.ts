@@ -17,11 +17,21 @@ export async function currentIdentity() {
   const cookie = (await cookies()).get('golfsixes_session')?.value;
   if (cookie) {
     const row = await (env as unknown as { DB: D1Database }).DB.prepare(
-      'SELECT email,name,user_id FROM sessions WHERE hash = ? AND expires > ?',
+      'SELECT email,name,user_id,method FROM sessions WHERE hash = ? AND expires > ?',
     )
       .bind(await digest(cookie), new Date().toISOString())
-      .first<{ email: string; name: string; user_id: string }>();
-    if (row)
+      .first<{
+        email: string;
+        name: string;
+        user_id: string;
+        method: string;
+      }>();
+    if (
+      row &&
+      (sitesSignInAvailable() ||
+        (env as unknown as Record<string, string>).PRIVATE_PREVIEW === 'true' ||
+        ['password', 'google', 'email'].includes(row.method))
+    )
       return {
         userId: row.user_id,
         email: row.email,

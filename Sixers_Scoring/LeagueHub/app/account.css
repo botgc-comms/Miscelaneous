@@ -1,0 +1,84 @@
+.account-form {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+  max-width: 32rem;
+}
+.account-form form {
+  display: grid;
+  gap: 1.1rem;
+}
+.account-form input {
+  font-size: 1rem;
+  min-height: 46px;
+  min-width: 0;
+  width: 100%;
+}
+.account-form small {
+  color: #58716a;
+  line-height: 1.5;
+}
+.account-form .btn {
+  min-height: 46px;
+  justify-content: center;
+}
+.account-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+}
+.account-links button {
+  text-align: left;
+  min-height: 40px;
+}
+.account-google {
+  background: white;
+  border: 1px solid #bbcfc6;
+}
+.service-tools {
+  position: relative;
+  background: #edf5ef;
+  border-bottom: 1px solid #d4e3da;
+  padding: 0.65rem 1.25rem;
+  font-size: 14px;
+}
+.service-tools summary {
+  cursor: pointer;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.service-tools-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  max-width: 1100px;
+}
+.service-tools-panel .field {
+  min-width: 180px;
+  max-width: 100%;
+}
+.service-tools.demo {
+  background: #fff1cd;
+  border-color: #ecd39b;
+}
+.service-tools .notice {
+  width: 100%;
+}
+@media (max-width: 480px) {
+  .account-links {
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .service-tools-panel .field {
+    width: 100%;
+  }
+  .service-tools-panel .btn {
+    flex: 1 1 calc(50% - 0.5rem);
+    min-width: 120px;
+    min-height: 44px;
+  }
+}

@@ -39,10 +39,26 @@ export function failure(e: unknown) {
 export async function user() {
   const u = await currentIdentity();
   if (!u) throw new AppError('Sign in to open your league workspace.', 401);
-  return u;
+  const { activeDemo } = await import('./demo-session');
+  const demo = await activeDemo();
+  if (demo)
+    return {
+      ...u,
+      userId: demo.actor.id,
+      email: demo.actor.email,
+      displayName: demo.actor.name,
+      fullName: demo.actor.name,
+      demoWorkspace: demo.row.id,
+      realUserId: u.userId,
+    };
+  return {
+    ...u,
+    demoWorkspace: undefined as string | undefined,
+    realUserId: u.userId,
+  };
 }
 export async function unifyOwnedRecords(
-  u: Awaited<ReturnType<typeof user>>,
+  u: NonNullable<Awaited<ReturnType<typeof currentIdentity>>>,
   requested?: string,
 ) {
   const legacy = await db()
@@ -88,6 +104,11 @@ export async function unifyOwnedRecords(
 }
 export async function context(workspace?: string, view?: string) {
   const u = await user();
+  if (u.demoWorkspace) {
+    if (workspace && workspace !== u.demoWorkspace)
+      throw new AppError('Leave demo mode to open live data.', 403);
+    workspace = u.demoWorkspace;
+  }
   await unifyOwnedRecords(u, workspace);
   const defaultRow = !workspace
     ? await db()
@@ -104,8 +125,20 @@ export async function context(workspace?: string, view?: string) {
     .first<Row>();
   if (!row) throw new AppError('Workspace not found.', 404);
   const state = upgradeState(JSON.parse(row.data) as State);
+  if (row.demo !== 2) {
+    delete state.demoSandbox;
+    delete state.demoToday;
+  }
   let me: Member | undefined;
-  if (row.demo) {
+  if (row.demo === 2) {
+    if (u.demoWorkspace !== row.id || row.owner !== u.realUserId)
+      throw new AppError('This demo belongs to another account.', 403);
+    me = state.members.find((m) => m.id === u.userId);
+    const { activeDemo } = await import('./demo-session');
+    const demo = await activeDemo();
+    state.demoSandbox = true;
+    state.demoToday = demo?.session.today || undefined;
+  } else if (row.demo) {
     if (row.owner !== u.userId)
       throw new AppError(
         'This example season belongs to another account.',
@@ -140,6 +173,8 @@ export async function context(workspace?: string, view?: string) {
 }
 export async function snapshot(c: Awaited<ReturnType<typeof context>>) {
   const projected = projectState(c.state, c.me);
+  projected.demoToday = c.state.demoToday;
+  projected.demoSandbox = c.row.demo === 2;
   if (c.me.role !== 'parent') {
     const { logoRows, processLogos } = await import('./club-logo-jobs');
     const logos = await logoRows(c.row.id);
@@ -184,14 +219,32 @@ export async function snapshot(c: Awaited<ReturnType<typeof context>>) {
   };
 }
 export async function saveCAS(row: Row, state: State) {
-  const r = await db()
+  const update = db()
     .prepare(
-      'UPDATE workspaces SET data = ?,revision = revision + 1,updated = ? WHERE id = ? AND revision = ?',
+      'UPDATE workspaces SET data=?,revision=revision+1,updated=? WHERE id=? AND revision=?',
     )
-    .bind(JSON.stringify(state), new Date().toISOString(), row.id, row.revision)
-    .run();
-  return r.meta.changes === 1;
+    .bind(
+      JSON.stringify(state),
+      new Date().toISOString(),
+      row.id,
+      row.revision,
+    );
+  const { eventEmails } = await import('./season-emails');
+  const { queueStatement } = await import('./email-outbox');
+  const origin =
+    (env as unknown as Record<string, string>).GOLFSIXES_PUBLIC_ORIGIN ||
+    'https://golfsixesleague.co.uk';
+  const emails = row.demo
+    ? []
+    : eventEmails(JSON.parse(row.data), state, row.id, origin);
+  // Queue before the CAS update under the same transaction, guarded by the old revision.
+  const results = await db().batch([
+    ...emails.map((p) => queueStatement(p, row.id, row.revision)),
+    update,
+  ]);
+  return results[results.length - 1].meta.changes === 1;
 }
+
 export async function mutate(
   workspace: string | undefined,
   view: string | undefined,
@@ -257,6 +310,11 @@ export async function hash(value: string) {
 }
 export async function createWorkspace(name: string) {
   const u = await user();
+  if (u.demoWorkspace)
+    throw new AppError(
+      'Return to the live service before creating a workspace.',
+      403,
+    );
   const existing = await context();
   if (existing.me.role !== 'admin')
     throw new AppError('Foundation administrator access is required.', 403);

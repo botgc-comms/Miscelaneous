@@ -15,7 +15,19 @@ services:
       - key: DATA_PATH
         value: /var/data
       - key: PRIVATE_PREVIEW
-        value: 'true'
+        sync: false
+      - key: GOLFSIXES_PUBLIC_ORIGIN
+        value: https://golfsixesleague.co.uk
+      - key: AUTH_FROM_EMAIL
+        value: GolfSixes League <hello@golfsixesleague.co.uk>
+      - key: RESEND_API_KEY
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: EMAIL_DELIVERY_ENABLED
+        sync: false
       - key: DATA_DIR
         value: /var/data/golfsixes-league
       - key: APP_PASSWORD
