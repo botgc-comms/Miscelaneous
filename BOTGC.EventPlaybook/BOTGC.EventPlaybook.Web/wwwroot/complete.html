@@ -53,6 +53,16 @@
         return;
       }
 
+      if (task.expiresOn && currentClubIsoDate() > task.expiresOn) {
+        content.innerHTML = `
+          <div class="completion-state-mark">—</div>
+          <h2>Task expired</h2>
+          <p><strong>${escapeHtml(task.taskTitle)}</strong></p>
+          <p class="help-text">${escapeHtml(task.eventName)}</p>
+          <p>This task was only needed before the event. Its completion link is no longer active.</p>`;
+        return;
+      }
+
       if (task.canCompleteFromLink === false) {
         const taskPath = `/?view=tasks&event=${encodeURIComponent(task.eventId)}&task=${encodeURIComponent(task.taskId)}`;
         content.innerHTML = `
@@ -99,6 +109,17 @@
         <div class="completion-learning-heading"><span>↺</span><div><strong>Learning from last time</strong><small>Consider this before completing the task</small></div></div>
         ${insights.map(insight => `<div class="completion-learning-entry"><p>${escapeHtml(insight.summary)}</p><small>${escapeHtml(insight.sourceEventName || 'Previous event')}${insight.sourceEventDate ? ` · ${new Date(insight.sourceEventDate + 'T12:00:00').toLocaleDateString('en-GB')}` : ''}${insight.sourceType === 'internal-retrospective' ? ' · internal retrospective' : insight.evidenceCount ? ` · based on ${escapeHtml(insight.evidenceCount)} response${Number(insight.evidenceCount) === 1 ? '' : 's'}` : ''}</small></div>`).join('')}
       </aside>`;
+    }
+
+    function currentClubIsoDate(date = new Date()) {
+      const formatter = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Europe/London',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      });
+      const parts = Object.fromEntries(formatter.formatToParts(date).map(part => [part.type, part.value]));
+      return `${parts.year}-${parts.month}-${parts.day}`;
     }
 
     function escapeHtml(value) {

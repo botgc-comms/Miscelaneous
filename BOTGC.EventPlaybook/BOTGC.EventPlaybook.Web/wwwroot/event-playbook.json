@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "3.6",
+  "schemaVersion": "3.8",
   "id": "botgc-event-playbook",
   "title": "Event Playbook",
   "description": "A data-driven event planning guide that turns answers into dated, assignable tasks, operational advisories and reusable event knowledge.",
@@ -289,8 +289,8 @@
               "answerType": "assignment",
               "assignmentMode": "personOrRole",
               "label": "Who owns the single authoritative message if the event changes?",
-              "helpText": "This person coordinates the wording and audience so operational and member messages do not conflict.",
-              "required": true,
+              "helpText": "Choose a person or role when member or participant communications are planned. Event Playbook will require an owner before a cancellation or postponement update is issued.",
+              "required": false,
               "source": "refined"
             },
             {
@@ -298,6 +298,7 @@
               "type": "question",
               "answerType": "multiChoice",
               "label": "What could cause the event to be cancelled, postponed or placed at risk?",
+              "helpText": "Leave this blank when there is no special trigger beyond the organiser's normal judgement. Otherwise select only the conditions that need an explicit decision before the event can proceed.",
               "options": [
                 { "value": "attendance", "label": "Insufficient bookings or attendance" },
                 { "value": "weather", "label": "Weather or course conditions" },
@@ -307,7 +308,7 @@
                 { "value": "organiser", "label": "Organiser decision or availability" },
                 { "value": "other", "label": "Other event-specific trigger" }
               ],
-              "required": true,
+              "required": false,
               "source": "refined"
             },
             {
@@ -330,7 +331,8 @@
               "id": "event-affected-areas",
               "type": "question",
               "answerType": "multiChoice",
-              "label": "Which teams or commitments must be checked before the event status changes?",
+              "label": "Who needs to receive the event go-ahead or a later status change?",
+              "helpText": "Select the affected teams or contacts. Event Playbook resolves these choices to the named people and shows the recipients before the decision owner sends the update. Leave this blank if nobody beyond the decision owner needs an internal update.",
               "options": [
                 { "value": "food-beverage", "label": "Food & Beverage staffing or orders" },
                 { "value": "clubhouse", "label": "Clubhouse rooms or service" },
@@ -341,60 +343,25 @@
                 { "value": "admission", "label": "Ticket sales, admission payments or refunds" },
                 { "value": "staffing", "label": "Other staff or volunteers" }
               ],
-              "required": true,
-              "source": "refined"
-            },
-            {
-              "id": "additional-operational-commitments",
-              "type": "question",
-              "answerType": "yesNo",
-              "label": "Will extra staffing, purchasing or supplier commitments be made specifically for this event?",
-              "allowDontKnow": true,
-              "dontKnowTask": {
-                "id": "decide-operational-commitments",
-                "title": "Decide whether the event requires extra staffing, purchasing or supplier commitments",
-                "detail": "Consult the affected department leads and record what will become difficult or costly to reverse.",
-                "deadlineCode": "B3",
-                "responsibleArea": "Event Coordination",
-                "defaultOwnerRoleId": "event-coordinator",
-                "source": "refined"
-              },
-              "required": true,
-              "source": "refined"
-            },
-            {
-              "id": "member-communications-sent",
-              "type": "question",
-              "answerType": "yesNo",
-              "label": "Have members or participants already been told that this event is proceeding?",
-              "allowDontKnow": true,
-              "dontKnowTask": {
-                "id": "check-event-communications-already-sent",
-                "title": "Check whether any event communications have already been sent or scheduled",
-                "detail": "Check member email, organiser messages, clubhouse screens, booking confirmations and social channels.",
-                "deadlineCode": "CD",
-                "responsibleArea": "Communications",
-                "defaultOwnerRoleId": "communications",
-                "source": "refined"
-              },
-              "required": true,
+              "required": false,
               "source": "refined"
             },
             {
               "id": "agree-event-viability-control",
               "type": "task",
-              "title": "Review and confirm the event's go/no-go plan",
-              "detail": "Check the recorded decision owner, communications owner, viability triggers, optional attendance threshold and affected teams. Correct anything that is missing or wrong, then confirm the plan.",
+              "title": "Decision owner: review and accept the event decision criteria",
+              "detail": "The named decision owner should review the recorded trigger points and notification recipients, correct anything that is wrong and explicitly accept responsibility for making the event decision.",
               "deadlineCode": "B3",
+              "expiresAfterDeadlineCode": "DT",
               "responsibleArea": "Event Coordination",
-              "defaultOwnerRoleId": "event-coordinator",
+              "ownerFromQuestionId": "event-decision-owner",
               "actionView": "module:event-control",
               "actionLabel": "Review Event control answers",
               "reviewSummary": {
-                "title": "Current go/no-go plan",
-                "instruction": "The Event Coordinator reviews these answers. Reassign this task only if someone else will perform the check.",
-                "confirmLabel": "Confirm go/no-go plan",
-                "confirmedLabel": "Go/no-go plan confirmed",
+                "title": "Event decision responsibility",
+                "instruction": "The named decision owner reviews these answers and accepts responsibility for the decision. Reassign this task only by changing the recorded decision owner.",
+                "confirmLabel": "Accept decision responsibility",
+                "confirmedLabel": "Decision responsibility accepted",
                 "fields": [
                   {
                     "questionId": "event-decision-owner",
@@ -404,12 +371,14 @@
                   {
                     "questionId": "event-communications-owner",
                     "label": "Change communications owner",
-                    "emptyText": "Choose who will issue the authoritative update"
+                    "required": false,
+                    "emptyText": "No separate communications owner is needed"
                   },
                   {
                     "questionId": "event-viability-triggers",
-                    "label": "Go/no-go triggers",
-                    "emptyText": "Record what could stop or place the event at risk"
+                    "label": "Special decision triggers",
+                    "required": false,
+                    "emptyText": "No special trigger beyond normal organiser judgement"
                   },
                   {
                     "questionId": "event-minimum-attendance",
@@ -420,18 +389,9 @@
                   },
                   {
                     "questionId": "event-affected-areas",
-                    "label": "Teams and commitments to check",
-                    "emptyText": "Select the affected teams or commitments"
-                  },
-                  {
-                    "questionId": "additional-operational-commitments",
-                    "label": "Extra commitments planned",
-                    "emptyText": "Confirm whether extra commitments will be made"
-                  },
-                  {
-                    "questionId": "member-communications-sent",
-                    "label": "Members already told it is proceeding",
-                    "emptyText": "Confirm whether communications have already been sent"
+                    "label": "People who must receive the decision",
+                    "required": false,
+                    "emptyText": "Nobody beyond the decision owner needs an internal update"
                   }
                 ]
               },
@@ -440,54 +400,44 @@
             {
               "id": "confirm-event-before-commitments",
               "type": "task",
-              "title": "Confirm the event is proceeding before additional staffing, purchasing, suppliers or publicity are firmly committed",
-              "detail": "The decision owner should mark the event Confirmed or At risk and tell affected department leads before irreversible commitments are made.",
+              "title": "Confirm the event go-ahead and notify the affected leads",
+              "detail": "Open the event-status decision, check the named recipients and apply Confirmed. Event Playbook records who made the decision and queues one internal update for each affected lead.",
               "deadlineCode": "CD",
+              "expiresAfterDeadlineCode": "DT",
               "responsibleArea": "Event Coordination",
-              "defaultOwnerRoleId": "event-coordinator",
-              "source": "refined"
-            },
-            {
-              "id": "confirm-fb-before-commitment",
-              "type": "task",
-              "title": "Give Food & Beverage an explicit event go-ahead before arranging extra cover, ordering stock or messaging members",
-              "detail": "F&B should work from the current Playbook status rather than a separate organiser conversation.",
-              "deadlineCode": "CD",
-              "showWhen": { "all": [{ "questionId": "catering-involved", "operator": "equals", "value": true }] },
-              "responsibleArea": "Event Coordination",
-              "defaultOwnerRoleId": "event-coordinator",
-              "source": "refined"
-            },
-            {
-              "id": "confirm-communications-before-promotion",
-              "type": "task",
-              "title": "Confirm the event status and agreed wording before sending or scheduling member promotion",
-              "detail": "All departments and the organiser should use the same approved event status and communications owner.",
-              "deadlineCode": "CD",
-              "showWhen": { "all": [{ "questionId": "communications-involved", "operator": "equals", "value": true }] },
-              "responsibleArea": "Communications",
-              "defaultOwnerRoleId": "communications",
-              "source": "refined"
-            },
-            {
-              "id": "final-event-go-no-go",
-              "type": "task",
-              "title": "Record the final go/no-go decision and confirm it with every operational lead",
-              "detail": "Do not rely on silence as confirmation. Mark the event Confirmed, At risk, Postponed or Cancelled in the Playbook.",
-              "deadlineCode": "GO",
-              "responsibleArea": "Event Coordination",
-              "defaultOwnerRoleId": "event-coordinator",
+              "ownerFromQuestionId": "event-decision-owner",
+              "completionMode": "event-status-decision",
+              "canCompleteFromLink": false,
+              "showWhen": { "all": [
+                { "eventField": "lifecycle.status", "operator": "in", "value": ["provisional", "confirmed"] },
+                { "eventField": "lifecycle.resolvedFromAtRisk", "operator": "notEquals", "value": true }
+              ] },
+              "actionView": "event-status",
+              "actionLabel": "Confirm event is going ahead",
+              "actionStatus": "confirmed",
               "source": "refined"
             },
             {
               "id": "resolve-at-risk-event",
               "type": "task",
-              "title": "Resolve the at-risk event decision and issue one status update",
-              "detail": "Review the recorded risk with the decision owner and either confirm, postpone or cancel the event.",
+              "title": "Resolve the at-risk event and notify the affected leads of the final outcome",
+              "detail": "While the event is At risk, choose Confirmed, Postponed or Cancelled. Keep this task visible until the final outcome has been recorded and its authoritative update has reached every named recipient.",
               "deadlineCode": "GO",
-              "showWhen": { "all": [{ "eventField": "lifecycle.status", "operator": "equals", "value": "at-risk" }] },
+              "expiresAfterDeadlineCode": "DT",
+              "showWhen": { "any": [
+                { "eventField": "lifecycle.status", "operator": "in", "value": ["at-risk", "postponed", "cancelled"] },
+                { "all": [
+                  { "eventField": "lifecycle.status", "operator": "equals", "value": "confirmed" },
+                  { "eventField": "lifecycle.resolvedFromAtRisk", "operator": "equals", "value": true }
+                ] }
+              ] },
               "responsibleArea": "Event Coordination",
-              "defaultOwnerRoleId": "event-coordinator",
+              "ownerFromQuestionId": "event-decision-owner",
+              "completionMode": "event-status-decision",
+              "canCompleteFromLink": false,
+              "actionView": "event-status",
+              "actionLabel": "Resolve event status",
+              "actionStatus": "confirmed",
               "source": "refined"
             }
           ]
@@ -604,7 +554,7 @@
               "showWhen": { "all": [
                 { "eventField": "lifecycle.status", "operator": "in", "value": ["cancelled", "postponed"] },
                 { "questionId": "entry-charge", "operator": "equals", "value": true },
-                { "questionId": "admission-arrangements", "operator": "contains", "value": "entry-payment" },
+                { "questionId": "admission-arrangements", "operator": "equals", "value": "paid-entry" },
                 { "questionId": "admission-free-entry", "operator": "answered" },
                 { "any": [
                   { "questionId": "admission-free-entry", "operator": "equals", "value": false },
@@ -4300,18 +4250,19 @@
       "sections": [
         {
           "id": "admission-offer",
-          "title": "Booking, price and capacity",
+          "title": "Registration, booking and ticket offer",
           "items": [
             {
               "id": "admission-arrangements",
               "type": "question",
-              "answerType": "multiChoice",
-              "label": "Which arrangements apply to attending the event?",
-              "helpText": "Select both options when attendees must reserve a place and also pay an entry charge. An advance ticket purchase counts as booking a place, even if no separate registration form is used.",
-              "example": "A free AGM may require members to reserve a place; a party may require a paid named booking; a pay-on-the-door event may only require an entry charge.",
+              "answerType": "singleChoice",
+              "label": "What kind of booking or ticket arrangement will be used?",
+              "helpText": "Choose the outcome the booking process is intended to achieve. Free attendance registration is only a head-count estimate; it does not reserve one of a limited number of places.",
+              "example": "Use attendance registration for free tickets issued only to estimate turnout, limited-place booking for a free event with a capacity, or paid entry when any attendee category will be charged.",
               "options": [
-                { "value": "advance-booking", "label": "Attendees must book, register, reserve or RSVP" },
-                { "value": "entry-payment", "label": "Attendees will be charged for entry" }
+                { "value": "attendance-registration", "label": "Free registration or tickets to estimate likely attendance (no fixed place limit)" },
+                { "value": "limited-place-booking", "label": "Free booking or reservation for a limited number of places" },
+                { "value": "paid-entry", "label": "Paid tickets or admission, in advance and/or at the door" }
               ],
               "required": true,
               "source": "refined"
@@ -4321,7 +4272,7 @@
               "type": "question",
               "answerType": "yesNo",
               "label": "Is entry free for certain attendee categories?",
-              "showWhen": { "all": [{ "questionId": "admission-arrangements", "operator": "contains", "value": "entry-payment" }] },
+              "showWhen": { "all": [{ "questionId": "admission-arrangements", "operator": "equals", "value": "paid-entry" }] },
               "required": true,
               "source": "refined"
             },
@@ -4337,20 +4288,21 @@
                 { "value": "visitors", "label": "Visitors" }
               ],
               "showWhen": { "all": [
-                { "questionId": "admission-arrangements", "operator": "contains", "value": "entry-payment" },
+                { "questionId": "admission-arrangements", "operator": "equals", "value": "paid-entry" },
                 { "questionId": "admission-free-entry", "operator": "equals", "value": true }
               ] },
               "required": true,
               "source": "refined"
             },
             {
-              "id": "set-admission-prices-task",
-              "type": "task",
-              "title": "Set the entry price for each attendee category that is not free",
-              "detail": "Use the free-entry categories recorded above. Agree and record the price for every unticked category, including what each price includes, before the booking or ticket information is published.",
-              "deadlineCode": "B4",
+              "id": "admission-price-details",
+              "type": "question",
+              "answerType": "text",
+              "label": "What will each type of paying attendee be charged, and what is included in that price?",
+              "helpText": "Use clear free-form wording for every paying category. The Communications Centre AI can use this answer when it prepares member-facing booking and ticket information.",
+              "example": "Adults £30; children £15; members £25. Each ticket includes the buffet and entertainment.",
               "showWhen": { "all": [
-                { "questionId": "admission-arrangements", "operator": "contains", "value": "entry-payment" },
+                { "questionId": "admission-arrangements", "operator": "equals", "value": "paid-entry" },
                 { "questionId": "admission-free-entry", "operator": "answered" },
                 { "any": [
                   { "questionId": "admission-free-entry", "operator": "equals", "value": false },
@@ -4365,26 +4317,36 @@
                   ] }
                 ] }
               ] },
-              "responsibleArea": "Finance",
-              "defaultOwnerRoleId": "finance",
-              "reviewSummary": {
-                "title": "Free-entry categories and prices",
-                "instruction": "Review who has free entry, record the agreed price for every remaining category in the task notes, then confirm the prices.",
-                "confirmLabel": "Confirm entry prices",
-                "confirmedLabel": "Entry prices confirmed",
-                "notesLabel": "Agreed prices",
-                "notesPlaceholder": "For example: Members £8; visitors £12; children free",
-                "fields": [
-                  { "questionId": "admission-free-entry", "label": "Any free-entry categories" },
-                  {
-                    "questionId": "admission-free-categories",
-                    "label": "Prices required for",
-                    "showUnselectedOptions": true,
-                    "notApplicableText": "Children, members and visitors",
-                    "allSelectedText": "None — all listed categories have free entry"
-                  }
-                ]
-              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "admission-payment-timing",
+              "type": "question",
+              "answerType": "multiChoice",
+              "label": "When can attendees pay the admission charge?",
+              "options": [
+                { "value": "advance", "label": "In advance" },
+                { "value": "door", "label": "At the door" },
+                { "value": "account", "label": "Charged to a member or customer account" }
+              ],
+              "showWhen": { "all": [
+                { "questionId": "admission-arrangements", "operator": "equals", "value": "paid-entry" },
+                { "questionId": "admission-free-entry", "operator": "answered" },
+                { "any": [
+                  { "questionId": "admission-free-entry", "operator": "equals", "value": false },
+                  { "all": [
+                    { "questionId": "admission-free-entry", "operator": "equals", "value": true },
+                    { "questionId": "admission-free-categories", "operator": "answered" },
+                    { "not": { "all": [
+                      { "questionId": "admission-free-categories", "operator": "contains", "value": "children" },
+                      { "questionId": "admission-free-categories", "operator": "contains", "value": "members" },
+                      { "questionId": "admission-free-categories", "operator": "contains", "value": "visitors" }
+                    ] } }
+                  ] }
+                ] }
+              ] },
+              "required": true,
               "source": "refined"
             },
             {
@@ -4392,11 +4354,15 @@
               "type": "question",
               "answerType": "number",
               "label": "What is the maximum number of places available?",
-              "helpText": "Record the total event capacity across both free and paid attendees.",
+              "helpText": "Record the total capacity across both free and paid attendees. This is not asked when free registration is only being used to estimate likely attendance.",
               "min": 1,
               "max": 2000,
               "unit": "places",
-              "required": false,
+              "showWhen": { "any": [
+                { "questionId": "admission-arrangements", "operator": "equals", "value": "limited-place-booking" },
+                { "questionId": "admission-arrangements", "operator": "equals", "value": "paid-entry" }
+              ] },
+              "required": true,
               "source": "refined"
             },
             {
@@ -4421,12 +4387,12 @@
               "source": "refined"
             },
             {
-              "id": "booking-registration-instructions",
+              "id": "guest-table-booking",
               "type": "question",
-              "answerType": "text",
-              "label": "What must an attendee do to secure a place or buy entry?",
-              "helpText": "Describe the steps, working link or contact, information to provide and payment point where applicable. The confirmation method is recorded separately below.",
-              "example": "Complete the member booking form, pay online and retain the confirmation email; or telephone the office to be added to the free guest list.",
+              "answerType": "yesNo",
+              "label": "Will guests need to book a table as part of attending the event?",
+              "helpText": "This is separate from registering for the event or buying a ticket. Answer yes when guests must also reserve a dining or clubhouse table.",
+              "example": "Guests buy an event ticket online and then contact the office to reserve a table for their party.",
               "showWhen": { "all": [{ "questionId": "admission-arrangements", "operator": "answered" }] },
               "required": true,
               "source": "refined"
@@ -4437,8 +4403,12 @@
               "answerType": "date",
               "label": "When should advance booking, registration or ticket sales open?",
               "showWhen": { "any": [
-                { "questionId": "admission-arrangements", "operator": "contains", "value": "advance-booking" },
-                { "questionId": "admission-payment-timing", "operator": "contains", "value": "advance" }
+                { "questionId": "admission-arrangements", "operator": "equals", "value": "attendance-registration" },
+                { "questionId": "admission-arrangements", "operator": "equals", "value": "limited-place-booking" },
+                { "all": [
+                  { "questionId": "admission-arrangements", "operator": "equals", "value": "paid-entry" },
+                  { "questionId": "admission-payment-timing", "operator": "contains", "value": "advance" }
+                ] }
               ] },
               "required": true,
               "source": "refined"
@@ -4449,44 +4419,29 @@
               "answerType": "date",
               "label": "When should advance booking, registration or ticket sales close?",
               "showWhen": { "any": [
-                { "questionId": "admission-arrangements", "operator": "contains", "value": "advance-booking" },
-                { "questionId": "admission-payment-timing", "operator": "contains", "value": "advance" }
+                { "questionId": "admission-arrangements", "operator": "equals", "value": "attendance-registration" },
+                { "questionId": "admission-arrangements", "operator": "equals", "value": "limited-place-booking" },
+                { "all": [
+                  { "questionId": "admission-arrangements", "operator": "equals", "value": "paid-entry" },
+                  { "questionId": "admission-payment-timing", "operator": "contains", "value": "advance" }
+                ] }
               ] },
               "required": true,
-              "source": "refined"
-            },
-            {
-              "id": "booking-confirmation-process",
-              "type": "question",
-              "answerType": "text",
-              "label": "How will attendees know their booking or advance purchase is confirmed, and what should they retain or show on arrival?",
-              "helpText": "Record whether confirmation is a named guest-list entry, email, ticket, receipt, QR code or another proof of booking or purchase.",
-              "showWhen": { "any": [
-                { "questionId": "admission-arrangements", "operator": "contains", "value": "advance-booking" },
-                { "questionId": "admission-payment-timing", "operator": "contains", "value": "advance" }
-              ] },
-              "required": true,
-              "source": "refined"
-            },
-            {
-              "id": "approve-admission-offer-task",
-              "type": "task",
-              "title": "Approve the attendance process and event capacity",
-              "detail": "Check that the attendee journey and total capacity are clear and workable. Where entry is charged, confirm the separate price-setting task is complete before prices or tickets are advertised.",
-              "deadlineCode": "B4",
-              "responsibleArea": "Event Coordination",
-              "defaultOwnerRoleId": "event-coordinator",
               "source": "refined"
             },
             {
               "id": "configure-ticket-sales-task",
               "type": "task",
               "title": "Set up and test the agreed booking, registration or advance-ticket route",
-              "detail": "Create the agreed booking or ticket record, apply capacity and opening or closing dates, test the complete attendee journey and give the working link or instructions to Communications.",
+              "detail": "Create the agreed registration, booking or ticket record, apply any relevant capacity and opening or closing dates, test the complete attendee journey and give the working link or instructions to Communications.",
               "deadlineCode": "B3",
               "showWhen": { "any": [
-                { "questionId": "admission-arrangements", "operator": "contains", "value": "advance-booking" },
-                { "questionId": "admission-payment-timing", "operator": "contains", "value": "advance" }
+                { "questionId": "admission-arrangements", "operator": "equals", "value": "attendance-registration" },
+                { "questionId": "admission-arrangements", "operator": "equals", "value": "limited-place-booking" },
+                { "all": [
+                  { "questionId": "admission-arrangements", "operator": "equals", "value": "paid-entry" },
+                  { "questionId": "admission-payment-timing", "operator": "contains", "value": "advance" }
+                ] }
               ] },
               "responsibleArea": "Administration",
               "defaultOwnerRoleId": "office",
@@ -4502,8 +4457,8 @@
               "id": "admission-public-instructions",
               "type": "question",
               "answerType": "text",
-              "label": "What exact booking, registration or purchase information must be published?",
-              "helpText": "Provide the approved public wording: the working link or contact, price where applicable, what is included, capacity or closing date and how confirmation works. The Communications module controls which channels publish it.",
+              "label": "What booking, registration or ticket link or contact should communications publish?",
+              "helpText": "Provide the exact working link or contact. Add only instructions that are not already captured by the registration mode, dates, capacity, table-booking and price answers. The Communications module controls which channels publish it.",
               "required": true,
               "source": "refined"
             },
@@ -4520,7 +4475,7 @@
                 { "value": "not-agreed", "label": "Not yet agreed" }
               ],
               "showWhen": { "all": [
-                { "questionId": "admission-arrangements", "operator": "contains", "value": "entry-payment" },
+                { "questionId": "admission-arrangements", "operator": "equals", "value": "paid-entry" },
                 { "questionId": "admission-free-entry", "operator": "answered" },
                 { "any": [
                   { "questionId": "admission-free-entry", "operator": "equals", "value": false },
@@ -4542,7 +4497,7 @@
               "id": "publish-admission-details-task",
               "type": "task",
               "title": "Provide the approved attendance, booking and any price instructions for event communications",
-              "detail": "Create one approved statement for the Communications Centre and attendee confirmations so every selected channel uses the same booking route, price where applicable and attendance conditions.",
+              "detail": "Create one approved statement for the Communications Centre so every selected channel uses the same registration or booking route, price where applicable, dates, table-booking requirement and attendance conditions.",
               "deadlineCode": "B3",
               "responsibleArea": "Communications",
               "defaultOwnerRoleId": "communications",
@@ -4557,7 +4512,7 @@
               "detail": "Resolve the policy before taking money and make the purchaser-facing wording clear enough to use if the event changes.",
               "deadlineCode": "B3",
               "showWhen": { "all": [
-                { "questionId": "admission-arrangements", "operator": "contains", "value": "entry-payment" },
+                { "questionId": "admission-arrangements", "operator": "equals", "value": "paid-entry" },
                 { "questionId": "admission-refund-policy", "operator": "equals", "value": "not-agreed" }
               ] },
               "responsibleArea": "Finance",
@@ -4570,35 +4525,6 @@
           "id": "admission-payment",
           "title": "Payment and admission on the day",
           "items": [
-            {
-              "id": "admission-payment-timing",
-              "type": "question",
-              "answerType": "multiChoice",
-              "label": "When can attendees pay the admission charge?",
-              "options": [
-                { "value": "advance", "label": "In advance" },
-                { "value": "door", "label": "At the door" },
-                { "value": "account", "label": "Charged to a member or customer account" }
-              ],
-              "showWhen": { "all": [
-                { "questionId": "admission-arrangements", "operator": "contains", "value": "entry-payment" },
-                { "questionId": "admission-free-entry", "operator": "answered" },
-                { "any": [
-                  { "questionId": "admission-free-entry", "operator": "equals", "value": false },
-                  { "all": [
-                    { "questionId": "admission-free-entry", "operator": "equals", "value": true },
-                    { "questionId": "admission-free-categories", "operator": "answered" },
-                    { "not": { "all": [
-                      { "questionId": "admission-free-categories", "operator": "contains", "value": "children" },
-                      { "questionId": "admission-free-categories", "operator": "contains", "value": "members" },
-                      { "questionId": "admission-free-categories", "operator": "contains", "value": "visitors" }
-                    ] } }
-                  ] }
-                ] }
-              ] },
-              "required": true,
-              "source": "refined"
-            },
             {
               "id": "admission-payment-methods",
               "type": "question",
@@ -4613,7 +4539,7 @@
                 { "value": "other", "label": "Other method" }
               ],
               "showWhen": { "all": [
-                { "questionId": "admission-arrangements", "operator": "contains", "value": "entry-payment" },
+                { "questionId": "admission-arrangements", "operator": "equals", "value": "paid-entry" },
                 { "questionId": "admission-free-entry", "operator": "answered" },
                 { "any": [
                   { "questionId": "admission-free-entry", "operator": "equals", "value": false },
@@ -4637,8 +4563,8 @@
               "answerType": "text",
               "label": "How will bookings or tickets be checked, and how will walk-ins or door sales be handled?",
               "showWhen": { "any": [
-                { "questionId": "admission-arrangements", "operator": "contains", "value": "advance-booking" },
-                { "questionId": "admission-payment-timing", "operator": "contains", "value": "door" }
+                { "questionId": "admission-arrangements", "operator": "equals", "value": "limited-place-booking" },
+                { "questionId": "admission-arrangements", "operator": "equals", "value": "paid-entry" }
               ] },
               "required": true,
               "source": "refined"
@@ -4662,8 +4588,8 @@
               "detail": "Assign named people, provide the final attendee list, define how walk-ins and complimentary places are approved and, where needed, test the payment facilities before doors open.",
               "deadlineCode": "B1",
               "showWhen": { "any": [
-                { "questionId": "admission-arrangements", "operator": "contains", "value": "advance-booking" },
-                { "questionId": "admission-payment-timing", "operator": "contains", "value": "door" }
+                { "questionId": "admission-arrangements", "operator": "equals", "value": "limited-place-booking" },
+                { "questionId": "admission-arrangements", "operator": "equals", "value": "paid-entry" }
               ] },
               "responsibleArea": "Administration",
               "defaultOwnerRoleId": "office",
@@ -4697,7 +4623,7 @@
               "detail": "Record the final admission income in Event Finances, explain differences between payments and attendance, and provide cash, card and online totals to Accounts.",
               "deadlineCode": "A1",
               "showWhen": { "all": [
-                { "questionId": "admission-arrangements", "operator": "contains", "value": "entry-payment" },
+                { "questionId": "admission-arrangements", "operator": "equals", "value": "paid-entry" },
                 { "questionId": "admission-free-entry", "operator": "answered" },
                 { "any": [
                   { "questionId": "admission-free-entry", "operator": "equals", "value": false },

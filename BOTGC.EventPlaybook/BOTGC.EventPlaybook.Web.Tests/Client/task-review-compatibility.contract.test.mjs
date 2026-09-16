@@ -28,7 +28,7 @@ function compileFunction(name, dependencies = {}) {
 }
 
 test('the operational-controls client script uses its release cache key', () => {
-  assert.match(indexSource, /playbook-app\.js\?v=20260914-operational-controls-1/);
+  assert.match(indexSource, /playbook-app\.js\?v=20260916-admission-status-controls-2/);
 });
 
 test('food review provenance is migrated before task reconciliation and server completion sync', () => {
@@ -223,6 +223,7 @@ test('a new task cannot be completed until its review is ready', () => {
   const taskState = { completed: false, status: 'open' };
   const markComplete = compileFunction('markTaskComplete', {
     ensureTaskState: () => taskState,
+    isTaskExpired: () => false,
     taskReviewState: () => ({ ready: false, signature: 'missing-answer' }),
     rotateTaskCompletionLink: () => assert.fail('A blocked completion must not rotate its link.')
   });

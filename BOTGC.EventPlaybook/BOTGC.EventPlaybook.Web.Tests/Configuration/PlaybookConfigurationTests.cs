@@ -18,7 +18,7 @@ public sealed class PlaybookConfigurationTests
 
         using var document = JsonDocument.Parse(dataJson);
         var root = document.RootElement;
-        Assert.Equal("3.6", root.GetProperty("schemaVersion").GetString());
+        Assert.Equal("3.8", root.GetProperty("schemaVersion").GetString());
 
         var closeDownQuestion = FindItem(root, "general-close-down-required");
         var context = closeDownQuestion.GetProperty("planningContext");
@@ -61,7 +61,7 @@ public sealed class PlaybookConfigurationTests
     }
 
     [Fact]
-    public void BookingAndChargingShareOneGatewayWithoutDuplicatingRegistrationInCommunications()
+    public void AdmissionDistinguishesAttendanceEstimatesLimitedPlacesAndPaidEntry()
     {
         var solutionRoot = FindSolutionRoot();
         var dataPath = Path.Combine(solutionRoot, "BOTGC.EventPlaybook.Web", "Data", "event-playbook.json");
@@ -81,19 +81,21 @@ public sealed class PlaybookConfigurationTests
         Assert.True(ContainsCondition(admission.GetProperty("activation"), "entry-charge", "equals", true));
 
         var arrangements = FindItem(root, "admission-arrangements");
-        Assert.Equal("multiChoice", arrangements.GetProperty("answerType").GetString());
+        Assert.Equal("singleChoice", arrangements.GetProperty("answerType").GetString());
         var arrangementValues = arrangements.GetProperty("options")
             .EnumerateArray()
             .Select(option => option.GetProperty("value").GetString())
             .ToArray();
-        Assert.Equal(2, arrangementValues.Length);
-        Assert.Contains("advance-booking", arrangementValues);
-        Assert.Contains("entry-payment", arrangementValues);
+        Assert.Equal(
+            new[] { "attendance-registration", "limited-place-booking", "paid-entry" },
+            arrangementValues);
+        Assert.Contains("head-count estimate", arrangements.GetProperty("helpText").GetString(), StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("does not reserve", arrangements.GetProperty("helpText").GetString(), StringComparison.OrdinalIgnoreCase);
 
         var freeEntry = FindItem(root, "admission-free-entry");
         Assert.Equal("yesNo", freeEntry.GetProperty("answerType").GetString());
         Assert.Equal("Is entry free for certain attendee categories?", freeEntry.GetProperty("label").GetString());
-        Assert.True(ContainsCondition(freeEntry.GetProperty("showWhen"), "admission-arrangements", "contains", "entry-payment"));
+        Assert.True(ContainsCondition(freeEntry.GetProperty("showWhen"), "admission-arrangements", "equals", "paid-entry"));
 
         var freeCategories = FindItem(root, "admission-free-categories");
         Assert.Equal("multiChoice", freeCategories.GetProperty("answerType").GetString());
@@ -104,20 +106,24 @@ public sealed class PlaybookConfigurationTests
             .ToArray();
         Assert.Equal(new[] { "children", "members", "visitors" }, freeCategoryValues);
 
-        var priceTask = FindItem(root, "set-admission-prices-task");
-        Assert.Equal("task", priceTask.GetProperty("type").GetString());
-        Assert.Equal("Set the entry price for each attendee category that is not free", priceTask.GetProperty("title").GetString());
-        Assert.True(ContainsCondition(priceTask.GetProperty("showWhen"), "admission-free-entry", "equals", false));
-        Assert.True(ContainsNegatedAllValues(priceTask.GetProperty("showWhen"), "admission-free-categories", freeCategoryValues!));
-        var pricingCategoriesField = priceTask.GetProperty("reviewSummary").GetProperty("fields")
-            .EnumerateArray()
-            .Single(field => field.GetProperty("questionId").GetString() == "admission-free-categories");
-        Assert.Equal("Prices required for", pricingCategoriesField.GetProperty("label").GetString());
-        Assert.True(pricingCategoriesField.GetProperty("showUnselectedOptions").GetBoolean());
+        var prices = FindItem(root, "admission-price-details");
+        Assert.Equal("question", prices.GetProperty("type").GetString());
+        Assert.Equal("text", prices.GetProperty("answerType").GetString());
+        Assert.True(prices.GetProperty("required").GetBoolean());
+        Assert.True(ContainsCondition(prices.GetProperty("showWhen"), "admission-arrangements", "equals", "paid-entry"));
+        Assert.True(ContainsCondition(prices.GetProperty("showWhen"), "admission-free-entry", "equals", false));
+        Assert.True(ContainsNegatedAllValues(prices.GetProperty("showWhen"), "admission-free-categories", freeCategoryValues!));
+        Assert.Contains("Communications Centre AI", prices.GetProperty("helpText").GetString(), StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Adults £30", prices.GetProperty("example").GetString(), StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("children £15", prices.GetProperty("example").GetString(), StringComparison.OrdinalIgnoreCase);
 
         var admissionCapacity = FindItem(root, "admission-capacity");
         Assert.Equal("What is the maximum number of places available?", admissionCapacity.GetProperty("label").GetString());
-        Assert.Contains("both free and paid attendees", admissionCapacity.GetProperty("helpText").GetString());
+        Assert.True(ContainsCondition(admissionCapacity.GetProperty("showWhen"), "admission-arrangements", "equals", "limited-place-booking"));
+        Assert.True(ContainsCondition(admissionCapacity.GetProperty("showWhen"), "admission-arrangements", "equals", "paid-entry"));
+        Assert.False(ContainsCondition(admissionCapacity.GetProperty("showWhen"), "admission-arrangements", "equals", "attendance-registration"));
+        Assert.True(admissionCapacity.GetProperty("required").GetBoolean());
+        Assert.Contains("not asked", admissionCapacity.GetProperty("helpText").GetString(), StringComparison.OrdinalIgnoreCase);
 
         var admissionOffer = admission.GetProperty("sections")
             .EnumerateArray()
@@ -127,38 +133,55 @@ public sealed class PlaybookConfigurationTests
             .Select(item => item.GetProperty("id").GetString())
             .ToList();
         Assert.True(admissionOfferIds.IndexOf("admission-free-entry") < admissionOfferIds.IndexOf("admission-free-categories"));
-        Assert.True(admissionOfferIds.IndexOf("admission-free-categories") < admissionOfferIds.IndexOf("set-admission-prices-task"));
-        Assert.True(admissionOfferIds.IndexOf("set-admission-prices-task") < admissionOfferIds.IndexOf("admission-capacity"));
+        Assert.True(admissionOfferIds.IndexOf("admission-free-categories") < admissionOfferIds.IndexOf("admission-price-details"));
+        Assert.True(admissionOfferIds.IndexOf("admission-price-details") < admissionOfferIds.IndexOf("admission-capacity"));
 
-        foreach (var paidItemId in new[] { "admission-refund-policy", "admission-payment-timing", "admission-payment-methods", "reconcile-admission-income-task" })
+        var tableBooking = FindItem(root, "guest-table-booking");
+        Assert.Equal("yesNo", tableBooking.GetProperty("answerType").GetString());
+        Assert.True(tableBooking.GetProperty("required").GetBoolean());
+        Assert.True(ContainsOperator(tableBooking.GetProperty("showWhen"), "admission-arrangements", "answered"));
+
+        foreach (var paidItemId in new[] { "admission-price-details", "admission-refund-policy", "admission-payment-timing", "admission-payment-methods", "reconcile-admission-income-task" })
         {
             var paidCondition = FindItem(root, paidItemId).GetProperty("showWhen");
-            Assert.True(ContainsCondition(paidCondition, "admission-arrangements", "contains", "entry-payment"));
+            Assert.True(ContainsCondition(paidCondition, "admission-arrangements", "equals", "paid-entry"));
             Assert.True(ContainsOperator(paidCondition, "admission-free-entry", "answered"));
             Assert.True(ContainsNegatedAllValues(paidCondition, "admission-free-categories", freeCategoryValues!));
         }
 
         var refundAfterChange = FindItem(root, "resolve-admission-refunds-after-event-change").GetProperty("showWhen");
         Assert.True(ContainsCondition(refundAfterChange, "entry-charge", "equals", true));
-        Assert.True(ContainsCondition(refundAfterChange, "admission-arrangements", "contains", "entry-payment"));
+        Assert.True(ContainsCondition(refundAfterChange, "admission-arrangements", "equals", "paid-entry"));
         Assert.True(ContainsNegatedAllValues(refundAfterChange, "admission-free-categories", freeCategoryValues!));
 
         var salesOpenCondition = FindItem(root, "ticket-sales-open-date").GetProperty("showWhen");
-        Assert.True(ContainsCondition(salesOpenCondition, "admission-arrangements", "contains", "advance-booking"));
+        Assert.True(ContainsCondition(salesOpenCondition, "admission-arrangements", "equals", "attendance-registration"));
+        Assert.True(ContainsCondition(salesOpenCondition, "admission-arrangements", "equals", "limited-place-booking"));
+        Assert.True(ContainsCondition(salesOpenCondition, "admission-arrangements", "equals", "paid-entry"));
         Assert.True(ContainsCondition(salesOpenCondition, "admission-payment-timing", "contains", "advance"));
 
-        var configureRouteCondition = FindItem(root, "configure-ticket-sales-task").GetProperty("showWhen");
-        Assert.True(ContainsCondition(configureRouteCondition, "admission-arrangements", "contains", "advance-booking"));
-        Assert.True(ContainsCondition(configureRouteCondition, "admission-payment-timing", "contains", "advance"));
-        Assert.True(ContainsCondition(FindItem(root, "door-admission-process").GetProperty("showWhen"), "admission-arrangements", "contains", "advance-booking"));
+        var salesCloseCondition = FindItem(root, "ticket-sales-close-date").GetProperty("showWhen");
+        Assert.True(ContainsCondition(salesCloseCondition, "admission-arrangements", "equals", "attendance-registration"));
+        Assert.True(ContainsCondition(salesCloseCondition, "admission-arrangements", "equals", "limited-place-booking"));
+        Assert.True(ContainsCondition(salesCloseCondition, "admission-arrangements", "equals", "paid-entry"));
+        Assert.True(ContainsCondition(salesCloseCondition, "admission-payment-timing", "contains", "advance"));
 
-        Assert.True(ContainsItem(root, "booking-registration-instructions"));
-        Assert.True(ContainsItem(root, "booking-confirmation-process"));
+        var configureRouteCondition = FindItem(root, "configure-ticket-sales-task").GetProperty("showWhen");
+        Assert.True(ContainsCondition(configureRouteCondition, "admission-arrangements", "equals", "attendance-registration"));
+        Assert.True(ContainsCondition(configureRouteCondition, "admission-arrangements", "equals", "limited-place-booking"));
+        Assert.True(ContainsCondition(configureRouteCondition, "admission-arrangements", "equals", "paid-entry"));
+        Assert.True(ContainsCondition(configureRouteCondition, "admission-payment-timing", "contains", "advance"));
+        Assert.False(ContainsCondition(FindItem(root, "door-admission-process").GetProperty("showWhen"), "admission-arrangements", "equals", "attendance-registration"));
+
+        Assert.False(ContainsItem(root, "booking-registration-instructions"));
+        Assert.False(ContainsItem(root, "booking-confirmation-process"));
+        Assert.False(ContainsItem(root, "set-admission-prices-task"));
+        Assert.False(ContainsItem(root, "approve-admission-offer-task"));
         Assert.True(ContainsItem(root, "admission-public-instructions"));
         Assert.False(ContainsItem(root, "booking-required"));
         Assert.False(ContainsItem(root, "booking-details-task"));
         Assert.False(ContainsItem(root, "admission-tickets-required"));
-        Assert.False(ContainsItem(root, "admission-price-details"));
+        Assert.True(ContainsItem(root, "admission-price-details"));
         Assert.False(ContainsItem(root, "complimentary-admission"));
         Assert.False(ContainsItem(root, "complimentary-admission-details"));
     }
@@ -329,6 +352,102 @@ public sealed class PlaybookConfigurationTests
         Assert.False(resultsTask.TryGetProperty("reviewSummary", out _));
     }
 
+    [Fact]
+    public void EventControlUsesOneActionableGoAheadInsteadOfPassiveDepartmentDuplicates()
+    {
+        var solutionRoot = FindSolutionRoot();
+        var dataPath = Path.Combine(solutionRoot, "BOTGC.EventPlaybook.Web", "Data", "event-playbook.json");
+        var publicPath = Path.Combine(solutionRoot, "BOTGC.EventPlaybook.Web", "wwwroot", "event-playbook.json");
+        var dataJson = File.ReadAllText(dataPath);
+
+        Assert.Equal(dataJson, File.ReadAllText(publicPath));
+
+        using var document = JsonDocument.Parse(dataJson);
+        var root = document.RootElement;
+        Assert.Equal("3.8", root.GetProperty("schemaVersion").GetString());
+
+        foreach (var retiredId in new[]
+        {
+            "additional-operational-commitments",
+            "decide-operational-commitments",
+            "member-communications-sent",
+            "check-event-communications-already-sent",
+            "confirm-fb-before-commitment",
+            "confirm-communications-before-promotion",
+            "final-event-go-no-go"
+        })
+        {
+            Assert.DoesNotContain($"\"id\": \"{retiredId}\"", dataJson, StringComparison.Ordinal);
+        }
+
+        var commitmentTasks = FindModule(root, "event-control").GetProperty("sections")
+            .EnumerateArray()
+            .Single(section => section.GetProperty("id").GetString() == "viability-control")
+            .GetProperty("items")
+            .EnumerateArray()
+            .Where(item => item.GetProperty("type").GetString() == "task" &&
+                item.TryGetProperty("deadlineCode", out var deadline) && deadline.GetString() == "CD")
+            .Select(item => item.GetProperty("id").GetString())
+            .ToArray();
+        Assert.Equal(new[] { "confirm-event-before-commitments" }, commitmentTasks);
+
+        var triggers = FindItem(root, "event-viability-triggers");
+        Assert.False(triggers.GetProperty("required").GetBoolean());
+        Assert.Contains("Leave this blank", triggers.GetProperty("helpText").GetString(), StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("normal judgement", triggers.GetProperty("helpText").GetString(), StringComparison.OrdinalIgnoreCase);
+
+        var communicationsOwner = FindItem(root, "event-communications-owner");
+        Assert.False(communicationsOwner.GetProperty("required").GetBoolean());
+        Assert.Contains("when member or participant communications are planned", communicationsOwner.GetProperty("helpText").GetString(), StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("require an owner", communicationsOwner.GetProperty("helpText").GetString(), StringComparison.OrdinalIgnoreCase);
+
+        var recipients = FindItem(root, "event-affected-areas");
+        Assert.False(recipients.GetProperty("required").GetBoolean());
+        Assert.Contains("receive the event go-ahead", recipients.GetProperty("label").GetString(), StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("named people", recipients.GetProperty("helpText").GetString(), StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(
+            new[] { "food-beverage", "clubhouse", "golf", "communications", "suppliers", "entertainment", "admission", "staffing" },
+            recipients.GetProperty("options").EnumerateArray().Select(option => option.GetProperty("value").GetString()).ToArray());
+
+        var acceptance = FindItem(root, "agree-event-viability-control");
+        Assert.Contains("accept", acceptance.GetProperty("title").GetString(), StringComparison.OrdinalIgnoreCase);
+        Assert.Equal("event-decision-owner", acceptance.GetProperty("ownerFromQuestionId").GetString());
+        Assert.Equal("DT", acceptance.GetProperty("expiresAfterDeadlineCode").GetString());
+        Assert.Equal("Accept decision responsibility", acceptance.GetProperty("reviewSummary").GetProperty("confirmLabel").GetString());
+        var acceptanceFieldIds = acceptance.GetProperty("reviewSummary").GetProperty("fields")
+            .EnumerateArray()
+            .Select(field => field.GetProperty("questionId").GetString())
+            .ToArray();
+        Assert.Contains("event-decision-owner", acceptanceFieldIds);
+        Assert.Contains("event-communications-owner", acceptanceFieldIds);
+        Assert.Contains("event-viability-triggers", acceptanceFieldIds);
+        Assert.Contains("event-minimum-attendance", acceptanceFieldIds);
+        Assert.Contains("event-affected-areas", acceptanceFieldIds);
+        Assert.DoesNotContain("additional-operational-commitments", acceptanceFieldIds);
+        Assert.DoesNotContain("member-communications-sent", acceptanceFieldIds);
+
+        var goAhead = FindItem(root, "confirm-event-before-commitments");
+        Assert.Equal("event-decision-owner", goAhead.GetProperty("ownerFromQuestionId").GetString());
+        Assert.Equal("event-status-decision", goAhead.GetProperty("completionMode").GetString());
+        Assert.False(goAhead.GetProperty("canCompleteFromLink").GetBoolean());
+        Assert.Equal("event-status", goAhead.GetProperty("actionView").GetString());
+        Assert.Equal("confirmed", goAhead.GetProperty("actionStatus").GetString());
+        Assert.Equal("DT", goAhead.GetProperty("expiresAfterDeadlineCode").GetString());
+        Assert.True(ContainsEventFieldCondition(goAhead.GetProperty("showWhen"), "lifecycle.status", "in", new[] { "provisional", "confirmed" }));
+        Assert.True(ContainsEventFieldCondition(goAhead.GetProperty("showWhen"), "lifecycle.resolvedFromAtRisk", "notEquals", true));
+
+        var atRisk = FindItem(root, "resolve-at-risk-event");
+        Assert.Equal("event-decision-owner", atRisk.GetProperty("ownerFromQuestionId").GetString());
+        Assert.Equal("event-status-decision", atRisk.GetProperty("completionMode").GetString());
+        Assert.False(atRisk.GetProperty("canCompleteFromLink").GetBoolean());
+        Assert.Equal("event-status", atRisk.GetProperty("actionView").GetString());
+        Assert.Equal("confirmed", atRisk.GetProperty("actionStatus").GetString());
+        Assert.Equal("DT", atRisk.GetProperty("expiresAfterDeadlineCode").GetString());
+        Assert.True(ContainsEventFieldCondition(atRisk.GetProperty("showWhen"), "lifecycle.status", "in", new[] { "at-risk", "postponed", "cancelled" }));
+        Assert.True(ContainsEventFieldCondition(atRisk.GetProperty("showWhen"), "lifecycle.status", "equals", "confirmed"));
+        Assert.True(ContainsEventFieldCondition(atRisk.GetProperty("showWhen"), "lifecycle.resolvedFromAtRisk", "equals", true));
+    }
+
     private static bool ContainsItem(JsonElement root, string itemId)
     {
         foreach (var module in root.GetProperty("modules").EnumerateArray())
@@ -458,6 +577,117 @@ public sealed class PlaybookConfigurationTests
         }
 
         return condition.TryGetProperty("not", out var negated) && ContainsOperator(negated, questionId, operation);
+    }
+
+    private static bool ContainsEventFieldCondition(
+        JsonElement condition,
+        string eventField,
+        string operation,
+        string expectedValue)
+    {
+        if (condition.ValueKind != JsonValueKind.Object)
+        {
+            return false;
+        }
+
+        if (condition.TryGetProperty("eventField", out var field) &&
+            field.GetString() == eventField &&
+            condition.TryGetProperty("operator", out var candidateOperation) &&
+            candidateOperation.GetString() == operation &&
+            condition.TryGetProperty("value", out var value) &&
+            value.ValueKind == JsonValueKind.String &&
+            value.GetString() == expectedValue)
+        {
+            return true;
+        }
+
+        foreach (var propertyName in new[] { "all", "any" })
+        {
+            if (condition.TryGetProperty(propertyName, out var collection) &&
+                collection.EnumerateArray().Any(candidate =>
+                    ContainsEventFieldCondition(candidate, eventField, operation, expectedValue)))
+            {
+                return true;
+            }
+        }
+
+        return condition.TryGetProperty("not", out var negated) &&
+            ContainsEventFieldCondition(negated, eventField, operation, expectedValue);
+    }
+
+    private static bool ContainsEventFieldCondition(
+        JsonElement condition,
+        string eventField,
+        string operation,
+        bool expectedValue)
+    {
+        if (condition.ValueKind != JsonValueKind.Object)
+        {
+            return false;
+        }
+
+        if (condition.TryGetProperty("eventField", out var field) &&
+            field.GetString() == eventField &&
+            condition.TryGetProperty("operator", out var candidateOperation) &&
+            candidateOperation.GetString() == operation &&
+            condition.TryGetProperty("value", out var value) &&
+            value.ValueKind is JsonValueKind.True or JsonValueKind.False &&
+            value.GetBoolean() == expectedValue)
+        {
+            return true;
+        }
+
+        foreach (var propertyName in new[] { "all", "any" })
+        {
+            if (condition.TryGetProperty(propertyName, out var collection) &&
+                collection.EnumerateArray().Any(candidate =>
+                    ContainsEventFieldCondition(candidate, eventField, operation, expectedValue)))
+            {
+                return true;
+            }
+        }
+
+        return condition.TryGetProperty("not", out var negated) &&
+            ContainsEventFieldCondition(negated, eventField, operation, expectedValue);
+    }
+
+    private static bool ContainsEventFieldCondition(
+        JsonElement condition,
+        string eventField,
+        string operation,
+        IReadOnlyCollection<string> expectedValues)
+    {
+        if (condition.ValueKind != JsonValueKind.Object)
+        {
+            return false;
+        }
+
+        if (condition.TryGetProperty("eventField", out var field) &&
+            field.GetString() == eventField &&
+            condition.TryGetProperty("operator", out var candidateOperation) &&
+            candidateOperation.GetString() == operation &&
+            condition.TryGetProperty("value", out var value) &&
+            value.ValueKind == JsonValueKind.Array)
+        {
+            var actualValues = value.EnumerateArray().Select(candidate => candidate.GetString()).ToArray();
+            if (actualValues.OrderBy(candidate => candidate).SequenceEqual(expectedValues.OrderBy(candidate => candidate)))
+            {
+                return true;
+            }
+        }
+
+        foreach (var propertyName in new[] { "all", "any" })
+        {
+            if (condition.TryGetProperty(propertyName, out var collection) &&
+                collection.EnumerateArray().Any(candidate =>
+                    ContainsEventFieldCondition(candidate, eventField, operation, expectedValues)))
+            {
+                return true;
+            }
+        }
+
+        return condition.TryGetProperty("not", out var negated) &&
+            ContainsEventFieldCondition(negated, eventField, operation, expectedValues);
     }
 
     private static bool ContainsNegatedAllValues(JsonElement condition, string questionId, IEnumerable<string?> expectedValues)

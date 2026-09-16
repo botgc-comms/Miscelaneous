@@ -47,11 +47,13 @@ public sealed class MemberEmailComposer(
             eventDescription = request.Description.Trim(),
             additionalCreativeInstructions = string.IsNullOrWhiteSpace(request.AdditionalInstructions) ? null : request.AdditionalInstructions.Trim(),
             price = string.IsNullOrWhiteSpace(request.Price) ? null : request.Price.Trim(),
+            planningContext = request.PlanningContext,
             artworkUrl,
             requirements = new[]
             {
                 "Return a JSON object with exactly two string properties: subject and bodyHtml.",
                 "Use only facts present in the supplied event information. Do not invent booking arrangements, times, prices or benefits.",
+                "Use relevant admission-planning facts when explaining how members register, reserve or pay. Preserve the supplied prices, dates, capacity, table-booking requirement and public booking instructions exactly; omit facts that are absent or not relevant.",
                 "Use friendly British English and a concise, engaging subject line.",
                 "The bodyHtml must be an email-safe HTML fragment with inline CSS only; no scripts, forms, iframes, external stylesheets or tracking markup.",
                 "Place the supplied artwork near the top as a responsive image using its exact URL and meaningful alt text.",
@@ -143,9 +145,11 @@ public sealed class MemberEmailComposer(
         var date = DateOnly.TryParseExact(request.EventDate, "yyyy-MM-dd", out var parsedDate)
             ? parsedDate.ToDateTime(TimeOnly.MinValue).ToString("dddd d MMMM yyyy", CultureInfo.GetCultureInfo("en-GB"))
             : request.EventDate;
-        var price = string.IsNullOrWhiteSpace(request.Price)
+        var displayPrice = MemberCommunicationsFallbackHtml.ResolvePrice(request.Price, request.PlanningContext);
+        var price = string.IsNullOrWhiteSpace(displayPrice)
             ? string.Empty
-            : $"<p style=\"margin:0 0 18px;font-size:18px;font-weight:700;color:#0b4254\">{HtmlEncoder.Default.Encode(request.Price.Trim())}</p>";
+            : $"<p style=\"margin:0 0 18px;font-size:18px;font-weight:700;color:#0b4254\">{HtmlEncoder.Default.Encode(displayPrice)}</p>";
+        var planning = MemberCommunicationsFallbackHtml.BuildPlanningSection(request.PlanningContext);
         var body = $"""
             <div style="max-width:640px;margin:0 auto;font-family:Arial,Helvetica,sans-serif;color:#173844;line-height:1.55">
               <img src="{HtmlEncoder.Default.Encode(artworkUrl)}" alt="{name} poster" style="display:block;width:100%;height:auto;margin:0 0 24px;border-radius:8px">
@@ -153,6 +157,7 @@ public sealed class MemberEmailComposer(
               <p style="margin:0 0 18px;font-size:17px;font-weight:700;color:#a97b20">{HtmlEncoder.Default.Encode(date)}</p>
               {price}
               <p style="margin:0 0 20px;font-size:16px">{description}</p>
+              {planning.Html}
               <p style="margin:24px 0 0">We hope you can join us.</p>
               <p style="margin:8px 0 0;font-weight:700">{HtmlEncoder.Default.Encode(clubName)}</p>
             </div>

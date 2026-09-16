@@ -26,6 +26,8 @@ public sealed class GeneratePosterRequest
 
     public string? RefinementNotes { get; init; }
 
+    public CommunicationsPlanningContext? PlanningContext { get; init; }
+
     public string? PreviousArtworkDataUrl { get; init; }
 
     public string? SelectedConceptDataUrl { get; init; }
@@ -68,6 +70,8 @@ public sealed class GenerateVariantRequest
     public string? AdditionalInstructions { get; init; }
 
     public string? RefinementNotes { get; init; }
+
+    public CommunicationsPlanningContext? PlanningContext { get; init; }
 
     public List<SupportingImageReference> SupportingImages { get; init; } = [];
 }
@@ -303,6 +307,8 @@ public sealed class MemberDiaryDraftRequest
 
     public string? BookingUrl { get; init; }
 
+    public CommunicationsPlanningContext? PlanningContext { get; init; }
+
     public required PublishAsset Artwork { get; init; }
 }
 
@@ -332,6 +338,8 @@ public sealed class MemberEmailDraftRequest
     public string? AdditionalInstructions { get; init; }
 
     public string? Price { get; init; }
+
+    public CommunicationsPlanningContext? PlanningContext { get; init; }
 
     public required PublishAsset Artwork { get; init; }
 }
@@ -471,7 +479,34 @@ public sealed class SelectReferenceImagesRequest
 
     public string? Price { get; init; }
 
+    public CommunicationsPlanningContext? PlanningContext { get; init; }
+
     public List<ReferenceSelectionCandidate> References { get; init; } = [];
+}
+
+public sealed class CommunicationsPlanningContext
+{
+    public string? RegistrationMode { get; init; }
+
+    public string? FreeEntry { get; init; }
+
+    public string? FreeEntryCategories { get; init; }
+
+    public string? TicketPriceDetails { get; init; }
+
+    public string? PaymentTiming { get; init; }
+
+    public string? MaximumPlaces { get; init; }
+
+    public string? BookingRoutes { get; init; }
+
+    public string? GuestTableBooking { get; init; }
+
+    public string? BookingOpens { get; init; }
+
+    public string? BookingCloses { get; init; }
+
+    public string? PublicBookingInstructions { get; init; }
 }
 
 public sealed class ReferenceSelectionCandidate

@@ -10,6 +10,7 @@ public sealed class RegisterCompletionLinkRequest
     public string? Assignee { get; init; }
     public string? AssigneeEmail { get; init; }
     public string? DueDate { get; init; }
+    public string? ExpiresOn { get; init; }
     public List<TaskLearningInsightSnapshot> LearningInsights { get; init; } = [];
     public bool PreserveLearningInsights { get; init; }
     public bool CanCompleteFromLink { get; init; } = true;
@@ -25,6 +26,7 @@ public sealed class TaskCompletionRecord
     public string? Assignee { get; set; }
     public string? AssigneeEmail { get; set; }
     public string? DueDate { get; set; }
+    public string? ExpiresOn { get; set; }
     public List<TaskLearningInsightSnapshot> LearningInsights { get; set; } = [];
     public bool CanCompleteFromLink { get; set; } = true;
     public DateTimeOffset RegisteredAtUtc { get; init; }

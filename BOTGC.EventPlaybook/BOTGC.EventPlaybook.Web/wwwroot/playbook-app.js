@@ -5,6 +5,12 @@
   const STORAGE_TEMPLATE = 'botgc-event-playbook-template-v1';
   const REFERENCE_LIBRARY_STORAGE = 'botgc-event-playbook-reference-library-v1';
   const STORAGE_SHARED_MIGRATED = 'botgc-event-playbook-shared-migration-v1';
+  const CLUB_DATE_FORMATTER = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/London',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
 
   const DEFAULT_MILESTONE_OFFSETS = Object.freeze({
     B4: -60,
@@ -41,6 +47,17 @@
   });
 
   const CHANGE_RESPONSE_STATUSES = new Set(['cancelled', 'postponed']);
+  const NOTIFIABLE_EVENT_STATUSES = new Set(['confirmed', 'at-risk', 'postponed', 'cancelled']);
+  const EVENT_STATUS_RECIPIENT_DEFINITIONS = Object.freeze([
+    { value: 'food-beverage', label: 'Food & Beverage', roleId: 'food-beverage-manager', ownerQuestionId: 'food-service-owner' },
+    { value: 'clubhouse', label: 'Clubhouse', roleId: 'clubhouse' },
+    { value: 'golf', label: 'Golf Operations', roleId: 'golf-manager' },
+    { value: 'communications', label: 'Communications', roleId: 'communications', ownerQuestionId: 'event-communications-owner' },
+    { value: 'suppliers', label: 'External suppliers', roleId: 'event-coordinator' },
+    { value: 'entertainment', label: 'Entertainment and production', roleId: 'event-coordinator', ownerQuestionId: 'entertainment-event-contact' },
+    { value: 'admission', label: 'Admission and payments', roleId: 'office' },
+    { value: 'staffing', label: 'Staff and volunteers', roleId: 'event-coordinator', ownerQuestionId: 'staffing-coordinator' }
+  ]);
 
   const FOOD_SERVICE_REVIEW_TASK_IDS_V36 = Object.freeze([
     'external-food-service-liaison-task',
@@ -49,6 +66,13 @@
     'event-day-food-service-task'
   ]);
   const LEGACY_FOOD_REVIEW_COMPLETION_PROVENANCE = 'pre-v3.6-food-review';
+  const RETIRED_EVENT_CONTROL_TASK_IDS_V37 = Object.freeze([
+    'decide-operational-commitments',
+    'check-event-communications-already-sent',
+    'confirm-fb-before-commitment',
+    'confirm-communications-before-promotion',
+    'final-event-go-no-go'
+  ]);
 
   const FINANCE_CATEGORIES = Object.freeze({
     income: ['Ticket sales', 'Bar sales', 'Catering sales', 'Sponsorship', 'Donations', 'Other income'],
@@ -581,6 +605,10 @@
   }
 
   function migrateAdmissionPricingState() {
+    // v3.8 restored admission-price-details as the authoritative planning
+    // answer. The v3.5 migration moved that legacy answer into task notes, so
+    // it must not run against the restored question and delete current data.
+    if (itemIndex.has('admission-price-details')) return false;
     if (!itemIndex.has('admission-free-categories') || !itemIndex.has('set-admission-prices-task')) return false;
 
     let changed = false;
@@ -718,6 +746,240 @@
     return changed;
   }
 
+  function migrateAdmissionModelV38() {
+    const configuredVersion = Number.parseFloat(playbook?.schemaVersion ?? '0');
+    if (!Number.isFinite(configuredVersion) || configuredVersion < 3.8 ||
+        !itemIndex.has('admission-arrangements') || !itemIndex.has('admission-price-details')) return false;
+
+    let changed = false;
+    const retiredQuestionIds = [
+      'booking-registration-instructions',
+      'booking-confirmation-process'
+    ];
+    const retiredTaskIds = [
+      'set-admission-prices-task',
+      'approve-admission-offer-task'
+    ];
+    const targetItemRemap = {
+      'booking-registration-instructions': 'admission-public-instructions',
+      'booking-confirmation-process': 'configure-ticket-sales-task',
+      'set-admission-prices-task': 'admission-price-details',
+      'approve-admission-offer-task': 'configure-ticket-sales-task'
+    };
+    const usableText = value => typeof value === 'string' && value.trim() ? value.trim() : '';
+    const appendUniqueText = (existing, value, label) => {
+      const cleaned = usableText(value);
+      if (!cleaned) return usableText(existing);
+      const next = label ? `${label}: ${cleaned}` : cleaned;
+      const current = usableText(existing);
+      if (!current) return next;
+      return current.includes(cleaned) ? current : `${current}\n\n${next}`;
+    };
+    const migrateArrangement = record => {
+      if (!record || typeof record !== 'object') return false;
+      const previous = record['admission-arrangements'];
+      let needsReview = false;
+      if (Array.isArray(previous)) {
+        if (previous.includes('entry-payment') || previous.includes('paid-entry')) {
+          record['admission-arrangements'] = 'paid-entry';
+        } else if (previous.includes('limited-place-booking')) {
+          record['admission-arrangements'] = 'limited-place-booking';
+        } else if (previous.includes('attendance-registration')) {
+          record['admission-arrangements'] = 'attendance-registration';
+        } else if (previous.includes('advance-booking')) {
+          if (hasRecordedQuestionValue(record['admission-capacity'])) {
+            record['admission-arrangements'] = 'limited-place-booking';
+          } else {
+            // The retired answer covered both finite reservations and simple
+            // attendance estimates. Without a recorded capacity, choosing one
+            // silently would change the event's meaning, so require review.
+            delete record['admission-arrangements'];
+            needsReview = true;
+          }
+        } else {
+          delete record['admission-arrangements'];
+        }
+      } else if (previous === 'entry-payment') {
+        record['admission-arrangements'] = 'paid-entry';
+      } else if (previous === 'advance-booking') {
+        if (hasRecordedQuestionValue(record['admission-capacity'])) {
+          record['admission-arrangements'] = 'limited-place-booking';
+        } else {
+          delete record['admission-arrangements'];
+          needsReview = true;
+        }
+      }
+      return needsReview;
+    };
+
+    for (const event of state.events ?? []) {
+      event.dataMigrations = event.dataMigrations && typeof event.dataMigrations === 'object'
+        ? event.dataMigrations
+        : {};
+      if (event.dataMigrations.admissionModelV38 === true) continue;
+
+      const before = JSON.stringify({
+        answers: event.answers,
+        clonedAnswerHints: event.clonedAnswerHints,
+        questionMeta: event.questionMeta,
+        taskState: event.taskState,
+        dataMigrations: event.dataMigrations,
+        learningInsights: event.learningInsights,
+        retrospectiveTaskAnalysis: event.retrospective?.taskAnalysis
+      });
+
+      event.answers = event.answers && typeof event.answers === 'object' ? event.answers : {};
+      event.taskState = event.taskState && typeof event.taskState === 'object' ? event.taskState : {};
+      const answerArrangementNeedsReview = migrateArrangement(event.answers);
+      const hintArrangementNeedsReview = migrateArrangement(event.clonedAnswerHints);
+      const arrangementNeedsReview = answerArrangementNeedsReview || hintArrangementNeedsReview;
+
+      const legacyPriceTask = event.taskState['set-admission-prices-task'];
+      const legacyComplimentary = event.answers['complimentary-admission'];
+      const legacyComplimentaryDetails = event.answers['complimentary-admission-details'];
+      const legacyComplimentaryHint = event.clonedAnswerHints?.['complimentary-admission'];
+      const legacyComplimentaryDetailsHint = event.clonedAnswerHints?.['complimentary-admission-details'];
+      if (!Object.prototype.hasOwnProperty.call(event.answers, 'admission-free-entry') &&
+          typeof legacyComplimentary === 'boolean') {
+        event.answers['admission-free-entry'] = legacyComplimentary;
+      }
+      if (event.clonedAnswerHints && typeof event.clonedAnswerHints === 'object' &&
+          !Object.prototype.hasOwnProperty.call(event.clonedAnswerHints, 'admission-free-entry') &&
+          typeof legacyComplimentaryHint === 'boolean') {
+        event.clonedAnswerHints['admission-free-entry'] = legacyComplimentaryHint;
+      }
+
+      let priceDetails = usableText(event.answers['admission-price-details']);
+      priceDetails = appendUniqueText(priceDetails, legacyPriceTask?.notes, 'Previously recorded ticket prices');
+      priceDetails = appendUniqueText(priceDetails, legacyComplimentaryDetails, 'Previously recorded complimentary or discounted entry');
+      if (priceDetails) event.answers['admission-price-details'] = priceDetails;
+      if (event.clonedAnswerHints && typeof event.clonedAnswerHints === 'object') {
+        let priceHint = usableText(event.clonedAnswerHints['admission-price-details']);
+        priceHint = appendUniqueText(priceHint, legacyComplimentaryDetailsHint, 'Previous complimentary or discounted entry');
+        if (priceHint) event.clonedAnswerHints['admission-price-details'] = priceHint;
+      }
+
+      const previousProcessDetails = [
+        ['Previously recorded attendee instructions', event.answers['booking-registration-instructions']],
+        ['Previously recorded confirmation process', event.answers['booking-confirmation-process']]
+      ];
+      const configureTask = event.taskState['configure-ticket-sales-task'] ?? {};
+      if (arrangementNeedsReview) {
+        configureTask.notes = appendUniqueText(
+          configureTask.notes,
+          'Previous admission planning information included advance booking without a recorded capacity. Review whether this event needs attendance-only registration or a limited-place reservation.',
+          'Admission arrangement needs review');
+      }
+      for (const [label, value] of previousProcessDetails) {
+        configureTask.notes = appendUniqueText(configureTask.notes, value, label);
+      }
+      const retiredApproval = event.taskState['approve-admission-offer-task'];
+      configureTask.notes = appendUniqueText(configureTask.notes, retiredApproval?.notes, 'Previous admission review note');
+      if (usableText(configureTask.notes)) event.taskState['configure-ticket-sales-task'] = configureTask;
+
+      for (const questionId of retiredQuestionIds) {
+        delete event.answers[questionId];
+        if (event.clonedAnswerHints && typeof event.clonedAnswerHints === 'object') delete event.clonedAnswerHints[questionId];
+        if (event.questionMeta && typeof event.questionMeta === 'object') delete event.questionMeta[questionId];
+      }
+      delete event.answers['complimentary-admission'];
+      delete event.answers['complimentary-admission-details'];
+      if (event.clonedAnswerHints && typeof event.clonedAnswerHints === 'object') {
+        delete event.clonedAnswerHints['complimentary-admission'];
+        delete event.clonedAnswerHints['complimentary-admission-details'];
+      }
+      for (const taskId of retiredTaskIds) delete event.taskState[taskId];
+
+      for (const insight of event.learningInsights ?? []) {
+        if (!Array.isArray(insight.targetItemIds)) continue;
+        insight.targetItemIds = [...new Set(insight.targetItemIds.map(itemId => targetItemRemap[itemId] ?? itemId))];
+      }
+      for (const proposal of event.retrospective?.taskAnalysis?.proposals ?? []) {
+        if (proposal.targetItemId && targetItemRemap[proposal.targetItemId]) {
+          proposal.targetItemId = targetItemRemap[proposal.targetItemId];
+        }
+      }
+
+      event.dataMigrations.admissionModelV38 = true;
+      const after = JSON.stringify({
+        answers: event.answers,
+        clonedAnswerHints: event.clonedAnswerHints,
+        questionMeta: event.questionMeta,
+        taskState: event.taskState,
+        dataMigrations: event.dataMigrations,
+        learningInsights: event.learningInsights,
+        retrospectiveTaskAnalysis: event.retrospective?.taskAnalysis
+      });
+      if (before !== after) changed = true;
+    }
+
+    const previousOutboxLength = state.notificationOutbox?.length ?? 0;
+    state.notificationOutbox = (state.notificationOutbox ?? [])
+      .filter(notification => !retiredTaskIds.includes(notification.taskId));
+    return changed || state.notificationOutbox.length !== previousOutboxLength;
+  }
+
+  function migrateEventControlStateV37() {
+    const configuredVersion = Number.parseFloat(playbook?.schemaVersion ?? '0');
+    if (!Number.isFinite(configuredVersion) || configuredVersion < 3.7) return false;
+
+    let changed = false;
+    for (const event of state.events ?? []) {
+      event.dataMigrations = event.dataMigrations && typeof event.dataMigrations === 'object'
+        ? event.dataMigrations
+        : {};
+      if (event.dataMigrations.eventControlV37 === true) continue;
+
+      event.answers = event.answers && typeof event.answers === 'object' ? event.answers : {};
+      event.taskState = event.taskState && typeof event.taskState === 'object' ? event.taskState : {};
+      const lifecycle = normaliseEventLifecycle(event);
+      if (event.answers['member-communications-sent'] === true) {
+        lifecycle.communicationsCommitmentRecorded = true;
+      }
+      delete event.answers['member-communications-sent'];
+      delete event.answers['additional-operational-commitments'];
+      if (event.clonedAnswerHints && typeof event.clonedAnswerHints === 'object') {
+        delete event.clonedAnswerHints['member-communications-sent'];
+        delete event.clonedAnswerHints['additional-operational-commitments'];
+      }
+
+      for (const taskId of RETIRED_EVENT_CONTROL_TASK_IDS_V37) delete event.taskState[taskId];
+
+      const decisionTaskState = event.taskState['confirm-event-before-commitments'];
+      if (decisionTaskState) {
+        delete decisionTaskState.reviewCompletionProvenance;
+        decisionTaskState.completed = false;
+        decisionTaskState.status = 'open';
+        decisionTaskState.completedAt = null;
+        decisionTaskState.reviewSignature = null;
+      }
+
+      if (NOTIFIABLE_EVENT_STATUSES.has(lifecycle.status) && !lifecycle.statusNotification) {
+        lifecycle.statusNotification = {
+          id: null,
+          status: lifecycle.status,
+          statusChangedAt: lifecycle.statusChangedAt,
+          deliveryStatus: 'legacy-recorded',
+          requestedRecipientCount: 0,
+          sentRecipientCount: 0,
+          alreadySentRecipientCount: 0,
+          pendingRecipientCount: 0,
+          missingEmail: [],
+          legacyRecordedAtUpgrade: true,
+          error: ''
+        };
+      }
+
+      event.dataMigrations.eventControlV37 = true;
+      changed = true;
+    }
+
+    const previousOutboxLength = state.notificationOutbox?.length ?? 0;
+    state.notificationOutbox = (state.notificationOutbox ?? []).filter(notification =>
+      notification.status === 'sent' || !RETIRED_EVENT_CONTROL_TASK_IDS_V37.includes(notification.taskId));
+    return changed || state.notificationOutbox.length !== previousOutboxLength;
+  }
+
   function migratePlaybookMilestoneCodes(candidate) {
     const copy = structuredClone(candidate);
     const remap = { B5: 'B4', A7: 'A2' };
@@ -760,6 +1022,7 @@
             taskId: String(task.taskId ?? ''),
             taskTitle: String(task.taskTitle ?? ''),
             dueDate: String(task.dueDate ?? ''),
+            expiresOn: String(task.expiresOn ?? ''),
             assigneeName: String(task.assigneeName ?? ''),
             assigneeEmail: String(task.assigneeEmail ?? ''),
             organiserName: String(task.organiserName ?? ''),
@@ -786,7 +1049,10 @@
 
         const organiser = assignmentRecipient(event.organiserRef ?? event.organiser, event);
         for (const task of getActiveTasks(event)) {
-          if (task.state.completed === true || task.state.status === 'completed' || !isValidIsoDate(task.dueDate)) continue;
+          if (task.expired && task.state.completionToken && registerLinks) {
+            ensureCompletionLinkRegistration(event, task.item, task.state, task.dueDate);
+          }
+          if (task.state.completed === true || task.state.status === 'completed' || task.expired || !isValidIsoDate(task.dueDate)) continue;
 
           task.state.completionToken ||= crypto.randomUUID();
           const completionToken = task.state.completionToken;
@@ -801,13 +1067,14 @@
             taskId: task.item.id,
             taskTitle: task.item.title,
             dueDate: task.dueDate,
+            expiresOn: task.expiresOn ?? '',
             assigneeName: assignee.name || task.state.assignee || '',
             assigneeEmail: assignee.email || legacyTaskAssigneeEmail(task.state, assigneeReference) || '',
             organiserName: organiser.name || event.organiser || '',
             organiserEmail: organiser.email || '',
             completionToken,
             completionPath: `/complete.html?token=${encodeURIComponent(completionToken)}`,
-            canCompleteFromLink: !taskCompletionControl(task.item, event, task.state).blocked,
+            canCompleteFromLink: task.item.canCompleteFromLink !== false && !taskCompletionControl(task.item, event, task.state).blocked,
             taskPath: `/?view=tasks&event=${encodeURIComponent(event.id)}&task=${encodeURIComponent(task.item.id)}`
           });
         }
@@ -958,9 +1225,11 @@
     state.taskAlertSchedule = shared.taskAlertSchedule;
     state.events = shared.events;
     const admissionPlanningMigrated = migrateAdmissionPlanningState();
+    const admissionModelMigrated = migrateAdmissionModelV38();
     const admissionPricingMigrated = migrateAdmissionPricingState();
     const foodServiceReviewMigrated = migrateFoodServiceReviewCompletionState();
-    const eventStateMigrated = admissionPlanningMigrated || admissionPricingMigrated || foodServiceReviewMigrated;
+    const eventControlMigrated = migrateEventControlStateV37();
+    const eventStateMigrated = admissionPlanningMigrated || admissionModelMigrated || admissionPricingMigrated || foodServiceReviewMigrated || eventControlMigrated;
     if (state.activeEventId && !state.events.some(event => event.id === state.activeEventId)) {
       state.activeEventId = null;
       state.activeView = 'catalogue';
@@ -1312,6 +1581,7 @@
 
     for (const task of tasks) {
       if (task.deadlineCode && !deadlineCodes.has(task.deadlineCode)) throw new Error(`${task.id} uses unknown deadline code ${task.deadlineCode}.`);
+      if (task.expiresAfterDeadlineCode && !deadlineCodes.has(task.expiresAfterDeadlineCode)) throw new Error(`${task.id} uses unknown expiry deadline code ${task.expiresAfterDeadlineCode}.`);
       if (task.defaultOwnerRoleId && !roleIds.has(task.defaultOwnerRoleId)) throw new Error(`${task.id} uses unknown owner role ${task.defaultOwnerRoleId}.`);
       if (task.ownerFromQuestionId) {
         const ownerQuestion = questions.get(task.ownerFromQuestionId);
@@ -1413,6 +1683,7 @@
       createdAt: now,
       closedAt: null,
       answers: organiserName ? { 'event-decision-owner': resolvedOrganiserRef ?? organiserName } : {},
+      questionMeta: {},
       taskState: {},
       team: organiserName ? [organiserName] : [],
       advisoryOverrides: {},
@@ -1437,7 +1708,9 @@
       dataMigrations: {
         admissionPlanningV34: true,
         admissionPricingV35: true,
-        foodServiceReviewCompletionV36: true
+        admissionModelV38: true,
+        foodServiceReviewCompletionV36: true,
+        eventControlV37: true
       },
       sourceEventId: null,
       eventSeriesId: id,
@@ -1591,6 +1864,7 @@
     event.lifecycle.memberUpdate ??= '';
     event.lifecycle.interestedParties = Array.isArray(event.lifecycle.interestedParties) ? event.lifecycle.interestedParties : [];
     event.lifecycle.history = Array.isArray(event.lifecycle.history) ? event.lifecycle.history : [];
+    event.lifecycle.resolvedFromAtRisk = event.lifecycle.resolvedFromAtRisk === true;
     event.startTime = typeof event.startTime === 'string' ? event.startTime : '';
     event.endTime = typeof event.endTime === 'string' ? event.endTime : '';
     event.intelligentGolfEventTypeId = Number(event.intelligentGolfEventTypeId) || 0;
@@ -1605,11 +1879,6 @@
         !Object.prototype.hasOwnProperty.call(clonedHints, 'event-decision-owner') &&
         event.lifecycle.decisionOwner) {
       event.answers['event-decision-owner'] = event.lifecycle.decisionOwnerRef ?? event.lifecycle.decisionOwner;
-    }
-    if (!event.answers['event-communications-owner'] &&
-        !Object.prototype.hasOwnProperty.call(clonedHints, 'event-communications-owner') &&
-        event.lifecycle.communicationsOwner) {
-      event.answers['event-communications-owner'] = event.lifecycle.communicationsOwnerRef ?? event.lifecycle.communicationsOwner;
     }
     return event.lifecycle;
   }
@@ -1642,6 +1911,7 @@
     }
     if (event) {
       event.answers ??= {};
+      normaliseQuestionMeta(event);
       event.taskState ??= {};
       event.team ??= [];
       event.advisoryOverrides ??= {};
@@ -1677,6 +1947,39 @@
     }
 
     return event.answers[questionId];
+  }
+
+  function normaliseQuestionMeta(event) {
+    if (!event || !event.questionMeta || typeof event.questionMeta !== 'object' || Array.isArray(event.questionMeta)) {
+      if (event) event.questionMeta = {};
+      return event?.questionMeta ?? {};
+    }
+
+    for (const [questionId, meta] of Object.entries(event.questionMeta)) {
+      if (!meta || typeof meta !== 'object' || meta.notRelevant !== true) {
+        delete event.questionMeta[questionId];
+      }
+    }
+    return event.questionMeta;
+  }
+
+  function isQuestionNotRelevant(event, questionId) {
+    return event?.questionMeta?.[questionId]?.notRelevant === true;
+  }
+
+  function clearQuestionNotRelevant(event, questionId) {
+    if (!isQuestionNotRelevant(event, questionId)) return false;
+    delete event.questionMeta[questionId];
+    return true;
+  }
+
+  function hasRecordedQuestionValue(value) {
+    if (value === undefined || value === null || value === '') return false;
+    if (Array.isArray(value)) return value.length > 0;
+    if (typeof value === 'object') {
+      return Object.values(value).some(entry => entry !== undefined && entry !== null && entry !== '');
+    }
+    return true;
   }
 
   function conditionMatches(condition, event) {
@@ -1739,7 +2042,7 @@
 
   function hasPaidAdmissionCategories(event) {
     const arrangements = getQuestionValue('admission-arrangements', event);
-    if (!Array.isArray(arrangements) || !arrangements.includes('entry-payment')) return false;
+    if (arrangements !== 'paid-entry') return false;
     const hasFreeEntry = getQuestionValue('admission-free-entry', event);
     if (hasFreeEntry === false) return true;
     if (hasFreeEntry !== true) return false;
@@ -1751,7 +2054,7 @@
   function hasCancellationEvidence(event, area) {
     const answerSignals = {
       'Food & Beverage': [],
-      Communications: ['member-communications-sent'],
+      Communications: [],
       'Golf Operations': ['tee-times-reserved'],
       Clubhouse: [],
       Course: [],
@@ -1759,6 +2062,7 @@
       Administration: ['entry-charge']
     };
     if ((answerSignals[area] ?? []).some(questionId => getQuestionValue(questionId, event) === true)) return true;
+    if (area === 'Communications' && event.lifecycle?.communicationsCommitmentRecorded === true) return true;
     if (area === 'Finance' && getQuestionValue('entry-charge', event) === true && hasPaidAdmissionCategories(event)) return true;
 
     return Object.entries(event.taskState ?? {}).some(([taskId, taskState]) => {
@@ -1808,21 +2112,35 @@
   }
 
   function normaliseAnswers(event) {
+    const questionMeta = normaliseQuestionMeta(event);
+    for (const questionId of Object.keys(questionMeta)) {
+      const indexed = itemIndex.get(questionId);
+      if (!indexed || indexed.item.type !== 'question' || indexed.item.required !== false) {
+        delete questionMeta[questionId];
+      }
+    }
     let changed = true;
     let loops = 0;
     while (changed && loops < 20) {
       changed = false;
       loops += 1;
       for (const module of playbook.modules) {
-        if (!isModuleActive(module, event)) {
-          continue;
-        }
+        const moduleActive = isModuleActive(module, event);
         for (const section of module.sections) {
           for (const item of section.items) {
-            if (item.type !== 'question' || item.bind) {
-              continue;
+            if (item.type !== 'question') continue;
+
+            const visible = moduleActive && isItemVisible(item, event);
+            const notRelevant = questionMeta[item.id]?.notRelevant === true;
+            const invalidNotRelevant = item.required !== false || hasRecordedQuestionValue(getQuestionValue(item.id, event));
+            if ((!visible || invalidNotRelevant) && notRelevant) {
+              delete questionMeta[item.id];
+              changed = true;
             }
-            if (!isItemVisible(item, event) && Object.prototype.hasOwnProperty.call(event.answers, item.id)) {
+
+            // Preserve answers in an inactive module, as before, but discard an
+            // answer when the question's own visibility rule makes it stale.
+            if (moduleActive && !item.bind && !visible && Object.prototype.hasOwnProperty.call(event.answers, item.id)) {
               delete event.answers[item.id];
               changed = true;
             }
@@ -1846,6 +2164,11 @@
     return true;
   }
 
+  function isQuestionComplete(item, event) {
+    return isAnsweredValue(getQuestionValue(item.id, event)) ||
+      (item.required === false && isQuestionNotRelevant(event, item.id));
+  }
+
   function moduleProgress(module, event) {
     if (!isModuleActive(module, event)) {
       return { active: false, answered: 0, total: 0, percent: 0 };
@@ -1854,13 +2177,13 @@
     const questions = [];
     for (const section of module.sections) {
       for (const item of section.items) {
-        if (item.type === 'question' && item.required !== false && isItemVisible(item, event)) {
+        if (item.type === 'question' && isItemVisible(item, event)) {
           questions.push(item);
         }
       }
     }
 
-    const answered = questions.filter(item => isAnsweredValue(getQuestionValue(item.id, event))).length;
+    const answered = questions.filter(item => isQuestionComplete(item, event)).length;
     const total = questions.length;
     return {
       active: true,
@@ -2156,6 +2479,7 @@
     if (!taskState.assignee && task.item.defaultOwnerRoleId) {
       assignTaskToReference(event, task.item, { kind: 'role', id: task.item.defaultOwnerRoleId }, 'default-role');
     }
+    reconcileEventStatusDecisionCompletion(task.item, event, taskState);
     reconcileTaskReviewCompletion(task.item, event, taskState);
     return taskState;
   }
@@ -2215,8 +2539,9 @@
   function queueNotification(event, item, type) {
     state.notificationOutbox ??= [];
     const taskState = ensureTaskState(event, item.id);
+    if (isTaskExpired(item, event, taskState)) return null;
     const dueDate = getDueDate(item.deadlineCode, event);
-    const existing = state.notificationOutbox.find(notification => notification.eventId === event.id && notification.taskId === item.id && notification.type === type && notification.status !== 'sent');
+    const existing = state.notificationOutbox.find(notification => notification.eventId === event.id && notification.taskId === item.id && notification.type === type && !['sent', 'expired'].includes(notification.status));
     if (existing) return existing;
 
     const token = taskState.completionToken || crypto.randomUUID();
@@ -2249,7 +2574,20 @@
     return notification;
   }
 
+  function isExpiredTaskNotification(notification) {
+    const event = state.events.find(candidate => candidate.id === notification?.eventId);
+    const indexed = itemIndex.get(notification?.taskId);
+    if (!event || !indexed || indexed.item.type !== 'task') return false;
+    return isTaskExpired(indexed.item, event, event.taskState?.[indexed.item.id]);
+  }
+
   async function dispatchNotification(notification, taskState) {
+    if (isExpiredTaskNotification(notification)) {
+      notification.status = 'expired';
+      taskState.notificationStatus = 'expired';
+      saveState();
+      return;
+    }
     try {
       const response = await fetch('/api/tasks/notifications', {
         method: 'POST',
@@ -2270,6 +2608,7 @@
     if (!taskState.completionToken) return;
     const completionToken = taskState.completionToken;
     const recipient = assignmentRecipient(taskAssignmentReference(taskState) ?? taskState.assignee, event);
+    const expiresOn = getTaskExpiryDate(item, event);
     const signature = JSON.stringify({
       token: completionToken,
       eventId: event.id,
@@ -2279,7 +2618,8 @@
       assignee: taskState.assignee ?? recipient.name ?? '',
       assigneeEmail: recipient.email || legacyTaskAssigneeEmail(taskState, taskAssignmentReference(taskState)),
       dueDate,
-      canCompleteFromLink: !taskCompletionControl(item, event, taskState).blocked,
+      expiresOn,
+      canCompleteFromLink: item.canCompleteFromLink !== false && !taskCompletionControl(item, event, taskState).blocked,
       learningInsights: priorLearningForItem(event, item).map(insight => ({
         summary: insight.summary,
         sourceEventName: insight.sourceEventName,
@@ -2315,6 +2655,10 @@
   }
 
   function applyServerTaskCompletion(event, item, taskState, record) {
+    if (item.completionMode === 'event-status-decision' || item.canCompleteFromLink === false) {
+      rotateTaskCompletionLink(taskState);
+      return false;
+    }
     const review = taskReviewState(item, event);
     if (review && !review.ready) {
       // This server completion was submitted against an answer set that cannot
@@ -2395,6 +2739,8 @@
 
   function markTaskComplete(event, item, completed) {
     const taskState = ensureTaskState(event, item.id);
+    if (item.completionMode === 'event-status-decision') return false;
+    if (completed && isTaskExpired(item, event, taskState)) return false;
     const review = taskReviewState(item, event);
     if (completed && review && !review.ready) return false;
     if (!completed && taskState.completed === true) rotateTaskCompletionLink(taskState);
@@ -2519,6 +2865,7 @@
     const copy = createEvent(`${sourceEvent.name} (Copy)`, sourceEvent.organiser, '', sourceEvent.description ?? '', {}, structuredClone(sourceEvent.organiserRef ?? null));
     copy.clonedAnswerHints = collectCloneAnswerHints(sourceEvent);
     copy.answers = {};
+    copy.questionMeta = {};
     copy.team = structuredClone(sourceEvent.team ?? []);
     copy.sourceEventId = sourceEvent.id;
     copy.eventSeriesId = sourceEvent.eventSeriesId ?? sourceEvent.id;
@@ -2587,6 +2934,8 @@
             const dueDate = getDueDate(taskItem.deadlineCode, event);
             const task = { item: taskItem, module, section, dueDate, state: event.taskState[taskItem.id] ?? {} };
             task.state = ensureOperationalTaskState(event, task);
+            task.expiresOn = getTaskExpiryDate(taskItem, event);
+            task.expired = isTaskExpired(taskItem, event, task.state, task.expiresOn);
             tasks.push(task);
           }
         }
@@ -2594,9 +2943,8 @@
     }
 
     return tasks.sort((a, b) => {
-      if (a.state.completed !== b.state.completed) {
-        return a.state.completed ? 1 : -1;
-      }
+      const statusRank = task => task.state.completed ? 1 : task.expired ? 2 : 0;
+      if (statusRank(a) !== statusRank(b)) return statusRank(a) - statusRank(b);
       if (a.dueDate && b.dueDate) {
         return a.dueDate.localeCompare(b.dueDate);
       }
@@ -2659,6 +3007,27 @@
     }
     date.setDate(date.getDate() + offset);
     return toIsoDate(date);
+  }
+
+  function getTaskExpiryDate(item, event) {
+    const code = String(item?.expiresAfterDeadlineCode ?? '').trim();
+    return code ? getDueDate(code, event) : null;
+  }
+
+  function currentClubIsoDate(date = new Date()) {
+    const parts = Object.fromEntries(CLUB_DATE_FORMATTER.formatToParts(date).map(part => [part.type, part.value]));
+    return `${parts.year}-${parts.month}-${parts.day}`;
+  }
+
+  function clubIsoDateFromTimestamp(value) {
+    if (!value) return '';
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? String(value).substring(0, 10) : currentClubIsoDate(date);
+  }
+
+  function isTaskExpired(item, event, taskState = null, expiresOn = getTaskExpiryDate(item, event)) {
+    if (taskState?.completed === true || !isValidIsoDate(expiresOn)) return false;
+    return currentClubIsoDate() > expiresOn;
   }
 
   function toIsoDate(date) {
@@ -2745,6 +3114,36 @@
     return String(value ?? '').trim();
   }
 
+  function buildCommunicationsPlanningContext(event) {
+    const fields = [
+      ['registrationMode', 'admission-arrangements'],
+      ['freeEntry', 'admission-free-entry'],
+      ['freeEntryCategories', 'admission-free-categories'],
+      ['ticketPriceDetails', 'admission-price-details'],
+      ['paymentTiming', 'admission-payment-timing'],
+      ['maximumPlaces', 'admission-capacity'],
+      ['bookingRoutes', 'ticket-sales-methods'],
+      ['guestTableBooking', 'guest-table-booking'],
+      ['bookingOpens', 'ticket-sales-open-date'],
+      ['bookingCloses', 'ticket-sales-close-date'],
+      ['publicBookingInstructions', 'admission-public-instructions']
+    ];
+
+    return Object.fromEntries(fields.flatMap(([propertyName, questionId]) => {
+      const indexed = itemIndex.get(questionId);
+      const question = indexed?.item;
+      if (!question || question.type !== 'question' ||
+          !isModuleActive(indexed.module, event) || !isItemVisible(question, event)) {
+        return [];
+      }
+
+      const value = getQuestionValue(questionId, event);
+      if (!isAnsweredValue(value)) return [];
+      const answer = formatBriefingAnswer(question, value);
+      return answer ? [[propertyName, answer]] : [];
+    }));
+  }
+
   function taskReviewState(item, event) {
     const review = item?.reviewSummary;
     if (!review || !Array.isArray(review.fields) || !event) return null;
@@ -2753,7 +3152,8 @@
       const question = itemIndex.get(field.questionId)?.item;
       const visible = Boolean(question && isItemVisible(question, event));
       const value = question ? getQuestionValue(field.questionId, event) : undefined;
-      const hasAnswer = Boolean(question && isAnsweredValue(value) && (
+      const notRelevant = Boolean(question && question.required === false && isQuestionNotRelevant(event, field.questionId));
+      const hasAnswer = notRelevant || Boolean(question && isAnsweredValue(value) && (
         question.answerType !== 'assignment' || assignmentDisplay(value, '').trim()
       ));
       const required = field.required === undefined
@@ -2769,6 +3169,8 @@
         ? 'Question unavailable'
         : !visible
           ? (field.notApplicableText || 'Not applicable')
+          : notRelevant
+            ? (field.notApplicableText || 'Not relevant')
           : hasAnswer
             ? (unselectedOptionLabels
               ? (unselectedOptionLabels.join(', ') || field.allSelectedText || 'None')
@@ -2778,6 +3180,7 @@
         questionId: field.questionId,
         label: field.label || question?.label || field.questionId,
         visible,
+        notRelevant,
         required,
         missing,
         answer
@@ -2839,20 +3242,98 @@
     return review;
   }
 
+  function eventStatusNotificationTargetSignature(targets) {
+    return JSON.stringify({
+      recipients: [...(targets?.recipients ?? [])]
+        .map(recipient => ({
+          email: String(recipient.email ?? '').trim().toLocaleLowerCase(),
+          areas: [...(recipient.areas ?? [])].map(String).sort((left, right) => left.localeCompare(right))
+        }))
+        .sort((left, right) => left.email.localeCompare(right.email)),
+      missingEmail: [...(targets?.missingEmail ?? [])]
+        .map(recipient => `${recipient.area ?? ''}|${recipient.name ?? ''}`.toLocaleLowerCase())
+        .sort((left, right) => left.localeCompare(right))
+    });
+  }
+
+  function eventStatusDecisionIsSatisfied(item, event) {
+    if (item?.completionMode !== 'event-status-decision') return false;
+    const lifecycle = normaliseEventLifecycle(event);
+    if (item.id === 'confirm-event-before-commitments' && lifecycle.status !== 'confirmed') return false;
+    if (item.id === 'resolve-at-risk-event' &&
+        !['postponed', 'cancelled'].includes(lifecycle.status) &&
+        !(lifecycle.status === 'confirmed' && lifecycle.resolvedFromAtRisk === true)) return false;
+    if (!['confirm-event-before-commitments', 'resolve-at-risk-event'].includes(item.id) &&
+        lifecycle.status === 'provisional') return false;
+
+    const expiresOn = getTaskExpiryDate(item, event);
+    const decisionDate = clubIsoDateFromTimestamp(lifecycle.statusChangedAt);
+    if (isValidIsoDate(expiresOn) && currentClubIsoDate() > expiresOn &&
+        (!isValidIsoDate(decisionDate) || decisionDate > expiresOn)) return false;
+
+    const notification = lifecycle.statusNotification;
+    if (notification?.deliveryStatus === 'legacy-recorded') return true;
+    if (!NOTIFIABLE_EVENT_STATUSES.has(lifecycle.status) ||
+        notification?.status !== lifecycle.status ||
+        notification?.statusChangedAt !== lifecycle.statusChangedAt) return false;
+
+    const targets = eventStatusNotificationTargets(event);
+    if (targets.missingEmail.length) return false;
+    if (eventStatusNotificationTargetSignature(targets) !== notification.targetSignature) return false;
+    if (!targets.recipients.length) return true;
+    return notification.deliveryStatus === 'sent' && Number(notification.pendingRecipientCount || 0) === 0;
+  }
+
+  function reconcileEventStatusDecisionCompletion(item, event, taskState) {
+    if (item?.completionMode !== 'event-status-decision') return;
+    const completed = eventStatusDecisionIsSatisfied(item, event);
+    if (taskState.completed === completed && taskState.status === (completed ? 'completed' : 'open')) return;
+    if (!completed && taskState.completed === true) rotateTaskCompletionLink(taskState);
+    delete taskState.reviewCompletionProvenance;
+    taskState.completed = completed;
+    taskState.status = completed ? 'completed' : 'open';
+    taskState.completedAt = completed
+      ? event.lifecycle?.statusNotification?.completedAt ?? event.lifecycle?.statusChangedAt ?? new Date().toISOString()
+      : null;
+    taskState.reviewSignature = null;
+  }
+
   function taskCompletionControl(item, event, taskState) {
     const review = taskReviewState(item, event);
     const completed = taskState.completed === true;
-    const blocked = Boolean(review && !completed && !review.ready);
+    const expiresOn = getTaskExpiryDate(item, event);
+    const expired = isTaskExpired(item, event, taskState, expiresOn);
+    const statusManaged = item.completionMode === 'event-status-decision';
+    const actionRequired = statusManaged && !completed && !expired;
+    const blocked = expired || statusManaged || Boolean(review && !completed && !review.ready);
     return {
       review,
       blocked,
-      title: completed
+      expired,
+      expiresOn,
+      statusManaged,
+      actionRequired,
+      title: statusManaged
+        ? completed
+          ? 'Completion is controlled by the recorded event-status decision'
+          : expired
+            ? `This task expired after ${formatDate(expiresOn)} and no longer needs action`
+            : 'Use the event-status action to record the decision and notify the affected leads'
+        : completed
         ? (review ? 'Reopen the confirmed plan' : 'Mark task open')
+        : expired
+          ? `This task expired after ${formatDate(expiresOn)} and no longer needs action`
+        : actionRequired
+          ? 'Use the event-status action to record the decision and notify the affected leads'
         : blocked
           ? `Complete ${review.missing.length} missing Event control answer${review.missing.length === 1 ? '' : 's'} first`
           : (review?.config.confirmLabel || 'Mark task complete'),
-      label: completed
+      label: statusManaged
+        ? completed ? 'Recorded' : expired ? 'Expired' : 'Use status'
+        : completed
         ? (review ? 'Confirmed' : 'Complete')
+        : expired
+          ? 'Expired'
         : (review?.config.confirmLabel || 'Mark complete')
     };
   }
@@ -2861,7 +3342,10 @@
     const review = taskReviewState(item, event);
     if (!review) return '';
     const completed = taskState.completed === true;
-    const statusText = completed
+    const expired = isTaskExpired(item, event, taskState);
+    const statusText = expired
+      ? 'Expired — no action required'
+      : completed
       ? (review.config.confirmedLabel || 'Arrangements confirmed')
       : review.ready
         ? 'Ready to confirm'
@@ -2876,7 +3360,7 @@
         <span class="task-review-summary-status">${completed ? '✓ ' : ''}${escapeHtml(statusText)}</span>
       </header>
       <dl class="task-review-summary-grid">
-        ${review.fields.map(field => `<div class="task-review-summary-field ${field.missing ? 'missing' : ''} ${field.visible ? '' : 'not-applicable'}">
+        ${review.fields.map(field => `<div class="task-review-summary-field ${field.missing ? 'missing' : ''} ${field.visible && !field.notRelevant ? '' : 'not-applicable'}">
           <dt>${escapeHtml(field.label)}</dt>
           <dd>${escapeHtml(field.answer)}</dd>
         </div>`).join('')}
@@ -2884,8 +3368,10 @@
       <footer class="task-review-summary-footer">
         <p>${escapeHtml(review.config.instruction || 'Check the answers before confirming this task.')}</p>
         <div class="task-review-summary-actions">
-          ${renderTaskWorkspaceAction(item, event)}
-          ${completed
+          ${expired ? '' : renderTaskWorkspaceAction(item, event)}
+          ${expired
+            ? '<span class="task-review-confirmed">— Expired</span>'
+            : completed
             ? `<span class="task-review-confirmed">✓ ${escapeHtml(review.config.confirmedLabel || 'Confirmed')}</span>`
             : showCompletionAction
               ? `<button type="button" class="button button-primary" data-task-confirm="${escapeHtml(item.id)}" data-task-confirm-event-id="${escapeHtml(event.id)}" ${review.ready ? '' : 'disabled'}>${escapeHtml(confirmText)}</button>`
@@ -2903,6 +3389,16 @@
         for (const item of section.items) {
           if (item.type !== 'question' || !isItemVisible(item, event)) continue;
           const value = getQuestionValue(item.id, event);
+          if (item.required === false && isQuestionNotRelevant(event, item.id)) {
+            answers.push({
+              questionId: item.id,
+              module: module.title,
+              section: section.title,
+              question: item.label,
+              answer: 'Not relevant'
+            });
+            continue;
+          }
           if (value === undefined || value === null || value === '' || (Array.isArray(value) && value.length === 0)) continue;
           const answer = formatBriefingAnswer(item, value);
           if (!answer) continue;
@@ -2917,7 +3413,7 @@
       }
     }
 
-    const tasks = getActiveTasks(event).map(task => {
+    const tasks = getActiveTasks(event).filter(task => !task.expired).map(task => {
       const ownerReference = taskAssignmentReference(task.state) ?? task.state.assignee;
       const owner = assignmentDisplay(ownerReference, task.state.assignee || (task.item.defaultOwnerRoleId ? roleById(task.item.defaultOwnerRoleId)?.name : '') || '');
       const staffBriefing = task.item.staffBriefing && typeof task.item.staffBriefing === 'object'
@@ -3650,7 +4146,8 @@
 
     const activeModules = event ? playbook.modules.filter(module => isModuleActive(module, event)) : [];
     const tasks = event ? getActiveTasks(event) : [];
-    const doneTasks = tasks.filter(task => task.state.completed).length;
+    const actionableTasks = tasks.filter(task => !task.expired);
+    const doneTasks = actionableTasks.filter(task => task.state.completed).length;
     const questionProgress = event ? getOverallQuestionProgress(event) : { total: 0, answered: 0, percent: 0 };
     const intelligentGolfStatus = event ? intelligentGolfEventStatuses.get(event.id) : null;
 
@@ -3761,7 +4258,7 @@
           <div class="sidebar-footer">
             ${event ? `<div class="sidebar-progress-copy">
                 <strong>${questionProgress.percent}% planned</strong>
-                <small>${doneTasks} of ${tasks.length} tasks complete</small>
+                <small>${doneTasks} of ${actionableTasks.length} actionable tasks complete</small>
               </div>
               <div class="progress-track"><div class="progress-fill" style="width:${questionProgress.percent}%"></div></div>`
               : '<div class="sidebar-progress-copy"><strong>No event selected</strong><small>Choose one from the catalogue</small></div>'}
@@ -3861,7 +4358,7 @@
       maybeOpenIntelligentGolfPlannerMatch(event);
     }
     if (state.activeView === 'artwork' && event) {
-      import('./poster-app.js?v=20260914-screen-take-down-1')
+      import('./poster-app.js?v=20260916-admission-context-1')
         .then(module => module.mountPosterStudio({
           eventId: event.id,
           eventName: event.name,
@@ -3871,6 +4368,7 @@
           endTime: event.endTime,
           eventTypeId: event.intelligentGolfEventTypeId,
           expectedAttendees: event.expectedAttendees,
+          planningContext: buildCommunicationsPlanningContext(event),
           cataloguePosterGenerationId: event.cataloguePosterGenerationId,
           referenceLibrary: loadReferenceLibrary(),
           onArtworkReady: (thumbnailDataUrl, artworkInfo = {}) => {
@@ -4144,7 +4642,7 @@
 
   function renderEventListItem(event) {
     const tasks = getActiveTasks(event);
-    const open = tasks.filter(task => !task.state.completed).length;
+    const open = tasks.filter(task => !task.state.completed && !task.expired).length;
     return `
       <div class="event-list-row ${event.id === state.activeEventId ? 'selected' : ''}">
         <button class="event-list-item" data-event-id="${event.id}">
@@ -4594,6 +5092,193 @@
     return EVENT_STATUS_DEFINITIONS[event.lifecycle.status] ?? EVENT_STATUS_DEFINITIONS.provisional;
   }
 
+  function eventStatusNotificationTargets(event) {
+    const selectedAreas = Array.isArray(getQuestionValue('event-affected-areas', event))
+      ? getQuestionValue('event-affected-areas', event)
+      : [];
+    const recipientsByEmail = new Map();
+    const missingEmail = [];
+
+    for (const definition of EVENT_STATUS_RECIPIENT_DEFINITIONS) {
+      if (!selectedAreas.includes(definition.value)) continue;
+      const answerReference = definition.ownerQuestionId
+        ? assignmentReference(getQuestionValue(definition.ownerQuestionId, event))
+        : null;
+      const reference = answerReference ?? { kind: 'role', id: definition.roleId };
+      const recipient = assignmentRecipient(reference, event);
+      const name = recipient.name || assignmentDisplay(reference) || definition.label;
+      const email = String(recipient.email ?? '').trim().toLocaleLowerCase();
+
+      if (!email) {
+        missingEmail.push({ name, area: definition.label });
+        continue;
+      }
+
+      const existing = recipientsByEmail.get(email) ?? { name, email, areas: [] };
+      if (!existing.name && name) existing.name = name;
+      if (!existing.areas.includes(definition.label)) existing.areas.push(definition.label);
+      recipientsByEmail.set(email, existing);
+    }
+
+    return {
+      recipients: [...recipientsByEmail.values()],
+      missingEmail
+    };
+  }
+
+  function createEventStatusNotification(event, status, changedAt) {
+    const targets = eventStatusNotificationTargets(event);
+    return {
+      id: crypto.randomUUID(),
+      status,
+      statusChangedAt: changedAt,
+      recipients: structuredClone(targets.recipients),
+      missingEmail: structuredClone(targets.missingEmail),
+      targetSignature: eventStatusNotificationTargetSignature(targets),
+      deliveryStatus: targets.recipients.length ? 'pending' : targets.missingEmail.length ? 'no-email' : 'not-required',
+      requestedRecipientCount: targets.recipients.length,
+      sentRecipientCount: 0,
+      alreadySentRecipientCount: 0,
+      pendingRecipientCount: targets.recipients.length,
+      attemptedAt: null,
+      completedAt: null,
+      error: ''
+    };
+  }
+
+  function eventStatusNotificationTargetsChanged(event, notification) {
+    if (!event || !notification || notification.deliveryStatus === 'legacy-recorded') return false;
+    return eventStatusNotificationTargetSignature(eventStatusNotificationTargets(event)) !== notification.targetSignature;
+  }
+
+  function eventStatusNotificationFeedback(notification, targetsChanged = false) {
+    if (!notification) return '';
+    const sent = Number(notification.sentRecipientCount || 0) + Number(notification.alreadySentRecipientCount || 0);
+    const pending = Number(notification.pendingRecipientCount || 0);
+    const missing = Array.isArray(notification.missingEmail) ? notification.missingEmail.length : 0;
+    if (notification.deliveryStatus === 'legacy-recorded') {
+      return 'This decision was recorded before operational status emails were introduced. It will not be sent retrospectively.';
+    }
+    if (notification.deliveryStatus === 'expired') {
+      return 'The event date has passed, so this old operational update will not be sent.';
+    }
+    if (targetsChanged) {
+      return 'The affected leads or their email details have changed since this status was last processed. Retry the update so the current recipients are recorded and any newly added people are emailed.';
+    }
+    if (notification.deliveryStatus === 'not-required') {
+      return 'The decision is recorded. No operational teams were selected, so no internal status email was required.';
+    }
+    if (notification.deliveryStatus === 'sending') {
+      return `Sending the recorded status to ${notification.requestedRecipientCount} operational lead${notification.requestedRecipientCount === 1 ? '' : 's'}…${missing ? ` ${missing} selected lead${missing === 1 ? ' has' : 's have'} no email address.` : ''}`;
+    }
+    if (notification.deliveryStatus === 'sent') {
+      return `Status update sent to ${sent} operational lead${sent === 1 ? '' : 's'}.${missing ? ` ${missing} selected lead${missing === 1 ? ' has' : 's have'} no email address.` : ''}`;
+    }
+    if (notification.deliveryStatus === 'no-email') {
+      return missing
+        ? `The decision is recorded, but ${missing} selected operational lead${missing === 1 ? ' has' : 's have'} no email address. Add the address in People & Roles, then retry.`
+        : 'The decision is recorded. No operational teams were selected to receive an update.';
+    }
+    if (notification.deliveryStatus === 'partial') {
+      return `Status update sent to ${sent}; ${pending} recipient${pending === 1 ? '' : 's'} still pending.${missing ? ` ${missing} selected lead${missing === 1 ? ' also has' : 's also have'} no email address.` : ''}`;
+    }
+    return `The decision is recorded, but its operational update is still pending.${notification.error ? ` ${notification.error}` : ''}${missing ? ` ${missing} selected lead${missing === 1 ? ' has' : 's have'} no email address.` : ''}`;
+  }
+
+  function renderEventStatusNotification(notification, event = null) {
+    if (!notification) return '';
+    const targetsChanged = eventStatusNotificationTargetsChanged(event, notification);
+    const retryable = !['sending', 'legacy-recorded', 'expired'].includes(notification.deliveryStatus) &&
+      (targetsChanged || ['pending', 'partial', 'failed'].includes(notification.deliveryStatus) ||
+        (notification.deliveryStatus === 'no-email' && (notification.missingEmail?.length ?? 0) > 0));
+    const tone = !targetsChanged && ['sent', 'legacy-recorded', 'not-required'].includes(notification.deliveryStatus)
+      ? 'success'
+      : notification.deliveryStatus === 'sending'
+        ? 'progress'
+        : 'warning';
+    return `<div class="event-status-notification ${tone}" role="status">
+      <div><strong>Operational status update</strong><span>${escapeHtml(eventStatusNotificationFeedback(notification, targetsChanged))}</span></div>
+      ${retryable ? `<button class="button button-secondary" type="button" data-retry-event-status-notification="${escapeHtml(event?.id ?? '')}">Retry update</button>` : ''}
+    </div>`;
+  }
+
+  async function dispatchEventStatusNotification(event) {
+    const lifecycle = normaliseEventLifecycle(event);
+    const notification = lifecycle.statusNotification;
+    if (!notification) return;
+    const targets = eventStatusNotificationTargets(event);
+    const targetsChanged = eventStatusNotificationTargetSignature(targets) !== notification.targetSignature;
+    if (['sending', 'legacy-recorded'].includes(notification.deliveryStatus) ||
+        (['sent', 'not-required'].includes(notification.deliveryStatus) && !targetsChanged)) return;
+    if (isValidIsoDate(event.eventDate) && currentClubIsoDate() > event.eventDate) {
+      notification.deliveryStatus = 'expired';
+      notification.pendingRecipientCount = 0;
+      notification.error = '';
+      saveState();
+      render();
+      return;
+    }
+
+    notification.recipients = structuredClone(targets.recipients);
+    notification.missingEmail = structuredClone(targets.missingEmail);
+    notification.targetSignature = eventStatusNotificationTargetSignature(targets);
+    notification.requestedRecipientCount = targets.recipients.length;
+    notification.pendingRecipientCount = targets.recipients.length;
+    notification.error = '';
+    if (!targets.recipients.length) {
+      notification.deliveryStatus = targets.missingEmail.length ? 'no-email' : 'not-required';
+      notification.completedAt = targets.missingEmail.length ? null : new Date().toISOString();
+      saveState();
+      render();
+      return;
+    }
+
+    const notificationId = notification.id;
+    notification.deliveryStatus = 'sending';
+    notification.attemptedAt = new Date().toISOString();
+    saveState();
+    render();
+
+    try {
+      const response = await fetch('/api/events/status-notifications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          notificationId,
+          eventId: event.id,
+          eventName: event.name,
+          eventDate: event.eventDate,
+          status: notification.status,
+          statusChangedAtUtc: notification.statusChangedAt,
+          decisionOwner: lifecycle.decisionOwner,
+          reason: lifecycle.reason,
+          recipients: targets.recipients
+        })
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || result.detail || `The email service returned HTTP ${response.status}.`);
+      if (event.lifecycle?.statusNotification?.id !== notificationId) return;
+
+      notification.sentRecipientCount = Number(result.sentRecipientCount || 0);
+      notification.alreadySentRecipientCount = Number(result.alreadySentRecipientCount || 0);
+      notification.pendingRecipientCount = Number(result.pendingRecipientCount || 0);
+      const failures = Array.isArray(result.deliveries)
+        ? result.deliveries.filter(delivery => delivery.status === 'pending' && delivery.error).map(delivery => delivery.error)
+        : [];
+      notification.error = failures[0] || '';
+      notification.deliveryStatus = notification.pendingRecipientCount === 0 ? 'sent' :
+        notification.sentRecipientCount + notification.alreadySentRecipientCount > 0 ? 'partial' : 'failed';
+      if (notification.deliveryStatus === 'sent') notification.completedAt = new Date().toISOString();
+    } catch (error) {
+      if (event.lifecycle?.statusNotification?.id !== notificationId) return;
+      notification.deliveryStatus = 'failed';
+      notification.error = error.message || 'The operational update could not be sent.';
+    }
+
+    saveState();
+    render();
+  }
+
   function renderEventLifecycleBanner(event) {
     const lifecycle = normaliseEventLifecycle(event);
     const definition = eventStatusDefinition(event);
@@ -4619,6 +5304,7 @@
           <div><span>Communications owner</span><strong>${escapeHtml(lifecycle.communicationsOwner || 'Not assigned')}</strong></div>
         </div>
         ${CHANGE_RESPONSE_STATUSES.has(lifecycle.status) && lifecycle.memberUpdate ? `<div class="event-authoritative-message"><span>Authoritative member update</span><p>${escapeHtml(lifecycle.memberUpdate)}</p></div>` : ''}
+        ${renderEventStatusNotification(lifecycle.statusNotification, event)}
         <button class="button button-primary" type="button" data-action="manage-event-status">Manage event status</button>
       </section>`;
   }
@@ -4629,6 +5315,7 @@
     const changeStatus = CHANGE_RESPONSE_STATUSES.has(lifecycle.status);
     const reasonRequired = changeStatus || lifecycle.status === 'at-risk';
     const recentHistory = [...lifecycle.history].slice(-5).reverse();
+    const notificationTargets = eventStatusNotificationTargets(event);
     return `
       <dialog id="event-status-dialog" class="modal event-status-dialog">
         <form id="event-status-form">
@@ -4653,6 +5340,14 @@
                 <div class="field"><span>Decision made by</span>${renderAssignmentPicker({ value: lifecycle.decisionOwnerRef ?? event.organiserRef ?? lifecycle.decisionOwner ?? event.organiser, fallback: lifecycle.decisionOwner || event.organiser, mode: 'person', statusField: 'decision-owner', id: 'event-status-decision-owner', required: true })}</div>
                 <div class="field"><span>Communications owner</span>${renderAssignmentPicker({ value: lifecycle.communicationsOwnerRef ?? lifecycle.communicationsOwner, fallback: lifecycle.communicationsOwner, statusField: 'communications-owner', id: 'event-status-communications-owner' })}<small>Required when member or participant communications have already been sent or scheduled.</small></div>
               </div>
+              <section class="event-status-recipient-preview">
+                <div><span class="eyebrow">Operational update</span><strong>The recorded decision will be sent as one update to the affected leads</strong><small>This does not create a separate notification task for every department.</small></div>
+                <ul>
+                  ${notificationTargets.recipients.map(recipient => `<li><span><strong>${escapeHtml(recipient.name || recipient.email)}</strong><small>${escapeHtml(recipient.areas.join(', '))}</small></span><em>Ready</em></li>`).join('')}
+                  ${notificationTargets.missingEmail.map(recipient => `<li class="missing"><span><strong>${escapeHtml(recipient.name)}</strong><small>${escapeHtml(recipient.area)}</small></span><em>No email configured</em></li>`).join('')}
+                  ${notificationTargets.recipients.length || notificationTargets.missingEmail.length ? '' : '<li class="empty"><span>No affected teams have been selected in Event control.</span></li>'}
+                </ul>
+              </section>
               <div id="event-status-change-fields" class="event-status-change-fields ${reasonRequired ? '' : 'hidden'}">
                 <label class="field"><span>Reason for the change</span><textarea id="event-status-reason" rows="3" ${reasonRequired ? 'required' : ''} placeholder="Record the operational reason, not just ‘organiser decision’.">${escapeHtml(lifecycle.reason)}</textarea></label>
               </div>
@@ -4855,12 +5550,13 @@
         : undefined;
     const pending = value === 'dont-know';
     const answered = isAnsweredValue(value);
+    const notRelevant = item.required === false && isQuestionNotRelevant(event, item.id);
     return `
-      <article class="flow-item question-item ${answered ? 'answered' : ''} ${pending ? 'pending-decision' : ''}" data-item-id="${item.id}">
+      <article class="flow-item question-item ${answered ? 'answered' : ''} ${pending ? 'pending-decision' : ''} ${notRelevant ? 'not-relevant' : ''}" data-item-id="${item.id}">
         <div class="flow-rail question-flow-rail">
           <span class="type-badge question-badge">Question</span>
-          <span class="question-state-mark">${pending ? '…' : answered ? '✓' : '?'}</span>
-          <small>${pending ? 'Pending' : answered ? 'Answered' : 'Decision'}</small>
+          <span class="question-state-mark">${notRelevant ? '—' : pending ? '…' : answered ? '✓' : '?'}</span>
+          <small>${notRelevant ? 'Not relevant' : pending ? 'Pending' : answered ? 'Answered' : 'Decision'}</small>
         </div>
         <div class="flow-body question-flow-body">
           <div class="question-label-row">
@@ -4873,6 +5569,13 @@
           ${renderDerivedContextForQuestion(item.id, event)}
           ${renderPriorLearning(event, item)}
           ${renderAnswerControl(item, value, priorHint)}
+          ${item.required === false ? `
+            <div class="optional-question-resolution">
+              <span>If this does not apply to this event, mark it complete without supplying an answer.</span>
+              <button type="button" class="choice-button not-relevant-choice ${notRelevant ? 'selected' : ''}" data-question-not-relevant="${escapeHtml(item.id)}" aria-pressed="${notRelevant ? 'true' : 'false'}">
+                ${notRelevant ? '✓ Not relevant' : 'Not relevant'}
+              </button>
+            </div>` : ''}
           ${renderAdvisoriesForQuestion(item.id, event)}
         </div>
       </article>
@@ -5002,7 +5705,41 @@
 
   function renderTaskWorkspaceAction(item, event) {
     if (!item.actionView || !item.actionLabel) return '';
+    if (item.actionView === 'event-status' || item.actionType === 'manage-event-status') {
+      if (item.completionMode === 'event-status-decision' && eventStatusDecisionIsSatisfied(item, event)) return '';
+      return `<button type="button" class="button button-primary task-workspace-action" data-task-manage-event-status="${escapeHtml(event?.id ?? '')}" data-event-status-prefill="${escapeHtml(item.actionStatus || 'confirmed')}">${escapeHtml(item.actionLabel)}</button>`;
+    }
     return `<button type="button" class="button button-secondary task-workspace-action" data-task-workspace-view="${escapeHtml(item.actionView)}" data-task-workspace-event-id="${escapeHtml(event?.id ?? '')}">${escapeHtml(item.actionLabel)}</button>`;
+  }
+
+  function renderTaskStatusDecisionDelivery(item, event) {
+    if (item?.completionMode !== 'event-status-decision') return '';
+    const taskState = event.taskState?.[item.id] ?? {};
+    const expired = isTaskExpired(item, event, taskState);
+    const notification = event.lifecycle?.statusNotification;
+    if (!notification) {
+      return expired
+        ? '<div class="task-status-delivery pending"><strong>Decision record expired</strong><span>No decision was recorded before the event cutoff; this task is retained as read-only history.</span></div>'
+        : '<div class="task-status-delivery pending"><strong>Decision still needed</strong><span>Use the status action to record the decision and notify the selected operational leads.</span></div>';
+    }
+    const targetsChanged = eventStatusNotificationTargetsChanged(event, notification);
+    const awaitingFinalDecision = item.id === 'resolve-at-risk-event' && event.lifecycle?.status === 'at-risk';
+    const retryable = !expired && !['sending', 'legacy-recorded', 'expired'].includes(notification.deliveryStatus) &&
+      (targetsChanged || ['pending', 'partial', 'failed'].includes(notification.deliveryStatus) ||
+        (notification.deliveryStatus === 'no-email' && (notification.missingEmail?.length ?? 0) > 0));
+    const tone = !expired && !targetsChanged && !awaitingFinalDecision &&
+      ['sent', 'legacy-recorded', 'not-required'].includes(notification.deliveryStatus) ? 'success' : 'pending';
+    const heading = expired
+      ? 'Decision notification retained'
+      : awaitingFinalDecision
+        ? 'At-risk update recorded; final decision still needed'
+        : tone === 'success'
+          ? 'Decision and notification recorded'
+          : 'Decision recorded; notification needs attention';
+    return `<div class="task-status-delivery ${tone}">
+      <div><strong>${heading}</strong><span>${escapeHtml(eventStatusNotificationFeedback(notification, targetsChanged))}</span></div>
+      ${retryable ? `<button type="button" class="button button-secondary" data-retry-event-status-notification="${escapeHtml(event.id)}">Retry update</button>` : ''}
+    </div>`;
   }
 
   function staffBriefingPhaseLabel(item) {
@@ -5017,13 +5754,17 @@
   function renderInlineTask(item, event) {
     const taskState = event.taskState[item.id] ?? {};
     const dueDate = getDueDate(item.deadlineCode, event);
-    const dueText = dueDate ? formatDate(dueDate) : item.deadlineCode ? `Configure ${item.deadlineCode}` : 'No deadline';
+    const expiresOn = getTaskExpiryDate(item, event);
+    const expired = isTaskExpired(item, event, taskState, expiresOn);
+    const dueText = expired
+      ? `Expired after ${formatDate(expiresOn)}`
+      : dueDate ? formatDate(dueDate) : item.deadlineCode ? `Configure ${item.deadlineCode}` : 'No deadline';
     const milestoneLabel = item.deadlineCode ? (MILESTONE_LABELS[item.deadlineCode] ?? item.deadlineCode) : 'No milestone';
     const detail = getTaskDetail(item, event);
     const completionControl = taskCompletionControl(item, event, taskState);
     const ownerInputId = `task-owner-${item.id}`;
     return `
-      <article class="flow-item task-item ${taskState.completed ? 'completed' : ''}" data-item-id="${item.id}">
+      <article class="flow-item task-item ${taskState.completed ? 'completed' : ''} ${expired ? 'expired' : ''}" data-item-id="${item.id}">
         <div class="flow-rail task-flow-rail">
           <span class="type-badge task-badge">Task</span>
           <div class="task-milestone-marker ${item.deadlineCode ? '' : 'no-milestone'}">
@@ -5039,20 +5780,27 @@
               ${detail ? `<p class="help-text">${escapeHtml(detail)}</p>` : ''}
               ${renderPriorLearning(event, item)}
             </div>
-            <label class="complete-toggle task-complete-control ${completionControl.blocked ? 'blocked' : ''}" title="${escapeHtml(completionControl.title)}">
-              <input type="checkbox" data-task-complete="${item.id}" ${taskState.completed ? 'checked' : ''} ${completionControl.blocked ? 'disabled' : ''}>
-              <span></span><small>${escapeHtml(completionControl.label)}</small>
-            </label>
+            ${expired
+              ? `<div class="complete-toggle task-expired-control" title="${escapeHtml(completionControl.title)}"><span aria-hidden="true">—</span><small>Expired</small></div>`
+              : completionControl.statusManaged
+                ? `<div class="complete-toggle task-status-control" title="${escapeHtml(completionControl.title)}"><span aria-hidden="true">${taskState.completed ? '✓' : '!'}</span><small>${escapeHtml(completionControl.label)}</small></div>`
+              : `<label class="complete-toggle task-complete-control ${completionControl.blocked ? 'blocked' : ''}" title="${escapeHtml(completionControl.title)}">
+                  <input type="checkbox" data-task-complete="${item.id}" ${taskState.completed ? 'checked' : ''} ${completionControl.blocked ? 'disabled' : ''}>
+                  <span></span><small>${escapeHtml(completionControl.label)}</small>
+                </label>`}
           </div>
           ${renderTaskReviewSummary(item, event, taskState)}
+          ${renderTaskStatusDecisionDelivery(item, event)}
           <div class="task-inline-meta">
             ${item.responsibleArea ? `<span class="area-chip">${escapeHtml(item.responsibleArea)}</span>` : ''}
             ${staffBriefingPhaseLabel(item) ? `<span class="staff-duty-chip">Staff duty · ${escapeHtml(staffBriefingPhaseLabel(item))}</span>` : ''}
-            ${item.reviewSummary ? '' : renderTaskWorkspaceAction(item, event)}
-            <div class="assignee-compact">
-              <label class="assignee-compact-label" for="${escapeHtml(ownerInputId)}">Owner</label>
-              ${renderAssignmentPicker({ value: taskAssignmentReference(taskState) ?? taskState.assignee, fallback: taskState.assignee, eligibleRoleId: item.defaultOwnerRoleId, taskId: item.id, id: ownerInputId, compact: true })}
-            </div>
+            ${!expired && !item.reviewSummary ? renderTaskWorkspaceAction(item, event) : ''}
+            ${expired
+              ? `<div class="assignee-compact task-expired-owner"><span class="assignee-compact-label">Owner at expiry</span><strong>${escapeHtml(taskState.assignee || (item.defaultOwnerRoleId ? roleById(item.defaultOwnerRoleId)?.name : '') || 'Not assigned')}</strong></div>`
+              : `<div class="assignee-compact">
+                  <label class="assignee-compact-label" for="${escapeHtml(ownerInputId)}">Owner</label>
+                  ${renderAssignmentPicker({ value: taskAssignmentReference(taskState) ?? taskState.assignee, fallback: taskState.assignee, eligibleRoleId: item.defaultOwnerRoleId, taskId: item.id, id: ownerInputId, compact: true })}
+                </div>`}
           </div>
         </div>
       </article>
@@ -5171,6 +5919,7 @@
 
   function taskHorizon(task) {
     if (task.state.completed) return 'completed';
+    if (task.expired) return 'expired';
     const days = taskDaysUntilDue(task);
     if (days === null) return 'undated';
     if (days <= 2) return 'attention';
@@ -5181,6 +5930,7 @@
 
   function taskDueRelativeLabel(task) {
     if (task.state.completed) return 'Completed';
+    if (task.expired) return task.expiresOn ? `Expired after ${formatDate(task.expiresOn)}` : 'Expired';
     const days = taskDaysUntilDue(task);
     if (days === null) return 'Date not configured';
     if (days < -1) return `${Math.abs(days)} days overdue`;
@@ -5239,7 +5989,8 @@
       'next-weeks': { label: 'Next few weeks', description: 'Due in eight to twenty-eight days.', icon: '28' },
       later: { label: 'Later', description: 'Planned more than four weeks ahead.', icon: '→' },
       undated: { label: 'Date needed', description: 'Waiting for a planning milestone or event date.', icon: '?' },
-      completed: { label: 'Completed', description: 'Finished tasks retained for the event record.', icon: '✓' }
+      completed: { label: 'Completed', description: 'Finished tasks retained for the event record.', icon: '✓' },
+      expired: { label: 'Expired', description: 'No longer actionable because the configured cutoff has passed.', icon: '—' }
     };
     return definitions[horizon] ?? definitions.later;
   }
@@ -5283,6 +6034,7 @@
       normaliseMilestoneDates(event);
       const tasks = getActiveTasks(event);
       for (const task of tasks) {
+        if (task.expired) continue;
         if (taskBelongsToPerson(task, event, person)) records.push({ task, event });
       }
     }
@@ -5324,10 +6076,12 @@
     const completionControl = taskCompletionControl(item, event, taskState);
     return `
       <article class="task-card dashboard-task-card event-tone-${eventTone} timing-${escapeHtml(horizon)} ${artwork ? 'has-event-artwork' : ''} ${taskState.completed ? 'completed' : ''}">
-        <label class="task-card-check ${completionControl.blocked ? 'blocked' : ''}" title="${escapeHtml(completionControl.title)}">
-          <input type="checkbox" data-dashboard-task-complete="${escapeHtml(item.id)}" data-dashboard-event-id="${escapeHtml(event.id)}" ${taskState.completed ? 'checked' : ''} ${completionControl.blocked ? 'disabled' : ''}>
-          <span></span>
-        </label>
+        ${completionControl.statusManaged
+          ? `<div class="task-card-selection-status ${taskState.completed ? 'completed' : 'status-managed'}" title="${escapeHtml(completionControl.title)}" aria-label="${escapeHtml(completionControl.title)}"><span aria-hidden="true">${taskState.completed ? '✓' : '!'}</span></div>`
+          : `<label class="task-card-check ${completionControl.blocked ? 'blocked' : ''}" title="${escapeHtml(completionControl.title)}">
+              <input type="checkbox" data-dashboard-task-complete="${escapeHtml(item.id)}" data-dashboard-event-id="${escapeHtml(event.id)}" ${taskState.completed ? 'checked' : ''} ${completionControl.blocked ? 'disabled' : ''}>
+              <span></span>
+            </label>`}
         <div class="task-card-content">
           ${artwork ? `<span class="dashboard-event-artwork" aria-hidden="true"><img src="${escapeHtml(artwork)}" alt="" loading="lazy" decoding="async"></span>` : ''}
           <div class="dashboard-task-card-body">
@@ -5347,6 +6101,7 @@
                 </div>
               </div>
               ${renderTaskReviewSummary(item, event, taskState)}
+              ${renderTaskStatusDecisionDelivery(item, event)}
               <div class="dashboard-task-actions">
                 ${detail ? `<details><summary>Task detail</summary><p>${escapeHtml(detail)}</p></details>` : '<span></span>'}
                 <div class="dashboard-task-action-buttons">
@@ -5468,10 +6223,11 @@
     const people = taskBoardPeople();
     const person = resolveTaskBoardPerson(event);
     const scoped = mode === 'mine' ? tasks.filter(task => taskBelongsToPerson(task, event, person)) : tasks;
-    const open = scoped.filter(task => !task.state.completed);
+    const open = scoped.filter(task => !task.state.completed && !task.expired);
     const done = scoped.filter(task => task.state.completed);
-    const unassigned = scoped.filter(task => !task.state.assignee && !task.state.completed);
-    const missingDates = scoped.filter(task => task.item.deadlineCode && !task.dueDate && !task.state.completed);
+    const expired = scoped.filter(task => task.expired);
+    const unassigned = open.filter(task => !task.state.assignee);
+    const missingDates = open.filter(task => task.item.deadlineCode && !task.dueDate);
     const attention = open.filter(task => taskHorizon(task) === 'attention');
     const overdue = attention.filter(task => (taskDaysUntilDue(task) ?? 0) < 0);
     const nextDays = open.filter(task => taskHorizon(task) === 'next-days');
@@ -5483,11 +6239,12 @@
       { value: 'next-days', label: 'Next few days', description: '3–7 days', tasks: nextDays, icon: '7' },
       { value: 'next-weeks', label: 'Next few weeks', description: '8–28 days', tasks: nextWeeks, icon: '28' },
       { value: 'later', label: 'Later or undated', description: 'Beyond four weeks', tasks: later, icon: '→' },
-      { value: 'completed', label: 'Completed', description: `${done.length} finished`, tasks: done, icon: '✓' }
+      { value: 'completed', label: 'Completed', description: `${done.length} finished`, tasks: done, icon: '✓' },
+      { value: 'expired', label: 'Expired', description: `${expired.length} no longer needed`, tasks: expired, icon: '—' }
     ];
     const requestedHorizon = horizonTabs.some(tab => tab.value === state.taskBoardHorizon) ? state.taskBoardHorizon : 'auto';
     const activeHorizon = requestedHorizon === 'auto'
-      ? (horizonTabs.find(tab => tab.value !== 'completed' && tab.tasks.length)?.value ?? (done.length ? 'completed' : 'attention'))
+      ? (horizonTabs.find(tab => !['completed', 'expired'].includes(tab.value) && tab.tasks.length)?.value ?? (done.length ? 'completed' : expired.length ? 'expired' : 'attention'))
       : requestedHorizon;
     const activeTab = horizonTabs.find(tab => tab.value === activeHorizon) ?? horizonTabs[0];
     const activeDefinition = taskHorizonDefinition(activeHorizon, activeTab.tasks);
@@ -5497,11 +6254,15 @@
     const allSelectableTasksSelected = selectableTaskIds.size > 0 && selectedTaskCount === selectableTaskIds.size;
     const emptyHeading = activeHorizon === 'completed'
       ? `No completed tasks for ${mode === 'mine' ? escapeHtml(person?.name ?? 'this person') : 'this event'}`
-      : `No tasks in ${activeTab.label.toLocaleLowerCase()}`;
+      : activeHorizon === 'expired'
+        ? 'No expired tasks for this event'
+        : `No tasks in ${activeTab.label.toLocaleLowerCase()}`;
     const emptyCopy = activeHorizon === 'attention'
       ? 'Nothing is overdue or due within the next two days. Choose another timeframe to work ahead.'
       : activeHorizon === 'completed'
         ? 'Tasks will appear here as they are finished.'
+        : activeHorizon === 'expired'
+          ? 'Tasks with a configured cutoff remain here as a read-only record after they are no longer needed.'
         : 'Choose another timeframe, or return to the planner if more work needs to be created.';
 
     return `
@@ -5512,7 +6273,7 @@
         </div>
         <div class="task-board-viewbar-meta">
           ${mode === 'mine' ? `<label class="task-board-person"><span>Working as</span>${people.length ? `<select data-task-board-person>${people.map(candidate => `<option value="${escapeHtml(candidate.id)}" ${candidate.id === person?.id ? 'selected' : ''}>${escapeHtml(candidate.name)}</option>`).join('')}</select>` : '<button type="button" class="text-button inline" data-view="directory">Add a person in People & Roles</button>'}</label>` : `<div class="task-board-overview-note"><span>${unassigned.length}</span><small>open task${unassigned.length === 1 ? '' : 's'} without an owner</small></div>`}
-          <div class="task-board-completion"><strong>${done.length}/${scoped.length}</strong><small>${escapeHtml(scopeLabel)} tasks complete</small></div>
+          <div class="task-board-completion"><strong>${done.length}/${open.length + done.length}</strong><small>${escapeHtml(scopeLabel)} actionable tasks complete${expired.length ? ` · ${expired.length} expired` : ''}</small></div>
         </div>
       </section>
 
@@ -5556,7 +6317,9 @@
   function renderTaskBoardCard(task, event, selected = false) {
     const { item, module, dueDate } = task;
     const taskState = task.state;
-    const dueLabel = dueDate ? formatDate(dueDate) : item.deadlineCode ? `Deadline ${item.deadlineCode} is not configured` : 'No due date';
+    const dueLabel = task.expired
+      ? `Expired after ${formatDate(task.expiresOn)}`
+      : dueDate ? formatDate(dueDate) : item.deadlineCode ? `Deadline ${item.deadlineCode} is not configured` : 'No due date';
     const detail = getTaskDetail(item, event);
     const horizon = taskHorizon(task);
     const owner = taskState.assignee || (item.defaultOwnerRoleId ? roleById(item.defaultOwnerRoleId)?.name : '') || 'Awaiting owner';
@@ -5564,8 +6327,10 @@
     const priorLearning = priorLearningForItem(event, item);
     const completionControl = taskCompletionControl(item, event, taskState);
     return `
-      <article class="task-card timing-${escapeHtml(horizon)} ${taskState.completed ? 'completed' : ''} ${selected ? 'selected' : ''}" data-task-card-id="${escapeHtml(item.id)}">
-        ${taskState.completed
+      <article class="task-card timing-${escapeHtml(horizon)} ${taskState.completed ? 'completed' : ''} ${task.expired ? 'expired' : ''} ${selected ? 'selected' : ''}" data-task-card-id="${escapeHtml(item.id)}">
+        ${task.expired
+          ? `<div class="task-card-selection-status expired" title="Task expired" aria-label="Task expired"><span aria-hidden="true">—</span></div>`
+          : taskState.completed
           ? `<div class="task-card-selection-status completed" title="Task completed" aria-label="Task completed"><span aria-hidden="true">✓</span></div>`
           : `<label class="task-card-check ${completionControl.blocked ? 'blocked' : ''}" title="${escapeHtml(completionControl.blocked ? completionControl.title : `Select ${item.title}`)}">
               <input type="checkbox" data-task-select="${escapeHtml(item.id)}" aria-label="Select ${escapeHtml(item.title)}" ${selected ? 'checked' : ''} ${completionControl.blocked ? 'disabled' : ''}>
@@ -5588,14 +6353,21 @@
           </div>
           ${renderTaskBoardLearning(event, item)}
           ${renderTaskReviewSummary(item, event, taskState, false)}
-          <div class="task-card-primary-actions">
-            <button type="button" class="button ${taskState.completed ? 'button-secondary' : 'button-primary'}" data-task-completion-action="${escapeHtml(item.id)}" data-task-target-completed="${taskState.completed ? 'false' : 'true'}" ${completionControl.blocked ? 'disabled' : ''} title="${escapeHtml(completionControl.title)}">${taskState.completed ? 'Reopen task' : 'Complete task'}</button>
-          </div>
+          ${renderTaskStatusDecisionDelivery(item, event)}
+          ${task.expired
+            ? '<div class="task-card-primary-actions task-expired-message"><span>This task is retained for the event record; no action is required.</span></div>'
+            : completionControl.actionRequired
+              ? `<div class="task-card-primary-actions">${renderTaskWorkspaceAction(item, event)}</div>`
+            : completionControl.statusManaged
+              ? '<div class="task-card-primary-actions task-status-managed-message"><span>Completion follows the recorded event status and delivery result.</span></div>'
+            : `<div class="task-card-primary-actions">
+                <button type="button" class="button ${taskState.completed ? 'button-secondary' : 'button-primary'}" data-task-completion-action="${escapeHtml(item.id)}" data-task-target-completed="${taskState.completed ? 'false' : 'true'}" ${completionControl.blocked ? 'disabled' : ''} title="${escapeHtml(completionControl.title)}">${taskState.completed ? 'Reopen task' : 'Complete task'}</button>
+              </div>`}
           <details class="task-card-manage">
-            <summary><span>Details and assignment</span><span class="task-card-manage-chevron" aria-hidden="true"></span></summary>
+            <summary><span>${task.expired ? 'Task record' : 'Details and assignment'}</span><span class="task-card-manage-chevron" aria-hidden="true"></span></summary>
             <div class="task-card-manage-body">
               ${detail ? `<p class="task-detail">${escapeHtml(detail)}</p>` : ''}
-              <div class="task-fields">
+              ${task.expired ? `<div class="task-expired-record"><span>Owner at expiry</span><strong>${escapeHtml(owner)}</strong>${taskState.notes ? `<span>Recorded note</span><p>${escapeHtml(taskState.notes)}</p>` : ''}</div>` : `<div class="task-fields">
                 <div class="task-assignment-field">
                   <span>Assigned to</span>
                   ${renderAssignmentPicker({ value: taskAssignmentReference(taskState) ?? taskState.assignee, fallback: taskState.assignee, eligibleRoleId: task.item.defaultOwnerRoleId, taskId: item.id })}
@@ -5604,12 +6376,12 @@
                   <span>${escapeHtml(item.reviewSummary?.notesLabel || (item.reviewSummary ? 'Confirmation note (optional)' : 'Task notes'))}</span>
                   <input type="text" value="${escapeHtml(taskState.notes ?? '')}" placeholder="${escapeHtml(item.reviewSummary?.notesPlaceholder || (item.reviewSummary ? 'Add context only if needed; the plan is recorded above' : 'Add any event-specific detail'))}" data-task-notes="${item.id}">
                 </label>
-              </div>
+              </div>`}
               <div class="task-operational-row">
-                <span class="notification-chip ${taskState.notificationStatus ?? 'none'}">${taskState.notificationStatus === 'queued' ? 'Assignment notification queued' : taskState.notificationStatus === 'outbox' ? 'Notification written to development outbox' : taskState.assignee ? 'Owner assigned' : 'Awaiting owner'}</span>
-                ${taskState.assignee && !assignmentRecipient(taskAssignmentReference(taskState) ?? taskState.assignee, event).email ? `<span class="notification-chip warning">No email configured for this person or role</span>` : ''}
-                ${item.reviewSummary ? '' : renderTaskWorkspaceAction(item, event)}
-                ${taskState.completionToken ? `<button class="text-button inline" data-copy-completion="${escapeHtml(item.id)}">Copy completion link</button>` : ''}
+                <span class="notification-chip ${task.expired ? 'expired' : taskState.notificationStatus ?? 'none'}">${task.expired ? 'Expired — reminders and completion disabled' : taskState.notificationStatus === 'queued' ? 'Assignment notification queued' : taskState.notificationStatus === 'outbox' ? 'Notification written to development outbox' : taskState.assignee ? 'Owner assigned' : 'Awaiting owner'}</span>
+                ${!task.expired && taskState.assignee && !assignmentRecipient(taskAssignmentReference(taskState) ?? taskState.assignee, event).email ? `<span class="notification-chip warning">No email configured for this person or role</span>` : ''}
+                ${!task.expired && !item.reviewSummary ? renderTaskWorkspaceAction(item, event) : ''}
+                ${!task.expired && item.canCompleteFromLink !== false && item.completionMode !== 'event-status-decision' && taskState.completionToken ? `<button class="text-button inline" data-copy-completion="${escapeHtml(item.id)}">Copy completion link</button>` : ''}
                 ${taskState.completedAt ? `<span class="completed-at">Completed ${escapeHtml(formatDate(taskState.completedAt.substring(0,10)))}</span>` : ''}
               </div>
             </div>
@@ -5626,12 +6398,16 @@
       for (const section of module.sections) {
         for (const item of section.items) {
           if (item.type !== 'task' || !isItemVisible(item, event)) continue;
+          const taskState = event.taskState?.[item.id] ?? {};
+          const expiresOn = getTaskExpiryDate(item, event);
           tasks.push({
             item,
             module,
             section,
             dueDate: getDueDate(item.deadlineCode, event),
-            state: event.taskState?.[item.id] ?? {}
+            expiresOn,
+            expired: isTaskExpired(item, event, taskState, expiresOn),
+            state: taskState
           });
         }
       }
@@ -5696,6 +6472,7 @@
     const statusDefinition = eventStatusDefinition(event);
     const tasks = getEventTaskSnapshot(event);
     const completed = tasks.filter(task => task.state.completed).length;
+    const expired = tasks.filter(task => task.expired).length;
     const retroCount = Object.values(event.retrospective ?? {}).filter(value => value !== '' && value !== null && value !== undefined).length;
     const closed = Boolean(event.closedAt);
     const current = event.id === state.activeEventId;
@@ -5734,6 +6511,7 @@
           <div class="catalogue-stats">
             <span><strong>${tasks.length}</strong> tasks</span>
             <span><strong>${completed}</strong> complete</span>
+            ${expired ? `<span><strong>${expired}</strong> expired</span>` : ''}
             <span><strong>${retroCount}</strong> retrospective answers</span>
           </div>
           <div class="button-row">
@@ -5752,6 +6530,8 @@
     const lifecycle = normaliseEventLifecycle(event);
     const statusDefinition = eventStatusDefinition(event);
     const tasks = getEventTaskSnapshot(event);
+    const actionableTasks = tasks.filter(task => !task.expired);
+    const expiredTasks = tasks.filter(task => task.expired);
     const retrospectiveFields = playbook.retrospective?.fields ?? [];
     const sentimentLabels = ['', 'Very difficult', 'Difficult', 'Mixed', 'Good', 'Excellent'];
     const sentiment = Number(event.retrospective?.sentimentRating || 0);
@@ -5778,11 +6558,11 @@
         </section>
 
         <section class="summary-section">
-          <div class="summary-section-heading"><h3>Tasks created</h3><span>${tasks.filter(task => task.state.completed).length}/${tasks.length} complete</span></div>
+          <div class="summary-section-heading"><h3>Tasks created</h3><span>${actionableTasks.filter(task => task.state.completed).length}/${actionableTasks.length} actionable tasks complete${expiredTasks.length ? ` · ${expiredTasks.length} expired` : ''}</span></div>
           ${tasks.length ? `<div class="summary-task-list">${tasks.map(task => `
-            <div class="summary-task-row ${task.state.completed ? 'complete' : ''}">
-              <span class="summary-task-status">${task.state.completed ? '✓' : '○'}</span>
-              <div><strong>${escapeHtml(task.item.title)}</strong><small>${escapeHtml(task.module.title)}${task.dueDate ? ` · Due ${escapeHtml(formatDate(task.dueDate))}` : ''}${task.state.assignee ? ` · ${escapeHtml(task.state.assignee)}` : ''}</small></div>
+            <div class="summary-task-row ${task.state.completed ? 'complete' : ''} ${task.expired ? 'expired' : ''}">
+              <span class="summary-task-status">${task.state.completed ? '✓' : task.expired ? '—' : '○'}</span>
+              <div><strong>${escapeHtml(task.item.title)}</strong><small>${escapeHtml(task.module.title)}${task.expired ? ` · Expired after ${escapeHtml(formatDate(task.expiresOn))}` : task.dueDate ? ` · Due ${escapeHtml(formatDate(task.dueDate))}` : ''}${task.state.assignee ? ` · ${escapeHtml(task.state.assignee)}` : ''}</small></div>
             </div>`).join('')}</div>` : '<p class="summary-empty">No tasks were generated for this event.</p>'}
         </section>
 
@@ -5946,7 +6726,7 @@
             moduleTitle: module.title,
             sectionId: section.id,
             sectionTitle: section.title,
-            completed: isAnsweredValue(getQuestionValue(item.id, event))
+            completed: isQuestionComplete(item, event)
           });
         }
       }
@@ -6957,6 +7737,7 @@
     }
 
     if (event.clonedAnswerHints) delete event.clonedAnswerHints[questionId];
+    if (hasRecordedQuestionValue(value)) clearQuestionNotRelevant(event, questionId);
     if (indexed.item.bind === 'eventDate') {
       reanchorEventDate(event, value);
     } else {
@@ -6987,6 +7768,37 @@
     }
     saveState();
     render();
+  }
+
+  function setQuestionNotRelevant(event, questionId, notRelevant) {
+    const indexed = itemIndex.get(questionId);
+    if (!indexed || indexed.item.type !== 'question' || indexed.item.required !== false) return false;
+
+    const questionMeta = normaliseQuestionMeta(event);
+    if (notRelevant) {
+      questionMeta[questionId] = { notRelevant: true };
+      if (indexed.item.bind === 'eventDate') {
+        reanchorEventDate(event, '');
+      } else {
+        delete event.answers[questionId];
+      }
+      if (questionId === 'event-communications-owner') {
+        event.lifecycle ??= {};
+        event.lifecycle.communicationsOwnerRef = null;
+        event.lifecycle.communicationsOwner = '';
+      }
+      if (event.clonedAnswerHints) delete event.clonedAnswerHints[questionId];
+      const decisionTask = buildDontKnowTask(indexed.item);
+      if (decisionTask) delete event.taskState[decisionTask.id];
+    } else {
+      delete questionMeta[questionId];
+    }
+
+    invalidateTaskReviewConfirmations(event, questionId);
+    normaliseAnswers(event);
+    saveState();
+    render();
+    return true;
   }
 
   function updateTeam(event, name) {
@@ -7021,17 +7833,19 @@
     if (guidance) guidance.textContent = EVENT_STATUS_DEFINITIONS[status]?.summary ?? '';
   }
 
-  function openEventStatusDialog(eventId = state.activeEventId) {
+  function openEventStatusDialog(eventId = state.activeEventId, preferredStatus = '') {
     if (eventId && eventId !== state.activeEventId && state.events.some(event => event.id === eventId)) {
       state.activeEventId = eventId;
       saveState();
       document.getElementById('event-summary-dialog')?.close();
       render();
-      requestAnimationFrame(() => openEventStatusDialog(eventId));
+      requestAnimationFrame(() => openEventStatusDialog(eventId, preferredStatus));
       return;
     }
     const dialog = document.getElementById('event-status-dialog');
     if (!dialog) return;
+    const statusSelect = document.getElementById('event-status-value');
+    if (preferredStatus && EVENT_STATUS_DEFINITIONS[preferredStatus] && statusSelect) statusSelect.value = preferredStatus;
     updateEventStatusDialogFields();
     dialog.showModal();
     requestAnimationFrame(() => document.getElementById('event-status-value')?.focus());
@@ -7066,8 +7880,13 @@
     if (!EVENT_STATUS_DEFINITIONS[nextStatus] || !decisionOwnerRef || (needsReason && !reason) || (requiresCommunicationsOwner && !communicationsOwnerRef)) return false;
 
     const now = new Date().toISOString();
+    const previousStatus = lifecycle.status;
+    const statusChanged = nextStatus !== previousStatus;
+    const statusNotification = statusChanged && NOTIFIABLE_EVENT_STATUSES.has(nextStatus)
+      ? createEventStatusNotification(event, nextStatus, now)
+      : null;
     const interestedParties = isChangeResponse ? deriveCancellationStakeholders(event) : [];
-    const changed = nextStatus !== lifecycle.status ||
+    const changed = statusChanged ||
       decisionOwner !== lifecycle.decisionOwner ||
       communicationsOwner !== lifecycle.communicationsOwner ||
       reason !== lifecycle.reason ||
@@ -7082,12 +7901,17 @@
         communicationsOwnerRef: structuredClone(communicationsOwnerRef),
         reason,
         memberUpdate,
+        statusNotificationId: statusNotification?.id ?? null,
         interestedParties: structuredClone(interestedParties)
       });
     }
 
     lifecycle.status = nextStatus;
-    if (changed) lifecycle.statusChangedAt = now;
+    if (statusChanged) {
+      lifecycle.statusChangedAt = now;
+      lifecycle.resolvedFromAtRisk = previousStatus === 'at-risk' &&
+        ['confirmed', 'postponed', 'cancelled'].includes(nextStatus);
+    }
     lifecycle.decisionOwner = decisionOwner;
     lifecycle.decisionOwnerRef = decisionOwnerRef;
     lifecycle.communicationsOwner = communicationsOwner;
@@ -7096,6 +7920,7 @@
     lifecycle.reason = reason;
     lifecycle.memberUpdate = memberUpdate;
     lifecycle.interestedParties = interestedParties;
+    if (statusChanged) lifecycle.statusNotification = statusNotification;
     event.answers['event-decision-owner'] = decisionOwnerRef;
     event.answers['event-communications-owner'] = communicationsOwnerRef;
     updateTeam(event, assignmentRecipient(decisionOwnerRef, event).name || decisionOwner);
@@ -7126,6 +7951,7 @@
     else if (event.closedAt) event.closedAt = null;
 
     saveState();
+    if (statusNotification) void dispatchEventStatusNotification(event);
     return true;
   }
 
@@ -7817,6 +8643,19 @@
       element.addEventListener('click', () => openEventStatusDialog());
     });
 
+    document.querySelectorAll('[data-task-manage-event-status]').forEach(element => {
+      element.addEventListener('click', () => openEventStatusDialog(
+        element.dataset.taskManageEventStatus || state.activeEventId,
+        element.dataset.eventStatusPrefill || 'confirmed'));
+    });
+
+    document.querySelectorAll('[data-retry-event-status-notification]').forEach(element => {
+      element.addEventListener('click', () => {
+        const event = state.events.find(candidate => candidate.id === element.dataset.retryEventStatusNotification) ?? getActiveEvent();
+        if (event) void dispatchEventStatusNotification(event);
+      });
+    });
+
     document.querySelectorAll('[data-close-event-status]').forEach(element => {
       element.addEventListener('click', () => document.getElementById('event-status-dialog')?.close());
     });
@@ -7875,6 +8714,17 @@
       });
     });
 
+    document.querySelectorAll('[data-question-not-relevant]').forEach(element => {
+      element.addEventListener('click', () => {
+        const event = getActiveEvent();
+        if (!event) return;
+        setQuestionNotRelevant(
+          event,
+          element.dataset.questionNotRelevant,
+          element.getAttribute('aria-pressed') !== 'true');
+      });
+    });
+
     document.querySelectorAll('[data-question-input]').forEach(element => {
       element.addEventListener('input', () => {
         const event = getActiveEvent();
@@ -7886,6 +8736,22 @@
         delete element.dataset.priorAnswerHint;
         if (indexed.item.bind === 'eventDate') return;
         event.answers[element.dataset.questionInput] = element.value;
+        if (hasRecordedQuestionValue(element.value)) {
+          const clearedNotRelevant = clearQuestionNotRelevant(event, element.dataset.questionInput);
+          if (clearedNotRelevant) {
+            const questionCard = element.closest('.question-item');
+            questionCard?.classList.remove('not-relevant');
+            questionCard?.classList.add('answered');
+            const stateMark = questionCard?.querySelector('.question-state-mark');
+            const stateLabel = questionCard?.querySelector('.question-flow-rail small');
+            if (stateMark) stateMark.textContent = '✓';
+            if (stateLabel) stateLabel.textContent = 'Answered';
+            const notRelevantButton = questionCard?.querySelector('[data-question-not-relevant]');
+            notRelevantButton?.classList.remove('selected');
+            notRelevantButton?.setAttribute('aria-pressed', 'false');
+            if (notRelevantButton) notRelevantButton.textContent = 'Not relevant';
+          }
+        }
         invalidateTaskReviewConfirmations(event, element.dataset.questionInput);
         saveState();
       });
@@ -8920,7 +9786,10 @@
 
     document.querySelectorAll('[data-action="send-notifications"]').forEach(element => {
       element.addEventListener('click', async () => {
+        const expired = (state.notificationOutbox ?? []).filter(item => item.status === 'queued' && isExpiredTaskNotification(item));
+        for (const notification of expired) notification.status = 'expired';
         const queued = (state.notificationOutbox ?? []).filter(item => item.status === 'queued');
+        if (expired.length) saveState();
         if (queued.length === 0) {
           alert('There are no queued notifications.');
           return;
@@ -9062,10 +9931,13 @@
         title: task.item.title,
         deadlineCode: task.item.deadlineCode ?? null,
         dueDate: task.dueDate,
+        expiresOn: task.expiresOn,
+        expired: task.expired,
         assignment,
         assignee: assignmentDisplay(assignment, task.state.assignee ?? '') || null,
         recipient: recipient.name || recipient.email ? recipient : null,
         completed: Boolean(task.state.completed),
+        status: task.state.completed ? 'completed' : task.expired ? 'expired' : 'open',
         notes: task.state.notes ?? null
       };
     });
@@ -9084,6 +9956,7 @@
         lifecycle: structuredClone(event.lifecycle),
         deadlineOffsets: Object.fromEntries(playbook.deadlineCodes.map(code => [code.code, getDeadlineOffset(code.code, event)])),
         answers: event.answers,
+        questionMeta: structuredClone(event.questionMeta ?? {}),
         previousAnswerHints: structuredClone(event.clonedAnswerHints ?? {}),
         finances: structuredClone(normaliseEventFinances(event)),
         financeSummary: financeTotals(event),
@@ -9102,7 +9975,7 @@
     const event = getActiveEvent();
     if (!event) return;
     const rows = [
-      ['Event', 'Module', 'Task', 'Deadline code', 'Due date', 'Assigned to', 'Status', 'Notes']
+      ['Event', 'Module', 'Task', 'Deadline code', 'Due date', 'Expires after', 'Assigned to', 'Status', 'Notes']
     ];
     for (const task of getActiveTasks(event)) {
       rows.push([
@@ -9111,8 +9984,9 @@
         task.item.title,
         task.item.deadlineCode ?? '',
         task.dueDate ?? '',
+        task.expiresOn ?? '',
         task.state.assignee ?? '',
-        task.state.completed ? 'Complete' : 'Open',
+        task.state.completed ? 'Complete' : task.expired ? 'Expired' : 'Open',
         task.state.notes ?? ''
       ]);
     }
@@ -9166,8 +10040,10 @@
       localStorage.setItem(STORAGE_TEMPLATE, JSON.stringify(candidate));
       indexPlaybook();
       migrateAdmissionPlanningState();
+      migrateAdmissionModelV38();
       migrateAdmissionPricingState();
       migrateFoodServiceReviewCompletionState();
+      migrateEventControlStateV37();
       state.activeView = 'module:start';
       saveState();
       render();
@@ -9183,14 +10059,17 @@
       playbook = candidate;
       indexPlaybook();
       migrateFoodServiceReviewCompletionState();
+      migrateEventControlStateV37();
       await initialiseClubBranding();
       await initialiseAccessSession();
       await initialisePluginStatus();
       await initialiseSharedState();
       migrateMilestoneState();
       migrateAdmissionPlanningState();
+      migrateAdmissionModelV38();
       migrateAdmissionPricingState();
       migrateFoodServiceReviewCompletionState();
+      migrateEventControlStateV37();
       initialiseOperationalState();
       const params = new URLSearchParams(location.search);
       const requestedView = params.get('view');

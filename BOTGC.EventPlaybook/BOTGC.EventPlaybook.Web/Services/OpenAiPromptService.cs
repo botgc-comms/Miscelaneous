@@ -75,6 +75,8 @@ public sealed class OpenAiPromptService(
                 eventDescription = request.Description.Trim(),
                 additionalCreativeInstructions = NormaliseOptional(request.AdditionalInstructions),
                 refinementNotes = NormaliseOptional(request.RefinementNotes),
+                planningContext = request.PlanningContext,
+                planningContextRule = "Treat admission and booking planning as factual grounding. Do not automatically render these fields as poster copy; include them only when the organiser's poster controls or instructions request that information.",
                 authorityRule = "The event description and additional creative instructions exclusively control what is depicted. Extract their concrete people, organisations, causes, characters, activities, props, entertainment, food, setting and humour. Do not add a separate catalogue scene recipe or replace a distinctive brief with generic golf imagery.",
                 requestedContent = new
                 {
@@ -181,6 +183,8 @@ public sealed class OpenAiPromptService(
             {
                 title = eventDefinition.Name,
                 organiserDescription = request.Description.Trim(),
+                planningContext = request.PlanningContext,
+                planningContextRule = "Use these facts only to preserve factual accuracy. Do not add booking, capacity, table-booking or pricing copy unless it is already requested campaign content.",
                 descriptionPriority = "The organiser description is the primary source of truth for the visual concept. Extract every concrete, distinctive visual element from it and make the most memorable ones visible in the scene. Do not collapse a colourful or unusual event into generic golf imagery.",
                 requiredVisualExtraction = "Before writing the final image prompt, identify the event's distinctive nouns, characters, activities, props, entertainment, food, setting and humour. Convert those into explicit must-show visual instructions. If the description contains unusual elements such as animals, costumes, performers, themed food or entertainment, those elements must visibly drive the poster concept rather than becoming background flavour.",
                 eventDefinition.SceneRecipe
@@ -425,6 +429,7 @@ public sealed class OpenAiPromptService(
         builder.AppendLine(string.IsNullOrWhiteSpace(request.AdditionalInstructions)
             ? "None supplied."
             : request.AdditionalInstructions.Trim());
+        AppendCommunicationsPlanningContext(builder, request.PlanningContext);
         if (!string.IsNullOrWhiteSpace(request.RefinementNotes))
         {
             builder.AppendLine("Refinement of the supplied previous campaign:");
@@ -563,6 +568,8 @@ public sealed class OpenAiPromptService(
             builder.AppendLine($"Campaign refinement direction: {request.RefinementNotes.Trim()}");
         }
 
+        AppendCommunicationsPlanningContext(builder, request.PlanningContext);
+
         AppendSupportingImagePrompt(builder, request.SupportingImages,
             "Use any separately supplied supporting images as visual references for specific objects or details that the campaign should preserve, such as a trophy, prop, mascot or other distinctive event asset.");
 
@@ -595,6 +602,37 @@ public sealed class OpenAiPromptService(
         AppendList(builder, eventDefinition.SceneRecipe.Avoid);
 
         return builder.ToString().Trim();
+    }
+
+    private static void AppendCommunicationsPlanningContext(
+        StringBuilder builder,
+        CommunicationsPlanningContext? context)
+    {
+        if (context is null) return;
+
+        var fields = new (string Label, string? Value)[]
+        {
+            ("Registration mode", context.RegistrationMode),
+            ("Free entry", context.FreeEntry),
+            ("Free attendee categories", context.FreeEntryCategories),
+            ("Ticket prices and inclusions", context.TicketPriceDetails),
+            ("Payment timing", context.PaymentTiming),
+            ("Maximum places", context.MaximumPlaces),
+            ("Booking routes", context.BookingRoutes),
+            ("Guest table booking", context.GuestTableBooking),
+            ("Booking opens", context.BookingOpens),
+            ("Booking closes", context.BookingCloses),
+            ("Public booking instructions", context.PublicBookingInstructions)
+        }.Where(field => !string.IsNullOrWhiteSpace(field.Value)).ToArray();
+
+        if (fields.Length == 0) return;
+        builder.AppendLine();
+        builder.AppendLine("ADMISSION AND BOOKING PLANNING FACTS FOR ACCURACY");
+        foreach (var field in fields)
+        {
+            builder.AppendLine($"- {field.Label}: {field.Value!.Trim()}");
+        }
+        builder.AppendLine("These facts are grounding only. Do not automatically add them as poster copy unless the organiser's poster controls or instructions request that information.");
     }
 
 

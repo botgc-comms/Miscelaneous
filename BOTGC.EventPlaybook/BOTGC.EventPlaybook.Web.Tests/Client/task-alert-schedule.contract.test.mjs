@@ -47,7 +47,7 @@ test('the projection contains only actionable active-event tasks and resolves cu
   assert.match(projection, /assignmentRecipient\(event\.organiserRef\s*\?\?\s*event\.organiser/);
   assert.match(projection, /assigneeEmail:\s*assignee\.email\s*\|\|\s*legacyTaskAssigneeEmail/);
   assert.match(projection, /organiserEmail:\s*organiser\.email/);
-  assert.match(projection, /canCompleteFromLink:\s*!taskCompletionControl/);
+  assert.match(projection, /canCompleteFromLink:\s*task\.item\.canCompleteFromLink\s*!==\s*false\s*&&\s*!taskCompletionControl/);
   assert.doesNotMatch(projection, /if\s*\(\s*!task\.state\.assignee\s*\)\s*continue/);
   assert.match(roleRoute, /linkedContact\s*&&\s*linkedContact\.active\s*!==\s*false\s*&&\s*linkedContact\.canReceiveTasks\s*!==\s*false/);
   assert.match(roleRoute, /role\?\.mailboxEmail/);

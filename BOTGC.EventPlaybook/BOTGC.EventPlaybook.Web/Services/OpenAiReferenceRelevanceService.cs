@@ -305,6 +305,12 @@ public sealed class OpenAiReferenceRelevanceService(
         builder.AppendLine(string.IsNullOrWhiteSpace(request.AdditionalInstructions)
             ? "None supplied."
             : request.AdditionalInstructions.Trim());
+        if (request.PlanningContext is not null)
+        {
+            builder.AppendLine();
+            builder.AppendLine("Admission and booking planning facts (factual context only; generic logistics do not make an image relevant):");
+            builder.AppendLine(JsonSerializer.Serialize(request.PlanningContext));
+        }
         builder.AppendLine();
         builder.AppendLine("Requested poster content:");
         builder.AppendLine(request.IncludeDate
