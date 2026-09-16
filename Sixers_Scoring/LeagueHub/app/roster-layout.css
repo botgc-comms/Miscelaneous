@@ -1,6 +1,77 @@
 .team-directory {
   max-width: 76rem;
 }
+.team-profile-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 8px 0 28px;
+}
+.team-profile-identity {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-width: 0;
+}
+.team-profile-identity h1 {
+  font-size: clamp(1.65rem, 3vw, 2.25rem);
+  line-height: 1.2;
+  margin: 0 0 8px;
+  overflow-wrap: anywhere;
+}
+.team-profile-identity p {
+  color: #536f64;
+  margin: 4px 0 0;
+}
+.team-profile-identity .team-profile-season {
+  font-size: 0.875rem;
+}
+.team-profile-cap {
+  display: grid;
+  place-items: center;
+  flex: 0 0 80px;
+  height: 80px;
+  background: white;
+  border: 1px solid #dce6e1;
+  border-radius: 20px;
+}
+.team-profile-heading > .btn {
+  flex-shrink: 0;
+}
+.roster-card {
+  container-type: inline-size;
+}
+.roster-card.roster-focused {
+  padding: 24px;
+}
+.roster-card.roster-focused .roster-columns {
+  margin-top: 0;
+}
+.roster-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #e0e8e3;
+}
+.roster-card .roster-columns .roster-section-heading h3 {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  font-size: 1rem;
+}
+.roster-section-heading p {
+  color: #536f64;
+  font-size: 0.8125rem;
+}
+.roster-card .roster-columns .roster-section-heading h3 span {
+  color: #31594d;
+  background: #edf4ef;
+}
 .team-directory-filters {
   display: flex;
   flex-wrap: wrap;
@@ -128,24 +199,35 @@
 }
 .roster-families {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
-  align-items: start;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-flow: row;
+  align-items: stretch;
   gap: 0.75rem;
 }
 .roster-family {
-  padding: 0.3rem;
+  display: grid;
+  align-content: center;
+  padding: 10px;
   min-width: 0;
+  min-height: 92px;
+  border: 1px solid #e1e9e4;
+  border-radius: 12px;
+  background: #fff;
 }
 .roster-family.has-siblings {
-  background: #f2f7f4;
-  border-radius: 0.6rem;
-  padding: 0.5rem;
+  grid-column: span 2;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 12px;
+  background: #f7faf8;
 }
 .roster-family-label {
-  display: block;
-  padding: 0 0.4rem 0.2rem;
-  font-size: 0.8125rem;
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  grid-column: 1 / -1;
+  padding-top: 5px;
+  font-size: 0.75rem;
   color: #536f64;
 }
 .roster-card .roster-player-button {
@@ -155,6 +237,20 @@
   gap: 0.5rem;
   min-height: 46px;
   padding: 0.4rem;
+  border-radius: 8px;
+  text-align: left;
+  min-width: 0;
+}
+.roster-card .roster-player-button:hover {
+  background: #eaf2ed;
+}
+.roster-card .roster-player-button:focus-visible {
+  outline: 2px solid #087b62;
+  outline-offset: 2px;
+}
+.roster-player-button .child-name > span:last-child {
+  overflow-wrap: anywhere;
+  line-height: 1.4;
 }
 .roster-card .roster-player-button small {
   font-size: 0.8125rem;
@@ -164,7 +260,49 @@
   min-height: 44px;
   text-align: left;
 }
+@container (max-width: 920px) {
+  .roster-families {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@container (max-width: 480px) {
+  .roster-families {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .roster-family.has-siblings {
+    grid-column: auto;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .roster-family {
+    min-height: 70px;
+  }
+  .roster-family-label {
+    justify-content: flex-start;
+    padding: 6px 8px 2px;
+  }
+}
 @media (max-width: 600px) {
+  .team-profile-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .team-profile-identity {
+    gap: 14px;
+  }
+  .team-profile-cap {
+    flex-basis: 62px;
+    height: 62px;
+    border-radius: 16px;
+  }
+  .team-profile-cap .junior-cap {
+    width: 42px !important;
+    height: 42px !important;
+  }
+  .roster-card.roster-focused {
+    padding: 16px;
+  }
   .team-directory-filters {
     gap: 0.75rem;
   }
@@ -193,9 +331,6 @@
   }
   .team-directory-detail {
     padding: 0 0.75rem 0.75rem;
-  }
-  .roster-families {
-    grid-template-columns: minmax(0, 1fr);
   }
   .roster-card .roster-header {
     align-items: flex-start;
