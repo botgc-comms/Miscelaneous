@@ -1,0 +1,534 @@
+/* Shared responsive rules, after the feature styles. */
+.mobile-filter-toggle {
+  display: none;
+}
+.directory-filter-fields {
+  display: contents;
+}
+.main,
+.family-main,
+.registration-main,
+.welcome-main {
+  width: 100%;
+  min-width: 0;
+}
+.card,
+.page-heading > div,
+.season-heading > div,
+.toolbar,
+.field,
+.stats-grid > *,
+.family-fixture-child > div {
+  min-width: 0;
+}
+.btn {
+  max-width: 100%;
+  white-space: normal;
+  line-height: 1.35;
+}
+.btn > svg,
+.row > svg,
+.find-team-choice > svg {
+  flex-shrink: 0;
+}
+.card p,
+.card h2,
+.card h3,
+.notice,
+.error,
+.find-team-choice strong,
+.child-name,
+.people-grid a {
+  overflow-wrap: anywhere;
+}
+.pick {
+  min-width: 0;
+}
+.dialog-actions {
+  flex-wrap: wrap;
+  gap: 10px;
+}
+[data-slot='dialog-content'] {
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+[data-slot='select-content'] {
+  max-width: calc(100vw - 24px);
+}
+.league-overview-controls > .row {
+  flex-wrap: nowrap;
+}
+.league-overview-controls > .row > .btn {
+  flex: 1 0 auto;
+}
+[data-slot='sidebar'][data-mobile='true'] {
+  max-width: calc(100vw - 44px);
+}
+[data-slot='sidebar'][data-mobile='true'] > button {
+  min-width: 44px;
+  min-height: 44px;
+  top: 6px;
+  right: 6px;
+  color: white;
+}
+[data-mobile='true'] .brand {
+  padding-top: 42px;
+}
+[data-mobile='true'] .sidebar-note {
+  display: none;
+}
+
+@media (max-width: 1100px) {
+  .page-heading {
+    flex-wrap: wrap;
+  }
+  .season-heading {
+    gap: 18px;
+    margin-bottom: 24px;
+  }
+  .season-heading > .row,
+  .page-heading > .row {
+    flex-wrap: wrap;
+  }
+  .season-heading .pick {
+    width: auto;
+  }
+  .club-filters {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .stats-gender-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .tab-list[data-slot='tabs-list'] {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
+    gap: 6px;
+    padding: 4px 0;
+    border-bottom: 0;
+    overflow: visible;
+  }
+  .tab-list [data-slot='tabs-trigger'] {
+    min-height: 44px;
+    height: 100%;
+    white-space: normal;
+    padding: 8px 4px;
+    border: 1px solid var(--border);
+    background: white;
+    text-align: center;
+    line-height: 1.3;
+  }
+  .tab-list [data-slot='tabs-trigger'][data-active] {
+    background: #087b62;
+    color: white;
+  }
+  .tab-list [data-slot='tabs-trigger']::after {
+    display: none;
+  }
+  .hole-tabs {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .hole-tabs button {
+    width: 100%;
+    height: 44px;
+    border-radius: 8px;
+    font-size: 16px;
+  }
+  .score-nav {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .score-nav .btn {
+    flex: 1;
+  }
+  .score-nav > .muted {
+    order: 3;
+    flex-basis: 100%;
+    text-align: center;
+  }
+  .stats-legend {
+    font-size: 14px;
+  }
+  .mobile-filter-toggle {
+    display: inline-flex;
+  }
+  .directory-filter-fields {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+  .directory-filter-fields[data-expanded='false'] {
+    display: none;
+  }
+  /* 16px input text prevents focus zoom on iPhones. */
+  .field input,
+  .field textarea,
+  .pick,
+  input[type='date'],
+  input[type='time'],
+  [data-slot='select-trigger'] {
+    font-size: 16px;
+    min-height: 44px;
+  }
+  .btn,
+  .btn.small,
+  .family-nav button,
+  [data-slot='sidebar-trigger'],
+  .topbar .avatar {
+    min-height: 44px;
+  }
+  [data-slot='sidebar-trigger'],
+  .topbar .avatar {
+    min-width: 44px;
+  }
+  .main {
+    padding: 22px 16px;
+  }
+  .topbar {
+    min-height: 64px;
+    padding: 8px 12px;
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+  .topbar > .row {
+    gap: 6px;
+    min-width: 0;
+  }
+  .topbar > .row:first-child {
+    flex: 1;
+  }
+  .topbar > .row:last-child {
+    flex-shrink: 0;
+  }
+  .topbar .pick {
+    width: 148px;
+    min-width: 0;
+    font-size: 14px;
+  }
+  .topbar-product-name {
+    font-size: 13px;
+    line-height: 1.25;
+  }
+  .page-heading {
+    margin: 0 0 22px;
+    gap: 16px;
+  }
+  .season-heading {
+    margin-bottom: 24px;
+  }
+  .season-heading h1,
+  .page-heading h1 {
+    font-size: clamp(26px, 6.4vw, 32px);
+    letter-spacing: -1px;
+  }
+  .season-heading > .row {
+    flex-direction: row;
+    align-items: stretch;
+    width: 100%;
+    gap: 10px;
+  }
+  .season-heading > .row > .btn,
+  .season-heading > .row > .pick {
+    flex: 1 1 120px;
+  }
+  .family-section-title {
+    gap: 14px;
+  }
+  .league-overview-controls {
+    width: 100%;
+  }
+  .league-overview-controls > .row {
+    width: 100%;
+    gap: 10px;
+  }
+  .league-overview-controls > .row > .btn {
+    padding: 10px 12px;
+  }
+  .check-field {
+    align-items: flex-start;
+    line-height: 1.5;
+    min-height: 32px;
+  }
+  .check-field [data-slot='checkbox'] {
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+  .card {
+    padding: 18px;
+  }
+  .league-summary h2 {
+    font-size: 22px;
+  }
+  .league-responsibility {
+    line-height: 1.6;
+  }
+  .league-summary > .row:last-child > .btn {
+    flex: 1 1 110px;
+  }
+  .season-team-list {
+    margin-top: 18px;
+  }
+  .season-team-row p,
+  .season-team-row .text-link {
+    font-size: 14px;
+  }
+  .toolbar {
+    gap: 10px;
+  }
+  .toolbar > .pick,
+  .toolbar > .search {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+  .directory-filters {
+    gap: 14px;
+  }
+  .club-filters,
+  .player-filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .mobile-directory {
+    padding: 0;
+    background: transparent;
+    border: 0;
+    overflow: visible;
+    box-shadow: none;
+  }
+  .mobile-directory [data-slot='table-container'] {
+    overflow: visible;
+  }
+  .mobile-directory table,
+  .mobile-directory tbody {
+    display: block;
+    width: 100%;
+  }
+  .mobile-directory thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .mobile-directory tbody tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    padding: 16px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 12px;
+  }
+  .mobile-directory td,
+  .mobile-directory td:first-child {
+    display: block;
+    padding: 0;
+    min-width: 0;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+  }
+  .mobile-directory td:first-child .text-link {
+    font-size: 16px;
+    text-align: left;
+  }
+  .mobile-directory td .row {
+    align-items: flex-start;
+  }
+  .mobile-directory td .row > span {
+    min-width: 0;
+  }
+  .mobile-directory td:last-child {
+    padding-top: 2px;
+  }
+  .mobile-directory td[data-label]::before {
+    content: attr(data-label) ': ';
+    color: #65796f;
+  }
+  .player-directory td:nth-child(3)::before {
+    content: 'Parent / guardian: ';
+    color: #65796f;
+  }
+  .directory-subline {
+    line-height: 1.5;
+  }
+  .directory-detail-grid,
+  .family-detail-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fixture-row {
+    align-items: flex-start;
+  }
+  .fixture-row > div {
+    min-width: 0;
+  }
+  .fixture-row .date-tile {
+    flex-shrink: 0;
+  }
+  .fixture-row h3,
+  .fixture-row p {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .people-grid .row,
+  .roster-child > .row,
+  .organiser-team > .row {
+    flex-wrap: wrap;
+  }
+  .roster-child .pick {
+    width: 100%;
+  }
+  .stats-panel {
+    padding: 16px;
+  }
+  .statistics-page .page-heading .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: 100%;
+  }
+  .statistics-page .page-heading .actions > .btn {
+    flex: 1 1 130px;
+  }
+  .stats-metric {
+    padding: 16px;
+  }
+  .stats-legend li {
+    gap: 8px;
+  }
+  .stats-scope {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .family-main {
+    padding: 24px 16px;
+  }
+  .family-top {
+    padding: 16px;
+    gap: 14px;
+  }
+  .family-top > .muted {
+    display: none;
+  }
+  .family-nav {
+    gap: 4px;
+  }
+  .family-nav > button {
+    font-size: 14px;
+  }
+  .family-child-top,
+  .family-fixture-top {
+    flex-wrap: wrap;
+  }
+  .family-fixture-top > div,
+  .family-child-top > div {
+    min-width: 0;
+  }
+  .family-fixture-top h2,
+  .family-child h2 {
+    overflow-wrap: anywhere;
+  }
+  .family-fixture-child .badge {
+    font-size: 12px;
+    white-space: normal;
+  }
+  .availability-buttons {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .availability-buttons button {
+    min-height: 44px;
+    font-size: 14px;
+    flex: 1 1 70px;
+  }
+  .team-search {
+    min-width: 0;
+  }
+  .team-finder .row {
+    flex-wrap: wrap;
+  }
+  .find-team-choice > div {
+    min-width: 0;
+  }
+  .dialog-actions .btn {
+    flex: 1 1 110px;
+  }
+  .team-finder .dialog-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .team-finder .dialog-actions .btn {
+    flex: none;
+    width: 100%;
+  }
+  [data-slot='dialog-content'],
+  .editor-dialog[data-slot='dialog-content'] {
+    width: calc(100vw - 24px);
+    max-width: calc(100vw - 24px) !important;
+    max-height: calc(100dvh - 24px);
+    padding: 20px;
+  }
+  [data-slot='dialog-content'] [data-slot='dialog-title'] {
+    padding-right: 26px;
+    text-align: left;
+  }
+  [data-slot='dialog-content'] [data-slot='dialog-description'] {
+    text-align: left;
+  }
+  [data-slot='dialog-content'] > button:last-child {
+    min-width: 40px;
+    min-height: 40px;
+    top: 6px;
+    right: 6px;
+  }
+}
+@media (max-width: 420px) {
+  .topbar-product-name span {
+    display: none;
+  }
+  .form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .card {
+    border-radius: 12px;
+  }
+}
+@media (max-width: 360px) {
+  .hole-tabs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .stroke-buttons {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .statistics-page .page-heading .actions > .btn {
+    flex-basis: 100%;
+  }
+  .topbar-product-name {
+    display: none;
+  }
+  .main,
+  .family-main {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+  .league-overview-controls > .row > .btn {
+    padding: 10px 8px;
+  }
+}
+@media (max-height: 500px) and (max-width: 1000px) {
+  [data-slot='dialog-content'] {
+    max-height: calc(100dvh - 16px);
+  }
+  [data-mobile='true'] .brand {
+    padding-bottom: 8px;
+  }
+  [data-mobile='true'] .foundation {
+    margin: 8px 18px;
+  }
+}

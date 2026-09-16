@@ -1,0 +1,159 @@
+.support-centre {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.support-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 20px 0;
+}
+.support-filter {
+  margin: 24px 0 16px;
+}
+.support-request-list {
+  display: grid;
+  gap: 12px;
+}
+.support-request {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  text-align: left;
+  width: 100%;
+}
+.support-request h2 {
+  font-size: 18px;
+  margin: 8px 0;
+  overflow-wrap: anywhere;
+}
+.support-request p,
+.support-empty p {
+  color: var(--muted);
+  margin-top: 8px;
+}
+.support-request > div {
+  min-width: 0;
+}
+.support-request > div:last-child {
+  flex-shrink: 0;
+  text-align: right;
+}
+.support-unread {
+  display: block;
+  color: #087b62;
+  font-size: 14px;
+  margin-top: 8px;
+}
+.support-routing {
+  color: #496861;
+  padding: 12px 0;
+  line-height: 1.6;
+}
+.support-form {
+  display: grid;
+  gap: 20px;
+}
+.support-form .field {
+  width: 100%;
+}
+.support-incident-fields {
+  display: grid;
+  gap: 18px;
+}
+.support-guidance {
+  background: #fff5dd;
+  border-left: 4px solid #b98222;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 24px;
+}
+.support-guidance p {
+  margin: 8px 0 16px;
+}
+.support-report {
+  margin-bottom: 24px;
+}
+.support-report dl > div {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+.support-report dt {
+  font-weight: 600;
+}
+.support-report dd {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin-top: 6px;
+}
+.support-report dl {
+  margin-bottom: 20px;
+}
+.support-report .section-top {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.support-messages {
+  display: grid;
+  gap: 16px;
+  margin: 20px 0;
+}
+.support-messages article {
+  border: 1px solid var(--border);
+  padding: 16px;
+  border-radius: 12px;
+}
+.support-messages article.mine {
+  background: #eff6f2;
+}
+.support-messages header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  justify-content: space-between;
+}
+.support-messages time {
+  font-size: 14px;
+  color: var(--muted);
+}
+.support-messages p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin-top: 10px;
+}
+.support-conversation + p {
+  margin-top: 20px;
+  font-size: 14px;
+}
+.support-resources {
+  margin-top: 28px;
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+}
+.support-resources summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #087b62;
+}
+.support-resources p {
+  margin: 14px 0;
+}
+@media (max-width: 600px) {
+  .support-request {
+    align-items: start;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .support-request > div:last-child {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .support-unread {
+    margin: 0;
+  }
+  .support-actions .btn {
+    flex: 1 1 180px;
+  }
+}

@@ -1,0 +1,247 @@
+.league-map-filters {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+.league-map-filters .pick {
+  min-width: 12rem;
+}
+.league-map-filters .check-field {
+  margin: 0;
+}
+.league-map-surface {
+  border: 1px solid #d8e4df;
+  border-radius: 1rem;
+  overflow: hidden;
+  background: white;
+}
+.league-map-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding: 0.75rem;
+}
+.league-map-canvas {
+  height: clamp(24rem, 62vh, 45rem);
+  width: 100%;
+  background: #e3ecef;
+  isolation: isolate;
+  z-index: 0;
+  font-family: inherit;
+}
+.league-map-canvas .leaflet-control-attribution {
+  font-size: 0.75rem;
+  max-width: 100%;
+}
+.league-map-canvas .leaflet-control-attribution a {
+  text-decoration: underline;
+}
+.league-map-canvas .leaflet-control-zoom a {
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+}
+.league-map-canvas .leaflet-popup-content {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  max-height: 18rem;
+  overflow-y: auto;
+}
+.league-map-canvas .leaflet-popup-close-button {
+  width: 32px;
+  height: 32px;
+  font-size: 24px;
+}
+.league-map-canvas .leaflet-tooltip.league-area-label {
+  font-size: 0.875rem;
+  font-weight: 700;
+  border: 0;
+  background: #ffffffeb;
+  border-radius: 0.4rem;
+  padding: 0.3rem 0.6rem;
+  box-shadow: 0 1px 5px #173e361f;
+  white-space: normal;
+  width: max-content;
+  max-width: 12rem;
+  text-align: center;
+}
+.league-area-label::before {
+  display: none;
+}
+.league-pin {
+  background: none;
+  border: 0;
+}
+.league-pin-dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 3px solid white;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px #173e3670;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  position: relative;
+}
+.league-pin-dot::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  width: 3px;
+  height: 8px;
+  background: #173e36;
+}
+.league-pin:focus-visible {
+  outline: 3px solid #007e68;
+  outline-offset: 4px;
+  border-radius: 50%;
+}
+.map-popup strong {
+  display: block;
+  font-size: 1rem;
+}
+.map-popup p {
+  margin: 0.35rem 0 0.65rem;
+}
+.map-popup button {
+  font-weight: 700;
+  color: #00745e;
+  min-height: 44px;
+  text-align: left;
+}
+.map-popup-team {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.map-popup .map-popup-league {
+  margin: 0 0 0.75rem 1.3rem;
+  color: #526860;
+}
+.map-cap-dot {
+  display: inline-block;
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 50%;
+  border: 1px solid #173e3633;
+  flex-shrink: 0;
+}
+.league-map-note {
+  color: #50675f;
+  font-size: 0.875rem;
+  margin: 0.75rem 0 1rem;
+  line-height: 1.6;
+}
+.league-map-key {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+.league-map-key button {
+  display: grid;
+  grid-template-columns: 0.8rem 1fr;
+  align-items: center;
+  gap: 0.3rem 0.7rem;
+  padding: 0.8rem;
+  border-radius: 0.6rem;
+  background: white;
+  border: 1px solid #dce5e1;
+  text-align: left;
+}
+.league-map-key button:hover {
+  border-color: #007e68;
+}
+.league-map-key button > span:first-child {
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 0.2rem;
+}
+.league-map-key button > span:last-child {
+  grid-column: 2;
+  font-size: 0.875rem;
+  color: #50675f;
+}
+.map-missing,
+.map-club-list {
+  border-top: 1px solid #dce5e1;
+  padding: 1rem 0;
+}
+.map-missing summary,
+.map-club-list summary {
+  cursor: pointer;
+  font-weight: 700;
+  min-height: 32px;
+}
+.map-missing ul,
+.map-club-list ul {
+  list-style: none;
+  padding: 0;
+}
+.map-missing li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid #e4eae7;
+}
+.map-missing li p {
+  color: #526860;
+  font-size: 0.875rem;
+}
+.map-missing .text-link {
+  min-height: 44px;
+  flex-shrink: 0;
+}
+.map-club-list li {
+  padding: 1rem 0;
+  border-bottom: 1px solid #e4eae7;
+}
+.map-club-list li > span {
+  display: block;
+  color: #526860;
+  font-size: 0.875rem;
+  margin: 0.25rem 0;
+}
+.map-club-list li p {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.2rem 0;
+}
+.league-map-credit {
+  font-size: 0.75rem;
+  color: #526860;
+  margin: 1rem 0;
+}
+.league-map-credit a {
+  text-decoration: underline;
+}
+@media (max-width: 600px) {
+  .league-map-filters {
+    gap: 0.75rem;
+  }
+  .league-map-filters .pick {
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
+  }
+  .league-map-canvas {
+    height: 55vh;
+    min-height: 22rem;
+  }
+  .league-map-actions .btn {
+    flex: 1;
+    font-size: 0.875rem;
+    min-height: 44px;
+  }
+  .league-map-key {
+    grid-template-columns: 1fr;
+  }
+}
