@@ -287,6 +287,112 @@
   margin-bottom: 20px;
   overflow: hidden;
 }
+.family-playing-card {
+  border: 2px solid #087f6b;
+}
+.family-playing-banner {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 22px 25px;
+  background: #e8f4ee;
+  color: #075746;
+}
+.family-playing-banner > svg {
+  flex-shrink: 0;
+}
+.family-playing-banner span {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+.family-playing-banner h2 {
+  margin: 5px 0 0;
+  font-size: clamp(22px, 3vw, 28px);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+.family-playing-card .family-fixture-top {
+  flex-wrap: wrap;
+}
+.family-playing-card .family-fixture-top > .text-link {
+  flex-basis: 100%;
+  justify-content: flex-start;
+  gap: 8px;
+  min-height: 44px;
+}
+.family-playing-card .family-fixture-child > .row {
+  align-items: flex-start;
+}
+.family-playing-card .family-fixture-child p {
+  color: #395b54;
+}
+.family-selection-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-top: 16px;
+}
+.family-confirmed-reply {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14px;
+  color: #08715f;
+}
+.family-withdraw {
+  display: inline-flex;
+  gap: 8px;
+  min-height: 44px;
+  align-items: center;
+  margin-top: 8px;
+  font-size: 14px;
+}
+.family-other-fixtures {
+  margin: 24px 0;
+  border-top: 1px solid #dbe5d3;
+  padding-top: 18px;
+}
+.family-other-fixtures > summary {
+  cursor: pointer;
+  padding: 10px 0;
+  font-size: 19px;
+  font-weight: 650;
+}
+.family-other-fixtures > summary small {
+  display: block;
+  font-size: 13px;
+  font-weight: 400;
+  color: #526b62;
+  margin: 5px 0 0 20px;
+}
+.family-other-fixtures > p {
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 8px 0 18px;
+}
+@media (max-width: 600px) {
+  .family-playing-banner,
+  .family-playing-card .family-fixture-top,
+  .family-playing-card .family-fixture-child {
+    padding: 18px 16px;
+  }
+  .family-playing-card .family-fixture-top > div:nth-child(2) {
+    min-width: 0;
+    flex-basis: calc(100% - 80px);
+  }
+  .family-playing-card .date-tile {
+    flex-shrink: 0;
+  }
+  .family-playing-card .family-fixture-top h2 {
+    font-size: 20px;
+    overflow-wrap: anywhere;
+  }
+  .family-selection-actions .btn {
+    width: 100%;
+  }
+}
 .family-fixture-top {
   display: flex;
   align-items: center;

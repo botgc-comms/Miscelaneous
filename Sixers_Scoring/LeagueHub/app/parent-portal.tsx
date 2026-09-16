@@ -54,7 +54,7 @@ import {
   parentJourney,
 } from '@/lib/journey-context';
 import { Scorecards } from './fixture-detail';
-import { familyFixtures } from '@/lib/parent-fixtures';
+import { familyFixtures, parentFixtureSections } from '@/lib/parent-fixtures';
 import { londonDay } from '@/lib/team-priority';
 type Season = {
   workspace: string;
@@ -288,40 +288,44 @@ export default function ParentPortal() {
     regs(p).some((r) => r.e.status === 'approved'),
   );
   const events = familyFixtures(data?.seasons || [], children);
-  const upcoming = events
-    .filter((v) => v.f.status === 'scheduled' && v.f.date >= londonDay())
-    .sort(
-      (a, b) =>
-        a.f.date.localeCompare(b.f.date) || a.f.start.localeCompare(b.f.start),
-    );
+  const { upcoming, selected, other, live } = parentFixtureSections(
+    events,
+    londonDay(),
+  );
   const published = upcoming.filter((e) => e.published);
-  const availabilityNeeded = published.reduce(
-    (total, e) =>
-      total +
-      e.kids.filter(
-        (p) =>
-          !e.season.state.availability?.some(
-            (a) => a.fixtureId === e.f.id && a.playerId === p.id,
-          ),
-      ).length,
-    0,
-  );
+  const repliesNeeded = (list: typeof events) =>
+    list.reduce(
+      (total, e) =>
+        total +
+        e.kids.filter(
+          (p) =>
+            !e.f.pairs.some((pair) => pair.players.includes(p.id)) &&
+            !e.season.state.reserves?.some(
+              (r) => r.fixtureId === e.f.id && r.playerId === p.id,
+            ) &&
+            !e.season.state.availability?.some(
+              (a) => a.fixtureId === e.f.id && a.playerId === p.id,
+            ),
+        ).length,
+      0,
+    );
+  const availabilityNeeded = repliesNeeded(published);
+  const otherRepliesNeeded = repliesNeeded(other);
   const fixtureFocus = published.length > 0;
-  const live = events.filter(
-    (v) =>
-      v.f.status === 'live' &&
-      v.kids.some((p) => v.f.pairs.some((q) => q.players.includes(p.id))),
-  );
-  const past = events
-    .filter(
-      (v) =>
-        v.f.status === 'completed' &&
-        v.kids.some((p) => v.f.pairs.some((q) => q.players.includes(p.id))),
-    )
-    .sort((a, b) => b.f.date.localeCompare(a.f.date));
   const notifications = (data?.seasons || [])
     .flatMap((season) =>
-      (season.state.notifications || []).map((n) => ({ season, n })),
+      (season.state.notifications || [])
+        .filter(
+          (n) =>
+            !n.fixtureId ||
+            season.state.fixtures.some(
+              (f) =>
+                f.id === n.fixtureId &&
+                f.date >= londonDay() &&
+                !['completed', 'cancelled'].includes(f.status),
+            ),
+        )
+        .map((n) => ({ season, n })),
     )
     .sort((a, b) => b.n.createdAt.localeCompare(a.n.createdAt));
   const unread = notifications.filter((v) => !v.n.readAt).length;
@@ -369,10 +373,18 @@ export default function ParentPortal() {
         setError((e as Error).message);
       }
   }
-  function openFixture(season: Season, f: Fixture) {
+  function openFixture(season: Season, f: Fixture, instructions = false) {
     setFixture({ season, id: f.id });
     setScreen('fixture');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (instructions)
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() =>
+          document
+            .getElementById('fixture-host-instructions')
+            ?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
+        ),
+      );
   }
   function ChildCard({ p }: { p: Player }) {
     const memberships = regs(p),
@@ -552,11 +564,28 @@ export default function ParentPortal() {
   }) {
     const { season, f, kids } = event,
       club = season.state.clubs.find((c) => c.id === f.clubId);
+    const playing = kids.filter((p) =>
+      f.pairs.some((pair) => pair.players.includes(p.id)),
+    );
+    const chosen = playing.length > 0;
+    const compactCard = compact && !chosen;
     return (
       <section
-        className={`family-fixture${compact ? ' family-availability-card' : ''}`}
+        className={`family-fixture${compactCard ? ' family-availability-card' : ''}${chosen ? ' family-playing-card' : ''}`}
       >
-        {!compact && (
+        {chosen && (
+          <div className="family-playing-banner">
+            <Check size={22} aria-hidden="true" />
+            <div>
+              <span>THE TEAM HAS BEEN ANNOUNCED</span>
+              <h2>
+                {playing.map((p) => p.name.split(' ')[0]).join(' & ')}{' '}
+                {playing.length === 1 ? 'is' : 'are'} playing!
+              </h2>
+            </div>
+          </div>
+        )}
+        {!compact && !chosen && (
           <ClubImage
             club={club}
             workspace={season.workspace}
@@ -578,14 +607,18 @@ export default function ParentPortal() {
             </span>
             <h2>{club?.name || f.name}</h2>
             <p>
-              Arrive {f.arrival} · Play {f.start}
+              Arrive {f.arrival} · Start {f.start} ·{' '}
+              {f.format === 'shotgun' ? 'Shotgun start' : 'Tee times'}
             </p>
             {!event.published && f.status === 'scheduled' && (
               <span className="badge amber">Provisional date</span>
             )}
           </div>
-          <button className="text-link" onClick={() => openFixture(season, f)}>
-            Details
+          <button
+            className="text-link"
+            onClick={() => openFixture(season, f, chosen)}
+          >
+            {chosen ? 'Host instructions & directions' : 'Fixture details'}
             <ChevronRight size={16} />
           </button>
         </div>
@@ -605,12 +638,14 @@ export default function ParentPortal() {
                 'Partner to be confirmed',
             )
             .join(' & ');
-          const team = regs(p).find(
-            (r) =>
-              r.season.workspace === season.workspace &&
-              r.e.status === 'approved' &&
-              f.teamIds.includes(r.e.teamId),
-          )?.team;
+          const team =
+            season.state.teams.find((t) => t.id === pair?.teamId) ||
+            regs(p).find(
+              (r) =>
+                r.season.workspace === season.workspace &&
+                r.e.status === 'approved' &&
+                f.teamIds.includes(r.e.teamId),
+            )?.team;
           return (
             <div className="family-fixture-child" key={p.id}>
               <div className="row">
@@ -625,23 +660,32 @@ export default function ParentPortal() {
                   </strong>
                   <p>
                     {pair
-                      ? `Selected${partner ? ' · Paired with ' + partner : ' · Partner to be confirmed'}`
+                      ? `${team?.name || 'Your team'} · ${team?.cap || 'Team'} caps${partner ? ' · Paired with ' + partner : ' · Partner to be confirmed'}`
                       : reserve
                         ? 'Reserve · We’ll let you know if a place opens up'
                         : av?.status === 'no'
                           ? 'Not available for this one'
                           : av?.status === 'yes'
                             ? 'Available · Waiting for team selection'
-                            : 'Can they play?'}
+                            : chosen
+                              ? 'Not selected yet · Can they play?'
+                              : 'Can they play?'}
                   </p>
                 </div>
-                {compact && !av && (
+                {compactCard && !av && !pair && !reserve && (
                   <span className="badge amber">Please respond</span>
                 )}
-                {pair && <span className="badge green">Selected</span>}
+
                 {reserve && <span className="badge amber">Reserve</span>}
               </div>
-              {f.status === 'scheduled' && (
+              {pair?.slotId && (
+                <p className="family-starting-slot">
+                  Starting group:{' '}
+                  {f.slots.find((slot) => slot.id === pair.slotId)?.label ||
+                    'Your organiser will confirm the starting group'}
+                </p>
+              )}
+              {f.status === 'scheduled' && !pair && !reserve && (
                 <div
                   className="availability-buttons"
                   aria-label={`${p.name} availability`}
@@ -673,10 +717,10 @@ export default function ParentPortal() {
                 </button>
               )}
               {f.status === 'scheduled' && pair && (
-                <div className="mt-3">
+                <div className="family-selection-actions">
                   {selectionConfirmed(season.state, f, p.id) ? (
-                    <span className="badge green">
-                      You’ve confirmed this place
+                    <span className="family-confirmed-reply">
+                      <Check size={16} /> You’ve confirmed they can play
                     </span>
                   ) : (
                     <button
@@ -699,6 +743,15 @@ export default function ParentPortal() {
                     </button>
                   )}
                 </div>
+              )}
+              {f.status === 'scheduled' && (pair || reserve) && (
+                <button
+                  className="text-link family-withdraw"
+                  disabled={busy}
+                  onClick={() => void availability(season, f, p, 'no')}
+                >
+                  {p.name.split(' ')[0]} can no longer play
+                </button>
               )}
               {team && !compact && (
                 <FixtureConversation
@@ -800,11 +853,13 @@ export default function ParentPortal() {
                         ? 'It’s matchday. Let’s play!'
                         : !joined
                           ? 'A team for every little golfer.'
-                          : fixtureFocus
-                            ? availabilityNeeded
-                              ? 'When can your children play?'
-                              : 'Your family’s fixtures.'
-                            : 'Your family’s next round.'}
+                          : selected.length
+                            ? 'They’re in the team!'
+                            : fixtureFocus
+                              ? availabilityNeeded
+                                ? 'When can your children play?'
+                                : 'Your family’s fixtures.'
+                              : 'Your family’s next round.'}
                   </h1>
                   <p>
                     {!children.length
@@ -813,11 +868,13 @@ export default function ParentPortal() {
                         ? 'Your pair, your scorecard. Everything you need is right here.'
                         : !joined
                           ? 'Pick a team or use the code your organiser gave you. They’ll confirm your child’s place.'
-                          : fixtureFocus
-                            ? availabilityNeeded
-                              ? 'The fixtures are published. Tell your organiser when each child is available. You can change your answers at any time.'
-                              : 'Your availability is saved. If plans change, update your answers below.'
-                            : 'Your children, their fixtures, and the moments to look forward to.'}
+                          : selected.length
+                            ? 'Your organiser has chosen the players. Confirm they can play and check the host’s arrival details below.'
+                            : fixtureFocus
+                              ? availabilityNeeded
+                                ? 'The fixtures are published. Tell your organiser when each child is available. You can change your answers at any time.'
+                                : 'Your availability is saved. If plans change, update your answers below.'
+                              : 'Your children, their fixtures, and the moments to look forward to.'}
                   </p>
                 </div>
                 {!joined && (
@@ -866,54 +923,51 @@ export default function ParentPortal() {
                     {live.map((e) => (
                       <EventCard key={e.season.workspace + e.f.id} event={e} />
                     ))}
-                    {joined && (
-                      <>
-                        <div className="family-section-title">
-                          <h2>
-                            {live.length
-                              ? 'Coming up next'
-                              : fixtureFocus
-                                ? 'Your availability'
-                                : 'Upcoming fixtures'}
-                          </h2>
-                          <span className="muted">
-                            {fixtureFocus
-                              ? availabilityNeeded
-                                ? `${availabilityNeeded} ${availabilityNeeded === 1 ? 'response' : 'responses'} still needed`
-                                : 'All responses saved'
-                              : 'Availability can change. That’s okay.'}
+                    {selected.map((e) => (
+                      <EventCard
+                        key={e.season.workspace + e.f.id}
+                        event={e}
+                        compact
+                      />
+                    ))}
+                    {joined && other.length > 0 && (
+                      <details
+                        className="family-other-fixtures"
+                        open={selected.length === 0}
+                      >
+                        <summary>
+                          <span>
+                            {selected.length
+                              ? 'Other upcoming fixtures'
+                              : 'Upcoming fixtures & availability'}
                           </span>
-                        </div>
-                        {upcoming.length ? (
-                          (fixtureFocus ? published : upcoming.slice(0, 4)).map(
-                            (e) => (
-                              <EventCard
-                                key={e.season.workspace + e.f.id}
-                                event={e}
-                                compact={fixtureFocus}
-                              />
-                            ),
-                          )
-                        ) : (
-                          <section className="card">
-                            <h2>You’re all caught up.</h2>
-                            <p className="muted mt-3">
-                              New fixtures will appear here when your organiser
-                              adds them.
-                            </p>
-                          </section>
-                        )}
-                        {upcoming.length >
-                          (fixtureFocus ? published.length : 4) && (
-                          <button
-                            className="text-link"
-                            onClick={() => setScreen('fixtures')}
-                          >
-                            See all {upcoming.length} upcoming fixtures
-                            <ArrowRight size={15} />
-                          </button>
-                        )}
-                      </>
+                          <small>
+                            {otherRepliesNeeded
+                              ? `${otherRepliesNeeded} ${otherRepliesNeeded === 1 ? 'reply' : 'replies'} needed`
+                              : 'Update your availability'}
+                          </small>
+                        </summary>
+                        <p className="muted">
+                          Tell your club organiser when your children can play.
+                          Available does not mean selected.
+                        </p>
+                        {other.map((e) => (
+                          <EventCard
+                            key={e.season.workspace + e.f.id}
+                            event={e}
+                            compact
+                          />
+                        ))}
+                      </details>
+                    )}
+                    {joined && !upcoming.length && !live.length && (
+                      <section className="card">
+                        <h2>You’re all caught up.</h2>
+                        <p className="muted mt-3">
+                          New fixtures will appear here when your organiser adds
+                          them.
+                        </p>
+                      </section>
                     )}
                     {fixtureFocus || live.length > 0 ? (
                       <div className="family-maintenance-link">
@@ -950,35 +1004,6 @@ export default function ParentPortal() {
                             <ChildCard key={p.id} p={p} />
                           ))}
                         </div>
-                      </>
-                    )}
-                    {past.length > 0 && (
-                      <>
-                        <div className="family-section-title">
-                          <h2>Their latest rounds</h2>
-                        </div>
-                        {past.slice(0, 2).map((e) => (
-                          <button
-                            key={e.season.workspace + e.f.id}
-                            className="family-result"
-                            onClick={() => openFixture(e.season, e.f)}
-                          >
-                            <Trophy size={23} />
-                            <div>
-                              <strong>{e.f.name}</strong>
-                              <p>
-                                {dateLabel(e.f.date)} ·{' '}
-                                {e.kids
-                                  .map((p) => p.name.split(' ')[0])
-                                  .join(' & ')}
-                              </p>
-                            </div>
-                            <span>
-                              View result
-                              <ChevronRight size={16} />
-                            </span>
-                          </button>
-                        ))}
                       </>
                     )}
                   </>
@@ -1151,14 +1176,35 @@ export default function ParentPortal() {
                   />
                 )}
                 <div className="family-children mt-6">
-                  <section className="card">
-                    <h2>Your welcome</h2>
-                    <p className="muted mt-3">{activeFixture.instructions}</p>
+                  <section
+                    className="card"
+                    id="fixture-host-instructions"
+                    tabIndex={-1}
+                  >
+                    <h2>Instructions from the host</h2>
+                    <p className="mt-3">
+                      <strong>
+                        {
+                          activeSeason.state.clubs.find(
+                            (c) => c.id === activeFixture.clubId,
+                          )?.name
+                        }
+                      </strong>
+                    </p>
+                    <p className="muted mt-3">
+                      {activeFixture.instructions ||
+                        'The host has not added extra instructions yet. Please check again before travelling.'}
+                    </p>
                     <p className="muted mt-3">
                       {
                         activeSeason.state.clubs.find(
                           (c) => c.id === activeFixture.clubId,
                         )?.address
+                      }{' '}
+                      {
+                        activeSeason.state.clubs.find(
+                          (c) => c.id === activeFixture.clubId,
+                        )?.postcode
                       }
                     </p>
                     <p className="muted mt-3">

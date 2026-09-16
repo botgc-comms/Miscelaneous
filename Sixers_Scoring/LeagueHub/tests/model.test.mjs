@@ -299,7 +299,7 @@ test('postcode lookup deduplicates, caches, preserves partial results and never 
 const { teamPriority, londonDay } = await import(
   pathToFileURL(path.join(output, 'team-priority.mjs'))
 );
-const { familyFixtures } = await import(
+const { familyFixtures, parentFixtureSections } = await import(
   pathToFileURL(path.join(output, 'parent-fixtures.mjs'))
 );
 
@@ -3048,5 +3048,118 @@ test('test-family top-ups reach the requested total, extend old samples and pres
   assert.throws(
     () => applyAction(s, admin, { ...seed, targetSize: 13 }),
     /test squad target/,
+  );
+});
+
+test('parent overview prioritises saved selections and hides all past, completed and cancelled fixtures', () => {
+  const { s, f, team } = planningState();
+  const child = s.players.find((p) => rosterEligible(s, p.id, team.id));
+  const event = (id, date, status, selected = false) => ({
+    f: {
+      ...f,
+      id,
+      date,
+      status,
+      pairs: selected
+        ? [{ id: 'pair', teamId: team.id, players: [child.id], slotId: '' }]
+        : [],
+    },
+    kids: [child],
+    published: true,
+  });
+  const events = [
+    event('old-live', '2026-09-15', 'live', true),
+    event('old-scheduled', '2026-09-15', 'scheduled', true),
+    event('selected', '2026-09-18', 'scheduled', true),
+    event('availability', '2026-09-17', 'scheduled'),
+    event('done', '2026-09-16', 'completed', true),
+    event('cancelled', '2026-09-19', 'cancelled', true),
+    event('today', '2026-09-16', 'live', true),
+  ];
+  const result = parentFixtureSections(events, '2026-09-16');
+  assert.deepEqual(
+    result.selected.map((e) => e.f.id),
+    ['selected'],
+  );
+  assert.deepEqual(
+    result.other.map((e) => e.f.id),
+    ['availability'],
+  );
+  assert.deepEqual(
+    result.live.map((e) => e.f.id),
+    ['today'],
+  );
+  assert.deepEqual(
+    result.upcoming.map((e) => e.f.id),
+    ['availability', 'selected'],
+  );
+});
+
+test('selected child withdrawal alerts their own club organiser rather than the unrelated fixture host', () => {
+  let s = upgradeState(demoState());
+  const f = s.fixtures.find((f) => f.id === 'fixture-3');
+  f.status = 'scheduled';
+  const pair = f.pairs[0],
+    pid = pair.players[0],
+    team = s.teams.find((t) => t.id === pair.teamId);
+  const child = s.players.find((p) => p.id === pid),
+    parent = s.members.find((m) => m.id === child.parentId);
+  s.members.push({
+    id: 'own-club-manager',
+    name: 'Own club',
+    email: 'own@example.invalid',
+    role: 'organiser',
+    orgIds: [team.orgId],
+    leagueIds: [],
+  });
+  s.members.push({
+    id: 'other-host-manager',
+    name: 'Host',
+    email: 'host@example.invalid',
+    role: 'organiser',
+    orgIds: ['different-host-org'],
+    leagueIds: [],
+  });
+  s.clubs.push({
+    id: 'different-host',
+    orgId: 'different-host-org',
+    name: 'Host club',
+    address: '',
+    instructions: 'Meet at the clubhouse',
+    welfareName: '',
+    welfareEmail: '',
+    safeGolf: false,
+  });
+  f.clubId = 'different-host';
+  s.enrollments = s.enrollments.filter((e) => e.playerId !== pid);
+  s.enrollments.push({
+    id: 'approved-child',
+    playerId: pid,
+    teamId: team.id,
+    status: 'approved',
+    requestedAt: '',
+  });
+  s.notifications = [];
+  const updated = applyAction(s, parent, {
+    type: 'availability',
+    fixtureId: f.id,
+    playerId: pid,
+    status: 'no',
+  });
+  assert.ok(
+    updated.notifications.some(
+      (n) =>
+        n.recipient === 'own-club-manager' &&
+        n.fixtureId === f.id &&
+        n.text.includes('replacement'),
+    ),
+  );
+  assert.ok(
+    !updated.notifications.some((n) => n.recipient === 'other-host-manager'),
+  );
+  assert.ok(
+    !updated.fixtures
+      .find((x) => x.id === f.id)
+      .pairs.some((p) => p.players.includes(pid)),
   );
 });
