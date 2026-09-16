@@ -8,6 +8,7 @@ const root = resolve('work/live-service-tests');
 await mkdir(root, { recursive: true });
 for (const name of [
   'model',
+  'support',
   'season-planning',
   'club-images',
   'test-families',
