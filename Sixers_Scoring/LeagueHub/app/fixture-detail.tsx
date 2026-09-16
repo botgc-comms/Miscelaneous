@@ -2,6 +2,7 @@
 import { ChildName } from './child-avatar';
 import { TeamLineup } from './team-lineup';
 import { StartingSlots } from './starting-allocations';
+import { FixtureMessageInbox } from './fixture-conversation';
 export { TeamLineup } from './team-lineup';
 import { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -205,6 +206,7 @@ export function FixtureDetail({
           </div>
         </section>
       )}
+      <FixtureMessageInbox s={s} fixtureId={f.id} busy={busy} send={act} />
       <Tabs value={visibleTab} onValueChange={(v) => setTab(String(v))}>
         <TabsList className="tab-list" variant="line">
           {[

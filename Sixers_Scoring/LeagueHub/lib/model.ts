@@ -270,6 +270,7 @@ export type FixtureMessage = {
   fixtureId: string;
   teamId: string;
   playerId: string;
+  audience?: 'team' | 'host';
   authorId: string;
   authorName: string;
   fromParent: boolean;
@@ -279,11 +280,16 @@ export type FixtureMessage = {
 export function canReadFixtureMessage(
   s: State,
   m: Member,
-  message: Pick<FixtureMessage, 'playerId' | 'teamId'>,
+  message: Pick<FixtureMessage, 'playerId' | 'teamId'> &
+    Partial<Pick<FixtureMessage, 'fixtureId' | 'audience'>>,
 ) {
   return m.role === 'parent'
     ? s.players.some((p) => p.id === message.playerId && p.parentId === m.id)
-    : canManageTeam(s, m, message.teamId);
+    : canManageTeam(s, m, message.teamId) ||
+        (message.audience === 'host' &&
+          s.fixtures.some(
+            (f) => f.id === message.fixtureId && canHost(s, m, f),
+          ));
 }
 export function selectionKey(f: Fixture, playerId: string) {
   const pair = f.pairs.find((p) => p.players.includes(playerId));
@@ -2335,7 +2341,19 @@ function applyFamilyAction(
       f && p && t && f.teamIds.includes(t.id),
       'Choose a child and team in this fixture.',
     );
-    authorise(canReadFixtureMessage(s, m, { playerId: p.id, teamId: t.id }));
+    const audience = a.audience || 'team';
+    requireThat(
+      ['team', 'host'].includes(audience),
+      'Choose the team organiser or fixture host.',
+    );
+    authorise(
+      canReadFixtureMessage(s, m, {
+        playerId: p.id,
+        teamId: t.id,
+        fixtureId: f.id,
+        audience,
+      }),
+    );
     requireThat(
       rosterEligible(s, p.id, t.id) ||
         f.pairs.some(
@@ -2351,6 +2369,7 @@ function applyFamilyAction(
       teamId: t.id,
       playerId: p.id,
       authorId: m.id,
+      audience,
       authorName: m.name,
       fromParent: m.role === 'parent',
       text: message,
@@ -2358,9 +2377,17 @@ function applyFamilyAction(
     });
     notify(
       s,
-      (m.role === 'parent' ? teamManagers(s, t.id) : [p.parentId]).filter(
-        (id) => id !== m.id,
-      ),
+      [
+        ...new Set([
+          ...teamManagers(s, t.id),
+          ...(m.role === 'parent' ? [] : [p.parentId]),
+          ...(audience === 'host'
+            ? s.members
+                .filter((person) => canHost(s, person, f))
+                .map((person) => person.id)
+            : []),
+        ]),
+      ].filter((id) => id !== m.id),
       `New fixture message about ${p.name} · ${f.name}.`,
       f.id,
     );

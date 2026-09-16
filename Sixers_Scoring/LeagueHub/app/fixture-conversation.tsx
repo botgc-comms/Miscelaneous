@@ -2,6 +2,54 @@
 import { useState } from 'react';
 import type { Action, State } from '@/lib/model';
 
+/** Messages routed to the host also stay available to the child's own team. */
+export function FixtureMessageInbox({
+  s,
+  fixtureId,
+  busy,
+  send,
+}: {
+  s: State;
+  fixtureId: string;
+  busy: boolean;
+  send: (action: Action) => Promise<any>;
+}) {
+  const threads = (s.fixtureMessages || []).filter(
+    (m, index, all) =>
+      m.fixtureId === fixtureId &&
+      m.audience === 'host' &&
+      all.findIndex(
+        (other) =>
+          other.fixtureId === fixtureId &&
+          other.audience === 'host' &&
+          other.teamId === m.teamId &&
+          other.playerId === m.playerId,
+      ) === index,
+  );
+  if (!threads.length) return null;
+  return (
+    <section className="card mb-5">
+      <h2>Family messages to the host</h2>
+      <p className="muted">
+        The child’s team organisers are included in these conversations.
+      </p>
+      {threads.map((m) => (
+        <FixtureConversation
+          key={m.id}
+          s={s}
+          fixtureId={fixtureId}
+          teamId={m.teamId}
+          playerId={m.playerId}
+          audience="host"
+          busy={busy}
+          send={send}
+          title={`${s.teams.find((t) => t.id === m.teamId)?.name || 'Team'} · ${s.players.find((p) => p.id === m.playerId)?.name || m.authorName}`}
+        />
+      ))}
+    </section>
+  );
+}
+
 export function FixtureConversation({
   s,
   fixtureId,
@@ -10,6 +58,11 @@ export function FixtureConversation({
   busy,
   send,
   parent = false,
+  audience = 'team',
+  playerIds,
+  teamIds,
+  title,
+  expanded = false,
 }: {
   s: State;
   fixtureId: string;
@@ -18,24 +71,31 @@ export function FixtureConversation({
   busy: boolean;
   send: (action: Action) => Promise<any>;
   parent?: boolean;
+  audience?: 'team' | 'host';
+  playerIds?: string[];
+  teamIds?: string[];
+  title?: string;
+  expanded?: boolean;
 }) {
   const [draft, setDraft] = useState('');
   const [error, setError] = useState('');
   const messages = (s.fixtureMessages || []).filter(
     (m) =>
       m.fixtureId === fixtureId &&
-      m.teamId === teamId &&
-      m.playerId === playerId,
+      (teamIds || [teamId]).includes(m.teamId) &&
+      (playerIds || [playerId]).includes(m.playerId) &&
+      (m.audience || 'team') === audience,
   );
   return (
-    <details className="fixture-conversation">
+    <details className="fixture-conversation" open={expanded || undefined}>
       <summary>
-        {parent ? 'Message your organiser' : 'Family messages'}
+        {title || (parent ? 'Message your organiser' : 'Family messages')}
         {messages.length ? ` (${messages.length})` : ''}
       </summary>
       <p className="muted mt-3">
-        About this fixture and this child. Only their family and team
-        administrators can see this conversation.
+        {audience === 'host'
+          ? 'The fixture host and your team organisers can see this conversation. Your team organisers receive a copy of every reply.'
+          : 'Only the family and their team administrators can see this conversation.'}
       </p>
       <div className="conversation-messages">
         {messages.map((m) => (
@@ -69,6 +129,7 @@ export function FixtureConversation({
               fixtureId,
               teamId,
               playerId,
+              audience,
               text: draft,
             });
             setDraft('');
@@ -78,11 +139,7 @@ export function FixtureConversation({
         }}
       >
         <label className="field">
-          <span>
-            {parent
-              ? 'Plans changed or a question about the pairing?'
-              : 'Reply to the family'}
-          </span>
+          <span>{parent ? 'Your message' : 'Reply to the family'}</span>
           <textarea
             value={draft}
             onChange={(e) => setDraft(e.target.value)}

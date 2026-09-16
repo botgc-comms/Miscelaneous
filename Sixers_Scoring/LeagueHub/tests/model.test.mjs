@@ -3632,3 +3632,80 @@ test('invitation rights allow Foundation admins all roles and organisers only th
     ),
   );
 });
+test('host conversations include the home organiser without exposing private team conversations', () => {
+  let { s, f, team } = planningState();
+  const parent = {
+    ...admin,
+    id: 'parent-0',
+    role: 'parent',
+    orgIds: [team.orgId],
+  };
+  const manager = s.members.find((m) => m.role === 'organiser');
+  const hostOrg = s.orgs.find((o) => o.id !== team.orgId);
+  const hostClub = s.clubs.find((c) => c.orgId === hostOrg.id);
+  s.fixtures[0].clubId = hostClub.id;
+  const host = { ...manager, id: 'fixture-host', orgIds: [hostOrg.id] };
+  const outsider = { ...manager, id: 'outsider', orgIds: ['no-access'] };
+  s.members.push(parent, host, outsider);
+  const action = {
+    type: 'fixture-message',
+    fixtureId: f.id,
+    teamId: team.id,
+    playerId: 'plan-0',
+    text: 'Where should we park?',
+  };
+  s = applyAction(s, parent, {
+    ...action,
+    text: 'Private question for our team.',
+  });
+  assert.equal(projectState(s, host).fixtureMessages.length, 0);
+  const before = structuredClone(s);
+  s = applyAction(s, parent, { ...action, audience: 'host' });
+  assert.equal(projectState(s, host).fixtureMessages.length, 1);
+  assert.equal(projectState(s, manager).fixtureMessages.length, 2);
+  assert.equal(projectState(s, outsider).fixtureMessages.length, 0);
+  assert.equal(
+    projectState(s, { ...parent, id: 'parent-1' }).fixtureMessages.length,
+    0,
+  );
+  const notifications = s.notifications.filter(
+    (n) => !before.notifications.some((old) => old.id === n.id),
+  );
+  assert.ok(notifications.some((n) => n.recipient === host.id));
+  assert.ok(notifications.some((n) => n.recipient === manager.id));
+  assert.equal(
+    notifications.filter((n) => n.recipient === manager.id).length,
+    1,
+  );
+  assert.throws(() => applyAction(s, host, action), /permission/);
+  assert.throws(
+    () => applyAction(s, outsider, { ...action, audience: 'host' }),
+    /permission/,
+  );
+  assert.throws(
+    () =>
+      applyAction(
+        s,
+        { ...parent, id: 'parent-1' },
+        { ...action, audience: 'host' },
+      ),
+    /permission/,
+  );
+  assert.throws(
+    () => applyAction(s, parent, { ...action, audience: 'everyone' }),
+    /Choose/,
+  );
+  const beforeReply = structuredClone(s);
+  s = applyAction(s, host, {
+    ...action,
+    audience: 'host',
+    text: 'Use the main clubhouse car park.',
+  });
+  const replies = s.notifications.filter(
+    (n) => !beforeReply.notifications.some((old) => old.id === n.id),
+  );
+  assert.ok(replies.some((n) => n.recipient === parent.id));
+  assert.ok(replies.some((n) => n.recipient === manager.id));
+  assert.ok(!replies.some((n) => n.recipient === host.id));
+  assert.equal(projectState(s, parent).fixtureMessages.length, 3);
+});
