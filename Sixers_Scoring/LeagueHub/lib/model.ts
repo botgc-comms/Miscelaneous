@@ -1,5 +1,10 @@
 import { clubWebsite } from './club-images';
 import {
+  validateStartSettings,
+  startingPairsKey,
+  type StartSettings,
+} from './starting-allocations';
+import {
   applySupportAction,
   canReadSupport,
   type SupportTicket,
@@ -139,6 +144,7 @@ export type Result = {
   rank: number;
 };
 export type Fixture = {
+  startSettings?: StartSettings;
   id: string;
   leagueId: string;
   clubId: string;
@@ -1723,6 +1729,10 @@ export function applyAction(
       start,
       registration: !!a.registration,
       format: a.format === 'tee-times' ? 'tee-times' : 'shotgun',
+      startSettings:
+        old && old.format === a.format && old.start === start
+          ? old.startSettings
+          : undefined,
       foodBefore: text(a.foodBefore || '', 'Food before play', 500, false),
       foodAfter: text(a.foodAfter || '', 'Food after play', 500, false),
       instructions: text(
@@ -1919,13 +1929,22 @@ export function applyAction(
         'Starting slots are locked once play starts.',
       );
       requireThat(
+        !a.expectedPairsKey || a.expectedPairsKey === startingPairsKey(f),
+        'Team selections changed. Reload the fixture and suggest allocations again.',
+        409,
+      );
+      const settings = a.settings
+        ? validateStartSettings(a.settings)
+        : undefined;
+      requireThat(
         Array.isArray(a.slots) && a.slots.length <= 50,
         'Invalid starting slots.',
       );
       const slots: Slot[] = a.slots.map((v: any) => ({
         id: typeof v.id === 'string' ? v.id : id(),
         label: text(v.label, 'Slot label', 50),
-        capacity: integer(v.capacity, 2, 4, 'Pairs per slot'),
+        capacity:
+          settings?.capacity ?? integer(v.capacity, 2, 6, 'Pairs per slot'),
         ...(v.startHole !== undefined
           ? { startHole: integer(v.startHole, 1, 36, 'Starting hole') }
           : {}),
@@ -1963,6 +1982,47 @@ export function applyAction(
         ),
         'A starting slot is over capacity.',
       );
+      requireThat(
+        slots.every(
+          (v) => f.pairs.filter((p) => p.slotId === v.id).length !== 1,
+        ),
+        'A pair cannot play alone. Move it into another group, or increase the shared capacity and suggest again.',
+      );
+      if (settings) {
+        requireThat(
+          slots.every(
+            (v) =>
+              typeof v.startTime === 'string' &&
+              v.startTime >= settings.firstTime,
+          ),
+          'Starting slots must have a time at or after the configured start.',
+        );
+        requireThat(
+          slots.every(
+            (v) =>
+              v.startHole !== undefined && settings.holes.includes(v.startHole),
+          ),
+          'Every starting slot must use one of the configured starting holes.',
+        );
+        requireThat(
+          settings.format !== 'shotgun' ||
+            (unique(slots.map((v) => String(v.startHole))) &&
+              slots.every((v) => v.startTime === settings.firstTime)),
+          'Shotgun groups need different starting holes and the same start time.',
+        );
+        requireThat(
+          settings.format !== 'tee-times' ||
+            unique(slots.map((v) => String(v.startTime))),
+          'Each tee-time group needs a different start time.',
+        );
+        requireThat(
+          settings.firstTime >= f.arrival,
+          'The start time must be at or after the arrival time.',
+        );
+        f.startSettings = settings;
+        f.format = settings.format;
+        f.start = settings.firstTime;
+      }
       note = 'Updated starting slots';
     } else if (a.type === 'score') {
       requireThat(

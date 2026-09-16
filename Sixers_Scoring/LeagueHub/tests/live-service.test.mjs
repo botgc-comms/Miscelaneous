@@ -9,6 +9,7 @@ await mkdir(root, { recursive: true });
 for (const name of [
   'model',
   'support',
+  'starting-allocations',
   'season-planning',
   'club-images',
   'test-families',

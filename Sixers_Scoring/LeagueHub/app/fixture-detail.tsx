@@ -1,6 +1,7 @@
 'use client';
 import { ChildName } from './child-avatar';
 import { TeamLineup } from './team-lineup';
+import { StartingSlots } from './starting-allocations';
 export { TeamLineup } from './team-lineup';
 import { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -20,22 +21,13 @@ import {
   Utensils,
   Flag,
   Users,
-  Plus,
   Check,
   ShieldCheck,
   RefreshCw,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
-import {
-  Pick,
-  Empty,
-  Badge,
-  Dot,
-  Field,
-  dateLabel,
-  type AppTools,
-} from './widgets';
+import { Pick, Empty, Badge, Dot, dateLabel, type AppTools } from './widgets';
 import {
   canOrg,
   canManageTeam,
@@ -46,7 +38,6 @@ import {
   fixtureResults,
   points,
   type Fixture,
-  type Slot,
 } from '@/lib/model';
 export function FixtureDetail({
   f,
@@ -82,6 +73,14 @@ export function FixtureDetail({
     }
   };
   const issues = readiness(s, f);
+  const showScorecards = f.status === 'live' || f.status === 'completed';
+  const showResults = f.status === 'completed';
+  const visibleTab =
+    (tab === 'score' && !showScorecards) || (tab === 'results' && !showResults)
+      ? showScorecards
+        ? 'score'
+        : 'details'
+      : tab;
   return (
     <>
       <button className="text-link row mb-5" onClick={back}>
@@ -206,14 +205,14 @@ export function FixtureDetail({
           </div>
         </section>
       )}
-      <Tabs value={tab} onValueChange={(v) => setTab(String(v))}>
+      <Tabs value={visibleTab} onValueChange={(v) => setTab(String(v))}>
         <TabsList className="tab-list" variant="line">
           {[
             ['details', 'Match details'],
             ['pairings', 'Team selection'],
             ['starts', 'Starting allocations'],
-            ['score', 'Scorecards'],
-            ['results', 'Results'],
+            ...(showScorecards ? [['score', 'Scorecards']] : []),
+            ...(showResults ? [['results', 'Results']] : []),
           ].map(([id, name]) => (
             <TabsTrigger value={id} key={id}>
               {name}
@@ -342,12 +341,16 @@ export function FixtureDetail({
             tools={tools}
           />
         </TabsContent>
-        <TabsContent value="score">
-          <Scorecards f={f} tools={tools} />
-        </TabsContent>
-        <TabsContent value="results">
-          <Results f={f} tools={tools} />
-        </TabsContent>
+        {showScorecards && (
+          <TabsContent value="score">
+            <Scorecards f={f} tools={tools} />
+          </TabsContent>
+        )}
+        {showResults && (
+          <TabsContent value="results">
+            <Results f={f} tools={tools} />
+          </TabsContent>
+        )}
       </Tabs>
     </>
   );
@@ -421,260 +424,6 @@ function Lineups({ f, tools }: { f: Fixture; tools: AppTools }) {
           );
         })}
       </div>
-    </div>
-  );
-}
-function StartingSlots({ f, tools }: { f: Fixture; tools: AppTools }) {
-  const { s, me, busy, act } = tools;
-  const allowed = canHost(s, me, f) && f.status === 'scheduled';
-  const [slots, setSlots] = useState<Slot[]>(
-    f.slots.map((slot) => ({
-      ...slot,
-      startHole:
-        slot.startHole || Number(slot.label.match(/hole\s+(\d+)/i)?.[1]) || 1,
-      startTime:
-        slot.startTime || slot.label.match(/\b\d{2}:\d{2}\b/)?.[0] || f.start,
-    })),
-  );
-  const [assign, setAssign] = useState<Record<string, string>>(
-    Object.fromEntries(f.pairs.map((p) => [p.id, p.slotId])),
-  );
-  const [error, setError] = useState('');
-  const playerNames = (ids: string[]) =>
-    ids
-      .map((id) => s.players.find((p) => p.id === id)?.name || 'Player')
-      .join(' & ');
-  const generate = () => {
-    const n = Math.floor(f.pairs.length / 2);
-    if (!n) {
-      setError('Submit team selections before allocating starting slots.');
-      return;
-    }
-    const start = f.start.split(':').map(Number);
-    const generated = Array.from({ length: n }, (_, i) => ({
-      id: crypto.randomUUID(),
-      label:
-        f.format === 'shotgun'
-          ? `Hole ${(i % s.leagues.find((l) => l.id === f.leagueId)!.holes) + 1}${i >= s.leagues.find((l) => l.id === f.leagueId)!.holes ? ' B' : ''}`
-          : `${String(Math.floor((start[0] * 60 + start[1] + i * 10) / 60) % 24).padStart(2, '0')}:${String((start[0] * 60 + start[1] + i * 10) % 60).padStart(2, '0')}`,
-      startHole:
-        f.format === 'shotgun'
-          ? (i % s.leagues.find((l) => l.id === f.leagueId)!.holes) + 1
-          : 1,
-      startTime:
-        f.format === 'shotgun'
-          ? f.start
-          : `${String(Math.floor((start[0] * 60 + start[1] + i * 10) / 60) % 24).padStart(2, '0')}:${String((start[0] * 60 + start[1] + i * 10) % 60).padStart(2, '0')}`,
-      capacity: i === n - 1 && f.pairs.length % 2 ? 3 : 2,
-    }));
-    const sorted = [...f.pairs].sort((a, b) => {
-      const ai = f.pairs
-          .filter((p) => p.teamId === a.teamId)
-          .findIndex((p) => p.id === a.id),
-        bi = f.pairs
-          .filter((p) => p.teamId === b.teamId)
-          .findIndex((p) => p.id === b.id);
-      return ai - bi || a.teamId.localeCompare(b.teamId);
-    });
-    setSlots(generated);
-    setAssign(
-      Object.fromEntries(
-        sorted.map((p, i) => [
-          p.id,
-          generated[Math.min(Math.floor(i / 2), n - 1)].id,
-        ]),
-      ),
-    );
-    setError('');
-  };
-  return (
-    <div className="stack">
-      <div className="section-top">
-        <div>
-          <h2>{f.format === 'shotgun' ? 'Starting holes' : 'Tee times'}</h2>
-          <p className="muted mt-2">
-            Bring pairs together in groups of two or more.
-          </p>
-        </div>
-        {allowed && (
-          <button className="btn" onClick={generate}>
-            Suggest allocations
-          </button>
-        )}
-      </div>
-      {!f.pairs.length ? (
-        <Empty title="Choose the teams first">
-          Starting slots will be available once pairings are submitted.
-        </Empty>
-      ) : (
-        <>
-          <div className="slot-grid">
-            {slots.map((slot, i) => (
-              <section className="card" key={slot.id}>
-                {allowed ? (
-                  <div className="form-grid">
-                    <Field
-                      label="Starting hole"
-                      type="number"
-                      min={1}
-                      max={36}
-                      value={slot.startHole || 1}
-                      onChange={(v) =>
-                        setSlots((old) =>
-                          old.map((s, j) =>
-                            j === i ? { ...s, startHole: Number(v) } : s,
-                          ),
-                        )
-                      }
-                    />
-                    <Field
-                      label="Tee time"
-                      type="time"
-                      value={slot.startTime || f.start}
-                      onChange={(v) =>
-                        setSlots((old) =>
-                          old.map((s, j) =>
-                            j === i ? { ...s, startTime: v } : s,
-                          ),
-                        )
-                      }
-                    />
-                    <Field
-                      label="Pair capacity"
-                      type="number"
-                      value={slot.capacity}
-                      min={2}
-                      max={4}
-                      onChange={(v) =>
-                        setSlots((old) =>
-                          old.map((s, j) =>
-                            i === j ? { ...s, capacity: Number(v) } : s,
-                          ),
-                        )
-                      }
-                    />
-                  </div>
-                ) : (
-                  <h3>{slot.label}</h3>
-                )}
-                <div className="muted mt-3">
-                  {f.pairs.filter((p) => assign[p.id] === slot.id).length} /{' '}
-                  {slot.capacity} pairs
-                </div>
-                {f.pairs
-                  .filter((p) => assign[p.id] === slot.id)
-                  .map((p) => (
-                    <div className="slot-pair" key={p.id}>
-                      <span className="row">
-                        <Dot
-                          color={
-                            s.teams.find((t) => t.id === p.teamId)?.color ||
-                            '#888'
-                          }
-                        />
-                        <strong>
-                          {s.teams.find((t) => t.id === p.teamId)?.name}
-                        </strong>
-                      </span>
-                      <p>
-                        {p.players.map((id) => {
-                          const player = s.players.find((v) => v.id === id);
-                          return player ? (
-                            <ChildName
-                              key={id}
-                              player={player}
-                              workspace={tools.workspace}
-                              view={tools.view}
-                              size={28}
-                            />
-                          ) : (
-                            <span key={id}>Player</span>
-                          );
-                        })}
-                      </p>
-                    </div>
-                  ))}
-              </section>
-            ))}
-          </div>
-          {allowed && (
-            <>
-              <button
-                className="btn self-start"
-                onClick={() =>
-                  setSlots((v) => [
-                    ...v,
-                    {
-                      id: crypto.randomUUID(),
-                      label:
-                        f.format === 'shotgun'
-                          ? `Hole ${v.length + 1}`
-                          : `Extra tee time ${v.length + 1}`,
-                      startHole: f.format === 'shotgun' ? v.length + 1 : 1,
-                      startTime: f.start,
-                      capacity: 2,
-                    },
-                  ])
-                }
-              >
-                <Plus size={16} />
-                Add starting slot
-              </button>
-              <section className="card">
-                <h2>Pair allocations</h2>
-                {f.pairs.map((p) => (
-                  <div className="allocation" key={p.id}>
-                    <div>
-                      <strong>
-                        {s.teams.find((t) => t.id === p.teamId)?.name}
-                      </strong>
-                      <p className="muted">{playerNames(p.players)}</p>
-                    </div>
-                    <Pick
-                      label="Choose a starting slot"
-                      value={assign[p.id] || ''}
-                      onChange={(v) =>
-                        setAssign((old) => ({ ...old, [p.id]: v }))
-                      }
-                      options={slots.map((v, i) => ({
-                        value: v.id,
-                        label: `${v.startTime || f.start} · Hole ${v.startHole || 1} · Group ${i + 1}`,
-                      }))}
-                    />
-                  </div>
-                ))}
-              </section>
-              {error && (
-                <p className="error" role="alert">
-                  {error}
-                </p>
-              )}
-              <button
-                className="btn primary self-start"
-                disabled={busy}
-                onClick={async () => {
-                  try {
-                    await act({
-                      type: 'slots',
-                      fixtureId: f.id,
-                      slots: slots.map((slot, i) => ({
-                        ...slot,
-                        label: `${slot.startTime || f.start} · Hole ${slot.startHole || 1} · Group ${i + 1}`,
-                      })),
-                      assignments: assign,
-                    });
-                    setError('');
-                  } catch (e) {
-                    setError((e as Error).message);
-                  }
-                }}
-              >
-                Save starting slots
-              </button>
-            </>
-          )}
-        </>
-      )}
     </div>
   );
 }

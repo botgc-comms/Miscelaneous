@@ -9,6 +9,7 @@ await mkdir(output, { recursive: true });
 for (const name of [
   'model',
   'support',
+  'starting-allocations',
   'demo-data',
   'season-emails',
   'email-template',
@@ -42,6 +43,10 @@ for (const name of [
     })
     .outputText.replace("from './model'", "from './model.mjs'")
     .replace("from './support'", "from './support.mjs'")
+    .replace(
+      "from './starting-allocations'",
+      "from './starting-allocations.mjs'",
+    )
     .replace("from './club-images'", "from './club-images.mjs'")
     .replace("from './test-families'", "from './test-families.mjs'")
     .replace("from './league-map'", "from './league-map.mjs'")
@@ -2468,6 +2473,183 @@ test('a player cannot be entered in both cap-colour teams', () => {
         pairs,
       }),
     /another team/,
+  );
+});
+const { suggestStartingAllocations, startingPairsKey, validateStartSettings } =
+  await import(pathToFileURL(path.join(output, 'starting-allocations.mjs')));
+const starts = {
+  format: 'shotgun',
+  holes: [1, 2, 3, 4, 5, 6],
+  firstTime: '14:00',
+  intervalMinutes: 10,
+  capacity: 3,
+};
+test('starting suggestions maximise group sizes, allocate every pair once and never leave a pair alone', () => {
+  const s = demoState(),
+    base = s.fixtures[3];
+  for (let capacity = 2; capacity <= 6; capacity++)
+    for (let n = 2; n <= 36; n++) {
+      const f = {
+        ...base,
+        pairs: Array.from({ length: n }, (_, i) => ({
+          ...base.pairs[i % base.pairs.length],
+          id: 'qa-' + i,
+        })),
+      };
+      const settings = { ...starts, capacity, format: 'tee-times', holes: [1] };
+      if (capacity === 2 && n % 2) {
+        assert.throws(
+          () => suggestStartingAllocations(f, s.teams, settings),
+          /alone/,
+        );
+        continue;
+      }
+      const r = suggestStartingAllocations(f, s.teams, settings);
+      assert.equal(Object.keys(r.assignments).length, n);
+      assert.equal(r.slots.length, Math.ceil(n / capacity));
+      const sizes = r.slots.map(
+        (slot) =>
+          Object.values(r.assignments).filter((id) => id === slot.id).length,
+      );
+      assert.ok(sizes.every((size) => size >= 2 && size <= capacity));
+      assert.equal(
+        sizes.reduce((a, b) => a + b, 0),
+        n,
+      );
+    }
+});
+test('suggestions mix teams and clubs, advance shotgun holes and use configured tee intervals', () => {
+  const s = demoState(),
+    f = s.fixtures[3];
+  // Six teams, including two clubs with two teams each.
+  const teams = s.teams.map((t, i) => ({
+    ...t,
+    orgId: ['a', 'b', 'c', 'd', 'a', 'b'][i],
+  }));
+  const shot = suggestStartingAllocations(f, teams, starts);
+  assert.equal(shot.slots.length, 6);
+  assert.deepEqual(
+    shot.slots.map((v) => v.startHole),
+    [1, 2, 3, 4, 5, 6],
+  );
+  assert.ok(
+    shot.slots.every((v) => v.startTime === '14:00' && v.capacity === 3),
+  );
+  for (const slot of shot.slots) {
+    const pairs = f.pairs.filter((p) => shot.assignments[p.id] === slot.id);
+    assert.equal(new Set(pairs.map((p) => p.teamId)).size, 3);
+    assert.equal(
+      new Set(pairs.map((p) => teams.find((t) => t.id === p.teamId).orgId))
+        .size,
+      3,
+    );
+  }
+  const tee = suggestStartingAllocations(f, teams, {
+    ...starts,
+    format: 'tee-times',
+    holes: [10],
+    firstTime: '13:48',
+    intervalMinutes: 8,
+    capacity: 4,
+  });
+  assert.deepEqual(
+    tee.slots.map((v) => v.startTime),
+    ['13:48', '13:56', '14:04', '14:12', '14:20'],
+  );
+  assert.ok(tee.slots.every((v) => v.startHole === 10));
+  assert.deepEqual(
+    tee.slots.map(
+      (slot) => f.pairs.filter((p) => tee.assignments[p.id] === slot.id).length,
+    ),
+    [4, 4, 4, 4, 2],
+  );
+});
+test('invalid or impossible starting settings explain the problem without creating a partial allocation', () => {
+  const s = demoState(),
+    f = s.fixtures[3],
+    snapshot = JSON.stringify(f);
+  assert.throws(
+    () => suggestStartingAllocations(f, s.teams, { ...starts, holes: [1, 2] }),
+    /starting holes/,
+  );
+  assert.throws(
+    () =>
+      suggestStartingAllocations(f, s.teams, {
+        ...starts,
+        format: 'tee-times',
+        holes: [1],
+        firstTime: '23:50',
+      }),
+    /next day/,
+  );
+  assert.throws(
+    () => validateStartSettings({ ...starts, holes: [1, 1] }),
+    /different starting holes/,
+  );
+  assert.throws(
+    () => validateStartSettings({ ...starts, capacity: 1 }),
+    /2 and 6/,
+  );
+  assert.throws(
+    () =>
+      suggestStartingAllocations(
+        { ...f, pairs: [f.pairs[0]] },
+        s.teams,
+        starts,
+      ),
+    /two pairs/,
+  );
+  assert.equal(JSON.stringify(f), snapshot);
+});
+test('saved starting settings persist, reject lone pairs and stale selections, and remain host-only', () => {
+  const s = demoState(),
+    f = s.fixtures[3];
+  f.status = 'scheduled';
+  f.arrival = '13:30';
+  const result = suggestStartingAllocations(f, s.teams, starts);
+  const action = {
+    type: 'slots',
+    fixtureId: f.id,
+    settings: starts,
+    expectedPairsKey: startingPairsKey(f),
+    slots: result.slots,
+    assignments: result.assignments,
+  };
+  const next = applyAction(s, admin, action),
+    saved = next.fixtures.find((v) => v.id === f.id);
+  assert.deepEqual(saved.startSettings, starts);
+  assert.equal(saved.format, 'shotgun');
+  assert.equal(saved.start, '14:00');
+  assert.throws(
+    () => applyAction(s, organiser(), action),
+    /permission|cannot|authorised|access|allowed/i,
+  );
+  const onlyOne = {
+    ...action,
+    assignments: { [f.pairs[0].id]: result.slots[0].id },
+  };
+  assert.throws(() => applyAction(s, admin, onlyOne), /alone/);
+  assert.throws(
+    () => applyAction(s, admin, { ...action, expectedPairsKey: 'old' }),
+    /selections changed/,
+  );
+  assert.throws(
+    () =>
+      applyAction(s, admin, {
+        ...action,
+        slots: result.slots.map((v) => ({ ...v, startHole: 1 })),
+      }),
+    /unique|different/,
+  );
+  const edited = applyAction(next, admin, {
+    type: 'fixture',
+    ...saved,
+    fixtureId: undefined,
+    instructions: 'Updated directions',
+  });
+  assert.deepEqual(
+    edited.fixtures.find((v) => v.id === f.id).startSettings,
+    starts,
   );
 });
 test('slot capacity is enforced and an incomplete fixture cannot start', () => {
