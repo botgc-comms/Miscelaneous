@@ -1,3 +1,4 @@
+import { LOGIN_ALERT_RECIPIENT } from './login-alerts';
 import { env } from 'cloudflare:workers';
 import { db, type Row } from './server';
 import { deliverEmail, emailReady } from './email';
@@ -78,7 +79,13 @@ export async function runEmailWorker() {
         old ||
         ((job.id.startsWith('reminder:') || job.id.startsWith('selection:')) &&
           !valid.has(job.id)) ||
-        !rows.some((w) => w.id === job.workspace)
+        (!(
+          job.id.startsWith('login-alert:') &&
+          !job.workspace &&
+          job.recipient === LOGIN_ALERT_RECIPIENT &&
+          config.LOGIN_ALERTS_ENABLED !== 'false'
+        ) &&
+          !rows.some((w) => w.id === job.workspace))
       ) {
         await db()
           .prepare('UPDATE email_outbox SET status=?,error=? WHERE id=?')

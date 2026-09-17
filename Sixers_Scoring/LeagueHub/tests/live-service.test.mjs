@@ -20,6 +20,7 @@ for (const name of [
   'email-template',
   'season-emails',
   'accounts',
+  'login-alerts',
   'identity',
   'live-clock',
   'email',
@@ -72,6 +73,7 @@ globalThis.testEnv = {
   AUTH_FROM_EMAIL: 'GolfSixes <hello@golfsixesleague.co.uk>',
   GOLFSIXES_PUBLIC_ORIGIN: 'https://golfsixesleague.co.uk',
   EMAIL_DELIVERY_ENABLED: 'true',
+  LOGIN_ALERTS_ENABLED: 'false',
 };
 globalThis.testCookies = {};
 const { createStorage } = await load('storage');
@@ -411,4 +413,115 @@ test('live viewing dates are restricted to Simon, session-scoped, validated and 
   );
   await assert.rejects(() => setLiveViewingDate('2027-01-01'), /not available/);
   globalThis.testCookies = {};
+});
+
+test('sign-in alerts exclude Simon and test identities, report only successful authentication and deliver once', async () => {
+  const { loginAlertMessage, queueLoginAlert } = await load('login-alerts');
+  const at = '2026-09-17T12:00:00Z';
+  for (const email of [
+    'Simon@MarabouStork.co.uk',
+    'sample@example.invalid',
+    'sample@example.com',
+  ])
+    assert.equal(
+      loginAlertMessage({ name: 'Test', email }, 'password', at),
+      null,
+    );
+  assert.equal(
+    loginAlertMessage(
+      { name: 'Visitor', email: 'visitor@club.co.uk' },
+      'preview',
+      at,
+    ),
+    null,
+  );
+  delete globalThis.testEnv.LOGIN_ALERTS_ENABLED;
+  const count = async () =>
+    Number(
+      (
+        await storage.DB.prepare(
+          "SELECT count(*) AS n FROM email_outbox WHERE id LIKE 'login-alert:%'",
+        ).first()
+      ).n,
+    );
+  const before = await count();
+  await assert.rejects(
+    accountAction({
+      type: 'password',
+      email: 'owner@club.co.uk',
+      password: 'incorrect',
+    }),
+  );
+  assert.equal(await count(), before);
+  await accountAction({
+    type: 'password',
+    email: 'owner@club.co.uk',
+    password: 'another long golfing phrase',
+  });
+  assert.equal(await count(), before + 1);
+  const { accountSession } = await load('accounts');
+  await accountSession(
+    await storage.DB.prepare('SELECT * FROM accounts WHERE email=?')
+      .bind('owner@club.co.uk')
+      .first(),
+    'google',
+  );
+  await queueLoginAlert(
+    { name: 'Verified visitor', email: 'visitor@club.co.uk' },
+    'email',
+  );
+  await queueLoginAlert(
+    { name: 'Simon', email: 'simon@maraboustork.co.uk' },
+    'password',
+  );
+  assert.equal(await count(), before + 3);
+  const rows = (
+    await storage.DB.prepare(
+      "SELECT * FROM email_outbox WHERE id LIKE 'login-alert:%'",
+    ).all()
+  ).results;
+  assert(
+    rows.every(
+      (r) => r.recipient === 'simon@maraboustork.co.uk' && !r.workspace,
+    ),
+  );
+  assert(
+    rows.some((r) =>
+      JSON.parse(r.payload).details.some((d) => d.value === 'Google'),
+    ),
+  );
+  assert(
+    rows.some((r) =>
+      JSON.parse(r.payload).details.some(
+        (d) => d.value === 'Email sign-in code',
+      ),
+    ),
+  );
+  assert(
+    rows.every(
+      (r) =>
+        !r.payload.includes('password_hash') &&
+        !r.payload.includes('golfsixes_session'),
+    ),
+  );
+  const sent = mail.length;
+  globalThis.testEnv.EMAIL_DELIVERY_ENABLED = 'false';
+  await runEmailWorker();
+  assert.equal(mail.length, sent);
+  globalThis.testEnv.EMAIL_DELIVERY_ENABLED = 'true';
+  await runEmailWorker();
+  assert.equal(mail.length, sent + 3);
+  await runEmailWorker();
+  assert.equal(mail.length, sent + 3);
+  assert(
+    mail
+      .slice(sent)
+      .every((m) => m.body.to.includes('simon@maraboustork.co.uk')),
+  );
+  globalThis.testEnv.LOGIN_ALERTS_ENABLED = 'false';
+  await queueLoginAlert(
+    { name: 'Visitor', email: 'visitor@club.co.uk' },
+    'email',
+  );
+  assert.equal(await count(), before + 3);
 });

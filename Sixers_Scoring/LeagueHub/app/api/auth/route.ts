@@ -1,3 +1,4 @@
+import { queueLoginAlert } from '@/lib/login-alerts';
 import { accountAction } from '@/lib/accounts';
 import { googleReady } from '@/lib/google-auth';
 import { currentIdentity, digest, sitesSignInAvailable } from '@/lib/identity';
@@ -201,6 +202,7 @@ export async function POST(req: Request) {
         'This code has already been used. Request a new one.',
         409,
       );
+      await queueLoginAlert(c, 'email');
       const r = json({ ok: true });
       r.headers.append(
         'Set-Cookie',

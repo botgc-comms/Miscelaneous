@@ -1,3 +1,4 @@
+import { queueLoginAlert } from './login-alerts';
 import { cookies } from 'next/headers';
 import { db, json } from './server';
 import { digest } from './identity';
@@ -49,6 +50,7 @@ export async function accountSession(account: Account, method = 'password') {
         .bind(await digest(old)),
     );
   await db().batch(statements);
+  await queueLoginAlert(account, method);
   const r = json({ ok: true });
   r.headers.append(
     'Set-Cookie',
@@ -117,7 +119,7 @@ export async function accountAction(a: any) {
       .prepare('SELECT * FROM accounts WHERE email=?')
       .bind(c.email)
       .first<Account>();
-    return accountSession(account!);
+    return accountSession(account!, 'verified');
   }
   requireThat(
     typeof a.email === 'string' &&
