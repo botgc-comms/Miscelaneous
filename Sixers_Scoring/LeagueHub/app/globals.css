@@ -1046,6 +1046,441 @@ p {
 .issue-list li {
   margin: 8px 0;
 }
+.tap-scorecard {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: clamp(18px, 3vw, 32px);
+}
+.tap-scorecard-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.tap-scorecard-header > span {
+  color: #526b62;
+  font-size: 13px;
+}
+.tap-pair-picker {
+  margin-top: 18px;
+}
+.tap-pair-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.tap-pair-picker .pick {
+  width: 100%;
+}
+.tap-pair-names {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin-top: 14px;
+}
+.tap-score-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  min-height: 54px;
+  margin-top: 18px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #edf7f2;
+  color: #086653;
+  font-size: 14px;
+  text-align: center;
+}
+.tap-score-status > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.tap-hole-focus {
+  text-align: center;
+  padding: 24px 0 20px;
+}
+.tap-hole-focus h2 {
+  font-size: clamp(40px, 6vw, 60px);
+  line-height: 1.1;
+  margin: 0 0 12px;
+  letter-spacing: -1px;
+}
+.tap-hole-focus h2 span {
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: #526b62;
+}
+.tap-hole-focus h2:focus {
+  outline: none;
+}
+.tap-hole-focus p {
+  font-size: 16px;
+  color: #526b62;
+}
+.tap-hole-focus > svg {
+  margin: 0 auto 16px;
+  color: #00816b;
+}
+.tap-strokes {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  max-width: 620px;
+  margin: 0 auto;
+}
+.tap-strokes button {
+  min-height: 70px;
+  border: 1px solid #a9c6bb;
+  border-radius: 12px;
+  background: #f8fbf9;
+  color: #12483b;
+  font-size: 30px;
+  font-weight: 700;
+  touch-action: manipulation;
+}
+.tap-strokes button:hover:not(:disabled),
+.tap-strokes button[aria-pressed='true'] {
+  background: #087f6b;
+  color: white;
+  border-color: #087f6b;
+}
+.tap-strokes button:focus-visible,
+.tap-round-holes button:focus-visible {
+  outline: 3px solid #006953;
+  outline-offset: 3px;
+}
+.tap-strokes button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+.tap-score-error {
+  border: 1px solid #d48a37;
+  border-radius: 10px;
+  padding: 16px;
+  background: #fff7e8;
+  margin-top: 16px;
+}
+.tap-score-error p {
+  margin: 8px 0 14px;
+}
+.tap-score-error .row {
+  flex-wrap: wrap;
+}
+.tap-round {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid #d8e5de;
+}
+.tap-round h3 {
+  font-size: 17px;
+}
+.tap-round .section-top {
+  margin-bottom: 12px;
+}
+.tap-round .section-top > span {
+  color: #526b62;
+  font-size: 14px;
+}
+.tap-round-holes {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+}
+.tap-round-holes button {
+  position: relative;
+  border: 1px solid #d8e5de;
+  border-radius: 8px;
+  padding: 10px 3px;
+  background: #f8fbf9;
+}
+.tap-round-holes button[aria-current] {
+  outline: 2px solid #087f6b;
+  outline-offset: -2px;
+  background: #edf7f2;
+}
+.tap-round-holes span {
+  display: block;
+  font-size: 12px;
+  color: #526b62;
+}
+.tap-round-holes strong {
+  display: block;
+  font-size: 22px;
+  margin-top: 4px;
+}
+.tap-round-holes svg {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  color: #087f6b;
+}
+.tap-round > p {
+  margin-top: 12px;
+  font-size: 13px;
+  color: #526b62;
+}
+.live-board {
+  border: 1px solid #d4e3db;
+  border-radius: 14px;
+  overflow: hidden;
+  background: white;
+}
+.live-board-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 24px;
+  padding: 28px;
+  background: #edf5f0;
+}
+.live-board-heading h2 {
+  font-size: 30px;
+  margin-top: 8px;
+}
+.live-board-heading p {
+  color: #526b62;
+  max-width: 580px;
+  margin-top: 10px;
+}
+.live-board-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.live-board-progress > strong {
+  font-size: 30px;
+}
+.live-board-progress strong span {
+  font-size: 18px;
+  color: #526b62;
+  font-weight: 400;
+}
+.live-board-progress > span {
+  font-size: 13px;
+  color: #526b62;
+}
+.live-board-labels,
+.live-board-team > summary {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) 150px 80px;
+  gap: 18px;
+  align-items: center;
+  padding: 18px 28px;
+}
+.live-board-labels {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  font-size: 12px;
+  color: #526b62;
+  border-bottom: 1px solid #d4e3db;
+}
+.live-board-labels > :last-child {
+  text-align: right;
+}
+.live-board-team {
+  border-bottom: 1px solid #e0e9e4;
+}
+.live-board-team > summary {
+  list-style: none;
+  cursor: pointer;
+  min-height: 100px;
+}
+.live-board-team > summary::-webkit-details-marker {
+  display: none;
+}
+.live-board-team > summary:hover {
+  background: #f6faf7;
+}
+.live-board-team > summary:focus-visible {
+  outline: 3px solid #00816b;
+  outline-offset: -3px;
+}
+.live-board-team.leading > summary {
+  background: #f0f7f1;
+}
+.live-board-rank {
+  font-size: 24px;
+  font-weight: 700;
+  color: #436456;
+}
+.live-board-name {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+.live-board-name .junior-cap {
+  flex-shrink: 0;
+}
+.live-board-name strong {
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+.live-board-name small {
+  display: block;
+  margin-top: 5px;
+  color: #526b62;
+  font-size: 12px;
+}
+.live-board-through {
+  font-size: 13px;
+  color: #526b62;
+}
+.live-board-through progress {
+  appearance: none;
+  border: 0;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #e3ede7;
+  width: 100%;
+  height: 6px;
+  display: block;
+  margin-top: 10px;
+  accent-color: #087f6b;
+}
+.live-board-through progress::-webkit-progress-bar {
+  background: #e3ede7;
+  border-radius: 4px;
+}
+.live-board-through progress::-webkit-progress-value {
+  background: #087f6b;
+  border-radius: 4px;
+}
+.live-board-through progress::-moz-progress-bar {
+  background: #087f6b;
+  border-radius: 4px;
+}
+.live-board-points {
+  text-align: right;
+}
+.live-board-points strong {
+  font-size: 32px;
+  line-height: 1;
+}
+.live-board-points small {
+  display: block;
+  font-size: 11px;
+  color: #526b62;
+  margin-top: 4px;
+}
+.live-board-pairs {
+  padding: 0 28px 20px 98px;
+}
+.live-board-pairs > p {
+  font-size: 13px;
+  color: #526b62;
+  margin-bottom: 12px;
+}
+.live-board-pair {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 14px 0;
+  border-top: 1px solid #e0e9e4;
+}
+.live-board-pair > strong {
+  font-size: 14px;
+}
+.live-pair-holes {
+  display: flex;
+  gap: 16px;
+  flex-shrink: 0;
+}
+.live-pair-holes span {
+  text-align: center;
+  min-width: 20px;
+}
+.live-pair-holes small {
+  display: block;
+  font-size: 11px;
+  color: #526b62;
+  margin-bottom: 4px;
+}
+.live-board-note {
+  padding: 18px 28px;
+  color: #526b62;
+  font-size: 13px;
+}
+@media (max-width: 640px) {
+  .tap-strokes {
+    gap: 8px;
+  }
+  .tap-strokes button {
+    min-height: 58px;
+    font-size: 26px;
+  }
+  .tap-scorecard-header {
+    gap: 8px;
+  }
+  .tap-hole-focus {
+    padding: 20px 0;
+  }
+  .tap-round-holes {
+    gap: 5px;
+  }
+  .tap-round-holes span {
+    font-size: 10px;
+  }
+  .live-board-heading {
+    padding: 20px;
+    gap: 14px;
+  }
+  .live-board-heading h2 {
+    font-size: 26px;
+  }
+  .live-board-labels {
+    display: none;
+  }
+  .live-board-team > summary {
+    grid-template-columns: 25px minmax(0, 1fr) 55px;
+    gap: 10px;
+    padding: 18px 16px;
+  }
+  .live-board-name {
+    gap: 8px;
+  }
+  .live-board-name strong {
+    font-size: 16px;
+  }
+  .live-board-name .junior-cap {
+    width: 25px !important;
+    height: 25px !important;
+  }
+  .live-board-through {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .live-board-points {
+    grid-column: 3;
+    grid-row: 1 / 3;
+  }
+  .live-board-rank {
+    font-size: 20px;
+  }
+  .live-board-pairs {
+    padding: 0 16px 16px;
+  }
+  .live-board-pair {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .live-pair-holes {
+    width: 100%;
+    gap: 8px;
+    justify-content: space-between;
+  }
+  .live-board-note {
+    padding: 16px;
+  }
+}
 .score-layout {
   display: grid;
   grid-template-columns: 1.3fr 1fr;

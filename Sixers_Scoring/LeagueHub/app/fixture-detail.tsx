@@ -1,5 +1,7 @@
 'use client';
-import { ChildName } from './child-avatar';
+import { Scorecards } from './scorecards';
+import { LiveLeaderboard } from './live-leaderboard';
+export { Scorecards } from './scorecards';
 import { TeamLineup } from './team-lineup';
 import { StartingSlots } from './starting-allocations';
 import { FixtureMessageInbox } from './fixture-conversation';
@@ -23,12 +25,9 @@ import {
   Flag,
   Check,
   ShieldCheck,
-  ChevronLeft,
-  ChevronRight,
 } from 'lucide-react';
-import { Pick, Empty, Badge, Dot, dateLabel, type AppTools } from './widgets';
+import { Badge, Dot, dateLabel, type AppTools } from './widgets';
 import {
-  canOrg,
   canManageTeam,
   capOrder,
   canHost,
@@ -36,7 +35,6 @@ import {
   readiness,
   fixtureResults,
   fixtureScoringOpen,
-  points,
   type Fixture,
 } from '@/lib/model';
 export function FixtureDetail({
@@ -55,7 +53,7 @@ export function FixtureDetail({
   const scoringOpen = fixtureScoringOpen(s, f);
   const [tab, setTab] = useState(
     scoringOpen
-      ? 'score'
+      ? 'live'
       : f.status === 'completed'
         ? 'results'
         : me.role === 'organiser'
@@ -76,9 +74,13 @@ export function FixtureDetail({
   const showScorecards = scoringOpen || f.status === 'completed';
   const showResults = f.status === 'completed';
   const visibleTab =
-    (tab === 'score' && !showScorecards) || (tab === 'results' && !showResults)
+    (tab === 'score' && !showScorecards) ||
+    (tab === 'live' && !scoringOpen) ||
+    (tab === 'results' && !showResults)
       ? showScorecards
-        ? 'score'
+        ? f.status === 'completed'
+          ? 'results'
+          : 'live'
         : 'details'
       : tab;
   return (
@@ -136,7 +138,7 @@ export function FixtureDetail({
           {error}
         </p>
       )}
-      {f.status === 'scheduled' && (
+      {f.status === 'scheduled' && !scoringOpen && (
         <section className="fixture-responsibility">
           <strong>
             {host
@@ -204,6 +206,7 @@ export function FixtureDetail({
       <Tabs value={visibleTab} onValueChange={(v) => setTab(String(v))}>
         <TabsList className="tab-list" variant="line">
           {[
+            ...(scoringOpen ? [['live', 'Live leaderboard']] : []),
             ['details', 'Match details'],
             ['pairings', 'Team selection'],
             ['starts', 'Starting allocations'],
@@ -215,6 +218,11 @@ export function FixtureDetail({
             </TabsTrigger>
           ))}
         </TabsList>
+        {scoringOpen && (
+          <TabsContent value="live">
+            <LiveLeaderboard f={f} tools={tools} />
+          </TabsContent>
+        )}
         <TabsContent value="details">
           <div className="dashboard-grid">
             <section className="card">
@@ -424,300 +432,6 @@ function Lineups({ f, tools }: { f: Fixture; tools: AppTools }) {
             </section>
           );
         })}
-      </div>
-    </div>
-  );
-}
-export function Scorecards({ f, tools }: { f: Fixture; tools: AppTools }) {
-  const { s, me } = tools;
-  const mine = f.pairs.filter((p) =>
-    p.players.some((id) =>
-      s.players.some((c) => c.id === id && c.parentId === me.id),
-    ),
-  );
-  const visiblePairs =
-    tools.view === 'parent' || me.role === 'parent' ? mine : f.pairs;
-  const [chosenPair, setPid] = useState(visiblePairs[0]?.id || '');
-  const pair = visiblePairs.find((p) => p.id === chosenPair) || visiblePairs[0];
-  if (!pair)
-    return (
-      <Empty title="Scorecards are on their way">
-        Submit team selections to create the pair scorecards.
-      </Empty>
-    );
-  const options = visiblePairs.map((p) => ({
-    value: p.id,
-    label: `${s.teams.find((t) => t.id === p.teamId)?.name} · ${p.players.map((id) => s.players.find((c) => c.id === id)?.name || 'Player').join(' & ')}`,
-  }));
-  return (
-    <PairScorecard
-      key={pair.id}
-      f={f}
-      tools={tools}
-      pair={pair}
-      options={options}
-      choosePair={setPid}
-    />
-  );
-}
-
-function PairScorecard({
-  f,
-  tools,
-  pair,
-  options,
-  choosePair,
-}: {
-  f: Fixture;
-  tools: AppTools;
-  pair: Fixture['pairs'][number];
-  options: { value: string; label: string }[];
-  choosePair: (id: string) => void;
-}) {
-  const { s, me, busy, act } = tools;
-  const scoringOpen = fixtureScoringOpen(s, f);
-  const l = s.leagues.find((l) => l.id === f.leagueId)!;
-  const pid = pair.id;
-  const [hole, setHole] = useState(1);
-  const [draft, setDraft] = useState<{
-    strokes: number;
-    version: number;
-  } | null>(null);
-  const [error, setError] = useState('');
-  const [saved, setSaved] = useState(false);
-  const t = s.teams.find((t) => t.id === pair.teamId)!;
-  const canScore =
-    canHost(s, me, f) ||
-    canOrg(s, me, t.orgId) ||
-    pair.players.some((id) =>
-      s.players.some((p) => p.id === id && p.parentId === me.id),
-    );
-  const score = f.scores[`${pid}:${hole}`];
-  const total = Array.from(
-    { length: l.holes },
-    (_, i) => f.scores[`${pid}:${i + 1}`],
-  ).reduce((n, v) => n + (v ? points(v.strokes, l.maxStrokes) : 0), 0);
-  const move = (n: number) => {
-    setHole(n);
-    setDraft(null);
-    setError('');
-    setSaved(false);
-  };
-  return (
-    <div className="score-layout">
-      <section
-        className="card scorecard"
-        style={{ borderTop: `5px solid ${t.color}` }}
-      >
-        <div className="section-top">
-          <span className="row">
-            <Dot color={t.color} />
-            <strong>{t.name}</strong>
-          </span>
-          {scoringOpen && f.status === 'scheduled' ? (
-            <span className="badge green">Scoring open</span>
-          ) : (
-            <Badge status={f.status} />
-          )}
-        </div>
-        {f.status === 'scheduled' && !scoringOpen && (
-          <p className="notice mt-4">
-            Your scorecard is ready. Scoring opens automatically on the fixture
-            date.
-          </p>
-        )}
-        <Pick
-          label="Choose your pair"
-          value={pid}
-          onChange={choosePair}
-          options={options}
-        />
-        <p className="muted mt-4">
-          {pair.players.map((id) => {
-            const player = s.players.find((p) => p.id === id);
-            return player ? (
-              <ChildName
-                key={id}
-                player={player}
-                workspace={tools.workspace}
-                view={tools.view}
-              />
-            ) : (
-              <span key={id}>Player</span>
-            );
-          })}{' '}
-          ·{' '}
-          {f.slots.find((v) => v.id === pair.slotId)?.label ||
-            'Starting slot to follow'}
-        </p>
-        <div className="hole-tabs" aria-label="Choose a hole">
-          {Array.from({ length: l.holes }, (_, i) => (
-            <button
-              key={i}
-              aria-label={`Hole ${i + 1}`}
-              aria-pressed={hole === i + 1}
-              className={hole === i + 1 ? 'active' : ''}
-              style={hole === i + 1 ? { background: t.color } : undefined}
-              onClick={() => move(i + 1)}
-            >
-              {i + 1}
-              {f.scores[`${pid}:${i + 1}`] && <span>✓</span>}
-            </button>
-          ))}
-        </div>
-        <div className="score-focus">
-          <span className="eyebrow">HOLE {hole}</span>
-          <h2>
-            {f.status === 'scheduled' && !scoringOpen
-              ? 'Ready for the first hole'
-              : 'How many strokes?'}
-          </h2>
-          <p>
-            {f.status === 'scheduled' && !scoringOpen
-              ? 'Scores will appear here on match day.'
-              : 'Count your pair’s shots together.'}
-          </p>
-          <div className="score-number" style={{ color: t.color }}>
-            {draft?.strokes ?? score?.strokes ?? '–'}
-          </div>
-          <p>
-            {draft
-              ? `${points(draft.strokes, l.maxStrokes)} points for your team`
-              : score
-                ? `${points(score.strokes, l.maxStrokes)} points · Saved`
-                : 'No score recorded yet'}
-          </p>
-        </div>
-        {canScore && scoringOpen ? (
-          <>
-            <div className="stroke-buttons">
-              {Array.from({ length: l.maxStrokes }, (_, i) => (
-                <button
-                  key={i}
-                  className={
-                    (draft?.strokes ?? score?.strokes) === i + 1 ? 'active' : ''
-                  }
-                  onClick={() => {
-                    setDraft({ strokes: i + 1, version: score?.version || 0 });
-                    setSaved(false);
-                  }}
-                >
-                  {i + 1}
-                </button>
-              ))}
-            </div>
-            <button
-              className="btn primary save-score"
-              disabled={busy || !draft}
-              onClick={async () => {
-                if (!draft) return;
-                try {
-                  await act({
-                    type: 'score',
-                    fixtureId: f.id,
-                    pairId: pid,
-                    hole,
-                    strokes: draft.strokes,
-                    expectedVersion: draft.version,
-                  });
-                  setDraft(null);
-                  setError('');
-                  setSaved(true);
-                } catch (e) {
-                  setError((e as Error).message);
-                  setDraft(null);
-                  await tools.refresh();
-                }
-              }}
-            >
-              {busy ? 'Saving…' : saved ? '✓ Score saved' : `Save hole ${hole}`}
-            </button>
-            <p className="scorer-note">
-              Both parents share this card. Scores refresh every 4 seconds.
-            </p>
-          </>
-        ) : scoringOpen || f.status !== 'scheduled' ? (
-          <p className="notice mt-4">
-            {f.status === 'completed'
-              ? 'This scorecard is final. A Foundation administrator can reopen the fixture for corrections.'
-              : 'You can follow this scorecard. Assigned parents and organisers can enter scores.'}
-          </p>
-        ) : null}
-        {error && (
-          <p className="error mt-4" role="alert">
-            {error}
-          </p>
-        )}
-        <div className="score-nav">
-          <button
-            className="btn small"
-            disabled={hole === 1}
-            onClick={() => move(hole - 1)}
-          >
-            <ChevronLeft size={16} />
-            Previous
-          </button>
-          <span className="muted">{total} team points</span>
-          <button
-            className="btn small"
-            disabled={hole === l.holes}
-            onClick={() => move(hole + 1)}
-          >
-            Next
-            <ChevronRight size={16} />
-          </button>
-        </div>
-      </section>
-      <div className="stack">
-        <section className="card">
-          <h2>Your round</h2>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Hole</TableHead>
-                <TableHead>Strokes</TableHead>
-                <TableHead>Points</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {Array.from({ length: l.holes }, (_, i) => {
-                const sc = f.scores[`${pid}:${i + 1}`];
-                return (
-                  <TableRow key={i}>
-                    <TableCell>{i + 1}</TableCell>
-                    <TableCell>{sc?.strokes ?? '—'}</TableCell>
-                    <TableCell>
-                      {sc ? points(sc.strokes, l.maxStrokes) : '—'}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-              <TableRow>
-                <TableCell colSpan={2}>
-                  <strong>Total points</strong>
-                </TableCell>
-                <TableCell>
-                  <strong>{total}</strong>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </section>
-        <section className="card season-card">
-          <Flag />
-          <h2>
-            Every shot is
-            <br />a team effort.
-          </h2>
-          <p>
-            Play from your best ball, encourage your partner, and enjoy your
-            round.
-          </p>
-          <p>
-            Reached {l.maxStrokes} strokes? Pick up, record {l.maxStrokes}, and
-            move to the next hole.
-          </p>
-        </section>
       </div>
     </div>
   );

@@ -592,7 +592,7 @@ export default function ParentPortal() {
       />
     );
     if (!showScorecard) return details;
-    const Heading = screen === 'fixture' ? 'h1' : 'h2';
+    const Heading = screen === 'fixture' || screen === 'home' ? 'h1' : 'h2';
     return (
       <section className="family-matchday" key={season.workspace + ':' + f.id}>
         <header className="family-matchday-heading">
@@ -715,7 +715,7 @@ export default function ParentPortal() {
             )}
             {screen === 'home' && (
               <>
-                <div className="parent-greeting">
+                <div className="parent-greeting" hidden={matchday.length > 0}>
                   <span className="eyebrow">
                     HELLO, {data.me.name.split(' ')[0].toUpperCase()}
                   </span>
