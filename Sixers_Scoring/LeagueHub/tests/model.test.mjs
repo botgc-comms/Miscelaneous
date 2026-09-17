@@ -8,6 +8,7 @@ const output = path.resolve('work/tests');
 await mkdir(output, { recursive: true });
 for (const name of [
   'model',
+  'registration-desk',
   'support',
   'starting-allocations',
   'demo-data',
@@ -41,7 +42,11 @@ for (const name of [
         target: ts.ScriptTarget.ES2022,
       },
     })
-    .outputText.replace("from './model'", "from './model.mjs'")
+    .outputText.replace(
+      "from './registration-desk'",
+      "from './registration-desk.mjs'",
+    )
+    .replace("from './model'", "from './model.mjs'")
     .replace("from './support'", "from './support.mjs'")
     .replace(
       "from './starting-allocations'",
@@ -3870,4 +3875,310 @@ test('host conversations include the home organiser without exposing private tea
   assert.ok(replies.some((n) => n.recipient === manager.id));
   assert.ok(!replies.some((n) => n.recipient === host.id));
   assert.equal(projectState(s, parent).fixtureMessages.length, 3);
+});
+
+const { deskFieldsKey, deskKey, deskSuggestions, registrationTickets } =
+  await import(pathToFileURL(path.join(output, 'registration-desk.mjs')));
+function deskSetup() {
+  const s = upgradeState(demoState()),
+    f = s.fixtures.find((f) => f.id === 'fixture-3');
+  f.status = 'scheduled';
+  f.scores = {};
+  f.results = [];
+  const host = {
+    ...s.members.find((m) => m.role === 'organiser'),
+    id: 'desk-host',
+    orgIds: [s.clubs.find((c) => c.id === f.clubId).orgId],
+  };
+  s.members.push(host);
+  return { s, f, host, playerId: f.pairs[0].players[0] };
+}
+test('registration is host-only, versioned and keeps sensitive notes out of visiting/parent projections', () => {
+  const { s, f, host, playerId } = deskSetup();
+  const action = {
+    type: 'desk-entry',
+    fixtureId: f.id,
+    playerId,
+    expectedVersion: 0,
+    status: 'arrived',
+    note: 'Private registration prompt',
+  };
+  const visitor = {
+    ...host,
+    id: 'visitor',
+    orgIds: [s.teams.find((t) => t.id === f.pairs[0].teamId).orgId],
+  };
+  assert.throws(() => applyAction(s, visitor, action), /Only the fixture host/);
+  let next = applyAction(s, host, action);
+  assert.equal(
+    next.fixtures.find((v) => v.id === f.id).desk.entries[0].status,
+    'arrived',
+  );
+  assert.throws(() => applyAction(next, host, action), /Another organiser/);
+  assert.equal(
+    projectState(next, visitor).fixtures.find((v) => v.id === f.id).desk,
+    undefined,
+  );
+  assert.equal(
+    projectState(next, host).fixtures.find((v) => v.id === f.id).desk.entries[0]
+      .note,
+    'Private registration prompt',
+  );
+  assert.throws(
+    () => applyAction(s, host, { ...action, playerId: 'not-selected' }),
+    /not selected/,
+  );
+});
+test('registration validates questions and preserves answered questions', () => {
+  const { s, f, host, playerId } = deskSetup();
+  const fields = [
+    {
+      id: 'meal',
+      label: 'Meal',
+      options: ['Pizza', 'Burger'],
+      multiple: false,
+    },
+  ];
+  let next = applyAction(s, host, {
+    type: 'desk-fields',
+    fixtureId: f.id,
+    expectedKey: '[]',
+    fields,
+  });
+  assert.throws(
+    () =>
+      applyAction(next, host, {
+        type: 'desk-entry',
+        fixtureId: f.id,
+        playerId,
+        expectedVersion: 0,
+        answers: { meal: ['Pizza', 'Burger'] },
+      }),
+    /configured answers/,
+  );
+  next = applyAction(next, host, {
+    type: 'desk-entry',
+    fixtureId: f.id,
+    playerId,
+    expectedVersion: 0,
+    status: 'arrived',
+    answers: { meal: ['Pizza'] },
+  });
+  assert.throws(
+    () =>
+      applyAction(next, host, {
+        type: 'desk-fields',
+        fixtureId: f.id,
+        expectedKey: deskFieldsKey(fields),
+        fields: [],
+      }),
+    /already have answers/,
+  );
+});
+test('withdrawal retains desk contact access, alerts the team and protects scored rounds', () => {
+  const { s, f, host, playerId } = deskSetup(),
+    original = f.pairs[0];
+  let next = applyAction(s, host, {
+    type: 'desk-entry',
+    fixtureId: f.id,
+    playerId,
+    expectedVersion: 0,
+    status: 'absent',
+  });
+  const changed = next.fixtures.find((v) => v.id === f.id);
+  assert(!changed.pairs[0].players.includes(playerId));
+  assert(
+    projectState(next, host).players.some(
+      (p) => p.id === playerId && p.parentId,
+    ),
+  );
+  assert(
+    next.notifications.some(
+      (n) => n.recipient === s.players.find((p) => p.id === playerId).parentId,
+    ),
+  );
+  f.scores[original.id + ':1'] = {
+    strokes: 4,
+    version: 1,
+    by: host.id,
+    at: '2026-09-19',
+  };
+  assert.throws(
+    () =>
+      applyAction(s, host, {
+        type: 'desk-entry',
+        fixtureId: f.id,
+        playerId,
+        expectedVersion: 0,
+        status: 'absent',
+      }),
+    /has scores/,
+  );
+  next = applyAction(next, host, {
+    type: 'desk-entry',
+    fixtureId: f.id,
+    playerId,
+    expectedVersion: 1,
+    status: 'arrived',
+  });
+  assert(
+    next.reserves.some((r) => r.fixtureId === f.id && r.playerId === playerId),
+  );
+  assert.equal(
+    next.availability.find(
+      (a) => a.fixtureId === f.id && a.playerId === playerId,
+    ).status,
+    'yes',
+  );
+});
+test('repair suggestions preserve siblings where possible and reject stale or unagreed changes', () => {
+  const { s, f, host } = deskSetup();
+  const team = f.pairs[0].teamId,
+    pairs = f.pairs.filter((p) => p.teamId === team);
+  pairs[0].players = [];
+  s.players.find((p) => p.id === pairs[1].players[1]).parentId = s.players.find(
+    (p) => p.id === pairs[1].players[0],
+  ).parentId;
+  s.players.find((p) => p.id === pairs[2].players[1]).parentId =
+    'separate-family';
+  const options = deskSuggestions(s, f).filter((p) => p.kind === 'split');
+  assert.equal(options[0].siblings, false);
+  const proposal = options[0],
+    key = deskKey(s, f);
+  assert.equal(
+    deskKey(
+      projectState(s, host),
+      projectState(s, host).fixtures.find((v) => v.id === f.id),
+    ),
+    key,
+  );
+  const action = {
+    type: 'desk-repair',
+    fixtureId: f.id,
+    ...proposal,
+    expectedKey: key,
+    agreed: true,
+  };
+  assert.throws(
+    () => applyAction(s, host, { ...action, agreed: false }),
+    /Confirm the change/,
+  );
+  assert.throws(
+    () => applyAction(s, host, { ...action, expectedKey: 'old' }),
+    /changed/,
+  );
+  const next = applyAction(s, host, action),
+    changed = next.fixtures.find((v) => v.id === f.id);
+  assert.equal(
+    changed.pairs.find((p) => p.id === proposal.targetId).players.length,
+    1,
+  );
+  assert.equal(
+    changed.pairs.find((p) => p.id === proposal.pairId).players.length,
+    1,
+  );
+  assert(
+    changed.desk.entries.every((e) =>
+      e.note.includes('replace their printed ticket'),
+    ),
+  );
+  const selected = changed.pairs.flatMap((p) => p.players);
+  assert.equal(new Set(selected).size, selected.length);
+});
+test('player tickets escape content and exclude contacts and private registration notes', () => {
+  const { s, f, playerId } = deskSetup(),
+    p = s.players.find((p) => p.id === playerId);
+  p.name = '<script>bad</script>';
+  p.emergencyPhone = 'PRIVATE_PHONE';
+  f.desk = {
+    fields: [],
+    entries: [
+      {
+        playerId,
+        status: 'arrived',
+        answers: {},
+        note: 'PRIVATE_NOTE',
+        version: 1,
+        updatedAt: '',
+        updatedBy: '',
+      },
+    ],
+  };
+  const html = registrationTickets(s, f, playerId);
+  assert(html.includes('&lt;script&gt;'));
+  assert(!html.includes('<script>'));
+  assert(!html.includes('PRIVATE_'));
+  assert.equal((html.match(/<article>/g) || []).length, 1);
+});
+
+test('registration promotes only approved named reserves and groups solo scorecards within capacity', () => {
+  const { s, f, host } = deskSetup();
+  const target = f.pairs[0],
+    playerId = target.players.pop();
+  s.reserves = [{ fixtureId: f.id, teamId: target.teamId, playerId }];
+  s.availability = s.availability.filter(
+    (a) => a.fixtureId !== f.id || a.playerId !== playerId,
+  );
+  const proposal = deskSuggestions(s, f).find(
+    (v) => v.kind === 'reserve' && v.playerId === playerId,
+  );
+  assert(proposal);
+  assert(
+    projectState(s, host).players.some((p) => p.id === playerId && p.parentId),
+  );
+  const next = applyAction(s, host, {
+    type: 'desk-repair',
+    fixtureId: f.id,
+    ...proposal,
+    expectedKey: deskKey(s, f),
+    agreed: true,
+  });
+  assert(
+    next.fixtures
+      .find((v) => v.id === f.id)
+      .pairs[0].players.includes(playerId),
+  );
+  assert.equal(next.reserves.length, 0);
+  const sourceSlot = f.slots[0],
+    targetSlot = f.slots[1];
+  f.pairs = f.pairs.slice(0, 3);
+  f.pairs[0].slotId = sourceSlot.id;
+  f.pairs[1].slotId = targetSlot.id;
+  f.pairs[2].slotId = targetSlot.id;
+  targetSlot.capacity = 3;
+  const move = deskSuggestions(s, f).find(
+    (v) => v.kind === 'group' && v.targetId === targetSlot.id,
+  );
+  assert(move);
+  const moved = applyAction(s, host, {
+    type: 'desk-repair',
+    fixtureId: f.id,
+    ...move,
+    expectedKey: deskKey(s, f),
+    agreed: true,
+  });
+  assert.equal(
+    moved.fixtures
+      .find((v) => v.id === f.id)
+      .pairs.filter((p) => p.slotId === targetSlot.id).length,
+    3,
+  );
+  targetSlot.capacity = 2;
+  assert(
+    !deskSuggestions(s, f).some(
+      (v) => v.kind === 'group' && v.targetId === targetSlot.id,
+    ),
+  );
+  targetSlot.capacity = 3;
+  f.scores[f.pairs[1].id + ':1'] = {
+    strokes: 3,
+    version: 1,
+    by: host.id,
+    at: '',
+  };
+  assert(
+    !deskSuggestions(s, f).some(
+      (v) => v.kind === 'group' && v.targetId === targetSlot.id,
+    ),
+  );
 });

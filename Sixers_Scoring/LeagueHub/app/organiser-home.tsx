@@ -1,4 +1,5 @@
 'use client';
+import { HostMatchday } from './registration-desk';
 import { useState } from 'react';
 import {
   ArrowRight,
@@ -539,6 +540,25 @@ export function OrganiserHome({
     team.enrollmentOpen !== false &&
     leagueAcceptsRegistrations(league);
   const setup = !league?.fixturesConfirmedAt;
+  const hostedToday = s.fixtures.filter(
+    (f) =>
+      f.date ===
+        (s.demoToday ||
+          new Date().toLocaleDateString('en-CA', {
+            timeZone: 'Europe/London',
+          })) &&
+      ['scheduled', 'live'].includes(f.status) &&
+      clubs.some((c) => c.id === f.clubId) &&
+      s.leagues.some((l) => l.id === f.leagueId && l.fixturesConfirmedAt),
+  );
+  if (!detailsOnly && !availabilityOnly && hostedToday.length)
+    return (
+      <HostMatchday
+        tools={tools}
+        fixtures={hostedToday}
+        openFixture={openFixture}
+      />
+    );
   if (!club)
     return (
       <section className="season-empty">

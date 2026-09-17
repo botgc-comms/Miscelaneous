@@ -1,3 +1,4 @@
+import { applyDeskAction, type RegistrationDesk } from './registration-desk';
 import { clubWebsite } from './club-images';
 import {
   validateStartSettings,
@@ -144,6 +145,7 @@ export type Result = {
   rank: number;
 };
 export type Fixture = {
+  desk?: RegistrationDesk;
   startSettings?: StartSettings;
   id: string;
   leagueId: string;
@@ -558,7 +560,9 @@ export function canPlayer(s: State, m: Member, p: Player) {
       (f) =>
         ['scheduled', 'live'].includes(f.status) &&
         canHost(s, m, f) &&
-        f.pairs.some((q) => q.players.includes(p.id)),
+        (f.pairs.some((q) => q.players.includes(p.id)) ||
+          f.desk?.entries.some((e) => e.playerId === p.id) ||
+          s.reserves?.some((r) => r.fixtureId === f.id && r.playerId === p.id)),
     )
   );
 }
@@ -590,7 +594,16 @@ export function projectState(s: State, m: Member): State {
   const orgIds = new Set([
     ...(['parent', 'organiser'].includes(m.role) ? m.orgIds : []),
     ...(m.role === 'organiser'
-      ? []
+      ? s.teams
+          .filter((t) =>
+            s.fixtures.some(
+              (f) =>
+                ids.includes(f.leagueId) &&
+                canHost(s, m, f) &&
+                f.teamIds.includes(t.id),
+            ),
+          )
+          .map((t) => t.orgId)
       : s.teams.filter((t) => ids.includes(t.leagueId)).map((t) => t.orgId)),
   ]);
   const fixtures = s.fixtures.filter((f) => ids.includes(f.leagueId));
@@ -625,7 +638,20 @@ export function projectState(s: State, m: Member): State {
       (e) =>
         (m.role === 'parent' &&
           s.players.some((p) => p.id === e.playerId && p.parentId === m.id)) ||
-        (m.role !== 'parent' && canManageTeam(s, m, e.teamId)),
+        (m.role !== 'parent' && canManageTeam(s, m, e.teamId)) ||
+        s.fixtures.some(
+          (f) =>
+            canHost(s, m, f) &&
+            (f.pairs.some(
+              (p) => p.teamId === e.teamId && p.players.includes(e.playerId),
+            ) ||
+              s.reserves?.some(
+                (r) =>
+                  r.fixtureId === f.id &&
+                  r.teamId === e.teamId &&
+                  r.playerId === e.playerId,
+              )),
+        ),
     ),
     availability: s.availability?.filter((a) =>
       s.players.some((p) => p.id === a.playerId && canPlayer(s, m, p)),
@@ -634,7 +660,8 @@ export function projectState(s: State, m: Member): State {
       (a) =>
         (m.role === 'parent' &&
           s.players.some((p) => p.id === a.playerId && p.parentId === m.id)) ||
-        (m.role !== 'parent' && canManageTeam(s, m, a.teamId)),
+        (m.role !== 'parent' && canManageTeam(s, m, a.teamId)) ||
+        s.fixtures.some((f) => f.id === a.fixtureId && canHost(s, m, f)),
     ),
     notifications: s.notifications?.filter((n) => n.recipient === m.id),
     profileChanges: s.profileChanges?.filter((c) =>
@@ -653,7 +680,9 @@ export function projectState(s: State, m: Member): State {
         fixtures.some((f) => f.clubId === c.id),
     ),
     teams: s.teams.filter((t) => ids.includes(t.leagueId)),
-    fixtures,
+    fixtures: fixtures.map((f) =>
+      canHost(s, m, f) ? f : { ...f, desk: undefined },
+    ),
     players: visiblePlayers.map((p) =>
       canPlayer(s, m, p)
         ? p
@@ -884,6 +913,7 @@ export function applyAction(
   now = new Date().toISOString(),
   viewingDate?: string,
 ): State {
+  if (a.type.startsWith('desk-')) return applyDeskAction(source, m, a, now);
   if (a.type.startsWith('support-'))
     return applySupportAction(source, m, a, now);
   if (

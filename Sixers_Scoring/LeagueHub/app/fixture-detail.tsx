@@ -1,4 +1,5 @@
 'use client';
+import { RegistrationDesk } from './registration-desk';
 import { Scorecards } from './scorecards';
 import { LiveLeaderboard } from './live-leaderboard';
 export { Scorecards } from './scorecards';
@@ -53,7 +54,9 @@ export function FixtureDetail({
   const scoringOpen = fixtureScoringOpen(s, f);
   const [tab, setTab] = useState(
     scoringOpen
-      ? 'live'
+      ? host
+        ? 'registration'
+        : 'live'
       : f.status === 'completed'
         ? 'results'
         : me.role === 'organiser'
@@ -205,6 +208,9 @@ export function FixtureDetail({
       <FixtureMessageInbox s={s} fixtureId={f.id} busy={busy} send={act} />
       <Tabs value={visibleTab} onValueChange={(v) => setTab(String(v))}>
         <TabsList className="tab-list" variant="line">
+          {host && ['scheduled', 'live'].includes(f.status) && (
+            <TabsTrigger value="registration">Registration</TabsTrigger>
+          )}
           {[
             ...(scoringOpen ? [['live', 'Live leaderboard']] : []),
             ['details', 'Match details'],
@@ -221,6 +227,11 @@ export function FixtureDetail({
         {scoringOpen && (
           <TabsContent value="live">
             <LiveLeaderboard f={f} tools={tools} />
+          </TabsContent>
+        )}
+        {host && ['scheduled', 'live'].includes(f.status) && (
+          <TabsContent value="registration">
+            <RegistrationDesk tools={tools} f={f} />
           </TabsContent>
         )}
         <TabsContent value="details">

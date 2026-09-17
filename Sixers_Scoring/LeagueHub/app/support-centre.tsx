@@ -30,13 +30,17 @@ const stamp = (value: string) =>
 export function SupportCentre({
   tools,
   initialTicket = '',
+  fixture,
 }: {
   tools: AppTools;
   initialTicket?: string;
+  fixture?: import('@/lib/model').Fixture;
 }) {
   const { s, me, busy, act } = tools;
   const [selected, setSelected] = useState(initialTicket);
-  const [creating, setCreating] = useState<'' | 'support' | 'incident'>('');
+  const [creating, setCreating] = useState<'' | 'support' | 'incident'>(
+    fixture ? 'incident' : '',
+  );
   const [filter, setFilter] = useState('active');
   const [error, setError] = useState('');
   const [reply, setReply] = useState('');
@@ -51,13 +55,17 @@ export function SupportCentre({
             supportAdmins(s, t.leagueId).some((m) => m.id === me.id),
         ),
   );
-  const [orgId, setOrgId] = useState(clubs[0]?.id || '');
+  const [orgId, setOrgId] = useState(
+    s.clubs.find((c) => c.id === fixture?.clubId)?.orgId || clubs[0]?.id || '',
+  );
   const leagues = s.leagues.filter((l) =>
     s.teams.some(
       (t) => t.orgId === orgId && t.leagueId === l.id && !t.withdrawnAt,
     ),
   );
-  const [leagueId, setLeagueId] = useState(leagues[0]?.id || '');
+  const [leagueId, setLeagueId] = useState(
+    fixture?.leagueId || leagues[0]?.id || '',
+  );
   const organisers = s.members.filter(
     (m) => m.role === 'organiser' && m.orgIds.includes(orgId),
   );
@@ -69,7 +77,14 @@ export function SupportCentre({
   const [incident, setIncident] = useState<IncidentReport>(
     () =>
       Object.fromEntries(
-        incidentFields.map(([key]) => [key, '']),
+        incidentFields.map(([key]) => [
+          key,
+          key === 'date'
+            ? fixture?.date || ''
+            : key === 'venue'
+              ? s.clubs.find((c) => c.id === fixture?.clubId)?.name || ''
+              : '',
+        ]),
       ) as IncidentReport,
   );
   const tickets = [...(s.supportTickets || [])].sort((a, b) =>
