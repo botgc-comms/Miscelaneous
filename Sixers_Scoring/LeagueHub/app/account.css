@@ -82,3 +82,20 @@
     min-height: 44px;
   }
 }
+.live-clock-panel {
+  flex-basis: 100%;
+  padding: 16px;
+  border: 1px solid #cbded5;
+  border-radius: 10px;
+  background: #f6faf8;
+  display: grid;
+  gap: 12px;
+}
+.live-clock-panel p {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #4a6359;
+}
+.live-clock-panel input {
+  max-width: 100%;
+}

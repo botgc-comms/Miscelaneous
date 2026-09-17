@@ -64,6 +64,12 @@ export const rateLimits = sqliteTable('rate_limits', {
   count: integer('count').notNull(),
   expires: integer('expires').notNull(),
 });
+export const liveViewDates = sqliteTable('live_view_dates', {
+  sessionHash: text('session_hash')
+    .primaryKey()
+    .references(() => sessions.hash, { onDelete: 'cascade' }),
+  today: text('today').notNull(),
+});
 
 export const accounts = sqliteTable('accounts', {
   email: text('email').primaryKey(),

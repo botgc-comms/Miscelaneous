@@ -20,6 +20,7 @@ for (const name of [
   'season-emails',
   'accounts',
   'identity',
+  'live-clock',
   'email',
   'email-outbox',
   'team-priority',
@@ -340,3 +341,73 @@ test('outbox suppresses fictional recipients, deduplicates sends and honours the
   assert.equal(suppressed.status, 'suppressed');
 });
 test.after(() => storage.close());
+
+test('live viewing dates are restricted to Simon, session-scoped, validated and never change workspace data', async () => {
+  const { canTimeTravelLive, liveViewingDate, setLiveViewingDate } =
+    await load('live-clock');
+  assert.ok(canTimeTravelLive('Simon@MarabouStork.co.uk'));
+  assert.ok(!canTimeTravelLive('someone@maraboustork.co.uk'));
+  assert.ok(!canTimeTravelLive('simon@maraboustork.co.uk.evil.invalid'));
+  const insert = async (token, email, userId) =>
+    storage.DB.prepare(
+      'INSERT INTO sessions(hash,email,name,user_id,expires,method) VALUES (?,?,?,?,?,?)',
+    )
+      .bind(
+        await digest(token),
+        email,
+        'Clock test',
+        userId,
+        '2099-01-01',
+        'password',
+      )
+      .run();
+  await insert('clock-simon', 'simon@maraboustork.co.uk', 'clock-owner');
+  await insert(
+    'clock-simon-other-session',
+    'simon@maraboustork.co.uk',
+    'clock-owner',
+  );
+  await insert('clock-other-admin', 'other@example.invalid', 'other-owner');
+  const before = await storage.DB.prepare(
+    'SELECT data,revision FROM workspaces WHERE id=?',
+  )
+    .bind('live')
+    .first();
+  globalThis.testCookies.golfsixes_session = 'clock-other-admin';
+  assert.equal(await liveViewingDate(), undefined);
+  await assert.rejects(() => setLiveViewingDate('2027-01-01'), /not available/);
+  globalThis.testCookies.golfsixes_session = 'clock-simon';
+  await setLiveViewingDate('2027-01-01');
+  assert.equal(await liveViewingDate(), '2027-01-01');
+  for (const invalid of ['2027-02-30', 'tomorrow', '', undefined, 123])
+    await assert.rejects(() => setLiveViewingDate(invalid), /valid date/);
+  assert.equal(await liveViewingDate(), '2027-01-01');
+  globalThis.testCookies.golfsixes_session = 'clock-simon-other-session';
+  assert.equal(await liveViewingDate(), undefined);
+  globalThis.testCookies.golfsixes_session = 'clock-other-admin';
+  assert.equal(await liveViewingDate(), undefined);
+  globalThis.testCookies.golfsixes_session = 'clock-simon';
+  await setLiveViewingDate(null);
+  assert.equal(await liveViewingDate(), undefined);
+  await setLiveViewingDate('2027-01-02');
+  const after = await storage.DB.prepare(
+    'SELECT data,revision FROM workspaces WHERE id=?',
+  )
+    .bind('live')
+    .first();
+  assert.deepEqual(after, before);
+  await storage.DB.prepare('DELETE FROM sessions WHERE hash=?')
+    .bind(await digest('clock-simon'))
+    .run();
+  assert.equal(await liveViewingDate(), undefined);
+  assert.equal(
+    await storage.DB.prepare(
+      'SELECT * FROM live_view_dates WHERE session_hash=?',
+    )
+      .bind(await digest('clock-simon'))
+      .first(),
+    null,
+  );
+  await assert.rejects(() => setLiveViewingDate('2027-01-01'), /not available/);
+  globalThis.testCookies = {};
+});

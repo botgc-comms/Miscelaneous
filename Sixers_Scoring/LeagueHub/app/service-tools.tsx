@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import './account.css';
+import { londonDay } from '@/lib/team-priority';
 export function ServiceTools() {
   const [toolbarSlot, setToolbarSlot] = useState<HTMLElement | null>(null);
   useEffect(() => {
@@ -15,6 +16,8 @@ export function ServiceTools() {
   const [auth, setAuth] = useState<any>(null),
     [demo, setDemo] = useState<any>(null),
     [date, setDate] = useState(''),
+    [liveClock, setLiveClock] = useState<any>(null),
+    [liveDate, setLiveDate] = useState(''),
     [error, setError] = useState(''),
     [busy, setBusy] = useState(false),
     [mail, setMail] = useState<any>(null);
@@ -29,6 +32,13 @@ export function ServiceTools() {
         .then((d: any) => {
           setDemo(d);
           setDate(d.today || '');
+        })
+        .catch(() => {});
+      fetch('/api/time-travel')
+        .then((r) => r.json())
+        .then((clock: any) => {
+          setLiveClock(clock);
+          setLiveDate(clock.today || '');
         })
         .catch(() => {});
     };
@@ -54,7 +64,27 @@ export function ServiceTools() {
       setBusy(false);
     }
   }
+  async function setLiveDateAndReload(today: string | null) {
+    setBusy(true);
+    setError('');
+    try {
+      const r = await fetch('/api/time-travel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ today }),
+      });
+      const result = (await r.json()) as { error?: string };
+      if (!r.ok) throw new Error(result.error);
+      location.reload();
+    } catch (e) {
+      setError((e as Error).message);
+      setBusy(false);
+    }
+  }
   if (!auth?.user) return null;
+  const nextLive = liveClock?.fixtures?.find(
+    (f: any) => f.date > (liveClock.today || londonDay()),
+  );
   const next =
     demo?.fixtures?.find(
       (f: any) => f.date > (date || new Date().toISOString().slice(0, 10)),
@@ -67,10 +97,15 @@ export function ServiceTools() {
       <summary>
         {demo?.active
           ? 'Demo & time travel · no emails are sent'
-          : demo?.available
-            ? 'My account · Demo & time travel'
-            : 'My account'}
+          : liveClock?.available
+            ? 'My account · Live time travel'
+            : demo?.available
+              ? 'My account · Demo & time travel'
+              : 'My account'}
         {demo?.active && date ? ' · ' + date : ''}
+        {!demo?.active && liveClock?.today
+          ? ' · Viewing ' + liveClock.today
+          : ''}
       </summary>
       <div className="service-tools-panel">
         {demo?.active ? (
@@ -140,6 +175,49 @@ export function ServiceTools() {
         ) : (
           <>
             <span>{auth.user.email}</span>
+            {liveClock?.available && (
+              <section className="live-clock-panel">
+                <strong>Time travel on the live site</strong>
+                <p>
+                  Change the date for your view only. Other users and scheduled
+                  emails keep the real date. Any edits you make still change
+                  live data.
+                </p>
+                <label className="field">
+                  <span>View the live site on</span>
+                  <input
+                    type="date"
+                    value={liveDate}
+                    onChange={(e) => setLiveDate(e.target.value)}
+                  />
+                </label>
+                <div className="row wrap">
+                  <button
+                    className="btn"
+                    disabled={busy || !liveDate}
+                    onClick={() => void setLiveDateAndReload(liveDate)}
+                  >
+                    Set live viewing date
+                  </button>
+                  {nextLive && (
+                    <button
+                      className="btn"
+                      disabled={busy}
+                      onClick={() => void setLiveDateAndReload(nextLive.date)}
+                    >
+                      Next fixture · {nextLive.date}
+                    </button>
+                  )}
+                  <button
+                    className="btn"
+                    disabled={busy || !liveClock.today}
+                    onClick={() => void setLiveDateAndReload(null)}
+                  >
+                    Use today
+                  </button>
+                </div>
+              </section>
+            )}
             {demo?.available && (
               <button
                 className="btn"

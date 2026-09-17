@@ -213,6 +213,9 @@ export async function parentSnapshot(demo = false, stage = 'ready') {
   const demoSession = c.u.demoWorkspace
     ? await (await import('./demo-session')).activeDemo()
     : null;
+  const viewingDate = c.u.demoWorkspace
+    ? demoSession?.session.today
+    : await (await import('./live-clock')).liveViewingDate();
   const seasons = rows.map((row) => {
     const s = upgradeState(JSON.parse(row.data));
     return {
@@ -223,7 +226,7 @@ export async function parentSnapshot(demo = false, stage = 'ready') {
       me: c.member,
       state: {
         ...projectState(s, c.member),
-        demoToday: demoSession?.session.today || undefined,
+        demoToday: viewingDate || undefined,
       },
       workspaces: [],
     };

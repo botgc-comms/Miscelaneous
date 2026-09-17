@@ -173,7 +173,10 @@ export async function context(workspace?: string, view?: string) {
 }
 export async function snapshot(c: Awaited<ReturnType<typeof context>>) {
   const projected = projectState(c.state, c.me);
-  projected.demoToday = c.state.demoToday;
+  projected.demoToday =
+    c.row.demo === 2
+      ? c.state.demoToday
+      : await (await import('./live-clock')).liveViewingDate();
   projected.demoSandbox = c.row.demo === 2;
   if (c.me.role !== 'parent') {
     const { logoRows, processLogos } = await import('./club-logo-jobs');

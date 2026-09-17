@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS live_view_dates (
+  session_hash TEXT PRIMARY KEY NOT NULL REFERENCES sessions(hash) ON DELETE CASCADE,
+  today TEXT NOT NULL
+);
