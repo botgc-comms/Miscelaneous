@@ -454,3 +454,52 @@ export function registrationTickets(s: State, f: Fixture, onlyPlayer?: string) {
   );
   return `<!doctype html><html lang="en"><meta charset="utf-8"><title>Player tickets</title><style>@page{size:A4;margin:10mm}body{font:12px/1.35 Arial,sans-serif;color:#153f35;margin:0}.tools{padding:15px}.tickets{display:grid;grid-template-columns:1fr 1fr}article{box-sizing:border-box;border:1px dashed #aaa;padding:6mm;min-height:65mm;break-inside:avoid}h2{font-size:20px;margin:8px 0}p{margin:6px 0}strong{font-size:19px}small{font-size:11px}@media print{.tools{display:none}}</style><div class="tools"><button onclick="window.print()">Print / save as PDF</button><p>A4 · up to 8 tickets per sheet · cut along the dotted lines. Print again if allocations change.</p></div><main class="tickets">${cards.join('')}</main></html>`;
 }
+
+export function registrationContacts(
+  parent: { name: string; phone: string } | undefined,
+  child: { emergencyName: string; emergencyPhone: string },
+) {
+  const canonical = (phone: string) => {
+    let n = phone.replace(/[^\d]/g, '');
+    if (n.startsWith('0044')) n = n.slice(2);
+    if (n.startsWith('44')) n = '0' + n.slice(2).replace(/^0/, '');
+    return n;
+  };
+  const contacts: {
+    name: string;
+    phone: string;
+    href: string;
+    role: string;
+    key: string;
+  }[] = [];
+  for (const contact of [
+    {
+      name: parent?.name || 'Parent',
+      phone: parent?.phone || '',
+      role: 'Parent',
+    },
+    {
+      name: child.emergencyName || 'Emergency contact',
+      phone: child.emergencyPhone,
+      role: 'Emergency contact',
+    },
+  ]) {
+    const key = canonical(contact.phone);
+    if (!key) continue;
+    const existing = contacts.find((c) => c.key === key);
+    if (existing) {
+      existing.role = 'Parent / emergency contact';
+      if (
+        existing.name.toLowerCase() !== contact.name.toLowerCase() &&
+        contact.name !== 'Emergency contact'
+      )
+        existing.name += ' / ' + contact.name;
+    } else
+      contacts.push({
+        ...contact,
+        key,
+        href: 'tel:' + contact.phone.replace(/[^+\d]/g, ''),
+      });
+  }
+  return contacts;
+}

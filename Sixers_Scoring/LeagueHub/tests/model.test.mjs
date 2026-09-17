@@ -4182,3 +4182,122 @@ test('registration promotes only approved named reserves and groups solo scoreca
     ),
   );
 });
+
+test('rewinding before a previously scored fixture restores preparation and closes scoring', async () => {
+  const s = upgradeState(demoState()),
+    f = s.fixtures.find((f) => f.id === scoreAction.fixtureId);
+  f.date = '2026-09-19';
+  f.status = 'scheduled';
+  s.fixtures = [f];
+  s.leagues.find((l) => l.id === f.leagueId).fixturesConfirmedAt = '2026-09-01';
+  const played = applyAction(
+    s,
+    parent(),
+    scoreAction,
+    '2026-09-17T12:00:00Z',
+    '2026-09-19',
+  );
+  const live = played.fixtures[0],
+    team = played.teams.find((t) => t.id === live.pairs[0].teamId);
+  played.demoToday = '2026-09-17';
+  assert.equal(live.status, 'live');
+  assert.equal(fixtureScoringOpen(played, live), false);
+  assert.equal(teamPriority(played, team).stage, 'Fixture preparation');
+  assert.notEqual(teamPriority(played, team).action, 'See live scores');
+  const { parentShowsScorecard, parentFixtureSections } = await import(
+    pathToFileURL(path.join(output, 'parent-fixtures.mjs'))
+  );
+  const event = {
+    f: live,
+    published: true,
+    kids: played.players.filter((p) => p.parentId === parent().id),
+  };
+  assert.equal(parentShowsScorecard(event, '2026-09-17'), false);
+  assert.equal(parentFixtureSections([event], '2026-09-17').matchday.length, 0);
+  assert.equal(parentFixtureSections([event], '2026-09-17').live.length, 0);
+  assert.throws(
+    () =>
+      applyAction(
+        played,
+        parent(),
+        { ...scoreAction, expectedVersion: 1 },
+        '2026-09-17T12:00:00Z',
+        '2026-09-17',
+      ),
+    /Scoring opens/,
+  );
+  assert.equal(fixtureScoringOpen(played, live, '2026-09-19'), true);
+  assert.equal(
+    teamPriority(played, team, '2026-09-19').action,
+    'See live scores',
+  );
+  assert.equal(parentShowsScorecard(event, '2026-09-19'), true);
+  assert.equal(
+    live.scores[`${scoreAction.pairId}:1`].strokes,
+    scoreAction.strokes,
+  );
+});
+
+test('hosts chase missing team selections with targeted notifications and email links', () => {
+  const { s, f, host } = deskSetup(),
+    team = s.teams.find((t) => t.id === f.pairs[0].teamId);
+  f.pairs = f.pairs.filter((p) => p.teamId !== team.id);
+  const recipient = {
+    ...host,
+    id: 'visiting-organiser',
+    name: 'Visiting organiser',
+    email: 'organiser@example.invalid',
+    orgIds: [team.orgId],
+  };
+  s.members.push(recipient);
+  const action = { type: 'selection-remind', fixtureId: f.id, teamId: team.id };
+  assert.throws(() => applyAction(s, recipient, action), /permission/);
+  const next = applyAction(s, host, action, '2026-09-17T10:00:00Z');
+  const added = next.notifications.filter(
+    (n) => !s.notifications.some((old) => old.id === n.id),
+  );
+  assert(added.some((n) => n.recipient === recipient.id));
+  assert(added.every((n) => n.text.includes('submit the pairs')));
+  assert(
+    added.every(
+      (n) => s.members.find((m) => m.id === n.recipient).role !== 'parent',
+    ),
+  );
+  assert.throws(
+    () => applyAction(next, host, action, '2026-09-17T10:00:01Z'),
+    /recently/,
+  );
+  const email = eventEmails(s, next, 'test', 'https://example.org').find(
+    (e) => e.recipient === recipient.email,
+  );
+  assert(email);
+  assert(email.message.action.url.includes('fixture=fixture-3'));
+  s.members = s.members.filter((m) => !m.orgIds.includes(team.orgId));
+  assert.throws(() => applyAction(s, host, action), /No junior organiser/);
+});
+test('registration contact numbers are visible data and equivalent UK numbers collapse to one contact', async () => {
+  const { registrationContacts } = await import(
+    pathToFileURL(path.join(output, 'registration-desk.mjs'))
+  );
+  for (const phone of [
+    '07700 900123',
+    '+44 7700 900123',
+    '0044 7700 900123',
+    '+44 (0)7700 900123',
+  ]) {
+    const contacts = registrationContacts(
+      { name: 'Simon', phone: '07700 900123' },
+      { emergencyName: 'Simon', emergencyPhone: phone },
+    );
+    assert.equal(contacts.length, 1);
+    assert.equal(contacts[0].phone, '07700 900123');
+    assert.equal(contacts[0].href, 'tel:07700900123');
+  }
+  assert.equal(
+    registrationContacts(
+      { name: 'Simon', phone: '07700 900123' },
+      { emergencyName: 'Sam', emergencyPhone: '07700 900456' },
+    ).length,
+    2,
+  );
+});

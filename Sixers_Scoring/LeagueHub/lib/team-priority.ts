@@ -42,7 +42,8 @@ export function teamPriority(
     )
     .sort(
       (a, b) =>
-        Number(b.status === 'live') - Number(a.status === 'live') ||
+        Number(b.status === 'live' && b.date <= today) -
+          Number(a.status === 'live' && a.date <= today) ||
         a.date.localeCompare(b.date) ||
         a.start.localeCompare(b.start),
     )[0];
@@ -80,7 +81,7 @@ export function teamPriority(
           86400000,
       )
     : Infinity;
-  if (next?.status === 'live')
+  if (next?.status === 'live' && fixtureScoringOpen(s, next, today))
     return {
       ...base,
       stage: 'Matchday · live',

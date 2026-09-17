@@ -13,6 +13,7 @@ export function parentShowsScorecard(event: FamilyEvent, today: string) {
   );
   return (
     selected &&
+    event.f.date <= today &&
     (event.f.status === 'live' ||
       event.f.status === 'completed' ||
       (event.published &&
@@ -50,7 +51,9 @@ export function parentFixtureSections<T extends FamilyEvent>(
     upcoming,
     selected,
     other: upcoming.filter((e) => !playing(e)),
-    live: current.filter((e) => e.f.status === 'live' && playing(e)),
+    live: current.filter(
+      (e) => e.f.status === 'live' && e.f.date <= today && playing(e),
+    ),
   };
 }
 

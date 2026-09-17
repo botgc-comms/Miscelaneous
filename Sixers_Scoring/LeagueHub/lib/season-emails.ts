@@ -124,15 +124,17 @@ export function eventEmails(
                 m,
                 origin,
                 workspace,
-                n.text.includes('has been selected')
-                  ? 'Your child is playing!'
-                  : n.text.includes('unavailable')
-                    ? 'Availability changed — please review'
-                    : n.text.includes('results are confirmed')
-                      ? 'Your fixture results are ready'
-                      : n.text.includes('cancelled')
-                        ? 'Fixture cancelled'
-                        : 'An update for your GolfSixes fixture',
+                n.text.includes('choose your players and submit the pairs')
+                  ? 'Please submit your team selection'
+                  : n.text.includes('has been selected')
+                    ? 'Your child is playing!'
+                    : n.text.includes('unavailable')
+                      ? 'Availability changed — please review'
+                      : n.text.includes('results are confirmed')
+                        ? 'Your fixture results are ready'
+                        : n.text.includes('cancelled')
+                          ? 'Fixture cancelled'
+                          : 'An update for your GolfSixes fixture',
                 n.text,
               )
             : {

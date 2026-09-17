@@ -30,6 +30,7 @@ import {
 import { Badge, Dot, dateLabel, type AppTools } from './widgets';
 import {
   canManageTeam,
+  organiserClubs,
   capOrder,
   canHost,
   canLeague,
@@ -99,7 +100,11 @@ export function FixtureDetail({
             {scoringOpen && f.status === 'scheduled' ? (
               <span className="badge green">Scoring open</span>
             ) : (
-              <Badge status={f.status} />
+              <Badge
+                status={
+                  f.status === 'live' && !scoringOpen ? 'scheduled' : f.status
+                }
+              />
             )}
           </div>
           <h1>{f.name}</h1>
@@ -115,7 +120,7 @@ export function FixtureDetail({
               </button>
             </>
           )}
-          {host && f.status === 'live' && (
+          {host && f.status === 'live' && scoringOpen && (
             <button
               className="btn primary"
               disabled={busy}
@@ -378,6 +383,8 @@ export function FixtureDetail({
 function Lineups({ f, tools }: { f: Fixture; tools: AppTools }) {
   const { s, me } = tools;
   const hosting = canHost(s, me, f);
+  const [reminderError, setReminderError] = useState('');
+  const [reminderNotice, setReminderNotice] = useState('');
   const teams = s.teams
     .filter(
       (t) =>
@@ -407,10 +414,22 @@ function Lineups({ f, tools }: { f: Fixture; tools: AppTools }) {
             : 'Choose your players and publish the pairs for the hosting organiser.'}
         </p>
       </div>
+      <div role="status">{reminderNotice}</div>
+      {reminderError && (
+        <p className="error" role="alert">
+          {reminderError}
+        </p>
+      )}
       <div className="fixture-team-overview">
         {teams.map((t) => {
           const pairs = f.pairs.filter((p) => p.teamId === t.id);
           const expected = s.leagues.find((l) => l.id === f.leagueId)!.pairs;
+          const complete =
+            pairs.length === expected &&
+            pairs.every((p) => p.players.length === 2);
+          const organisers = s.members.filter((m) =>
+            organiserClubs(m).includes(t.orgId),
+          );
           return (
             <section className="card" key={t.id}>
               <div className="row">
@@ -418,11 +437,64 @@ function Lineups({ f, tools }: { f: Fixture; tools: AppTools }) {
                 <h3>{t.name}</h3>
               </div>
               <p className="muted mt-2">
-                {pairs.length === expected
+                {complete
                   ? 'Selection submitted'
-                  : 'Awaiting complete selection'}{' '}
-                · {pairs.length} of {expected} pairs
+                  : 'Waiting for this club’s organiser to submit their pairs'}{' '}
+                · {pairs.filter((p) => p.players.length === 2).length} of{' '}
+                {expected} complete pairs
               </p>
+              {!complete &&
+                hosting &&
+                ['scheduled', 'live'].includes(f.status) && (
+                  <div className="selection-chase">
+                    <p>
+                      This is the club organiser’s team selection, not the
+                      parents’ availability replies.
+                    </p>
+                    {organisers.length ? (
+                      <>
+                        <p>{organisers.map((m) => m.name).join(', ')}</p>
+                        <button
+                          className="btn"
+                          disabled={tools.busy}
+                          onClick={async () => {
+                            setReminderError('');
+                            setReminderNotice('');
+                            try {
+                              await tools.act({
+                                type: 'selection-remind',
+                                fixtureId: f.id,
+                                teamId: t.id,
+                              });
+                              setReminderNotice(
+                                'Reminder queued for ' +
+                                  t.name +
+                                  '’s organisers. They will see an in-app notification; email follows the workspace delivery settings.',
+                              );
+                            } catch (e) {
+                              setReminderError((e as Error).message);
+                            }
+                          }}
+                        >
+                          Chase organiser
+                        </button>
+                        {f.selectionReminders?.[t.id] && (
+                          <small>
+                            Last reminder:{' '}
+                            {new Date(
+                              f.selectionReminders[t.id].at,
+                            ).toLocaleString('en-GB')}
+                          </small>
+                        )}
+                      </>
+                    ) : (
+                      <p>
+                        No organiser assigned. Ask the Foundation administrator
+                        to invite one.
+                      </p>
+                    )}
+                  </div>
+                )}
               <ul>
                 {pairs.map((p) => (
                   <li key={p.id}>

@@ -16,6 +16,7 @@ import {
   deskKey,
   deskFieldsKey,
   registrationTickets,
+  registrationContacts,
   type DeskField,
   type DeskSuggestion,
 } from '@/lib/registration-desk';
@@ -587,6 +588,7 @@ function ChildRegistration({
   const [answers, setAnswers] = useState(e?.answers || {}),
     [note, setNote] = useState(e?.note || ''),
     [withdraw, setWithdraw] = useState(false);
+  const contacts = registrationContacts(parent, child);
   const peers = f.pairs
     .filter((p) => p.slotId && p.slotId === pair?.slotId && p.id !== pair?.id)
     .flatMap((p) =>
@@ -642,25 +644,20 @@ function ChildRegistration({
         </p>
       )}
       <div className="desk-contacts">
-        {parent?.phone && (
-          <a
-            className="btn"
-            href={`tel:${parent.phone.replace(/[^+\d]/g, '')}`}
-          >
-            <Phone size={16} />
-            Call {parent.name}
-          </a>
-        )}
-        {child.emergencyPhone && child.emergencyPhone !== parent?.phone && (
-          <a
-            className="btn"
-            href={`tel:${child.emergencyPhone.replace(/[^+\d]/g, '')}`}
-          >
-            <Phone size={16} />
-            Call {child.emergencyName || 'emergency contact'}
-          </a>
-        )}
-        {!parent?.phone && !child.emergencyPhone && (
+        {contacts.map((contact) => (
+          <div className="desk-contact" key={contact.key}>
+            <div>
+              <strong>{contact.name}</strong>
+              <span>{contact.role}</span>
+              <span className="desk-phone">{contact.phone}</span>
+            </div>
+            <a className="btn" href={contact.href}>
+              <Phone size={16} />
+              Call
+            </a>
+          </div>
+        ))}
+        {!contacts.length && (
           <p>No contact number recorded. Contact the child’s team organiser.</p>
         )}
       </div>

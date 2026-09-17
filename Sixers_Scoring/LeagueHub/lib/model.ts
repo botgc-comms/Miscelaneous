@@ -145,6 +145,7 @@ export type Result = {
   rank: number;
 };
 export type Fixture = {
+  selectionReminders?: Record<string, { at: string; by: string }>;
   desk?: RegistrationDesk;
   startSettings?: StartSettings;
   id: string;
@@ -898,11 +899,11 @@ export function fixtureScoringOpen(
     ),
 ) {
   return (
-    f.status === 'live' ||
-    (f.status === 'scheduled' &&
-      f.date <= today &&
-      !!s.leagues.find((league) => league.id === f.leagueId)
-        ?.fixturesConfirmedAt)
+    f.date <= today &&
+    (f.status === 'live' ||
+      (f.status === 'scheduled' &&
+        !!s.leagues.find((league) => league.id === f.leagueId)
+          ?.fixturesConfirmedAt))
   );
 }
 
@@ -943,7 +944,53 @@ export function applyAction(
   const authorized = (ok: boolean) =>
     requireThat(ok, 'You do not have permission for this action.', 403);
   let note = '';
-  if (a.type === 'club-confirm') {
+  if (a.type === 'selection-remind') {
+    const f = s.fixtures.find((f) => f.id === a.fixtureId),
+      t = s.teams.find((t) => t.id === a.teamId);
+    requireThat(
+      f && t && f.teamIds.includes(t.id),
+      'Choose a participating team.',
+    );
+    authorized(canHost(s, m, f));
+    requireThat(
+      ['scheduled', 'live'].includes(f.status),
+      'This fixture is no longer awaiting teams.',
+    );
+    const expected = s.leagues.find((l) => l.id === f.leagueId)!.pairs;
+    const pairs = f.pairs.filter((p) => p.teamId === t.id);
+    requireThat(
+      pairs.length !== expected || pairs.some((p) => p.players.length !== 2),
+      'This team already has a complete selection.',
+    );
+    const recipients = s.members.filter((member) =>
+      organiserClubs(member).includes(t.orgId),
+    );
+    requireThat(
+      recipients.length > 0,
+      'No junior organiser is assigned to this club. Ask the Foundation administrator to assign one.',
+    );
+    const last = f.selectionReminders?.[t.id];
+    requireThat(
+      !last || Date.parse(now) - Date.parse(last.at) >= 15 * 60 * 1000,
+      'A reminder was sent recently. Please wait 15 minutes before sending another.',
+    );
+    f.selectionReminders ??= {};
+    f.selectionReminders[t.id] = { at: now, by: m.id };
+    notify(
+      s,
+      recipients.map((r) => r.id),
+      m.name +
+        ' is asking you to choose your players and submit the pairs for ' +
+        t.name +
+        ' at ' +
+        f.name +
+        ' on ' +
+        f.date +
+        '. Open the fixture and go to Team selection so the host can arrange starting groups.',
+      f.id,
+    );
+    note = 'Requested team selection for ' + t.name;
+  } else if (a.type === 'club-confirm') {
     const club = s.clubs.find((c) => c.id === a.clubId);
     requireThat(club, 'Club not found.');
     authorized(canOrg(s, m, club.orgId));
