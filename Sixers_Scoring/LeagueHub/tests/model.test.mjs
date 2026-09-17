@@ -74,6 +74,7 @@ const {
   responsibleForLeague,
   selectionKey,
   selectionConfirmed,
+  fixtureScoringOpen,
 } = await import(pathToFileURL(path.join(output, 'model.mjs')));
 const { demoState, demoUser } = await import(
   pathToFileURL(path.join(output, 'demo.mjs'))
@@ -2385,7 +2386,7 @@ test('completed scorecards are locked', () =>
         fixtureId: 'fixture-0',
         pairId: 'pair-0-0-0',
       }),
-    /live/,
+    /Completed or cancelled/,
   ));
 test('parent projection redacts other children and invitation secrets', () => {
   const s = demoState();
@@ -3469,6 +3470,167 @@ test('parent overview prioritises saved selections and hides all past, completed
   assert.deepEqual(
     result.upcoming.map((e) => e.f.id),
     ['availability', 'selected'],
+  );
+});
+
+test('published match-day scorecards take priority without needing a manual start', async () => {
+  const { parentShowsScorecard } = await import(
+    pathToFileURL(path.join(output, 'parent-fixtures.mjs'))
+  );
+  const { s, f, team } = planningState();
+  const child = s.players.find((p) => rosterEligible(s, p.id, team.id));
+  const event = (
+    id,
+    date,
+    selected = true,
+    published = true,
+    status = 'scheduled',
+  ) => ({
+    f: {
+      ...f,
+      id,
+      date,
+      status,
+      pairs: selected
+        ? [{ id: 'pair', teamId: team.id, players: [child.id], slotId: '' }]
+        : [],
+    },
+    kids: [child],
+    published,
+  });
+  const today = event('ashbourne', '2026-09-19');
+  const later = event('later', '2026-09-26');
+  const notSelected = event('unselected', '2026-09-19', false);
+  const draft = event('unpublished', '2026-09-19', true, false);
+  const list = [
+    later,
+    today,
+    notSelected,
+    draft,
+    event('cancelled', '2026-09-19', true, true, 'cancelled'),
+  ];
+  assert.equal(parentShowsScorecard(today, '2026-09-18'), false);
+  assert.equal(parentShowsScorecard(today, '2026-09-19'), true);
+  assert.equal(parentShowsScorecard(notSelected, '2026-09-19'), false);
+  assert.equal(parentShowsScorecard(draft, '2026-09-19'), false);
+  const result = parentFixtureSections(list, '2026-09-19');
+  assert.deepEqual(
+    result.matchday.map((e) => e.f.id),
+    ['ashbourne'],
+  );
+  assert.ok(result.upcoming.every((e) => e.f.id !== 'ashbourne'));
+  assert.ok(result.selected.includes(later));
+  assert.ok(result.other.includes(notSelected));
+  const liveWithoutSelection = {
+    ...notSelected,
+    f: { ...notSelected.f, status: 'live' },
+  };
+  const unselectedSections = parentFixtureSections(
+    [liveWithoutSelection],
+    '2026-09-19',
+  );
+  assert.deepEqual(unselectedSections.matchday, []);
+  assert.deepEqual(unselectedSections.other, [liveWithoutSelection]);
+  assert.equal(
+    parentShowsScorecard(today, '2026-09-20'),
+    true,
+    'A direct link still permits late score entry',
+  );
+  assert.deepEqual(parentFixtureSections(list, '2026-09-20').matchday, []);
+  assert.equal(
+    today.f.status,
+    'scheduled',
+    'Viewing a simulated date must not start a real fixture',
+  );
+});
+
+test('scoring opens automatically by London date and the first valid score starts the fixture', () => {
+  const s = upgradeState(demoState());
+  const f = s.fixtures.find((v) => v.id === scoreAction.fixtureId);
+  f.status = 'scheduled';
+  f.date = '2026-09-19';
+  s.leagues.find((l) => l.id === f.leagueId).fixturesConfirmedAt =
+    '2026-09-01T12:00:00Z';
+  delete s.demoToday;
+  assert.equal(fixtureScoringOpen(s, f, '2026-09-18'), false);
+  assert.equal(fixtureScoringOpen(s, f, '2026-09-19'), true);
+  assert.throws(
+    () =>
+      applyAction(
+        s,
+        parent(),
+        { ...scoreAction, pairId: 'pair-3-1-0' },
+        '2026-09-19T12:00:00Z',
+      ),
+    /assigned parents|permission|score this/i,
+  );
+  assert.equal(
+    f.status,
+    'scheduled',
+    'Unauthorised scoring must not start play',
+  );
+  assert.throws(
+    () =>
+      applyAction(
+        s,
+        parent(),
+        { ...scoreAction, today: '2026-09-19', demoToday: '2026-09-19' },
+        '2026-09-18T12:00:00Z',
+      ),
+    /Scoring opens/,
+  );
+  // 23:30 UTC is already 19 September in the UK's summer time.
+  const next = applyAction(s, parent(), scoreAction, '2026-09-18T23:30:00Z');
+  const changed = next.fixtures.find((v) => v.id === f.id);
+  assert.equal(changed.status, 'live');
+  assert.equal(
+    changed.scores[`${scoreAction.pairId}:1`].strokes,
+    scoreAction.strokes,
+  );
+  assert.equal(f.status, 'scheduled');
+  const preview = applyAction(
+    s,
+    parent(),
+    scoreAction,
+    '2026-09-17T12:00:00Z',
+    '2026-09-19',
+  );
+  assert.equal(preview.fixtures.find((v) => v.id === f.id).status, 'live');
+  assert.equal(
+    preview.demoToday,
+    undefined,
+    'A trusted viewing date must not become shared workspace data',
+  );
+  assert.equal(
+    preview.fixtures.find((v) => v.id === f.id).scores[
+      `${scoreAction.pairId}:1`
+    ].at,
+    '2026-09-17T12:00:00Z',
+  );
+  assert.throws(
+    () =>
+      applyAction(
+        s,
+        parent(),
+        { ...scoreAction, expectedVersion: 999 },
+        '2026-09-19T12:00:00Z',
+      ),
+    /Another scorer/,
+  );
+  assert.equal(f.status, 'scheduled');
+  for (const status of ['completed', 'cancelled']) {
+    f.status = status;
+    assert.equal(fixtureScoringOpen(s, f, '2026-09-19'), false);
+    assert.throws(
+      () => applyAction(s, parent(), scoreAction, '2026-09-19T12:00:00Z'),
+      /Scoring opens/,
+    );
+  }
+  f.status = 'scheduled';
+  delete s.leagues.find((l) => l.id === f.leagueId).fixturesConfirmedAt;
+  assert.throws(
+    () => applyAction(s, parent(), scoreAction, '2026-09-19T12:00:00Z'),
+    /Scoring opens/,
   );
 });
 

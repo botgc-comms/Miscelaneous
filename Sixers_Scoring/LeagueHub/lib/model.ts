@@ -859,11 +859,30 @@ export function readiness(s: State, f: Fixture) {
   }
   return issues;
 }
+/** Published fixtures accept scores from their match date; viewing alone is read-only. */
+export function fixtureScoringOpen(
+  s: State,
+  f: Fixture,
+  today = s.demoToday ||
+    new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/London' }).format(
+      new Date(),
+    ),
+) {
+  return (
+    f.status === 'live' ||
+    (f.status === 'scheduled' &&
+      f.date <= today &&
+      !!s.leagues.find((league) => league.id === f.leagueId)
+        ?.fixturesConfirmedAt)
+  );
+}
+
 export function applyAction(
   source: State,
   m: Member,
   a: Action,
   now = new Date().toISOString(),
+  viewingDate?: string,
 ): State {
   if (a.type.startsWith('support-'))
     return applySupportAction(source, m, a, now);
@@ -2032,8 +2051,16 @@ export function applyAction(
       note = 'Updated starting slots';
     } else if (a.type === 'score') {
       requireThat(
-        f.status === 'live',
-        'Scores can only be entered while the fixture is live.',
+        fixtureScoringOpen(
+          s,
+          f,
+          viewingDate ||
+            s.demoToday ||
+            new Intl.DateTimeFormat('en-CA', {
+              timeZone: 'Europe/London',
+            }).format(new Date(now)),
+        ),
+        'Scoring opens on the date of a published fixture. Completed or cancelled fixtures cannot be scored.',
       );
       const pair = f.pairs.find((p) => p.id === a.pairId);
       requireThat(pair, 'Pair not found.');
@@ -2053,6 +2080,9 @@ export function applyAction(
         'Another scorer updated this hole. Review their score and try again.',
         409,
       );
+      // The first successful score records play starting. An invalid or stale
+      // request cannot change fixture status, and viewing a date never writes it.
+      f.status = 'live';
       f.scores[key] = {
         strokes,
         version: (f.scores[key]?.version || 0) + 1,

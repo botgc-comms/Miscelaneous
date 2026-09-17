@@ -2,6 +2,7 @@ import {
   leagueAcceptsRegistrations,
   rosterEligible,
   selectionConfirmed,
+  fixtureScoringOpen,
   type State,
   type Team,
 } from './model';
@@ -93,9 +94,13 @@ export function teamPriority(
     return {
       ...base,
       stage: 'Matchday · today',
-      title: 'Get ready for today’s play',
-      detail: 'Check your pairs and family confirmations before the start.',
-      action: 'Check today’s team',
+      title:
+        fixtureScoringOpen(s, next, today) && next.pairs.length
+          ? 'Follow today’s scoring'
+          : 'Get ready for today’s play',
+      detail:
+        'Scoring opens automatically today. Check your pairs and starting groups, then follow the scores as families enter them.',
+      action: 'Open today’s fixture',
       target: 'preparation' as const,
       urgency: 1,
     };

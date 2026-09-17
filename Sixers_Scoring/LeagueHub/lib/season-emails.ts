@@ -204,7 +204,7 @@ export function scheduledEmails(
       }
       if (days === 0 && selected.length) {
         heading = 'It’s match day!';
-        text = `${selected.map((p) => p.name).join(' and ')} ${selected.length === 1 ? 'is' : 'are'} playing today. Open the fixture for your scorecards and live results. Score entry opens when the organiser starts the fixture.`;
+        text = `${selected.map((p) => p.name).join(' and ')} ${selected.length === 1 ? 'is' : 'are'} playing today. Your scorecard is ready and scoring opens automatically today. Record your pair’s scores as you play. Joining instructions are available on the same screen.`;
       }
       if (heading)
         out.push({

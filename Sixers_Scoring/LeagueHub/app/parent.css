@@ -290,6 +290,56 @@
 .family-event-group {
   margin-bottom: 32px;
 }
+.family-matchday {
+  margin-bottom: 36px;
+}
+.family-matchday-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.family-matchday-heading > div {
+  min-width: 0;
+}
+.family-matchday-heading h1,
+.family-matchday-heading h2 {
+  font-size: clamp(24px, 4vw, 32px);
+  margin: 6px 0;
+  overflow-wrap: anywhere;
+}
+.family-matchday-heading p {
+  color: #526b62;
+  font-size: 16px;
+}
+.family-matchday-heading .btn {
+  white-space: normal;
+  text-align: left;
+}
+.family-matchday-details {
+  margin-top: 20px;
+  border: 1px solid #d7e5e0;
+  border-radius: 12px;
+  background: white;
+  scroll-margin-top: 20px;
+}
+.family-matchday-details > summary {
+  padding: 18px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #087f6b;
+  cursor: pointer;
+}
+.family-matchday-details > summary:focus-visible {
+  outline: 2px solid #00816b;
+  outline-offset: 3px;
+}
+.family-matchday-details > .family-event-group {
+  padding: 0 16px;
+  margin-bottom: 16px;
+}
 .family-event-card {
   margin-bottom: 16px;
 }

@@ -21,10 +21,8 @@ import {
   MapPin,
   Utensils,
   Flag,
-  Users,
   Check,
   ShieldCheck,
-  RefreshCw,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
@@ -37,6 +35,7 @@ import {
   canLeague,
   readiness,
   fixtureResults,
+  fixtureScoringOpen,
   points,
   type Fixture,
 } from '@/lib/model';
@@ -53,8 +52,9 @@ export function FixtureDetail({
   const l = s.leagues.find((l) => l.id === f.leagueId)!;
   const club = s.clubs.find((c) => c.id === f.clubId);
   const host = canHost(s, me, f);
+  const scoringOpen = fixtureScoringOpen(s, f);
   const [tab, setTab] = useState(
-    f.status === 'live'
+    scoringOpen
       ? 'score'
       : f.status === 'completed'
         ? 'results'
@@ -67,14 +67,13 @@ export function FixtureDetail({
     setError('');
     try {
       await act({ type, fixtureId: f.id });
-      if (type === 'start') setTab('score');
       if (type === 'finalise') setTab('results');
     } catch (e) {
       setError((e as Error).message);
     }
   };
   const issues = readiness(s, f);
-  const showScorecards = f.status === 'live' || f.status === 'completed';
+  const showScorecards = scoringOpen || f.status === 'completed';
   const showResults = f.status === 'completed';
   const visibleTab =
     (tab === 'score' && !showScorecards) || (tab === 'results' && !showResults)
@@ -92,7 +91,11 @@ export function FixtureDetail({
         <div>
           <div className="row mb-2">
             <span className="eyebrow">{l.name}</span>
-            <Badge status={f.status} />
+            {scoringOpen && f.status === 'scheduled' ? (
+              <span className="badge green">Scoring open</span>
+            ) : (
+              <Badge status={f.status} />
+            )}
           </div>
           <h1>{f.name}</h1>
           <p>
@@ -104,15 +107,6 @@ export function FixtureDetail({
             <>
               <button className="btn" onClick={() => edit('fixture', f)}>
                 Edit fixture
-              </button>
-              <button
-                className="btn primary"
-                disabled={busy || issues.length > 0}
-                title={issues.join(' ')}
-                onClick={() => run('start')}
-              >
-                <Flag size={16} />
-                Start play
               </button>
             </>
           )}
@@ -317,7 +311,12 @@ export function FixtureDetail({
           </div>
           {host && f.status === 'scheduled' && (
             <section className="card mt-5">
-              <h2>Ready to play?</h2>
+              <h2>Match-day preparation</h2>
+              <p className="muted mt-2">
+                Scoring opens automatically on the fixture date. Keep team
+                selections and starting groups up to date before scores are
+                entered.
+              </p>
               {issues.length ? (
                 <ul className="issue-list">
                   {issues.map((i) => (
@@ -430,14 +429,55 @@ function Lineups({ f, tools }: { f: Fixture; tools: AppTools }) {
   );
 }
 export function Scorecards({ f, tools }: { f: Fixture; tools: AppTools }) {
-  const { s, me, busy, act } = tools;
-  const l = s.leagues.find((l) => l.id === f.leagueId)!;
+  const { s, me } = tools;
   const mine = f.pairs.filter((p) =>
     p.players.some((id) =>
       s.players.some((c) => c.id === id && c.parentId === me.id),
     ),
   );
-  const [pid, setPid] = useState(mine[0]?.id || f.pairs[0]?.id || '');
+  const visiblePairs =
+    tools.view === 'parent' || me.role === 'parent' ? mine : f.pairs;
+  const [chosenPair, setPid] = useState(visiblePairs[0]?.id || '');
+  const pair = visiblePairs.find((p) => p.id === chosenPair) || visiblePairs[0];
+  if (!pair)
+    return (
+      <Empty title="Scorecards are on their way">
+        Submit team selections to create the pair scorecards.
+      </Empty>
+    );
+  const options = visiblePairs.map((p) => ({
+    value: p.id,
+    label: `${s.teams.find((t) => t.id === p.teamId)?.name} · ${p.players.map((id) => s.players.find((c) => c.id === id)?.name || 'Player').join(' & ')}`,
+  }));
+  return (
+    <PairScorecard
+      key={pair.id}
+      f={f}
+      tools={tools}
+      pair={pair}
+      options={options}
+      choosePair={setPid}
+    />
+  );
+}
+
+function PairScorecard({
+  f,
+  tools,
+  pair,
+  options,
+  choosePair,
+}: {
+  f: Fixture;
+  tools: AppTools;
+  pair: Fixture['pairs'][number];
+  options: { value: string; label: string }[];
+  choosePair: (id: string) => void;
+}) {
+  const { s, me, busy, act } = tools;
+  const scoringOpen = fixtureScoringOpen(s, f);
+  const l = s.leagues.find((l) => l.id === f.leagueId)!;
+  const pid = pair.id;
   const [hole, setHole] = useState(1);
   const [draft, setDraft] = useState<{
     strokes: number;
@@ -445,23 +485,14 @@ export function Scorecards({ f, tools }: { f: Fixture; tools: AppTools }) {
   } | null>(null);
   const [error, setError] = useState('');
   const [saved, setSaved] = useState(false);
-  const pair = f.pairs.find((p) => p.id === pid);
-  if (!pair)
-    return (
-      <Empty title="Scorecards are on their way">
-        Submit team selections to create the pair scorecards.
-      </Empty>
-    );
   const t = s.teams.find((t) => t.id === pair.teamId)!;
   const canScore =
     canHost(s, me, f) ||
     canOrg(s, me, t.orgId) ||
-    mine.some((p) => p.id === pid);
+    pair.players.some((id) =>
+      s.players.some((p) => p.id === id && p.parentId === me.id),
+    );
   const score = f.scores[`${pid}:${hole}`];
-  const options = (me.role === 'parent' ? mine : f.pairs).map((p) => ({
-    value: p.id,
-    label: `${s.teams.find((t) => t.id === p.teamId)?.name} · ${p.players.map((id) => s.players.find((c) => c.id === id)?.name || 'Player').join(' & ')}`,
-  }));
   const total = Array.from(
     { length: l.holes },
     (_, i) => f.scores[`${pid}:${i + 1}`],
@@ -483,15 +514,22 @@ export function Scorecards({ f, tools }: { f: Fixture; tools: AppTools }) {
             <Dot color={t.color} />
             <strong>{t.name}</strong>
           </span>
-          <Badge status={f.status} />
+          {scoringOpen && f.status === 'scheduled' ? (
+            <span className="badge green">Scoring open</span>
+          ) : (
+            <Badge status={f.status} />
+          )}
         </div>
+        {f.status === 'scheduled' && !scoringOpen && (
+          <p className="notice mt-4">
+            Your scorecard is ready. Scoring opens automatically on the fixture
+            date.
+          </p>
+        )}
         <Pick
           label="Choose your pair"
           value={pid}
-          onChange={(v) => {
-            setPid(v);
-            move(1);
-          }}
+          onChange={choosePair}
           options={options}
         />
         <p className="muted mt-4">
@@ -529,8 +567,16 @@ export function Scorecards({ f, tools }: { f: Fixture; tools: AppTools }) {
         </div>
         <div className="score-focus">
           <span className="eyebrow">HOLE {hole}</span>
-          <h2>How many strokes?</h2>
-          <p>Count your pair’s shots together.</p>
+          <h2>
+            {f.status === 'scheduled' && !scoringOpen
+              ? 'Ready for the first hole'
+              : 'How many strokes?'}
+          </h2>
+          <p>
+            {f.status === 'scheduled' && !scoringOpen
+              ? 'Scores will appear here on match day.'
+              : 'Count your pair’s shots together.'}
+          </p>
           <div className="score-number" style={{ color: t.color }}>
             {draft?.strokes ?? score?.strokes ?? '–'}
           </div>
@@ -542,7 +588,7 @@ export function Scorecards({ f, tools }: { f: Fixture; tools: AppTools }) {
                 : 'No score recorded yet'}
           </p>
         </div>
-        {canScore && f.status === 'live' ? (
+        {canScore && scoringOpen ? (
           <>
             <div className="stroke-buttons">
               {Array.from({ length: l.maxStrokes }, (_, i) => (
@@ -590,15 +636,13 @@ export function Scorecards({ f, tools }: { f: Fixture; tools: AppTools }) {
               Both parents share this card. Scores refresh every 4 seconds.
             </p>
           </>
-        ) : (
+        ) : scoringOpen || f.status !== 'scheduled' ? (
           <p className="notice mt-4">
             {f.status === 'completed'
-              ? 'This scorecard is final. A league administrator can reopen the fixture for corrections.'
-              : f.status === 'scheduled'
-                ? 'The host will open scoring when play begins.'
-                : 'You can follow this scorecard. Assigned parents and organisers can enter scores.'}
+              ? 'This scorecard is final. A Foundation administrator can reopen the fixture for corrections.'
+              : 'You can follow this scorecard. Assigned parents and organisers can enter scores.'}
           </p>
-        )}
+        ) : null}
         {error && (
           <p className="error mt-4" role="alert">
             {error}

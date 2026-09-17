@@ -1,6 +1,5 @@
 'use client';
 import { AccountSignIn } from './account-sign-in';
-import { ClubImage } from './club-image';
 import { GenderField } from './gender-field';
 import { ChildAvatar, ChildName } from './child-avatar';
 import { useState, useEffect, useRef } from 'react';
@@ -47,14 +46,18 @@ import {
   type Member,
 } from '@/lib/model';
 import JoinTeam from './join-team';
-import { ParentFixtureCard, HostInstructions } from './parent-fixture-card';
+import { ParentFixtureCard } from './parent-fixture-card';
 import {
   readJourney,
   rememberJourney,
   parentJourney,
 } from '@/lib/journey-context';
 import { Scorecards } from './fixture-detail';
-import { familyFixtures, parentFixtureSections } from '@/lib/parent-fixtures';
+import {
+  familyFixtures,
+  parentFixtureSections,
+  parentShowsScorecard,
+} from '@/lib/parent-fixtures';
 import { londonDay } from '@/lib/team-priority';
 type Season = {
   workspace: string;
@@ -302,9 +305,10 @@ export default function ParentPortal() {
     regs(p).some((r) => r.e.status === 'approved'),
   );
   const events = familyFixtures(data?.seasons || [], children);
-  const { upcoming, selected, other, live } = parentFixtureSections(
+  const today = data?.seasons?.[0]?.state.demoToday || londonDay();
+  const { upcoming, selected, other, matchday } = parentFixtureSections(
     events,
-    data?.seasons?.[0]?.state.demoToday || londonDay(),
+    today,
   );
   const published = upcoming.filter((e) => e.published);
   const repliesNeeded = (list: typeof events) =>
@@ -325,7 +329,7 @@ export default function ParentPortal() {
     );
   const availabilityNeeded = repliesNeeded(published);
   const otherRepliesNeeded = repliesNeeded(other);
-  const fixtureFocus = published.length > 0;
+  const fixtureFocus = published.length > 0 || matchday.length > 0;
   const notifications = (data?.seasons || [])
     .flatMap((season) =>
       (season.state.notifications || [])
@@ -572,19 +576,70 @@ export default function ParentPortal() {
   }
   function renderEvent(event: (typeof events)[number]) {
     const { season, f, kids } = event;
-    return (
+    const showScorecard = parentShowsScorecard(event, today);
+    const details = (
       <ParentFixtureCard
         key={season.workspace + f.id}
         s={season.state}
         f={f}
         kids={kids}
         published={event.published}
-        detail={screen === 'fixture'}
+        detail={showScorecard || screen === 'fixture'}
         busy={busy}
         send={(a) => act(season, a)}
         availability={(p, value) => void availability(season, f, p, value)}
         open={() => openFixture(season, f)}
       />
+    );
+    if (!showScorecard) return details;
+    const Heading = screen === 'fixture' ? 'h1' : 'h2';
+    return (
+      <section className="family-matchday" key={season.workspace + ':' + f.id}>
+        <header className="family-matchday-heading">
+          <div>
+            <span className="eyebrow">
+              {f.date === today ? 'Today' : dateLabel(f.date)} ·{' '}
+              {f.status === 'completed'
+                ? 'Completed scorecard'
+                : 'Your scorecard'}
+            </span>
+            <Heading>
+              {season.state.clubs.find((club) => club.id === f.clubId)?.name ||
+                f.name}
+            </Heading>
+            <p>
+              Arrive {f.arrival} ·{' '}
+              {f.format === 'shotgun' ? 'Shotgun start' : 'First tee time'}{' '}
+              {f.start}
+            </p>
+          </div>
+          <a
+            className="btn"
+            href={'#matchday-details-' + season.workspace + '-' + f.id}
+            onClick={(e) => {
+              e.preventDefault();
+              const panel = document.getElementById(
+                'matchday-details-' + season.workspace + '-' + f.id,
+              ) as HTMLDetailsElement | null;
+              if (panel) {
+                panel.open = true;
+                panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                panel.querySelector('summary')?.focus();
+              }
+            }}
+          >
+            <MapPin size={16} /> Instructions & fixture details
+          </a>
+        </header>
+        <Scorecards f={f} tools={tools(season)} />
+        <details
+          className="family-matchday-details"
+          id={'matchday-details-' + season.workspace + '-' + f.id}
+        >
+          <summary>Joining instructions, team & messages</summary>
+          {details}
+        </details>
+      </section>
     );
   }
 
@@ -667,7 +722,7 @@ export default function ParentPortal() {
                   <h1>
                     {!children.length
                       ? 'Let’s meet your young golfer.'
-                      : live.length
+                      : matchday.length
                         ? 'It’s matchday. Let’s play!'
                         : !joined
                           ? 'A team for every little golfer.'
@@ -682,8 +737,8 @@ export default function ParentPortal() {
                   <p>
                     {!children.length
                       ? 'Add your children first. We’ll help you find their teams next.'
-                      : live.length
-                        ? 'Your pair, your scorecard. Everything you need is right here.'
+                      : matchday.length
+                        ? 'Enter scores for your child’s pair below. Joining instructions and organiser messages are still available.'
                         : !joined
                           ? 'Pick a team or use the code your organiser gave you. They’ll confirm your child’s place.'
                           : selected.length
@@ -738,16 +793,23 @@ export default function ParentPortal() {
                   </section>
                 ) : (
                   <>
-                    {live.map((e) => renderEvent(e))}
-                    {selected.map((e) => renderEvent(e))}
+                    {matchday.map((e) => renderEvent(e))}
+                    {matchday.length > 0 && selected.length > 0 ? (
+                      <details className="family-other-fixtures">
+                        <summary>Selected for later fixtures</summary>
+                        {selected.map((e) => renderEvent(e))}
+                      </details>
+                    ) : (
+                      selected.map((e) => renderEvent(e))
+                    )}
                     {joined && other.length > 0 && (
                       <details
                         className="family-other-fixtures"
-                        open={selected.length === 0}
+                        open={selected.length === 0 && matchday.length === 0}
                       >
                         <summary>
                           <span>
-                            {selected.length
+                            {selected.length || matchday.length
                               ? 'Other upcoming fixtures'
                               : 'Upcoming fixtures & availability'}
                           </span>
@@ -764,7 +826,7 @@ export default function ParentPortal() {
                         {other.map((e) => renderEvent(e))}
                       </details>
                     )}
-                    {joined && !upcoming.length && !live.length && (
+                    {joined && !upcoming.length && !matchday.length && (
                       <section className="card">
                         <h2>You’re all caught up.</h2>
                         <p className="muted mt-3">
@@ -773,7 +835,7 @@ export default function ParentPortal() {
                         </p>
                       </section>
                     )}
-                    {fixtureFocus || live.length > 0 ? (
+                    {fixtureFocus ? (
                       <div className="family-maintenance-link">
                         <button
                           className="btn"
@@ -864,6 +926,7 @@ export default function ParentPortal() {
             {screen === 'fixtures' && (
               <>
                 <h1 className="mb-7">All their upcoming fixtures.</h1>
+                {matchday.map((e) => renderEvent(e))}
                 {upcoming.map((e) => renderEvent(e))}
               </>
             )}
@@ -928,62 +991,25 @@ export default function ParentPortal() {
                   <ArrowLeft size={16} />
                   Back to our fixtures
                 </button>
-                {activeFixture.status !== 'scheduled' && (
-                  <div className="parent-greeting">
-                    <ClubImage
-                      club={activeSeason.state.clubs.find(
-                        (c) => c.id === activeFixture.clubId,
-                      )}
-                      workspace={activeSeason.workspace}
-                    />
-                    <span className="eyebrow">
-                      {dateLabel(activeFixture.date)}
-                    </span>
-                    <h1>
-                      {activeSeason.state.clubs.find(
-                        (c) => c.id === activeFixture.clubId,
-                      )?.name || activeFixture.name}
-                    </h1>
-                    <p>
-                      Arrive {activeFixture.arrival} · Play{' '}
-                      {activeFixture.start} ·{' '}
-                      {activeFixture.format === 'shotgun'
-                        ? 'Shotgun start'
-                        : 'Tee times'}
-                    </p>
-                  </div>
-                )}
-                {activeFixture.status === 'live' ||
-                activeFixture.status === 'completed' ? (
-                  <Scorecards
-                    key={activeFixture.id}
-                    f={activeFixture}
-                    tools={tools(activeSeason)}
-                  />
-                ) : (
-                  renderEvent({
-                    season: activeSeason,
-                    f: activeFixture,
-                    published: !!activeSeason.state.leagues.find(
-                      (l) => l.id === activeFixture.leagueId,
-                    )?.fixturesConfirmedAt,
-                    kids: children.filter((p) =>
+                {renderEvent({
+                  season: activeSeason,
+                  f: activeFixture,
+                  published: !!activeSeason.state.leagues.find(
+                    (l) => l.id === activeFixture.leagueId,
+                  )?.fixturesConfirmedAt,
+                  kids: children.filter(
+                    (p) =>
+                      activeFixture.pairs.some((pair) =>
+                        pair.players.includes(p.id),
+                      ) ||
                       regs(p).some(
                         (r) =>
                           r.season.workspace === activeSeason.workspace &&
                           r.e.status === 'approved' &&
                           activeFixture.teamIds.includes(r.e.teamId),
                       ),
-                    ),
-                  })
-                )}
-                {activeFixture.status !== 'scheduled' && (
-                  <HostInstructions
-                    s={activeSeason.state}
-                    f={activeFixture}
-                    id="fixture-host-instructions"
-                  />
-                )}
+                  ),
+                })}
               </>
             )}
             <footer className="family-footer">

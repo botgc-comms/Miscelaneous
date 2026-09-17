@@ -1,13 +1,31 @@
 import { rosterEligible, type Player, type State } from './model';
 
+type FamilyEvent = {
+  f: State['fixtures'][number];
+  kids: Player[];
+  published: boolean;
+};
+
+/** Match-day scorecards take priority for families with a saved selection. */
+export function parentShowsScorecard(event: FamilyEvent, today: string) {
+  const selected = event.kids.some((child) =>
+    event.f.pairs.some((pair) => pair.players.includes(child.id)),
+  );
+  return (
+    selected &&
+    (event.f.status === 'live' ||
+      event.f.status === 'completed' ||
+      (event.published &&
+        event.f.status === 'scheduled' &&
+        event.f.date <= today))
+  );
+}
+
 /** Parent home priorities use saved line-ups; unsaved organiser drafts stay local. */
-export function parentFixtureSections<
-  T extends {
-    f: State['fixtures'][number];
-    kids: Player[];
-    published: boolean;
-  },
->(events: T[], today: string) {
+export function parentFixtureSections<T extends FamilyEvent>(
+  events: T[],
+  today: string,
+) {
   const current = events
     .filter(
       ({ f }) => f.date >= today && ['scheduled', 'live'].includes(f.status),
@@ -20,9 +38,15 @@ export function parentFixtureSections<
     event.kids.some((p) =>
       event.f.pairs.some((pair) => pair.players.includes(p.id)),
     );
-  const upcoming = current.filter((e) => e.f.status === 'scheduled');
+  const matchday = current
+    .filter((event) => parentShowsScorecard(event, today))
+    .sort(
+      (a, b) => Number(b.f.status === 'live') - Number(a.f.status === 'live'),
+    );
+  const upcoming = current.filter((e) => !matchday.includes(e));
   const selected = upcoming.filter(playing);
   return {
+    matchday,
     upcoming,
     selected,
     other: upcoming.filter((e) => !playing(e)),

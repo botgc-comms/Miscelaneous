@@ -264,7 +264,17 @@ export async function mutate(
         'Update this child through My children so their organisers can review the changes.',
         403,
       );
-    const next = applyAction(c.state, c.me, action);
+    const viewingDate =
+      action.type === 'score' && c.row.demo !== 2
+        ? await (await import('./live-clock')).liveViewingDate()
+        : undefined;
+    const next = applyAction(
+      c.state,
+      c.me,
+      action,
+      new Date().toISOString(),
+      viewingDate,
+    );
     if (await saveCAS(c.row, next)) {
       const jobs = next.clubs.filter(
         (club) =>
