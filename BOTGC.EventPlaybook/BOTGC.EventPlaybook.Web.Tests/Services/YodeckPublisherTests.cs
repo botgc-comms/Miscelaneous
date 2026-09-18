@@ -7,7 +7,6 @@ using BOTGC.EventPlaybook.Models;
 using BOTGC.EventPlaybook.Options;
 using BOTGC.EventPlaybook.Services;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace BOTGC.EventPlaybook.Web.Tests.Services;
@@ -429,7 +428,7 @@ public sealed class YodeckPublisherTests
                 PlaylistName = "Clubhouse"
             });
 
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+        var exception = await Assert.ThrowsAsync<YodeckUnavailableException>(() =>
             publisher.TakeDownAsync(CreateTakeDownCommand(), CancellationToken.None));
 
         Assert.Contains("not configured", exception.Message, StringComparison.OrdinalIgnoreCase);
@@ -439,6 +438,41 @@ public sealed class YodeckPublisherTests
         Assert.Equal("failed", activity.Outcome);
         Assert.Equal("configuration", activity.Stage);
         Assert.Null(activity.StatusCode);
+    }
+
+    [Fact]
+    public async Task PublishAsync_UsesCurrentPluginSettingsWithoutRecreatingPublisher()
+    {
+        var scenario = new YodeckScenario();
+        var activityStore = new RecordingIntegrationActivityStore();
+        var settings = new MutableYodeckSettingsProvider(new YodeckRuntimeSettings(
+            Enabled: false,
+            ApiToken: "secret-token",
+            ApiTokenLabel: "event-playbook",
+            PlaylistId: 77,
+            PlaylistName: "Clubhouse",
+            MediaDurationSeconds: 15,
+            UsesLegacyConfiguration: false));
+        var publisher = new YodeckPublisher(
+            new FakeHttpClientFactory(scenario.Handler),
+            settings,
+            activityStore,
+            NullLogger<YodeckPublisher>.Instance);
+
+        var disabled = await Assert.ThrowsAsync<YodeckUnavailableException>(() =>
+            publisher.PublishAsync(CreateCommand(), CancellationToken.None));
+        Assert.Contains("disabled", disabled.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Empty(scenario.Requests);
+
+        settings.Current = settings.Current with { Enabled = true };
+        var result = await publisher.PublishAsync(CreateCommand(), CancellationToken.None);
+
+        Assert.Equal(91, result.MediaId);
+        Assert.Contains(scenario.Requests, request =>
+            request.Method == HttpMethod.Post && request.Path == "/api/v2/screens/push");
+        Assert.Equal(2, activityStore.Activities.Count);
+        Assert.Equal("configuration", activityStore.Activities[0].Stage);
+        Assert.Equal("succeeded", activityStore.Activities[1].Outcome);
     }
 
     [Fact]
@@ -585,20 +619,38 @@ public sealed class YodeckPublisherTests
     private static YodeckPublisher CreatePublisher(
         YodeckScenario scenario,
         IIntegrationActivityStore? activityStore = null,
-        YodeckOptions? yodeckOptions = null) =>
-        new(
+        YodeckOptions? yodeckOptions = null)
+    {
+        var options = yodeckOptions ?? new YodeckOptions
+        {
+            ApiBaseUrl = "https://app.yodeck.test/api/v2/",
+            ApiToken = "secret-token",
+            ApiTokenLabel = "event-playbook",
+            PlaylistId = 77,
+            PlaylistName = "Clubhouse",
+            MediaDurationSeconds = 15
+        };
+        return new YodeckPublisher(
             new FakeHttpClientFactory(scenario.Handler),
-            Microsoft.Extensions.Options.Options.Create(yodeckOptions ?? new YodeckOptions
-            {
-                ApiBaseUrl = "https://app.yodeck.test/api/v2/",
-                ApiToken = "secret-token",
-                ApiTokenLabel = "event-playbook",
-                PlaylistId = 77,
-                PlaylistName = "Clubhouse",
-                MediaDurationSeconds = 15
-            }),
+            new MutableYodeckSettingsProvider(new YodeckRuntimeSettings(
+                Enabled: true,
+                ApiToken: options.ApiToken,
+                ApiTokenLabel: options.ApiTokenLabel,
+                PlaylistId: options.PlaylistId,
+                PlaylistName: options.PlaylistName,
+                MediaDurationSeconds: options.MediaDurationSeconds,
+                UsesLegacyConfiguration: false)),
             activityStore ?? new RecordingIntegrationActivityStore(),
             NullLogger<YodeckPublisher>.Instance);
+    }
+
+    private sealed class MutableYodeckSettingsProvider(YodeckRuntimeSettings current) : IYodeckSettingsProvider
+    {
+        public YodeckRuntimeSettings Current { get; set; } = current;
+
+        public Task<YodeckRuntimeSettings> GetAsync(CancellationToken cancellationToken) =>
+            Task.FromResult(Current);
+    }
 
     private static YodeckPublishCommand CreateCommand() => new()
     {

@@ -32,6 +32,21 @@ test('the screen card places a matching take-down action beside the publish acti
   assert.match(card, /id="takeDownScreensButton" class="button button-secondary hidden"/);
   assert.ok(card.indexOf('shareScreensButton') < card.indexOf('takeDownScreensButton'));
   assert.match(cssSource, /\.share-action-buttons\{[\s\S]*display:\s*flex;[\s\S]*grid-column:\s*1\s*\/\s*-1;/);
+  assert.match(playbookSource, /\$\{pluginCapabilities\.yodeckEnabled\s*\?\s*`<article class="share-action-card">/);
+  assert.match(playbookSource, /\$\{pluginCapabilities\.yodeckEnabled\s*\?\s*`<dialog id="posterPublishDialog"/);
+  assert.match(playbookSource, /yodeckEnabled:\s*value\?\.yodeck\?\.enabled\s*===\s*true/);
+  assert.match(posterSource, /shareScreensButton\?\.addEventListener\('click',\s*openScreenShareDialog\)/);
+});
+
+test('Yodeck is administered as an enabled plugin without exposing its saved token', () => {
+  assert.match(playbookSource, /yodeckEnabled:\s*false/);
+  assert.match(playbookSource, /cacheKey:\s*'yodeck'/);
+  assert.match(playbookSource, /data-configure-plugin="yodeck"/);
+  assert.match(playbookSource, /id="yodeck-plugin-form"/);
+  assert.match(playbookSource, /id="yodeck-plugin-token"[^>]+type="password"/);
+  assert.match(playbookSource, /yodeck\.hasApiToken\s*\?\s*'Saved securely'/);
+  assert.match(playbookSource, /savePluginConfiguration\(dialog,\s*'\/api\/admin\/plugins\/yodeck'/);
+  assert.match(playbookSource, /data-disconnect-plugin="yodeck"/);
 });
 
 test('persisted screen operations retain their action and old records default to publish', () => {

@@ -4,6 +4,7 @@ public sealed class PluginSettingsOverview
 {
     public required IntelligentGolfPluginSummary IntelligentGolf { get; init; }
     public required MondayPluginSummary Monday { get; init; }
+    public required YodeckPluginSummary Yodeck { get; init; }
 }
 
 public sealed class IntelligentGolfPluginSummary
@@ -32,6 +33,19 @@ public sealed class MondayPluginSummary
     public string? WorkspaceId { get; init; }
     public string? BoardId { get; init; }
     public bool HasApiToken { get; init; }
+    public DateTimeOffset? UpdatedAtUtc { get; init; }
+}
+
+public sealed class YodeckPluginSummary
+{
+    public string Id { get; init; } = "yodeck";
+    public string Name { get; init; } = "Yodeck";
+    public bool Enabled { get; init; }
+    public bool Configured { get; init; }
+    public bool HasApiToken { get; init; }
+    public long PlaylistId { get; init; }
+    public string? PlaylistName { get; init; }
+    public int MediaDurationSeconds { get; init; }
     public DateTimeOffset? UpdatedAtUtc { get; init; }
 }
 
@@ -69,6 +83,21 @@ public sealed class SaveMondayPluginRequest
     public string? WorkspaceId { get; init; }
     public string? BoardId { get; init; }
 }
+
+public sealed class SaveYodeckPluginRequest
+{
+    public bool Enabled { get; init; }
+    public string? ApiToken { get; init; }
+    public long? PlaylistId { get; init; }
+    public string? PlaylistName { get; init; }
+    public int? MediaDurationSeconds { get; init; }
+}
+
+public sealed record YodeckPluginCredentials(
+    string ApiToken,
+    long PlaylistId,
+    string PlaylistName,
+    int MediaDurationSeconds);
 
 public sealed class SetPluginEnabledRequest
 {

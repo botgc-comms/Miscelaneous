@@ -249,7 +249,8 @@ public sealed class IntelligentGolfMemberCommunicationsClientTests
                     Configured = true,
                     EmailConfigured = emailConfigured
                 },
-                Monday = new MondayPluginSummary()
+                Monday = new MondayPluginSummary(),
+                Yodeck = new YodeckPluginSummary()
             });
         }
 
@@ -266,6 +267,17 @@ public sealed class IntelligentGolfMemberCommunicationsClientTests
 
         public Task<MondayPluginSummary> SaveMondayAsync(
             SaveMondayPluginRequest request,
+            CancellationToken cancellationToken) => throw new NotSupportedException();
+
+        public Task<YodeckPluginSummary> SaveYodeckAsync(
+            SaveYodeckPluginRequest request,
+            CancellationToken cancellationToken) => throw new NotSupportedException();
+
+        public Task<YodeckPluginCredentials> ResolveYodeckCredentialsAsync(
+            SaveYodeckPluginRequest request,
+            CancellationToken cancellationToken) => throw new NotSupportedException();
+
+        public Task<YodeckPluginCredentials?> GetYodeckCredentialsAsync(
             CancellationToken cancellationToken) => throw new NotSupportedException();
 
         public Task<PluginSettingsOverview> SetEnabledAsync(

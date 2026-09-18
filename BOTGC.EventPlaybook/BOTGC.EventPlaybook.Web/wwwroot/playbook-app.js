@@ -150,7 +150,8 @@
   let pluginSettingsNotice = '';
   let pluginCapabilities = {
     intelligentGolfEnabled: false,
-    mondayEnabled: false
+    mondayEnabled: false,
+    yodeckEnabled: false
   };
   const intelligentGolfEventStatuses = new Map();
   const intelligentGolfStatusRequests = new Map();
@@ -179,7 +180,7 @@
     displayName: ''
   };
   const requestedView = new URLSearchParams(window.location.search).get('view');
-  if (['dashboard', 'tasks', 'finances', 'briefing', 'catalogue', 'artwork', 'retrospective', 'admin', 'plugins', 'references', 'directory'].includes(requestedView)) {
+  if (['dashboard', 'tasks', 'finances', 'briefing', 'catalogue', 'artwork', 'cancellation', 'retrospective', 'admin', 'plugins', 'references', 'directory'].includes(requestedView)) {
     state.activeView = requestedView;
   }
 
@@ -274,7 +275,8 @@
     const intelligentGolfChanged = pluginCapabilities.intelligentGolfEnabled !== intelligentGolfEnabled;
     pluginCapabilities = {
       intelligentGolfEnabled,
-      mondayEnabled: value?.monday?.enabled === true
+      mondayEnabled: value?.monday?.enabled === true,
+      yodeckEnabled: value?.yodeck?.enabled === true
     };
     if (intelligentGolfChanged) invalidateIntelligentGolfEventStatusCache();
   }
@@ -4141,6 +4143,9 @@
     if (event) {
       normaliseAnswers(event);
       normaliseMilestoneDates(event);
+      if (state.activeView === 'cancellation' && normaliseEventLifecycle(event).status !== 'cancelled') {
+        state.activeView = 'module:start';
+      }
     }
     saveState();
 
@@ -4166,6 +4171,7 @@
       : state.activeView === 'briefing' ? 'Briefing Summary'
       : state.activeView === 'catalogue' ? 'Event Catalogue'
       : state.activeView === 'artwork' ? 'Communications Centre'
+      : state.activeView === 'cancellation' ? 'Cancellation Control'
       : state.activeView === 'directory' ? 'People & Roles'
       : state.activeView === 'references' ? 'Image Library'
       : state.activeView === 'admin' ? 'Playbook Administration'
@@ -4178,6 +4184,7 @@
       : state.activeView === 'briefing' ? 'Read the latest event and staff briefings compiled from the description, planning answers and operational work.'
       : state.activeView === 'catalogue' ? 'Review previous events, clone successful plans and reuse the knowledge captured from earlier events.'
       : state.activeView === 'artwork' ? 'Create a campaign from three AI concepts or adapt an existing supplied design into matching artwork for screens, member communications and print.'
+      : state.activeView === 'cancellation' ? 'Review every recorded publication and commitment, then coordinate the actions needed to withdraw or correct them.'
       : state.activeView === 'directory' ? 'Maintain the people, shared mailboxes, responsibilities and platform access used throughout every event.'
       : state.activeView === 'references' ? `Maintain reusable images of the clubhouse, course, trophies and interiors so Communications Centre artwork can look recognisably like ${clubBranding.clubName}.`
       : state.activeView === 'admin' ? 'Configure the questions, tasks, ownership rules and advisories that make up the club event planning process.'
@@ -4186,7 +4193,7 @@
       : 'Plan the event consistently from first decision to final close-down, with every relevant question, responsibility and deadline in one place.';
     const showEventEditor = Boolean(event) && state.activeView === 'module:start';
     const showEventTools = Boolean(event) && (isPlanningView || state.activeView === 'tasks' || state.activeView === 'retrospective');
-    const showLifecycleBanner = Boolean(event) && (isPlanningView || ['tasks', 'finances', 'briefing', 'artwork', 'retrospective'].includes(state.activeView));
+    const showLifecycleBanner = Boolean(event) && (isPlanningView || ['tasks', 'finances', 'briefing', 'artwork', 'cancellation', 'retrospective'].includes(state.activeView));
     const lifecycle = event ? normaliseEventLifecycle(event) : null;
     const lifecycleDefinition = event ? eventStatusDefinition(event) : null;
 
@@ -4210,6 +4217,7 @@
             <button class="${state.activeView === 'tasks' ? 'active' : ''}" data-view="tasks" ${event ? '' : 'disabled'}><span class="nav-icon">✓</span>Task Board</button>
             <button class="${state.activeView === 'finances' ? 'active' : ''}" data-view="finances" ${event ? '' : 'disabled'}><span class="nav-icon">£</span>Event Finances</button>
             <button class="${state.activeView === 'artwork' ? 'active' : ''}" data-view="artwork" ${event ? '' : 'disabled'}><span class="nav-icon">✦</span>Communications Centre</button>
+            ${lifecycle?.status === 'cancelled' ? `<button class="cancellation-nav ${state.activeView === 'cancellation' ? 'active' : ''}" data-view="cancellation"><span class="nav-icon">!</span>Cancellation Control</button>` : ''}
             <button class="${state.activeView === 'retrospective' ? 'active' : ''}" data-view="retrospective" ${event ? '' : 'disabled'}><span class="nav-icon">↺</span>Retrospectives</button>
           </nav>
 
@@ -4332,7 +4340,7 @@
           <main class="main-content ${state.activeView === 'artwork' ? 'poster-studio' : ''}">
             ${event ? renderIntelligentGolfPlannerMatchBanner(event) : ''}
             ${showLifecycleBanner ? renderEventLifecycleBanner(event) : ''}
-            ${state.activeView === 'dashboard' ? renderDashboard() : state.activeView === 'catalogue' ? renderCatalogue() : state.activeView === 'directory' ? renderDirectory() : state.activeView === 'references' ? renderReferenceLibrary() : state.activeView === 'plugins' ? renderPluginAdministration() : state.activeView === 'admin' ? renderAdmin() : !event ? renderEmptyState() : state.activeView === 'tasks' ? renderTaskBoard(event, tasks) : state.activeView === 'finances' ? renderEventFinances(event) : state.activeView === 'briefing' ? renderBriefing(event) : state.activeView === 'artwork' ? renderArtworkStudio(event) : state.activeView === 'retrospective' ? renderRetrospective(event) : renderModuleView(event)}
+            ${state.activeView === 'dashboard' ? renderDashboard() : state.activeView === 'catalogue' ? renderCatalogue() : state.activeView === 'directory' ? renderDirectory() : state.activeView === 'references' ? renderReferenceLibrary() : state.activeView === 'plugins' ? renderPluginAdministration() : state.activeView === 'admin' ? renderAdmin() : !event ? renderEmptyState() : state.activeView === 'tasks' ? renderTaskBoard(event, tasks) : state.activeView === 'finances' ? renderEventFinances(event) : state.activeView === 'briefing' ? renderBriefing(event) : state.activeView === 'artwork' ? renderArtworkStudio(event) : state.activeView === 'cancellation' ? renderCancellationWorkspace(event) : state.activeView === 'retrospective' ? renderRetrospective(event) : renderModuleView(event)}
           </main>
         </main>
       </div>
@@ -4353,6 +4361,30 @@
     }
     if (state.activeView === 'retrospective' && event) ensureFeedbackLoaded(event.id);
     if (state.activeView === 'briefing' && event) ensureEventBriefing(event);
+    if (state.activeView === 'cancellation' && event && lifecycle?.status === 'cancelled') {
+      import('./cancellation-app.js?v=20260918-cancellation-1')
+        .then(module => module.mountCancellationWorkspace({
+          eventId: event.id,
+          eventName: event.name,
+          eventDate: event.eventDate,
+          answers: structuredClone(event.answers ?? {}),
+          lifecycle: structuredClone(lifecycle),
+          responseState: structuredClone(event.cancellationResponse ?? null),
+          yodeckEnabled: pluginCapabilities.yodeckEnabled,
+          intelligentGolfEnabled: pluginCapabilities.intelligentGolfEnabled,
+          onManageStatus: () => openEventStatusDialog(event.id),
+          onStateChange: response => {
+            const target = state.events.find(candidate => candidate.id === event.id);
+            if (!target) return;
+            target.cancellationResponse = response;
+            saveState();
+          }
+        }))
+        .catch(error => {
+          const workspace = document.getElementById('cancellationWorkspace');
+          if (workspace) workspace.innerHTML = `<div class="cancellation-page-error"><strong>Cancellation Control could not start.</strong><span>${escapeHtml(error.message || 'The module could not be loaded.')}</span></div>`;
+        });
+    }
     if (event && pluginCapabilities.intelligentGolfEnabled) {
       ensureIntelligentGolfEventStatus(event.id);
       maybeOpenIntelligentGolfPlannerMatch(event);
@@ -4673,6 +4705,12 @@
     `;
   }
 
+  function renderCancellationWorkspace(event) {
+    const lifecycle = normaliseEventLifecycle(event);
+    if (lifecycle.status !== 'cancelled') return renderModuleView(event);
+    return '<div id="cancellationWorkspace" class="cancellation-workspace" aria-live="polite"><section class="cancellation-loading"><span></span><div><strong>Preparing Cancellation Control…</strong><p>Checking actual publication and integration records.</p></div></section></div>';
+  }
+
   function renderArtworkStudio(event) {
     const retainedArtworkThumbnail = event.publishedCataloguePosterThumbnail || event.cataloguePosterThumbnail || '';
     return `
@@ -4778,14 +4816,14 @@
       <section id="sharePanel" class="panel publish-panel share-panel hidden">
         <div class="panel-heading"><div><p class="section-kicker">Share</p><h2>Share the approved campaign</h2><p class="panel-copy">Choose where the event should be communicated. Each channel has its own settings and can be used independently.</p></div></div>
         <div class="share-actions">
-          <article class="share-action-card">
+          ${pluginCapabilities.yodeckEnabled ? `<article class="share-action-card">
             <span class="share-action-icon">▣</span>
             <div><h3>Clubhouse screens</h3><p>Choose when the digital-screen artwork should appear around the clubhouse.</p><span id="shareScreensStatus" class="share-action-status hidden"></span></div>
             <div class="share-action-buttons">
               <button id="shareScreensButton" class="button button-gold" type="button">Send to clubhouse screens</button>
               <button id="takeDownScreensButton" class="button button-secondary hidden" type="button">Take down</button>
             </div>
-          </article>
+          </article>` : ''}
           <article id="shareEmailCard" class="share-action-card">
             <span class="share-action-icon">✉</span>
             <div><h3>Members</h3><p>Draft an email, choose active membership categories and send a test before contacting members.</p><span id="shareEmailStatus" class="share-action-status hidden"></span></div>
@@ -4805,7 +4843,7 @@
         <div id="shareMessage" class="publish-message share-message" role="status">This campaign has not been shared yet.</div>
       </section>
 
-      <dialog id="posterPublishDialog" class="poster-publish-dialog">
+      ${pluginCapabilities.yodeckEnabled ? `<dialog id="posterPublishDialog" class="poster-publish-dialog">
         <form id="posterPublishForm">
           <div class="poster-publish-heading">
             <div><p class="eyebrow">Share artwork</p><h2>Send to clubhouse screens</h2><p>Choose how the digital-screen artwork should be identified and when it should appear.</p></div>
@@ -4827,7 +4865,7 @@
           </div>
           <div class="poster-publish-actions"><button id="cancelPosterPublish" class="button button-secondary" type="button">Cancel</button><button id="confirmPosterPublish" class="button button-gold button-large" type="submit">Send to clubhouse screens</button></div>
         </form>
-      </dialog>
+      </dialog>` : ''}
 
       <dialog id="memberEmailDialog" class="poster-publish-dialog member-email-dialog">
         <form id="memberEmailForm">
@@ -7324,6 +7362,34 @@
     return integrationActivityRequest;
   }
 
+  const pluginUiDefinitions = Object.freeze({
+    'intelligent-golf': {
+      name: 'Intelligent Golf',
+      cacheKey: 'intelligentGolf',
+      capabilityKey: 'intelligentGolfEnabled',
+      dialogId: 'intelligent-golf-plugin-dialog',
+      enabledInputId: 'ig-plugin-enabled'
+    },
+    monday: {
+      name: 'Monday.com',
+      cacheKey: 'monday',
+      capabilityKey: 'mondayEnabled',
+      dialogId: 'monday-plugin-dialog',
+      enabledInputId: 'monday-plugin-enabled'
+    },
+    yodeck: {
+      name: 'Yodeck',
+      cacheKey: 'yodeck',
+      capabilityKey: 'yodeckEnabled',
+      dialogId: 'yodeck-plugin-dialog',
+      enabledInputId: 'yodeck-plugin-enabled'
+    }
+  });
+
+  function pluginUiDefinition(pluginId) {
+    return pluginUiDefinitions[String(pluginId ?? '').trim().toLowerCase()] ?? null;
+  }
+
   function pluginStatus(summary) {
     if (summary?.enabled && summary?.configured) return { label: 'Active', className: 'enabled' };
     if (summary?.configured) return { label: 'Ready', className: 'configured' };
@@ -7401,6 +7467,7 @@
         <section class="plugin-admin-grid" aria-busy="true">
           <article class="plugin-card plugin-card-loading"><div class="plugin-card-icon">IG</div><div><h3>Intelligent Golf</h3><p>Loading secure configuration…</p></div></article>
           <article class="plugin-card plugin-card-loading"><div class="plugin-card-icon monday">M</div><div><h3>Monday.com</h3><p>Loading secure configuration…</p></div></article>
+          <article class="plugin-card plugin-card-loading"><div class="plugin-card-icon yodeck">YD</div><div><h3>Yodeck</h3><p>Loading secure configuration…</p></div></article>
         </section>`;
     }
 
@@ -7411,8 +7478,10 @@
 
     const intelligentGolf = pluginSettingsCache.intelligentGolf ?? {};
     const monday = pluginSettingsCache.monday ?? {};
+    const yodeck = pluginSettingsCache.yodeck ?? {};
     const intelligentGolfStatus = pluginStatus(intelligentGolf);
     const mondayStatus = pluginStatus(monday);
+    const yodeckStatus = pluginStatus(yodeck);
 
     return `
       <section class="plugin-admin-intro">
@@ -7448,6 +7517,20 @@
           </div>
           <footer class="plugin-card-actions"><small>${escapeHtml(pluginUpdatedLabel(monday.updatedAtUtc))}</small><button class="button button-primary" type="button" data-configure-plugin="monday">${monday.configured ? 'Update settings' : 'Configure'}</button></footer>
         </article>
+
+        <article class="plugin-card ${yodeck.enabled ? 'plugin-on' : 'plugin-off'}">
+          <header class="plugin-card-header"><div class="plugin-card-icon yodeck">YD</div><div class="plugin-card-title"><span class="plugin-status ${yodeckStatus.className}">${escapeHtml(yodeckStatus.label)}</span><h3>Yodeck</h3><p>Clubhouse digital-screen artwork and playlist publishing.</p></div>${renderPluginModuleSwitch('yodeck', 'Yodeck', yodeck)}</header>
+          <div class="plugin-card-body">
+            <p>Upload finished campaign artwork to Yodeck, keep it in the configured clubhouse playlist and push playlist changes to the screens.</p>
+            <dl class="plugin-facts">
+              <div><dt>API token</dt><dd>${yodeck.hasApiToken ? 'Saved securely' : 'Not set'}</dd></div>
+              <div><dt>Playlist ID</dt><dd>${yodeck.playlistId > 0 ? escapeHtml(String(yodeck.playlistId)) : 'Not set'}</dd></div>
+              <div><dt>Destination name</dt><dd>${escapeHtml(yodeck.playlistName || 'Clubhouse')}</dd></div>
+              <div><dt>Artwork duration</dt><dd>${Number(yodeck.mediaDurationSeconds) > 0 ? `${escapeHtml(String(yodeck.mediaDurationSeconds))} seconds` : '15 seconds'}</dd></div>
+            </dl>
+          </div>
+          <footer class="plugin-card-actions"><small>${escapeHtml(pluginUpdatedLabel(yodeck.updatedAtUtc))}</small><button class="button button-primary" type="button" data-configure-plugin="yodeck">${yodeck.configured ? 'Update settings' : 'Configure'}</button></footer>
+        </article>
       </section>
       ${renderIntegrationActivity()}`;
   }
@@ -7456,6 +7539,7 @@
     if (!pluginSettingsCache || pluginSettingsCache.error) return '';
     const intelligentGolf = pluginSettingsCache.intelligentGolf ?? {};
     const monday = pluginSettingsCache.monday ?? {};
+    const yodeck = pluginSettingsCache.yodeck ?? {};
     return `
       <dialog id="intelligent-golf-plugin-dialog" class="plugin-dialog">
         <form id="intelligent-golf-plugin-form">
@@ -7487,6 +7571,21 @@
             <label class="plugin-enabled-control wide"><input id="monday-plugin-enabled" type="checkbox" ${monday.enabled ? 'checked' : ''}><span><strong>Enable this plugin</strong><small>The token must be saved before the plugin can be enabled.</small></span></label>
           </div>
           <footer class="modal-actions">${monday.configured ? '<button class="button button-danger plugin-disconnect-button" type="button" data-disconnect-plugin="monday">Remove credentials</button>' : ''}<span></span><button class="button button-secondary" type="button" data-close-plugin-dialog>Cancel</button><button class="button button-primary" type="submit">Save Monday.com</button></footer>
+        </form>
+      </dialog>
+
+      <dialog id="yodeck-plugin-dialog" class="plugin-dialog">
+        <form id="yodeck-plugin-form">
+          <header class="modal-heading"><div><span class="eyebrow">Plugin settings</span><h2>Configure Yodeck</h2><p>Connect Event Playbook to the existing clubhouse-screen playlist.</p></div><button class="icon-button" type="button" data-close-plugin-dialog aria-label="Close">×</button></header>
+          <div class="plugin-dialog-body">
+            <div class="plugin-dialog-guidance"><strong>The API token cannot be revealed</strong><p>Use a Yodeck token with Media, Playlists, Screens and Push to Screens access. Leave the token blank to retain the saved value.</p></div>
+            <label class="wide"><span>API token</span><input id="yodeck-plugin-token" type="password" autocomplete="new-password" spellcheck="false" placeholder="${yodeck.hasApiToken ? 'Saved — leave blank to keep' : 'Paste the Yodeck API token'}"></label>
+            <label><span>Clubhouse playlist ID</span><input id="yodeck-plugin-playlist-id" type="number" min="1" step="1" inputmode="numeric" value="${yodeck.playlistId > 0 ? escapeHtml(String(yodeck.playlistId)) : ''}" placeholder="12345"><small>The numeric ID of the existing playlist assigned to the clubhouse screens.</small></label>
+            <label><span>Destination name</span><input id="yodeck-plugin-playlist-name" type="text" maxlength="500" value="${escapeHtml(yodeck.playlistName || 'Clubhouse')}" placeholder="Clubhouse"><small>The friendly name shown to people publishing artwork.</small></label>
+            <label><span>Artwork duration</span><input id="yodeck-plugin-media-duration" type="number" min="5" max="300" step="1" inputmode="numeric" value="${escapeHtml(String(yodeck.mediaDurationSeconds || 15))}"><small>Seconds each poster remains visible within the playlist.</small></label>
+            <label class="plugin-enabled-control wide"><input id="yodeck-plugin-enabled" type="checkbox" ${yodeck.enabled ? 'checked' : ''}><span><strong>Enable this plugin</strong><small>The token and playlist ID must be saved before clubhouse-screen controls are shown.</small></span></label>
+          </div>
+          <footer class="modal-actions">${yodeck.configured ? '<button class="button button-danger plugin-disconnect-button" type="button" data-disconnect-plugin="yodeck">Remove credentials</button>' : ''}<span></span><button class="button button-secondary" type="button" data-close-plugin-dialog>Cancel</button><button class="button button-primary" type="submit">Save Yodeck</button></footer>
         </form>
       </dialog>`;
   }
@@ -7950,6 +8049,12 @@
     if (nextStatus === 'completed') event.closedAt ??= now;
     else if (event.closedAt) event.closedAt = null;
 
+    if (statusChanged && nextStatus === 'cancelled') {
+      state.activeView = 'cancellation';
+    } else if (state.activeView === 'cancellation' && nextStatus !== 'cancelled') {
+      state.activeView = 'module:start';
+    }
+
     saveState();
     if (statusNotification) void dispatchEventStatusNotification(event);
     return true;
@@ -8206,11 +8311,12 @@
       const result = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(result.error || `Plugin settings could not be saved (${response.status}).`);
 
-      if (endpoint.endsWith('/intelligent-golf')) {
-        pluginCapabilities.intelligentGolfEnabled = result.enabled === true;
+      const definition = pluginUiDefinition(endpoint.split('/').pop());
+      if (definition) {
+        pluginCapabilities[definition.capabilityKey] = result.enabled === true;
+      }
+      if (definition?.cacheKey === 'intelligentGolf') {
         invalidateIntelligentGolfEventStatusCache();
-      } else if (endpoint.endsWith('/monday')) {
-        pluginCapabilities.mondayEnabled = result.enabled === true;
       }
       dialog?.close();
       pluginSettingsCache = null;
@@ -8227,14 +8333,15 @@
 
   async function setPluginEnabledState(trigger) {
     const pluginId = trigger.dataset.togglePlugin;
-    const isMonday = pluginId === 'monday';
-    const summary = isMonday ? pluginSettingsCache?.monday : pluginSettingsCache?.intelligentGolf;
-    const name = isMonday ? 'Monday.com' : 'Intelligent Golf';
+    const definition = pluginUiDefinition(pluginId);
+    if (!definition) return;
+    const summary = pluginSettingsCache?.[definition.cacheKey];
+    const name = definition.name;
     const shouldEnable = summary?.enabled !== true;
 
     if (shouldEnable && summary?.configured !== true) {
-      const dialog = document.getElementById(isMonday ? 'monday-plugin-dialog' : 'intelligent-golf-plugin-dialog');
-      const enabledInput = document.getElementById(isMonday ? 'monday-plugin-enabled' : 'ig-plugin-enabled');
+      const dialog = document.getElementById(definition.dialogId);
+      const enabledInput = document.getElementById(definition.enabledInputId);
       if (enabledInput) enabledInput.checked = true;
       dialog?.showModal();
       return;
@@ -8262,9 +8369,10 @@
   }
 
   function resetPluginDialogEnabledState(dialog) {
-    const isMonday = dialog?.id === 'monday-plugin-dialog';
-    const summary = isMonday ? pluginSettingsCache?.monday : pluginSettingsCache?.intelligentGolf;
-    const enabledInput = document.getElementById(isMonday ? 'monday-plugin-enabled' : 'ig-plugin-enabled');
+    const definition = Object.values(pluginUiDefinitions).find(candidate => candidate.dialogId === dialog?.id);
+    if (!definition) return;
+    const summary = pluginSettingsCache?.[definition.cacheKey];
+    const enabledInput = document.getElementById(definition.enabledInputId);
     if (enabledInput) enabledInput.checked = summary?.enabled === true;
   }
 
@@ -8557,10 +8665,8 @@
 
     document.querySelectorAll('[data-configure-plugin]').forEach(element => {
       element.addEventListener('click', () => {
-        const dialogId = element.dataset.configurePlugin === 'monday'
-          ? 'monday-plugin-dialog'
-          : 'intelligent-golf-plugin-dialog';
-        document.getElementById(dialogId)?.showModal();
+        const definition = pluginUiDefinition(element.dataset.configurePlugin);
+        if (definition) document.getElementById(definition.dialogId)?.showModal();
       });
     });
 
@@ -8616,10 +8722,25 @@
       }, 'Monday.com settings were saved securely.', eventArgs.submitter);
     });
 
+    document.getElementById('yodeck-plugin-form')?.addEventListener('submit', eventArgs => {
+      eventArgs.preventDefault();
+      const dialog = eventArgs.currentTarget.closest('dialog');
+      const playlistIdValue = document.getElementById('yodeck-plugin-playlist-id')?.value ?? '';
+      savePluginConfiguration(dialog, '/api/admin/plugins/yodeck', {
+        enabled: document.getElementById('yodeck-plugin-enabled')?.checked === true,
+        apiToken: document.getElementById('yodeck-plugin-token')?.value ?? '',
+        playlistId: playlistIdValue ? Number(playlistIdValue) : null,
+        playlistName: document.getElementById('yodeck-plugin-playlist-name')?.value ?? '',
+        mediaDurationSeconds: Number(document.getElementById('yodeck-plugin-media-duration')?.value || 15)
+      }, 'Yodeck settings were saved securely.', eventArgs.submitter);
+    });
+
     document.querySelectorAll('[data-disconnect-plugin]').forEach(element => {
       element.addEventListener('click', async () => {
         const pluginId = element.dataset.disconnectPlugin;
-        const name = pluginId === 'monday' ? 'Monday.com' : 'Intelligent Golf';
+        const definition = pluginUiDefinition(pluginId);
+        if (!definition) return;
+        const name = definition.name;
         if (!confirm(`Remove all saved ${name} credentials and disable this plugin?`)) return;
 
         element.disabled = true;

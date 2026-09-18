@@ -41,6 +41,11 @@ public interface IIntelligentGolfEventIntegration
         MemberDiaryPublishRequest request,
         byte[] artworkBytes,
         CancellationToken cancellationToken);
+    Task<IntelligentGolfEventCancellationResult> CancelEventAsync(
+        PlaybookEventIntegrationSnapshot eventSnapshot,
+        bool removeDiary,
+        bool removePlanner,
+        CancellationToken cancellationToken);
 }
 
 public sealed class IntelligentGolfEventIntegration(
@@ -704,6 +709,231 @@ public sealed class IntelligentGolfEventIntegration(
                     : exception.Message
             }, cancellationToken);
             throw;
+        }
+        finally
+        {
+            eventLock.Release();
+        }
+    }
+
+    public async Task<IntelligentGolfEventCancellationResult> CancelEventAsync(
+        PlaybookEventIntegrationSnapshot eventSnapshot,
+        bool removeDiary,
+        bool removePlanner,
+        CancellationToken cancellationToken)
+    {
+        ValidateSnapshot(eventSnapshot);
+        if (!removeDiary && !removePlanner)
+            throw new ArgumentException("Choose at least one Intelligent Golf publication to remove.");
+
+        var eventLock = _eventLocks.GetOrAdd(eventSnapshot.EventId, _ => new SemaphoreSlim(1, 1));
+        await eventLock.WaitAsync(cancellationToken);
+        try
+        {
+            await EnsureAvailableAsync(cancellationToken);
+            var link = await linkStore.GetAsync(eventSnapshot.EventId, cancellationToken);
+            var plannerEventId = link?.IntelligentGolfEventId
+                ?? throw new InvalidOperationException(
+                    "This Event Playbook event is not linked to an Intelligent Golf planner entry.");
+            var diaryEntryId = link.IntelligentGolfDiaryEntryId;
+
+            if (removeDiary && diaryEntryId is not > 0)
+            {
+                throw new InvalidOperationException(
+                    "This Event Playbook event is not linked to an Intelligent Golf member diary entry.");
+            }
+
+            if (removePlanner && diaryEntryId is > 0 && !removeDiary)
+            {
+                throw new InvalidOperationException(
+                    $"Intelligent Golf diary entry {diaryEntryId} must be removed before planner entry {plannerEventId}.");
+            }
+
+            var diaryOutcome = new IntelligentGolfRemovalOutcome
+            {
+                Requested = removeDiary,
+                Outcome = "not-requested",
+                ExternalId = diaryEntryId
+            };
+            var plannerOutcome = new IntelligentGolfRemovalOutcome
+            {
+                Requested = removePlanner,
+                Outcome = "not-requested",
+                ExternalId = plannerEventId
+            };
+
+            if (removeDiary)
+            {
+                var expectedDiaryEntryId = diaryEntryId!.Value;
+                try
+                {
+                    using var message = CreateRequest(HttpMethod.Delete, "api/event-planner/member-diary");
+                    message.Content = JsonContent.Create(new
+                    {
+                        eventPlaybookEventId = eventSnapshot.EventId,
+                        intelligentGolfEventId = plannerEventId,
+                        intelligentGolfDiaryEntryId = expectedDiaryEntryId
+                    });
+                    using var response = await SendAsync(message, cancellationToken);
+                    var result = await response.Content.ReadFromJsonAsync<IntelligentGolfDiaryRemovalResult>(
+                        JsonOptions,
+                        cancellationToken)
+                        ?? throw new InvalidOperationException(
+                            "The Event Playbook API did not return the removed Intelligent Golf diary entry ID.");
+                    if (result.IntelligentGolfEventId != plannerEventId ||
+                        result.IntelligentGolfDiaryEntryId != expectedDiaryEntryId ||
+                        !result.ConfirmedAbsent)
+                    {
+                        throw new InvalidOperationException(
+                            "The Event Playbook API did not confirm removal of the expected Intelligent Golf diary entry.");
+                    }
+
+                    await linkStore.ClearDiaryAsync(
+                        eventSnapshot.EventId,
+                        plannerEventId,
+                        expectedDiaryEntryId,
+                        cancellationToken);
+                    diaryOutcome = new IntelligentGolfRemovalOutcome
+                    {
+                        Requested = true,
+                        Outcome = result.Removed ? "removed" : "already-absent",
+                        ExternalId = expectedDiaryEntryId,
+                        RemovedAtUtc = result.RemovedAtUtc
+                    };
+                    await RecordActivitySafelyAsync(new IntegrationActivityWrite
+                    {
+                        Operation = "Remove member diary",
+                        Outcome = "succeeded",
+                        EventPlaybookEventId = eventSnapshot.EventId,
+                        EventName = eventSnapshot.Name,
+                        ExternalEventId = plannerEventId,
+                        ExternalRecordId = expectedDiaryEntryId,
+                        Stage = result.Removed ? "member-diary-remove" : "member-diary-already-absent",
+                        Message = result.Removed
+                            ? $"Removed member diary entry {expectedDiaryEntryId} from planner entry {plannerEventId}."
+                            : $"Confirmed member diary entry {expectedDiaryEntryId} was already absent from planner entry {plannerEventId}."
+                    }, cancellationToken);
+                    diaryEntryId = null;
+                }
+                catch (Exception exception) when (exception is not OperationCanceledException)
+                {
+                    var requestException = exception as IntelligentGolfApiRequestException;
+                    await linkStore.RecordFailureAsync(
+                        eventSnapshot.EventId,
+                        exception.Message,
+                        requestException?.Stage ?? "member-diary-remove",
+                        requestException?.StatusCode,
+                        cancellationToken);
+                    await RecordActivitySafelyAsync(new IntegrationActivityWrite
+                    {
+                        Operation = "Remove member diary",
+                        Outcome = "failed",
+                        EventPlaybookEventId = eventSnapshot.EventId,
+                        EventName = eventSnapshot.Name,
+                        ExternalEventId = plannerEventId,
+                        ExternalRecordId = expectedDiaryEntryId,
+                        Stage = requestException?.Stage ?? "member-diary-remove",
+                        StatusCode = requestException?.StatusCode,
+                        Message = exception.Message
+                    }, cancellationToken);
+                    throw;
+                }
+            }
+
+            if (removePlanner)
+            {
+                try
+                {
+                    var currentLink = await linkStore.GetAsync(eventSnapshot.EventId, cancellationToken);
+                    if (currentLink?.IntelligentGolfEventId != plannerEventId)
+                    {
+                        throw new IntelligentGolfPlannerLinkChangedException(
+                            plannerEventId,
+                            currentLink?.IntelligentGolfEventId);
+                    }
+                    if (currentLink.IntelligentGolfDiaryEntryId is > 0)
+                    {
+                        throw new InvalidOperationException(
+                            $"Intelligent Golf diary entry {currentLink.IntelligentGolfDiaryEntryId} must be removed before planner entry {plannerEventId}.");
+                    }
+
+                    using var message = CreateRequest(HttpMethod.Delete, "api/event-planner/events");
+                    message.Content = JsonContent.Create(new
+                    {
+                        eventPlaybookEventId = eventSnapshot.EventId,
+                        intelligentGolfEventId = plannerEventId,
+                        eventDate = eventSnapshot.EventDate
+                    });
+                    using var response = await SendAsync(message, cancellationToken);
+                    var result = await response.Content.ReadFromJsonAsync<IntelligentGolfPlannerRemovalResult>(
+                        JsonOptions,
+                        cancellationToken)
+                        ?? throw new InvalidOperationException(
+                            "The Event Playbook API did not return the removed Intelligent Golf planner entry ID.");
+                    if (result.IntelligentGolfEventId != plannerEventId || !result.ConfirmedAbsent)
+                    {
+                        throw new InvalidOperationException(
+                            "The Event Playbook API did not confirm removal of the expected Intelligent Golf planner entry.");
+                    }
+
+                    await linkStore.ClearEventAsync(
+                        eventSnapshot.EventId,
+                        plannerEventId,
+                        cancellationToken);
+                    plannerOutcome = new IntelligentGolfRemovalOutcome
+                    {
+                        Requested = true,
+                        Outcome = result.Removed ? "removed" : "already-absent",
+                        ExternalId = plannerEventId,
+                        RemovedAtUtc = result.RemovedAtUtc
+                    };
+                    await RecordActivitySafelyAsync(new IntegrationActivityWrite
+                    {
+                        Operation = "Remove planner event",
+                        Outcome = "succeeded",
+                        EventPlaybookEventId = eventSnapshot.EventId,
+                        EventName = eventSnapshot.Name,
+                        ExternalEventId = plannerEventId,
+                        Stage = result.Removed ? "planner-event-remove" : "planner-event-already-absent",
+                        Message = result.Removed
+                            ? $"Removed planner entry {plannerEventId} after its member diary had been removed."
+                            : $"Confirmed planner entry {plannerEventId} was already absent."
+                    }, cancellationToken);
+                }
+                catch (Exception exception) when (exception is not OperationCanceledException)
+                {
+                    var requestException = exception as IntelligentGolfApiRequestException;
+                    await linkStore.RecordFailureAsync(
+                        eventSnapshot.EventId,
+                        exception.Message,
+                        requestException?.Stage ?? "planner-event-remove",
+                        requestException?.StatusCode,
+                        cancellationToken);
+                    await RecordActivitySafelyAsync(new IntegrationActivityWrite
+                    {
+                        Operation = "Remove planner event",
+                        Outcome = "failed",
+                        EventPlaybookEventId = eventSnapshot.EventId,
+                        EventName = eventSnapshot.Name,
+                        ExternalEventId = plannerEventId,
+                        Stage = requestException?.Stage ?? "planner-event-remove",
+                        StatusCode = requestException?.StatusCode,
+                        Message = exception.Message
+                    }, cancellationToken);
+                    throw;
+                }
+            }
+
+            var refreshedLink = await linkStore.GetAsync(eventSnapshot.EventId, cancellationToken);
+            return new IntelligentGolfEventCancellationResult
+            {
+                EventPlaybookEventId = eventSnapshot.EventId,
+                Success = true,
+                PlannerEntryId = refreshedLink?.IntelligentGolfEventId,
+                DiaryEntryId = refreshedLink?.IntelligentGolfDiaryEntryId,
+                Diary = diaryOutcome,
+                Planner = plannerOutcome
+            };
         }
         finally
         {

@@ -5099,11 +5099,12 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(198,161,91,.22)!i
 .plugin-admin-intro h2 { margin: 3px 0 5px; color: var(--navy); font: 700 1.65rem/1.08 Georgia,"Times New Roman",serif; }
 .plugin-admin-intro p { max-width: 780px; margin: 0; color: var(--muted); font-size: .72rem; line-height: 1.5; }
 .plugin-settings-notice { margin-bottom: 14px; padding: 10px 13px; border: 1px solid #bcd8ca; border-radius: 9px; color: #276248; background: #eef8f2; font-size: .66rem; font-weight: 800; }
-.plugin-admin-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
+.plugin-admin-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,320px),1fr)); gap: 16px; }
 .plugin-card { display: flex; min-width: 0; min-height: 430px; flex-direction: column; overflow: hidden; border: 1px solid var(--border); border-radius: 15px; background: #fff; box-shadow: var(--shadow); }
 .plugin-card-header { display: flex; align-items: flex-start; gap: 13px; padding: 19px 20px 16px; border-top: 4px solid var(--blue); border-bottom: 1px solid var(--border); background: linear-gradient(180deg,#fbfcfc,#f5f8f7); }
 .plugin-card-icon { display: grid; width: 48px; height: 48px; flex: 0 0 48px; place-items: center; border-radius: 12px; color: #fff; background: linear-gradient(135deg,#07384d,#28715f); font: 900 .9rem/1 ui-sans-serif,system-ui,sans-serif; box-shadow: 0 7px 16px rgba(7,56,77,.16); }
 .plugin-card-icon.monday { color: #1f2533; background: linear-gradient(135deg,#ffce45,#ff6268 55%,#6586ff); }
+.plugin-card-icon.yodeck { background: linear-gradient(135deg,#f6821f,#e84142 58%,#743b8f); }
 .plugin-card-title { min-width: 0; }
 .plugin-card-title h3 { margin: 5px 0 3px; color: var(--navy); font: 700 1.2rem/1.12 Georgia,"Times New Roman",serif; }
 .plugin-card-title p { margin: 0; color: var(--muted); font-size: .63rem; line-height: 1.4; }

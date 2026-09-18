@@ -125,6 +125,31 @@ public sealed record PublishPlannerDiaryResult(
     bool EventImageAttached,
     DateTimeOffset PublishedAtUtc);
 
+public sealed record RemovePlannerDiaryRequest(
+    string EventPlaybookEventId,
+    int IntelligentGolfEventId,
+    int IntelligentGolfDiaryEntryId);
+
+public sealed record RemovePlannerDiaryResult(
+    string EventPlaybookEventId,
+    int IntelligentGolfEventId,
+    int IntelligentGolfDiaryEntryId,
+    bool Removed,
+    bool ConfirmedAbsent,
+    DateTimeOffset RemovedAtUtc);
+
+public sealed record RemovePlannerEventRequest(
+    string EventPlaybookEventId,
+    int IntelligentGolfEventId,
+    DateOnly EventDate);
+
+public sealed record RemovePlannerEventResult(
+    string EventPlaybookEventId,
+    int IntelligentGolfEventId,
+    bool Removed,
+    bool ConfirmedAbsent,
+    DateTimeOffset RemovedAtUtc);
+
 public sealed record SynchronisePlannerEventCommand(
     SynchronisePlannerEventRequest Request) : IRequest<SynchronisePlannerEventResult>;
 
@@ -143,6 +168,12 @@ public sealed record RelinkPlannerEventCommand(
 
 public sealed record PublishPlannerDiaryCommand(
     PublishPlannerDiaryRequest Request) : IRequest<PublishPlannerDiaryResult>;
+
+public sealed record RemovePlannerDiaryCommand(
+    RemovePlannerDiaryRequest Request) : IRequest<RemovePlannerDiaryResult>;
+
+public sealed record RemovePlannerEventCommand(
+    RemovePlannerEventRequest Request) : IRequest<RemovePlannerEventResult>;
 
 public sealed class SynchronisePlannerEventHandler(
     IIntelligentGolfTransport transport,
@@ -1773,7 +1804,7 @@ public sealed class PublishPlannerDiaryHandler(
         return discovery.AllIds.Count == 1 ? discovery.AllIds.Single() : null;
     }
 
-    private static DiaryLinkDiscovery DiscoverDiaryLinks(string raw)
+    internal static DiaryLinkDiscovery DiscoverDiaryLinks(string raw)
     {
         var htmlFragments = new List<string>();
         var diarySectionFragments = new List<string>();
@@ -1958,10 +1989,603 @@ public sealed class PublishPlannerDiaryHandler(
     }
 
     private sealed record ResolvedPlannerEventArtwork(string FileName, byte[] Content);
-    private sealed record DiaryLinkDiscovery(
+    internal sealed record DiaryLinkDiscovery(
         bool DiarySectionRecognised,
         IReadOnlyCollection<int> LinkedIds,
         IReadOnlyCollection<int> AllIds);
+}
+
+public sealed class RemovePlannerDiaryHandler(
+    IIntelligentGolfTransport transport,
+    ICacheService cache,
+    IDistributedLockManager lockManager,
+    ILogger<RemovePlannerDiaryHandler> logger)
+    : IRequestHandler<RemovePlannerDiaryCommand, RemovePlannerDiaryResult>
+{
+    public async Task<RemovePlannerDiaryResult> Handle(
+        RemovePlannerDiaryCommand command,
+        CancellationToken cancellationToken)
+    {
+        var request = command.Request;
+        Validate(request);
+
+        await using var diaryLock = await lockManager.AcquireAsync(
+            $"intelligent-golf:member-diary:planner:{request.IntelligentGolfEventId}",
+            cancellationToken);
+        if (!diaryLock.IsAcquired)
+        {
+            throw new TimeoutException(
+                "Another request is currently changing this member diary entry. Try again shortly.");
+        }
+
+        var eventCacheKey = DiaryCacheKey(request.EventPlaybookEventId);
+        var plannerCacheKey = PlannerDiaryCacheKey(request.IntelligentGolfEventId);
+        await ValidateCachedDiaryLinkAsync(eventCacheKey, request, cancellationToken);
+        await ValidateCachedDiaryLinkAsync(plannerCacheKey, request, cancellationToken);
+
+        var before = await ReadDiaryLinksAsync(request, "member-diary-remove-check", cancellationToken);
+        if (before.LinkedIds.Count == 0)
+        {
+            await ClearDiaryCacheAsync(eventCacheKey, plannerCacheKey, cancellationToken);
+            var alreadyAbsentAt = DateTimeOffset.UtcNow;
+            logger.LogInformation(
+                "Intelligent Golf diary entry {DiaryEntryId} was already absent from planner entry {PlannerEventId}; cleared the cached association.",
+                request.IntelligentGolfDiaryEntryId,
+                request.IntelligentGolfEventId);
+            return new RemovePlannerDiaryResult(
+                request.EventPlaybookEventId.Trim(),
+                request.IntelligentGolfEventId,
+                request.IntelligentGolfDiaryEntryId,
+                false,
+                true,
+                alreadyAbsentAt);
+        }
+
+        var linkedDiaryId = before.LinkedIds.Single();
+        if (linkedDiaryId != request.IntelligentGolfDiaryEntryId)
+        {
+            throw new IntelligentGolfMutationException(
+                "member-diary-remove-conflict",
+                $"Intelligent Golf planner entry {request.IntelligentGolfEventId} is linked to diary entry {linkedDiaryId}, not the expected entry {request.IntelligentGolfDiaryEntryId}.",
+                request.IntelligentGolfEventId,
+                linkedDiaryId,
+                "Refresh the Event Playbook integration status before trying again.");
+        }
+
+        IntelligentGolfTransportResponse removalResponse;
+        try
+        {
+            removalResponse = await transport.GetResponseAsync(
+                $"/event.php?eventid={request.IntelligentGolfEventId}&requestType=ajax&ajaxaction=removefromdiary&id={request.IntelligentGolfDiaryEntryId}",
+                cancellationToken);
+        }
+        catch (IntelligentGolfAuthenticationException)
+        {
+            throw;
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
+        {
+            throw new IntelligentGolfMutationException(
+                "member-diary-remove",
+                $"Intelligent Golf could not remove diary entry {request.IntelligentGolfDiaryEntryId} from planner entry {request.IntelligentGolfEventId}.",
+                request.IntelligentGolfEventId,
+                request.IntelligentGolfDiaryEntryId,
+                exception.Message,
+                exception);
+        }
+
+        var rejection = IntelligentGolfMutationResponseInspector.FindRejection(removalResponse.Body);
+        if (!string.IsNullOrWhiteSpace(rejection))
+        {
+            throw new IntelligentGolfMutationException(
+                "member-diary-remove",
+                $"Intelligent Golf rejected the removal of diary entry {request.IntelligentGolfDiaryEntryId}.",
+                request.IntelligentGolfEventId,
+                request.IntelligentGolfDiaryEntryId,
+                rejection);
+        }
+
+        var after = await ReadDiaryLinksAsync(request, "member-diary-remove-verification", cancellationToken);
+        if (after.LinkedIds.Count > 0)
+        {
+            throw new IntelligentGolfMutationException(
+                "member-diary-remove-verification",
+                $"Intelligent Golf did not confirm that diary entry {request.IntelligentGolfDiaryEntryId} was removed from planner entry {request.IntelligentGolfEventId}.",
+                request.IntelligentGolfEventId,
+                request.IntelligentGolfDiaryEntryId,
+                $"Planner entry still reports diary ID(s): {string.Join(", ", after.LinkedIds)}.");
+        }
+
+        await ClearDiaryCacheAsync(eventCacheKey, plannerCacheKey, cancellationToken);
+        var removedAt = DateTimeOffset.UtcNow;
+        logger.LogInformation(
+            "Removed Intelligent Golf diary entry {DiaryEntryId} from planner entry {PlannerEventId} and cleared its cached association.",
+            request.IntelligentGolfDiaryEntryId,
+            request.IntelligentGolfEventId);
+        return new RemovePlannerDiaryResult(
+            request.EventPlaybookEventId.Trim(),
+            request.IntelligentGolfEventId,
+            request.IntelligentGolfDiaryEntryId,
+            true,
+            true,
+            removedAt);
+    }
+
+    private async Task<PublishPlannerDiaryHandler.DiaryLinkDiscovery> ReadDiaryLinksAsync(
+        RemovePlannerDiaryRequest request,
+        string stage,
+        CancellationToken cancellationToken)
+    {
+        IntelligentGolfTransportResponse response;
+        try
+        {
+            response = await transport.GetResponseAsync(
+                $"/event.php?eventid={request.IntelligentGolfEventId}",
+                cancellationToken);
+        }
+        catch (IntelligentGolfAuthenticationException)
+        {
+            throw;
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
+        {
+            throw new IntelligentGolfMutationException(
+                stage,
+                $"Event Playbook could not verify the member diary link on Intelligent Golf planner entry {request.IntelligentGolfEventId}.",
+                request.IntelligentGolfEventId,
+                request.IntelligentGolfDiaryEntryId,
+                exception.Message,
+                exception);
+        }
+
+        var discovery = PublishPlannerDiaryHandler.DiscoverDiaryLinks(response.Body);
+        if (!discovery.DiarySectionRecognised)
+        {
+            throw new IntelligentGolfMutationException(
+                stage,
+                $"Event Playbook could not recognise the member diary section on Intelligent Golf planner entry {request.IntelligentGolfEventId}, so it did not clear the stored diary link.",
+                request.IntelligentGolfEventId,
+                request.IntelligentGolfDiaryEntryId,
+                "Expected the event_overview_diary section on the planner page.");
+        }
+
+        if (discovery.LinkedIds.Count > 1)
+        {
+            throw new IntelligentGolfMutationException(
+                stage,
+                $"Intelligent Golf planner entry {request.IntelligentGolfEventId} returned more than one linked member diary entry, so Event Playbook did not remove any of them.",
+                request.IntelligentGolfEventId,
+                request.IntelligentGolfDiaryEntryId,
+                string.Join(", ", discovery.LinkedIds));
+        }
+
+        return discovery;
+    }
+
+    private async Task ValidateCachedDiaryLinkAsync(
+        string cacheKey,
+        RemovePlannerDiaryRequest request,
+        CancellationToken cancellationToken)
+    {
+        var cached = await cache.GetAsync<CachedDiaryLink>(cacheKey, cancellationToken);
+        if (cached?.IntelligentGolfDiaryEntryId is not > 0 ||
+            cached.IntelligentGolfDiaryEntryId == request.IntelligentGolfDiaryEntryId)
+        {
+            return;
+        }
+
+        throw new IntelligentGolfMutationException(
+            "member-diary-remove-conflict",
+            $"The cached Intelligent Golf diary link now points to entry {cached.IntelligentGolfDiaryEntryId}, not the expected entry {request.IntelligentGolfDiaryEntryId}.",
+            request.IntelligentGolfEventId,
+            cached.IntelligentGolfDiaryEntryId,
+            "Refresh the Event Playbook integration status before trying again.");
+    }
+
+    private async Task ClearDiaryCacheAsync(
+        string eventCacheKey,
+        string plannerCacheKey,
+        CancellationToken cancellationToken)
+    {
+        await cache.RemoveAsync(eventCacheKey, cancellationToken);
+        await cache.RemoveAsync(plannerCacheKey, cancellationToken);
+    }
+
+    private static void Validate(RemovePlannerDiaryRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.EventPlaybookEventId))
+            throw new ArgumentException("The Event Playbook event ID is required.");
+        if (request.IntelligentGolfEventId <= 0)
+            throw new ArgumentException("A valid Intelligent Golf planner entry ID is required.");
+        if (request.IntelligentGolfDiaryEntryId <= 0)
+            throw new ArgumentException("A valid Intelligent Golf diary entry ID is required.");
+    }
+
+    private static string DiaryCacheKey(string eventPlaybookEventId) =>
+        $"intelligent-golf:diary-link:{eventPlaybookEventId.Trim().ToLowerInvariant()}";
+
+    private static string PlannerDiaryCacheKey(int intelligentGolfEventId) =>
+        $"intelligent-golf:diary-link:planner:{intelligentGolfEventId}";
+
+    private sealed class CachedDiaryLink
+    {
+        public int IntelligentGolfDiaryEntryId { get; init; }
+    }
+}
+
+public sealed class RemovePlannerEventHandler(
+    IIntelligentGolfTransport transport,
+    IIntelligentGolfSession session,
+    ICacheService cache,
+    IDistributedLockManager lockManager,
+    ILogger<RemovePlannerEventHandler> logger)
+    : IRequestHandler<RemovePlannerEventCommand, RemovePlannerEventResult>
+{
+    public async Task<RemovePlannerEventResult> Handle(
+        RemovePlannerEventCommand command,
+        CancellationToken cancellationToken)
+    {
+        var request = command.Request;
+        Validate(request);
+
+        await using var eventLock = await lockManager.AcquireAsync(
+            $"intelligent-golf:event-allocation:{request.EventPlaybookEventId.Trim().ToLowerInvariant()}",
+            cancellationToken);
+        if (!eventLock.IsAcquired)
+        {
+            throw new TimeoutException(
+                "Another request is currently changing this Intelligent Golf planner entry. Try again shortly.");
+        }
+
+        await using var diaryLock = await lockManager.AcquireAsync(
+            $"intelligent-golf:member-diary:planner:{request.IntelligentGolfEventId}",
+            cancellationToken);
+        if (!diaryLock.IsAcquired)
+        {
+            throw new TimeoutException(
+                "Another request is currently changing the member diary for this planner entry. Try again shortly.");
+        }
+
+        var eventCacheKey = EventCacheKey(request.EventPlaybookEventId);
+        var diaryCacheKey = DiaryCacheKey(request.EventPlaybookEventId);
+        var plannerDiaryCacheKey = PlannerDiaryCacheKey(request.IntelligentGolfEventId);
+        var cachedEvent = await cache.GetAsync<CachedEventLink>(eventCacheKey, cancellationToken);
+        if (cachedEvent?.IntelligentGolfEventId is > 0 &&
+            cachedEvent.IntelligentGolfEventId != request.IntelligentGolfEventId)
+        {
+            throw new IntelligentGolfPlannerRelinkConflictException(
+                request.IntelligentGolfEventId,
+                cachedEvent.IntelligentGolfEventId);
+        }
+
+        await EnsureCachedDiaryIsAbsentAsync(diaryCacheKey, request, cancellationToken);
+        await EnsureCachedDiaryIsAbsentAsync(plannerDiaryCacheKey, request, cancellationToken);
+
+        var candidates = await IntelligentGolfPlannerEventDiscovery.FindByDateAsync(
+            transport,
+            session.BaseUrl,
+            request.EventDate,
+            cancellationToken);
+        if (candidates.All(candidate => candidate.IntelligentGolfEventId != request.IntelligentGolfEventId))
+        {
+            await ConfirmPlannerPageIsAbsentAsync(request, cancellationToken);
+            await ClearPlannerCachesAsync(
+                eventCacheKey,
+                diaryCacheKey,
+                plannerDiaryCacheKey,
+                cancellationToken);
+            var alreadyAbsentAt = DateTimeOffset.UtcNow;
+            logger.LogInformation(
+                "Intelligent Golf planner entry {PlannerEventId} was already absent from {EventDate}; cleared the cached association.",
+                request.IntelligentGolfEventId,
+                request.EventDate);
+            return new RemovePlannerEventResult(
+                request.EventPlaybookEventId.Trim(),
+                request.IntelligentGolfEventId,
+                false,
+                true,
+                alreadyAbsentAt);
+        }
+
+        await EnsureRemoteDiaryIsAbsentAsync(request, cancellationToken);
+        var deletePath = await DiscoverPlannerDeletePathAsync(request, cancellationToken);
+
+        IntelligentGolfTransportResponse removalResponse;
+        try
+        {
+            removalResponse = await transport.GetResponseAsync(
+                deletePath,
+                cancellationToken);
+        }
+        catch (IntelligentGolfAuthenticationException)
+        {
+            throw;
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
+        {
+            throw new IntelligentGolfMutationException(
+                "planner-event-remove",
+                $"Intelligent Golf could not remove planner entry {request.IntelligentGolfEventId}.",
+                request.IntelligentGolfEventId,
+                responseDetail: exception.Message,
+                innerException: exception);
+        }
+
+        var rejection = IntelligentGolfMutationResponseInspector.FindRejection(removalResponse.Body);
+        if (!string.IsNullOrWhiteSpace(rejection))
+        {
+            throw new IntelligentGolfMutationException(
+                "planner-event-remove",
+                $"Intelligent Golf rejected the removal of planner entry {request.IntelligentGolfEventId}.",
+                request.IntelligentGolfEventId,
+                responseDetail: rejection);
+        }
+
+        var remainingCandidates = await IntelligentGolfPlannerEventDiscovery.FindByDateAsync(
+            transport,
+            session.BaseUrl,
+            request.EventDate,
+            cancellationToken);
+        if (remainingCandidates.Any(candidate => candidate.IntelligentGolfEventId == request.IntelligentGolfEventId))
+        {
+            throw new IntelligentGolfMutationException(
+                "planner-event-remove-verification",
+                $"Intelligent Golf did not confirm that planner entry {request.IntelligentGolfEventId} was removed.",
+                request.IntelligentGolfEventId,
+                responseDetail: "The planner entry is still present on the event date.");
+        }
+
+        await ClearPlannerCachesAsync(
+            eventCacheKey,
+            diaryCacheKey,
+            plannerDiaryCacheKey,
+            cancellationToken);
+        var removedAt = DateTimeOffset.UtcNow;
+        logger.LogInformation(
+            "Removed Intelligent Golf planner entry {PlannerEventId} and cleared its cached association for Event Playbook event {EventPlaybookEventId}.",
+            request.IntelligentGolfEventId,
+            request.EventPlaybookEventId);
+        return new RemovePlannerEventResult(
+            request.EventPlaybookEventId.Trim(),
+            request.IntelligentGolfEventId,
+            true,
+            true,
+            removedAt);
+    }
+
+    private async Task<string> DiscoverPlannerDeletePathAsync(
+        RemovePlannerEventRequest request,
+        CancellationToken cancellationToken)
+    {
+        IntelligentGolfTransportResponse response;
+        try
+        {
+            response = await transport.GetResponseAsync(
+                $"/eventadmin.php?group=-1&booking={request.IntelligentGolfEventId}",
+                cancellationToken);
+        }
+        catch (IntelligentGolfAuthenticationException)
+        {
+            throw;
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
+        {
+            throw new IntelligentGolfMutationException(
+                "planner-event-remove-control",
+                $"Event Playbook could not read the Intelligent Golf delete control for planner entry {request.IntelligentGolfEventId}.",
+                request.IntelligentGolfEventId,
+                responseDetail: exception.Message,
+                innerException: exception);
+        }
+
+        if (!Uri.TryCreate(session.BaseUrl.TrimEnd('/') + "/", UriKind.Absolute, out var baseUri))
+        {
+            throw new IntelligentGolfMutationException(
+                "planner-event-remove-control",
+                "The configured Intelligent Golf site address is invalid.",
+                request.IntelligentGolfEventId);
+        }
+
+        foreach (Match anchor in Regex.Matches(
+                     response.Body,
+                     @"<a\b(?<attributes>[^>]*)>(?<content>.*?)</a\s*>",
+                     RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.CultureInvariant))
+        {
+            var attributes = anchor.Groups["attributes"].Value;
+            if (!string.Equals(
+                    ReadAttribute(attributes, "id"),
+                    "deletebutton",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            var encodedHref = ReadAttribute(attributes, "href");
+            if (string.IsNullOrWhiteSpace(encodedHref) ||
+                !Uri.TryCreate(baseUri, WebUtility.HtmlDecode(encodedHref), out var deleteUri) ||
+                !deleteUri.Scheme.Equals(baseUri.Scheme, StringComparison.OrdinalIgnoreCase) ||
+                !deleteUri.IdnHost.Equals(baseUri.IdnHost, StringComparison.OrdinalIgnoreCase) ||
+                deleteUri.Port != baseUri.Port ||
+                !deleteUri.AbsolutePath.Equals("/eventadmin.php", StringComparison.OrdinalIgnoreCase) ||
+                !string.Equals(ReadQueryValue(deleteUri, "group"), "-1", StringComparison.Ordinal) ||
+                !string.Equals(ReadQueryValue(deleteUri, "delete"), "1", StringComparison.Ordinal) ||
+                !int.TryParse(
+                    ReadQueryValue(deleteUri, "booking"),
+                    NumberStyles.None,
+                    CultureInfo.InvariantCulture,
+                    out var bookingId) ||
+                bookingId != request.IntelligentGolfEventId)
+            {
+                throw new IntelligentGolfMutationException(
+                    "planner-event-remove-control",
+                    $"Intelligent Golf returned an unexpected delete target for planner entry {request.IntelligentGolfEventId}, so Event Playbook did not follow it.",
+                    request.IntelligentGolfEventId,
+                    responseDetail: encodedHref);
+            }
+
+            return deleteUri.PathAndQuery;
+        }
+
+        throw new IntelligentGolfMutationException(
+            "planner-event-remove-control",
+            $"Intelligent Golf did not expose its Delete Booking control for planner entry {request.IntelligentGolfEventId}, so Event Playbook did not attempt a guessed deletion request.",
+            request.IntelligentGolfEventId,
+            responseDetail: "Expected an anchor with id=deletebutton on the linked Event Admin page.");
+    }
+
+    private static string? ReadAttribute(string attributes, string attributeName)
+    {
+        var match = Regex.Match(
+            attributes,
+            $@"(?:^|\s){Regex.Escape(attributeName)}\s*=\s*(?:""(?<double>[^""]*)""|'(?<single>[^']*)'|(?<bare>[^\s>]+))",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        if (!match.Success) return null;
+
+        return WebUtility.HtmlDecode(
+                match.Groups["double"].Success
+                    ? match.Groups["double"].Value
+                    : match.Groups["single"].Success
+                        ? match.Groups["single"].Value
+                        : match.Groups["bare"].Value)
+            .Trim();
+    }
+
+    private static string? ReadQueryValue(Uri uri, string name)
+    {
+        var match = Regex.Match(
+            uri.Query,
+            $@"(?:^|[?&]){Regex.Escape(name)}=(?<value>[^&]*)(?:&|$)",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        return match.Success
+            ? Uri.UnescapeDataString(match.Groups["value"].Value.Replace('+', ' '))
+            : null;
+    }
+
+    private async Task EnsureCachedDiaryIsAbsentAsync(
+        string cacheKey,
+        RemovePlannerEventRequest request,
+        CancellationToken cancellationToken)
+    {
+        var cached = await cache.GetAsync<CachedDiaryLink>(cacheKey, cancellationToken);
+        if (cached?.IntelligentGolfDiaryEntryId is not > 0) return;
+
+        throw new IntelligentGolfMutationException(
+            "planner-event-remove-diary-linked",
+            $"Intelligent Golf planner entry {request.IntelligentGolfEventId} still has linked diary entry {cached.IntelligentGolfDiaryEntryId}. Remove the member diary entry first.",
+            request.IntelligentGolfEventId,
+            cached.IntelligentGolfDiaryEntryId,
+            "Planner removal was not attempted.");
+    }
+
+    private async Task EnsureRemoteDiaryIsAbsentAsync(
+        RemovePlannerEventRequest request,
+        CancellationToken cancellationToken)
+    {
+        IntelligentGolfTransportResponse response;
+        try
+        {
+            response = await transport.GetResponseAsync(
+                $"/event.php?eventid={request.IntelligentGolfEventId}",
+                cancellationToken);
+        }
+        catch (IntelligentGolfAuthenticationException)
+        {
+            throw;
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
+        {
+            throw new IntelligentGolfMutationException(
+                "planner-event-remove-check",
+                $"Event Playbook could not check planner entry {request.IntelligentGolfEventId} before removing it.",
+                request.IntelligentGolfEventId,
+                responseDetail: exception.Message,
+                innerException: exception);
+        }
+
+        var discovery = PublishPlannerDiaryHandler.DiscoverDiaryLinks(response.Body);
+        if (!discovery.DiarySectionRecognised)
+        {
+            throw new IntelligentGolfMutationException(
+                "planner-event-remove-check",
+                $"Event Playbook could not recognise the member diary section on planner entry {request.IntelligentGolfEventId}, so it did not risk deleting the planner entry.",
+                request.IntelligentGolfEventId,
+                responseDetail: "Expected the event_overview_diary section on the planner page.");
+        }
+
+        if (discovery.LinkedIds.Count > 0)
+        {
+            throw new IntelligentGolfMutationException(
+                "planner-event-remove-diary-linked",
+                $"Intelligent Golf planner entry {request.IntelligentGolfEventId} still has a linked member diary entry. Remove it first.",
+                request.IntelligentGolfEventId,
+                discovery.LinkedIds.First(),
+                $"Linked diary ID(s): {string.Join(", ", discovery.LinkedIds)}.");
+        }
+    }
+
+    private async Task ConfirmPlannerPageIsAbsentAsync(
+        RemovePlannerEventRequest request,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await IntelligentGolfPlannerEventLookup.FindByIdAsync(
+                transport,
+                session.BaseUrl,
+                request.EventDate,
+                request.IntelligentGolfEventId,
+                cancellationToken);
+        }
+        catch (IntelligentGolfMutationException exception)
+            when (string.Equals(exception.Stage, "planner-event-lookup-response", StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        throw new IntelligentGolfMutationException(
+            "planner-event-remove-verification",
+            $"Intelligent Golf planner entry {request.IntelligentGolfEventId} could not be confirmed as absent.",
+            request.IntelligentGolfEventId,
+            responseDetail: "The event page still resolves even though the entry was not found on the expected planner date.");
+    }
+
+    private async Task ClearPlannerCachesAsync(
+        string eventCacheKey,
+        string diaryCacheKey,
+        string plannerDiaryCacheKey,
+        CancellationToken cancellationToken)
+    {
+        await cache.RemoveAsync(eventCacheKey, cancellationToken);
+        await cache.RemoveAsync(diaryCacheKey, cancellationToken);
+        await cache.RemoveAsync(plannerDiaryCacheKey, cancellationToken);
+    }
+
+    private static void Validate(RemovePlannerEventRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.EventPlaybookEventId))
+            throw new ArgumentException("The Event Playbook event ID is required.");
+        if (request.IntelligentGolfEventId <= 0)
+            throw new ArgumentException("A valid Intelligent Golf planner entry ID is required.");
+    }
+
+    private static string EventCacheKey(string eventPlaybookEventId) =>
+        $"intelligent-golf:event-link:{eventPlaybookEventId.Trim().ToLowerInvariant()}";
+
+    private static string DiaryCacheKey(string eventPlaybookEventId) =>
+        $"intelligent-golf:diary-link:{eventPlaybookEventId.Trim().ToLowerInvariant()}";
+
+    private static string PlannerDiaryCacheKey(int intelligentGolfEventId) =>
+        $"intelligent-golf:diary-link:planner:{intelligentGolfEventId}";
+
+    private sealed class CachedEventLink
+    {
+        public int IntelligentGolfEventId { get; init; }
+    }
+
+    private sealed class CachedDiaryLink
+    {
+        public int IntelligentGolfDiaryEntryId { get; init; }
+    }
 }
 
 internal static class IntelligentGolfMutationResponseInspector
@@ -2160,6 +2784,24 @@ public static class EventPlannerFeatureExtensions
             .WithTags("Event planner")
             .WithSummary("Publish the Intelligent Golf member diary entry and attach its approved planner artwork")
             .Produces<PublishPlannerDiaryResult>();
+
+        endpoints.MapDelete(
+                "/api/event-planner/member-diary",
+                async (RemovePlannerDiaryRequest request, IMediator mediator, CancellationToken cancellationToken) =>
+                    Results.Ok(await mediator.Send(new RemovePlannerDiaryCommand(request), cancellationToken)))
+            .WithName("RemovePlannerMemberDiary")
+            .WithTags("Event planner")
+            .WithSummary("Remove a linked Intelligent Golf member diary entry and verify that it is absent")
+            .Produces<RemovePlannerDiaryResult>();
+
+        endpoints.MapDelete(
+                "/api/event-planner/events",
+                async (RemovePlannerEventRequest request, IMediator mediator, CancellationToken cancellationToken) =>
+                    Results.Ok(await mediator.Send(new RemovePlannerEventCommand(request), cancellationToken)))
+            .WithName("RemovePlannerEvent")
+            .WithTags("Event planner")
+            .WithSummary("Remove a linked Intelligent Golf planner entry after its member diary has been removed")
+            .Produces<RemovePlannerEventResult>();
 
         return endpoints;
     }

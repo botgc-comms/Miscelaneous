@@ -554,6 +554,96 @@ public sealed class MemberDiaryEventImageTests
         Assert.Empty(transport.Calls);
     }
 
+    [Fact]
+    public async Task RemoveDiary_UsesCapturedRemoveActionThenVerifiesAbsenceBeforeClearingCaches()
+    {
+        var plannerReadCount = 0;
+        var transport = new RecordingTransport(call => call.Path switch
+        {
+            var path when call.Method == HttpMethod.Get && path == $"/event.php?eventid={PlannerEventId}" =>
+                Response(++plannerReadCount == 1
+                    ? $"<div id='event_overview_diary'><a data-ajax-action='editdiary' data-ajax-data-inline-id='{DiaryEntryId}'>Edit</a></div>"
+                    : EmptyDiarySectionHtml),
+            var path when call.Method == HttpMethod.Get &&
+                          path == $"/event.php?eventid={PlannerEventId}&requestType=ajax&ajaxaction=removefromdiary&id={DiaryEntryId}" =>
+                Response("{\"actions\":[{\"type\":\"message\",\"data\":\"Diary Entry deleted\"}]}"),
+            _ => throw Unexpected(call)
+        });
+        var cache = new JsonCache();
+        await cache.SetAsync(
+            "intelligent-golf:diary-link:event-123",
+            new { IntelligentGolfDiaryEntryId = DiaryEntryId },
+            TimeSpan.FromDays(1));
+        await cache.SetAsync(
+            $"intelligent-golf:diary-link:planner:{PlannerEventId}",
+            new { IntelligentGolfDiaryEntryId = DiaryEntryId },
+            TimeSpan.FromDays(1));
+        var handler = new RemovePlannerDiaryHandler(
+            transport,
+            cache,
+            new AlwaysAcquiredLockManager(),
+            NullLogger<RemovePlannerDiaryHandler>.Instance);
+
+        var result = await handler.Handle(
+            new RemovePlannerDiaryCommand(new RemovePlannerDiaryRequest(
+                "event-123",
+                PlannerEventId,
+                DiaryEntryId)),
+            CancellationToken.None);
+
+        Assert.True(result.Removed);
+        Assert.True(result.ConfirmedAbsent);
+        Assert.Collection(
+            transport.Calls,
+            call => Assert.Equal($"/event.php?eventid={PlannerEventId}", call.Path),
+            call => Assert.Equal(
+                $"/event.php?eventid={PlannerEventId}&requestType=ajax&ajaxaction=removefromdiary&id={DiaryEntryId}",
+                call.Path),
+            call => Assert.Equal($"/event.php?eventid={PlannerEventId}", call.Path));
+        Assert.DoesNotContain("intelligent-golf:diary-link:event-123", cache.Keys);
+        Assert.DoesNotContain($"intelligent-golf:diary-link:planner:{PlannerEventId}", cache.Keys);
+    }
+
+    [Fact]
+    public async Task RemoveDiary_WhenPostCheckStillFindsDiary_DoesNotClearEitherCache()
+    {
+        var linkedHtml = $"<div id='event_overview_diary'><a data-ajax-action='editdiary' data-ajax-data-inline-id='{DiaryEntryId}'>Edit</a></div>";
+        var transport = new RecordingTransport(call => call.Path switch
+        {
+            var path when call.Method == HttpMethod.Get && path == $"/event.php?eventid={PlannerEventId}" =>
+                Response(linkedHtml),
+            var path when call.Method == HttpMethod.Get && path.Contains("ajaxaction=removefromdiary", StringComparison.Ordinal) =>
+                Response("{\"actions\":[{\"type\":\"message\",\"data\":\"Diary Entry deleted\"}]}"),
+            _ => throw Unexpected(call)
+        });
+        var cache = new JsonCache();
+        await cache.SetAsync(
+            "intelligent-golf:diary-link:event-123",
+            new { IntelligentGolfDiaryEntryId = DiaryEntryId },
+            TimeSpan.FromDays(1));
+        await cache.SetAsync(
+            $"intelligent-golf:diary-link:planner:{PlannerEventId}",
+            new { IntelligentGolfDiaryEntryId = DiaryEntryId },
+            TimeSpan.FromDays(1));
+        var handler = new RemovePlannerDiaryHandler(
+            transport,
+            cache,
+            new AlwaysAcquiredLockManager(),
+            NullLogger<RemovePlannerDiaryHandler>.Instance);
+
+        var exception = await Assert.ThrowsAsync<IntelligentGolfMutationException>(() =>
+            handler.Handle(
+                new RemovePlannerDiaryCommand(new RemovePlannerDiaryRequest(
+                    "event-123",
+                    PlannerEventId,
+                    DiaryEntryId)),
+                CancellationToken.None));
+
+        Assert.Equal("member-diary-remove-verification", exception.Stage);
+        Assert.Contains("intelligent-golf:diary-link:event-123", cache.Keys);
+        Assert.Contains($"intelligent-golf:diary-link:planner:{PlannerEventId}", cache.Keys);
+    }
+
     private static PublishPlannerDiaryHandler CreateHandler(
         IIntelligentGolfTransport transport,
         ICacheService cache) =>
@@ -651,6 +741,8 @@ public sealed class MemberDiaryEventImageTests
     {
         private static readonly JsonSerializerOptions Options = new(JsonSerializerDefaults.Web);
         private readonly Dictionary<string, string> _values = new(StringComparer.Ordinal);
+
+        public IEnumerable<string> Keys => _values.Keys;
 
         public Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default)
             where T : class =>
