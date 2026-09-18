@@ -102,6 +102,7 @@ public sealed class PlaybookEventChangePipeline : BackgroundService, IPlaybookEv
                 EndTime = ReadString(item, "endTime"),
                 EventTypeId = ReadNullableInt(item, "intelligentGolfEventTypeId"),
                 Attendees = Math.Max(0, ReadNullableInt(item, "expectedAttendees") ?? 0),
+                LifecycleStatus = ReadNestedString(item, "lifecycle", "status"),
                 GroupId = ReadString(item, "intelligentGolfGroupId") ?? "151",
                 GroupName = ReadString(item, "intelligentGolfGroupName") ?? "BOTGC Event Planner"
             };
@@ -134,5 +135,12 @@ public sealed class PlaybookEventChangePipeline : BackgroundService, IPlaybookEv
         if (!element.TryGetProperty(propertyName, out var value)) return null;
         if (value.ValueKind == JsonValueKind.Number && value.TryGetInt32(out var number)) return number;
         return value.ValueKind == JsonValueKind.String && int.TryParse(value.GetString(), out number) ? number : null;
+    }
+
+    private static string? ReadNestedString(JsonElement element, string objectName, string propertyName)
+    {
+        if (!element.TryGetProperty(objectName, out var nested) || nested.ValueKind != JsonValueKind.Object)
+            return null;
+        return ReadString(nested, propertyName);
     }
 }

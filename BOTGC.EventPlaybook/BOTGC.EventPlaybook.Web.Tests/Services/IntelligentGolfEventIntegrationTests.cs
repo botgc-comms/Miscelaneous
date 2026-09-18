@@ -539,6 +539,107 @@ public sealed class IntelligentGolfEventIntegrationTests
         Assert.False(payload.RootElement.GetProperty("createNewWhenDateOccupied").GetBoolean());
     }
 
+    [Fact]
+    public async Task CancelEventAsync_RemovesDiaryBeforePlannerAndClearsEachConfirmedLink()
+    {
+        var scenario = new PrivateApiScenario(SynchronisedAt);
+        var linkStore = new RecordingLinkStore();
+        linkStore.Seed(CreateExistingLink());
+        var activityStore = new RecordingActivityStore();
+        var integration = CreateIntegration(scenario, linkStore, activityStore);
+
+        var result = await integration.CancelEventAsync(
+            CreateSnapshot(),
+            removeDiary: true,
+            removePlanner: true,
+            CancellationToken.None);
+
+        Assert.True(result.Success);
+        Assert.Null(result.DiaryEntryId);
+        Assert.Null(result.PlannerEntryId);
+        Assert.Equal("removed", result.Diary.Outcome);
+        Assert.Equal(4963, result.Diary.ExternalId);
+        Assert.Equal("removed", result.Planner.Outcome);
+        Assert.Equal(4713, result.Planner.ExternalId);
+        Assert.Equal(1, linkStore.ClearDiaryCalls);
+        Assert.Equal(1, linkStore.ClearEventCalls);
+        Assert.Collection(
+            scenario.Requests,
+            request =>
+            {
+                Assert.Equal(HttpMethod.Delete, request.Method);
+                Assert.Equal("/api/event-planner/member-diary", request.Path);
+                using var payload = JsonDocument.Parse(request.Body);
+                Assert.Equal(4713, payload.RootElement.GetProperty("intelligentGolfEventId").GetInt32());
+                Assert.Equal(4963, payload.RootElement.GetProperty("intelligentGolfDiaryEntryId").GetInt32());
+            },
+            request =>
+            {
+                Assert.Equal(HttpMethod.Delete, request.Method);
+                Assert.Equal("/api/event-planner/events", request.Path);
+                using var payload = JsonDocument.Parse(request.Body);
+                Assert.Equal(4713, payload.RootElement.GetProperty("intelligentGolfEventId").GetInt32());
+                Assert.Equal("2027-02-20", payload.RootElement.GetProperty("eventDate").GetString());
+            });
+        Assert.Collection(
+            activityStore.Activities.Where(activity => activity.Outcome == "succeeded"),
+            activity => Assert.Equal("Remove member diary", activity.Operation),
+            activity => Assert.Equal("Remove planner event", activity.Operation));
+    }
+
+    [Fact]
+    public async Task CancelEventAsync_WhenPlannerRemovalFails_KeepsPlannerLinkAfterConfirmedDiaryRemoval()
+    {
+        var scenario = new PrivateApiScenario(SynchronisedAt)
+        {
+            RejectPlannerRemoval = true
+        };
+        var linkStore = new RecordingLinkStore();
+        linkStore.Seed(CreateExistingLink());
+        var activityStore = new RecordingActivityStore();
+        var integration = CreateIntegration(scenario, linkStore, activityStore);
+
+        var exception = await Assert.ThrowsAsync<IntelligentGolfApiRequestException>(() =>
+            integration.CancelEventAsync(
+                CreateSnapshot(),
+                removeDiary: true,
+                removePlanner: true,
+                CancellationToken.None));
+
+        Assert.Equal("planner-event-remove", exception.Stage);
+        var link = await linkStore.GetAsync("event-123", CancellationToken.None);
+        Assert.Equal(4713, link?.IntelligentGolfEventId);
+        Assert.Null(link?.IntelligentGolfDiaryEntryId);
+        Assert.Equal(1, linkStore.ClearDiaryCalls);
+        Assert.Equal(0, linkStore.ClearEventCalls);
+        Assert.Equal(2, scenario.Requests.Count);
+        Assert.Contains(activityStore.Activities, activity =>
+            activity.Operation == "Remove member diary" && activity.Outcome == "succeeded");
+        Assert.Contains(activityStore.Activities, activity =>
+            activity.Operation == "Remove planner event" && activity.Outcome == "failed");
+    }
+
+    [Fact]
+    public async Task CancelEventAsync_WillNotRemovePlannerWhileLinkedDiaryIsRetained()
+    {
+        var scenario = new PrivateApiScenario(SynchronisedAt);
+        var linkStore = new RecordingLinkStore();
+        linkStore.Seed(CreateExistingLink());
+        var integration = CreateIntegration(scenario, linkStore, new RecordingActivityStore());
+
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            integration.CancelEventAsync(
+                CreateSnapshot(),
+                removeDiary: false,
+                removePlanner: true,
+                CancellationToken.None));
+
+        Assert.Contains("must be removed before planner entry", exception.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Empty(scenario.Requests);
+        Assert.Equal(0, linkStore.ClearDiaryCalls);
+        Assert.Equal(0, linkStore.ClearEventCalls);
+    }
+
     private static IntelligentGolfEventIntegration CreateIntegration(
         PrivateApiScenario scenario,
         RecordingLinkStore linkStore,
@@ -608,6 +709,7 @@ public sealed class IntelligentGolfEventIntegrationTests
         public bool OmitEventImageAttached { get; init; }
         public string? RelinkFailureStage { get; init; }
         public bool PauseDiaryResponse { get; init; }
+        public bool RejectPlannerRemoval { get; init; }
         public int PlannerEventId { get; set; } = 4743;
         public IReadOnlyList<IntelligentGolfPlannerEventCandidate> PlannerCandidates { get; init; } = [];
         public IntelligentGolfPlannerEventCandidate? PlannerLookupCandidate { get; init; }
@@ -772,6 +874,45 @@ public sealed class IntelligentGolfEventIntegrationTests
                 });
             }
 
+            if (request.Method == HttpMethod.Delete &&
+                request.Path == "/api/event-planner/member-diary")
+            {
+                return Json(HttpStatusCode.OK, new
+                {
+                    eventPlaybookEventId = "event-123",
+                    intelligentGolfEventId = 4713,
+                    intelligentGolfDiaryEntryId = 4963,
+                    removed = true,
+                    confirmedAbsent = true,
+                    removedAtUtc = SynchronisedAt
+                });
+            }
+
+            if (request.Method == HttpMethod.Delete &&
+                request.Path == "/api/event-planner/events")
+            {
+                if (RejectPlannerRemoval)
+                {
+                    return Json(HttpStatusCode.BadGateway, new
+                    {
+                        title = "Planner removal failed",
+                        detail = "Intelligent Golf did not remove the planner entry.",
+                        stage = "planner-event-remove",
+                        intelligentGolfEventId = 4713,
+                        retryable = true
+                    });
+                }
+
+                return Json(HttpStatusCode.OK, new
+                {
+                    eventPlaybookEventId = "event-123",
+                    intelligentGolfEventId = 4713,
+                    removed = true,
+                    confirmedAbsent = true,
+                    removedAtUtc = SynchronisedAt
+                });
+            }
+
             throw new Xunit.Sdk.XunitException(
                 $"Unexpected private API request: {request.Method} {request.Path}");
         }
@@ -837,7 +978,8 @@ public sealed class IntelligentGolfEventIntegrationTests
                     Enabled = true,
                     Configured = true
                 },
-                Monday = new MondayPluginSummary()
+                Monday = new MondayPluginSummary(),
+                Yodeck = new YodeckPluginSummary()
             });
 
         public Task<IntelligentGolfPluginSummary> SaveIntelligentGolfAsync(
@@ -859,6 +1001,20 @@ public sealed class IntelligentGolfEventIntegrationTests
             CancellationToken cancellationToken) =>
             throw new NotSupportedException();
 
+        public Task<YodeckPluginSummary> SaveYodeckAsync(
+            SaveYodeckPluginRequest request,
+            CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+
+        public Task<YodeckPluginCredentials> ResolveYodeckCredentialsAsync(
+            SaveYodeckPluginRequest request,
+            CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+
+        public Task<YodeckPluginCredentials?> GetYodeckCredentialsAsync(
+            CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
+
         public Task<PluginSettingsOverview> SetEnabledAsync(
             string pluginId,
             bool enabled,
@@ -877,6 +1033,8 @@ public sealed class IntelligentGolfEventIntegrationTests
 
         public int SaveDiaryCalls { get; private set; }
         public int SaveAllocatedDiaryCalls { get; private set; }
+        public int ClearDiaryCalls { get; private set; }
+        public int ClearEventCalls { get; private set; }
         public Dictionary<int, string> LinkedOwners { get; } = [];
 
         public void Seed(IntelligentGolfIntegrationLink link) => _link = link;
@@ -941,6 +1099,40 @@ public sealed class IntelligentGolfEventIntegrationTests
             var link = GetOrCreate(eventId);
             link.IntelligentGolfEventId = intelligentGolfEventId;
             link.IntelligentGolfDiaryEntryId = diaryEntryId;
+            return Task.CompletedTask;
+        }
+
+        public Task ClearDiaryAsync(
+            string eventId,
+            int expectedIntelligentGolfEventId,
+            int expectedIntelligentGolfDiaryEntryId,
+            CancellationToken cancellationToken)
+        {
+            var link = GetOrCreate(eventId);
+            if (link.IntelligentGolfEventId != expectedIntelligentGolfEventId)
+                throw new IntelligentGolfPlannerLinkChangedException(expectedIntelligentGolfEventId, link.IntelligentGolfEventId);
+            if (link.IntelligentGolfDiaryEntryId != expectedIntelligentGolfDiaryEntryId)
+                throw new IntelligentGolfDiaryLinkChangedException(expectedIntelligentGolfDiaryEntryId, link.IntelligentGolfDiaryEntryId);
+            ClearDiaryCalls++;
+            link.IntelligentGolfDiaryEntryId = null;
+            link.DiaryPublishedAtUtc = null;
+            return Task.CompletedTask;
+        }
+
+        public Task ClearEventAsync(
+            string eventId,
+            int expectedIntelligentGolfEventId,
+            CancellationToken cancellationToken)
+        {
+            var link = GetOrCreate(eventId);
+            if (link.IntelligentGolfEventId != expectedIntelligentGolfEventId)
+                throw new IntelligentGolfPlannerLinkChangedException(expectedIntelligentGolfEventId, link.IntelligentGolfEventId);
+            if (link.IntelligentGolfDiaryEntryId is > 0)
+                throw new InvalidOperationException("The diary link must be removed first.");
+            ClearEventCalls++;
+            link.IntelligentGolfEventId = null;
+            link.LastEventFingerprint = null;
+            link.EventSynchronisedAtUtc = null;
             return Task.CompletedTask;
         }
 

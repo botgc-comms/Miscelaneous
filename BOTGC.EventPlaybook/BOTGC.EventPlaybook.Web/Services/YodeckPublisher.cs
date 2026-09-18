@@ -3,38 +3,45 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using BOTGC.EventPlaybook.Models;
-using BOTGC.EventPlaybook.Options;
-using Microsoft.Extensions.Options;
 
 namespace BOTGC.EventPlaybook.Services;
 
 public sealed class YodeckPublisher(
     IHttpClientFactory httpClientFactory,
-    IOptions<YodeckOptions> options,
+    IYodeckSettingsProvider settingsProvider,
     IIntegrationActivityStore activityStore,
     ILogger<YodeckPublisher> logger) : IYodeckPublisher
 {
-    private readonly YodeckOptions _options = options.Value;
+    private readonly AsyncLocal<YodeckRuntimeSettings?> _activeSettings = new();
     private readonly SemaphoreSlim _mediaTagGate = new(1, 1);
     private readonly SemaphoreSlim _publishGate = new(1, 1);
 
-    public bool IsConfigured => _options.IsConfigured;
+    private YodeckRuntimeSettings Settings => _activeSettings.Value
+        ?? throw new InvalidOperationException("The Yodeck operation does not have an active settings snapshot.");
 
     public async Task<YodeckPublishResult> PublishAsync(
         YodeckPublishCommand command,
         CancellationToken cancellationToken)
     {
+        YodeckRuntimeSettings? attemptedSettings = null;
         try
         {
-            if (!IsConfigured)
+            attemptedSettings = await settingsProvider.GetAsync(cancellationToken);
+            if (!attemptedSettings.Enabled)
             {
-                throw new InvalidOperationException(
-                    "Clubhouse screen sharing is not configured. Ask an administrator to complete the server connection settings.");
+                throw new YodeckUnavailableException(
+                    "Clubhouse screen sharing is disabled. Ask an administrator to enable the Yodeck plugin.");
+            }
+            if (!attemptedSettings.IsConfigured)
+            {
+                throw new YodeckUnavailableException(
+                    "Clubhouse screen sharing is not configured. Ask an administrator to complete the Yodeck plugin settings.");
             }
 
             await _publishGate.WaitAsync(cancellationToken);
             try
             {
+                _activeSettings.Value = attemptedSettings;
                 var result = await UpsertAsync(command, cancellationToken);
                 await RecordActivitySafelyAsync(new IntegrationActivityWrite
                 {
@@ -53,6 +60,7 @@ public sealed class YodeckPublisher(
             }
             finally
             {
+                _activeSettings.Value = null;
                 _publishGate.Release();
             }
         }
@@ -66,7 +74,7 @@ public sealed class YodeckPublisher(
                 Outcome = "failed",
                 EventPlaybookEventId = command.EventId,
                 EventName = command.EventName,
-                Stage = requestFailure?.Stage ?? (IsConfigured ? "screen-publish" : "configuration"),
+                Stage = requestFailure?.Stage ?? (attemptedSettings?.IsAvailable == true ? "screen-publish" : "configuration"),
                 StatusCode = requestFailure?.StatusCode,
                 Message = exception.Message
             });
@@ -78,17 +86,25 @@ public sealed class YodeckPublisher(
         YodeckTakeDownCommand command,
         CancellationToken cancellationToken)
     {
+        YodeckRuntimeSettings? attemptedSettings = null;
         try
         {
-            if (!IsConfigured)
+            attemptedSettings = await settingsProvider.GetAsync(cancellationToken);
+            if (!attemptedSettings.Enabled)
             {
-                throw new InvalidOperationException(
-                    "Clubhouse screen sharing is not configured. Ask an administrator to complete the server connection settings.");
+                throw new YodeckUnavailableException(
+                    "Clubhouse screen sharing is disabled. Ask an administrator to enable the Yodeck plugin.");
+            }
+            if (!attemptedSettings.IsConfigured)
+            {
+                throw new YodeckUnavailableException(
+                    "Clubhouse screen sharing is not configured. Ask an administrator to complete the Yodeck plugin settings.");
             }
 
             await _publishGate.WaitAsync(cancellationToken);
             try
             {
+                _activeSettings.Value = attemptedSettings;
                 var result = await RemoveFromPlaylistAsync(command, cancellationToken);
                 await RecordActivitySafelyAsync(new IntegrationActivityWrite
                 {
@@ -109,6 +125,7 @@ public sealed class YodeckPublisher(
             }
             finally
             {
+                _activeSettings.Value = null;
                 _publishGate.Release();
             }
         }
@@ -122,7 +139,7 @@ public sealed class YodeckPublisher(
                 Outcome = "failed",
                 EventPlaybookEventId = command.EventId,
                 EventName = command.EventName,
-                Stage = requestFailure?.Stage ?? (IsConfigured ? "screen-take-down" : "configuration"),
+                Stage = requestFailure?.Stage ?? (attemptedSettings?.IsAvailable == true ? "screen-take-down" : "configuration"),
                 StatusCode = requestFailure?.StatusCode,
                 Message = exception.Message
             });
@@ -135,7 +152,7 @@ public sealed class YodeckPublisher(
         CancellationToken cancellationToken)
     {
         var playlist = await GetPlaylistAsync(cancellationToken);
-        var playlistName = ReadString(playlist, "name") ?? _options.PlaylistName;
+        var playlistName = ReadString(playlist, "name") ?? Settings.PlaylistName;
         var workspaceId = ReadNestedInt64(playlist, "workspace", "id");
         var eventTag = BuildEventTag(command.EventId);
         var tags = BuildMediaTags(command.Tags, eventTag);
@@ -197,7 +214,7 @@ public sealed class YodeckPublisher(
             mediaId,
             command.EventId,
             mediaUpload.Status,
-            _options.PlaylistId,
+            Settings.PlaylistId,
             playlistUpdate.Changed,
             playlistUpdate.DuplicateEntriesRemoved,
             screenPush.Status,
@@ -207,7 +224,7 @@ public sealed class YodeckPublisher(
         {
             MediaId = mediaId,
             MediaName = command.MediaName,
-            PlaylistId = _options.PlaylistId,
+            PlaylistId = Settings.PlaylistId,
             PlaylistName = playlistName,
             StartDate = command.StartDate,
             EndDate = command.EndDate,
@@ -232,7 +249,7 @@ public sealed class YodeckPublisher(
         CancellationToken cancellationToken)
     {
         var playlist = await GetPlaylistAsync(cancellationToken);
-        var playlistName = ReadString(playlist, "name") ?? _options.PlaylistName;
+        var playlistName = ReadString(playlist, "name") ?? Settings.PlaylistName;
         var workspaceId = ReadNestedInt64(playlist, "workspace", "id");
         var eventTag = BuildEventTag(command.EventId);
         var matchingMedia = await FindEventMediaAsync(
@@ -309,7 +326,7 @@ public sealed class YodeckPublisher(
         logger.LogInformation(
             "Took down event {EventId} from Yodeck playlist {PlaylistId}; playlist changed: {PlaylistChanged}; entries removed: {EntriesRemoved}; retained media: {RetainedMediaCount}; screen push: {PushStatus} ({ScreenCount} affected screens reported).",
             command.EventId,
-            _options.PlaylistId,
+            Settings.PlaylistId,
             playlistUpdate.Changed,
             playlistUpdate.EntriesRemoved,
             retainedMediaIds.Count,
@@ -318,7 +335,7 @@ public sealed class YodeckPublisher(
 
         return new YodeckTakeDownResult
         {
-            PlaylistId = _options.PlaylistId,
+            PlaylistId = Settings.PlaylistId,
             PlaylistName = playlistName,
             PlaylistWasChanged = playlistUpdate.Changed,
             RemovedPlaylistEntries = playlistUpdate.EntriesRemoved,
@@ -417,7 +434,7 @@ public sealed class YodeckPublisher(
     {
         using var response = await SendYodeckAsync(
             HttpMethod.Get,
-            $"playlists/{_options.PlaylistId}",
+            $"playlists/{Settings.PlaylistId}",
             content: null,
             cancellationToken);
         return await ReadObjectAsync(response, "retrieve the Clubhouse screen rotation", cancellationToken);
@@ -562,7 +579,7 @@ public sealed class YodeckPublisher(
                 ["format"] = null
             },
             ["description"] = $"Event Playbook event id: {command.EventId}. Artwork for {command.EventName}.",
-            ["default_duration"] = Math.Clamp(_options.MediaDurationSeconds, 5, 300),
+            ["default_duration"] = Math.Clamp(Settings.MediaDurationSeconds, 5, 300),
             ["tags"] = new JsonArray(tags
                 .Select(tag => (JsonNode?)JsonValue.Create(tag))
                 .ToArray()),
@@ -685,7 +702,7 @@ public sealed class YodeckPublisher(
         var canonicalItemFound = false;
         var changed = false;
         var duplicateEntriesRemoved = 0;
-        var duration = Math.Clamp(_options.MediaDurationSeconds, 5, 300);
+        var duration = Math.Clamp(Settings.MediaDurationSeconds, 5, 300);
 
         if (playlist["items"] is JsonArray existingItems)
         {
@@ -746,7 +763,7 @@ public sealed class YodeckPublisher(
         using var content = JsonContent.Create(new JsonObject { ["items"] = items });
         using var response = await SendYodeckAsync(
             HttpMethod.Patch,
-            $"playlists/{_options.PlaylistId}",
+            $"playlists/{Settings.PlaylistId}",
             content,
             cancellationToken);
         await EnsureSuccessAsync(response, "update the Clubhouse screen rotation", cancellationToken);
@@ -790,7 +807,7 @@ public sealed class YodeckPublisher(
         using var content = JsonContent.Create(new JsonObject { ["items"] = items });
         using var response = await SendYodeckAsync(
             HttpMethod.Patch,
-            $"playlists/{_options.PlaylistId}",
+            $"playlists/{Settings.PlaylistId}",
             content,
             cancellationToken);
         await EnsureSuccessAsync(response, "remove the event artwork from the Clubhouse screen rotation", cancellationToken);
@@ -894,7 +911,7 @@ public sealed class YodeckPublisher(
         using var request = new HttpRequestMessage(method, relativeUrl) { Content = content };
         request.Headers.Authorization = new AuthenticationHeaderValue(
             "Token",
-            $"{_options.ApiTokenLabel}:{_options.ApiToken}");
+            $"{Settings.ApiTokenLabel}:{Settings.ApiToken}");
         return await client.SendAsync(request, cancellationToken);
     }
 

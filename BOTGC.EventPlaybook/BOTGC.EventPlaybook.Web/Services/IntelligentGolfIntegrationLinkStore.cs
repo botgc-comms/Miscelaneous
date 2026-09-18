@@ -27,6 +27,15 @@ public interface IIntelligentGolfIntegrationLinkStore
         int intelligentGolfEventId,
         int diaryEntryId,
         CancellationToken cancellationToken);
+    Task ClearDiaryAsync(
+        string eventId,
+        int expectedIntelligentGolfEventId,
+        int expectedIntelligentGolfDiaryEntryId,
+        CancellationToken cancellationToken);
+    Task ClearEventAsync(
+        string eventId,
+        int expectedIntelligentGolfEventId,
+        CancellationToken cancellationToken);
     Task RecordFailureAsync(
         string eventId,
         string message,
@@ -135,6 +144,98 @@ public sealed class IntelligentGolfIntegrationLinkStore : IIntelligentGolfIntegr
             link.IntelligentGolfEventId = intelligentGolfEventId;
             link.IntelligentGolfDiaryEntryId = diaryEntryId;
         }, cancellationToken);
+
+    public async Task ClearDiaryAsync(
+        string eventId,
+        int expectedIntelligentGolfEventId,
+        int expectedIntelligentGolfDiaryEntryId,
+        CancellationToken cancellationToken)
+    {
+        var key = eventId.Trim();
+        await _gate.WaitAsync(cancellationToken);
+        try
+        {
+            var document = await LoadAsync(cancellationToken);
+            if (!document.Events.TryGetValue(key, out var link))
+            {
+                throw new InvalidOperationException(
+                    $"Event Playbook event {key} no longer has an Intelligent Golf link.");
+            }
+
+            if (link.IntelligentGolfEventId != expectedIntelligentGolfEventId)
+            {
+                throw new IntelligentGolfPlannerLinkChangedException(
+                    expectedIntelligentGolfEventId,
+                    link.IntelligentGolfEventId);
+            }
+
+            if (link.IntelligentGolfDiaryEntryId != expectedIntelligentGolfDiaryEntryId)
+            {
+                throw new IntelligentGolfDiaryLinkChangedException(
+                    expectedIntelligentGolfDiaryEntryId,
+                    link.IntelligentGolfDiaryEntryId);
+            }
+
+            link.IntelligentGolfDiaryEntryId = null;
+            link.DiaryPublishedAtUtc = null;
+            link.LastError = null;
+            link.LastErrorStage = null;
+            link.LastErrorStatusCode = null;
+            link.UpdatedAtUtc = DateTimeOffset.UtcNow;
+            await SaveAsync(document, cancellationToken);
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    public async Task ClearEventAsync(
+        string eventId,
+        int expectedIntelligentGolfEventId,
+        CancellationToken cancellationToken)
+    {
+        var key = eventId.Trim();
+        await _gate.WaitAsync(cancellationToken);
+        try
+        {
+            var document = await LoadAsync(cancellationToken);
+            if (!document.Events.TryGetValue(key, out var link))
+            {
+                throw new InvalidOperationException(
+                    $"Event Playbook event {key} no longer has an Intelligent Golf link.");
+            }
+
+            if (link.IntelligentGolfEventId != expectedIntelligentGolfEventId)
+            {
+                throw new IntelligentGolfPlannerLinkChangedException(
+                    expectedIntelligentGolfEventId,
+                    link.IntelligentGolfEventId);
+            }
+
+            if (link.IntelligentGolfDiaryEntryId is > 0)
+            {
+                throw new InvalidOperationException(
+                    $"Intelligent Golf diary entry {link.IntelligentGolfDiaryEntryId} must be removed before planner entry {expectedIntelligentGolfEventId}.");
+            }
+
+            link.IntelligentGolfEventId = null;
+            link.IntelligentGolfDiaryEntryId = null;
+            link.LastEventFingerprint = null;
+            link.EventSynchronisedAtUtc = null;
+            link.DiaryPublishedAtUtc = null;
+            link.LastError = null;
+            link.LastErrorStage = null;
+            link.LastErrorStatusCode = null;
+            ClearPendingMatch(link);
+            link.UpdatedAtUtc = DateTimeOffset.UtcNow;
+            await SaveAsync(document, cancellationToken);
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
 
     public Task RecordFailureAsync(
         string eventId,
@@ -335,4 +436,16 @@ public sealed class IntelligentGolfIntegrationLinkStore : IIntelligentGolfIntegr
         public Dictionary<string, IntelligentGolfIntegrationLink> Events { get; init; } =
             new(StringComparer.OrdinalIgnoreCase);
     }
+}
+
+public sealed class IntelligentGolfDiaryLinkChangedException(
+    int expectedIntelligentGolfDiaryEntryId,
+    int? currentIntelligentGolfDiaryEntryId)
+    : Exception(
+        currentIntelligentGolfDiaryEntryId is > 0
+            ? $"This Event Playbook event is now linked to Intelligent Golf diary entry {currentIntelligentGolfDiaryEntryId}, not the expected entry {expectedIntelligentGolfDiaryEntryId}. Refresh the event before trying again."
+            : $"This Event Playbook event is no longer linked to Intelligent Golf diary entry {expectedIntelligentGolfDiaryEntryId}. Refresh the event before trying again.")
+{
+    public int ExpectedIntelligentGolfDiaryEntryId { get; } = expectedIntelligentGolfDiaryEntryId;
+    public int? CurrentIntelligentGolfDiaryEntryId { get; } = currentIntelligentGolfDiaryEntryId;
 }

@@ -20,6 +20,14 @@ public interface IPluginSettingsStore
     Task<MondayPluginSummary> SaveMondayAsync(
         SaveMondayPluginRequest request,
         CancellationToken cancellationToken);
+    Task<YodeckPluginSummary> SaveYodeckAsync(
+        SaveYodeckPluginRequest request,
+        CancellationToken cancellationToken);
+    Task<YodeckPluginCredentials> ResolveYodeckCredentialsAsync(
+        SaveYodeckPluginRequest request,
+        CancellationToken cancellationToken);
+    Task<YodeckPluginCredentials?> GetYodeckCredentialsAsync(
+        CancellationToken cancellationToken);
     Task<PluginSettingsOverview> SetEnabledAsync(
         string pluginId,
         bool enabled,
@@ -31,6 +39,10 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
 {
     private const int MaximumSecretLength = 4_096;
     private const int MaximumSettingLength = 500;
+    private const string DefaultYodeckPlaylistName = "Clubhouse";
+    private const int DefaultYodeckMediaDurationSeconds = 15;
+    private const int MinimumYodeckMediaDurationSeconds = 5;
+    private const int MaximumYodeckMediaDurationSeconds = 300;
     private readonly string _path;
     private readonly IDataProtector _protector;
     private readonly SemaphoreSlim _gate = new(1, 1);
@@ -198,6 +210,105 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
         }
     }
 
+    public async Task<YodeckPluginSummary> SaveYodeckAsync(
+        SaveYodeckPluginRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _gate.WaitAsync(cancellationToken);
+        try
+        {
+            var document = await LoadAsync(cancellationToken);
+            var current = document.Yodeck ?? new YodeckPluginRecord();
+            var encryptedApiToken = UpdateSecret(
+                current.EncryptedApiToken,
+                NormaliseSecretReplacement(request.ApiToken),
+                "API token");
+            var playlistId = ResolveYodeckPlaylistId(current.PlaylistId, request.PlaylistId);
+            var playlistName = ResolveSetting(current.PlaylistName, request.PlaylistName, "playlist name")
+                ?? DefaultYodeckPlaylistName;
+            var mediaDurationSeconds = ResolveYodeckMediaDuration(
+                current.MediaDurationSeconds,
+                request.MediaDurationSeconds);
+
+            var configured = IsYodeckConfigured(
+                encryptedApiToken,
+                playlistId,
+                playlistName,
+                mediaDurationSeconds);
+            if (request.Enabled && !configured)
+            {
+                throw new ArgumentException(
+                    "Add a Yodeck API token and playlist ID before enabling the plugin.");
+            }
+
+            document.Yodeck = new YodeckPluginRecord
+            {
+                Enabled = request.Enabled,
+                EncryptedApiToken = encryptedApiToken,
+                PlaylistId = playlistId,
+                PlaylistName = playlistName,
+                MediaDurationSeconds = mediaDurationSeconds,
+                UpdatedAtUtc = DateTimeOffset.UtcNow
+            };
+            await SaveAsync(document, cancellationToken);
+            return CreateYodeckSummary(document.Yodeck);
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    public async Task<YodeckPluginCredentials> ResolveYodeckCredentialsAsync(
+        SaveYodeckPluginRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _gate.WaitAsync(cancellationToken);
+        try
+        {
+            var current = (await LoadAsync(cancellationToken)).Yodeck ?? new YodeckPluginRecord();
+            return CreateYodeckCredentials(
+                ResolveSecret(current.EncryptedApiToken, NormaliseSecretReplacement(request.ApiToken)),
+                ResolveYodeckPlaylistId(current.PlaylistId, request.PlaylistId),
+                ResolveSetting(current.PlaylistName, request.PlaylistName, "playlist name")
+                    ?? DefaultYodeckPlaylistName,
+                ResolveYodeckMediaDuration(current.MediaDurationSeconds, request.MediaDurationSeconds));
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    public async Task<YodeckPluginCredentials?> GetYodeckCredentialsAsync(
+        CancellationToken cancellationToken)
+    {
+        await _gate.WaitAsync(cancellationToken);
+        try
+        {
+            var record = (await LoadAsync(cancellationToken)).Yodeck;
+            if (record is null ||
+                !IsYodeckConfigured(
+                    record.EncryptedApiToken,
+                    record.PlaylistId,
+                    record.PlaylistName,
+                    record.MediaDurationSeconds))
+            {
+                return null;
+            }
+
+            return CreateYodeckCredentials(
+                ResolveSecret(record.EncryptedApiToken, null),
+                record.PlaylistId,
+                record.PlaylistName,
+                record.MediaDurationSeconds);
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
     public async Task<PluginSettingsOverview> DisconnectAsync(string pluginId, CancellationToken cancellationToken)
     {
         await _gate.WaitAsync(cancellationToken);
@@ -211,6 +322,16 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
                     break;
                 case "monday":
                     document.Monday = null;
+                    break;
+                case "yodeck":
+                    // Keep an explicit empty record so a future runtime provider can
+                    // distinguish "disconnected" from "never configured" when deciding
+                    // whether legacy environment settings may be used as a fallback.
+                    document.Yodeck = new YodeckPluginRecord
+                    {
+                        Enabled = false,
+                        UpdatedAtUtc = DateTimeOffset.UtcNow
+                    };
                     break;
                 default:
                     throw new KeyNotFoundException("That plugin does not exist.");
@@ -264,6 +385,24 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
                     record.Enabled = enabled;
                     record.UpdatedAtUtc = DateTimeOffset.UtcNow;
                     document.Monday = record;
+                    break;
+                }
+                case "yodeck":
+                {
+                    var record = document.Yodeck ?? new YodeckPluginRecord();
+                    if (enabled &&
+                        !IsYodeckConfigured(
+                            record.EncryptedApiToken,
+                            record.PlaylistId,
+                            record.PlaylistName,
+                            record.MediaDurationSeconds))
+                    {
+                        throw new ArgumentException("Configure Yodeck before turning the module on.");
+                    }
+
+                    record.Enabled = enabled;
+                    record.UpdatedAtUtc = DateTimeOffset.UtcNow;
+                    document.Yodeck = record;
                     break;
                 }
                 default:
@@ -326,7 +465,32 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
             emailFromAddress);
     }
 
+    private static YodeckPluginCredentials CreateYodeckCredentials(
+        string? apiToken,
+        long? playlistId,
+        string? playlistName,
+        int? mediaDurationSeconds)
+    {
+        if (string.IsNullOrWhiteSpace(apiToken) ||
+            playlistId is not > 0 ||
+            string.IsNullOrWhiteSpace(playlistName) ||
+            mediaDurationSeconds is not (>= MinimumYodeckMediaDurationSeconds and <= MaximumYodeckMediaDurationSeconds))
+        {
+            throw new ArgumentException(
+                "Add a Yodeck API token and playlist ID before enabling the plugin.");
+        }
+
+        return new YodeckPluginCredentials(
+            apiToken,
+            playlistId.Value,
+            playlistName,
+            mediaDurationSeconds.Value);
+    }
+
     private static bool HasSecret(string? encryptedValue) => !string.IsNullOrWhiteSpace(encryptedValue);
+
+    private static string? NormaliseSecretReplacement(string? value) =>
+        string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 
     private static string? NormaliseHttpsUrl(string? value, string label)
     {
@@ -354,6 +518,36 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
 
     private static string? ResolveSetting(string? currentValue, string? replacement, string label) =>
         replacement is null ? currentValue : NormaliseSetting(replacement, label);
+
+    private static long? ResolveYodeckPlaylistId(long? currentValue, long? replacement)
+    {
+        if (replacement is null) return currentValue;
+        return replacement > 0
+            ? replacement
+            : throw new ArgumentException("The Yodeck playlist ID must be a positive whole number.");
+    }
+
+    private static int ResolveYodeckMediaDuration(int? currentValue, int? replacement)
+    {
+        var value = replacement ?? currentValue ?? DefaultYodeckMediaDurationSeconds;
+        if (value is < MinimumYodeckMediaDurationSeconds or > MaximumYodeckMediaDurationSeconds)
+        {
+            throw new ArgumentException(
+                $"The Yodeck media duration must be between {MinimumYodeckMediaDurationSeconds} and {MaximumYodeckMediaDurationSeconds} seconds.");
+        }
+
+        return value;
+    }
+
+    private static bool IsYodeckConfigured(
+        string? encryptedApiToken,
+        long? playlistId,
+        string? playlistName,
+        int? mediaDurationSeconds) =>
+        HasSecret(encryptedApiToken) &&
+        playlistId is > 0 &&
+        !string.IsNullOrWhiteSpace(playlistName) &&
+        mediaDurationSeconds is >= MinimumYodeckMediaDurationSeconds and <= MaximumYodeckMediaDurationSeconds;
 
     private static int? ResolveMemberNumber(int? currentValue, string? replacement)
     {
@@ -405,7 +599,8 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
     private static PluginSettingsOverview CreateOverview(PluginSettingsDocument document) => new()
     {
         IntelligentGolf = CreateIntelligentGolfSummary(document.IntelligentGolf),
-        Monday = CreateMondaySummary(document.Monday)
+        Monday = CreateMondaySummary(document.Monday),
+        Yodeck = CreateYodeckSummary(document.Yodeck)
     };
 
     private static IntelligentGolfPluginSummary CreateIntelligentGolfSummary(IntelligentGolfPluginRecord? record) => new()
@@ -439,11 +634,27 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
         UpdatedAtUtc = record?.UpdatedAtUtc
     };
 
+    private static YodeckPluginSummary CreateYodeckSummary(YodeckPluginRecord? record) => new()
+    {
+        Enabled = record?.Enabled == true,
+        Configured = record is not null && IsYodeckConfigured(
+            record.EncryptedApiToken,
+            record.PlaylistId,
+            record.PlaylistName,
+            record.MediaDurationSeconds),
+        HasApiToken = HasSecret(record?.EncryptedApiToken),
+        PlaylistId = record?.PlaylistId ?? 0,
+        PlaylistName = record?.PlaylistName,
+        MediaDurationSeconds = record?.MediaDurationSeconds ?? 0,
+        UpdatedAtUtc = record?.UpdatedAtUtc
+    };
+
     private sealed class PluginSettingsDocument
     {
         public int Version { get; init; } = 2;
         public IntelligentGolfPluginRecord? IntelligentGolf { get; set; }
         public MondayPluginRecord? Monday { get; set; }
+        public YodeckPluginRecord? Yodeck { get; set; }
     }
 
     private sealed class IntelligentGolfPluginRecord
@@ -465,6 +676,16 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
         public string? EncryptedApiToken { get; init; }
         public string? WorkspaceId { get; init; }
         public string? BoardId { get; init; }
+        public DateTimeOffset? UpdatedAtUtc { get; set; }
+    }
+
+    private sealed class YodeckPluginRecord
+    {
+        public bool Enabled { get; set; }
+        public string? EncryptedApiToken { get; init; }
+        public long? PlaylistId { get; init; }
+        public string? PlaylistName { get; init; }
+        public int? MediaDurationSeconds { get; init; }
         public DateTimeOffset? UpdatedAtUtc { get; set; }
     }
 }

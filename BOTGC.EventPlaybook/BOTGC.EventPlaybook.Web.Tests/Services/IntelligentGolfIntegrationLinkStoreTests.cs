@@ -143,6 +143,62 @@ public sealed class IntelligentGolfIntegrationLinkStoreTests
         Assert.Equal("current-fingerprint", reloaded?.LastEventFingerprint);
     }
 
+    [Fact]
+    public async Task ClearDiaryThenEvent_ClearsOnlyTheRemotelyConfirmedAssociationAtEachStep()
+    {
+        using var root = new TemporaryContentRoot();
+        var store = CreateStore(root.Path);
+        await SeedRichLinkAsync(store, "event-123", 4713);
+
+        await store.ClearDiaryAsync(
+            "event-123",
+            expectedIntelligentGolfEventId: 4713,
+            expectedIntelligentGolfDiaryEntryId: 4963,
+            CancellationToken.None);
+
+        var diaryCleared = await CreateStore(root.Path).GetAsync("event-123", CancellationToken.None);
+        Assert.Equal(4713, diaryCleared?.IntelligentGolfEventId);
+        Assert.Null(diaryCleared?.IntelligentGolfDiaryEntryId);
+        Assert.Null(diaryCleared?.DiaryPublishedAtUtc);
+        Assert.Equal("initial-fingerprint", diaryCleared?.LastEventFingerprint);
+        Assert.Null(diaryCleared?.LastError);
+
+        await store.ClearEventAsync(
+            "event-123",
+            expectedIntelligentGolfEventId: 4713,
+            CancellationToken.None);
+
+        var eventCleared = await CreateStore(root.Path).GetAsync("event-123", CancellationToken.None);
+        Assert.Null(eventCleared?.IntelligentGolfEventId);
+        Assert.Null(eventCleared?.IntelligentGolfDiaryEntryId);
+        Assert.Null(eventCleared?.LastEventFingerprint);
+        Assert.Null(eventCleared?.EventSynchronisedAtUtc);
+        Assert.Null(eventCleared?.DiaryPublishedAtUtc);
+        Assert.Null(eventCleared?.PendingMatchEventDate);
+        Assert.Empty(eventCleared?.PendingMatchCandidates ?? []);
+    }
+
+    [Fact]
+    public async Task ClearDiaryAsync_WhenExpectedDiaryIsStale_RejectsWithoutClearingEitherLink()
+    {
+        using var root = new TemporaryContentRoot();
+        var store = CreateStore(root.Path);
+        await SeedRichLinkAsync(store, "event-123", 4713);
+
+        var exception = await Assert.ThrowsAsync<IntelligentGolfDiaryLinkChangedException>(() =>
+            store.ClearDiaryAsync(
+                "event-123",
+                expectedIntelligentGolfEventId: 4713,
+                expectedIntelligentGolfDiaryEntryId: 4999,
+                CancellationToken.None));
+
+        Assert.Equal(4999, exception.ExpectedIntelligentGolfDiaryEntryId);
+        Assert.Equal(4963, exception.CurrentIntelligentGolfDiaryEntryId);
+        var reloaded = await CreateStore(root.Path).GetAsync("event-123", CancellationToken.None);
+        Assert.Equal(4713, reloaded?.IntelligentGolfEventId);
+        Assert.Equal(4963, reloaded?.IntelligentGolfDiaryEntryId);
+    }
+
     private static IntelligentGolfIntegrationLinkStore CreateStore(string contentRootPath) =>
         new(new TestWebHostEnvironment(contentRootPath));
 

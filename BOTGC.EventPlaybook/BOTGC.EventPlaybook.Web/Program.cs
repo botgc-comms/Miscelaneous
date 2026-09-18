@@ -102,6 +102,7 @@ builder.Services.AddHttpClient("Yodeck", client =>
         : yodeckApiBaseUrl.TrimEnd('/') + "/");
     client.Timeout = TimeSpan.FromMinutes(3);
 });
+builder.Services.AddSingleton<IYodeckSettingsProvider, YodeckSettingsProvider>();
 builder.Services.AddSingleton<IYodeckPublisher, YodeckPublisher>();
 builder.Services.AddHttpClient(IntelligentGolfApiSessionClient.HttpClientName, client =>
 {
@@ -150,14 +151,46 @@ builder.Services
 
 var app = builder.Build();
 
+if (!string.IsNullOrWhiteSpace(yodeckApiToken) && yodeckPlaylistId > 0)
+{
+    try
+    {
+        var pluginSettingsStore = app.Services.GetRequiredService<IPluginSettingsStore>();
+        var plugins = await pluginSettingsStore.GetOverviewAsync(CancellationToken.None);
+        if (plugins.Yodeck.UpdatedAtUtc is null)
+        {
+            await pluginSettingsStore.SaveYodeckAsync(new SaveYodeckPluginRequest
+            {
+                Enabled = true,
+                ApiToken = yodeckApiToken,
+                PlaylistId = yodeckPlaylistId,
+                PlaylistName = string.IsNullOrWhiteSpace(yodeckPlaylistName) ? "Clubhouse" : yodeckPlaylistName,
+                MediaDurationSeconds = yodeckMediaDuration
+            }, CancellationToken.None);
+            app.Logger.LogInformation("Migrated the legacy Yodeck environment configuration into the encrypted plugin settings store.");
+        }
+    }
+    catch (Exception exception)
+    {
+        // The runtime provider still supplies the legacy values when no explicit
+        // plugin record exists, so a persistence problem must not break an
+        // otherwise working pre-plugin deployment.
+        app.Logger.LogWarning(exception, "Could not migrate the legacy Yodeck environment configuration; continuing with the legacy runtime fallback.");
+    }
+}
+
+var startupYodeckSettings = await app.Services
+    .GetRequiredService<IYodeckSettingsProvider>()
+    .GetAsync(CancellationToken.None);
+
 app.Logger.LogInformation(
     "Communications Centre configured. API key: {ApiKeyStatus}; image model: {ImageModel}; image quality: {ImageQuality}; prompt model: {PromptModel}; Yodeck: {YodeckStatus}; demo access: {DemoAccessStatus}; administrator access: {AdminAccessStatus}",
     string.IsNullOrWhiteSpace(openAiApiKey) ? "not configured - mock mode" : "OPENAI_API_KEY",
     effectiveImageModel,
     effectiveImageQuality,
     effectivePromptModel,
-    !string.IsNullOrWhiteSpace(yodeckApiToken) && yodeckPlaylistId > 0
-        ? $"playlist {yodeckPlaylistId}"
+    startupYodeckSettings.IsAvailable
+        ? $"playlist {startupYodeckSettings.PlaylistId}"
         : "not configured",
     string.IsNullOrWhiteSpace(demoPassword) ? "disabled" : "password protected",
     string.IsNullOrWhiteSpace(adminPassword) ? "not configured" : "password protected");
@@ -338,20 +371,23 @@ app.MapGet("/api/branding/crest", async (
 
 app.MapGet("/api/plugins/status", async (
     IPluginSettingsStore pluginSettingsStore,
+    IYodeckSettingsProvider yodeckSettingsProvider,
     CancellationToken cancellationToken) =>
 {
     var plugins = await pluginSettingsStore.GetOverviewAsync(cancellationToken);
+    var yodeck = await yodeckSettingsProvider.GetAsync(cancellationToken);
     return Results.Ok(new
     {
         intelligentGolf = new { enabled = plugins.IntelligentGolf.Enabled },
-        monday = new { enabled = plugins.Monday.Enabled }
+        monday = new { enabled = plugins.Monday.Enabled },
+        yodeck = new { enabled = yodeck.Enabled }
     });
 });
 
 app.MapGet("/api/poster/config", async (
     IPosterConfigurationService configurationService,
     IClubBrandingStore brandingStore,
-    IYodeckPublisher yodeckPublisher,
+    IYodeckSettingsProvider yodeckSettingsProvider,
     IIntelligentGolfEventIntegration intelligentGolfIntegration,
     IPluginSettingsStore pluginSettingsStore,
     Microsoft.Extensions.Options.IOptions<EventPlaybookApiOptions> eventPlaybookApiOptions,
@@ -360,6 +396,7 @@ app.MapGet("/api/poster/config", async (
     var configurationModel = configurationService.Get();
     var branding = await brandingStore.GetOverviewAsync(cancellationToken);
     var plugins = await pluginSettingsStore.GetOverviewAsync(cancellationToken);
+    var yodeck = await yodeckSettingsProvider.GetAsync(cancellationToken);
     var hasApiKey = !string.IsNullOrWhiteSpace(openAiApiKey);
 
     return Results.Ok(new
@@ -391,9 +428,9 @@ app.MapGet("/api/poster/config", async (
         apiKeySource = hasApiKey ? "OPENAI_API_KEY" : "not configured",
         clubhouseScreens = new
         {
-            configured = yodeckPublisher.IsConfigured,
-            destinationName = string.IsNullOrWhiteSpace(yodeckPlaylistName) ? "Clubhouse screens" : yodeckPlaylistName,
-            mediaDurationSeconds = yodeckMediaDuration
+            configured = yodeck.IsAvailable,
+            destinationName = string.IsNullOrWhiteSpace(yodeck.PlaylistName) ? "Clubhouse screens" : yodeck.PlaylistName,
+            mediaDurationSeconds = yodeck.MediaDurationSeconds
         },
         memberDiary = new
         {
@@ -705,6 +742,100 @@ app.MapPost("/api/integrations/intelligent-golf/events/{eventId}/planner-link", 
     }
 });
 
+app.MapPost("/api/integrations/intelligent-golf/events/{eventId}/cancel", async (
+    string eventId,
+    CancelIntelligentGolfEventRequest request,
+    ISharedPlaybookStateStore stateStore,
+    IIntelligentGolfEventIntegration intelligentGolfIntegration,
+    CancellationToken cancellationToken) =>
+{
+    var key = eventId.Trim();
+    if (string.IsNullOrWhiteSpace(key))
+        return Results.BadRequest(new { error = "An Event Playbook event ID is required." });
+    if (!request.RemoveDiary && !request.RemovePlanner)
+        return Results.BadRequest(new { error = "Choose at least one Intelligent Golf publication to remove." });
+
+    var sharedState = await stateStore.GetAsync(cancellationToken);
+    if (!PlaybookEventChangePipeline.ReadEvents(sharedState.State).TryGetValue(key, out var snapshot))
+        return Results.NotFound(new { error = "The Event Playbook event could not be found in shared storage." });
+    if (!string.Equals(snapshot.LifecycleStatus, "cancelled", StringComparison.OrdinalIgnoreCase))
+    {
+        return Results.Conflict(new
+        {
+            error = "Intelligent Golf records can only be removed through Cancellation Control while the Event Playbook event is cancelled."
+        });
+    }
+
+    try
+    {
+        var result = await intelligentGolfIntegration.CancelEventAsync(
+            snapshot,
+            request.RemoveDiary,
+            request.RemovePlanner,
+            cancellationToken);
+        return Results.Ok(result);
+    }
+    catch (IntelligentGolfDiaryLinkChangedException exception)
+    {
+        return Results.Problem(
+            title: "The member diary link has changed",
+            detail: exception.Message,
+            statusCode: StatusCodes.Status409Conflict,
+            extensions: new Dictionary<string, object?>
+            {
+                ["refreshStatus"] = true,
+                ["expectedDiaryEntryId"] = exception.ExpectedIntelligentGolfDiaryEntryId,
+                ["currentDiaryEntryId"] = exception.CurrentIntelligentGolfDiaryEntryId
+            });
+    }
+    catch (IntelligentGolfPlannerLinkChangedException exception)
+    {
+        return Results.Problem(
+            title: "The planner link has changed",
+            detail: exception.Message,
+            statusCode: StatusCodes.Status409Conflict,
+            extensions: new Dictionary<string, object?>
+            {
+                ["refreshStatus"] = true,
+                ["expectedPlannerEntryId"] = exception.ExpectedIntelligentGolfEventId,
+                ["currentPlannerEntryId"] = exception.ActualIntelligentGolfEventId
+            });
+    }
+    catch (IntelligentGolfApiRequestException exception)
+    {
+        return Results.Problem(
+            title: "Intelligent Golf cancellation cleanup failed",
+            detail: exception.Message,
+            statusCode: exception.StatusCode is >= 400 and <= 599
+                ? exception.StatusCode
+                : StatusCodes.Status502BadGateway,
+            extensions: new Dictionary<string, object?>
+            {
+                ["stage"] = exception.Stage,
+                ["upstreamStatusCode"] = exception.StatusCode,
+                ["retryable"] = exception.Retryable,
+                ["refreshStatus"] = true,
+                ["plannerEntryId"] = exception.IntelligentGolfEventId,
+                ["diaryEntryId"] = exception.IntelligentGolfRecordId
+            });
+    }
+    catch (ArgumentException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
+    catch (InvalidOperationException exception)
+    {
+        return Results.Problem(
+            title: "Intelligent Golf cancellation cleanup could not continue",
+            detail: exception.Message,
+            statusCode: StatusCodes.Status409Conflict,
+            extensions: new Dictionary<string, object?>
+            {
+                ["refreshStatus"] = true
+            });
+    }
+});
+
 app.MapPost("/api/integrations/intelligent-golf/events/{eventId}/planner-match", async (
     string eventId,
     ResolveIntelligentGolfPlannerMatchRequest request,
@@ -857,6 +988,84 @@ app.MapPost("/api/poster/member-email/draft", async (
     return Results.Ok(await composer.ComposeAsync(draft, artworkUrl, cancellationToken));
 });
 
+app.MapPost("/api/poster/member-email/cancellation-draft", async (
+    MemberCancellationEmailDraftRequest draft,
+    HttpRequest httpRequest,
+    IMemberEmailArtworkStore artworkStore,
+    IMemberEmailComposer composer,
+    IIntegrationActivityStore activityStore,
+    CancellationToken cancellationToken) =>
+{
+    if (string.IsNullOrWhiteSpace(draft.EventId) ||
+        string.IsNullOrWhiteSpace(draft.EventName) ||
+        string.IsNullOrWhiteSpace(draft.Reason) ||
+        !DateOnly.TryParseExact(draft.EventDate, "yyyy-MM-dd", out _))
+    {
+        return Results.BadRequest(new
+        {
+            error = "Event name, date and cancellation reason are required to draft the member cancellation email."
+        });
+    }
+
+    string? artworkUrl = null;
+    if (draft.Artwork is not null)
+    {
+        if (!TryDecodePngDataUrl(draft.Artwork.DataUrl, out var artworkBytes, out var artworkError))
+        {
+            return Results.BadRequest(new { error = artworkError });
+        }
+
+        var artworkToken = await artworkStore.SaveAsync(draft.EventId, artworkBytes, cancellationToken);
+        var publicScheme = httpRequest.Headers["X-Forwarded-Proto"].FirstOrDefault() ?? httpRequest.Scheme;
+        artworkUrl = $"{publicScheme}://{httpRequest.Host}{httpRequest.PathBase}/api/poster/member-email/artwork/{artworkToken}";
+    }
+
+    try
+    {
+        var result = await composer.ComposeCancellationAsync(draft, artworkUrl, cancellationToken);
+        await RecordIntegrationActivitySafelyAsync(
+            activityStore,
+            new IntegrationActivityWrite
+            {
+                Integration = "Member communications",
+                Operation = "Draft cancellation member email",
+                Outcome = "succeeded",
+                EventPlaybookEventId = draft.EventId,
+                EventName = draft.EventName,
+                Stage = "cancellation-email-draft",
+                Message = result.Mode == "openai"
+                    ? $"Generated editable cancellation email copy using {result.Model}."
+                    : "Generated editable cancellation email copy using the deterministic fallback."
+            },
+            app.Logger);
+        return Results.Ok(result);
+    }
+    catch (Exception exception) when (exception is not OperationCanceledException)
+    {
+        await RecordIntegrationActivitySafelyAsync(
+            activityStore,
+            new IntegrationActivityWrite
+            {
+                Integration = "Member communications",
+                Operation = "Draft cancellation member email",
+                Outcome = "failed",
+                EventPlaybookEventId = draft.EventId,
+                EventName = draft.EventName,
+                Stage = "cancellation-email-draft",
+                Message = "The cancellation email draft could not be generated."
+            },
+            app.Logger);
+        app.Logger.LogWarning(
+            exception,
+            "Cancellation email drafting failed for Event Playbook event {EventId}.",
+            draft.EventId);
+        return Results.Problem(
+            title: "The cancellation email could not be drafted",
+            detail: "Try generating the cancellation email again.",
+            statusCode: StatusCodes.Status500InternalServerError);
+    }
+});
+
 app.MapGet("/api/poster/member-email/members", async (
     bool? refresh,
     IIntelligentGolfMemberCommunicationsClient communications,
@@ -891,6 +1100,7 @@ app.MapPost("/api/poster/member-email/test", async (
 app.MapPost("/api/poster/member-email/send", async (
     MemberCampaignEmailRequest request,
     IIntelligentGolfMemberCommunicationsClient communications,
+    IIntegrationActivityStore activityStore,
     CancellationToken cancellationToken) =>
 {
     if (request.MemberNumbers is null || request.MemberNumbers.Count == 0)
@@ -900,10 +1110,45 @@ app.MapPost("/api/poster/member-email/send", async (
 
     try
     {
-        return Results.Ok(await communications.SendCampaignAsync(request, cancellationToken));
+        var result = await communications.SendCampaignAsync(request, cancellationToken);
+        await RecordIntegrationActivitySafelyAsync(
+            activityStore,
+            new IntegrationActivityWrite
+            {
+                Integration = "Member communications",
+                Operation = string.Equals(request.Operation, "cancellation", StringComparison.OrdinalIgnoreCase)
+                    ? "Send cancellation member email"
+                    : "Send member email",
+                Outcome = "succeeded",
+                EventPlaybookEventId = request.EventId,
+                EventName = request.EventName,
+                Stage = string.Equals(request.Operation, "cancellation", StringComparison.OrdinalIgnoreCase)
+                    ? "cancellation-email-send"
+                    : "member-email-send",
+                Message = $"Sent the approved email to {result.Sent} of {result.Requested} requested member{(result.Requested == 1 ? string.Empty : "s")}."
+            },
+            app.Logger);
+        return Results.Ok(result);
     }
     catch (InvalidOperationException exception)
     {
+        await RecordIntegrationActivitySafelyAsync(
+            activityStore,
+            new IntegrationActivityWrite
+            {
+                Integration = "Member communications",
+                Operation = string.Equals(request.Operation, "cancellation", StringComparison.OrdinalIgnoreCase)
+                    ? "Send cancellation member email"
+                    : "Send member email",
+                Outcome = "failed",
+                EventPlaybookEventId = request.EventId,
+                EventName = request.EventName,
+                Stage = string.Equals(request.Operation, "cancellation", StringComparison.OrdinalIgnoreCase)
+                    ? "cancellation-email-send"
+                    : "member-email-send",
+                Message = exception.Message
+            },
+            app.Logger);
         return Results.Problem(exception.Message, statusCode: StatusCodes.Status502BadGateway);
     }
 });
@@ -1371,13 +1616,17 @@ app.MapPost("/api/poster/publish", async (
             }
         });
     }
+    catch (YodeckUnavailableException exception)
+    {
+        return Results.Problem(
+            exception.Message,
+            statusCode: StatusCodes.Status503ServiceUnavailable);
+    }
     catch (InvalidOperationException exception)
     {
         return Results.Problem(
             exception.Message,
-            statusCode: yodeckPublisher.IsConfigured
-                ? StatusCodes.Status502BadGateway
-                : StatusCodes.Status503ServiceUnavailable);
+            statusCode: StatusCodes.Status502BadGateway);
     }
 });
 
@@ -1425,13 +1674,17 @@ app.MapPost("/api/poster/take-down", async (
             }
         });
     }
+    catch (YodeckUnavailableException exception)
+    {
+        return Results.Problem(
+            exception.Message,
+            statusCode: StatusCodes.Status503ServiceUnavailable);
+    }
     catch (InvalidOperationException exception)
     {
         return Results.Problem(
             exception.Message,
-            statusCode: yodeckPublisher.IsConfigured
-                ? StatusCodes.Status502BadGateway
-                : StatusCodes.Status503ServiceUnavailable);
+            statusCode: StatusCodes.Status502BadGateway);
     }
 });
 
@@ -1652,6 +1905,21 @@ app.MapPut("/api/admin/plugins/monday", async (
     try
     {
         return Results.Ok(await pluginSettingsStore.SaveMondayAsync(request, cancellationToken));
+    }
+    catch (ArgumentException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
+});
+
+app.MapPut("/api/admin/plugins/yodeck", async (
+    SaveYodeckPluginRequest request,
+    IPluginSettingsStore pluginSettingsStore,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        return Results.Ok(await pluginSettingsStore.SaveYodeckAsync(request, cancellationToken));
     }
     catch (ArgumentException exception)
     {
@@ -2095,4 +2363,19 @@ static string NormaliseAdminReturnUrl(string? returnUrl)
     var normalised = NormaliseLocalReturnUrl(returnUrl);
     if (normalised == "/") return "/?view=admin";
     return normalised;
+}
+
+static async Task RecordIntegrationActivitySafelyAsync(
+    IIntegrationActivityStore activityStore,
+    IntegrationActivityWrite activity,
+    ILogger logger)
+{
+    try
+    {
+        await activityStore.RecordAsync(activity, CancellationToken.None);
+    }
+    catch (Exception exception)
+    {
+        logger.LogWarning(exception, "Could not record {Operation} in integration activity.", activity.Operation);
+    }
 }

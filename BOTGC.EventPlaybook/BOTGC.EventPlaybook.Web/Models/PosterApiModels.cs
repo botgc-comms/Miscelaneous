@@ -357,6 +357,21 @@ public sealed class MemberEmailDraftResult
     public required string Model { get; init; }
 }
 
+public sealed class MemberCancellationEmailDraftRequest
+{
+    public required string EventId { get; init; }
+
+    public required string EventName { get; init; }
+
+    public required string EventDate { get; init; }
+
+    public required string Reason { get; init; }
+
+    public string? MemberUpdate { get; init; }
+
+    public PublishAsset? Artwork { get; init; }
+}
+
 public sealed class MemberDirectoryEntry
 {
     public int MemberNumber { get; init; }
@@ -394,6 +409,12 @@ public sealed class MemberCampaignEmailRequest
     public required string Subject { get; init; }
 
     public required string BodyHtml { get; init; }
+
+    public string? EventId { get; init; }
+
+    public string? EventName { get; init; }
+
+    public string? Operation { get; init; }
 }
 
 public sealed class MemberCampaignEmailResult

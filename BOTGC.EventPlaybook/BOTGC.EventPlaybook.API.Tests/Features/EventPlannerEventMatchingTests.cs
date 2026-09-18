@@ -819,6 +819,109 @@ public sealed class EventPlannerEventMatchingTests
         Assert.DoesNotContain("intelligent-golf:diary-link:event-123", cache.Values.Keys);
     }
 
+    [Fact]
+    public async Task RemovePlanner_ExtractsCapturedDeleteBookingControlAndVerifiesPlannerAbsenceBeforeClearingCache()
+    {
+        const int plannerEventId = 4733;
+        var deleted = false;
+        var eventPage = SameDayEventPageWithReorderedAttributesHtml +
+                        "<div id='event_overview_diary'><a data-ajax-action='addtodiary'>Add</a></div>";
+        var transport = new RecordingTransport(request => request.Path switch
+        {
+            DisplayMonthPath => Response(DisplayMonthResponse(
+                deleted
+                    ? string.Empty
+                    : "<a href='/eventadmin.php?booking=4733&amp;group=-1'>BOTGC Event Planner: A Night with Marc Bolton</a>")),
+            "/event.php?eventid=4733" => Response(eventPage),
+            "/eventadmin.php?group=-1&booking=4733" => Response("""
+                <p class="mainSubmit">
+                  <a id="deletebutton" href="eventadmin.php?group=-1&amp;booking=4733&amp;delete=1" style="float:left;">
+                    <img src="/images/cross.png"> Delete Booking
+                  </a>
+                </p>
+                """),
+            "/eventadmin.php?group=-1&booking=4733&delete=1" => MarkDeleted(),
+            _ => throw Unexpected(request)
+        });
+        var cache = new JsonCache();
+        await SeedCacheAsync(
+            cache,
+            "intelligent-golf:event-link:event-123",
+            new { IntelligentGolfEventId = plannerEventId });
+        var handler = new RemovePlannerEventHandler(
+            transport,
+            Session,
+            cache,
+            new AlwaysAcquiredLockManager(),
+            NullLogger<RemovePlannerEventHandler>.Instance);
+
+        var result = await handler.Handle(
+            new RemovePlannerEventCommand(new RemovePlannerEventRequest(
+                "event-123",
+                plannerEventId,
+                EventDate)),
+            CancellationToken.None);
+
+        Assert.True(result.Removed);
+        Assert.True(result.ConfirmedAbsent);
+        Assert.Contains(transport.Requests, request =>
+            request.Method == HttpMethod.Get &&
+            request.Path == "/eventadmin.php?group=-1&booking=4733&delete=1");
+        var controlReadIndex = transport.Requests.FindIndex(request =>
+            request.Path == "/eventadmin.php?group=-1&booking=4733");
+        var deleteIndex = transport.Requests.FindIndex(request =>
+            request.Path == "/eventadmin.php?group=-1&booking=4733&delete=1");
+        Assert.True(controlReadIndex >= 0);
+        Assert.True(deleteIndex > controlReadIndex);
+        Assert.DoesNotContain("intelligent-golf:event-link:event-123", cache.Values.Keys);
+        return;
+
+        IntelligentGolfTransportResponse MarkDeleted()
+        {
+            deleted = true;
+            return Response("<div class='user-message-success'>Deleted Booking</div>");
+        }
+    }
+
+    [Fact]
+    public async Task RemovePlanner_WhenDeleteControlIsMissing_DoesNotGuessADeleteRequestOrClearCache()
+    {
+        const int plannerEventId = 4733;
+        var eventPage = SameDayEventPageWithReorderedAttributesHtml +
+                        "<div id='event_overview_diary'><a data-ajax-action='addtodiary'>Add</a></div>";
+        var transport = new RecordingTransport(request => request.Path switch
+        {
+            DisplayMonthPath => Response(DisplayMonthResponse(
+                "<a href='/eventadmin.php?booking=4733&amp;group=-1'>BOTGC Event Planner: A Night with Marc Bolton</a>")),
+            "/event.php?eventid=4733" => Response(eventPage),
+            "/eventadmin.php?group=-1&booking=4733" => Response("<p>No delete control is available.</p>"),
+            _ => throw Unexpected(request)
+        });
+        var cache = new JsonCache();
+        await SeedCacheAsync(
+            cache,
+            "intelligent-golf:event-link:event-123",
+            new { IntelligentGolfEventId = plannerEventId });
+        var handler = new RemovePlannerEventHandler(
+            transport,
+            Session,
+            cache,
+            new AlwaysAcquiredLockManager(),
+            NullLogger<RemovePlannerEventHandler>.Instance);
+
+        var exception = await Assert.ThrowsAsync<IntelligentGolfMutationException>(() =>
+            handler.Handle(
+                new RemovePlannerEventCommand(new RemovePlannerEventRequest(
+                    "event-123",
+                    plannerEventId,
+                    EventDate)),
+                CancellationToken.None));
+
+        Assert.Equal("planner-event-remove-control", exception.Stage);
+        Assert.DoesNotContain(transport.Requests, request => request.Path.Contains("delete=1", StringComparison.Ordinal));
+        Assert.Contains("intelligent-golf:event-link:event-123", cache.Values.Keys);
+    }
+
     private static SynchronisePlannerEventHandler CreateSynchroniseHandler(
         IIntelligentGolfTransport transport,
         ICacheService cache) =>

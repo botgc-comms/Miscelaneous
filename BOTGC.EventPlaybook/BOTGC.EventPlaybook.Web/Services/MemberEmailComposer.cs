@@ -16,6 +16,11 @@ public interface IMemberEmailComposer
         MemberEmailDraftRequest request,
         string artworkUrl,
         CancellationToken cancellationToken);
+
+    Task<MemberEmailDraftResult> ComposeCancellationAsync(
+        MemberCancellationEmailDraftRequest request,
+        string? artworkUrl,
+        CancellationToken cancellationToken);
 }
 
 public sealed class MemberEmailComposer(
@@ -114,6 +119,105 @@ public sealed class MemberEmailComposer(
         }
     }
 
+    public async Task<MemberEmailDraftResult> ComposeCancellationAsync(
+        MemberCancellationEmailDraftRequest request,
+        string? artworkUrl,
+        CancellationToken cancellationToken)
+    {
+        var branding = await clubBrandingStore.GetOverviewAsync(cancellationToken);
+        var fallback = BuildCancellationFallback(request, artworkUrl, branding.ClubName);
+        if (string.IsNullOrWhiteSpace(_options.ApiKey)) return fallback;
+
+        var eventDate = DateOnly.TryParseExact(request.EventDate, "yyyy-MM-dd", out var parsedDate)
+            ? parsedDate.ToDateTime(TimeOnly.MinValue).ToString("dddd d MMMM yyyy", CultureInfo.GetCultureInfo("en-GB"))
+            : request.EventDate;
+        var authoritativeMemberUpdate = string.IsNullOrWhiteSpace(request.MemberUpdate)
+            ? null
+            : request.MemberUpdate.Trim();
+        var brief = new
+        {
+            task = "Write a clear HTML email telling golf-club members that this event has been cancelled.",
+            clubName = branding.ClubName,
+            eventName = request.EventName.Trim(),
+            eventDate,
+            cancellationReason = request.Reason.Trim(),
+            authoritativeMemberUpdate,
+            artworkUrl = string.IsNullOrWhiteSpace(artworkUrl) ? null : artworkUrl,
+            requirements = new[]
+            {
+                "Return a JSON object with exactly two string properties: subject and bodyHtml.",
+                "The subject must begin with 'CANCELLED:' and name the event.",
+                "State prominently and unambiguously near the start that the event has been cancelled.",
+                "If authoritativeMemberUpdate is supplied, reproduce it faithfully as the member-facing message. Do not contradict, embellish or omit it. Treat cancellationReason as internal context and do not expose details absent from the member update.",
+                "If authoritativeMemberUpdate is absent, use the cancellation reason to give members a concise factual explanation.",
+                "Never invite members to attend, register, reserve, book or buy tickets, and never imply that the event is still proceeding.",
+                "Do not invent refund, rebooking, replacement-event or contact arrangements.",
+                "Use British English and a calm, apologetic tone without minimising the cancellation.",
+                "The bodyHtml must be an email-safe HTML fragment with inline CSS only; no scripts, forms, iframes, external stylesheets or tracking markup.",
+                "If artworkUrl is supplied, place that exact image URL near the top. Do not invent an image URL.",
+                "End with the club name. Do not include an unsubscribe statement because Intelligent Golf applies the club email wrapper."
+            }
+        };
+
+        try
+        {
+            using var message = new HttpRequestMessage(HttpMethod.Post, "chat/completions");
+            message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _options.ApiKey);
+            message.Content = JsonContent.Create(new
+            {
+                model = _options.PromptModel,
+                response_format = new { type = "json_object" },
+                messages = new object[]
+                {
+                    new
+                    {
+                        role = "system",
+                        content = "You are the communications editor for a British golf club. Produce accurate cancellation notices as strict JSON. Never write promotional or inviting copy for a cancelled event."
+                    },
+                    new { role = "user", content = JsonSerializer.Serialize(brief) }
+                }
+            });
+
+            using var client = httpClientFactory.CreateClient("OpenAI");
+            using var response = await client.SendAsync(message, cancellationToken);
+            var raw = await response.Content.ReadAsStringAsync(cancellationToken);
+            if (!response.IsSuccessStatusCode)
+            {
+                logger.LogWarning("OpenAI cancellation email drafting failed with {StatusCode}; using fallback copy.", response.StatusCode);
+                return fallback;
+            }
+
+            var generated = Parse(raw);
+            if (generated is null) return fallback;
+            var body = Sanitise(generated.BodyHtml);
+            if (!IsSafeCancellationDraft(generated.Subject, body, request))
+            {
+                logger.LogWarning("OpenAI cancellation email drafting returned unsafe or incomplete copy; using fallback copy.");
+                return fallback;
+            }
+
+            if (!string.IsNullOrWhiteSpace(artworkUrl) &&
+                !body.Contains(artworkUrl, StringComparison.OrdinalIgnoreCase))
+            {
+                body = $"<p style=\"margin:0 0 24px\"><img src=\"{HtmlEncoder.Default.Encode(artworkUrl)}\" alt=\"Cancelled: {HtmlEncoder.Default.Encode(request.EventName)}\" style=\"display:block;width:100%;max-width:640px;height:auto;margin:0 auto\"></p>{body}";
+            }
+
+            return new MemberEmailDraftResult
+            {
+                Subject = generated.Subject.Trim(),
+                BodyHtml = body,
+                ArtworkUrl = artworkUrl ?? string.Empty,
+                Mode = "openai",
+                Model = _options.PromptModel
+            };
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            logger.LogWarning(exception, "OpenAI cancellation email drafting failed; using fallback copy.");
+            return fallback;
+        }
+    }
+
     private static MemberEmailDraftResult? Parse(string raw)
     {
         using var document = JsonDocument.Parse(raw);
@@ -171,6 +275,81 @@ public sealed class MemberEmailComposer(
             Model = "deterministic-fallback"
         };
     }
+
+    private static MemberEmailDraftResult BuildCancellationFallback(
+        MemberCancellationEmailDraftRequest request,
+        string? artworkUrl,
+        string clubName)
+    {
+        var eventName = request.EventName.Trim();
+        var encodedName = HtmlEncoder.Default.Encode(eventName);
+        var date = DateOnly.TryParseExact(request.EventDate, "yyyy-MM-dd", out var parsedDate)
+            ? parsedDate.ToDateTime(TimeOnly.MinValue).ToString("dddd d MMMM yyyy", CultureInfo.GetCultureInfo("en-GB"))
+            : request.EventDate;
+        var memberMessage = string.IsNullOrWhiteSpace(request.MemberUpdate)
+            ? request.Reason.Trim()
+            : request.MemberUpdate.Trim();
+        var encodedMessage = EncodeWithLineBreaks(memberMessage);
+        var image = string.IsNullOrWhiteSpace(artworkUrl)
+            ? string.Empty
+            : $"<img src=\"{HtmlEncoder.Default.Encode(artworkUrl)}\" alt=\"Cancelled: {encodedName}\" style=\"display:block;width:100%;height:auto;margin:0 0 24px;border-radius:8px\">";
+        var body = $"""
+            <div style="max-width:640px;margin:0 auto;font-family:Arial,Helvetica,sans-serif;color:#173844;line-height:1.55">
+              {image}
+              <div style="margin:0 0 24px;padding:16px 20px;background:#a83f34;color:#ffffff;font-size:24px;font-weight:800;letter-spacing:.04em;text-align:center">EVENT CANCELLED</div>
+              <h1 style="margin:0 0 10px;color:#07384a;font-family:Georgia,serif;font-size:30px;line-height:1.15">{encodedName}</h1>
+              <p style="margin:0 0 18px;font-size:17px;font-weight:700;color:#a97b20">{HtmlEncoder.Default.Encode(date)}</p>
+              <p style="margin:0 0 16px;font-size:18px;font-weight:700">This event has been cancelled.</p>
+              <p style="margin:0 0 20px;font-size:16px">{encodedMessage}</p>
+              <p style="margin:24px 0 0">We apologise for any inconvenience.</p>
+              <p style="margin:8px 0 0;font-weight:700">{HtmlEncoder.Default.Encode(clubName)}</p>
+            </div>
+            """;
+        return new MemberEmailDraftResult
+        {
+            Subject = $"CANCELLED: {eventName} — {date}",
+            BodyHtml = body,
+            ArtworkUrl = artworkUrl ?? string.Empty,
+            Mode = "fallback",
+            Model = "deterministic-fallback"
+        };
+    }
+
+    private static bool IsSafeCancellationDraft(
+        string subject,
+        string bodyHtml,
+        MemberCancellationEmailDraftRequest request)
+    {
+        var plainBody = NormaliseText(Regex.Replace(bodyHtml, "<[^>]+>", " "));
+        var normalisedSubject = NormaliseText(subject);
+        if (!normalisedSubject.Contains("cancel", StringComparison.OrdinalIgnoreCase) ||
+            !plainBody.Contains("cancel", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        var combined = $"{normalisedSubject} {plainBody}";
+        if (Regex.IsMatch(
+                combined,
+                @"\b(join us|book now|reserve your|register now|tickets? (?:are )?(?:available|on sale)|look forward to (?:seeing|welcoming))\b",
+                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+        {
+            return false;
+        }
+
+        var authoritativeMessage = string.IsNullOrWhiteSpace(request.MemberUpdate)
+            ? request.Reason
+            : request.MemberUpdate;
+        return plainBody.Contains(NormaliseText(authoritativeMessage), StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string EncodeWithLineBreaks(string value) =>
+        HtmlEncoder.Default.Encode(value)
+            .Replace("\r\n", "<br>", StringComparison.Ordinal)
+            .Replace("\n", "<br>", StringComparison.Ordinal);
+
+    private static string NormaliseText(string value) =>
+        Regex.Replace(System.Net.WebUtility.HtmlDecode(value), @"\s+", " ").Trim();
 
     private static string Sanitise(string html)
     {

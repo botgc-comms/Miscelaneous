@@ -1564,7 +1564,7 @@ function wireEvents(session) {
         if (retryButton) retryConcept(session, retryButton.dataset.retryConcept);
     });
     elements.cancelGenerationButton.addEventListener('click', () => cancelGeneration(session));
-    elements.shareScreensButton.addEventListener('click', openScreenShareDialog);
+    elements.shareScreensButton?.addEventListener('click', openScreenShareDialog);
     elements.takeDownScreensButton?.addEventListener('click', () => void takeDownFromClubhouseScreens());
     elements.shareEmailButton.addEventListener('click', openMemberEmailDialog);
     elements.sharePrintButton?.addEventListener('click', openPrintDialog);

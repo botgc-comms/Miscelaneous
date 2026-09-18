@@ -10,6 +10,7 @@ public sealed class PlaybookEventIntegrationSnapshot
     public string? EndTime { get; init; }
     public int? EventTypeId { get; init; }
     public int Attendees { get; init; }
+    public string? LifecycleStatus { get; init; }
     public string? GroupId { get; init; } = "151";
     public string GroupName { get; init; } = "BOTGC Event Planner";
 }
@@ -53,6 +54,67 @@ public sealed class IntelligentGolfDiaryPublishResult
     public bool Created { get; init; }
     public bool? EventImageAttached { get; init; }
     public DateTimeOffset PublishedAtUtc { get; init; }
+}
+
+public sealed class CancelIntelligentGolfEventRequest
+{
+    public bool RemoveDiary { get; init; }
+
+    public bool RemovePlanner { get; init; }
+}
+
+public sealed class IntelligentGolfRemovalOutcome
+{
+    public required bool Requested { get; init; }
+
+    public required string Outcome { get; init; }
+
+    public int? ExternalId { get; init; }
+
+    public DateTimeOffset? RemovedAtUtc { get; init; }
+}
+
+public sealed class IntelligentGolfEventCancellationResult
+{
+    public required string EventPlaybookEventId { get; init; }
+
+    public required bool Success { get; init; }
+
+    public int? PlannerEntryId { get; init; }
+
+    public int? DiaryEntryId { get; init; }
+
+    public required IntelligentGolfRemovalOutcome Diary { get; init; }
+
+    public required IntelligentGolfRemovalOutcome Planner { get; init; }
+}
+
+public sealed class IntelligentGolfDiaryRemovalResult
+{
+    public required string EventPlaybookEventId { get; init; }
+
+    public int IntelligentGolfEventId { get; init; }
+
+    public int IntelligentGolfDiaryEntryId { get; init; }
+
+    public bool Removed { get; init; }
+
+    public bool ConfirmedAbsent { get; init; }
+
+    public DateTimeOffset RemovedAtUtc { get; init; }
+}
+
+public sealed class IntelligentGolfPlannerRemovalResult
+{
+    public required string EventPlaybookEventId { get; init; }
+
+    public int IntelligentGolfEventId { get; init; }
+
+    public bool Removed { get; init; }
+
+    public bool ConfirmedAbsent { get; init; }
+
+    public DateTimeOffset RemovedAtUtc { get; init; }
 }
 
 public sealed class IntelligentGolfEventAdoptResult
