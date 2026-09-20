@@ -4766,24 +4766,6 @@
               "source": "refined"
             },
             {
-              "id": "prepare-communication-prerequisites-task",
-              "type": "task",
-              "title": "Confirm every prerequisite is ready before member or attendee communications are released",
-              "detail": "Coordinate with the operational owner of each selected form, booking route, page, document or service. Where booking, ticketing or attendee-feedback work already exists, verify that task rather than recreating it. Test the final link and QR destination, confirm approvals and data or privacy handling, and record the working URL or file in task notes before publishing.",
-              "deadlineCode": "B4",
-              "showWhen": {
-                "all": [
-                  { "questionId": "communication-prerequisites-required", "operator": "equals", "value": true },
-                  { "questionId": "communication-prerequisites", "operator": "answered" },
-                  { "questionId": "communication-prerequisite-details", "operator": "answered" }
-                ]
-              },
-              "source": "refined",
-              "responsibleArea": "Communications",
-              "defaultOwnerRoleId": "communications",
-              "ownerFromQuestionId": "event-communications-owner"
-            },
-            {
               "id": "digital-signage",
               "type": "question",
               "answerType": "yesNo",

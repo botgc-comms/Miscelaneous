@@ -492,6 +492,7 @@ public sealed class PlaybookConfigurationTests
         Assert.Contains(communicationsTasks, task => task.GetProperty("id").GetString() == "member-email-task");
         Assert.Contains(communicationsTasks, task => task.GetProperty("id").GetString() == "member-diary-task");
         Assert.Contains(communicationsTasks, task => task.GetProperty("id").GetString() == "issue-authoritative-event-change-message");
+        Assert.False(ContainsItem(root, "prepare-communication-prerequisites-task"));
 
         var recipients = FindItem(root, "event-affected-areas");
         Assert.False(recipients.GetProperty("required").GetBoolean());
