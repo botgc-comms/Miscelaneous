@@ -22,6 +22,27 @@ public sealed class IntelligentGolfEventIntegrationTests
         new(2026, 9, 9, 8, 30, 0, TimeSpan.Zero);
 
     [Fact]
+    public async Task GetTicketBookingsAsync_ReadsTheLinkedPlannerEntryAndRequestsFreshMemberResolution()
+    {
+        var scenario = new PrivateApiScenario(SynchronisedAt) { PlannerEventId = 4713 };
+        var linkStore = new RecordingLinkStore();
+        linkStore.Seed(CreateExistingLink());
+        var integration = CreateIntegration(scenario, linkStore, new RecordingActivityStore());
+
+        var result = await integration.GetTicketBookingsAsync("event-123", refresh: true, CancellationToken.None);
+
+        var request = Assert.Single(scenario.Requests);
+        Assert.Equal(HttpMethod.Get, request.Method);
+        Assert.Equal("/api/event-planner/events/4713/ticket-bookings", request.Path);
+        Assert.Equal("?refresh=true", request.Uri.Query);
+        var booking = Assert.Single(result.Bookings);
+        Assert.Equal(83642, booking.BookerIntelligentGolfUserId);
+        Assert.Equal(3104, booking.BookerMemberNumber);
+        Assert.Equal("simon@example.test", booking.BookerEmail);
+        Assert.True(booking.IsMember);
+    }
+
+    [Fact]
     public async Task PublishDiaryAsync_ForwardsSelectedPngWithEventDerivedSocialFileName()
     {
         var publishedAt = new DateTimeOffset(2026, 9, 9, 8, 35, 0, TimeSpan.Zero);
@@ -834,6 +855,40 @@ public sealed class IntelligentGolfEventIntegrationTests
 
         private HttpResponseMessage Respond(CapturedRequest request)
         {
+            if (request.Method == HttpMethod.Get &&
+                request.Path == $"/api/event-planner/events/{PlannerEventId}/ticket-bookings")
+            {
+                return Json(HttpStatusCode.OK, new
+                {
+                    intelligentGolfEventId = PlannerEventId,
+                    bookingCount = 1,
+                    ticketCount = 1,
+                    memberBookingCount = 1,
+                    memberBookingsWithEmailCount = 1,
+                    bookings = new[]
+                    {
+                        new
+                        {
+                            bookingId = 1809,
+                            bookerIntelligentGolfUserId = 83642,
+                            bookerMemberNumber = 3104,
+                            bookerName = "Simon Parsons",
+                            bookerEmail = "simon@example.test",
+                            isMember = true,
+                            memberMatched = true,
+                            isActiveMember = true,
+                            bookingReference = "TK-834222DD",
+                            bookingType = "member",
+                            ticketCount = 1,
+                            ticketHolderNames = new[] { "Simon Parsons" },
+                            price = "Free",
+                            paymentStatus = "Not Paid",
+                            bookedAt = "19 Sep 08:22"
+                        }
+                    }
+                });
+            }
+
             if (request.Method == HttpMethod.Get &&
                 request.Path == "/api/event-planner/events/candidates")
             {

@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using BOTGC.EventPlaybook.API.Features.MemberEmail;
+using BOTGC.EventPlaybook.API.Features.Members;
 using BOTGC.EventPlaybook.API.Infrastructure.IntelligentGolf;
 using HtmlAgilityPack;
 using MediatR;
@@ -2793,6 +2794,22 @@ public static class EventPlannerFeatureExtensions
             .WithTags("Event planner")
             .WithSummary("Configure ticket settings and ticket types on a linked Intelligent Golf planner event")
             .Produces<SynchronisePlannerTicketsResult>();
+
+        endpoints.MapGet(
+                "/api/event-planner/events/{eventId:int}/ticket-bookings",
+                async (int eventId, bool? refresh, IMediator mediator, CancellationToken cancellationToken) =>
+                {
+                    var forceRefresh = refresh ?? false;
+                    var bookings = await mediator.Send(
+                        new GetPlannerTicketBookingsQuery(eventId, forceRefresh),
+                        cancellationToken);
+                    var members = await mediator.Send(new GetMembersQuery(forceRefresh), cancellationToken);
+                    return Results.Ok(PlannerTicketBookingEnricher.Enrich(eventId, bookings, members));
+                })
+            .WithName("GetPlannerTicketBookings")
+            .WithTags("Event planner")
+            .WithSummary("Read current ticket bookings and resolve member bookers through the Intelligent Golf member directory")
+            .Produces<PlannerTicketBookingList>();
 
         endpoints.MapPut(
                 "/api/event-planner/notes",

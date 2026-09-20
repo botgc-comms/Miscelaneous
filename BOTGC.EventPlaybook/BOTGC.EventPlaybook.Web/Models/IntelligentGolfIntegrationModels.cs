@@ -55,6 +55,38 @@ public sealed class IntelligentGolfPlannerNoteSynchroniseResult
     public DateTimeOffset SynchronisedAtUtc { get; init; }
 }
 
+public sealed class IntelligentGolfTicketBookingList
+{
+    public int IntelligentGolfEventId { get; init; }
+    public int BookingCount { get; init; }
+    public int TicketCount { get; init; }
+    public int MemberBookingCount { get; init; }
+    public int MemberBookingsWithEmailCount { get; init; }
+    public IReadOnlyList<IntelligentGolfTicketBooking> Bookings { get; init; } = [];
+}
+
+public sealed class IntelligentGolfTicketBooking
+{
+    public int BookingId { get; init; }
+    public int? BookerIntelligentGolfUserId { get; init; }
+    public int? BookerMemberNumber { get; init; }
+    public required string BookerName { get; init; }
+    public string? BookerEmail { get; init; }
+    public string? BookerPhone { get; init; }
+    public bool IsMember { get; init; }
+    public bool MemberMatched { get; init; }
+    public bool IsActiveMember { get; init; }
+    public string? MembershipCategory { get; init; }
+    public required string BookingReference { get; init; }
+    public required string BookingType { get; init; }
+    public int TicketCount { get; init; }
+    public IReadOnlyList<string> TicketHolderNames { get; init; } = [];
+    public required string Price { get; init; }
+    public required string PaymentStatus { get; init; }
+    public required string BookedAt { get; init; }
+    public string? Notes { get; init; }
+}
+
 public sealed class IntelligentGolfIntegrationLink
 {
     public required string EventPlaybookEventId { get; init; }

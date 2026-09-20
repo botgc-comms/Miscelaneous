@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Encodings.Web;
 using BOTGC.EventPlaybook.Models;
 using BOTGC.EventPlaybook.Options;
 using BOTGC.EventPlaybook.Services;
@@ -495,6 +496,44 @@ app.MapGet("/api/integrations/intelligent-golf/events/{eventId}", async (
         matchRequiredAtUtc = link?.MatchRequiredAtUtc,
         updatedAtUtc = link?.UpdatedAtUtc
     });
+});
+
+app.MapGet("/api/integrations/intelligent-golf/events/{eventId}/ticket-bookings", async (
+    string eventId,
+    bool? refresh,
+    IIntelligentGolfEventIntegration intelligentGolfIntegration,
+    CancellationToken cancellationToken) =>
+{
+    if (string.IsNullOrWhiteSpace(eventId))
+        return Results.BadRequest(new { error = "An Event Playbook event ID is required." });
+
+    try
+    {
+        return Results.Ok(await intelligentGolfIntegration.GetTicketBookingsAsync(
+            eventId,
+            refresh ?? false,
+            cancellationToken));
+    }
+    catch (IntelligentGolfApiRequestException exception)
+    {
+        return Results.Problem(
+            title: "Intelligent Golf ticket bookings could not be loaded",
+            detail: exception.Message,
+            statusCode: StatusCodes.Status502BadGateway,
+            extensions: new Dictionary<string, object?>
+            {
+                ["stage"] = exception.Stage,
+                ["upstreamStatusCode"] = exception.StatusCode,
+                ["retryable"] = exception.Retryable
+            });
+    }
+    catch (InvalidOperationException exception)
+    {
+        return Results.Problem(
+            title: "Intelligent Golf ticket bookings are unavailable",
+            detail: exception.Message,
+            statusCode: StatusCodes.Status409Conflict);
+    }
 });
 
 app.MapGet("/api/integrations/intelligent-golf/events/{eventId}/planner-candidates", async (
@@ -2196,6 +2235,118 @@ app.MapPut("/api/feedback/events/{eventId}/campaign", async (
     catch (InvalidOperationException exception)
     {
         return Results.BadRequest(new { error = exception.Message });
+    }
+});
+
+app.MapPost("/api/feedback/events/{eventId}/confirmed-attendees/email", async (
+    string eventId,
+    bool? resend,
+    HttpContext context,
+    ISharedPlaybookStateStore stateStore,
+    IFeedbackStore feedbackStore,
+    IIntelligentGolfEventIntegration intelligentGolfIntegration,
+    IIntelligentGolfMemberCommunicationsClient memberCommunications,
+    CancellationToken cancellationToken) =>
+{
+    var key = eventId.Trim();
+    if (string.IsNullOrWhiteSpace(key))
+        return Results.BadRequest(new { error = "An Event Playbook event ID is required." });
+
+    var sharedState = await stateStore.GetAsync(cancellationToken);
+    if (!PlaybookEventChangePipeline.ReadEvents(sharedState.State).TryGetValue(key, out var eventSnapshot))
+        return Results.NotFound(new { error = "The Event Playbook event could not be found in shared storage." });
+
+    var feedback = await feedbackStore.GetForEventAsync(key, cancellationToken);
+    if (feedback.Campaign is null)
+        return Results.Conflict(new { error = "Create the feedback form before emailing it to attendees." });
+    if (feedback.Campaign.AttendeeEmailSentAtUtc is not null && resend != true)
+    {
+        return Results.Conflict(new
+        {
+            error = $"The feedback form was already emailed to {feedback.Campaign.AttendeeEmailRecipientCount} attendee{(feedback.Campaign.AttendeeEmailRecipientCount == 1 ? string.Empty : "s")}.",
+            alreadySent = true,
+            feedback.Campaign.AttendeeEmailSentAtUtc,
+            feedback.Campaign.AttendeeEmailRecipientCount
+        });
+    }
+
+    var availability = FeedbackStore.GetAvailability(feedback.Campaign);
+    if (!availability.IsAcceptingResponses)
+        return Results.Conflict(new { error = availability.Message });
+
+    try
+    {
+        var bookings = await intelligentGolfIntegration.GetTicketBookingsAsync(key, refresh: true, cancellationToken);
+        var eligibleBookings = bookings.Bookings
+            .Where(booking => booking.IsMember && booking.MemberMatched && booking.IsActiveMember &&
+                              booking.BookerMemberNumber is > 0 && !string.IsNullOrWhiteSpace(booking.BookerEmail))
+            .ToList();
+        var memberNumbers = eligibleBookings
+            .Select(booking => booking.BookerMemberNumber!.Value)
+            .Distinct()
+            .ToList();
+        if (memberNumbers.Count == 0)
+        {
+            return Results.Conflict(new
+            {
+                error = "No current Intelligent Golf member bookings could be matched to active members with email addresses.",
+                bookings.BookingCount,
+                bookings.MemberBookingCount
+            });
+        }
+
+        var publicUrl = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}/feedback.html?token={Uri.EscapeDataString(feedback.Campaign.PublicToken)}";
+        var encodedName = HtmlEncoder.Default.Encode(eventSnapshot.Name);
+        var encodedUrl = HtmlEncoder.Default.Encode(publicUrl);
+        var closingCopy = string.IsNullOrWhiteSpace(feedback.Campaign.ClosesOn)
+            ? string.Empty
+            : $"<p>Please respond by {HtmlEncoder.Default.Encode(feedback.Campaign.ClosesOn)}.</p>";
+        var delivery = await memberCommunications.SendCampaignAsync(new MemberCampaignEmailRequest
+        {
+            MemberNumbers = memberNumbers,
+            Subject = $"Tell us what you thought of {eventSnapshot.Name}",
+            BodyHtml = $"<p>Thank you for booking for <strong>{encodedName}</strong>.</p><p>We would be grateful if you could complete our short anonymous feedback form.</p><p><a href=\"{encodedUrl}\">Share your feedback</a></p>{closingCopy}<p>Your answers are anonymous and will help us improve future events.</p>",
+            EventId = key,
+            EventName = eventSnapshot.Name,
+            Operation = "Send attendee feedback form"
+        }, cancellationToken);
+        var sentAt = DateTimeOffset.UtcNow;
+        await feedbackStore.RecordAttendeeEmailAsync(
+            key,
+            delivery.Sent,
+            delivery.DraftId,
+            sentAt,
+            cancellationToken);
+        return Results.Ok(new FeedbackAttendeeEmailResult
+        {
+            ConfirmedBookings = bookings.BookingCount,
+            EligibleMembers = memberNumbers.Count,
+            ExcludedBookings = Math.Max(0, bookings.BookingCount - eligibleBookings.Count),
+            Requested = delivery.Requested,
+            Sent = delivery.Sent,
+            DraftId = delivery.DraftId,
+            SentAtUtc = sentAt
+        });
+    }
+    catch (IntelligentGolfApiRequestException exception)
+    {
+        return Results.Problem(
+            title: "Confirmed attendees could not be loaded",
+            detail: exception.Message,
+            statusCode: StatusCodes.Status502BadGateway,
+            extensions: new Dictionary<string, object?>
+            {
+                ["stage"] = exception.Stage,
+                ["upstreamStatusCode"] = exception.StatusCode,
+                ["retryable"] = exception.Retryable
+            });
+    }
+    catch (InvalidOperationException exception)
+    {
+        return Results.Problem(
+            title: "The attendee feedback email could not be sent",
+            detail: exception.Message,
+            statusCode: StatusCodes.Status409Conflict);
     }
 });
 

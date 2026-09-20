@@ -24,6 +24,10 @@ public interface IIntelligentGolfEventIntegration
     Task<IntelligentGolfTicketSynchroniseResult> SynchroniseTicketsAsync(
         PlaybookEventIntegrationSnapshot eventSnapshot,
         CancellationToken cancellationToken);
+    Task<IntelligentGolfTicketBookingList> GetTicketBookingsAsync(
+        string eventPlaybookEventId,
+        bool refresh,
+        CancellationToken cancellationToken);
     Task<IntelligentGolfPlannerEventCandidatesResult> GetPlannerEventCandidatesAsync(
         PlaybookEventIntegrationSnapshot eventSnapshot,
         CancellationToken cancellationToken);
@@ -84,6 +88,46 @@ public sealed class IntelligentGolfEventIntegration(
         PlaybookEventIntegrationSnapshot eventSnapshot,
         CancellationToken cancellationToken) =>
         await SynchroniseEventCoreAsync(eventSnapshot, true, true, cancellationToken);
+
+    public async Task<IntelligentGolfTicketBookingList> GetTicketBookingsAsync(
+        string eventPlaybookEventId,
+        bool refresh,
+        CancellationToken cancellationToken)
+    {
+        var eventId = eventPlaybookEventId.Trim();
+        if (string.IsNullOrWhiteSpace(eventId))
+            throw new ArgumentException("An Event Playbook event ID is required.", nameof(eventPlaybookEventId));
+
+        await EnsureAvailableAsync(cancellationToken);
+        var link = await linkStore.GetAsync(eventId, cancellationToken);
+        if (link?.IntelligentGolfEventId is not > 0)
+            throw new InvalidOperationException("This event is not linked to an Intelligent Golf planner entry.");
+
+        try
+        {
+            using var message = CreateRequest(
+                HttpMethod.Get,
+                $"api/event-planner/events/{link.IntelligentGolfEventId.Value}/ticket-bookings?refresh={refresh.ToString().ToLowerInvariant()}");
+            using var response = await SendAsync(message, cancellationToken);
+            return await response.Content.ReadFromJsonAsync<IntelligentGolfTicketBookingList>(JsonOptions, cancellationToken)
+                ?? throw new InvalidOperationException("The Event Playbook API did not return the Intelligent Golf ticket bookings.");
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            var requestException = exception as IntelligentGolfApiRequestException;
+            await RecordActivitySafelyAsync(new IntegrationActivityWrite
+            {
+                Operation = "Read planner ticket bookings",
+                Outcome = "failed",
+                EventPlaybookEventId = eventId,
+                ExternalEventId = link.IntelligentGolfEventId,
+                Stage = requestException?.Stage ?? "planner-ticket-bookings",
+                StatusCode = requestException?.StatusCode,
+                Message = exception.Message
+            }, cancellationToken);
+            throw;
+        }
+    }
 
     public async Task<IntelligentGolfTicketSynchroniseResult> SynchroniseTicketsAsync(
         PlaybookEventIntegrationSnapshot eventSnapshot,

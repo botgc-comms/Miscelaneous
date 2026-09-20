@@ -7501,6 +7501,10 @@
     const customQuestion = campaign?.questions?.find(question => question.id === 'custom-question')?.label ?? '';
     const closesOn = campaign?.closesOn ?? (event.eventDate ? addDaysToIsoDate(event.eventDate, 7) : '');
     const publicUrl = campaign ? `${location.origin}/feedback.html?token=${encodeURIComponent(campaign.publicToken)}` : '';
+    const attendeeEmailSent = Boolean(campaign?.attendeeEmailSentAtUtc);
+    const attendeeEmailStatus = attendeeEmailSent
+      ? `Last sent to ${Number(campaign.attendeeEmailRecipientCount) || 0} member${Number(campaign.attendeeEmailRecipientCount) === 1 ? '' : 's'} on ${new Date(campaign.attendeeEmailSentAtUtc).toLocaleString('en-GB')}.`
+      : 'No feedback email has been sent from the confirmed Intelligent Golf bookings.';
     return `<section class="playbook-section attendee-feedback-section">
       <header class="retrospective-section-heading">
         <div><span class="eyebrow">1 · Release member feedback</span><h3>Member feedback form</h3></div>
@@ -7525,6 +7529,7 @@
           <div><span class="feedback-status ${availability?.isAcceptingResponses ? 'open' : 'closed'}">${availability?.isAcceptingResponses ? 'Accepting responses' : 'Not accepting responses'}</span><h4>Share with attendees</h4><p>${escapeHtml(availability?.message ?? '')} Use the same link for email, ticketing integrations or a QR code at the event.</p></div>
           <input id="feedbackPublicUrl" type="text" readonly value="${escapeHtml(publicUrl)}" aria-label="Public feedback link">
           <div class="button-row"><button class="button button-secondary" type="button" data-action="copy-feedback-link">Copy link</button><a class="button button-secondary" href="${escapeHtml(publicUrl)}" target="_blank" rel="noopener">Open form</a><a class="button button-secondary" href="/api/feedback/public/${encodeURIComponent(campaign.publicToken)}/qr.svg" download="${escapeHtml(slugify(event.name))}-feedback-qr.svg">Download QR</a></div>
+          ${pluginCapabilities.intelligentGolfEnabled ? `<div class="feedback-attendee-email"><strong>Email confirmed bookings</strong><p>Intelligent Golf records current ticket bookers, not physical check-in. One email will be sent to each active member booker whose player ID resolves to a member email address.</p><small>${escapeHtml(attendeeEmailStatus)}</small><button class="button button-secondary" type="button" data-action="email-feedback-attendees">${attendeeEmailSent ? 'Send again to current bookers' : 'Email booked members'}</button></div>` : ''}
         </aside>` : ''}
       </div>
       ${campaign ? renderFeedbackResponses(campaign, responses) : ''}
@@ -10185,6 +10190,50 @@
         await navigator.clipboard.writeText(input.value);
         element.textContent = 'Copied';
         setTimeout(() => { if (element.isConnected) element.textContent = 'Copy link'; }, 1800);
+      });
+    });
+
+    document.querySelectorAll('[data-action="email-feedback-attendees"]').forEach(element => {
+      element.addEventListener('click', async () => {
+        const event = getActiveEvent();
+        if (!event) return;
+        const originalText = element.textContent;
+        element.disabled = true;
+        element.textContent = 'Checking current bookings…';
+        try {
+          const bookingResponse = await fetch(`/api/integrations/intelligent-golf/events/${encodeURIComponent(event.id)}/ticket-bookings?refresh=true`, { cache: 'no-store' });
+          const bookings = await bookingResponse.json().catch(() => ({}));
+          if (!bookingResponse.ok) throw new Error(bookings.error || bookings.detail || 'The Intelligent Golf bookings could not be loaded.');
+          const eligible = (bookings.bookings ?? []).filter(booking =>
+            booking.isMember === true && booking.memberMatched === true && booking.isActiveMember === true &&
+            Number(booking.bookerMemberNumber) > 0 && String(booking.bookerEmail ?? '').trim());
+          const uniqueMembers = [...new Map(eligible.map(booking => [Number(booking.bookerMemberNumber), booking])).values()];
+          if (!uniqueMembers.length) throw new Error('No current member bookings could be matched to active members with email addresses.');
+          const feedback = feedbackCache.get(event.id);
+          const alreadySent = Boolean(feedback?.campaign?.attendeeEmailSentAtUtc);
+          const names = uniqueMembers.slice(0, 8).map(booking => booking.bookerName).join(', ');
+          const more = uniqueMembers.length > 8 ? ` and ${uniqueMembers.length - 8} more` : '';
+          const warning = alreadySent ? '\n\nThis feedback form has already been emailed. This will send it again to the current booking list.' : '';
+          if (!window.confirm(`Send the anonymous feedback form to ${uniqueMembers.length} confirmed member booker${uniqueMembers.length === 1 ? '' : 's'}?\n\n${names}${more}\n\nIntelligent Golf confirms the booking, not physical attendance.${warning}`)) {
+            element.disabled = false;
+            element.textContent = originalText;
+            return;
+          }
+
+          element.textContent = 'Sending feedback email…';
+          const sendResponse = await fetch(`/api/feedback/events/${encodeURIComponent(event.id)}/confirmed-attendees/email?resend=${alreadySent ? 'true' : 'false'}`, { method: 'POST' });
+          const result = await sendResponse.json().catch(() => ({}));
+          if (!sendResponse.ok) throw new Error(result.error || result.detail || 'The attendee feedback email could not be sent.');
+          feedbackCache.delete(event.id);
+          await ensureFeedbackLoaded(event.id, true);
+          alert(`Feedback email sent to ${Number(result.sent) || 0} confirmed member booker${Number(result.sent) === 1 ? '' : 's'}.`);
+        } catch (error) {
+          alert(error.message || 'The attendee feedback email could not be sent.');
+          if (element.isConnected) {
+            element.disabled = false;
+            element.textContent = originalText;
+          }
+        }
       });
     });
 

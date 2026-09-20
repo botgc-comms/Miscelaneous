@@ -11,6 +11,12 @@ public interface IFeedbackStore
     Task<FeedbackCampaign> UpsertCampaignAsync(string eventId, UpsertFeedbackCampaignRequest request, CancellationToken cancellationToken);
     Task<FeedbackEventData> GetForEventAsync(string eventId, CancellationToken cancellationToken);
     Task<FeedbackCampaign?> GetPublicCampaignAsync(string token, CancellationToken cancellationToken);
+    Task<FeedbackCampaign> RecordAttendeeEmailAsync(
+        string eventId,
+        int recipientCount,
+        string? draftId,
+        DateTimeOffset sentAtUtc,
+        CancellationToken cancellationToken);
     Task<bool> SubmitAsync(string token, SubmitFeedbackRequest request, CancellationToken cancellationToken);
 }
 
@@ -109,6 +115,33 @@ public sealed class FeedbackStore : IFeedbackStore
                     .OrderByDescending(response => response.SubmittedAtUtc)
                     .ToList()
             };
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    public async Task<FeedbackCampaign> RecordAttendeeEmailAsync(
+        string eventId,
+        int recipientCount,
+        string? draftId,
+        DateTimeOffset sentAtUtc,
+        CancellationToken cancellationToken)
+    {
+        await _gate.WaitAsync(cancellationToken);
+        try
+        {
+            var document = await LoadAsync(cancellationToken);
+            var campaign = document.Campaigns.SingleOrDefault(candidate =>
+                string.Equals(candidate.EventId, eventId, StringComparison.OrdinalIgnoreCase))
+                ?? throw new KeyNotFoundException("Create the feedback form before emailing it to attendees.");
+            campaign.AttendeeEmailSentAtUtc = sentAtUtc;
+            campaign.AttendeeEmailRecipientCount = Math.Max(0, recipientCount);
+            campaign.AttendeeEmailDraftId = string.IsNullOrWhiteSpace(draftId) ? null : draftId.Trim();
+            campaign.UpdatedAtUtc = sentAtUtc;
+            await SaveAsync(document, cancellationToken);
+            return campaign;
         }
         finally
         {

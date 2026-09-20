@@ -20,6 +20,7 @@ This is a standalone .NET 9 API for the event-planner integration with Intellige
 | --- | --- | --- |
 | `POST` | `/v1/auth/intelligent-golf/session` | Validate the club site/member/admin credentials and establish the shared IG session. |
 | `GET` | `/api/members` | List active members, enriched with names, email addresses, categories and the IG recipient ID. Add `?refresh=true` to bypass the cached reports. |
+| `GET` | `/api/event-planner/events/{eventId}/ticket-bookings` | Read current planner ticket bookings and resolve member bookers from IG player IDs to member numbers and email addresses. Add `?refresh=true` to bypass the short booking cache and member-directory cache. |
 | `POST` | `/api/members/emails/test` | Send one test copy to an email address through IG. |
 | `POST` | `/api/members/emails/campaign` | Send one campaign to selected active members. The request uses club member numbers; the API resolves IG's internal recipient IDs server-side. |
 | `GET` | `/api/event-planner/events/candidates?eventDate=YYYY-MM-DD` | List the IG planner events found on an event date. |

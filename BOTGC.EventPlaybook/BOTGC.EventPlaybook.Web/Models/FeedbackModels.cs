@@ -25,6 +25,9 @@ public sealed class FeedbackCampaign
     public string? OpensOn { get; set; }
     public string? ClosesOn { get; set; }
     public List<FeedbackQuestion> Questions { get; set; } = [];
+    public DateTimeOffset? AttendeeEmailSentAtUtc { get; set; }
+    public int AttendeeEmailRecipientCount { get; set; }
+    public string? AttendeeEmailDraftId { get; set; }
     public DateTimeOffset CreatedAtUtc { get; init; }
     public DateTimeOffset UpdatedAtUtc { get; set; }
 }
@@ -74,4 +77,15 @@ public sealed class FeedbackAvailability
     public required string ClubDate { get; init; }
     public string? OpensOn { get; init; }
     public string? ClosesOn { get; init; }
+}
+
+public sealed class FeedbackAttendeeEmailResult
+{
+    public int ConfirmedBookings { get; init; }
+    public int EligibleMembers { get; init; }
+    public int ExcludedBookings { get; init; }
+    public int Requested { get; init; }
+    public int Sent { get; init; }
+    public string? DraftId { get; init; }
+    public DateTimeOffset SentAtUtc { get; init; }
 }

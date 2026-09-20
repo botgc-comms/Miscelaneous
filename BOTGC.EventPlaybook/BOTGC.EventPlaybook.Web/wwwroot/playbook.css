@@ -4867,6 +4867,10 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(198,161,91,.22)!i
 .feedback-share-card > img { width: min(100%, 188px); aspect-ratio: 1; margin: 0 auto; border: 1px solid #d2dfdc; border-radius: 12px; background: #fff; }
 .feedback-share-card .button-row { display: flex; flex-wrap: wrap; }
 .feedback-share-card .button { flex: 1 1 auto; text-align: center; text-decoration: none; }
+.feedback-attendee-email { display: grid; gap: 7px; padding: 13px; border: 1px solid #c9dad6; border-radius: 11px; background: #eef6f3; }
+.feedback-attendee-email strong { color: var(--navy); font-size: .76rem; }
+.feedback-attendee-email p { margin: 0; }
+.feedback-attendee-email small { color: #5f716e; font-size: .63rem; line-height: 1.4; }
 .feedback-status { display: inline-flex; margin-bottom: 7px; padding: 5px 8px; border-radius: 999px; color: #286955; background: #e5f3ed; font-size: .61rem; font-weight: 900; text-transform: uppercase; letter-spacing: .06em; }
 .feedback-status.closed { color: #725f3c; background: #f4ebda; }
 .feedback-loading,
@@ -4931,7 +4935,8 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(198,161,91,.22)!i
   .feedback-manager-grid.has-campaign { grid-template-columns: 1fr; }
   .feedback-share-card { grid-template-columns: 150px 1fr; align-items: center; }
   .feedback-share-card > input,
-  .feedback-share-card > .button-row { grid-column: 1 / -1; }
+  .feedback-share-card > .button-row,
+  .feedback-share-card > .feedback-attendee-email { grid-column: 1 / -1; }
 }
 
 @media (max-width: 760px) {
@@ -4945,7 +4950,8 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(198,161,91,.22)!i
   .carry-forward-builder-fields label.wide { grid-column: auto; }
   .feedback-share-card { grid-template-columns: 1fr; }
   .feedback-share-card > input,
-  .feedback-share-card > .button-row { grid-column: auto; }
+  .feedback-share-card > .button-row,
+  .feedback-share-card > .feedback-attendee-email { grid-column: auto; }
   .feedback-comment > div,
   .carry-forward-list article { align-items: flex-start; flex-direction: column; }
   .retrospective-analysis-actions,
