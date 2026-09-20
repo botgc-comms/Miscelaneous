@@ -1692,6 +1692,22 @@
           throw new Error(`${task.id} owner source must reference an assignment question.`);
         }
       }
+      if (task.handover) {
+        for (const [side, descriptor] of Object.entries({ source: task.handover.from, recipient: task.handover.to })) {
+          if (!descriptor || !['questionId', 'eventField', 'roleId'].some(key => String(descriptor[key] ?? '').trim())) {
+            throw new Error(`${task.id} handover ${side} must identify an assignment question, event field or role.`);
+          }
+          if (descriptor.questionId) {
+            const handoverQuestion = questions.get(descriptor.questionId);
+            if (!handoverQuestion || handoverQuestion.answerType !== 'assignment') {
+              throw new Error(`${task.id} handover ${side} must reference an assignment question.`);
+            }
+          }
+          for (const roleId of [descriptor.roleId, descriptor.fallbackRoleId].filter(Boolean)) {
+            if (!roleIds.has(roleId)) throw new Error(`${task.id} handover ${side} uses unknown role ${roleId}.`);
+          }
+        }
+      }
       if (task.reviewSummary) {
         if (!Array.isArray(task.reviewSummary.fields) || task.reviewSummary.fields.length === 0) {
           throw new Error(`${task.id} must define at least one review summary field.`);
@@ -2132,7 +2148,7 @@
   }
 
   function isItemVisible(item, event) {
-    return item?.assistantDisabled !== true && conditionMatches(item.showWhen, event);
+    return item?.assistantDisabled !== true && conditionMatches(item.showWhen, event) && handoverIsRequired(item, event);
   }
 
   function taskStateShowsBriefingOrCommitment(taskState) {
@@ -2474,6 +2490,52 @@
     return { name, email: contactEmailByName(name) };
   }
 
+  function handoverAssignmentReference(descriptor, event) {
+    if (!descriptor || typeof descriptor !== 'object') return null;
+    const value = descriptor.questionId
+      ? getQuestionValue(descriptor.questionId, event)
+      : descriptor.eventField
+        ? descriptor.eventField.split('.').reduce((current, key) => current?.[key], event)
+        : descriptor.roleId
+          ? { kind: 'role', id: descriptor.roleId }
+          : null;
+    return assignmentReference(value) ?? (descriptor.fallbackRoleId
+      ? assignmentReference({ kind: 'role', id: descriptor.fallbackRoleId })
+      : null);
+  }
+
+  function assignmentsResolveToSameRecipient(leftValue, rightValue, event) {
+    const left = assignmentReference(leftValue);
+    const right = assignmentReference(rightValue);
+    if (!left || !right) return false;
+    if (left.kind === right.kind && left.id === right.id) return true;
+
+    const resolvedContactId = reference => reference.kind === 'person'
+      ? contactById(reference.id)?.id ?? reference.id
+      : contactForRole(reference.id, event)?.id ?? '';
+    const leftContactId = resolvedContactId(left);
+    const rightContactId = resolvedContactId(right);
+    if (leftContactId && rightContactId && leftContactId === rightContactId) return true;
+
+    const leftRecipient = assignmentRecipient(left, event);
+    const rightRecipient = assignmentRecipient(right, event);
+    const leftEmail = String(leftRecipient.email ?? '').trim().toLocaleLowerCase();
+    const rightEmail = String(rightRecipient.email ?? '').trim().toLocaleLowerCase();
+    if (leftEmail && rightEmail) return leftEmail === rightEmail;
+
+    const leftName = String(leftRecipient.name ?? '').trim().toLocaleLowerCase();
+    const rightName = String(rightRecipient.name ?? '').trim().toLocaleLowerCase();
+    return Boolean(leftName && rightName && leftName === rightName);
+  }
+
+  function handoverIsRequired(item, event) {
+    if (!item?.handover) return true;
+    const source = handoverAssignmentReference(item.handover.from, event);
+    const recipient = handoverAssignmentReference(item.handover.to, event);
+    if (!source || !recipient) return true;
+    return !assignmentsResolveToSameRecipient(source, recipient, event);
+  }
+
   function taskAssignmentReference(taskState) {
     if (taskState?.assignmentKind && taskState?.assignmentId) {
       return assignmentReference({ kind: taskState.assignmentKind, id: taskState.assignmentId });
@@ -2574,6 +2636,9 @@
     const ownerSourceReference = ownerSourceQuestionId
       ? assignmentReference(getQuestionValue(ownerSourceQuestionId, event))
       : null;
+    if (!ownerSourceQuestionId && String(taskState.assignedBy ?? '').startsWith('question:')) {
+      assignTaskToReference(event, task.item, null, 'owner-source-retired');
+    }
     const currentReference = taskAssignmentReference(taskState);
     const sourceCanManageOwner = !taskState.assignee || taskState.assignedBy === 'default-role' || taskState.assignedBy === ownerSourceTag;
     const sourceMatchesCurrent = ownerSourceReference && currentReference &&

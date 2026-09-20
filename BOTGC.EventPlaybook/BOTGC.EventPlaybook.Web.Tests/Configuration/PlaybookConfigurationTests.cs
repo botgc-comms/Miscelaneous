@@ -541,6 +541,25 @@ public sealed class PlaybookConfigurationTests
         Assert.True(ContainsEventFieldCondition(atRisk.GetProperty("showWhen"), "lifecycle.resolvedFromAtRisk", "equals", true));
     }
 
+    [Fact]
+    public void AdmissionInstructionsAreOnlyHandedOverAcrossAnOwnershipBoundary()
+    {
+        var solutionRoot = FindSolutionRoot();
+        var dataPath = Path.Combine(solutionRoot, "BOTGC.EventPlaybook.Web", "Data", "event-playbook.json");
+        using var document = JsonDocument.Parse(File.ReadAllText(dataPath));
+
+        var task = FindItem(document.RootElement, "publish-admission-details-task");
+        Assert.Equal("Event Coordination", task.GetProperty("responsibleArea").GetString());
+        Assert.Equal("event-coordinator", task.GetProperty("defaultOwnerRoleId").GetString());
+        Assert.False(task.TryGetProperty("ownerFromQuestionId", out _));
+        Assert.True(ContainsCondition(task.GetProperty("showWhen"), "communications-involved", "equals", true));
+
+        var handover = task.GetProperty("handover");
+        Assert.Equal("event-coordinator", handover.GetProperty("from").GetProperty("roleId").GetString());
+        Assert.Equal("event-communications-owner", handover.GetProperty("to").GetProperty("questionId").GetString());
+        Assert.Equal("communications", handover.GetProperty("to").GetProperty("fallbackRoleId").GetString());
+    }
+
     private static bool ContainsItem(JsonElement root, string itemId)
     {
         foreach (var module in root.GetProperty("modules").EnumerateArray())
