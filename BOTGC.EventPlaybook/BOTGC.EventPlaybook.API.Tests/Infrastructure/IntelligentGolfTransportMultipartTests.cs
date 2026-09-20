@@ -153,6 +153,36 @@ public sealed class IntelligentGolfTransportMultipartTests
             Encoding.UTF8.GetString(request.Body));
     }
 
+    [Fact]
+    public async Task PostForm_EventNote_PreservesTheNotesTabAndBrowserFieldOrder()
+    {
+        var handler = new RecordingHandler();
+        var transport = new IntelligentGolfTransport(
+            new SingleClientFactory(new HttpClient(handler)),
+            new AuthenticatedSession("https://www.botgc.co.uk/"),
+            new IntelligentGolfSessionOperationGate(),
+            NullLogger<IntelligentGolfTransport>.Instance);
+
+        await transport.PostFormResponseAsync(
+            "/event.php?eventid=4743&tab=notes&requestType=ajax&ajaxaction=savenote",
+            [
+                new("noteid", string.Empty),
+                new("member_id", string.Empty),
+                new("eventid", "4743"),
+                new("actiontype", "0"),
+                new("followupdate", string.Empty),
+                new("assigned_userid", "83642"),
+                new("note", "This event was created by the Event Playbook")
+            ],
+            CancellationToken.None);
+
+        var request = Assert.Single(handler.Requests);
+        Assert.Equal("https://www.botgc.co.uk/event.php?eventid=4743&tab=notes", request.Referrer?.ToString());
+        Assert.Equal(
+            "noteid=&member_id=&eventid=4743&actiontype=0&followupdate=&assigned_userid=83642&note=This+event+was+created+by+the+Event+Playbook",
+            Encoding.UTF8.GetString(request.Body));
+    }
+
     private static int FindDisposition(string body, string fieldName)
     {
         var quoted = body.IndexOf($"name=\"{fieldName}\"", StringComparison.Ordinal);

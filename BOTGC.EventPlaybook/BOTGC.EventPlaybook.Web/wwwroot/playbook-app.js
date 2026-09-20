@@ -59,6 +59,72 @@
     { value: 'staffing', label: 'Staff and volunteers', roleId: 'event-coordinator', ownerQuestionId: 'staffing-coordinator' }
   ]);
 
+  const INTELLIGENT_GOLF_NOTE_GROUPS = Object.freeze([
+    { title: 'Leadership and contacts', fields: [
+      ['event-decision-owner', 'Decision owner'], ['event-communications-owner', 'Communications owner'],
+      ['staffing-coordinator', 'Staffing coordinator'], ['event-day-lead', 'Event-day lead']
+    ] },
+    { title: 'Golf operations', fields: [
+      ['golf-type', 'Golf format'], ['golf-player-count', 'Players'], ['golf-supporter-count', 'Supporters'],
+      ['golf-start-method', 'Start method'], ['tee-time-window', 'Tee-time window'], ['shotgun-start-time', 'Shotgun start'],
+      ['competition-format', 'Competition'], ['golf-results-technology-plan', 'Scoring technology and fallback'],
+      ['special-course-details', 'Non-standard course setup'], ['arrival-sign-in', 'Player check-in'],
+      ['arrival-direction-signage', 'Arrival signage'], ['starter-required', 'Starter required'],
+      ['course-marshals-required', 'Course marshals required']
+    ] },
+    { title: 'Rooms and setup', fields: [
+      ['clubhouse-areas', 'Rooms/areas'], ['clubhouse-other-area', 'Other area'],
+      ['seated-dining', 'Seated dining'], ['seating-setup-required', 'Special seating setup'],
+      ['seating-layout', 'Seating layout'], ['seating-layout-notes', 'Layout instructions'],
+      ['top-table-required', 'Top table'], ['top-table-seat-count', 'Top-table seats'],
+      ['special-table-covering', 'Table covering'], ['special-table-covering-notes', 'Covering instructions'],
+      ['room-theme', 'Room theme'], ['screen-channel', 'Required television/screen channel']
+    ] },
+    { title: 'Catering and bar', fields: [
+      ['required-catering-start', 'Catering required from'], ['bar-service-required', 'Event bar service'],
+      ['bar-service-start', 'Bar opens'], ['bar-service-end', 'Bar closes'],
+      ['extended-catering-until', 'Extended catering until'], ['extended-catering-service', 'Extended service'],
+      ['catering-covers', 'Food covers'], ['agreed-menu-choices', 'Menu/meal choices'],
+      ['meal-service-time', 'Food service time'], ['food-service-arrangement', 'Food service arrangement'],
+      ['food-service-arrangement-other', 'Other service arrangement'],
+      ['food-service-self-service-supervisor', 'Self-service supervisor'],
+      ['food-service-owner', 'Food-service owner'], ['dietary-requirements-summary', 'Dietary/allergen requirements']
+    ] },
+    { title: 'Bookings and admission', fields: [
+      ['admission-arrangements', 'Booking/admission arrangement'], ['admission-price-details', 'Prices and inclusions'],
+      ['admission-capacity', 'Capacity'], ['ticket-sales-open-date', 'Bookings open'],
+      ['ticket-sales-close-date', 'Bookings close'], ['ig-ticket-allocation', 'IG ticket allocation'],
+      ['ig-ticket-types', 'IG ticket types'], ['guest-table-booking', 'Separate table booking'],
+      ['door-admission-process', 'Door/check-in process'], ['admission-payment-methods', 'Payment methods'],
+      ['admission-cash-float', 'Cash float/handover']
+    ] },
+    { title: 'Entertainment and presentation', fields: [
+      ['entertainment-outline', 'Programme/experience'], ['external-entertainment-provider', 'Entertainer/supplier'],
+      ['entertainment-space-requirements', 'Performance space'],
+      ['entertainment-technical-requirements', 'Technical requirements'],
+      ['entertainment-event-contact', 'Entertainer contact on the day'],
+      ['prize-requirements-detail', 'Prizes/awards'], ['prize-table-required', 'Prize table'],
+      ['presentation-microphone-needed', 'Microphone/PA'], ['speaker-required', 'Host/speaker'],
+      ['photos-required', 'Presentation photographs']
+    ] },
+    { title: 'Staffing, access and lock-up', fields: [
+      ['event-day-duty-allocations', 'Duty allocations'], ['staff-briefing-comments', 'Additional briefing instructions'],
+      ['additional-event-staff-areas', 'Teams needing changed cover'],
+      ['additional-event-staff-details', 'Additional cover'], ['event-rotas-confirmed', 'Rotas updated'],
+      ['whole-event-cover-confirmed', 'Full-event cover'], ['staffing-contingency-confirmed', 'Fallback cover'],
+      ['event-opening-arrangement', 'Opening/early access'], ['event-opening-person', 'Person providing access'],
+      ['event-lock-up-arrangement', 'Closing/lock-up'], ['event-lock-up-person', 'Final closer/keyholder']
+    ] },
+    { title: 'Safety and contingencies', fields: [
+      ['risk-assessment-required', 'Event-specific risk assessment'], ['juniors-involved', 'Juniors involved'],
+      ['weather-contingency', 'Weather contingency']
+    ] },
+    { title: 'Close-down', fields: [
+      ['close-down-actions', 'Items/areas to reset'], ['close-down-plan-details', 'Close-down instructions'],
+      ['additional-close-down-details', 'Additional recovery work'], ['close-down-lead', 'Close-down lead/team']
+    ] }
+  ]);
+
   const FOOD_SERVICE_REVIEW_TASK_IDS_V36 = Object.freeze([
     'external-food-service-liaison-task',
     'food-staff-task',
@@ -1174,6 +1240,7 @@
 
   function getSharedStateSnapshot() {
     const taskAlertSchedule = materialiseTaskAlertSchedule();
+    materialiseIntelligentGolfPlanningNotes();
     return normaliseSharedState({
       deadlineOffsets: state.deadlineOffsets,
       directoryInitialised: state.directoryInitialised,
@@ -1269,7 +1336,8 @@
     const admissionPricingMigrated = migrateAdmissionPricingState();
     const foodServiceReviewMigrated = migrateFoodServiceReviewCompletionState();
     const eventControlMigrated = migrateEventControlStateV37();
-    const eventStateMigrated = admissionPlanningMigrated || admissionModelMigrated || admissionPricingMigrated || foodServiceReviewMigrated || eventControlMigrated;
+    const planningNotesMigrated = materialiseIntelligentGolfPlanningNotes();
+    const eventStateMigrated = admissionPlanningMigrated || admissionModelMigrated || admissionPricingMigrated || foodServiceReviewMigrated || eventControlMigrated || planningNotesMigrated;
     if (state.activeEventId && !state.events.some(event => event.id === state.activeEventId)) {
       state.activeEventId = null;
       state.activeView = 'catalogue';
@@ -1283,6 +1351,7 @@
     }
     applyingSharedState = false;
     if (eventStateMigrated && sharedStateReady) scheduleSharedStateSave(100);
+    return eventStateMigrated;
   }
 
   function scheduleSharedStateSave(delay = 450) {
@@ -1423,7 +1492,7 @@
             });
           }
         }
-        applySharedState(initial);
+        needsMigrationSave = applySharedState(initial) || needsMigrationSave;
       } else {
         lastSyncedSharedState = emptySharedState();
         needsMigrationSave = browserSnapshot.roles.length > 0 || browserSnapshot.events.length > 0 || browserSnapshot.contacts.length > 0 || browserSnapshot.referenceLibrary.length > 0;
@@ -3359,6 +3428,64 @@
     if (item.answerType === 'date') return formatDate(value);
     if (item.answerType === 'number' && item.unit) return `${value} ${item.unit}`;
     return String(value ?? '').trim();
+  }
+
+  function buildIntelligentGolfPlanningNote(event) {
+    if (!event || !playbook) return '';
+    const lifecycle = normaliseEventLifecycle(event);
+    const status = EVENT_STATUS_DEFINITIONS[lifecycle.status]?.label || lifecycle.status || 'Provisional';
+    const time = [event.startTime, event.endTime].filter(Boolean).join('–');
+    const lines = [
+      'EVENT PLAYBOOK — OPERATIONAL PLANNING SUMMARY',
+      `Event: ${event.name}`,
+      `Date: ${formatDate(event.eventDate)}${time ? ` · ${time}` : ''}`,
+      `Status: ${status}`,
+      `Expected attendance: ${Number(event.expectedAttendees) > 0 ? Number(event.expectedAttendees) : 'Not yet confirmed'}`,
+      `Organiser: ${assignmentDisplay(event.organiserRef ?? event.organiser, event.organiser || 'Not assigned')}`
+    ];
+
+    for (const group of INTELLIGENT_GOLF_NOTE_GROUPS) {
+      const rows = [];
+      for (const [questionId, label] of group.fields) {
+        const indexed = itemIndex.get(questionId);
+        const question = indexed?.item;
+        if (!question || question.type !== 'question' ||
+            !isModuleActive(indexed.module, event) || !isItemVisible(question, event) ||
+            isQuestionNotRelevant(event, questionId)) continue;
+        const value = getQuestionValue(questionId, event);
+        if (!isAnsweredValue(value)) continue;
+        const answer = formatBriefingAnswer(question, value);
+        if (answer) rows.push(`${label}: ${answer}`);
+      }
+      if (rows.length) lines.push('', group.title.toUpperCase(), ...rows);
+    }
+
+    const taskNotes = [];
+    for (const [taskId, taskState] of Object.entries(event.taskState ?? {})) {
+      const note = String(taskState?.notes ?? '').trim();
+      const indexed = itemIndex.get(taskId);
+      if (!note || taskState?.notRelevant === true || indexed?.item?.type !== 'task') continue;
+      const stateLabel = taskState.completed === true ? 'Confirmed' : 'Planning note';
+      taskNotes.push(`${stateLabel} — ${indexed.item.title}: ${note}`);
+    }
+    if (taskNotes.length) lines.push('', 'EVENT PLAYBOOK TASK NOTES', ...taskNotes);
+
+    lines.push('', 'This managed note is updated from Event Playbook. Actions remain in Event Playbook rather than this note.');
+    const note = lines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+    if (note.length <= 7000) return note;
+    return `${note.slice(0, 6910).trimEnd()}\n\n[Further planning detail remains available in Event Playbook.]`;
+  }
+
+  function materialiseIntelligentGolfPlanningNotes() {
+    if (!playbook) return false;
+    let changed = false;
+    for (const event of state.events ?? []) {
+      const note = buildIntelligentGolfPlanningNote(event);
+      if (event.intelligentGolfPlanningNote === note) continue;
+      event.intelligentGolfPlanningNote = note;
+      changed = true;
+    }
+    return changed;
   }
 
   function buildCommunicationsPlanningContext(event) {

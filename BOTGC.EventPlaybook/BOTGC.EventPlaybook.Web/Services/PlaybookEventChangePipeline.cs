@@ -105,6 +105,7 @@ public sealed class PlaybookEventChangePipeline : BackgroundService, IPlaybookEv
                 LifecycleStatus = ReadNestedString(item, "lifecycle", "status"),
                 GroupId = ReadString(item, "intelligentGolfGroupId") ?? "151",
                 GroupName = ReadString(item, "intelligentGolfGroupName") ?? "BOTGC Event Planner",
+                PlanningNote = ReadString(item, "intelligentGolfPlanningNote"),
                 IntelligentGolfTicketsRequested = ReadAnswerBoolean(item, "ig-online-ticketing") == true,
                 IntelligentGolfTickets = ReadTicketConfiguration(item, out var ticketValidationError),
                 IntelligentGolfTicketValidationError = ticketValidationError
@@ -124,7 +125,8 @@ public sealed class PlaybookEventChangePipeline : BackgroundService, IPlaybookEv
         left.EventTypeId == right.EventTypeId &&
         left.Attendees == right.Attendees &&
         string.Equals(left.GroupId, right.GroupId, StringComparison.Ordinal) &&
-        string.Equals(left.GroupName, right.GroupName, StringComparison.Ordinal);
+        string.Equals(left.GroupName, right.GroupName, StringComparison.Ordinal) &&
+        string.Equals(left.PlanningNote, right.PlanningNote, StringComparison.Ordinal);
 
     private static string? ReadString(JsonElement element, string propertyName)
     {

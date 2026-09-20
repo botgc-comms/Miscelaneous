@@ -542,7 +542,7 @@ public sealed class IntelligentGolfEventIntegrationTests
     [Fact]
     public async Task SynchroniseTicketsAsync_UsesTheLinkedPlannerAndStructuredAnswers()
     {
-        var scenario = new PrivateApiScenario(SynchronisedAt);
+        var scenario = new PrivateApiScenario(SynchronisedAt) { PlannerEventId = 4713 };
         var linkStore = new RecordingLinkStore();
         linkStore.Seed(CreateExistingLink());
         var activityStore = new RecordingActivityStore();
@@ -589,6 +589,48 @@ public sealed class IntelligentGolfEventIntegrationTests
         var activity = Assert.Single(activityStore.Activities, candidate =>
             candidate.Operation == "Configure planner tickets");
         Assert.Equal("succeeded", activity.Outcome);
+    }
+
+    [Fact]
+    public async Task SynchroniseEventAsync_UpdatesTheManagedOperationalNoteAfterPlannerDetails()
+    {
+        var scenario = new PrivateApiScenario(SynchronisedAt) { PlannerEventId = 4713 };
+        var linkStore = new RecordingLinkStore();
+        linkStore.Seed(CreateExistingLink());
+        var activityStore = new RecordingActivityStore();
+        var integration = CreateIntegration(scenario, linkStore, activityStore);
+        var source = CreateSnapshot();
+        var snapshot = new PlaybookEventIntegrationSnapshot
+        {
+            EventId = source.EventId,
+            Name = source.Name,
+            EventDate = source.EventDate,
+            Description = source.Description,
+            StartTime = source.StartTime,
+            EndTime = source.EndTime,
+            EventTypeId = source.EventTypeId,
+            Attendees = source.Attendees,
+            PlanningNote = "EVENT PLAYBOOK — OPERATIONAL PLANNING SUMMARY\nRooms/areas: Peacock Lounge"
+        };
+
+        await integration.SynchroniseEventAsync(snapshot, force: false, CancellationToken.None);
+
+        Assert.Collection(
+            scenario.Requests,
+            request => Assert.Equal("/api/event-planner/events/synchronise", request.Path),
+            request =>
+            {
+                Assert.Equal(HttpMethod.Put, request.Method);
+                Assert.Equal("/api/event-planner/notes", request.Path);
+                using var payload = JsonDocument.Parse(request.Body);
+                Assert.Equal(4713, payload.RootElement.GetProperty("intelligentGolfEventId").GetInt32());
+                Assert.Contains("Peacock Lounge", payload.RootElement.GetProperty("note").GetString(), StringComparison.Ordinal);
+            });
+        var stored = await linkStore.GetAsync("event-123", CancellationToken.None);
+        Assert.Equal(912, stored?.IntelligentGolfNoteId);
+        Assert.False(string.IsNullOrWhiteSpace(stored?.LastPlannerNoteFingerprint));
+        Assert.Contains(activityStore.Activities, activity =>
+            activity.Operation == "Synchronise planner note" && activity.Outcome == "succeeded");
     }
 
     [Fact]
@@ -938,6 +980,19 @@ public sealed class IntelligentGolfEventIntegrationTests
                 });
             }
 
+            if (request.Method == HttpMethod.Put &&
+                request.Path == "/api/event-planner/notes")
+            {
+                return Json(HttpStatusCode.OK, new
+                {
+                    eventPlaybookEventId = "event-123",
+                    intelligentGolfEventId = 4713,
+                    intelligentGolfNoteId = 912,
+                    created = true,
+                    synchronisedAtUtc = SynchronisedAt
+                });
+            }
+
             if (request.Method == HttpMethod.Delete &&
                 request.Path == "/api/event-planner/member-diary")
             {
@@ -1150,6 +1205,20 @@ public sealed class IntelligentGolfEventIntegrationTests
             link.LastError = null;
             link.LastErrorStage = null;
             link.LastErrorStatusCode = null;
+            return Task.CompletedTask;
+        }
+
+        public Task SavePlannerNoteAsync(
+            string eventId,
+            int intelligentGolfEventId,
+            int? intelligentGolfNoteId,
+            string fingerprint,
+            CancellationToken cancellationToken)
+        {
+            var link = GetOrCreate(eventId);
+            link.IntelligentGolfEventId = intelligentGolfEventId;
+            link.IntelligentGolfNoteId = intelligentGolfNoteId;
+            link.LastPlannerNoteFingerprint = fingerprint;
             return Task.CompletedTask;
         }
 

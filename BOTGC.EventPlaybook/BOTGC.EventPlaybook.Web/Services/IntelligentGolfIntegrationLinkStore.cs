@@ -16,6 +16,12 @@ public interface IIntelligentGolfIntegrationLinkStore
         string fingerprint,
         DateTimeOffset synchronisedAtUtc,
         CancellationToken cancellationToken);
+    Task SavePlannerNoteAsync(
+        string eventId,
+        int intelligentGolfEventId,
+        int? intelligentGolfNoteId,
+        string fingerprint,
+        CancellationToken cancellationToken);
     Task SaveDiaryAsync(
         string eventId,
         int intelligentGolfEventId,
@@ -134,6 +140,24 @@ public sealed class IntelligentGolfIntegrationLinkStore : IIntelligentGolfIntegr
             link.LastErrorStatusCode = null;
         }, cancellationToken);
 
+    public Task SavePlannerNoteAsync(
+        string eventId,
+        int intelligentGolfEventId,
+        int? intelligentGolfNoteId,
+        string fingerprint,
+        CancellationToken cancellationToken) =>
+        UpdateAsync(eventId, link =>
+        {
+            if (link.IntelligentGolfEventId is > 0 && link.IntelligentGolfEventId != intelligentGolfEventId)
+                throw new IntelligentGolfPlannerLinkChangedException(intelligentGolfEventId, link.IntelligentGolfEventId);
+            link.IntelligentGolfEventId = intelligentGolfEventId;
+            link.IntelligentGolfNoteId = intelligentGolfNoteId;
+            link.LastPlannerNoteFingerprint = fingerprint.Trim();
+            link.LastError = null;
+            link.LastErrorStage = null;
+            link.LastErrorStatusCode = null;
+        }, cancellationToken);
+
     public Task SaveAllocatedDiaryAsync(
         string eventId,
         int intelligentGolfEventId,
@@ -221,7 +245,9 @@ public sealed class IntelligentGolfIntegrationLinkStore : IIntelligentGolfIntegr
 
             link.IntelligentGolfEventId = null;
             link.IntelligentGolfDiaryEntryId = null;
+            link.IntelligentGolfNoteId = null;
             link.LastEventFingerprint = null;
+            link.LastPlannerNoteFingerprint = null;
             link.EventSynchronisedAtUtc = null;
             link.DiaryPublishedAtUtc = null;
             link.LastError = null;
@@ -336,6 +362,8 @@ public sealed class IntelligentGolfIntegrationLinkStore : IIntelligentGolfIntegr
             link.IntelligentGolfEventId = intelligentGolfEventId;
             link.IntelligentGolfDiaryEntryId = null;
             link.DiaryPublishedAtUtc = null;
+            link.IntelligentGolfNoteId = null;
+            link.LastPlannerNoteFingerprint = null;
             link.LastEventFingerprint = fingerprint.Trim();
             link.EventSynchronisedAtUtc = relinkedAtUtc;
             link.LastError = null;
@@ -405,7 +433,9 @@ public sealed class IntelligentGolfIntegrationLinkStore : IIntelligentGolfIntegr
         EventPlaybookEventId = link.EventPlaybookEventId,
         IntelligentGolfEventId = link.IntelligentGolfEventId,
         IntelligentGolfDiaryEntryId = link.IntelligentGolfDiaryEntryId,
+        IntelligentGolfNoteId = link.IntelligentGolfNoteId,
         LastEventFingerprint = link.LastEventFingerprint,
+        LastPlannerNoteFingerprint = link.LastPlannerNoteFingerprint,
         EventSynchronisedAtUtc = link.EventSynchronisedAtUtc,
         DiaryPublishedAtUtc = link.DiaryPublishedAtUtc,
         LastError = link.LastError,

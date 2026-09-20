@@ -2794,6 +2794,15 @@ public static class EventPlannerFeatureExtensions
             .WithSummary("Configure ticket settings and ticket types on a linked Intelligent Golf planner event")
             .Produces<SynchronisePlannerTicketsResult>();
 
+        endpoints.MapPut(
+                "/api/event-planner/notes",
+                async (SynchronisePlannerNoteRequest request, IMediator mediator, CancellationToken cancellationToken) =>
+                    Results.Ok(await mediator.Send(new SynchronisePlannerNoteCommand(request), cancellationToken)))
+            .WithName("SynchronisePlannerNote")
+            .WithTags("Event planner")
+            .WithSummary("Create or update the managed Event Playbook operational note on an Intelligent Golf planner event")
+            .Produces<SynchronisePlannerNoteResult>();
+
         endpoints.MapDelete(
                 "/api/event-planner/member-diary",
                 async (RemovePlannerDiaryRequest request, IMediator mediator, CancellationToken cancellationToken) =>

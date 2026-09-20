@@ -15,6 +15,7 @@ public sealed class PlaybookEventTicketConfigurationTests
         var snapshot = Assert.Single(PlaybookEventChangePipeline.ReadEvents(document.RootElement)).Value;
 
         Assert.True(snapshot.IntelligentGolfTicketsRequested);
+        Assert.Equal("EVENT PLAYBOOK — OPERATIONAL PLANNING SUMMARY", snapshot.PlanningNote);
         Assert.Null(snapshot.IntelligentGolfTicketValidationError);
         var tickets = Assert.IsType<IntelligentGolfTicketConfiguration>(snapshot.IntelligentGolfTickets);
         Assert.Equal(100, tickets.MaximumTickets);
@@ -55,6 +56,7 @@ public sealed class PlaybookEventTicketConfigurationTests
               "name": "The 2027 Forum",
               "eventDate": "2027-01-12",
               "description": "Member forum",
+              "intelligentGolfPlanningNote": "EVENT PLAYBOOK — OPERATIONAL PLANNING SUMMARY",
               "answers": {
                 "ig-online-ticketing": true,
                 "ig-ticket-allocation": "100",

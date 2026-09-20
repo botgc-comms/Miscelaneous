@@ -266,9 +266,13 @@ public sealed class IntelligentGolfEventIntegration(
             await EnsureAvailableAsync(cancellationToken);
             var fingerprint = Fingerprint(eventSnapshot);
             var link = await linkStore.GetAsync(eventSnapshot.EventId, cancellationToken);
+            var planningNoteFingerprint = PlanningNoteFingerprint(eventSnapshot.PlanningNote);
+            var planningNoteUpToDate = string.IsNullOrWhiteSpace(eventSnapshot.PlanningNote) ||
+                string.Equals(link?.LastPlannerNoteFingerprint, planningNoteFingerprint, StringComparison.Ordinal);
             if (!force &&
                 link?.IntelligentGolfEventId is > 0 &&
-                string.Equals(link.LastEventFingerprint, fingerprint, StringComparison.Ordinal))
+                string.Equals(link.LastEventFingerprint, fingerprint, StringComparison.Ordinal) &&
+                planningNoteUpToDate)
             {
                 return new IntelligentGolfEventSynchroniseResult
                 {
@@ -304,6 +308,14 @@ public sealed class IntelligentGolfEventIntegration(
                 fingerprint,
                 result.SynchronisedAtUtc,
                 cancellationToken);
+            if (!string.IsNullOrWhiteSpace(eventSnapshot.PlanningNote) && !planningNoteUpToDate)
+            {
+                await SynchronisePlanningNoteAsync(
+                    eventSnapshot,
+                    result.IntelligentGolfEventId,
+                    planningNoteFingerprint!,
+                    cancellationToken);
+            }
             await RecordActivitySafelyAsync(new IntegrationActivityWrite
             {
                 Operation = "Synchronise planner event",
@@ -361,9 +373,12 @@ public sealed class IntelligentGolfEventIntegration(
                 requestException?.StatusCode,
                 cancellationToken);
             var failedLink = await linkStore.GetAsync(eventSnapshot.EventId, cancellationToken);
+            var failedOperation = requestException?.Stage?.StartsWith("planner-note", StringComparison.OrdinalIgnoreCase) == true
+                ? "Synchronise planner note"
+                : "Synchronise planner event";
             await RecordActivitySafelyAsync(new IntegrationActivityWrite
             {
-                Operation = "Synchronise planner event",
+                Operation = failedOperation,
                 Outcome = "failed",
                 EventPlaybookEventId = eventSnapshot.EventId,
                 EventName = eventSnapshot.Name,
@@ -427,6 +442,14 @@ public sealed class IntelligentGolfEventIntegration(
                 Fingerprint(eventSnapshot),
                 result.AdoptedAtUtc,
                 cancellationToken);
+            if (!string.IsNullOrWhiteSpace(eventSnapshot.PlanningNote))
+            {
+                await SynchronisePlanningNoteAsync(
+                    eventSnapshot,
+                    result.IntelligentGolfEventId,
+                    PlanningNoteFingerprint(eventSnapshot.PlanningNote)!,
+                    cancellationToken);
+            }
             await RecordActivitySafelyAsync(new IntegrationActivityWrite
             {
                 Operation = "Link existing planner event",
@@ -593,6 +616,14 @@ public sealed class IntelligentGolfEventIntegration(
                 Fingerprint(eventSnapshot),
                 relinkedAtUtc,
                 cancellationToken);
+            if (!string.IsNullOrWhiteSpace(eventSnapshot.PlanningNote))
+            {
+                await SynchronisePlanningNoteAsync(
+                    eventSnapshot,
+                    intelligentGolfEventId,
+                    PlanningNoteFingerprint(eventSnapshot.PlanningNote)!,
+                    cancellationToken);
+            }
             await RecordActivitySafelyAsync(new IntegrationActivityWrite
             {
                 Operation = "Relink planner event",
@@ -1198,6 +1229,46 @@ public sealed class IntelligentGolfEventIntegration(
                 .Select(paragraph => $"<p>{HtmlEncoder.Default.Encode(paragraph).Replace("\n", "<br>", StringComparison.Ordinal)}</p>"));
     }
 
+    private async Task<IntelligentGolfPlannerNoteSynchroniseResult> SynchronisePlanningNoteAsync(
+        PlaybookEventIntegrationSnapshot eventSnapshot,
+        int intelligentGolfEventId,
+        string fingerprint,
+        CancellationToken cancellationToken)
+    {
+        using var message = CreateRequest(HttpMethod.Put, "api/event-planner/notes");
+        message.Content = JsonContent.Create(new
+        {
+            eventPlaybookEventId = eventSnapshot.EventId,
+            intelligentGolfEventId,
+            note = eventSnapshot.PlanningNote!.Trim()
+        });
+        using var response = await SendAsync(message, cancellationToken);
+        var result = await response.Content.ReadFromJsonAsync<IntelligentGolfPlannerNoteSynchroniseResult>(
+            JsonOptions,
+            cancellationToken)
+            ?? throw new InvalidOperationException("The Event Playbook API did not confirm the Intelligent Golf planning note.");
+        await linkStore.SavePlannerNoteAsync(
+            eventSnapshot.EventId,
+            result.IntelligentGolfEventId,
+            result.IntelligentGolfNoteId,
+            fingerprint,
+            cancellationToken);
+        await RecordActivitySafelyAsync(new IntegrationActivityWrite
+        {
+            Operation = "Synchronise planner note",
+            Outcome = "succeeded",
+            EventPlaybookEventId = eventSnapshot.EventId,
+            EventName = eventSnapshot.Name,
+            ExternalEventId = result.IntelligentGolfEventId,
+            ExternalRecordId = result.IntelligentGolfNoteId,
+            Stage = result.Created ? "planner-note-create" : "planner-note-update",
+            Message = result.Created
+                ? $"Created the managed Event Playbook operational note on Intelligent Golf planner entry {result.IntelligentGolfEventId}."
+                : $"Updated the managed Event Playbook operational note on Intelligent Golf planner entry {result.IntelligentGolfEventId}."
+        }, cancellationToken);
+        return result;
+    }
+
     private static string Fingerprint(PlaybookEventIntegrationSnapshot snapshot)
     {
         var json = JsonSerializer.Serialize(new
@@ -1214,6 +1285,11 @@ public sealed class IntelligentGolfEventIntegration(
         });
         return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(json)));
     }
+
+    private static string? PlanningNoteFingerprint(string? note) =>
+        string.IsNullOrWhiteSpace(note)
+            ? null
+            : Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(note.Trim())));
 
     private static string? EmptyAsNull(string? value) =>
         string.IsNullOrWhiteSpace(value) ? null : value.Trim();

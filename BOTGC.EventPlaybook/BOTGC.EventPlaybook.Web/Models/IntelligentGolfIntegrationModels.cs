@@ -13,6 +13,7 @@ public sealed class PlaybookEventIntegrationSnapshot
     public string? LifecycleStatus { get; init; }
     public string? GroupId { get; init; } = "151";
     public string GroupName { get; init; } = "BOTGC Event Planner";
+    public string? PlanningNote { get; init; }
     public bool IntelligentGolfTicketsRequested { get; init; }
     public IntelligentGolfTicketConfiguration? IntelligentGolfTickets { get; init; }
     public string? IntelligentGolfTicketValidationError { get; init; }
@@ -45,12 +46,23 @@ public sealed class IntelligentGolfTicketSynchroniseResult
     public DateTimeOffset SynchronisedAtUtc { get; init; }
 }
 
+public sealed class IntelligentGolfPlannerNoteSynchroniseResult
+{
+    public required string EventPlaybookEventId { get; init; }
+    public int IntelligentGolfEventId { get; init; }
+    public int? IntelligentGolfNoteId { get; init; }
+    public bool Created { get; init; }
+    public DateTimeOffset SynchronisedAtUtc { get; init; }
+}
+
 public sealed class IntelligentGolfIntegrationLink
 {
     public required string EventPlaybookEventId { get; init; }
     public int? IntelligentGolfEventId { get; set; }
     public int? IntelligentGolfDiaryEntryId { get; set; }
     public string? LastEventFingerprint { get; set; }
+    public string? LastPlannerNoteFingerprint { get; set; }
+    public int? IntelligentGolfNoteId { get; set; }
     public DateTimeOffset? EventSynchronisedAtUtc { get; set; }
     public DateTimeOffset? DiaryPublishedAtUtc { get; set; }
     public string? LastError { get; set; }

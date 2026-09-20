@@ -32,6 +32,8 @@ public sealed class IntelligentGolfIntegrationLinkStoreTests
 
         Assert.Equal(4733, result.IntelligentGolfEventId);
         Assert.Null(result.IntelligentGolfDiaryEntryId);
+        Assert.Null(result.IntelligentGolfNoteId);
+        Assert.Null(result.LastPlannerNoteFingerprint);
         Assert.Null(result.DiaryPublishedAtUtc);
         Assert.Equal("new-fingerprint", result.LastEventFingerprint);
         Assert.Equal(RelinkedAt, result.EventSynchronisedAtUtc);
@@ -46,6 +48,8 @@ public sealed class IntelligentGolfIntegrationLinkStoreTests
         Assert.NotNull(reloaded);
         Assert.Equal(4733, reloaded.IntelligentGolfEventId);
         Assert.Null(reloaded.IntelligentGolfDiaryEntryId);
+        Assert.Null(reloaded.IntelligentGolfNoteId);
+        Assert.Null(reloaded.LastPlannerNoteFingerprint);
         Assert.Null(reloaded.DiaryPublishedAtUtc);
         Assert.Equal("new-fingerprint", reloaded.LastEventFingerprint);
         Assert.Equal(RelinkedAt, reloaded.EventSynchronisedAtUtc);
@@ -70,6 +74,8 @@ public sealed class IntelligentGolfIntegrationLinkStoreTests
 
         Assert.Equal(before.IntelligentGolfEventId, result.IntelligentGolfEventId);
         Assert.Equal(before.IntelligentGolfDiaryEntryId, result.IntelligentGolfDiaryEntryId);
+        Assert.Equal(before.IntelligentGolfNoteId, result.IntelligentGolfNoteId);
+        Assert.Equal(before.LastPlannerNoteFingerprint, result.LastPlannerNoteFingerprint);
         Assert.Equal(before.DiaryPublishedAtUtc, result.DiaryPublishedAtUtc);
         Assert.Equal(before.LastEventFingerprint, result.LastEventFingerprint);
         Assert.Equal(before.EventSynchronisedAtUtc, result.EventSynchronisedAtUtc);
@@ -112,6 +118,7 @@ public sealed class IntelligentGolfIntegrationLinkStoreTests
         var second = await reloadedStore.GetAsync("event-456", CancellationToken.None);
         Assert.Equal(4713, first?.IntelligentGolfEventId);
         Assert.Equal(4963, first?.IntelligentGolfDiaryEntryId);
+        Assert.Equal(912, first?.IntelligentGolfNoteId);
         Assert.Equal(4733, second?.IntelligentGolfEventId);
     }
 
@@ -161,6 +168,8 @@ public sealed class IntelligentGolfIntegrationLinkStoreTests
         Assert.Null(diaryCleared?.IntelligentGolfDiaryEntryId);
         Assert.Null(diaryCleared?.DiaryPublishedAtUtc);
         Assert.Equal("initial-fingerprint", diaryCleared?.LastEventFingerprint);
+        Assert.Equal(912, diaryCleared?.IntelligentGolfNoteId);
+        Assert.Equal("initial-note-fingerprint", diaryCleared?.LastPlannerNoteFingerprint);
         Assert.Null(diaryCleared?.LastError);
 
         await store.ClearEventAsync(
@@ -171,7 +180,9 @@ public sealed class IntelligentGolfIntegrationLinkStoreTests
         var eventCleared = await CreateStore(root.Path).GetAsync("event-123", CancellationToken.None);
         Assert.Null(eventCleared?.IntelligentGolfEventId);
         Assert.Null(eventCleared?.IntelligentGolfDiaryEntryId);
+        Assert.Null(eventCleared?.IntelligentGolfNoteId);
         Assert.Null(eventCleared?.LastEventFingerprint);
+        Assert.Null(eventCleared?.LastPlannerNoteFingerprint);
         Assert.Null(eventCleared?.EventSynchronisedAtUtc);
         Assert.Null(eventCleared?.DiaryPublishedAtUtc);
         Assert.Null(eventCleared?.PendingMatchEventDate);
@@ -218,6 +229,12 @@ public sealed class IntelligentGolfIntegrationLinkStoreTests
             intelligentGolfEventId,
             4963,
             DiaryPublishedAt,
+            CancellationToken.None);
+        await store.SavePlannerNoteAsync(
+            eventId,
+            intelligentGolfEventId,
+            912,
+            "initial-note-fingerprint",
             CancellationToken.None);
         await store.SaveMatchRequiredAsync(
             eventId,
