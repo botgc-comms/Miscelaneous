@@ -9,6 +9,7 @@ using BOTGC.EventPlaybook.API.Features.Members;
 using BOTGC.EventPlaybook.API.Infrastructure.IntelligentGolf;
 using HtmlAgilityPack;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BOTGC.EventPlaybook.API.Features;
 
@@ -2822,7 +2823,7 @@ public static class EventPlannerFeatureExtensions
 
         endpoints.MapDelete(
                 "/api/event-planner/member-diary",
-                async (RemovePlannerDiaryRequest request, IMediator mediator, CancellationToken cancellationToken) =>
+                async ([FromBody] RemovePlannerDiaryRequest request, IMediator mediator, CancellationToken cancellationToken) =>
                     Results.Ok(await mediator.Send(new RemovePlannerDiaryCommand(request), cancellationToken)))
             .WithName("RemovePlannerMemberDiary")
             .WithTags("Event planner")
@@ -2831,7 +2832,7 @@ public static class EventPlannerFeatureExtensions
 
         endpoints.MapDelete(
                 "/api/event-planner/events",
-                async (RemovePlannerEventRequest request, IMediator mediator, CancellationToken cancellationToken) =>
+                async ([FromBody] RemovePlannerEventRequest request, IMediator mediator, CancellationToken cancellationToken) =>
                     Results.Ok(await mediator.Send(new RemovePlannerEventCommand(request), cancellationToken)))
             .WithName("RemovePlannerEvent")
             .WithTags("Event planner")
