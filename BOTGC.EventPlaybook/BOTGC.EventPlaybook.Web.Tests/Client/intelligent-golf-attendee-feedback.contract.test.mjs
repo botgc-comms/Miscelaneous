@@ -23,6 +23,6 @@ test('sending feedback previews fresh bookings and requires explicit confirmatio
 });
 
 test('the booking-feedback release is cache-busted', () => {
-  assert.match(indexSource, /playbook\.css\?v=20260920-ig-booking-feedback-1/);
-  assert.match(indexSource, /playbook-app\.js\?v=20260920-ig-booking-feedback-1/);
+  assert.match(indexSource, /playbook\.css\?v=20260920-compact-not-relevant-1/);
+  assert.match(indexSource, /playbook-app\.js\?v=20260920-compact-not-relevant-1/);
 });

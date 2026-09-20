@@ -1760,13 +1760,21 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(198,161,91,.22)!i
 .question-flow-body .choice-button { min-height:36px!important; min-width:58px!important; padding:7px 14px!important; }
 .question-flow-body .answer-input { min-height:42px!important; margin-top:11px!important; }
 .optional-question-resolution {
-  display:flex; max-width:900px; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px;
-  margin-top:14px; padding:10px 12px; border:1px dashed #c8d4d2; border-radius:10px;
-  color:#637572; background:#f7faf9;
+  display:flex; align-items:center; margin-top:7px;
 }
-.optional-question-resolution > span { font-size:.62rem; line-height:1.45; }
-.choice-button.not-relevant-choice { flex:0 0 auto; border-color:#9caaa7!important; color:#536662!important; background:#fff!important; }
-.choice-button.not-relevant-choice.selected { border-color:#667a76!important; color:#fff!important; background:#667a76!important; box-shadow:0 4px 10px rgba(83,102,98,.16)!important; }
+.question-flow-body .choice-button.not-relevant-choice {
+  min-width:0!important; min-height:24px!important; padding:2px 4px!important; border:0!important;
+  border-radius:4px!important; color:#61726e!important; background:transparent!important;
+  box-shadow:none!important; font-size:.56rem; font-weight:750; text-decoration:underline;
+  text-decoration-color:#a9b6b3; text-underline-offset:3px;
+}
+.question-flow-body .choice-button.not-relevant-choice:hover,
+.question-flow-body .choice-button.not-relevant-choice:focus-visible {
+  color:#143f4e!important; background:#edf4f2!important; text-decoration-color:#59726c;
+}
+.question-flow-body .choice-button.not-relevant-choice.selected {
+  color:#536662!important; background:transparent!important;
+}
 .question-item.not-relevant .question-flow-rail { background:linear-gradient(180deg,#f1f3f2,#e9edeb)!important; }
 .question-item.not-relevant .question-state-mark { border-color:#73847f; color:#fff; background:#73847f; }
 .question-item.not-relevant .question-flow-rail small { color:#5c6e69!important; text-align:center; }

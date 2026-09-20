@@ -6008,9 +6008,8 @@
           ${renderPriorLearning(event, item)}
           ${renderAnswerControl(item, value, priorHint)}
           <div class="optional-question-resolution">
-            <span>If this question does not apply to this event, remove it from the outstanding plan.</span>
             <button type="button" class="choice-button not-relevant-choice ${notRelevant ? 'selected' : ''}" data-question-not-relevant="${escapeHtml(item.id)}" aria-pressed="${notRelevant ? 'true' : 'false'}">
-              ${notRelevant ? '✓ Not relevant — restore' : 'Not relevant'}
+              ${notRelevant ? 'Restore question' : 'Mark as not relevant'}
             </button>
           </div>
           ${renderAdvisoriesForQuestion(item.id, event)}
