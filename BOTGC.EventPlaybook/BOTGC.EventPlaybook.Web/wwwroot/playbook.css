@@ -756,6 +756,7 @@ button{cursor:pointer}
 .choice-button.dont-know-choice{border-color:#dec992!important;color:#805d1f!important;background:#fffdf7!important}
 .choice-button.dont-know-choice.selected{border-color:#ad7923!important;color:#fff!important;background:#ad7923!important;box-shadow:0 4px 10px rgba(173,121,35,.18)!important}
 .answer-input{width:min(100%,420px)!important;margin-top:8px!important}
+.answer-textarea{width:100%!important;min-height:112px!important;resize:vertical!important;line-height:1.5!important;white-space:pre-wrap!important}
 .multi-choice-group{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important;margin-top:9px!important}
 .check-choice{display:flex!important;align-items:center!important;gap:8px!important;min-height:36px!important;padding:7px 9px!important;border:1px solid var(--border)!important;border-radius:8px!important;background:#fff!important;font-size:.64rem!important;font-weight:750!important}
 .module-task-summary{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:18px!important;margin-top:18px!important;padding:15px 17px!important}

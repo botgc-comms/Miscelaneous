@@ -5853,6 +5853,8 @@
           questionId: item.id,
           required: item.required !== false
         });
+      case 'textarea':
+        return `<textarea class="answer-input answer-textarea${hintClass}" rows="${escapeHtml(item.rows ?? 6)}" maxlength="${escapeHtml(item.maxLength ?? 6000)}" data-question-input="${item.id}"${hintData}>${escapeHtml(hintedValue)}</textarea>`;
       case 'text':
       default:
         return `<input class="answer-input${hintClass}" type="text" value="${escapeHtml(hintedValue)}" data-question-input="${item.id}"${hintData}>`;
@@ -5860,12 +5862,17 @@
   }
 
   function renderTaskWorkspaceAction(item, event) {
-    if (!item.actionView || !item.actionLabel) return '';
-    if (item.actionView === 'event-status' || item.actionType === 'manage-event-status') {
+    const actions = [];
+    if (item.actionView && item.actionLabel && (item.actionView === 'event-status' || item.actionType === 'manage-event-status')) {
       if (item.completionMode === 'event-status-decision' && eventStatusDecisionIsSatisfied(item, event)) return '';
-      return `<button type="button" class="button button-primary task-workspace-action" data-task-manage-event-status="${escapeHtml(event?.id ?? '')}" data-event-status-prefill="${escapeHtml(item.actionStatus || 'confirmed')}">${escapeHtml(item.actionLabel)}</button>`;
+      actions.push(`<button type="button" class="button button-primary task-workspace-action" data-task-manage-event-status="${escapeHtml(event?.id ?? '')}" data-event-status-prefill="${escapeHtml(item.actionStatus || 'confirmed')}">${escapeHtml(item.actionLabel)}</button>`);
+    } else if (item.actionView && item.actionLabel) {
+      actions.push(`<button type="button" class="button button-secondary task-workspace-action" data-task-workspace-view="${escapeHtml(item.actionView)}" data-task-workspace-event-id="${escapeHtml(event?.id ?? '')}">${escapeHtml(item.actionLabel)}</button>`);
     }
-    return `<button type="button" class="button button-secondary task-workspace-action" data-task-workspace-view="${escapeHtml(item.actionView)}" data-task-workspace-event-id="${escapeHtml(event?.id ?? '')}">${escapeHtml(item.actionLabel)}</button>`;
+    if (item.secondaryActionView && item.secondaryActionLabel) {
+      actions.push(`<button type="button" class="button button-secondary task-workspace-action" data-task-workspace-view="${escapeHtml(item.secondaryActionView)}" data-task-workspace-event-id="${escapeHtml(event?.id ?? '')}">${escapeHtml(item.secondaryActionLabel)}</button>`);
+    }
+    return actions.join('');
   }
 
   function renderTaskStatusDecisionDelivery(item, event) {

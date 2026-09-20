@@ -12,6 +12,38 @@ namespace BOTGC.EventPlaybook.Web.Tests.Services;
 public sealed class EventBriefingServiceTests
 {
     [Fact]
+    public async Task GenerateAsync_FallbackTurnsRecordedDutyAllocationsIntoStaffBriefingActions()
+    {
+        var service = CreateService();
+        var request = Request(
+            Answer("staffing-coordinator", "Food & Beverage Manager", "Staffing"),
+            Answer("event-day-lead", "Alex Morgan", "Staffing"),
+            Answer(
+                "event-day-duty-allocations",
+                "Before event — Front of House / Jamie — Set out theatre-style seating facing the top table.\nDuring event — Bar / Sam — Keep the service point staffed until 22:30.\nAfter event — Late Front of House / Taylor — Return the room to its normal layout and lock up.",
+                "Staffing"),
+            Answer("staff-briefing-comments", "Board members need water at the top table before doors open.", "Staffing"));
+
+        var result = await service.GenerateAsync(request, CancellationToken.None);
+
+        Assert.Contains(result.KeyInformation, fact =>
+            fact.Label == "Staffing coordinator" && fact.Value == "Food & Beverage Manager");
+        Assert.Contains(result.KeyInformation, fact =>
+            fact.Label == "Event-day lead" && fact.Value == "Alex Morgan");
+        Assert.Contains(result.StaffBriefing.Preparation, action =>
+            action.Audience == "Front of House / Jamie"
+            && action.Instruction.Contains("theatre-style seating", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(result.StaffBriefing.EventDay, action =>
+            action.Audience == "Bar / Sam"
+            && action.Instruction.Contains("22:30", StringComparison.Ordinal));
+        Assert.Contains(result.StaffBriefing.Afterwards, action =>
+            action.Audience == "Late Front of House / Taylor"
+            && action.Instruction.Contains("lock up", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(result.StaffBriefing.ImportantNotes, note =>
+            note.Contains("water at the top table", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
     public async Task GenerateAsync_FallbackIncludesFoodServiceOwnerAndScoringResilience()
     {
         var service = CreateService();

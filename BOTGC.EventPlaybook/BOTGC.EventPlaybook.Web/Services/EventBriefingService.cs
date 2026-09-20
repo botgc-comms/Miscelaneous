@@ -25,6 +25,10 @@ public sealed class EventBriefingService(
     private const string FoodServiceSelfServiceSupervisorQuestionId = "food-service-self-service-supervisor";
     private const string ResultsTechnologyDependentQuestionId = "golf-results-technology-dependent";
     private const string ResultsTechnologyPlanQuestionId = "golf-results-technology-plan";
+    private const string StaffingCoordinatorQuestionId = "staffing-coordinator";
+    private const string EventDayLeadQuestionId = "event-day-lead";
+    private const string EventDayDutyAllocationsQuestionId = "event-day-duty-allocations";
+    private const string StaffBriefingCommentsQuestionId = "staff-briefing-comments";
     private const int MaximumKeyFacts = 10;
     private const int MaximumPreparationActions = 18;
     private const int MaximumEventDayActions = 18;
@@ -88,6 +92,8 @@ public sealed class EventBriefingService(
                 "Use operationalStaffDuties as the only source of task-based staff actions. You may turn confirmed planning answers or settled task-note outcomes into concise information for the relevant team—for example recorded covers, meal choices or bar hours—but never convert an unclassified planning task title into a staff instruction.",
                 "Preparation means immediate setup and shift readiness shortly before guests arrive, not planning work performed days or weeks earlier. Event-day means service and delivery while the event is running. Afterwards means close-down and immediate reconciliation.",
                 "Each staff action must name the team or role that needs it and give a direct practical instruction. Do not include project deadlines, task completion labels or instructions to prepare the briefing itself.",
+                "The recorded event-day duty allocations are authoritative staff instructions. Preserve the named person or role and place each line into preparation, event-day delivery or close-down according to its recorded phase.",
+                "Include special staff-briefing comments as operational context without turning them into invented duties.",
                 "The staff introduction should summarise what staff need to know about the event. Where supplied, include covers, meal choices, food-service and bar timings, room use and the event start and finish.",
                 "Always state a recorded food-service arrangement and the named person responsible for operating or supervising it. For an 'other' arrangement, use its supplied description rather than the generic option label. Do not treat a statement that no additional catering staff are needed as proof that food is self-service.",
                 "If self-service will involve juniors or hot-holding equipment, the event-day instruction must explicitly name the recorded adult supervisor. If none is recorded, identify that as an immediate operational uncertainty.",
@@ -340,6 +346,7 @@ public sealed class EventBriefingService(
             answers,
             result.StaffBriefing.Preparation,
             result.StaffBriefing.EventDay,
+            result.StaffBriefing.Afterwards,
             result.StaffBriefing.ImportantNotes);
         return result;
     }
@@ -394,7 +401,7 @@ public sealed class EventBriefingService(
             .ToList();
         var important = new List<string>();
         if (!string.IsNullOrWhiteSpace(request.StatusReason)) important.Insert(0, $"Status note: {request.StatusReason}");
-        AddOperationalStaffActions(request.Answers, preparation, eventDay, important);
+        AddOperationalStaffActions(request.Answers, preparation, eventDay, afterwards, important);
 
         return new EventBriefingResult
         {
@@ -511,6 +518,8 @@ public sealed class EventBriefingService(
         var operationalFacts = new List<EventBriefingFact>();
         AddFact(operationalFacts, "Food service arrangement", FoodServiceArrangement(answers));
         AddFact(operationalFacts, "Food service lead", Answer(answers, FoodServiceOwnerQuestionId));
+        AddFact(operationalFacts, "Staffing coordinator", Answer(answers, StaffingCoordinatorQuestionId));
+        AddFact(operationalFacts, "Event-day lead", Answer(answers, EventDayLeadQuestionId));
 
         var selfServiceRisk = Answer(answers, FoodServiceSelfServiceRiskQuestionId);
         if (!string.IsNullOrWhiteSpace(selfServiceRisk))
@@ -538,6 +547,8 @@ public sealed class EventBriefingService(
             .Select(fact => fact.Label)
             .Append("Food service arrangement")
             .Append("Food service lead")
+            .Append("Staffing coordinator")
+            .Append("Event-day lead")
             .Append("Self-service safeguard")
             .Append("Scoring technology dependency")
             .Append("Scoring technology and fallback")
@@ -552,6 +563,7 @@ public sealed class EventBriefingService(
         IReadOnlyCollection<EventBriefingAnswer> answers,
         List<StaffBriefingAction> preparation,
         List<StaffBriefingAction> eventDay,
+        List<StaffBriefingAction> afterwards,
         List<string> importantNotes)
     {
         var serviceArrangement = FoodServiceArrangement(answers);
@@ -623,9 +635,83 @@ public sealed class EventBriefingService(
             InsertUnique(importantNotes, "Scoring or results depend on technology, but no tested setup and fallback plan has been recorded.");
         }
 
+        AddRecordedDutyAllocations(
+            Answer(answers, EventDayDutyAllocationsQuestionId),
+            preparation,
+            eventDay,
+            afterwards);
+        var briefingComments = Answer(answers, StaffBriefingCommentsQuestionId);
+        if (!string.IsNullOrWhiteSpace(briefingComments))
+        {
+            InsertUnique(importantNotes, briefingComments);
+        }
+
         TrimTo(preparation, MaximumPreparationActions);
         TrimTo(eventDay, MaximumEventDayActions);
+        TrimTo(afterwards, 12);
         TrimTo(importantNotes, MaximumImportantNotes);
+    }
+
+    private static void AddRecordedDutyAllocations(
+        string value,
+        List<StaffBriefingAction> preparation,
+        List<StaffBriefingAction> eventDay,
+        List<StaffBriefingAction> afterwards)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return;
+
+        var lines = value.Replace("\r", string.Empty, StringComparison.Ordinal)
+            .Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        foreach (var line in lines)
+        {
+            var parts = line.Split(['—', '–', '|'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            var target = eventDay;
+            var offset = 0;
+            if (parts.Length > 0)
+            {
+                var phase = parts[0];
+                if (StartsWithAny(phase, "before", "setup", "preparation"))
+                {
+                    target = preparation;
+                    offset = 1;
+                }
+                else if (StartsWithAny(phase, "after", "close-down", "close down", "closing"))
+                {
+                    target = afterwards;
+                    offset = 1;
+                }
+                else if (StartsWithAny(phase, "during", "event day", "event-day", "on the day"))
+                {
+                    target = eventDay;
+                    offset = 1;
+                }
+            }
+
+            var audience = parts.Length - offset >= 2 ? parts[offset] : "Event team";
+            var instruction = parts.Length - offset >= 2
+                ? string.Join(" — ", parts.Skip(offset + 1))
+                : parts.Length > offset ? parts[offset] : line;
+            if (string.IsNullOrWhiteSpace(instruction)) continue;
+            AddUniqueAction(target, audience, instruction);
+        }
+    }
+
+    private static bool StartsWithAny(string value, params string[] prefixes) =>
+        prefixes.Any(prefix => value.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
+
+    private static void AddUniqueAction(
+        List<StaffBriefingAction> actions,
+        string audience,
+        string instruction)
+    {
+        if (actions.Any(action =>
+                action.Audience.Equals(audience, StringComparison.OrdinalIgnoreCase)
+                && action.Instruction.Equals(instruction, StringComparison.OrdinalIgnoreCase))) return;
+        actions.Add(new StaffBriefingAction
+        {
+            Audience = audience,
+            Instruction = instruction
+        });
     }
 
     private static string FoodServiceArrangement(IReadOnlyCollection<EventBriefingAnswer> answers)

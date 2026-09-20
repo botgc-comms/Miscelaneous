@@ -6,6 +6,64 @@ namespace BOTGC.EventPlaybook.Web.Tests.Configuration;
 public sealed class PlaybookConfigurationTests
 {
     [Fact]
+    public void StaffingBuildsOneOwnedDutyPlanAndAlwaysProducesABriefing()
+    {
+        var solutionRoot = FindSolutionRoot();
+        var dataPath = Path.Combine(solutionRoot, "BOTGC.EventPlaybook.Web", "Data", "event-playbook.json");
+        var publicPath = Path.Combine(solutionRoot, "BOTGC.EventPlaybook.Web", "wwwroot", "event-playbook.json");
+        var dataJson = File.ReadAllText(dataPath);
+
+        Assert.Equal(dataJson, File.ReadAllText(publicPath));
+
+        using var document = JsonDocument.Parse(dataJson);
+        var root = document.RootElement;
+        var additionalDuties = FindItem(root, "specific-jobs-required");
+        Assert.Contains("additional", additionalDuties.GetProperty("label").GetString(), StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(
+            additionalDuties.GetProperty("planningContext").GetProperty("fields").EnumerateArray(),
+            field => field.GetProperty("questionId").GetString() == "seating-layout");
+
+        var allocations = FindItem(root, "event-day-duty-allocations");
+        Assert.Equal("textarea", allocations.GetProperty("answerType").GetString());
+        Assert.True(allocations.GetProperty("required").GetBoolean());
+
+        var dutyTask = FindItem(root, "roles-task");
+        Assert.False(dutyTask.TryGetProperty("showWhen", out _));
+        Assert.Equal("staffing-coordinator", dutyTask.GetProperty("ownerFromQuestionId").GetString());
+        Assert.Equal("module:staffing", dutyTask.GetProperty("actionView").GetString());
+        Assert.Equal("briefing", dutyTask.GetProperty("secondaryActionView").GetString());
+        Assert.Contains(
+            dutyTask.GetProperty("reviewSummary").GetProperty("fields").EnumerateArray(),
+            field => field.GetProperty("questionId").GetString() == "event-day-duty-allocations");
+
+        Assert.False(ContainsItem(root, "staff-briefing-required"));
+        var briefingComments = FindItem(root, "staff-briefing-comments");
+        Assert.Equal("textarea", briefingComments.GetProperty("answerType").GetString());
+        Assert.False(briefingComments.GetProperty("required").GetBoolean());
+
+        var briefingTask = FindItem(root, "staff-briefing-task");
+        Assert.False(briefingTask.TryGetProperty("showWhen", out _));
+        Assert.Equal("staffing-coordinator", briefingTask.GetProperty("ownerFromQuestionId").GetString());
+        Assert.Equal("briefing", briefingTask.GetProperty("actionView").GetString());
+
+        foreach (var taskId in new[]
+                 {
+                     "event-lead-task", "roles-task", "staff-briefing-task", "arrange-additional-event-staff",
+                     "confirm-event-rotas", "resolve-event-cover-gaps", "resolve-staffing-contingency",
+                     "arrange-event-opening-cover", "arrange-event-lock-up-cover"
+                 })
+        {
+            Assert.Equal("staffing-coordinator", FindItem(root, taskId).GetProperty("ownerFromQuestionId").GetString());
+        }
+
+        var lockUp = FindItem(root, "event-lock-up-arrangement");
+        Assert.Contains(
+            lockUp.GetProperty("options").EnumerateArray(),
+            option => option.GetProperty("value").GetString() == "handover-to-duty-closer"
+                      && option.GetProperty("label").GetString()!.Contains("Front of House", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
     public void CloseDownPlanSurfacesPriorSetupAndRequiresNamedOwnership()
     {
         var solutionRoot = FindSolutionRoot();

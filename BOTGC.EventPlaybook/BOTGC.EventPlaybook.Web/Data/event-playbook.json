@@ -4994,31 +4994,90 @@
               },
               "source": "refined",
               "responsibleArea": "Event Coordination",
-              "defaultOwnerRoleId": "event-coordinator"
+              "defaultOwnerRoleId": "event-coordinator",
+              "ownerFromQuestionId": "staffing-coordinator"
             },
             {
               "id": "specific-jobs-required",
               "type": "question",
               "answerType": "yesNo",
-              "label": "Are there specific arrival, setup, registration, service, presentation or close-down jobs that must be allocated?",
-              "helpText": "This records what each person must do. The staffing and rota questions separately confirm who is attending and when.",
-              "example": "Staff the registration desk, meet an entertainer, manage a presentation, clear decorations or hand over to the closing keyholder.",
+              "label": "Are there any additional arrival, setup, registration, service, presentation or close-down duties that have not already been identified elsewhere in the plan?",
+              "helpText": "Room setup, food service, golf, entertainment, admission and close-down duties already created by earlier answers are shown below and do not need to be entered again. Choose Yes only for an additional duty.",
+              "example": "An extra person must meet the entertainer, manage a registration desk or supervise a presentation handover.",
+              "planningContext": {
+                "title": "Operational duties already identified by the event plan",
+                "description": "These arrangements are inherited from earlier answers and must be covered in the duty allocation; do not recreate them here.",
+                "emptyText": "No operational setup or service duties have been identified from earlier answers yet.",
+                "footerText": "The staffing coordinator must allocate these inherited duties as well as any additional duties recorded below.",
+                "fields": [
+                  { "questionId": "clubhouse-areas", "label": "Rooms or areas to prepare" },
+                  { "questionId": "seating-setup-required", "label": "Seating setup", "trueText": "Event-specific seating must be laid out or rearranged" },
+                  { "questionId": "seating-layout", "label": "Seating layout" },
+                  { "questionId": "seating-layout-notes", "label": "Layout instructions" },
+                  { "questionId": "top-table-required", "label": "Top or board table", "trueText": "A top or board table must be prepared" },
+                  { "questionId": "top-table-seat-count", "label": "Top-table seats" },
+                  { "questionId": "prize-table-required", "label": "Prize display", "trueText": "A prize or trophy table must be prepared" },
+                  { "questionId": "room-theme", "label": "Room dressing", "trueText": "The room must be dressed or decorated" },
+                  { "questionId": "arrival-direction-signage", "label": "Arrival or registration signage", "trueText": "Arrival or registration signage must be positioned" },
+                  { "questionId": "food-service-arrangement", "label": "Food service arrangement" },
+                  { "questionId": "food-service-owner", "label": "Food service owner" },
+                  { "questionId": "bar-service-required", "label": "Bar service", "trueText": "Event-specific bar service is required" },
+                  { "questionId": "door-admission-process", "label": "Admission or registration desk" },
+                  { "questionId": "entertainment-space-requirements", "label": "Entertainment setup", "excludeValues": ["standard"] },
+                  { "questionId": "event-opening-arrangement", "label": "Opening arrangement", "excludeValues": ["normal-opening-cover"] },
+                  { "questionId": "event-lock-up-arrangement", "label": "Closing and lock-up" }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "additional-event-day-duty-details",
+              "type": "question",
+              "answerType": "textarea",
+              "label": "What additional duties must be added to the event-day duty list?",
+              "helpText": "Record only work that is not already shown in the inherited plan above. Include when and where each duty happens.",
+              "example": "During event — Peacock Lounge — Meet the speaker at 18:30 and show them to the presentation area.",
+              "showWhen": {
+                "all": [
+                  { "questionId": "specific-jobs-required", "operator": "equals", "value": true }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "event-day-duty-allocations",
+              "type": "question",
+              "answerType": "textarea",
+              "label": "Who will carry out each inherited and additional staff duty?",
+              "helpText": "Create the usable duty list here. Use one line per duty in the format: Before event, During event or After event — named person or role — practical instruction. Cover every relevant arrangement shown above.",
+              "example": "Before event — Front of House / Alex — Set out theatre-style seating facing the rear of the room.\nAfter event — Late Front of House / Sam — Return the room to its normal layout and complete lock-up.",
               "required": true,
               "source": "refined"
             },
             {
               "id": "roles-task",
               "type": "task",
-              "title": "Create the event-day duty list and assign every named job to an individual",
-              "detail": "List each practical duty, when and where it happens, who owns it and who they report to. This duty list complements the staff rota rather than replacing it.",
+              "title": "Review the inherited duties and assign every event-day job to a named person or role",
+              "detail": "Use the duties already created by the Clubhouse, food, golf, entertainment, admission and close-down answers, add any genuinely additional work, and record who will carry out every duty. The recorded allocation feeds the staff briefing and complements the rota rather than replacing it.",
               "deadlineCode": "B1",
-              "showWhen": {
-                "all": [
-                  {
-                    "questionId": "specific-jobs-required",
-                    "operator": "equals",
-                    "value": true
-                  }
+              "ownerFromQuestionId": "staffing-coordinator",
+              "actionView": "module:staffing",
+              "actionLabel": "Review duty allocations",
+              "secondaryActionView": "briefing",
+              "secondaryActionLabel": "Open briefing summary",
+              "reviewSummary": {
+                "title": "Event-day duties and named allocations",
+                "instruction": "The staffing coordinator must check the inherited plan, add any missing duty and confirm that every practical duty has a named person or role. Reassign this task only by changing the staffing coordinator answer.",
+                "confirmLabel": "Confirm duty allocations",
+                "confirmedLabel": "Duty allocations confirmed",
+                "fields": [
+                  { "questionId": "staffing-coordinator", "label": "Staffing coordinator", "emptyText": "Choose who coordinates staffing" },
+                  { "questionId": "event-day-lead", "label": "Event-day lead", "required": false, "notApplicableText": "Event-day lead is still being arranged" },
+                  { "questionId": "specific-jobs-required", "label": "Additional duties beyond the inherited plan" },
+                  { "questionId": "additional-event-day-duty-details", "label": "Additional duties", "required": false, "notApplicableText": "No additional duties identified" },
+                  { "questionId": "event-day-duty-allocations", "label": "Named duty allocations", "emptyText": "Record who will carry out every inherited and additional duty" }
                 ]
               },
               "source": "expanded",
@@ -5026,25 +5085,33 @@
               "defaultOwnerRoleId": "event-coordinator"
             },
             {
-              "id": "staff-briefing-required",
+              "id": "staff-briefing-comments",
               "type": "question",
-              "answerType": "yesNo",
-              "label": "Is a formal staff or volunteer briefing required?",
-              "required": true,
-              "source": "expanded"
+              "answerType": "textarea",
+              "label": "Are there any special or additional comments that staff need in the event briefing?",
+              "helpText": "A staff briefing is always produced. Use this only for event-specific context, warnings or handover information that is not already captured by the duty allocations and other planning answers.",
+              "example": "The organiser will make the welcome at 19:00; direct any accessibility questions to the event-day lead.",
+              "required": false,
+              "source": "refined"
             },
             {
               "id": "staff-briefing-task",
               "type": "task",
-              "title": "Prepare and issue the final event briefing with timings, roles, contacts and contingency arrangements",
+              "title": "Review and issue the final staff briefing with timings, duties, named contacts and contingency arrangements",
               "deadlineCode": "B1",
-              "showWhen": {
-                "all": [
-                  {
-                    "questionId": "staff-briefing-required",
-                    "operator": "equals",
-                    "value": true
-                  }
+              "detail": "Open the Briefing Summary, check that inherited operational arrangements and the named duty allocations are represented correctly, add any special briefing comments and issue the final version to the affected staff and volunteers.",
+              "ownerFromQuestionId": "staffing-coordinator",
+              "actionView": "briefing",
+              "actionLabel": "Open briefing summary",
+              "reviewSummary": {
+                "title": "Staff briefing readiness",
+                "instruction": "The staffing coordinator confirms that the briefing reflects the recorded duty list and has been issued to the people delivering the event.",
+                "confirmLabel": "Confirm briefing issued",
+                "confirmedLabel": "Staff briefing issued",
+                "fields": [
+                  { "questionId": "staffing-coordinator", "label": "Staffing coordinator", "emptyText": "Choose who owns the staff briefing" },
+                  { "questionId": "event-day-duty-allocations", "label": "Named duty allocations", "emptyText": "Complete the event-day duty list first" },
+                  { "questionId": "staff-briefing-comments", "label": "Additional briefing comments", "required": false, "notApplicableText": "No additional comments recorded" }
                 ]
               },
               "source": "expanded",
@@ -5119,6 +5186,7 @@
               },
               "responsibleArea": "Event Coordination",
               "defaultOwnerRoleId": "event-coordinator",
+              "ownerFromQuestionId": "staffing-coordinator",
               "source": "refined"
             },
             {
@@ -5144,6 +5212,7 @@
               },
               "responsibleArea": "Event Coordination",
               "defaultOwnerRoleId": "event-coordinator",
+              "ownerFromQuestionId": "staffing-coordinator",
               "source": "refined"
             },
             {
@@ -5173,6 +5242,7 @@
               },
               "responsibleArea": "Event Coordination",
               "defaultOwnerRoleId": "event-coordinator",
+              "ownerFromQuestionId": "staffing-coordinator",
               "source": "refined"
             },
             {
@@ -5197,6 +5267,7 @@
               },
               "responsibleArea": "Event Coordination",
               "defaultOwnerRoleId": "event-coordinator",
+              "ownerFromQuestionId": "staffing-coordinator",
               "source": "refined"
             }
           ]
@@ -5252,6 +5323,7 @@
               },
               "responsibleArea": "Clubhouse",
               "defaultOwnerRoleId": "clubhouse",
+              "ownerFromQuestionId": "staffing-coordinator",
               "source": "refined"
             },
             {
@@ -5280,10 +5352,10 @@
               "type": "question",
               "answerType": "singleChoice",
               "label": "What final closing and lock-up arrangement applies to this event?",
-              "helpText": "The answer must cover the period after guests leave while cash, equipment, cleaning or room close-down is still taking place.",
+              "helpText": "The answer must cover the period after guests leave while cash, equipment, cleaning or room close-down is still taking place. In most cases this will be the final Front of House team member on duty.",
               "options": [
-                { "value": "event-keyholder", "label": "The event keyholder will complete final lock-up" },
-                { "value": "handover-to-duty-closer", "label": "The event team will hand over to the later duty closer" },
+                { "value": "event-keyholder", "label": "A named event keyholder will remain and complete final lock-up" },
+                { "value": "handover-to-duty-closer", "label": "The event team will hand over to the final Front of House team member on duty" },
                 { "value": "needs-arranging", "label": "Closing and lock-up still need arranging" }
               ],
               "showWhen": {
@@ -5299,8 +5371,8 @@
               "type": "question",
               "answerType": "assignment",
               "assignmentMode": "person",
-              "label": "Who has final responsibility for closing and locking up?",
-              "helpText": "Choose the authorised person who will remain until the event team has finished or accepted the formal handover.",
+              "label": "Who will be the final Front of House closer or event keyholder?",
+              "helpText": "Choose the authorised person who will remain until close-down is finished, or who will accept the formal handover from the event team.",
               "showWhen": {
                 "all": [
                   { "questionId": "event-lock-up-arrangement", "operator": "in", "value": ["event-keyholder", "handover-to-duty-closer"] }
@@ -5322,6 +5394,7 @@
               },
               "responsibleArea": "Clubhouse",
               "defaultOwnerRoleId": "clubhouse",
+              "ownerFromQuestionId": "staffing-coordinator",
               "source": "refined"
             },
             {
