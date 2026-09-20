@@ -64,7 +64,7 @@ public sealed class PlaybookConfigurationTests
     }
 
     [Fact]
-    public void CloseDownPlanSurfacesPriorSetupAndRequiresNamedOwnership()
+    public void CloseDownPlanSurfacesPriorSetupAndAcceptsPersonOrDutyTeamOwnership()
     {
         var solutionRoot = FindSolutionRoot();
         var dataPath = Path.Combine(solutionRoot, "BOTGC.EventPlaybook.Web", "Data", "event-playbook.json");
@@ -93,7 +93,8 @@ public sealed class PlaybookConfigurationTests
 
         var lead = FindItem(root, "close-down-lead");
         Assert.Equal("assignment", lead.GetProperty("answerType").GetString());
-        Assert.Equal("person", lead.GetProperty("assignmentMode").GetString());
+        Assert.Equal("personOrRole", lead.GetProperty("assignmentMode").GetString());
+        Assert.Contains("Clubhouse / House Team", lead.GetProperty("helpText").GetString());
         Assert.True(lead.GetProperty("required").GetBoolean());
 
         var task = FindItem(root, "general-close-down-task");

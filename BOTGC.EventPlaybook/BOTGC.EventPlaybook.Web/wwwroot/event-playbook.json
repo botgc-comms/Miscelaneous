@@ -5667,9 +5667,10 @@
               "id": "close-down-lead",
               "type": "question",
               "answerType": "assignment",
-              "assignmentMode": "person",
-              "label": "Who will coordinate and sign off the close-down on the day?",
-              "helpText": "Choose the named person who will check the selected actions, coordinate departmental handovers and report anything still outstanding.",
+              "assignmentMode": "personOrRole",
+              "label": "Who or which duty team will complete and sign off the close-down?",
+              "helpText": "Choose a named person only when one has specifically accepted responsibility. If the staff rostered at the end of the event will reset the room and complete the normal close-down, choose Clubhouse / House Team.",
+              "example": "Clubhouse / House Team — the Front of House staff on the closing shift will reset the room and report anything outstanding.",
               "showWhen": { "all": [{ "questionId": "general-close-down-required", "operator": "equals", "value": true }] },
               "required": true,
               "source": "refined"
@@ -5692,7 +5693,7 @@
               },
               "reviewSummary": {
                 "title": "Agreed close-down plan",
-                "instruction": "The named close-down lead coordinates the specialist teams and signs this off only when the selected actions and handovers are complete.",
+                "instruction": "The recorded person or duty team coordinates the specialist work and signs this off only when the selected actions and handovers are complete.",
                 "confirmLabel": "Sign off close-down",
                 "confirmedLabel": "Close-down completed and signed off",
                 "fields": [
@@ -5700,7 +5701,7 @@
                   { "questionId": "close-down-plan-details", "label": "Required end state", "emptyText": "Record what the close-down team must do" },
                   { "questionId": "additional-close-down-required", "label": "Additional clear-up needed", "emptyText": "Confirm whether anything else is required" },
                   { "questionId": "additional-close-down-details", "label": "Additional work", "notApplicableText": "No additional work identified" },
-                  { "questionId": "close-down-lead", "label": "Close-down lead", "emptyText": "Choose the person responsible on the day" }
+                  { "questionId": "close-down-lead", "label": "Close-down responsibility", "emptyText": "Choose the person or duty team responsible at the end of the event" }
                 ]
               },
               "source": "refined",
@@ -5709,7 +5710,7 @@
               "staffBriefing": {
                 "phase": "after-event",
                 "audience": "Event close-down team",
-                "instruction": "Follow the agreed close-down scope and end-state instructions, complete each departmental handover and report anything outstanding to the named close-down lead."
+                "instruction": "Follow the agreed close-down scope and end-state instructions, complete each departmental handover and report anything outstanding to the recorded person or closing duty team."
               }
             },
             {
