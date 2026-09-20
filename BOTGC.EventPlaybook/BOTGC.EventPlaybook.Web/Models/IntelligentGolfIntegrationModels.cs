@@ -13,6 +13,36 @@ public sealed class PlaybookEventIntegrationSnapshot
     public string? LifecycleStatus { get; init; }
     public string? GroupId { get; init; } = "151";
     public string GroupName { get; init; } = "BOTGC Event Planner";
+    public bool IntelligentGolfTicketsRequested { get; init; }
+    public IntelligentGolfTicketConfiguration? IntelligentGolfTickets { get; init; }
+    public string? IntelligentGolfTicketValidationError { get; init; }
+}
+
+public sealed class IntelligentGolfTicketConfiguration
+{
+    public int MaximumTickets { get; init; }
+    public bool AllowMembersOnline { get; init; }
+    public int? MaximumTicketsPerMember { get; init; }
+    public bool RequireMemberGuestDetails { get; init; }
+    public bool MembersPaymentDueOnEntry { get; init; }
+    public bool AllowVisitorsOnline { get; init; }
+    public int? MaximumTicketsPerVisitor { get; init; }
+    public bool AddOptions { get; init; }
+    public IReadOnlyList<IntelligentGolfTicketType> TicketTypes { get; init; } = [];
+}
+
+public sealed class IntelligentGolfTicketType
+{
+    public required string Name { get; init; }
+    public decimal Price { get; init; }
+}
+
+public sealed class IntelligentGolfTicketSynchroniseResult
+{
+    public required string EventPlaybookEventId { get; init; }
+    public int IntelligentGolfEventId { get; init; }
+    public int TicketTypeCount { get; init; }
+    public DateTimeOffset SynchronisedAtUtc { get; init; }
 }
 
 public sealed class IntelligentGolfIntegrationLink

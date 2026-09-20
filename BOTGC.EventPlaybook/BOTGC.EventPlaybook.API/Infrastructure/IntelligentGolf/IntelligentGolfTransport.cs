@@ -266,7 +266,9 @@ public sealed class IntelligentGolfTransport(
                 System.Text.RegularExpressions.RegexOptions.IgnoreCase);
             if (eventId.Success)
             {
-                builder.Query = $"eventid={eventId.Groups[1].Value}";
+                var query = $"eventid={eventId.Groups[1].Value}";
+                if (TryGetQueryParameter(requestUri.Query, "tab", out var tab)) query += $"&tab={tab}";
+                builder.Query = query;
             }
         }
         else if (requestUri.AbsolutePath.EndsWith("/eventview.php", StringComparison.OrdinalIgnoreCase) &&

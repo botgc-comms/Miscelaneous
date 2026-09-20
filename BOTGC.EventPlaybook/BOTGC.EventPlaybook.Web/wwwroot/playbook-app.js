@@ -1341,6 +1341,24 @@
     return saved;
   }
 
+  async function flushSharedState() {
+    if (!sharedStateReady) return false;
+    if (sharedStateSaveTimer) {
+      clearTimeout(sharedStateSaveTimer);
+      sharedStateSaveTimer = null;
+    }
+    const timeoutAt = Date.now() + 10_000;
+    while (sharedStateSaveInFlight && Date.now() < timeoutAt) {
+      await new Promise(resolve => setTimeout(resolve, 25));
+    }
+    if (sharedStateSaveInFlight) return false;
+    if (sharedStateSaveTimer) {
+      clearTimeout(sharedStateSaveTimer);
+      sharedStateSaveTimer = null;
+    }
+    return persistSharedState();
+  }
+
   async function pollSharedState() {
     if (!sharedStateReady || sharedStateSaveInFlight) return;
     if (document.activeElement?.matches?.('input, textarea, select, [contenteditable="true"]')) return;
@@ -2148,7 +2166,12 @@
   }
 
   function isItemVisible(item, event) {
-    return item?.assistantDisabled !== true && conditionMatches(item.showWhen, event) && handoverIsRequired(item, event);
+    const requiredPluginEnabled = !item?.requiresPlugin ||
+      (item.requiresPlugin === 'intelligentGolf' && pluginCapabilities.intelligentGolfEnabled) ||
+      (item.requiresPlugin === 'monday' && pluginCapabilities.mondayEnabled) ||
+      (item.requiresPlugin === 'yodeck' && pluginCapabilities.yodeckEnabled);
+    return item?.assistantDisabled !== true && requiredPluginEnabled &&
+      conditionMatches(item.showWhen, event) && handoverIsRequired(item, event);
   }
 
   function taskStateShowsBriefingOrCommitment(taskState) {
@@ -2927,7 +2950,8 @@
   function markTaskComplete(event, item, completed) {
     const taskState = ensureTaskState(event, item.id);
     if (taskState.notRelevant === true) return false;
-    if (item.completionMode === 'event-status-decision') return false;
+    if (item.completionMode === 'event-status-decision' ||
+        (item.completionMode === 'intelligent-golf-ticket-sync' && completed)) return false;
     if (completed && isTaskExpired(item, event, taskState)) return false;
     const review = taskReviewState(item, event);
     if (completed && review && !review.ready) return false;
@@ -3320,6 +3344,12 @@
     if (item.answerType === 'assignment') return assignmentDisplay(value, 'Not assigned');
     const options = Array.isArray(item.options) ? item.options : [];
     const optionLabel = candidate => options.find(option => option.value === candidate)?.label ?? candidate;
+    if (item.answerType === 'ticketTypes' && Array.isArray(value)) {
+      return value
+        .filter(entry => entry && String(entry.name ?? '').trim())
+        .map(entry => `${String(entry.name).trim()} — £${Number(entry.price || 0).toFixed(2)}`)
+        .join('; ');
+    }
     if (Array.isArray(value)) return value.map(optionLabel).join(', ');
     if (value && typeof value === 'object') {
       if (value.start || value.end) return [value.start, value.end].filter(Boolean).join(' to ');
@@ -3372,7 +3402,7 @@
       const notRelevant = Boolean(question && isQuestionNotRelevant(event, field.questionId));
       const hasAnswer = notRelevant || Boolean(question && isAnsweredValue(value) && (
         question.answerType !== 'assignment' || assignmentDisplay(value, '').trim()
-      ));
+      ) && (question.answerType !== 'ticketTypes' || validTicketTypesAnswer(value)));
       const required = field.required === undefined
         ? question?.required !== false
         : field.required !== false;
@@ -3521,16 +3551,24 @@
     const expiresOn = getTaskExpiryDate(item, event);
     const expired = isTaskExpired(item, event, taskState, expiresOn);
     const statusManaged = item.completionMode === 'event-status-decision';
-    const actionRequired = statusManaged && !completed && !expired;
-    const blocked = expired || statusManaged || Boolean(review && !completed && !review.ready);
+    const integrationManaged = item.completionMode === 'intelligent-golf-ticket-sync';
+    const actionRequired = (statusManaged || integrationManaged) && !completed && !expired;
+    const blocked = expired || statusManaged || integrationManaged || Boolean(review && !completed && !review.ready);
     return {
       review,
       blocked,
       expired,
       expiresOn,
       statusManaged,
+      integrationManaged,
       actionRequired,
-      title: statusManaged
+      title: integrationManaged
+        ? completed
+          ? 'The Intelligent Golf ticket configuration has been verified'
+          : review && !review.ready
+            ? `Complete ${review.missing.length} missing ticket answer${review.missing.length === 1 ? '' : 's'} first`
+            : 'Use the Intelligent Golf action to configure and verify the tickets'
+        : statusManaged
         ? completed
           ? 'Completion is controlled by the recorded event-status decision'
           : expired
@@ -3545,7 +3583,9 @@
         : blocked
           ? `Complete ${review.missing.length} missing Event control answer${review.missing.length === 1 ? '' : 's'} first`
           : (review?.config.confirmLabel || 'Mark task complete'),
-      label: statusManaged
+      label: integrationManaged
+        ? completed ? 'Configured' : 'Use IG action'
+        : statusManaged
         ? completed ? 'Recorded' : expired ? 'Expired' : 'Use status'
         : completed
         ? (review ? 'Confirmed' : 'Complete')
@@ -3590,7 +3630,7 @@
             ? '<span class="task-review-confirmed">— Expired</span>'
             : completed
             ? `<span class="task-review-confirmed">✓ ${escapeHtml(review.config.confirmedLabel || 'Confirmed')}</span>`
-            : showCompletionAction
+            : showCompletionAction && item.completionMode !== 'intelligent-golf-ticket-sync'
               ? `<button type="button" class="button button-primary" data-task-confirm="${escapeHtml(item.id)}" data-task-confirm-event-id="${escapeHtml(event.id)}" ${review.ready ? '' : 'disabled'}>${escapeHtml(confirmText)}</button>`
               : ''}
         </div>
@@ -5959,6 +5999,20 @@
           <label><span>Last tee time</span><input class="answer-input${hintClass}" type="time" value="${escapeHtml(range.end ?? '')}" data-time-range-question-id="${item.id}" data-time-range-part="end"${hintData}></label>
         </div>`;
       }
+      case 'ticketTypes': {
+        const rows = Array.isArray(value) && value.length
+          ? value
+          : [{ name: '', price: '' }];
+        return `<div class="ticket-types-answer" data-ticket-types-question="${escapeHtml(item.id)}">
+          <div class="ticket-types-heading"><span>Ticket name</span><span>Price</span><span></span></div>
+          ${rows.map((entry, index) => `<div class="ticket-type-row">
+            <input class="answer-input" type="text" maxlength="120" value="${escapeHtml(entry?.name ?? '')}" placeholder="For example, Member" data-ticket-type-question-id="${escapeHtml(item.id)}" data-ticket-type-index="${index}" data-ticket-type-field="name">
+            <div class="ticket-type-price"><span>£</span><input class="answer-input" type="number" min="0" max="10000" step="0.01" value="${escapeHtml(entry?.price ?? '')}" data-ticket-type-question-id="${escapeHtml(item.id)}" data-ticket-type-index="${index}" data-ticket-type-field="price"></div>
+            <button type="button" class="icon-button ticket-type-remove" data-ticket-type-remove="${index}" data-ticket-type-remove-question="${escapeHtml(item.id)}" aria-label="Remove ticket type">×</button>
+          </div>`).join('')}
+          <button type="button" class="button button-secondary ticket-type-add" data-ticket-type-add="${escapeHtml(item.id)}">Add ticket type</button>
+        </div>`;
+      }
       case 'assignment':
         return renderAssignmentPicker({
           value,
@@ -5977,7 +6031,16 @@
 
   function renderTaskWorkspaceAction(item, event) {
     const actions = [];
-    if (item.actionView && item.actionLabel && (item.actionView === 'event-status' || item.actionType === 'manage-event-status')) {
+    if (item.actionType === 'configure-intelligent-golf-tickets') {
+      const taskState = ensureTaskState(event, item.id);
+      if (taskState.completed === true) return '';
+      const review = taskReviewState(item, event);
+      const sending = taskState.integrationStatus === 'sending';
+      actions.push(`<div class="task-integration-action ${escapeHtml(taskState.integrationStatus ?? '')}">
+        <button type="button" class="button button-primary task-workspace-action" data-configure-ig-tickets="${escapeHtml(item.id)}" data-configure-ig-tickets-event-id="${escapeHtml(event.id)}" ${sending || !review?.ready ? 'disabled' : ''}>${sending ? 'Configuring tickets…' : escapeHtml(item.actionLabel || 'Configure tickets in Intelligent Golf')}</button>
+        ${taskState.integrationMessage ? `<small>${escapeHtml(taskState.integrationMessage)}</small>` : ''}
+      </div>`);
+    } else if (item.actionView && item.actionLabel && (item.actionView === 'event-status' || item.actionType === 'manage-event-status')) {
       if (item.completionMode === 'event-status-decision' && eventStatusDecisionIsSatisfied(item, event)) return '';
       actions.push(`<button type="button" class="button button-primary task-workspace-action" data-task-manage-event-status="${escapeHtml(event?.id ?? '')}" data-event-status-prefill="${escapeHtml(item.actionStatus || 'confirmed')}">${escapeHtml(item.actionLabel)}</button>`);
     } else if (item.actionView && item.actionLabel) {
@@ -5987,6 +6050,47 @@
       actions.push(`<button type="button" class="button button-secondary task-workspace-action" data-task-workspace-view="${escapeHtml(item.secondaryActionView)}" data-task-workspace-event-id="${escapeHtml(event?.id ?? '')}">${escapeHtml(item.secondaryActionLabel)}</button>`);
     }
     return actions.join('');
+  }
+
+  async function configureIntelligentGolfTickets(event, item) {
+    const taskState = ensureTaskState(event, item.id);
+    const review = taskReviewState(item, event);
+    if (!review?.ready || taskState.integrationStatus === 'sending') return false;
+    taskState.integrationStatus = 'sending';
+    taskState.integrationMessage = 'Sending the reviewed settings and ticket types to Intelligent Golf.';
+    render();
+    try {
+      if (!await flushSharedState()) {
+        throw new Error('The latest ticket answers could not be saved to the shared event record. Intelligent Golf has not been changed.');
+      }
+      const response = await fetch(`/api/integrations/intelligent-golf/events/${encodeURIComponent(event.id)}/tickets`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: '{}'
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(payload.detail || payload.error || payload.title || `Intelligent Golf ticket configuration failed (${response.status}).`);
+      }
+      delete taskState.reviewCompletionProvenance;
+      taskState.completed = true;
+      taskState.status = 'completed';
+      taskState.completedAt = new Date().toISOString();
+      taskState.reviewSignature = review.signature;
+      taskState.reviewInvalidatedAt = null;
+      taskState.integrationStatus = 'succeeded';
+      taskState.integrationMessage = `Configured ${Number(payload.ticketTypeCount) || 0} ticket type${Number(payload.ticketTypeCount) === 1 ? '' : 's'} on Intelligent Golf planner entry ${payload.intelligentGolfEventId || ''}.`.trim();
+      saveState();
+      invalidateIntelligentGolfEventStatusCache();
+      render();
+      return true;
+    } catch (error) {
+      taskState.integrationStatus = 'failed';
+      taskState.integrationMessage = error.message || 'The Intelligent Golf tickets could not be configured.';
+      saveState();
+      render();
+      return false;
+    }
   }
 
   function renderTaskStatusDecisionDelivery(item, event) {
@@ -8062,6 +8166,30 @@
     return result;
   }
 
+  function validTicketTypesAnswer(value) {
+    return Array.isArray(value) && value.length > 0 && value.every(entry => {
+      const name = String(entry?.name ?? '').trim();
+      const price = Number(entry?.price);
+      return name.length > 0 && Number.isFinite(price) && price >= 0;
+    });
+  }
+
+  function collectTicketTypeAnswer(questionId) {
+    const controls = [...document.querySelectorAll(`[data-ticket-type-question-id="${CSS.escape(questionId)}"]`)];
+    const rows = new Map();
+    for (const control of controls) {
+      const index = Number(control.dataset.ticketTypeIndex);
+      if (!Number.isInteger(index) || index < 0) continue;
+      const row = rows.get(index) ?? { name: '', price: '' };
+      row[control.dataset.ticketTypeField] = control.value;
+      rows.set(index, row);
+    }
+    return [...rows.entries()]
+      .sort(([left], [right]) => left - right)
+      .map(([, row]) => ({ name: String(row.name ?? '').trim(), price: row.price }))
+      .filter(row => row.name || String(row.price ?? '').trim());
+  }
+
   function renderNewEventDialog() {
     return `
       <dialog id="new-event-dialog" class="modal new-event-dialog">
@@ -9313,6 +9441,51 @@
       });
     });
 
+    document.querySelectorAll('[data-ticket-type-question-id]').forEach(element => {
+      element.addEventListener('input', () => {
+        const event = getActiveEvent();
+        const questionId = element.dataset.ticketTypeQuestionId;
+        if (!event || !questionId) return;
+        event.answers[questionId] = collectTicketTypeAnswer(questionId);
+        clearQuestionNotRelevant(event, questionId);
+        invalidateTaskReviewConfirmations(event, questionId);
+        saveState();
+      });
+      element.addEventListener('change', () => render());
+    });
+
+    document.querySelectorAll('[data-ticket-type-add]').forEach(element => {
+      element.addEventListener('click', () => {
+        const event = getActiveEvent();
+        const questionId = element.dataset.ticketTypeAdd;
+        if (!event || !questionId) return;
+        const rows = collectTicketTypeAnswer(questionId);
+        rows.push({ name: '', price: '' });
+        event.answers[questionId] = rows;
+        clearQuestionNotRelevant(event, questionId);
+        invalidateTaskReviewConfirmations(event, questionId);
+        saveState();
+        render();
+      });
+    });
+
+    document.querySelectorAll('[data-ticket-type-remove]').forEach(element => {
+      element.addEventListener('click', () => {
+        const event = getActiveEvent();
+        const questionId = element.dataset.ticketTypeRemoveQuestion;
+        const removeIndex = Number(element.dataset.ticketTypeRemove);
+        if (!event || !questionId || !Number.isInteger(removeIndex)) return;
+        const rows = Array.isArray(event.answers[questionId])
+          ? event.answers[questionId].map(row => ({ ...row }))
+          : [];
+        rows.splice(removeIndex, 1);
+        event.answers[questionId] = rows;
+        invalidateTaskReviewConfirmations(event, questionId);
+        saveState();
+        render();
+      });
+    });
+
     document.querySelectorAll('[data-task-complete]').forEach(element => {
       element.addEventListener('change', () => {
         const event = getActiveEvent();
@@ -9401,6 +9574,16 @@
         }
         saveState();
         render();
+      });
+    });
+
+    document.querySelectorAll('[data-configure-ig-tickets]').forEach(element => {
+      element.addEventListener('click', async () => {
+        const eventId = element.dataset.configureIgTicketsEventId;
+        const event = state.events.find(candidate => candidate.id === eventId) ?? getActiveEvent();
+        const indexed = itemIndex.get(element.dataset.configureIgTickets);
+        if (!event || !indexed) return;
+        await configureIntelligentGolfTickets(event, indexed.item);
       });
     });
 

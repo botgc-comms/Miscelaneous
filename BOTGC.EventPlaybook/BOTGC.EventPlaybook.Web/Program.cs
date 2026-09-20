@@ -1835,6 +1835,57 @@ app.MapGet("/api/admin/plugins", async (
     return Results.Ok(await pluginSettingsStore.GetOverviewAsync(cancellationToken));
 });
 
+app.MapPost("/api/integrations/intelligent-golf/events/{eventId}/tickets", async (
+    string eventId,
+    ISharedPlaybookStateStore stateStore,
+    IIntelligentGolfEventIntegration intelligentGolfIntegration,
+    CancellationToken cancellationToken) =>
+{
+    var key = eventId.Trim();
+    if (string.IsNullOrWhiteSpace(key))
+        return Results.BadRequest(new { error = "An Event Playbook event ID is required." });
+
+    var sharedState = await stateStore.GetAsync(cancellationToken);
+    if (!PlaybookEventChangePipeline.ReadEvents(sharedState.State).TryGetValue(key, out var snapshot))
+        return Results.NotFound(new { error = "The Event Playbook event could not be found in shared storage." });
+    if (!snapshot.IntelligentGolfTicketsRequested)
+        return Results.Conflict(new { error = "Intelligent Golf online ticketing has not been selected for this event." });
+    if (snapshot.IntelligentGolfTickets is null)
+        return Results.BadRequest(new { error = snapshot.IntelligentGolfTicketValidationError ?? "Complete the Intelligent Golf ticket questions first." });
+
+    try
+    {
+        return Results.Ok(await intelligentGolfIntegration.SynchroniseTicketsAsync(snapshot, cancellationToken));
+    }
+    catch (IntelligentGolfApiRequestException exception)
+    {
+        return Results.Problem(
+            title: "Intelligent Golf ticket configuration failed",
+            detail: exception.Message,
+            statusCode: exception.StatusCode is >= 400 and <= 599
+                ? exception.StatusCode
+                : StatusCodes.Status502BadGateway,
+            extensions: new Dictionary<string, object?>
+            {
+                ["stage"] = exception.Stage,
+                ["upstreamStatusCode"] = exception.StatusCode,
+                ["retryable"] = exception.Retryable,
+                ["plannerEntryId"] = exception.IntelligentGolfEventId
+            });
+    }
+    catch (ArgumentException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
+    catch (InvalidOperationException exception)
+    {
+        return Results.Problem(
+            title: "Intelligent Golf tickets could not be configured",
+            detail: exception.Message,
+            statusCode: StatusCodes.Status409Conflict);
+    }
+});
+
 app.MapGet("/api/playbook/template", async (
     IPlaybookTemplateStore templateStore,
     CancellationToken cancellationToken) =>

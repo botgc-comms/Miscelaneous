@@ -2785,6 +2785,15 @@ public static class EventPlannerFeatureExtensions
             .WithSummary("Publish the Intelligent Golf member diary entry and attach its approved planner artwork")
             .Produces<PublishPlannerDiaryResult>();
 
+        endpoints.MapPut(
+                "/api/event-planner/tickets",
+                async (SynchronisePlannerTicketsRequest request, IMediator mediator, CancellationToken cancellationToken) =>
+                    Results.Ok(await mediator.Send(new SynchronisePlannerTicketsCommand(request), cancellationToken)))
+            .WithName("SynchronisePlannerTickets")
+            .WithTags("Event planner")
+            .WithSummary("Configure ticket settings and ticket types on a linked Intelligent Golf planner event")
+            .Produces<SynchronisePlannerTicketsResult>();
+
         endpoints.MapDelete(
                 "/api/event-planner/member-diary",
                 async (RemovePlannerDiaryRequest request, IMediator mediator, CancellationToken cancellationToken) =>

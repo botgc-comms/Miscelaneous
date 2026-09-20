@@ -540,6 +540,58 @@ public sealed class IntelligentGolfEventIntegrationTests
     }
 
     [Fact]
+    public async Task SynchroniseTicketsAsync_UsesTheLinkedPlannerAndStructuredAnswers()
+    {
+        var scenario = new PrivateApiScenario(SynchronisedAt);
+        var linkStore = new RecordingLinkStore();
+        linkStore.Seed(CreateExistingLink());
+        var activityStore = new RecordingActivityStore();
+        var integration = CreateIntegration(scenario, linkStore, activityStore);
+        var baseSnapshot = CreateSnapshot();
+        var snapshot = new PlaybookEventIntegrationSnapshot
+        {
+            EventId = baseSnapshot.EventId,
+            Name = baseSnapshot.Name,
+            EventDate = baseSnapshot.EventDate,
+            Description = baseSnapshot.Description,
+            StartTime = baseSnapshot.StartTime,
+            EndTime = baseSnapshot.EndTime,
+            EventTypeId = baseSnapshot.EventTypeId,
+            Attendees = baseSnapshot.Attendees,
+            IntelligentGolfTicketsRequested = true,
+            IntelligentGolfTickets = new IntelligentGolfTicketConfiguration
+            {
+                MaximumTickets = 100,
+                AllowMembersOnline = true,
+                MaximumTicketsPerMember = 4,
+                RequireMemberGuestDetails = false,
+                MembersPaymentDueOnEntry = false,
+                AllowVisitorsOnline = false,
+                AddOptions = false,
+                TicketTypes = [new IntelligentGolfTicketType { Name = "Member", Price = 0m }]
+            }
+        };
+
+        var result = await integration.SynchroniseTicketsAsync(snapshot, CancellationToken.None);
+
+        Assert.Equal(4713, result.IntelligentGolfEventId);
+        var request = Assert.Single(scenario.Requests, candidate =>
+            candidate.Method == HttpMethod.Put && candidate.Path == "/api/event-planner/tickets");
+        using (var payload = JsonDocument.Parse(request.Body))
+        {
+            Assert.Equal(4713, payload.RootElement.GetProperty("intelligentGolfEventId").GetInt32());
+            Assert.Equal(100, payload.RootElement.GetProperty("maximumTickets").GetInt32());
+            Assert.Equal(4, payload.RootElement.GetProperty("maximumTicketsPerMember").GetInt32());
+            var type = Assert.Single(payload.RootElement.GetProperty("ticketTypes").EnumerateArray());
+            Assert.Equal("Member", type.GetProperty("name").GetString());
+            Assert.Equal(0m, type.GetProperty("price").GetDecimal());
+        }
+        var activity = Assert.Single(activityStore.Activities, candidate =>
+            candidate.Operation == "Configure planner tickets");
+        Assert.Equal("succeeded", activity.Outcome);
+    }
+
+    [Fact]
     public async Task CancelEventAsync_RemovesDiaryBeforePlannerAndClearsEachConfirmedLink()
     {
         var scenario = new PrivateApiScenario(SynchronisedAt);
@@ -871,6 +923,18 @@ public sealed class IntelligentGolfEventIntegrationTests
                     created = true,
                     eventImageAttached = true,
                     publishedAtUtc = diaryPublishedAt
+                });
+            }
+
+            if (request.Method == HttpMethod.Put &&
+                request.Path == "/api/event-planner/tickets")
+            {
+                return Json(HttpStatusCode.OK, new
+                {
+                    eventPlaybookEventId = "event-123",
+                    intelligentGolfEventId = 4713,
+                    ticketTypeCount = 1,
+                    synchronisedAtUtc = SynchronisedAt
                 });
             }
 

@@ -104,7 +104,10 @@ public sealed class PlaybookEventChangePipeline : BackgroundService, IPlaybookEv
                 Attendees = Math.Max(0, ReadNullableInt(item, "expectedAttendees") ?? 0),
                 LifecycleStatus = ReadNestedString(item, "lifecycle", "status"),
                 GroupId = ReadString(item, "intelligentGolfGroupId") ?? "151",
-                GroupName = ReadString(item, "intelligentGolfGroupName") ?? "BOTGC Event Planner"
+                GroupName = ReadString(item, "intelligentGolfGroupName") ?? "BOTGC Event Planner",
+                IntelligentGolfTicketsRequested = ReadAnswerBoolean(item, "ig-online-ticketing") == true,
+                IntelligentGolfTickets = ReadTicketConfiguration(item, out var ticketValidationError),
+                IntelligentGolfTicketValidationError = ticketValidationError
             };
         }
         return result;
@@ -135,6 +138,108 @@ public sealed class PlaybookEventChangePipeline : BackgroundService, IPlaybookEv
         if (!element.TryGetProperty(propertyName, out var value)) return null;
         if (value.ValueKind == JsonValueKind.Number && value.TryGetInt32(out var number)) return number;
         return value.ValueKind == JsonValueKind.String && int.TryParse(value.GetString(), out number) ? number : null;
+    }
+
+    private static IntelligentGolfTicketConfiguration? ReadTicketConfiguration(
+        JsonElement eventElement,
+        out string? validationError)
+    {
+        validationError = null;
+        if (ReadAnswerBoolean(eventElement, "ig-online-ticketing") != true) return null;
+
+        var maximumTickets = ReadAnswerInt(eventElement, "ig-ticket-allocation");
+        var allowMembers = ReadAnswerBoolean(eventElement, "ig-members-online");
+        var allowVisitors = ReadAnswerBoolean(eventElement, "ig-visitors-online");
+        var requireGuestDetails = ReadAnswerBoolean(eventElement, "ig-require-member-guest-details");
+        var paymentDueOnEntry = ReadAnswerBoolean(eventElement, "ig-members-payment-due-on-entry") ?? false;
+        var addOptions = ReadAnswerBoolean(eventElement, "ig-add-ticket-options");
+        var maximumPerMember = ReadAnswerInt(eventElement, "ig-max-tickets-member");
+        var maximumPerVisitor = ReadAnswerInt(eventElement, "ig-max-tickets-visitor");
+        var ticketTypes = ReadTicketTypes(eventElement);
+
+        if (maximumTickets is not > 0)
+            validationError = "Enter how many tickets Intelligent Golf should make available.";
+        else if (!allowMembers.HasValue)
+            validationError = "Choose whether members may book online in Intelligent Golf.";
+        else if (allowMembers == true && (maximumPerMember is null or < 0))
+            validationError = "Enter the maximum number of tickets per member.";
+        else if (allowMembers == true && !requireGuestDetails.HasValue)
+            validationError = "Choose whether member guest details are required.";
+        else if (!allowVisitors.HasValue)
+            validationError = "Choose whether visitors may book online in Intelligent Golf.";
+        else if (allowMembers == false && allowVisitors == false)
+            validationError = "Allow members, visitors or both to book online in Intelligent Golf.";
+        else if (allowVisitors == true && (maximumPerVisitor is null or < 0))
+            validationError = "Enter the maximum number of tickets per visitor.";
+        else if (!addOptions.HasValue)
+            validationError = "Choose whether Intelligent Golf additional ticket options are enabled.";
+        else if (ticketTypes.Count == 0)
+            validationError = "Add at least one Intelligent Golf ticket type with a valid price.";
+
+        if (validationError is not null) return null;
+        return new IntelligentGolfTicketConfiguration
+        {
+            MaximumTickets = maximumTickets!.Value,
+            AllowMembersOnline = allowMembers!.Value,
+            MaximumTicketsPerMember = allowMembers.Value ? maximumPerMember : null,
+            RequireMemberGuestDetails = allowMembers.Value && requireGuestDetails == true,
+            MembersPaymentDueOnEntry = allowMembers.Value && paymentDueOnEntry,
+            AllowVisitorsOnline = allowVisitors!.Value,
+            MaximumTicketsPerVisitor = allowVisitors.Value ? maximumPerVisitor : null,
+            AddOptions = addOptions!.Value,
+            TicketTypes = ticketTypes
+        };
+    }
+
+    private static bool? ReadAnswerBoolean(JsonElement eventElement, string questionId)
+    {
+        if (!TryGetAnswer(eventElement, questionId, out var value)) return null;
+        return value.ValueKind switch
+        {
+            JsonValueKind.True => true,
+            JsonValueKind.False => false,
+            JsonValueKind.String when bool.TryParse(value.GetString(), out var parsed) => parsed,
+            _ => null
+        };
+    }
+
+    private static int? ReadAnswerInt(JsonElement eventElement, string questionId)
+    {
+        if (!TryGetAnswer(eventElement, questionId, out var value)) return null;
+        if (value.ValueKind == JsonValueKind.Number && value.TryGetInt32(out var number)) return number;
+        return value.ValueKind == JsonValueKind.String && int.TryParse(value.GetString(), out number) ? number : null;
+    }
+
+    private static IReadOnlyList<IntelligentGolfTicketType> ReadTicketTypes(JsonElement eventElement)
+    {
+        if (!TryGetAnswer(eventElement, "ig-ticket-types", out var value) || value.ValueKind != JsonValueKind.Array)
+            return [];
+        var result = new List<IntelligentGolfTicketType>();
+        var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var row in value.EnumerateArray())
+        {
+            if (row.ValueKind != JsonValueKind.Object) return [];
+            var name = ReadString(row, "name");
+            if (string.IsNullOrWhiteSpace(name) || name.Length > 120 || !names.Add(name)) return [];
+            if (!row.TryGetProperty("price", out var priceValue)) return [];
+            decimal price;
+            if (priceValue.ValueKind == JsonValueKind.Number && priceValue.TryGetDecimal(out price)) { }
+            else if (priceValue.ValueKind == JsonValueKind.String &&
+                     decimal.TryParse(priceValue.GetString(), System.Globalization.NumberStyles.Number,
+                         System.Globalization.CultureInfo.InvariantCulture, out price)) { }
+            else return [];
+            if (price < 0 || price > 10000) return [];
+            result.Add(new IntelligentGolfTicketType { Name = name, Price = price });
+        }
+        return result;
+    }
+
+    private static bool TryGetAnswer(JsonElement eventElement, string questionId, out JsonElement value)
+    {
+        value = default;
+        return eventElement.TryGetProperty("answers", out var answers) &&
+               answers.ValueKind == JsonValueKind.Object &&
+               answers.TryGetProperty(questionId, out value);
     }
 
     private static string? ReadNestedString(JsonElement element, string objectName, string propertyName)

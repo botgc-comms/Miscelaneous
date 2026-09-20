@@ -4424,21 +4424,175 @@
               "source": "refined"
             },
             {
+              "id": "ig-online-ticketing",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Should Event Playbook configure online tickets on the linked Intelligent Golf planner event?",
+              "helpText": "Choose Yes only when Intelligent Golf is the booking system. The saved answers are not sent until the ticket-setup task is reviewed and confirmed.",
+              "showWhen": { "all": [{ "questionId": "ticket-sales-methods", "operator": "contains", "value": "member-system" }] },
+              "requiresPlugin": "intelligentGolf",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "ig-ticket-allocation",
+              "type": "question",
+              "answerType": "number",
+              "label": "How many tickets or registrations should Intelligent Golf make available?",
+              "helpText": "This is the value sent as max_tickets. For attendance estimates it is a technical allocation, not a statement that the event has a fixed capacity.",
+              "min": 1,
+              "max": 10000,
+              "unit": "tickets",
+              "showWhen": { "all": [{ "questionId": "ig-online-ticketing", "operator": "equals", "value": true }] },
+              "requiresPlugin": "intelligentGolf",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "ig-members-online",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Should members be allowed to book these tickets online in Intelligent Golf?",
+              "showWhen": { "all": [{ "questionId": "ig-online-ticketing", "operator": "equals", "value": true }] },
+              "requiresPlugin": "intelligentGolf",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "ig-max-tickets-member",
+              "type": "question",
+              "answerType": "number",
+              "label": "What is the maximum number of tickets one member may book?",
+              "helpText": "Use 0 only when Intelligent Golf should not apply a per-member restriction.",
+              "min": 0,
+              "max": 1000,
+              "unit": "tickets per member",
+              "showWhen": { "all": [{ "questionId": "ig-members-online", "operator": "equals", "value": true }] },
+              "requiresPlugin": "intelligentGolf",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "ig-require-member-guest-details",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Must members provide the details of every guest they book?",
+              "showWhen": { "all": [{ "questionId": "ig-members-online", "operator": "equals", "value": true }] },
+              "requiresPlugin": "intelligentGolf",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "ig-members-payment-due-on-entry",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Should Intelligent Golf mark members' ticket payment as due on entry?",
+              "showWhen": { "all": [
+                { "questionId": "ig-members-online", "operator": "equals", "value": true },
+                { "questionId": "admission-arrangements", "operator": "equals", "value": "paid-entry" }
+              ] },
+              "requiresPlugin": "intelligentGolf",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "ig-visitors-online",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Should visitors be allowed to book these tickets online in Intelligent Golf?",
+              "showWhen": { "all": [{ "questionId": "ig-online-ticketing", "operator": "equals", "value": true }] },
+              "requiresPlugin": "intelligentGolf",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "ig-max-tickets-visitor",
+              "type": "question",
+              "answerType": "number",
+              "label": "What is the maximum number of tickets one visitor may book?",
+              "helpText": "Use 0 only when Intelligent Golf should not apply a per-visitor restriction.",
+              "min": 0,
+              "max": 1000,
+              "unit": "tickets per visitor",
+              "showWhen": { "all": [{ "questionId": "ig-visitors-online", "operator": "equals", "value": true }] },
+              "requiresPlugin": "intelligentGolf",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "ig-add-ticket-options",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Should Intelligent Golf enable additional options during ticket booking?",
+              "showWhen": { "all": [{ "questionId": "ig-online-ticketing", "operator": "equals", "value": true }] },
+              "requiresPlugin": "intelligentGolf",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "ig-ticket-types",
+              "type": "question",
+              "answerType": "ticketTypes",
+              "label": "Which Intelligent Golf ticket types should be created, and what should each cost?",
+              "helpText": "Add one row for every ticket shown to bookers. Names and numeric prices are sent directly to Intelligent Golf; use 0 for a free ticket.",
+              "example": "Member — £0; Adult visitor — £30; Child — £15.",
+              "showWhen": { "all": [{ "questionId": "ig-online-ticketing", "operator": "equals", "value": true }] },
+              "requiresPlugin": "intelligentGolf",
+              "required": true,
+              "source": "refined"
+            },
+            {
               "id": "configure-ticket-sales-task",
               "type": "task",
               "title": "Set up and test the agreed booking, registration or advance-ticket route",
               "detail": "Create the agreed registration, booking or ticket record, apply any relevant capacity and opening or closing dates, test the complete attendee journey and give the working link or instructions to Communications.",
               "deadlineCode": "B3",
-              "showWhen": { "any": [
-                { "questionId": "admission-arrangements", "operator": "equals", "value": "attendance-registration" },
-                { "questionId": "admission-arrangements", "operator": "equals", "value": "limited-place-booking" },
-                { "all": [
-                  { "questionId": "admission-arrangements", "operator": "equals", "value": "paid-entry" },
-                  { "questionId": "admission-payment-timing", "operator": "contains", "value": "advance" }
+              "showWhen": { "all": [
+                { "questionId": "ig-online-ticketing", "operator": "notEquals", "value": true },
+                { "any": [
+                  { "questionId": "admission-arrangements", "operator": "equals", "value": "attendance-registration" },
+                  { "questionId": "admission-arrangements", "operator": "equals", "value": "limited-place-booking" },
+                  { "all": [
+                    { "questionId": "admission-arrangements", "operator": "equals", "value": "paid-entry" },
+                    { "questionId": "admission-payment-timing", "operator": "contains", "value": "advance" }
+                  ] }
                 ] }
               ] },
               "responsibleArea": "Administration",
               "defaultOwnerRoleId": "office",
+              "source": "refined"
+            },
+            {
+              "id": "configure-ig-ticket-sales-task",
+              "type": "task",
+              "title": "Configure and test the Intelligent Golf ticket setup",
+              "detail": "Review the recorded ticket settings, then apply the ticket capacity, online-booking limits and ticket types to the linked Intelligent Golf planner event. This task completes only after Intelligent Golf accepts and returns the saved setup.",
+              "deadlineCode": "B3",
+              "showWhen": { "all": [{ "questionId": "ig-online-ticketing", "operator": "equals", "value": true }] },
+              "requiresPlugin": "intelligentGolf",
+              "responsibleArea": "Administration",
+              "defaultOwnerRoleId": "office",
+              "completionMode": "intelligent-golf-ticket-sync",
+              "canCompleteFromLink": false,
+              "actionType": "configure-intelligent-golf-tickets",
+              "actionLabel": "Configure tickets in Intelligent Golf",
+              "reviewSummary": {
+                "title": "Intelligent Golf ticket setup",
+                "instruction": "Check these values carefully. Confirming sends the two ticket-administration POSTs to the linked planner event and verifies the result before completing this task.",
+                "confirmLabel": "Configure tickets in Intelligent Golf",
+                "confirmedLabel": "Intelligent Golf tickets configured",
+                "fields": [
+                  { "questionId": "ig-ticket-allocation", "label": "Tickets available" },
+                  { "questionId": "ig-members-online", "label": "Members can book online" },
+                  { "questionId": "ig-max-tickets-member", "label": "Maximum per member" },
+                  { "questionId": "ig-require-member-guest-details", "label": "Require member guest details" },
+                  { "questionId": "ig-members-payment-due-on-entry", "label": "Member payment due on entry" },
+                  { "questionId": "ig-visitors-online", "label": "Visitors can book online" },
+                  { "questionId": "ig-max-tickets-visitor", "label": "Maximum per visitor" },
+                  { "questionId": "ig-add-ticket-options", "label": "Additional ticket options" },
+                  { "questionId": "ig-ticket-types", "label": "Ticket types and prices" }
+                ]
+              },
               "source": "refined"
             }
           ]

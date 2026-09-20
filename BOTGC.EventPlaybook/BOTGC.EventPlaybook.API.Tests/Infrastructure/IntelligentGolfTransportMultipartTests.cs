@@ -123,6 +123,36 @@ public sealed class IntelligentGolfTransportMultipartTests
             Encoding.UTF8.GetString(request.Body));
     }
 
+    [Fact]
+    public async Task PostForm_TicketAdministration_PreservesTheTicketTabInTheReferrer()
+    {
+        var handler = new RecordingHandler();
+        var client = new HttpClient(handler);
+        var transport = new IntelligentGolfTransport(
+            new SingleClientFactory(client),
+            new AuthenticatedSession("https://www.botgc.co.uk/"),
+            new IntelligentGolfSessionOperationGate(),
+            NullLogger<IntelligentGolfTransport>.Instance);
+
+        await transport.PostFormResponseAsync(
+            "/event.php?eventid=4743&tab=ticket_admin&requestType=ajax&ajaxaction=editsettingsconfirm",
+            [
+                new("max_tickets", "100"),
+                new("show_for_members", "on"),
+                new("max_tickets_member", "4"),
+                new("max_tickets_visitor", string.Empty)
+            ],
+            CancellationToken.None);
+
+        var request = Assert.Single(handler.Requests);
+        Assert.Equal(
+            "https://www.botgc.co.uk/event.php?eventid=4743&tab=ticket_admin",
+            request.Referrer?.ToString());
+        Assert.Equal(
+            "max_tickets=100&show_for_members=on&max_tickets_member=4&max_tickets_visitor=",
+            Encoding.UTF8.GetString(request.Body));
+    }
+
     private static int FindDisposition(string body, string fieldName)
     {
         var quoted = body.IndexOf($"name=\"{fieldName}\"", StringComparison.Ordinal);
