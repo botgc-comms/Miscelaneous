@@ -616,6 +616,7 @@ public static class TaskAlertScheduleReader
             EventDate = ReadString(element, "eventDate", 20),
             TaskId = taskId,
             TaskTitle = taskTitle,
+            Notes = ReadString(element, "notes", 2_000),
             DueDate = dueDate,
             ExpiresOn = expiresOn,
             AssigneeName = ReadString(element, "assigneeName", 300),
@@ -881,7 +882,14 @@ internal static class TaskAlertEmailComposer
                     .Append(encoder.Encode(item.Task.DueDate.ToString("ddd d MMM yyyy", BritishCulture)))
                     .Append("</span><br><small style=\"color:#52666b\">")
                     .Append(encoder.Encode(ResponsibilityLabel(item)))
-                    .Append("</small></li>");
+                    .Append("</small>");
+                if (!string.IsNullOrWhiteSpace(item.Task.Notes))
+                {
+                    body.Append("<div style=\"margin-top:6px;padding:7px 9px;border-left:3px solid #c6a15b;color:#3f5559;background:#f7f4eb;font-size:13px\"><strong>Task note:</strong> ")
+                        .Append(encoder.Encode(item.Task.Notes))
+                        .Append("</div>");
+                }
+                body.Append("</li>");
             }
             body.Append("</ul>");
         }

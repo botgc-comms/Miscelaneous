@@ -212,8 +212,9 @@ test('expired status-decision rendering is read-only and exposes neither retry n
   assert.doesNotMatch(html, /data-task-manage-event-status/);
 
   const cardSource = functionSource('renderTaskBoardCard');
-  assert.match(cardSource, /task\.expired\s*\?\s*'<div class="task-card-primary-actions task-expired-message"/);
-  assert.match(cardSource, /:\s*completionControl\.actionRequired\s*\?\s*`<div class="task-card-primary-actions">\$\{renderTaskWorkspaceAction/);
+  assert.match(cardSource, /task-card-primary-actions \$\{task\.expired \? 'task-expired-message'/);
+  assert.match(cardSource, /task\.expired\s*\?\s*'<span>This task is retained for the event record; no action is required\.<\/span>'/);
+  assert.match(cardSource, /:\s*completionControl\.actionRequired\s*\?\s*renderTaskWorkspaceAction/);
 });
 
 test('completed status-decision tasks expose no generic completion or repeated status action', () => {
@@ -236,7 +237,8 @@ test('completed status-decision tasks expose no generic completion or repeated s
   assert.match(completionSource, /const statusManaged = item\.completionMode === 'event-status-decision'/);
   assert.match(completionSource, /blocked = expired \|\| statusManaged/);
   const cardSource = functionSource('renderTaskBoardCard');
-  assert.match(cardSource, /completionControl\.statusManaged\s*\?\s*'<div class="task-card-primary-actions task-status-managed-message/);
+  assert.match(cardSource, /completionControl\.statusManaged \? 'task-status-managed-message'/);
+  assert.match(cardSource, /completionControl\.statusManaged\s*\?\s*'<span>Completion follows the recorded event status and delivery result\.<\/span>'/);
   assert.doesNotMatch(cardSource, /completionControl\.statusManaged[^]*Reopen task[^]*completionControl\.statusManaged/);
 });
 

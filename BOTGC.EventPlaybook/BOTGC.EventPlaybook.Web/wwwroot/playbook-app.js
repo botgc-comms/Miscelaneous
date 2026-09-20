@@ -145,6 +145,7 @@
   const feedbackCache = new Map();
   const feedbackRequests = new Set();
   const briefingGenerationRequests = new Map();
+  let taskNoteReturnFocus = null;
   const taskBoardSelection = {
     eventId: '',
     scopeKey: '',
@@ -1028,6 +1029,7 @@
             eventDate: String(task.eventDate ?? ''),
             taskId: String(task.taskId ?? ''),
             taskTitle: String(task.taskTitle ?? ''),
+            notes: String(task.notes ?? ''),
             dueDate: String(task.dueDate ?? ''),
             expiresOn: String(task.expiresOn ?? ''),
             assigneeName: String(task.assigneeName ?? ''),
@@ -1103,6 +1105,7 @@
             eventDate: event.eventDate,
             taskId: task.item.id,
             taskTitle: task.item.title,
+            notes: String(task.state.notes ?? '').trim(),
             dueDate: task.dueDate,
             expiresOn: task.expiresOn ?? '',
             assigneeName: assignee.name || task.state.assignee || '',
@@ -1121,7 +1124,7 @@
     const content = { publicBaseUrl, tasks: projectedTasks, planningReminders };
     const previous = normaliseTaskAlertSchedule(state.taskAlertSchedule);
     const unchanged = previous.generatedAtUtc && valuesEqual(
-      { publicBaseUrl: previous.publicBaseUrl, tasks: previous.tasks },
+      { publicBaseUrl: previous.publicBaseUrl, tasks: previous.tasks, planningReminders: previous.planningReminders },
       content);
     const next = unchanged
       ? previous
@@ -3551,13 +3554,13 @@
   }
 
   function briefingFingerprint(payload) {
-    const input = `briefing-v2|${playbook.schemaVersion}|${JSON.stringify(payload)}`;
+    const input = `briefing-v3|${playbook.schemaVersion}|${JSON.stringify(payload)}`;
     let hash = 2166136261;
     for (let index = 0; index < input.length; index += 1) {
       hash ^= input.charCodeAt(index);
       hash = Math.imul(hash, 16777619);
     }
-    return `v2-${(hash >>> 0).toString(16).padStart(8, '0')}-${input.length}`;
+    return `v3-${(hash >>> 0).toString(16).padStart(8, '0')}-${input.length}`;
   }
 
   function currentBriefingSource(event) {
@@ -4446,6 +4449,7 @@
 
       ${renderNewEventDialog()}
       <dialog id="event-summary-dialog" class="modal event-summary-dialog"><div id="event-summary-content"></div></dialog>
+      ${renderTaskNoteDialog()}
       ${renderEventStatusDialog(event)}
       ${renderIntelligentGolfPlannerMatchDialog(event)}
       ${renderIntelligentGolfPlannerLinkDialog(event)}
@@ -5903,6 +5907,46 @@
     return labels[item?.staffBriefing?.phase] ?? '';
   }
 
+  function renderTaskNoteAction(item, event, taskState = event?.taskState?.[item?.id] ?? {}) {
+    const hasNote = Boolean(String(taskState?.notes ?? '').trim());
+    const label = hasNote ? 'Edit note' : 'Add note';
+    return `<button type="button" class="text-button inline task-note-action ${hasNote ? 'has-note' : ''}" data-task-note-action="${escapeHtml(item.id)}" data-task-note-event-id="${escapeHtml(event.id)}" aria-label="${label} for ${escapeHtml(item.title)}">${hasNote ? '● ' : '+ '}${label}</button>`;
+  }
+
+  function renderTaskNoteDialog() {
+    return `<dialog id="task-note-dialog" class="plugin-dialog task-note-dialog" aria-labelledby="task-note-dialog-title">
+      <form id="task-note-form">
+        <header class="modal-heading"><div><span class="eyebrow">Shared planning context</span><h2 id="task-note-dialog-title">Task note</h2><p>Record useful event-specific information against this task.</p></div><button class="icon-button" type="button" data-close-task-note-dialog aria-label="Close">×</button></header>
+        <div class="plugin-dialog-body">
+          <div class="task-note-context"><span id="task-note-area"></span><strong id="task-note-task"></strong><small id="task-note-status"></small></div>
+          <label class="wide"><span>Note <em>optional</em></span><textarea id="task-note-text" rows="7" maxlength="2000" placeholder="Record a decision, confirmed arrangement, useful handover detail or information that other people need to know."></textarea><small>Notes form part of the event record, exported task data and briefing source. Open-task notes are treated as unconfirmed unless the wording clearly records a settled decision.</small></label>
+          <input id="task-note-event-id" type="hidden"><input id="task-note-task-id" type="hidden">
+        </div>
+        <footer class="modal-actions"><span></span><button class="button button-secondary" type="button" data-close-task-note-dialog>Cancel</button><button class="button button-primary" type="submit">Save note</button></footer>
+      </form>
+    </dialog>`;
+  }
+
+  function openTaskNoteDialog(trigger) {
+    const event = state.events.find(candidate => candidate.id === trigger.dataset.taskNoteEventId);
+    const indexed = itemIndex.get(trigger.dataset.taskNoteAction);
+    const dialog = document.getElementById('task-note-dialog');
+    if (!event || !indexed || indexed.item.type !== 'task' || !dialog) return;
+    const taskState = ensureTaskState(event, indexed.item.id);
+    const expired = isTaskExpired(indexed.item, event, taskState);
+    taskNoteReturnFocus = trigger;
+    document.getElementById('task-note-event-id').value = event.id;
+    document.getElementById('task-note-task-id').value = indexed.item.id;
+    document.getElementById('task-note-area').textContent = `${event.name} · ${indexed.module.title} · ${indexed.section.title}`;
+    document.getElementById('task-note-task').textContent = indexed.item.title;
+    document.getElementById('task-note-status').textContent = expired
+      ? 'Expired task record'
+      : taskState.completed ? 'Completed task' : 'Open task';
+    document.getElementById('task-note-text').value = String(taskState.notes ?? '');
+    dialog.showModal();
+    requestAnimationFrame(() => document.getElementById('task-note-text')?.focus());
+  }
+
   function renderInlineTask(item, event) {
     const taskState = event.taskState[item.id] ?? {};
     const dueDate = getDueDate(item.deadlineCode, event);
@@ -5947,6 +5991,7 @@
             ${item.responsibleArea ? `<span class="area-chip">${escapeHtml(item.responsibleArea)}</span>` : ''}
             ${staffBriefingPhaseLabel(item) ? `<span class="staff-duty-chip">Staff duty · ${escapeHtml(staffBriefingPhaseLabel(item))}</span>` : ''}
             ${!expired && !item.reviewSummary ? renderTaskWorkspaceAction(item, event) : ''}
+            ${renderTaskNoteAction(item, event, taskState)}
             ${expired
               ? `<div class="assignee-compact task-expired-owner"><span class="assignee-compact-label">Owner at expiry</span><strong>${escapeHtml(taskState.assignee || (item.defaultOwnerRoleId ? roleById(item.defaultOwnerRoleId)?.name : '') || 'Not assigned')}</strong></div>`
               : `<div class="assignee-compact">
@@ -6258,6 +6303,7 @@
                 ${detail ? `<details><summary>Task detail</summary><p>${escapeHtml(detail)}</p></details>` : '<span></span>'}
                 <div class="dashboard-task-action-buttons">
                   ${item.reviewSummary ? '' : renderTaskWorkspaceAction(item, event)}
+                  ${renderTaskNoteAction(item, event, taskState)}
                   <button type="button" class="text-button inline" data-dashboard-open-event="${escapeHtml(event.id)}">Open event task board</button>
                 </div>
               </div>
@@ -6506,15 +6552,16 @@
           ${renderTaskBoardLearning(event, item)}
           ${renderTaskReviewSummary(item, event, taskState, false)}
           ${renderTaskStatusDecisionDelivery(item, event)}
-          ${task.expired
-            ? '<div class="task-card-primary-actions task-expired-message"><span>This task is retained for the event record; no action is required.</span></div>'
-            : completionControl.actionRequired
-              ? `<div class="task-card-primary-actions">${renderTaskWorkspaceAction(item, event)}</div>`
-            : completionControl.statusManaged
-              ? '<div class="task-card-primary-actions task-status-managed-message"><span>Completion follows the recorded event status and delivery result.</span></div>'
-            : `<div class="task-card-primary-actions">
-                <button type="button" class="button ${taskState.completed ? 'button-secondary' : 'button-primary'}" data-task-completion-action="${escapeHtml(item.id)}" data-task-target-completed="${taskState.completed ? 'false' : 'true'}" ${completionControl.blocked ? 'disabled' : ''} title="${escapeHtml(completionControl.title)}">${taskState.completed ? 'Reopen task' : 'Complete task'}</button>
-              </div>`}
+          <div class="task-card-primary-actions ${task.expired ? 'task-expired-message' : completionControl.statusManaged ? 'task-status-managed-message' : ''}">
+            ${task.expired
+              ? '<span>This task is retained for the event record; no action is required.</span>'
+              : completionControl.actionRequired
+                ? renderTaskWorkspaceAction(item, event)
+              : completionControl.statusManaged
+                ? '<span>Completion follows the recorded event status and delivery result.</span>'
+              : `<button type="button" class="button ${taskState.completed ? 'button-secondary' : 'button-primary'}" data-task-completion-action="${escapeHtml(item.id)}" data-task-target-completed="${taskState.completed ? 'false' : 'true'}" ${completionControl.blocked ? 'disabled' : ''} title="${escapeHtml(completionControl.title)}">${taskState.completed ? 'Reopen task' : 'Complete task'}</button>`}
+            ${renderTaskNoteAction(item, event, taskState)}
+          </div>
           <details class="task-card-manage">
             <summary><span>${task.expired ? 'Task record' : 'Details and assignment'}</span><span class="task-card-manage-chevron" aria-hidden="true"></span></summary>
             <div class="task-card-manage-body">
@@ -6526,7 +6573,7 @@
                 </div>
                 <label class="task-notes-field">
                   <span>${escapeHtml(item.reviewSummary?.notesLabel || (item.reviewSummary ? 'Confirmation note (optional)' : 'Task notes'))}</span>
-                  <input type="text" value="${escapeHtml(taskState.notes ?? '')}" placeholder="${escapeHtml(item.reviewSummary?.notesPlaceholder || (item.reviewSummary ? 'Add context only if needed; the plan is recorded above' : 'Add any event-specific detail'))}" data-task-notes="${item.id}">
+                  <input type="text" maxlength="2000" value="${escapeHtml(taskState.notes ?? '')}" placeholder="${escapeHtml(item.reviewSummary?.notesPlaceholder || (item.reviewSummary ? 'Add context only if needed; the plan is recorded above' : 'Add any event-specific detail'))}" data-task-notes="${item.id}">
                 </label>
               </div>`}
               <div class="task-operational-row">
@@ -9211,9 +9258,44 @@
       element.addEventListener('change', () => {
         const event = getActiveEvent();
         if (!event) return;
-        ensureTaskState(event, element.dataset.taskNotes).notes = element.value.trim();
+        const taskState = ensureTaskState(event, element.dataset.taskNotes);
+        const note = element.value.trim();
+        if (note) taskState.notes = note;
+        else delete taskState.notes;
+        taskState.notesUpdatedAt = new Date().toISOString();
         saveState();
       });
+    });
+
+    document.querySelectorAll('[data-task-note-action]').forEach(element => {
+      element.addEventListener('click', () => openTaskNoteDialog(element));
+    });
+
+    const taskNoteDialog = document.getElementById('task-note-dialog');
+    document.querySelectorAll('[data-close-task-note-dialog]').forEach(element => {
+      element.addEventListener('click', () => taskNoteDialog?.close());
+    });
+    taskNoteDialog?.addEventListener('close', () => {
+      if (taskNoteReturnFocus?.isConnected) taskNoteReturnFocus.focus();
+      taskNoteReturnFocus = null;
+    });
+    document.getElementById('task-note-form')?.addEventListener('submit', eventArgs => {
+      eventArgs.preventDefault();
+      const eventId = document.getElementById('task-note-event-id')?.value ?? '';
+      const taskId = document.getElementById('task-note-task-id')?.value ?? '';
+      const targetEvent = state.events.find(candidate => candidate.id === eventId);
+      const indexed = itemIndex.get(taskId);
+      if (!targetEvent || !indexed || indexed.item.type !== 'task') return;
+      const taskState = ensureTaskState(targetEvent, taskId);
+      const note = document.getElementById('task-note-text')?.value.trim() ?? '';
+      if (note) taskState.notes = note;
+      else delete taskState.notes;
+      taskState.notesUpdatedAt = new Date().toISOString();
+      saveState();
+      taskNoteReturnFocus = null;
+      taskNoteDialog?.close();
+      render();
+      requestAnimationFrame(() => document.querySelector(`[data-task-note-action="${CSS.escape(taskId)}"][data-task-note-event-id="${CSS.escape(eventId)}"]`)?.focus());
     });
 
     document.querySelectorAll('[data-save-advisory]').forEach(element => {

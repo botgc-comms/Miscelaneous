@@ -58,6 +58,29 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task RunOnceAsync_IncludesTheRecordedTaskNoteInTheSharedDigest()
+    {
+        var sender = new RecordingEmailSender();
+        var dispatcher = CreateDispatcher(
+            State(Alert(
+                "noted-task",
+                "Prepare the room",
+                "2026-09-11",
+                "alice@example.com",
+                "Alice",
+                null,
+                notes: "Use six seats at the top table & keep the fire exit clear.")),
+            new RecordingCompletionRegistry(),
+            sender);
+
+        await dispatcher.RunOnceAsync(Today, CancellationToken.None);
+
+        var message = Assert.Single(sender.Messages);
+        Assert.Contains("Task note:", message.BodyHtml);
+        Assert.Contains("Use six seats at the top table &amp; keep the fire exit clear.", message.BodyHtml);
+    }
+
+    [Fact]
     public async Task RunOnceAsync_CombinesDailyIncompletePlanningRemindersForTheEventCoordinator()
     {
         var ledger = new InMemoryDeliveryLedger();
@@ -482,7 +505,8 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
         string eventName = "Autumn Event",
         Guid? token = null,
         bool canCompleteFromLink = true,
-        string? expiresOn = null) =>
+        string? expiresOn = null,
+        string? notes = null) =>
         new(
             "event-1",
             eventName,
@@ -496,7 +520,8 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
             organiserEmail,
             $"/complete.html?token={(token ?? DeterministicToken(taskId)):D}",
             canCompleteFromLink,
-            expiresOn);
+            expiresOn,
+            notes);
 
     private static Guid DeterministicToken(string value)
     {
@@ -535,7 +560,8 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
         string? OrganiserEmail,
         string CompletionPath,
         bool CanCompleteFromLink = true,
-        string? ExpiresOn = null);
+        string? ExpiresOn = null,
+        string? Notes = null);
 
     private sealed record PlanningProjection(
         string EventId,

@@ -51,6 +51,8 @@ public sealed class ScheduledTaskAlert
 
     public required string TaskTitle { get; init; }
 
+    public string? Notes { get; init; }
+
     public required DateOnly DueDate { get; init; }
 
     public DateOnly? ExpiresOn { get; init; }

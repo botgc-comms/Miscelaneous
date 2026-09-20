@@ -71,7 +71,7 @@ OPENAI_PROMPT_MODEL=gpt-5.6
 
 ## Briefing Summary
 
-The selected event workspace includes a read-only **Briefing Summary**. It combines the event description, current event fields, every visible answered planning question, recorded outcomes and explicitly classified staff duties into:
+The selected event workspace includes a read-only **Briefing Summary**. It combines the event description, current event fields, every visible answered planning question, notes recorded against open or completed tasks, and explicitly classified staff duties into:
 
 - a concise, copyable event summary for the planner, describing the event rather than reporting task progress;
 - key information and relevant operational sections;
@@ -79,6 +79,8 @@ The selected event workspace includes a read-only **Briefing Summary**. It combi
 - a printable A4 notice containing key contacts and only unresolved points that affect event delivery.
 
 Planning deadlines are never treated as staff instructions. A task only supplies an action to the staff briefing when its Playbook definition contains explicit `staffBriefing` metadata with a phase, audience and practical instruction. The Playbook administration form applies the same distinction to newly added tasks. Catering also records food covers, agreed meal choices, service time, dietary requirements and event-specific bar hours so the Kitchen and Bar sections contain usable facts. Internally prepared food and external caterers follow separate operational paths, with supplier liaison assigned instead of kitchen preparation when an outside provider is responsible.
+
+Every task presentation has an explicit **Add note** or **Edit note** action. These event-specific notes are retained in the event-plan export and task CSV, included in task-alert emails sent to the responsible person, and supplied to briefing generation. A note on an open task remains unconfirmed context unless its wording explicitly records a settled decision; only tasks classified with `staffBriefing` metadata can create staff actions.
 
 The saved briefing includes a fingerprint of all its source information. Changing an event field, answer, task owner, task note, due date or completion state makes the previous briefing stale. Opening the Briefing Summary automatically generates a replacement; stale copy may be viewed while generation is running but cannot be printed as current.
 
@@ -145,6 +147,8 @@ Deadline alerts are live email. From 08:00 Europe/London each day, Event Playboo
 - every overdue task is also included in the event organiser's daily digest, including overdue tasks that do not yet have an owner;
 - when the owner and organiser use the same email address, the task appears only once in that person's digest;
 - completed, cancelled, closed and past events no longer generate planning-completion reminders.
+
+When a task has a recorded note, the note is included beneath that task in the recipient's digest so the assignee and any overdue organiser escalation receive the same working context.
 
 Delivery uses the sender configured in the enabled **Intelligent Golf** plugin. People, role contacts, shared role mailboxes and event organisers therefore need a current email address in **People & Roles**. Failed deliveries remain eligible for a 30-minute same-day retry; a persistent daily ledger prevents a successfully delivered digest being sent twice after a restart. Safe success and failure summaries appear in **Integration activity** without exposing addresses, completion tokens or email bodies.
 

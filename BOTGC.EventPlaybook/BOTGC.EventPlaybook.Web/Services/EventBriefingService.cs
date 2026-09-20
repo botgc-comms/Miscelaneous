@@ -55,13 +55,15 @@ public sealed class EventBriefingService(
                 expectedAttendees = cleanRequest.ExpectedAttendees > 0 ? cleanRequest.ExpectedAttendees : null as int?
             },
             planningAnswers = cleanRequest.Answers,
-            recordedPlanningOutcomes = cleanRequest.Tasks
-                .Where(task => task.Completed && !string.IsNullOrWhiteSpace(task.Notes))
+            taskNotes = cleanRequest.Tasks
+                .Where(task => !string.IsNullOrWhiteSpace(task.Notes))
                 .Select(task => new
                 {
                     area = task.Area,
                     subject = task.Title,
-                    outcome = task.Notes
+                    owner = EmptyAsNull(task.Owner),
+                    status = task.Completed ? "completed" : "open",
+                    note = task.Notes
                 }),
             operationalStaffDuties = cleanRequest.Tasks
                 .Where(task => IsStaffBriefingPhase(task.StaffBriefingPhase))
@@ -76,14 +78,14 @@ public sealed class EventBriefingService(
                 }),
             rules = new[]
             {
-                "Use only facts in the supplied event details, planning answers, recorded planning outcomes and explicitly classified operational staff duties. Never invent timings, attendance, suppliers, staffing, prices, food, entertainment, safety measures or completed work.",
+                "Use only facts in the supplied event details, planning answers, task notes and explicitly classified operational staff duties. Never invent timings, attendance, suppliers, staffing, prices, food, entertainment, safety measures or completed work.",
                 "Resolve repeated information into one clear statement. If sources appear inconsistent, state that the point needs confirmation instead of choosing one.",
                 "The event summary is concise copy for the event planner, not a task report. Explain what the event is and capture confirmed date and timings, expected attendance or catering covers, meal choices and service times, opening hours, entertainment, room or course arrangements, guest information, staffing requirements and other relevant operational facts.",
                 "Never put task deadlines, planning milestones, completion status or reminders to agree, decide, document, arrange or book something into the event summary.",
-                "Recorded planning outcomes are free-form task notes. Use a note as a settled fact only when it explicitly records a confirmed value or completed outcome; otherwise omit it or identify the point as unconfirmed.",
+                "Task notes are shared planning context. Include useful note information in the planner summary where relevant, but use it as a settled fact only when the note explicitly records a confirmed value or completed outcome. Treat notes on open tasks as unconfirmed unless their wording clearly records a settled decision.",
                 "Omit irrelevant headings rather than filling them with generic advice.",
                 "The staff briefing is for club staff who will physically deliver the event, especially Kitchen, Bar, Clubhouse or Front of House, Golf Operations and Greens where relevant. It is not the organisers' planning checklist.",
-                "Use operationalStaffDuties as the only source of task-based staff actions. You may turn confirmed planning answers or recorded outcomes into concise information for the relevant team—for example recorded covers, meal choices or bar hours—but never convert an unclassified planning task title into a staff instruction.",
+                "Use operationalStaffDuties as the only source of task-based staff actions. You may turn confirmed planning answers or settled task-note outcomes into concise information for the relevant team—for example recorded covers, meal choices or bar hours—but never convert an unclassified planning task title into a staff instruction.",
                 "Preparation means immediate setup and shift readiness shortly before guests arrive, not planning work performed days or weeks earlier. Event-day means service and delivery while the event is running. Afterwards means close-down and immediate reconciliation.",
                 "Each staff action must name the team or role that needs it and give a direct practical instruction. Do not include project deadlines, task completion labels or instructions to prepare the briefing itself.",
                 "The staff introduction should summarise what staff need to know about the event. Where supplied, include covers, meal choices, food-service and bar timings, room use and the event start and finish.",
@@ -362,6 +364,21 @@ public sealed class EventBriefingService(
             })
             .Take(8)
             .ToList();
+        var taskNotes = request.Tasks
+            .Where(task => !string.IsNullOrWhiteSpace(task.Notes))
+            .Select(task => $"{task.Title} ({(task.Completed ? "completed" : "open")}): {task.Notes}")
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Take(12)
+            .ToList();
+        if (taskNotes.Count > 0)
+        {
+            if (sections.Count >= 8) sections.RemoveAt(sections.Count - 1);
+            sections.Add(new EventBriefingSection
+            {
+                Title = "Recorded task notes",
+                Points = taskNotes
+            });
+        }
 
         var preparation = StaffActions(request.Tasks, "before-event", 18);
         var eventDay = StaffActions(request.Tasks, "event-day", 18);

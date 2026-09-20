@@ -72,6 +72,39 @@ public sealed class EventBriefingServiceTests
     }
 
     [Fact]
+    public async Task GenerateAsync_FallbackIncludesNotesFromOpenAndCompletedTasksAsSharedPlanningContext()
+    {
+        var service = CreateService();
+        var request = RequestWithTasks(
+            [],
+            new EventBriefingTask
+            {
+                Area = "Clubhouse",
+                Title = "Agree the room layout",
+                Owner = "Alex Morgan",
+                Notes = "Board members need six seats at the top table.",
+                Completed = false
+            },
+            new EventBriefingTask
+            {
+                Area = "Catering",
+                Title = "Confirm the meal service",
+                Notes = "Confirmed 60 covers with two vegetarian meals.",
+                Completed = true
+            });
+
+        var result = await service.GenerateAsync(request, CancellationToken.None);
+
+        var notes = Assert.Single(result.Sections, section => section.Title == "Recorded task notes");
+        Assert.Contains(notes.Points, point =>
+            point.Contains("Agree the room layout (open)", StringComparison.Ordinal)
+            && point.Contains("six seats", StringComparison.Ordinal));
+        Assert.Contains(notes.Points, point =>
+            point.Contains("Confirm the meal service (completed)", StringComparison.Ordinal)
+            && point.Contains("60 covers", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public async Task GenerateAsync_UsesOtherFoodServiceDetailInsteadOfGenericOptionLabel()
     {
         var service = CreateService();
