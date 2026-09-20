@@ -222,6 +222,7 @@ public sealed class TaskEmailAlertDispatcher(
 
             var digests = new Dictionary<string, RecipientDigest>(StringComparer.OrdinalIgnoreCase);
             var candidateTaskCount = 0;
+            var candidatePlanningReminderCount = 0;
             foreach (var task in schedule.Tasks)
             {
                 if (task.ExpiresOn is { } expiresOn && londonDate > expiresOn) continue;
@@ -300,6 +301,16 @@ public sealed class TaskEmailAlertDispatcher(
                 }
             }
 
+            foreach (var reminder in schedule.PlanningReminders)
+            {
+                if (reminder.TotalQuestions <= 0 || reminder.PercentComplete >= 100) continue;
+                if (reminder.EventDate is { } eventDate && eventDate < londonDate) continue;
+                var organiserEmail = NormaliseEmail(reminder.OrganiserEmail);
+                if (organiserEmail is null) continue;
+                GetDigest(digests, organiserEmail).Add(reminder);
+                candidatePlanningReminderCount++;
+            }
+
             var sent = 0;
             var alreadySent = 0;
             var failed = 0;
@@ -324,17 +335,17 @@ public sealed class TaskEmailAlertDispatcher(
                     await deliveryLedger.MarkSentAsync(
                         londonDate,
                         digest.RecipientEmail,
-                        message.TaskCount,
+                        message.AttentionItemCount,
                         cancellationToken);
                     sent++;
                     await RecordActivitySafelyAsync(
                         new IntegrationActivityWrite
                         {
-                            Integration = "Task email alerts",
-                            Operation = "Send task alert digest",
+                            Integration = "Event Playbook email alerts",
+                            Operation = "Send combined alert digest",
                             Outcome = "succeeded",
                             Stage = "task-email-digest",
-                            Message = $"Sent one combined task alert containing {message.TaskCount} task{(message.TaskCount == 1 ? string.Empty : "s")}."
+                            Message = $"Sent one combined Event Playbook alert containing {message.TaskCount} task{(message.TaskCount == 1 ? string.Empty : "s")} and {message.PlanningReminderCount} planning reminder{(message.PlanningReminderCount == 1 ? string.Empty : "s")}."
                         },
                         cancellationToken);
                 }
@@ -352,8 +363,8 @@ public sealed class TaskEmailAlertDispatcher(
                     await RecordActivitySafelyAsync(
                         new IntegrationActivityWrite
                         {
-                            Integration = "Task email alerts",
-                            Operation = "Send task alert digest",
+                            Integration = "Event Playbook email alerts",
+                            Operation = "Send combined alert digest",
                             Outcome = "failed",
                             Stage = "task-email-digest",
                             Message = "A combined task alert could not be delivered and remains eligible for retry."
@@ -366,6 +377,7 @@ public sealed class TaskEmailAlertDispatcher(
             {
                 LocalDate = londonDate,
                 CandidateTaskCount = candidateTaskCount,
+                CandidatePlanningReminderCount = candidatePlanningReminderCount,
                 RecipientCount = digests.Count,
                 SentRecipientCount = sent,
                 AlreadySentRecipientCount = alreadySent,
@@ -519,11 +531,25 @@ public static class TaskAlertScheduleReader
             tasks.Add(task);
         }
 
+        var planningReminders = new List<ScheduledPlanningReminder>();
+        var seenReminderEvents = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        if (scheduleElement.TryGetProperty("planningReminders", out var remindersElement) &&
+            remindersElement.ValueKind == JsonValueKind.Array)
+        {
+            foreach (var item in remindersElement.EnumerateArray().Take(MaximumTasks))
+            {
+                if (!TryReadPlanningReminder(item, out var reminder)) continue;
+                if (!seenReminderEvents.Add(reminder.EventId)) continue;
+                planningReminders.Add(reminder);
+            }
+        }
+
         return new TaskAlertSchedule
         {
             GeneratedAtUtc = generatedAtUtc,
             PublicBaseUrl = publicBaseUrl,
-            Tasks = tasks
+            Tasks = tasks,
+            PlanningReminders = planningReminders
         };
     }
 
@@ -603,6 +629,53 @@ public static class TaskAlertScheduleReader
         return true;
     }
 
+    private static bool TryReadPlanningReminder(
+        JsonElement element,
+        out ScheduledPlanningReminder reminder)
+    {
+        reminder = null!;
+        if (element.ValueKind != JsonValueKind.Object) return false;
+        var eventId = ReadString(element, "eventId", 200);
+        var eventName = ReadString(element, "eventName", 500);
+        var organiserEmail = ReadString(element, "organiserEmail", 500);
+        if (eventId is null || eventName is null || organiserEmail is null ||
+            !TryReadNonNegativeInt(element, "answeredQuestions", out var answered) ||
+            !TryReadNonNegativeInt(element, "totalQuestions", out var total) ||
+            total <= 0 || answered > total)
+        {
+            return false;
+        }
+
+        DateOnly? eventDate = null;
+        var eventDateValue = ReadString(element, "eventDate", 20);
+        if (eventDateValue is not null)
+        {
+            if (!DateOnly.TryParseExact(
+                    eventDateValue,
+                    "yyyy-MM-dd",
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.None,
+                    out var parsedDate))
+            {
+                return false;
+            }
+            eventDate = parsedDate;
+        }
+
+        reminder = new ScheduledPlanningReminder
+        {
+            EventId = eventId,
+            EventName = eventName,
+            EventDate = eventDate,
+            OrganiserName = ReadString(element, "organiserName", 300),
+            OrganiserEmail = organiserEmail,
+            AnsweredQuestions = answered,
+            TotalQuestions = total,
+            FirstIncompleteModuleId = ReadString(element, "firstIncompleteModuleId", 200)
+        };
+        return true;
+    }
+
     private static bool TryReadCompletionPath(
         string? value,
         out string completionPath,
@@ -658,15 +731,27 @@ public static class TaskAlertScheduleReader
             _ => defaultValue
         };
     }
+
+    private static bool TryReadNonNegativeInt(JsonElement element, string propertyName, out int result)
+    {
+        result = 0;
+        return element.TryGetProperty(propertyName, out var value) &&
+               value.ValueKind == JsonValueKind.Number &&
+               value.TryGetInt32(out result) &&
+               result >= 0;
+    }
 }
 
 internal sealed class RecipientDigest(string recipientEmail)
 {
     private readonly Dictionary<string, DigestTask> _tasks = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, ScheduledPlanningReminder> _planningReminders = new(StringComparer.OrdinalIgnoreCase);
 
     public string RecipientEmail { get; } = recipientEmail;
 
     public IReadOnlyCollection<DigestTask> Tasks => _tasks.Values;
+
+    public IReadOnlyCollection<ScheduledPlanningReminder> PlanningReminders => _planningReminders.Values;
 
     public void Add(
         ScheduledTaskAlert task,
@@ -690,6 +775,9 @@ internal sealed class RecipientDigest(string recipientEmail)
             IsOrganiserEscalation = isOrganiserEscalation
         });
     }
+
+    public void Add(ScheduledPlanningReminder reminder) =>
+        _planningReminders[reminder.EventId] = reminder;
 }
 
 internal sealed class DigestTask
@@ -718,6 +806,10 @@ internal static class TaskAlertEmailComposer
             .ThenBy(item => item.Task.EventName, StringComparer.OrdinalIgnoreCase)
             .ThenBy(item => item.Task.TaskTitle, StringComparer.OrdinalIgnoreCase)
             .ToArray();
+        var planningReminders = digest.PlanningReminders
+            .OrderBy(item => item.EventDate ?? DateOnly.MaxValue)
+            .ThenBy(item => item.EventName, StringComparer.OrdinalIgnoreCase)
+            .ToArray();
         var encoder = HtmlEncoder.Default;
         var sections = new[]
         {
@@ -728,10 +820,45 @@ internal static class TaskAlertEmailComposer
 
         var body = new System.Text.StringBuilder();
         body.Append("<div style=\"font-family:Arial,sans-serif;color:#17353f;line-height:1.45;max-width:720px\">")
-            .Append("<h1 style=\"color:#0d3548\">Event Playbook tasks requiring attention</h1>")
-            .Append("<p>This is your combined task alert for ")
+            .Append(planningReminders.Length > 0
+                ? "<h1 style=\"color:#0d3548\">Event Playbook planning requiring attention</h1>"
+                : "<h1 style=\"color:#0d3548\">Event Playbook tasks requiring attention</h1>")
+            .Append("<p>This is your combined Event Playbook alert for ")
             .Append(encoder.Encode(localDate.ToString("dddd d MMMM yyyy", BritishCulture)))
             .Append(".</p>");
+
+        if (planningReminders.Length > 0)
+        {
+            body.Append("<h2 style=\"color:#0d3548;border-bottom:1px solid #d9e2df;padding-bottom:6px\">Planning incomplete</h2>")
+                .Append("<p>Advertising an event does not finish its operational plan. Please complete the outstanding questions for these events:</p>")
+                .Append("<ul style=\"padding-left:22px\">");
+            foreach (var reminder in planningReminders)
+            {
+                var moduleId = string.IsNullOrWhiteSpace(reminder.FirstIncompleteModuleId)
+                    ? "start"
+                    : reminder.FirstIncompleteModuleId;
+                var planningPath = $"/?view={Uri.EscapeDataString($"module:{moduleId}")}&event={Uri.EscapeDataString(reminder.EventId)}";
+                var planningUrl = new Uri(publicBaseUrl, planningPath).AbsoluteUri;
+                body.Append("<li style=\"margin:0 0 14px\"><a style=\"font-weight:700;color:#07546b\" href=\"")
+                    .Append(encoder.Encode(planningUrl))
+                    .Append("\">")
+                    .Append(encoder.Encode(reminder.EventName))
+                    .Append("</a><br><span><strong>")
+                    .Append(reminder.PercentComplete.ToString(CultureInfo.InvariantCulture))
+                    .Append("% complete</strong> &middot; ")
+                    .Append(reminder.AnsweredQuestions.ToString(CultureInfo.InvariantCulture))
+                    .Append(" of ")
+                    .Append(reminder.TotalQuestions.ToString(CultureInfo.InvariantCulture))
+                    .Append(" planning questions answered");
+                if (reminder.EventDate is { } eventDate)
+                {
+                    body.Append(" &middot; event ")
+                        .Append(encoder.Encode(eventDate.ToString("ddd d MMM yyyy", BritishCulture)));
+                }
+                body.Append("</span></li>");
+            }
+            body.Append("</ul>");
+        }
 
         foreach (var section in sections.Where(section => section.Tasks.Length > 0))
         {
@@ -759,13 +886,19 @@ internal static class TaskAlertEmailComposer
             body.Append("</ul>");
         }
 
-        body.Append("<p style=\"margin-top:24px;color:#52666b\">Each task title opens its individual task page. This combined alert replaces separate emails for each task.</p></div>");
+        body.Append("<p style=\"margin-top:24px;color:#52666b\">Links open the relevant event planning area or individual task. This combined alert replaces separate emails for each item.</p></div>");
+        var subject = tasks.Length > 0 && planningReminders.Length > 0
+            ? $"Event Playbook: {tasks.Length} task{(tasks.Length == 1 ? string.Empty : "s")} and {planningReminders.Length} event plan{(planningReminders.Length == 1 ? string.Empty : "s")} need attention"
+            : planningReminders.Length > 0
+                ? $"Event Playbook: {planningReminders.Length} event plan{(planningReminders.Length == 1 ? string.Empty : "s")} need attention"
+                : $"Event Playbook: {tasks.Length} task{(tasks.Length == 1 ? string.Empty : "s")} need attention";
         return new TaskAlertEmailMessage
         {
             RecipientEmail = digest.RecipientEmail,
-            Subject = $"Event Playbook: {tasks.Length} task{(tasks.Length == 1 ? string.Empty : "s")} need attention",
+            Subject = subject,
             BodyHtml = body.ToString(),
-            TaskCount = tasks.Length
+            TaskCount = tasks.Length,
+            PlanningReminderCount = planningReminders.Length
         };
     }
 

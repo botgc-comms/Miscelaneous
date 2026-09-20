@@ -131,6 +131,8 @@ builder.Services.AddSingleton<IRetrospectiveAnalysisService, RetrospectiveAnalys
 builder.Services.AddSingleton<IEventBriefingService, EventBriefingService>();
 builder.Services.AddSingleton<IPluginSettingsStore, PluginSettingsStore>();
 builder.Services.AddSingleton<IClubBrandingStore, ClubBrandingStore>();
+builder.Services.AddSingleton<IPlaybookTemplateStore, PlaybookTemplateStore>();
+builder.Services.AddSingleton<IPlaybookAssistantService, PlaybookAssistantService>();
 builder.Services.AddSingleton<PrototypePersistenceStore>();
 builder.Services.AddSingleton<ISharedPlaybookStateStore>(services => services.GetRequiredService<PrototypePersistenceStore>());
 builder.Services.AddSingleton<IPosterSessionStore>(services => services.GetRequiredService<PrototypePersistenceStore>());
@@ -1833,6 +1835,134 @@ app.MapGet("/api/admin/plugins", async (
     return Results.Ok(await pluginSettingsStore.GetOverviewAsync(cancellationToken));
 });
 
+app.MapGet("/api/playbook/template", async (
+    IPlaybookTemplateStore templateStore,
+    CancellationToken cancellationToken) =>
+{
+    return Results.Ok(await templateStore.GetAsync(cancellationToken));
+});
+
+app.MapPut("/api/admin/playbook/template", async (
+    SavePlaybookTemplateRequest request,
+    IPlaybookTemplateStore templateStore,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        return Results.Ok(await templateStore.SaveAsync(request, cancellationToken));
+    }
+    catch (PlaybookTemplateConflictException exception)
+    {
+        return Results.Json(new
+        {
+            error = exception.Message,
+            current = exception.Current
+        }, statusCode: StatusCodes.Status409Conflict);
+    }
+    catch (ArgumentException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
+});
+
+app.MapPost("/api/admin/playbook/template/reset", async (
+    ResetPlaybookTemplateRequest request,
+    IPlaybookTemplateStore templateStore,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        return Results.Ok(await templateStore.ResetAsync(request.ExpectedRevision, cancellationToken));
+    }
+    catch (PlaybookTemplateConflictException exception)
+    {
+        return Results.Json(new
+        {
+            error = exception.Message,
+            current = exception.Current
+        }, statusCode: StatusCodes.Status409Conflict);
+    }
+});
+
+app.MapPost("/api/admin/playbook-assistant/propose", async (
+    PlaybookAssistantProposalRequest request,
+    IPlaybookAssistantService assistant,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        return Results.Ok(await assistant.ProposeAsync(request, cancellationToken));
+    }
+    catch (PlaybookTemplateConflictException exception)
+    {
+        return Results.Json(new
+        {
+            error = exception.Message,
+            current = exception.Current
+        }, statusCode: StatusCodes.Status409Conflict);
+    }
+    catch (ArgumentException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
+    catch (InvalidOperationException exception)
+    {
+        return Results.Problem(
+            title: "Playbook assistant unavailable",
+            detail: exception.Message,
+            statusCode: StatusCodes.Status503ServiceUnavailable);
+    }
+});
+
+app.MapPost("/api/admin/playbook-assistant/apply", async (
+    ApplyPlaybookAssistantProposalRequest request,
+    IPlaybookAssistantService assistant,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        return Results.Ok(await assistant.ApplyAsync(request, cancellationToken));
+    }
+    catch (PlaybookTemplateConflictException exception)
+    {
+        return Results.Json(new
+        {
+            error = exception.Message,
+            current = exception.Current
+        }, statusCode: StatusCodes.Status409Conflict);
+    }
+    catch (ArgumentException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
+});
+
+app.MapPost("/api/admin/playbook-assistant/voice", async (
+    HttpRequest request,
+    IPlaybookAssistantService assistant,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        if (!request.HasFormContentType) return Results.BadRequest(new { error = "Upload an audio recording." });
+        var form = await request.ReadFormAsync(cancellationToken);
+        var audio = form.Files.GetFile("audio");
+        if (audio is null) return Results.BadRequest(new { error = "Upload an audio recording." });
+        return Results.Ok(new { text = await assistant.TranscribeAsync(audio, cancellationToken) });
+    }
+    catch (ArgumentException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
+    catch (InvalidOperationException exception)
+    {
+        return Results.Problem(
+            title: "Voice instruction unavailable",
+            detail: exception.Message,
+            statusCode: StatusCodes.Status503ServiceUnavailable);
+    }
+});
+
 app.MapGet("/api/admin/integration-activity", async (
     int? limit,
     IIntegrationActivityStore activityStore,
@@ -2115,10 +2245,12 @@ app.MapPost("/api/briefing/generate", async (
     }
 });
 
-app.MapGet("/api/playbook/config", (IWebHostEnvironment environment) =>
+app.MapGet("/api/playbook/config", async (
+    IPlaybookTemplateStore templateStore,
+    CancellationToken cancellationToken) =>
 {
-    var path = Path.Combine(environment.ContentRootPath, "Data", "event-playbook.json");
-    return Results.Text(File.ReadAllText(path), "application/json");
+    var document = await templateStore.GetAsync(cancellationToken);
+    return Results.Text(document.Template.GetRawText(), "application/json");
 });
 
 var notificationOutboxLock = new SemaphoreSlim(1, 1);

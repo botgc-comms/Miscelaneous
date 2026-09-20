@@ -7,6 +7,36 @@ public sealed class TaskAlertSchedule
     public required Uri PublicBaseUrl { get; init; }
 
     public IReadOnlyList<ScheduledTaskAlert> Tasks { get; init; } = [];
+
+    public IReadOnlyList<ScheduledPlanningReminder> PlanningReminders { get; init; } = [];
+}
+
+public sealed class ScheduledPlanningReminder
+{
+    public required string EventId { get; init; }
+
+    public required string EventName { get; init; }
+
+    public DateOnly? EventDate { get; init; }
+
+    public string? OrganiserName { get; init; }
+
+    public required string OrganiserEmail { get; init; }
+
+    public int AnsweredQuestions { get; init; }
+
+    public int TotalQuestions { get; init; }
+
+    public int PercentComplete => TotalQuestions <= 0
+        ? 0
+        : Math.Clamp(
+            (int)Math.Round(
+                AnsweredQuestions * 100d / TotalQuestions,
+                MidpointRounding.AwayFromZero),
+            0,
+            100);
+
+    public string? FirstIncompleteModuleId { get; init; }
 }
 
 public sealed class ScheduledTaskAlert
@@ -49,6 +79,10 @@ public sealed class TaskAlertEmailMessage
     public required string BodyHtml { get; init; }
 
     public int TaskCount { get; init; }
+
+    public int PlanningReminderCount { get; init; }
+
+    public int AttentionItemCount => TaskCount + PlanningReminderCount;
 }
 
 public sealed class TaskEmailAlertDispatchResult
@@ -56,6 +90,8 @@ public sealed class TaskEmailAlertDispatchResult
     public DateOnly LocalDate { get; init; }
 
     public int CandidateTaskCount { get; init; }
+
+    public int CandidatePlanningReminderCount { get; init; }
 
     public int RecipientCount { get; init; }
 

@@ -139,10 +139,12 @@ That remains an intentional development provider for immediate assignment events
 
 Deadline alerts are live email. From 08:00 Europe/London each day, Event Playbook sends each recipient one combined digest rather than one message per task:
 
+- each active event whose planning questions are not yet complete is included in its event coordinator's daily digest, showing the current percentage and linking to the first incomplete planning area;
 - the task owner is emailed exactly two calendar days before the due date and again on the due date;
 - an incomplete overdue task is emailed to its owner every day;
 - every overdue task is also included in the event organiser's daily digest, including overdue tasks that do not yet have an owner;
-- when the owner and organiser use the same email address, the task appears only once in that person's digest.
+- when the owner and organiser use the same email address, the task appears only once in that person's digest;
+- completed, cancelled, closed and past events no longer generate planning-completion reminders.
 
 Delivery uses the sender configured in the enabled **Intelligent Golf** plugin. People, role contacts, shared role mailboxes and event organisers therefore need a current email address in **People & Roles**. Failed deliveries remain eligible for a 30-minute same-day retry; a persistent daily ledger prevents a successfully delivered digest being sent twice after a restart. Safe success and failure summaries appear in **Integration activity** without exposing addresses, completion tokens or email bodies.
 
@@ -187,11 +189,15 @@ The same mechanism can later support sunset, room capacity, supplier access, sta
 The Playbook Administration view provides:
 
 - a link to the dedicated People & Roles directory;
+- an AI configuration assistant for discussing club-specific secondary questions and generated tasks, with an explicit proposal/review/apply step;
+- optional voice instructions that are transcribed into editable text before they are sent;
 - adding questions to a module/section;
 - adding tasks with deadline and default-owner role;
 - simple conditional visibility against another answer;
 - creation of derived-fact advisory rules;
 - Draft → Validate → Publish behaviour.
+
+The ten primary questions in **Start here** are protected from AI and direct-template changes. AI rewording retains existing item IDs, retired club-specific items are hidden rather than deleted, and every write uses an optimistic template revision. This preserves compatible answers and task history when the question set evolves. The bundled core can be restored from the assistant at any time.
 
 Validation checks include:
 
@@ -201,6 +207,8 @@ Validation checks include:
 - unknown responsibility roles;
 - advisory targets;
 - circular question visibility dependencies.
+
+The active club template is stored in `App_Data/playbook-template.json`; the browser copy is only a fallback cache. Assistant proposals never alter that file. Only the separate **Apply approved proposal** action persists a validated change.
 
 Existing event records retain the Playbook version they were created against. Applied data-shape migrations are recorded separately on the event.
 

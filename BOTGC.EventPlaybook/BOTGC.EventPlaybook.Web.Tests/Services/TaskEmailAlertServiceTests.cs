@@ -58,6 +58,45 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task RunOnceAsync_CombinesDailyIncompletePlanningRemindersForTheEventCoordinator()
+    {
+        var ledger = new InMemoryDeliveryLedger();
+        var sender = new RecordingEmailSender();
+        var schedule = StateWithPlanning(
+            [Alert("due-today", "Confirm the supplier", "2026-09-11", "alice@example.com", "Alice", null)],
+            [
+                Planning("event-1", "Autumn Event", "2026-09-20", "alice@example.com", 2, 15, "food-drink"),
+                Planning("event-2", "Winter Social", "2026-10-02", "alice@example.com", 5, 10, "communications"),
+                Planning("past", "Past Event", "2026-09-10", "alice@example.com", 1, 10, "start"),
+                Planning("complete", "Complete Event", "2026-10-03", "alice@example.com", 10, 10, "start")
+            ]);
+        var dispatcher = CreateDispatcher(schedule, new RecordingCompletionRegistry(), sender, ledger);
+
+        var first = await dispatcher.RunOnceAsync(Today, CancellationToken.None);
+        var duplicate = await dispatcher.RunOnceAsync(Today, CancellationToken.None);
+        var nextDay = await dispatcher.RunOnceAsync(Today.AddDays(1), CancellationToken.None);
+
+        Assert.Equal(1, first.CandidateTaskCount);
+        Assert.Equal(2, first.CandidatePlanningReminderCount);
+        Assert.Equal(1, first.RecipientCount);
+        Assert.Equal(1, first.SentRecipientCount);
+        Assert.Equal(1, duplicate.AlreadySentRecipientCount);
+        Assert.Equal(1, nextDay.SentRecipientCount);
+        Assert.Equal(2, sender.Messages.Count);
+        var message = sender.Messages[0];
+        Assert.Equal(1, message.TaskCount);
+        Assert.Equal(2, message.PlanningReminderCount);
+        Assert.Contains("Autumn Event", message.BodyHtml);
+        Assert.Contains("13% complete", message.BodyHtml);
+        Assert.Contains("Winter Social", message.BodyHtml);
+        Assert.Contains("50% complete", message.BodyHtml);
+        Assert.Contains("view=module%3Afood-drink&amp;event=event-1", message.BodyHtml);
+        Assert.DoesNotContain("Past Event", message.BodyHtml);
+        Assert.DoesNotContain("Complete Event", message.BodyHtml);
+        Assert.Contains("1 task and 2 event plans need attention", message.Subject);
+    }
+
+    [Fact]
     public async Task RunOnceAsync_RegistersThenSkipsTaskCompletedThroughItsLink()
     {
         var item = Alert("complete", "Already complete", "2026-09-11", "alice@example.com", "Alice", "organiser@example.com");
@@ -419,6 +458,20 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
             }
         }, WebJsonOptions);
 
+    private static JsonElement StateWithPlanning(
+        IReadOnlyList<AlertProjection> tasks,
+        IReadOnlyList<PlanningProjection> planningReminders) =>
+        JsonSerializer.SerializeToElement(new
+        {
+            taskAlertSchedule = new
+            {
+                generatedAtUtc = "2026-09-11T07:55:00Z",
+                publicBaseUrl = "https://events.example.test",
+                tasks,
+                planningReminders
+            }
+        }, WebJsonOptions);
+
     private static AlertProjection Alert(
         string taskId,
         string title,
@@ -459,6 +512,16 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
     private static int Occurrences(string value, string fragment) =>
         value.Split(fragment, StringSplitOptions.None).Length - 1;
 
+    private static PlanningProjection Planning(
+        string eventId,
+        string eventName,
+        string? eventDate,
+        string organiserEmail,
+        int answered,
+        int total,
+        string firstIncompleteModuleId) =>
+        new(eventId, eventName, eventDate, "Event Organiser", organiserEmail, answered, total, firstIncompleteModuleId);
+
     private sealed record AlertProjection(
         string EventId,
         string EventName,
@@ -473,6 +536,16 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
         string CompletionPath,
         bool CanCompleteFromLink = true,
         string? ExpiresOn = null);
+
+    private sealed record PlanningProjection(
+        string EventId,
+        string EventName,
+        string? EventDate,
+        string? OrganiserName,
+        string OrganiserEmail,
+        int AnsweredQuestions,
+        int TotalQuestions,
+        string? FirstIncompleteModuleId);
 
     private sealed class StubSharedStateStore(JsonElement state) : ISharedPlaybookStateStore
     {

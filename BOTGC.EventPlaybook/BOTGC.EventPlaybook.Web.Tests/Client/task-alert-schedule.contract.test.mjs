@@ -54,6 +54,19 @@ test('the projection contains only actionable active-event tasks and resolves cu
   assert.match(roleRoute, /role\?\.fallbackRoleId\s*\?\s*contactForRole/);
 });
 
+test('the projection includes incomplete event planning for the current event coordinator', () => {
+  const projection = functionSource('materialiseTaskAlertSchedule');
+
+  assert.match(projection, /const planningReminders = \[\]/);
+  assert.match(projection, /const planningProgress = getOverallQuestionProgress\(event\)/);
+  assert.match(projection, /lifecycle\.status !== 'cancelled'/);
+  assert.match(projection, /organiser\.email && planningProgress\.total > 0 && planningProgress\.percent < 100/);
+  assert.match(projection, /firstIncompleteModuleId: firstIncompleteModule\?\.id \|\| 'start'/);
+  assert.match(projection, /answeredQuestions: planningProgress\.answered/);
+  assert.match(projection, /totalQuestions: planningProgress\.total/);
+  assert.match(projection, /const content = \{ publicBaseUrl, tasks: projectedTasks, planningReminders \}/);
+});
+
 test('each projected task receives one reusable registered completion link', () => {
   const projection = functionSource('materialiseTaskAlertSchedule');
   const queueNotification = functionSource('queueNotification');

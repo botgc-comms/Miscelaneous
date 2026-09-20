@@ -124,6 +124,11 @@
   const playbookFileInput = document.getElementById('playbook-file-input');
 
   let playbook = null;
+  let playbookTemplateRevision = 0;
+  let protectedQuestionIds = [];
+  let playbookTemplateNeedsMigration = false;
+  let pendingPlaybookTemplateDocument = null;
+  let playbookTemplatePollTimer = null;
   let itemIndex = new Map();
   let moduleIndex = new Map();
   let state = loadState();
@@ -1034,12 +1039,25 @@
             canCompleteFromLink: task.canCompleteFromLink !== false,
             taskPath: String(task.taskPath ?? '')
           }))
+        : [],
+      planningReminders: Array.isArray(candidate.planningReminders)
+        ? candidate.planningReminders.filter(item => item && typeof item === 'object').map(item => ({
+            eventId: String(item.eventId ?? ''),
+            eventName: String(item.eventName ?? ''),
+            eventDate: String(item.eventDate ?? ''),
+            organiserName: String(item.organiserName ?? ''),
+            organiserEmail: String(item.organiserEmail ?? ''),
+            answeredQuestions: Math.max(0, Number(item.answeredQuestions) || 0),
+            totalQuestions: Math.max(0, Number(item.totalQuestions) || 0),
+            firstIncompleteModuleId: String(item.firstIncompleteModuleId ?? '')
+          }))
         : []
     };
   }
 
   function materialiseTaskAlertSchedule(registerLinks = sharedStateReady) {
     const projectedTasks = [];
+    const planningReminders = [];
     const publicBaseUrl = location.origin;
 
     if (playbook) {
@@ -1050,6 +1068,23 @@
         if (event.closedAt || lifecycle.status === 'completed') continue;
 
         const organiser = assignmentRecipient(event.organiserRef ?? event.organiser, event);
+        const planningProgress = getOverallQuestionProgress(event);
+        if (lifecycle.status !== 'cancelled' && organiser.email && planningProgress.total > 0 && planningProgress.percent < 100) {
+          const firstIncompleteModule = playbook.modules.find(module => {
+            const progress = moduleProgress(module, event);
+            return progress.active && progress.total > 0 && progress.answered < progress.total;
+          });
+          planningReminders.push({
+            eventId: event.id,
+            eventName: event.name,
+            eventDate: event.eventDate,
+            organiserName: organiser.name || event.organiser || '',
+            organiserEmail: organiser.email,
+            answeredQuestions: planningProgress.answered,
+            totalQuestions: planningProgress.total,
+            firstIncompleteModuleId: firstIncompleteModule?.id || 'start'
+          });
+        }
         for (const task of getActiveTasks(event)) {
           if (task.expired && task.state.completionToken && registerLinks) {
             ensureCompletionLinkRegistration(event, task.item, task.state, task.dueDate);
@@ -1083,7 +1118,7 @@
       }
     }
 
-    const content = { publicBaseUrl, tasks: projectedTasks };
+    const content = { publicBaseUrl, tasks: projectedTasks, planningReminders };
     const previous = normaliseTaskAlertSchedule(state.taskAlertSchedule);
     const unchanged = previous.generatedAtUtc && valuesEqual(
       { publicBaseUrl: previous.publicBaseUrl, tasks: previous.tasks },
@@ -1388,57 +1423,96 @@
     }
   }
 
-  function replayLocalAdminCustomisations(bundledPlaybook, storedTemplate) {
-    const merged = structuredClone(bundledPlaybook);
-    const itemIds = new Set();
-    const replayedAdminItems = [];
-    for (const module of merged.modules ?? []) {
-      for (const section of module.sections ?? []) {
-        for (const item of section.items ?? []) itemIds.add(item.id);
+  function mergeNamedTemplateArray(coreValues, legacyValues, keyName) {
+    const merged = structuredClone(Array.isArray(coreValues) ? coreValues : []);
+    const indexes = new Map(merged.map((value, index) => [String(value?.[keyName] ?? ''), index]));
+    for (const legacyValue of Array.isArray(legacyValues) ? legacyValues : []) {
+      const key = String(legacyValue?.[keyName] ?? '');
+      if (!key) continue;
+      const clone = structuredClone(legacyValue);
+      if (indexes.has(key)) merged[indexes.get(key)] = clone;
+      else {
+        indexes.set(key, merged.length);
+        merged.push(clone);
       }
     }
+    return merged;
+  }
 
-    for (const storedModule of storedTemplate.modules ?? []) {
-      const targetModule = (merged.modules ?? []).find(module => module.id === storedModule.id);
-      if (!targetModule) continue;
-      for (const storedSection of storedModule.sections ?? []) {
-        const targetSection = (targetModule.sections ?? []).find(section => section.id === storedSection.id);
-        if (!targetSection) continue;
-        for (const item of storedSection.items ?? []) {
-          if (item.source !== 'admin' || itemIds.has(item.id)) continue;
-          const replayedItem = structuredClone(item);
-          targetSection.items.push(replayedItem);
-          replayedAdminItems.push(replayedItem);
-          itemIds.add(item.id);
+  function replayLocalAdminCustomisations(bundledPlaybook, storedTemplate, protectedIds = protectedQuestionIds) {
+    const merged = structuredClone(bundledPlaybook);
+    const derivedProtectedIds = (bundledPlaybook?.modules ?? [])
+      .find(module => module.id === 'start')?.sections
+      ?.flatMap(section => section.items ?? [])
+      .filter(item => item.type === 'question')
+      .map(item => String(item.id)) ?? [];
+    const protectedSet = new Set((protectedIds?.length ? protectedIds : derivedProtectedIds).map(String));
+    const rootCollections = new Set(['modules', 'responsibilityRoles', 'deadlineCodes', 'advisoryRules', 'schemaVersion']);
+
+    // A browser could already contain a manually imported club Playbook from before
+    // shared storage existed. Preserve all of its club-specific data, not just items
+    // carrying a particular source flag, while retaining immutable core questions.
+    for (const [key, value] of Object.entries(storedTemplate ?? {})) {
+      if (rootCollections.has(key)) continue;
+      merged[key] = structuredClone(value);
+    }
+
+    merged.modules ??= [];
+    const locateItem = id => {
+      for (const module of merged.modules) {
+        for (const section of module.sections ?? []) {
+          const index = (section.items ?? []).findIndex(item => item.id === id);
+          if (index >= 0) return { section, index };
+        }
+      }
+      return null;
+    };
+
+    for (const legacyModule of storedTemplate?.modules ?? []) {
+      let targetModule = merged.modules.find(module => module.id === legacyModule.id);
+      if (!targetModule) {
+        targetModule = structuredClone(legacyModule);
+        targetModule.sections = (targetModule.sections ?? []).map(section => ({
+          ...section,
+          items: (section.items ?? []).filter(item => !protectedSet.has(String(item.id))).map(item => structuredClone(item))
+        }));
+        merged.modules.push(targetModule);
+        continue;
+      }
+
+      for (const [key, value] of Object.entries(legacyModule)) {
+        if (key !== 'sections' && key !== 'id') targetModule[key] = structuredClone(value);
+      }
+      targetModule.sections ??= [];
+      for (const legacySection of legacyModule.sections ?? []) {
+        let targetSection = targetModule.sections.find(section => section.id === legacySection.id);
+        if (!targetSection) {
+          targetSection = { ...structuredClone(legacySection), items: [] };
+          targetModule.sections.push(targetSection);
+        } else {
+          for (const [key, value] of Object.entries(legacySection)) {
+            if (key !== 'items' && key !== 'id') targetSection[key] = structuredClone(value);
+          }
+        }
+        targetSection.items ??= [];
+        for (const legacyItem of legacySection.items ?? []) {
+          const id = String(legacyItem?.id ?? '');
+          if (!id || protectedSet.has(id)) continue;
+          const existing = locateItem(id);
+          if (existing) existing.section.items.splice(existing.index, 1);
+          targetSection.items.push(structuredClone(legacyItem));
         }
       }
     }
 
-    merged.responsibilityRoles ??= [];
-    const mergedRoleIds = new Set(merged.responsibilityRoles.map(role => role.id));
-    const storedRoles = new Map((storedTemplate.responsibilityRoles ?? []).map(role => [role.id, role]));
-    const requiredRoleIds = replayedAdminItems
-      .map(item => item.defaultOwnerRoleId)
-      .filter(Boolean);
-    for (let index = 0; index < requiredRoleIds.length; index += 1) {
-      const roleId = requiredRoleIds[index];
-      if (mergedRoleIds.has(roleId)) continue;
-      const storedRole = storedRoles.get(roleId);
-      if (!storedRole) continue;
-      merged.responsibilityRoles.push(structuredClone(storedRole));
-      mergedRoleIds.add(roleId);
-      if (storedRole.fallbackRoleId) requiredRoleIds.push(storedRole.fallbackRoleId);
-    }
-
-    merged.advisoryRules ??= [];
-    const advisoryIds = new Set(merged.advisoryRules.map(advisory => advisory.id));
-    for (const advisory of storedTemplate.advisoryRules ?? []) {
-      const isLegacyAdminAdvisory = /^advisory-\d+$/.test(String(advisory.id ?? ''));
-      if ((advisory.source !== 'admin' && !isLegacyAdminAdvisory) || advisoryIds.has(advisory.id)) continue;
-      merged.advisoryRules.push(structuredClone(advisory));
-      advisoryIds.add(advisory.id);
-    }
-
+    merged.responsibilityRoles = mergeNamedTemplateArray(merged.responsibilityRoles, storedTemplate?.responsibilityRoles, 'id');
+    merged.deadlineCodes = mergeNamedTemplateArray(merged.deadlineCodes, storedTemplate?.deadlineCodes, 'code');
+    merged.advisoryRules = mergeNamedTemplateArray(merged.advisoryRules, storedTemplate?.advisoryRules, 'id');
+    const coreVersion = Number.parseFloat(bundledPlaybook?.schemaVersion);
+    const storedVersion = Number.parseFloat(storedTemplate?.schemaVersion);
+    merged.schemaVersion = Number.isFinite(storedVersion) && (!Number.isFinite(coreVersion) || storedVersion > coreVersion)
+      ? storedTemplate.schemaVersion
+      : bundledPlaybook.schemaVersion;
     return merged;
   }
 
@@ -1452,6 +1526,30 @@
         localStorage.removeItem(STORAGE_TEMPLATE);
         storedTemplate = null;
       }
+    }
+
+    try {
+      const response = await fetch('/api/playbook/template', { cache: 'no-store' });
+      if (response.ok) {
+        const document = await response.json();
+        if (!document?.template || typeof document.template !== 'object') {
+          throw new Error('The server returned an invalid Playbook template.');
+        }
+        playbookTemplateRevision = Number(document.revision) || 0;
+        protectedQuestionIds = Array.isArray(document.protectedQuestionIds) ? document.protectedQuestionIds.map(String) : [];
+        let serverTemplate = document.template;
+        if (storedTemplate && playbookTemplateRevision === 0) {
+          serverTemplate = replayLocalAdminCustomisations(serverTemplate, storedTemplate, document.protectedQuestionIds);
+          if (JSON.stringify(serverTemplate) !== JSON.stringify(document.template)) {
+            playbookTemplateNeedsMigration = true;
+          }
+        }
+        localStorage.setItem(STORAGE_TEMPLATE, JSON.stringify(serverTemplate));
+        return serverTemplate;
+      }
+      if (response.status !== 404) throw new Error(`Unable to load the server Playbook template (${response.status}).`);
+    } catch (error) {
+      console.warn('The shared Playbook template is unavailable; using the browser fallback.', error);
     }
 
     let bundledPlaybook;
@@ -2031,7 +2129,7 @@
   }
 
   function isItemVisible(item, event) {
-    return conditionMatches(item.showWhen, event);
+    return item?.assistantDisabled !== true && conditionMatches(item.showWhen, event);
   }
 
   function taskStateShowsBriefingOrCommitment(taskState) {
@@ -2132,17 +2230,18 @@
           for (const item of section.items) {
             if (item.type !== 'question') continue;
 
+            const retiredByAssistant = item.assistantDisabled === true;
             const visible = moduleActive && isItemVisible(item, event);
             const notRelevant = questionMeta[item.id]?.notRelevant === true;
             const invalidNotRelevant = item.required !== false || hasRecordedQuestionValue(getQuestionValue(item.id, event));
-            if ((!visible || invalidNotRelevant) && notRelevant) {
+            if (((!visible && !retiredByAssistant) || invalidNotRelevant) && notRelevant) {
               delete questionMeta[item.id];
               changed = true;
             }
 
             // Preserve answers in an inactive module, as before, but discard an
             // answer when the question's own visibility rule makes it stale.
-            if (moduleActive && !item.bind && !visible && Object.prototype.hasOwnProperty.call(event.answers, item.id)) {
+            if (moduleActive && !item.bind && !visible && !retiredByAssistant && Object.prototype.hasOwnProperty.call(event.answers, item.id)) {
               delete event.answers[item.id];
               changed = true;
             }
@@ -4354,7 +4453,22 @@
     `;
 
     bindEvents();
+    mountPendingPlaybookTemplateNotice();
     focusTaskBoardDeepLink();
+    if (state.activeView === 'admin' && accessSession.isAdmin) {
+      import('./playbook-assistant.js?v=20260919-playbook-assistant-1')
+        .then(module => module.mountPlaybookAssistant({
+          revision: playbookTemplateRevision,
+          schemaVersion: playbook.schemaVersion,
+          protectedQuestionIds: [...protectedQuestionIds],
+          onApplied: result => applyPlaybookTemplateDocument(result.document),
+          onReset: document => applyPlaybookTemplateDocument(document)
+        }))
+        .catch(error => {
+          const host = document.getElementById('playbook-assistant-root');
+          if (host) host.innerHTML = `<div class="playbook-assistant-load-error"><strong>Playbook Assistant could not start.</strong><span>${escapeHtml(error.message || 'The module could not be loaded.')}</span></div>`;
+        });
+    }
     if (state.activeView === 'plugins') {
       ensurePluginSettingsLoaded();
       ensureIntegrationActivityLoaded();
@@ -7593,6 +7707,7 @@
   function renderAdmin() {
     return `
       <section class="page-header"><div><div class="eyebrow">Configuration</div><h2>Playbook admin</h2><p>Extend the data-driven Playbook without changing application code. People and responsibilities are maintained on the dedicated People & Roles page.</p></div><button class="button button-secondary" data-view="directory">Open People & Roles</button></section>
+      <section id="playbook-assistant-root" class="playbook-assistant-host" aria-label="Playbook Assistant"></section>
       <section class="admin-branding-card" aria-labelledby="club-identity-heading">
         <div class="admin-branding-preview">
           <span class="eyebrow">Club identity</span>
@@ -7654,6 +7769,100 @@
           ${state.adminDraftAdvisories.length ? `<div class="draft-list">${state.adminDraftAdvisories.map(item => `<div class="draft-row"><span>Advisory</span><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(item.targetQuestionId)}</small></div>`).join('')}</div>` : ''}
         </article>
       </section>`;
+  }
+
+  function applyPlaybookTemplateDocument(document, { renderAfter = true } = {}) {
+    if (!document?.template || typeof document.template !== 'object') {
+      throw new Error('The server returned an invalid Playbook template.');
+    }
+    const candidate = migratePlaybookMilestoneCodes(structuredClone(document.template));
+    validatePlaybook(candidate);
+    playbook = candidate;
+    playbookTemplateRevision = Number(document.revision) || 0;
+    if (pendingPlaybookTemplateDocument && Number(pendingPlaybookTemplateDocument.revision) <= playbookTemplateRevision) {
+      pendingPlaybookTemplateDocument = null;
+    }
+    protectedQuestionIds = Array.isArray(document.protectedQuestionIds) ? document.protectedQuestionIds.map(String) : protectedQuestionIds;
+    playbookTemplateNeedsMigration = false;
+    localStorage.setItem(STORAGE_TEMPLATE, JSON.stringify(playbook));
+    indexPlaybook();
+    migrateAdmissionPlanningState();
+    migrateAdmissionModelV38();
+    migrateAdmissionPricingState();
+    migrateFoodServiceReviewCompletionState();
+    migrateEventControlStateV37();
+    saveState();
+    if (renderAfter) render();
+  }
+
+  function mountPendingPlaybookTemplateNotice() {
+    document.getElementById('playbook-template-update-notice')?.remove();
+    if (!pendingPlaybookTemplateDocument || Number(pendingPlaybookTemplateDocument.revision) <= playbookTemplateRevision) return;
+    const notice = document.createElement('aside');
+    notice.id = 'playbook-template-update-notice';
+    notice.className = 'playbook-template-update-notice';
+    notice.setAttribute('role', 'status');
+    notice.innerHTML = `
+      <div>
+        <strong>The club Playbook configuration has changed.</strong>
+        <span>Load the approved question and task updates when you are ready. Your event answers and task history are retained by their stable IDs.</span>
+      </div>
+      <button class="button button-primary" type="button">Load latest Playbook</button>`;
+    notice.querySelector('button')?.addEventListener('click', () => {
+      const latest = pendingPlaybookTemplateDocument;
+      if (!latest) return;
+      applyPlaybookTemplateDocument(latest);
+    });
+    (document.querySelector('.main-content') ?? app).prepend(notice);
+  }
+
+  async function pollPlaybookTemplate() {
+    if (!playbook || document.visibilityState === 'hidden') return;
+    try {
+      const response = await fetch('/api/playbook/template', { cache: 'no-store' });
+      if (!response.ok) return;
+      const document = await response.json();
+      if (!document?.template || Number(document.revision) <= playbookTemplateRevision) return;
+      pendingPlaybookTemplateDocument = document;
+      mountPendingPlaybookTemplateNotice();
+    } catch (error) {
+      console.warn('The latest club Playbook configuration could not be checked.', error);
+    }
+  }
+
+  function startPlaybookTemplatePolling() {
+    if (playbookTemplatePollTimer) return;
+    playbookTemplatePollTimer = window.setInterval(pollPlaybookTemplate, 30_000);
+  }
+
+  async function persistPlaybookTemplate(candidate, source = 'administrator') {
+    validatePlaybook(candidate);
+    const response = await fetch('/api/admin/playbook/template', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        expectedRevision: playbookTemplateRevision,
+        template: candidate,
+        source
+      })
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      if (response.status === 409 && result.current?.template) {
+        applyPlaybookTemplateDocument(result.current, { renderAfter: false });
+        window.setTimeout(render, 0);
+        const conflict = new Error('Another administrator updated the club Playbook while you were working. The latest version has been loaded; your draft changes are still available to review and publish again.');
+        conflict.status = response.status;
+        conflict.current = result.current;
+        throw conflict;
+      }
+      const error = new Error(result.error || result.detail || `The Playbook could not be published (${response.status}).`);
+      error.status = response.status;
+      error.current = result.current;
+      throw error;
+    }
+    applyPlaybookTemplateDocument(result, { renderAfter: false });
+    return result;
   }
 
   function renderNewEventDialog() {
@@ -9831,7 +10040,8 @@
     });
 
     document.querySelectorAll('[data-action="admin-publish"]').forEach(element => {
-      element.addEventListener('click', () => {
+      element.addEventListener('click', async () => {
+        element.disabled = true;
         try {
           const candidate = structuredClone(playbook);
           candidate.responsibilityRoles = responsibilityRoles().map(role => ({
@@ -9877,15 +10087,16 @@
           validatePlaybook(candidate);
           const nextVersion = Number.parseFloat(candidate.schemaVersion || '1') + 0.1;
           candidate.schemaVersion = nextVersion.toFixed(1);
-          playbook = candidate;
+          await persistPlaybookTemplate(candidate, 'manual-admin');
           state.adminDraftItems = [];
           state.adminDraftAdvisories = [];
-          localStorage.setItem(STORAGE_TEMPLATE, JSON.stringify(playbook));
-          indexPlaybook(); saveState();
-          alert(`Playbook v${playbook.schemaVersion} validated and published locally.`);
+          saveState();
+          alert(`Playbook v${playbook.schemaVersion} validated and published for the club.`);
           render();
         } catch (error) {
           alert(`Cannot publish: ${error.message}`);
+        } finally {
+          element.disabled = false;
         }
       });
     });
@@ -9939,12 +10150,30 @@
     });
 
     document.querySelectorAll('[data-action="reset-playbook"]').forEach(element => {
-      element.addEventListener('click', () => {
+      element.addEventListener('click', async () => {
         if (!confirm('Reset the playbook template to the bundled sample? Your event answers will be retained where IDs still match.')) {
           return;
         }
-        localStorage.removeItem(STORAGE_TEMPLATE);
-        location.reload();
+        element.disabled = true;
+        try {
+          const response = await fetch('/api/admin/playbook/template/reset', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ expectedRevision: playbookTemplateRevision })
+          });
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok) {
+            if (response.status === 409 && result.current?.template) {
+              applyPlaybookTemplateDocument(result.current);
+              throw new Error('Another administrator updated the club Playbook first. The latest version has been loaded; review it before restoring the bundled core.');
+            }
+            throw new Error(result.error || result.detail || 'The bundled Playbook could not be restored.');
+          }
+          applyPlaybookTemplateDocument(result);
+        } catch (error) {
+          alert(error.message);
+          element.disabled = false;
+        }
       });
     });
 
@@ -10157,14 +10386,7 @@
       if (state.events.length > 0 && !confirm('Load this playbook template? Existing event data will be retained, but questions or tasks with different IDs may no longer appear.')) {
         return;
       }
-      playbook = candidate;
-      localStorage.setItem(STORAGE_TEMPLATE, JSON.stringify(candidate));
-      indexPlaybook();
-      migrateAdmissionPlanningState();
-      migrateAdmissionModelV38();
-      migrateAdmissionPricingState();
-      migrateFoodServiceReviewCompletionState();
-      migrateEventControlStateV37();
+      await persistPlaybookTemplate(candidate, 'json-import');
       state.activeView = 'module:start';
       saveState();
       render();
@@ -10183,6 +10405,13 @@
       migrateEventControlStateV37();
       await initialiseClubBranding();
       await initialiseAccessSession();
+      if (accessSession.isAdmin && playbookTemplateNeedsMigration) {
+        try {
+          await persistPlaybookTemplate(playbook, 'browser-admin-migration');
+        } catch (error) {
+          console.warn('The previous browser Playbook customisations could not be migrated to shared storage.', error);
+        }
+      }
       await initialisePluginStatus();
       await initialiseSharedState();
       migrateMilestoneState();
@@ -10220,6 +10449,7 @@
       await syncServerCompletions();
       if (applyRequestedTaskDeepLink(params)) saveState();
       render();
+      startPlaybookTemplatePolling();
     })
     .catch(error => {
       app.innerHTML = `
@@ -10232,4 +10462,10 @@
       `;
       document.getElementById('fatal-load')?.addEventListener('click', () => playbookFileInput.click());
     });
+
+  window.addEventListener('pagehide', () => {
+    if (playbookTemplatePollTimer) window.clearInterval(playbookTemplatePollTimer);
+    playbookTemplatePollTimer = null;
+  });
+  window.addEventListener('pageshow', startPlaybookTemplatePolling);
 })();
