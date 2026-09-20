@@ -5771,29 +5771,10 @@
               "defaultOwnerRoleId": "communications"
             },
             {
-              "id": "review-attendee-feedback",
-              "type": "task",
-              "title": "Review anonymous attendee feedback and approve the learning to carry into the next event",
-              "detail": "Turn useful evidence into concise organiser-approved notes and map each one to the relevant planner section, question or task.",
-              "deadlineCode": "A2",
-              "showWhen": {
-                "all": [
-                  {
-                    "questionId": "collect-attendee-feedback",
-                    "operator": "equals",
-                    "value": true
-                  }
-                ]
-              },
-              "source": "expanded",
-              "responsibleArea": "Event Coordination",
-              "defaultOwnerRoleId": "event-coordinator"
-            },
-            {
               "id": "complete-retrospective",
               "type": "task",
               "title": "Complete the post-event retrospective and record financial and operational lessons",
-              "detail": "Record what went well, what did not go well and what should improve next time. Include the event's financial result and any operational learning that should be carried into a future event.",
+              "detail": "Record what went well, what did not go well and what should improve next time. Include the event's financial result and, where attendee feedback was collected, review that evidence and approve the useful learning to carry into future events.",
               "deadlineCode": "A2",
               "responsibleArea": "Event Coordination",
               "defaultOwnerRoleId": "event-coordinator",

@@ -112,10 +112,12 @@ public sealed class PlaybookConfigurationTests
 
         Assert.False(ContainsItem(root, "post-event-review"));
         Assert.False(ContainsItem(root, "review-task"));
+        Assert.False(ContainsItem(root, "review-attendee-feedback"));
 
         var retrospectiveTask = FindItem(root, "complete-retrospective");
         Assert.Equal("A2", retrospectiveTask.GetProperty("deadlineCode").GetString());
         Assert.Equal("retrospective", retrospectiveTask.GetProperty("actionView").GetString());
+        Assert.Contains("attendee feedback", retrospectiveTask.GetProperty("detail").GetString(), StringComparison.OrdinalIgnoreCase);
         Assert.False(retrospectiveTask.TryGetProperty("showWhen", out _));
     }
 
