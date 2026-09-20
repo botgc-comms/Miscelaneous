@@ -464,9 +464,34 @@ public sealed class PlaybookConfigurationTests
         Assert.Contains("normal judgement", triggers.GetProperty("helpText").GetString(), StringComparison.OrdinalIgnoreCase);
 
         var communicationsOwner = FindItem(root, "event-communications-owner");
-        Assert.False(communicationsOwner.GetProperty("required").GetBoolean());
-        Assert.Contains("when member or participant communications are planned", communicationsOwner.GetProperty("helpText").GetString(), StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("require an owner", communicationsOwner.GetProperty("helpText").GetString(), StringComparison.OrdinalIgnoreCase);
+        Assert.True(communicationsOwner.GetProperty("required").GetBoolean());
+        Assert.Equal("personOrRole", communicationsOwner.GetProperty("assignmentMode").GetString());
+        Assert.Contains("All communications tasks", communicationsOwner.GetProperty("helpText").GetString(), StringComparison.OrdinalIgnoreCase);
+        Assert.Equal(
+            "event-communications-owner",
+            FindModule(root, "communications").GetProperty("sections").EnumerateArray()
+                .Single(section => section.GetProperty("id").GetString() == "communications-plan")
+                .GetProperty("items").EnumerateArray().First().GetProperty("id").GetString());
+
+        var communicationsTasks = root.GetProperty("modules").EnumerateArray()
+            .SelectMany(module => module.GetProperty("sections").EnumerateArray())
+            .SelectMany(section => section.GetProperty("items").EnumerateArray())
+            .SelectMany(item => item.GetProperty("type").GetString() == "task"
+                ? new[] { item }
+                : item.TryGetProperty("dontKnowTask", out var dontKnowTask)
+                    ? new[] { dontKnowTask }
+                    : Array.Empty<JsonElement>())
+            .Where(task =>
+                task.TryGetProperty("responsibleArea", out var area) && area.GetString() == "Communications" ||
+                task.TryGetProperty("defaultOwnerRoleId", out var defaultOwner) && defaultOwner.GetString() == "communications")
+            .ToArray();
+        Assert.NotEmpty(communicationsTasks);
+        Assert.All(communicationsTasks, task =>
+            Assert.Equal("event-communications-owner", task.GetProperty("ownerFromQuestionId").GetString()));
+        Assert.Contains(communicationsTasks, task => task.GetProperty("id").GetString() == "digital-signage-task");
+        Assert.Contains(communicationsTasks, task => task.GetProperty("id").GetString() == "member-email-task");
+        Assert.Contains(communicationsTasks, task => task.GetProperty("id").GetString() == "member-diary-task");
+        Assert.Contains(communicationsTasks, task => task.GetProperty("id").GetString() == "issue-authoritative-event-change-message");
 
         var recipients = FindItem(root, "event-affected-areas");
         Assert.False(recipients.GetProperty("required").GetBoolean());

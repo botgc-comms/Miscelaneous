@@ -195,6 +195,7 @@
                 "deadlineCode": "B3",
                 "responsibleArea": "Communications",
                 "defaultOwnerRoleId": "communications",
+                "ownerFromQuestionId": "event-communications-owner",
                 "source": "refined"
               },
               "required": true,
@@ -281,16 +282,6 @@
               "label": "Who has authority to make the final go/no-go decision?",
               "helpText": "Name one person. Department leads should not have to infer whether the event is proceeding from separate conversations.",
               "required": true,
-              "source": "refined"
-            },
-            {
-              "id": "event-communications-owner",
-              "type": "question",
-              "answerType": "assignment",
-              "assignmentMode": "personOrRole",
-              "label": "Who owns the single authoritative message if the event changes?",
-              "helpText": "Choose a person or role when member or participant communications are planned. Event Playbook will require an owner before a cancellation or postponement update is issued.",
-              "required": false,
               "source": "refined"
             },
             {
@@ -515,6 +506,7 @@
               ] },
               "responsibleArea": "Communications",
               "defaultOwnerRoleId": "communications",
+              "ownerFromQuestionId": "event-communications-owner",
               "source": "refined"
             },
             {
@@ -585,6 +577,7 @@
               ] },
               "responsibleArea": "Communications",
               "defaultOwnerRoleId": "communications",
+              "ownerFromQuestionId": "event-communications-owner",
               "source": "refined"
             },
             {
@@ -2072,6 +2065,7 @@
               "source": "refined",
               "responsibleArea": "Communications",
               "defaultOwnerRoleId": "communications",
+              "ownerFromQuestionId": "event-communications-owner",
               "staffBriefing": {
                 "phase": "event-day",
                 "audience": "Event photographer",
@@ -4501,6 +4495,7 @@
               "deadlineCode": "B3",
               "responsibleArea": "Communications",
               "defaultOwnerRoleId": "communications",
+              "ownerFromQuestionId": "event-communications-owner",
               "actionView": "artwork",
               "actionLabel": "Open Communications Centre",
               "source": "refined"
@@ -4671,6 +4666,17 @@
           "title": "Audience and communication channels",
           "items": [
             {
+              "id": "event-communications-owner",
+              "type": "question",
+              "answerType": "assignment",
+              "assignmentMode": "personOrRole",
+              "label": "Who is responsible for this event's communications?",
+              "helpText": "Choose the person or role responsible for coordinating every selected channel, approving consistent information and issuing any later correction, cancellation or postponement message. All communications tasks will be assigned to this owner.",
+              "example": "The event organiser, Communications lead or another named person who will manage the Communications Centre work for this event.",
+              "required": true,
+              "source": "refined"
+            },
+            {
               "id": "audience",
               "type": "question",
               "answerType": "multiChoice",
@@ -4715,6 +4721,7 @@
                 "deadlineCode": "B4",
                 "responsibleArea": "Communications",
                 "defaultOwnerRoleId": "communications",
+                "ownerFromQuestionId": "event-communications-owner",
                 "source": "refined"
               },
               "required": true,
@@ -4773,7 +4780,8 @@
               },
               "source": "refined",
               "responsibleArea": "Communications",
-              "defaultOwnerRoleId": "communications"
+              "defaultOwnerRoleId": "communications",
+              "ownerFromQuestionId": "event-communications-owner"
             },
             {
               "id": "digital-signage",
@@ -4801,6 +4809,7 @@
               "source": "refined",
               "responsibleArea": "Communications",
               "defaultOwnerRoleId": "communications",
+              "ownerFromQuestionId": "event-communications-owner",
               "actionView": "artwork",
               "actionLabel": "Open Communications Centre"
             },
@@ -4830,6 +4839,7 @@
               "source": "refined",
               "responsibleArea": "Communications",
               "defaultOwnerRoleId": "communications",
+              "ownerFromQuestionId": "event-communications-owner",
               "actionView": "artwork",
               "actionLabel": "Open Communications Centre"
             },
@@ -4859,6 +4869,7 @@
               "source": "refined",
               "responsibleArea": "Communications",
               "defaultOwnerRoleId": "communications",
+              "ownerFromQuestionId": "event-communications-owner",
               "actionView": "artwork",
               "actionLabel": "Open Communications Centre"
             },
@@ -4888,6 +4899,7 @@
               "source": "refined",
               "responsibleArea": "Communications",
               "defaultOwnerRoleId": "communications",
+              "ownerFromQuestionId": "event-communications-owner",
               "actionView": "artwork",
               "actionLabel": "Open Communications Centre"
             },
@@ -4917,7 +4929,8 @@
               },
               "source": "expanded",
               "responsibleArea": "Communications",
-              "defaultOwnerRoleId": "communications"
+              "defaultOwnerRoleId": "communications",
+              "ownerFromQuestionId": "event-communications-owner"
             }
           ]
         }
@@ -5749,7 +5762,8 @@
               },
               "source": "expanded",
               "responsibleArea": "Communications",
-              "defaultOwnerRoleId": "communications"
+              "defaultOwnerRoleId": "communications",
+              "ownerFromQuestionId": "event-communications-owner"
             },
             {
               "id": "share-attendee-feedback",
@@ -5768,7 +5782,8 @@
               },
               "source": "expanded",
               "responsibleArea": "Communications",
-              "defaultOwnerRoleId": "communications"
+              "defaultOwnerRoleId": "communications",
+              "ownerFromQuestionId": "event-communications-owner"
             },
             {
               "id": "complete-retrospective",
