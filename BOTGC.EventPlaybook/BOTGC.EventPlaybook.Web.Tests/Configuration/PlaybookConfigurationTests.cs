@@ -177,7 +177,13 @@ public sealed class PlaybookConfigurationTests
         Assert.False(ContainsItem(root, "booking-confirmation-process"));
         Assert.False(ContainsItem(root, "set-admission-prices-task"));
         Assert.False(ContainsItem(root, "approve-admission-offer-task"));
-        Assert.True(ContainsItem(root, "admission-public-instructions"));
+        var publicInstructions = FindItem(root, "admission-public-instructions");
+        Assert.Equal(
+            "What booking instructions should be included in communications?",
+            publicInstructions.GetProperty("label").GetString());
+        Assert.Contains(
+            "exact wording members need in order to book or register",
+            publicInstructions.GetProperty("helpText").GetString());
         Assert.False(ContainsItem(root, "booking-required"));
         Assert.False(ContainsItem(root, "booking-details-task"));
         Assert.False(ContainsItem(root, "admission-tickets-required"));

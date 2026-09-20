@@ -4457,8 +4457,8 @@
               "id": "admission-public-instructions",
               "type": "question",
               "answerType": "text",
-              "label": "What booking, registration or ticket link or contact should communications publish?",
-              "helpText": "Provide the exact working link or contact. Add only instructions that are not already captured by the registration mode, dates, capacity, table-booking and price answers. The Communications module controls which channels publish it.",
+              "label": "What booking instructions should be included in communications?",
+              "helpText": "Provide the exact wording members need in order to book or register, including a working link, contact or other steps where applicable. Do not repeat details already captured by the registration mode, dates, capacity, table-booking and price answers. The Communications module controls which channels publish it.",
               "required": true,
               "source": "refined"
             },
