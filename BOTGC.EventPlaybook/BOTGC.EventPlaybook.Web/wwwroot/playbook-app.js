@@ -2137,6 +2137,7 @@
 
   function taskStateShowsBriefingOrCommitment(taskState) {
     if (!taskState || typeof taskState !== 'object') return false;
+    if (taskState.notRelevant === true) return false;
     return taskState.completed === true ||
       taskState.assignedBy === 'manual' ||
       Boolean(taskState.notes?.trim()) ||
@@ -2218,7 +2219,7 @@
     const questionMeta = normaliseQuestionMeta(event);
     for (const questionId of Object.keys(questionMeta)) {
       const indexed = itemIndex.get(questionId);
-      if (!indexed || indexed.item.type !== 'question' || indexed.item.required !== false) {
+      if (!indexed || indexed.item.type !== 'question') {
         delete questionMeta[questionId];
       }
     }
@@ -2236,7 +2237,7 @@
             const retiredByAssistant = item.assistantDisabled === true;
             const visible = moduleActive && isItemVisible(item, event);
             const notRelevant = questionMeta[item.id]?.notRelevant === true;
-            const invalidNotRelevant = item.required !== false || hasRecordedQuestionValue(getQuestionValue(item.id, event));
+            const invalidNotRelevant = hasRecordedQuestionValue(getQuestionValue(item.id, event));
             if (((!visible && !retiredByAssistant) || invalidNotRelevant) && notRelevant) {
               delete questionMeta[item.id];
               changed = true;
@@ -2270,7 +2271,7 @@
 
   function isQuestionComplete(item, event) {
     return isAnsweredValue(getQuestionValue(item.id, event)) ||
-      (item.required === false && isQuestionNotRelevant(event, item.id));
+      isQuestionNotRelevant(event, item.id);
   }
 
   function moduleProgress(module, event) {
@@ -2563,6 +2564,10 @@
     taskState.completedAt ??= null;
     taskState.lastReminderAt ??= null;
     taskState.escalatedAt ??= null;
+    if (taskState.notRelevant === true) {
+      taskState.status = 'not-relevant';
+      return taskState;
+    }
 
     const ownerSourceQuestionId = String(task.item.ownerFromQuestionId ?? '').trim();
     const ownerSourceTag = ownerSourceQuestionId ? `question:${ownerSourceQuestionId}` : '';
@@ -2643,9 +2648,9 @@
   function queueNotification(event, item, type) {
     state.notificationOutbox ??= [];
     const taskState = ensureTaskState(event, item.id);
-    if (isTaskExpired(item, event, taskState)) return null;
+    if (taskState.notRelevant === true || isTaskExpired(item, event, taskState)) return null;
     const dueDate = getDueDate(item.deadlineCode, event);
-    const existing = state.notificationOutbox.find(notification => notification.eventId === event.id && notification.taskId === item.id && notification.type === type && !['sent', 'expired'].includes(notification.status));
+    const existing = state.notificationOutbox.find(notification => notification.eventId === event.id && notification.taskId === item.id && notification.type === type && !['sent', 'expired', 'not-relevant'].includes(notification.status));
     if (existing) return existing;
 
     const token = taskState.completionToken || crypto.randomUUID();
@@ -2686,6 +2691,12 @@
   }
 
   async function dispatchNotification(notification, taskState) {
+    if (taskState.notRelevant === true) {
+      notification.status = 'not-relevant';
+      taskState.notificationStatus = 'not-relevant';
+      saveState();
+      return;
+    }
     if (isExpiredTaskNotification(notification)) {
       notification.status = 'expired';
       taskState.notificationStatus = 'expired';
@@ -2700,6 +2711,12 @@
       });
       if (!response.ok) return;
       const result = await response.json();
+      if (taskState.notRelevant === true) {
+        notification.status = 'not-relevant';
+        taskState.notificationStatus = 'not-relevant';
+        saveState();
+        return;
+      }
       notification.status = result.deliveryMode === 'development-outbox' ? 'outbox' : 'sent';
       taskState.notificationStatus = notification.status;
       saveState();
@@ -2759,6 +2776,7 @@
   }
 
   function applyServerTaskCompletion(event, item, taskState, record) {
+    if (taskState.notRelevant === true) return false;
     if (item.completionMode === 'event-status-decision' || item.canCompleteFromLink === false) {
       rotateTaskCompletionLink(taskState);
       return false;
@@ -2843,6 +2861,7 @@
 
   function markTaskComplete(event, item, completed) {
     const taskState = ensureTaskState(event, item.id);
+    if (taskState.notRelevant === true) return false;
     if (item.completionMode === 'event-status-decision') return false;
     if (completed && isTaskExpired(item, event, taskState)) return false;
     const review = taskReviewState(item, event);
@@ -2855,6 +2874,34 @@
     if (review) {
       taskState.reviewSignature = completed ? review.signature : null;
       if (completed) taskState.reviewInvalidatedAt = null;
+    }
+    return true;
+  }
+
+  function markTaskNotRelevant(event, item, notRelevant) {
+    const taskState = ensureTaskState(event, item.id);
+    const excluded = Boolean(notRelevant);
+    if (taskState.notRelevant === excluded) return true;
+
+    rotateTaskCompletionLink(taskState);
+    delete taskState.reviewCompletionProvenance;
+    taskState.notRelevant = excluded;
+    taskState.notRelevantAt = excluded ? new Date().toISOString() : null;
+    taskState.completed = false;
+    taskState.completedAt = null;
+    taskState.reviewSignature = null;
+    taskState.reviewInvalidatedAt = null;
+    taskState.status = excluded ? 'not-relevant' : 'open';
+    if (excluded) {
+      taskState.notificationStatus = 'not-relevant';
+      for (const notification of state.notificationOutbox ?? []) {
+        if (notification.eventId === event.id && notification.taskId === item.id && notification.status === 'queued') {
+          notification.status = 'not-relevant';
+        }
+      }
+      taskBoardSelection.taskIds.delete(item.id);
+    } else if (taskState.notificationStatus === 'not-relevant') {
+      taskState.notificationStatus = null;
     }
     return true;
   }
@@ -3019,7 +3066,7 @@
     return hints;
   }
 
-  function getActiveTasks(event) {
+  function getActiveTasks(event, { includeNotRelevant = false } = {}) {
     const tasks = [];
     for (const module of playbook.modules) {
       if (!isModuleActive(module, event)) {
@@ -3038,6 +3085,7 @@
             const dueDate = getDueDate(taskItem.deadlineCode, event);
             const task = { item: taskItem, module, section, dueDate, state: event.taskState[taskItem.id] ?? {} };
             task.state = ensureOperationalTaskState(event, task);
+            if (task.state.notRelevant === true && !includeNotRelevant) continue;
             task.expiresOn = getTaskExpiryDate(taskItem, event);
             task.expired = isTaskExpired(taskItem, event, task.state, task.expiresOn);
             tasks.push(task);
@@ -3256,7 +3304,7 @@
       const question = itemIndex.get(field.questionId)?.item;
       const visible = Boolean(question && isItemVisible(question, event));
       const value = question ? getQuestionValue(field.questionId, event) : undefined;
-      const notRelevant = Boolean(question && question.required === false && isQuestionNotRelevant(event, field.questionId));
+      const notRelevant = Boolean(question && isQuestionNotRelevant(event, field.questionId));
       const hasAnswer = notRelevant || Boolean(question && isAnsweredValue(value) && (
         question.answerType !== 'assignment' || assignmentDisplay(value, '').trim()
       ));
@@ -3493,7 +3541,7 @@
         for (const item of section.items) {
           if (item.type !== 'question' || !isItemVisible(item, event)) continue;
           const value = getQuestionValue(item.id, event);
-          if (item.required === false && isQuestionNotRelevant(event, item.id)) {
+          if (isQuestionNotRelevant(event, item.id)) {
             answers.push({
               questionId: item.id,
               module: module.title,
@@ -5569,7 +5617,8 @@
   }
 
   function renderSection(section, event, layoutOrder = null) {
-    const visibleItems = section.items.filter(item => isItemVisible(item, event));
+    const visibleItems = section.items.filter(item =>
+      isItemVisible(item, event) && (item.type !== 'task' || event.taskState?.[item.id]?.notRelevant !== true));
     if (visibleItems.length === 0) {
       return '';
     }
@@ -5585,7 +5634,8 @@
           ${visibleItems.map(item => {
             if (item.type === 'question') {
               const decisionTask = buildDontKnowTask(item);
-              return renderQuestion(item, event) + (decisionTask && isItemVisible(decisionTask, event) ? renderInlineTask(decisionTask, event) : '');
+              const decisionTaskVisible = decisionTask && isItemVisible(decisionTask, event) && event.taskState?.[decisionTask.id]?.notRelevant !== true;
+              return renderQuestion(item, event) + (decisionTaskVisible ? renderInlineTask(decisionTask, event) : '');
             }
             return item.type === 'note' ? renderNote(item, event) : renderInlineTask(item, event);
           }).join('')}
@@ -5706,7 +5756,7 @@
         : undefined;
     const pending = value === 'dont-know';
     const answered = isAnsweredValue(value);
-    const notRelevant = item.required === false && isQuestionNotRelevant(event, item.id);
+    const notRelevant = isQuestionNotRelevant(event, item.id);
     return `
       <article class="flow-item question-item ${answered ? 'answered' : ''} ${pending ? 'pending-decision' : ''} ${notRelevant ? 'not-relevant' : ''}" data-item-id="${item.id}">
         <div class="flow-rail question-flow-rail">
@@ -5725,13 +5775,12 @@
           ${renderDerivedContextForQuestion(item.id, event)}
           ${renderPriorLearning(event, item)}
           ${renderAnswerControl(item, value, priorHint)}
-          ${item.required === false ? `
-            <div class="optional-question-resolution">
-              <span>If this does not apply to this event, mark it complete without supplying an answer.</span>
-              <button type="button" class="choice-button not-relevant-choice ${notRelevant ? 'selected' : ''}" data-question-not-relevant="${escapeHtml(item.id)}" aria-pressed="${notRelevant ? 'true' : 'false'}">
-                ${notRelevant ? '✓ Not relevant' : 'Not relevant'}
-              </button>
-            </div>` : ''}
+          <div class="optional-question-resolution">
+            <span>If this question does not apply to this event, remove it from the outstanding plan.</span>
+            <button type="button" class="choice-button not-relevant-choice ${notRelevant ? 'selected' : ''}" data-question-not-relevant="${escapeHtml(item.id)}" aria-pressed="${notRelevant ? 'true' : 'false'}">
+              ${notRelevant ? '✓ Not relevant — restore' : 'Not relevant'}
+            </button>
+          </div>
           ${renderAdvisoriesForQuestion(item.id, event)}
         </div>
       </article>
@@ -5920,6 +5969,14 @@
     return `<button type="button" class="text-button inline task-note-action ${hasNote ? 'has-note' : ''}" data-task-note-action="${escapeHtml(item.id)}" data-task-note-event-id="${escapeHtml(event.id)}" aria-label="${label} for ${escapeHtml(item.title)}">${hasNote ? '● ' : '+ '}${label}</button>`;
   }
 
+  function renderTaskNotRelevantControl(item, event, taskState = event?.taskState?.[item?.id] ?? {}) {
+    const notRelevant = taskState?.notRelevant === true;
+    return `<label class="task-not-relevant-control ${notRelevant ? 'selected' : ''}" title="${notRelevant ? 'Return this task to the active plan' : 'Remove this task from the active plan because it does not apply to this event'}">
+      <input type="checkbox" data-task-not-relevant="${escapeHtml(item.id)}" data-task-not-relevant-event-id="${escapeHtml(event.id)}" ${notRelevant ? 'checked' : ''}>
+      <span aria-hidden="true"></span><small>${notRelevant ? 'Not relevant — restore' : 'Not relevant'}</small>
+    </label>`;
+  }
+
   function renderTaskNoteDialog() {
     return `<dialog id="task-note-dialog" class="plugin-dialog task-note-dialog" aria-labelledby="task-note-dialog-title">
       <form id="task-note-form">
@@ -5999,6 +6056,7 @@
             ${staffBriefingPhaseLabel(item) ? `<span class="staff-duty-chip">Staff duty · ${escapeHtml(staffBriefingPhaseLabel(item))}</span>` : ''}
             ${!expired && !item.reviewSummary ? renderTaskWorkspaceAction(item, event) : ''}
             ${renderTaskNoteAction(item, event, taskState)}
+            ${renderTaskNotRelevantControl(item, event, taskState)}
             ${expired
               ? `<div class="assignee-compact task-expired-owner"><span class="assignee-compact-label">Owner at expiry</span><strong>${escapeHtml(taskState.assignee || (item.defaultOwnerRoleId ? roleById(item.defaultOwnerRoleId)?.name : '') || 'Not assigned')}</strong></div>`
               : `<div class="assignee-compact">
@@ -6122,6 +6180,7 @@
   }
 
   function taskHorizon(task) {
+    if (task.state.notRelevant === true) return 'not-relevant';
     if (task.state.completed) return 'completed';
     if (task.expired) return 'expired';
     const days = taskDaysUntilDue(task);
@@ -6133,6 +6192,7 @@
   }
 
   function taskDueRelativeLabel(task) {
+    if (task.state.notRelevant === true) return 'Not relevant';
     if (task.state.completed) return 'Completed';
     if (task.expired) return task.expiresOn ? `Expired after ${formatDate(task.expiresOn)}` : 'Expired';
     const days = taskDaysUntilDue(task);
@@ -6194,7 +6254,8 @@
       later: { label: 'Later', description: 'Planned more than four weeks ahead.', icon: '→' },
       undated: { label: 'Date needed', description: 'Waiting for a planning milestone or event date.', icon: '?' },
       completed: { label: 'Completed', description: 'Finished tasks retained for the event record.', icon: '✓' },
-      expired: { label: 'Expired', description: 'No longer actionable because the configured cutoff has passed.', icon: '—' }
+      expired: { label: 'Expired', description: 'No longer actionable because the configured cutoff has passed.', icon: '—' },
+      'not-relevant': { label: 'Not relevant', description: 'Removed from the active plan because it does not apply to this event.', icon: '×' }
     };
     return definitions[horizon] ?? definitions.later;
   }
@@ -6311,6 +6372,7 @@
                 <div class="dashboard-task-action-buttons">
                   ${item.reviewSummary ? '' : renderTaskWorkspaceAction(item, event)}
                   ${renderTaskNoteAction(item, event, taskState)}
+                  ${renderTaskNotRelevantControl(item, event, taskState)}
                   <button type="button" class="text-button inline" data-dashboard-open-event="${escapeHtml(event.id)}">Open event task board</button>
                 </div>
               </div>
@@ -6388,7 +6450,7 @@
     }
 
     const selectableIds = new Set(tasks
-      .filter(task => !task.state.completed && !taskCompletionControl(task.item, event, task.state).blocked)
+      .filter(task => task.state.notRelevant !== true && !task.state.completed && !taskCompletionControl(task.item, event, task.state).blocked)
       .map(task => task.item.id));
 
     for (const taskId of taskBoardSelection.taskIds) {
@@ -6428,6 +6490,11 @@
     const people = taskBoardPeople();
     const person = resolveTaskBoardPerson(event);
     const scoped = mode === 'mine' ? tasks.filter(task => taskBelongsToPerson(task, event, person)) : tasks;
+    const allIncludingNotRelevant = getActiveTasks(event, { includeNotRelevant: true });
+    const scopedIncludingNotRelevant = mode === 'mine'
+      ? allIncludingNotRelevant.filter(task => taskBelongsToPerson(task, event, person))
+      : allIncludingNotRelevant;
+    const notRelevant = scopedIncludingNotRelevant.filter(task => task.state.notRelevant === true);
     const open = scoped.filter(task => !task.state.completed && !task.expired);
     const done = scoped.filter(task => task.state.completed);
     const expired = scoped.filter(task => task.expired);
@@ -6445,11 +6512,12 @@
       { value: 'next-weeks', label: 'Next few weeks', description: '8–28 days', tasks: nextWeeks, icon: '28' },
       { value: 'later', label: 'Later or undated', description: 'Beyond four weeks', tasks: later, icon: '→' },
       { value: 'completed', label: 'Completed', description: `${done.length} finished`, tasks: done, icon: '✓' },
-      { value: 'expired', label: 'Expired', description: `${expired.length} no longer needed`, tasks: expired, icon: '—' }
+      { value: 'expired', label: 'Expired', description: `${expired.length} no longer needed`, tasks: expired, icon: '—' },
+      { value: 'not-relevant', label: 'Not relevant', description: `${notRelevant.length} removed`, tasks: notRelevant, icon: '×' }
     ];
     const requestedHorizon = horizonTabs.some(tab => tab.value === state.taskBoardHorizon) ? state.taskBoardHorizon : 'auto';
     const activeHorizon = requestedHorizon === 'auto'
-      ? (horizonTabs.find(tab => !['completed', 'expired'].includes(tab.value) && tab.tasks.length)?.value ?? (done.length ? 'completed' : expired.length ? 'expired' : 'attention'))
+      ? (horizonTabs.find(tab => !['completed', 'expired', 'not-relevant'].includes(tab.value) && tab.tasks.length)?.value ?? (done.length ? 'completed' : expired.length ? 'expired' : notRelevant.length ? 'not-relevant' : 'attention'))
       : requestedHorizon;
     const activeTab = horizonTabs.find(tab => tab.value === activeHorizon) ?? horizonTabs[0];
     const activeDefinition = taskHorizonDefinition(activeHorizon, activeTab.tasks);
@@ -6461,6 +6529,8 @@
       ? `No completed tasks for ${mode === 'mine' ? escapeHtml(person?.name ?? 'this person') : 'this event'}`
       : activeHorizon === 'expired'
         ? 'No expired tasks for this event'
+        : activeHorizon === 'not-relevant'
+          ? 'No tasks have been marked not relevant'
         : `No tasks in ${activeTab.label.toLocaleLowerCase()}`;
     const emptyCopy = activeHorizon === 'attention'
       ? 'Nothing is overdue or due within the next two days. Choose another timeframe to work ahead.'
@@ -6522,7 +6592,9 @@
   function renderTaskBoardCard(task, event, selected = false) {
     const { item, module, dueDate } = task;
     const taskState = task.state;
-    const dueLabel = task.expired
+    const dueLabel = taskState.notRelevant === true
+      ? 'Removed from active plan'
+      : task.expired
       ? `Expired after ${formatDate(task.expiresOn)}`
       : dueDate ? formatDate(dueDate) : item.deadlineCode ? `Deadline ${item.deadlineCode} is not configured` : 'No due date';
     const detail = getTaskDetail(item, event);
@@ -6532,8 +6604,10 @@
     const priorLearning = priorLearningForItem(event, item);
     const completionControl = taskCompletionControl(item, event, taskState);
     return `
-      <article class="task-card timing-${escapeHtml(horizon)} ${taskState.completed ? 'completed' : ''} ${task.expired ? 'expired' : ''} ${selected ? 'selected' : ''}" data-task-card-id="${escapeHtml(item.id)}">
-        ${task.expired
+      <article class="task-card timing-${escapeHtml(horizon)} ${taskState.completed ? 'completed' : ''} ${task.expired ? 'expired' : ''} ${taskState.notRelevant === true ? 'not-relevant' : ''} ${selected ? 'selected' : ''}" data-task-card-id="${escapeHtml(item.id)}">
+        ${taskState.notRelevant === true
+          ? `<div class="task-card-selection-status not-relevant" title="Task marked not relevant" aria-label="Task marked not relevant"><span aria-hidden="true">×</span></div>`
+          : task.expired
           ? `<div class="task-card-selection-status expired" title="Task expired" aria-label="Task expired"><span aria-hidden="true">—</span></div>`
           : taskState.completed
           ? `<div class="task-card-selection-status completed" title="Task completed" aria-label="Task completed"><span aria-hidden="true">✓</span></div>`
@@ -6557,23 +6631,26 @@
             </div>
           </div>
           ${renderTaskBoardLearning(event, item)}
-          ${renderTaskReviewSummary(item, event, taskState, false)}
-          ${renderTaskStatusDecisionDelivery(item, event)}
-          <div class="task-card-primary-actions ${task.expired ? 'task-expired-message' : completionControl.statusManaged ? 'task-status-managed-message' : ''}">
+          ${taskState.notRelevant === true ? '' : renderTaskReviewSummary(item, event, taskState, false)}
+          ${taskState.notRelevant === true ? '' : renderTaskStatusDecisionDelivery(item, event)}
+          <div class="task-card-primary-actions ${task.expired ? 'task-expired-message' : taskState.notRelevant === true ? 'task-expired-message' : completionControl.statusManaged ? 'task-status-managed-message' : ''}">
             ${task.expired
               ? '<span>This task is retained for the event record; no action is required.</span>'
+              : taskState.notRelevant === true
+                ? '<span>This task has been removed from the active plan.</span>'
               : completionControl.actionRequired
                 ? renderTaskWorkspaceAction(item, event)
               : completionControl.statusManaged
                 ? '<span>Completion follows the recorded event status and delivery result.</span>'
               : `<button type="button" class="button ${taskState.completed ? 'button-secondary' : 'button-primary'}" data-task-completion-action="${escapeHtml(item.id)}" data-task-target-completed="${taskState.completed ? 'false' : 'true'}" ${completionControl.blocked ? 'disabled' : ''} title="${escapeHtml(completionControl.title)}">${taskState.completed ? 'Reopen task' : 'Complete task'}</button>`}
             ${renderTaskNoteAction(item, event, taskState)}
+            ${renderTaskNotRelevantControl(item, event, taskState)}
           </div>
           <details class="task-card-manage">
-            <summary><span>${task.expired ? 'Task record' : 'Details and assignment'}</span><span class="task-card-manage-chevron" aria-hidden="true"></span></summary>
+            <summary><span>${task.expired || taskState.notRelevant === true ? 'Task record' : 'Details and assignment'}</span><span class="task-card-manage-chevron" aria-hidden="true"></span></summary>
             <div class="task-card-manage-body">
               ${detail ? `<p class="task-detail">${escapeHtml(detail)}</p>` : ''}
-              ${task.expired ? `<div class="task-expired-record"><span>Owner at expiry</span><strong>${escapeHtml(owner)}</strong>${taskState.notes ? `<span>Recorded note</span><p>${escapeHtml(taskState.notes)}</p>` : ''}</div>` : `<div class="task-fields">
+              ${task.expired || taskState.notRelevant === true ? `<div class="task-expired-record"><span>${taskState.notRelevant === true ? 'Owner when removed' : 'Owner at expiry'}</span><strong>${escapeHtml(owner)}</strong>${taskState.notes ? `<span>Recorded note</span><p>${escapeHtml(taskState.notes)}</p>` : ''}</div>` : `<div class="task-fields">
                 <div class="task-assignment-field">
                   <span>Assigned to</span>
                   ${renderAssignmentPicker({ value: taskAssignmentReference(taskState) ?? taskState.assignee, fallback: taskState.assignee, eligibleRoleId: task.item.defaultOwnerRoleId, taskId: item.id })}
@@ -6584,10 +6661,10 @@
                 </label>
               </div>`}
               <div class="task-operational-row">
-                <span class="notification-chip ${task.expired ? 'expired' : taskState.notificationStatus ?? 'none'}">${task.expired ? 'Expired — reminders and completion disabled' : taskState.notificationStatus === 'queued' ? 'Assignment notification queued' : taskState.notificationStatus === 'outbox' ? 'Notification written to development outbox' : taskState.assignee ? 'Owner assigned' : 'Awaiting owner'}</span>
-                ${!task.expired && taskState.assignee && !assignmentRecipient(taskAssignmentReference(taskState) ?? taskState.assignee, event).email ? `<span class="notification-chip warning">No email configured for this person or role</span>` : ''}
-                ${!task.expired && !item.reviewSummary ? renderTaskWorkspaceAction(item, event) : ''}
-                ${!task.expired && item.canCompleteFromLink !== false && item.completionMode !== 'event-status-decision' && taskState.completionToken ? `<button class="text-button inline" data-copy-completion="${escapeHtml(item.id)}">Copy completion link</button>` : ''}
+                <span class="notification-chip ${task.expired || taskState.notRelevant === true ? 'expired' : taskState.notificationStatus ?? 'none'}">${taskState.notRelevant === true ? 'Not relevant — reminders and completion disabled' : task.expired ? 'Expired — reminders and completion disabled' : taskState.notificationStatus === 'queued' ? 'Assignment notification queued' : taskState.notificationStatus === 'outbox' ? 'Notification written to development outbox' : taskState.assignee ? 'Owner assigned' : 'Awaiting owner'}</span>
+                ${!task.expired && taskState.notRelevant !== true && taskState.assignee && !assignmentRecipient(taskAssignmentReference(taskState) ?? taskState.assignee, event).email ? `<span class="notification-chip warning">No email configured for this person or role</span>` : ''}
+                ${!task.expired && taskState.notRelevant !== true && !item.reviewSummary ? renderTaskWorkspaceAction(item, event) : ''}
+                ${!task.expired && taskState.notRelevant !== true && item.canCompleteFromLink !== false && item.completionMode !== 'event-status-decision' && taskState.completionToken ? `<button class="text-button inline" data-copy-completion="${escapeHtml(item.id)}">Copy completion link</button>` : ''}
                 ${taskState.completedAt ? `<span class="completed-at">Completed ${escapeHtml(formatDate(taskState.completedAt.substring(0,10)))}</span>` : ''}
               </div>
             </div>
@@ -6605,6 +6682,7 @@
         for (const item of section.items) {
           if (item.type !== 'task' || !isItemVisible(item, event)) continue;
           const taskState = event.taskState?.[item.id] ?? {};
+          if (taskState.notRelevant === true) continue;
           const expiresOn = getTaskExpiryDate(item, event);
           tasks.push({
             item,
@@ -8134,7 +8212,7 @@
 
   function setQuestionNotRelevant(event, questionId, notRelevant) {
     const indexed = itemIndex.get(questionId);
-    if (!indexed || indexed.item.type !== 'question' || indexed.item.required !== false) return false;
+    if (!indexed || indexed.item.type !== 'question') return false;
 
     const questionMeta = normaliseQuestionMeta(event);
     if (notRelevant) {
@@ -9271,6 +9349,22 @@
         else delete taskState.notes;
         taskState.notesUpdatedAt = new Date().toISOString();
         saveState();
+      });
+    });
+
+    document.querySelectorAll('[data-task-not-relevant]').forEach(element => {
+      element.addEventListener('change', () => {
+        const eventId = element.dataset.taskNotRelevantEventId;
+        const targetEvent = state.events.find(candidate => candidate.id === eventId) ?? getActiveEvent();
+        if (!targetEvent) return;
+        const task = getActiveTasks(targetEvent, { includeNotRelevant: true })
+          .find(candidate => candidate.item.id === element.dataset.taskNotRelevant);
+        if (!task || markTaskNotRelevant(targetEvent, task.item, element.checked) === false) {
+          render();
+          return;
+        }
+        saveState();
+        render();
       });
     });
 

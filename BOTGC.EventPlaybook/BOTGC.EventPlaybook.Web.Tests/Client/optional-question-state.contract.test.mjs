@@ -30,9 +30,8 @@ const isAnsweredValue = compileFunction('isAnsweredValue');
 const isQuestionNotRelevant = compileFunction('isQuestionNotRelevant');
 const hasRecordedQuestionValue = compileFunction('hasRecordedQuestionValue');
 
-test('module progress includes optional visible questions and accepts an explicit not-relevant decision', () => {
+test('module progress accepts an explicit not-relevant decision for any visible question', () => {
   const values = new Map([
-    ['required', true],
     ['optional-answered', 'Recorded detail']
   ]);
   const getQuestionValue = questionId => values.get(questionId);
@@ -57,7 +56,10 @@ test('module progress includes optional visible questions and accepts an explici
     }]
   };
   const event = {
-    questionMeta: { 'optional-skipped': { notRelevant: true } }
+    questionMeta: {
+      'optional-skipped': { notRelevant: true },
+      required: { notRelevant: true }
+    }
   };
 
   assert.deepEqual(moduleProgress(module, event), {
@@ -68,7 +70,7 @@ test('module progress includes optional visible questions and accepts an explici
   });
 });
 
-test('marking an optional question not relevant clears its typed value without using an answer sentinel', () => {
+test('marking any question not relevant clears its typed value without using an answer sentinel', () => {
   const optionalQuestion = { id: 'optional-question', type: 'question', required: false };
   const communicationsOwner = { id: 'event-communications-owner', type: 'question', required: false };
   const requiredQuestion = { id: 'required-question', type: 'question' };
@@ -108,8 +110,8 @@ test('marking an optional question not relevant clears its typed value without u
 
   assert.equal(setQuestionNotRelevant(event, optionalQuestion.id, false), true);
   assert.deepEqual(event.questionMeta, {});
-  assert.equal(setQuestionNotRelevant(event, requiredQuestion.id, true), false);
-  assert.deepEqual(event.questionMeta, {});
+  assert.equal(setQuestionNotRelevant(event, requiredQuestion.id, true), true);
+  assert.deepEqual(event.questionMeta, { 'required-question': { notRelevant: true } });
 
   const communicationsEvent = {
     answers: { [communicationsOwner.id]: { kind: 'person', id: 'alice' } },
@@ -209,12 +211,11 @@ test('normalisation removes stale not-relevant metadata when a question becomes 
   assert.deepEqual(event.questionMeta, {});
 });
 
-test('the optional-question UI is explicit, accessible and visually distinct', () => {
+test('the question UI makes not relevant available to every question', () => {
   const renderQuestion = functionSource('renderQuestion');
-  assert.match(renderQuestion, /item\.required === false/);
   assert.match(renderQuestion, /data-question-not-relevant/);
   assert.match(renderQuestion, /aria-pressed/);
-  assert.match(renderQuestion, /Not relevant/);
+  assert.match(renderQuestion, /Not relevant — restore/);
   assert.match(source, /querySelectorAll\('\[data-question-not-relevant\]'\)/);
   assert.match(css, /\.optional-question-resolution/);
   assert.match(css, /\.choice-button\.not-relevant-choice\.selected/);
