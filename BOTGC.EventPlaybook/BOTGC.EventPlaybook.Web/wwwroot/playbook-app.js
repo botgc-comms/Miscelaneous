@@ -205,6 +205,8 @@
   let sharedStateSaveInFlight = false;
   let sharedStateSavePending = false;
   let applyingSharedState = false;
+  let browserStateCacheMode = 'full';
+  let browserStateCacheWarningShown = false;
   const completionLinkRegistrationSignatures = new Map();
   const completionLinkRegistrationRequests = new Map();
   let taskBoardDeepLinkTarget = null;
@@ -1077,9 +1079,90 @@
     return copy;
   }
 
-  function saveState() {
+  function serialiseBrowserStateForCache(compact = false) {
     const { referenceLibrary: _, ...browserState } = state;
-    localStorage.setItem(STORAGE_STATE, JSON.stringify(browserState));
+    if (!compact) return JSON.stringify(browserState);
+
+    return JSON.stringify(browserState, (key, value) => {
+      // This schedule is derived from the event/task state and is rebuilt on
+      // start-up. Keeping a second copy makes the emergency cache needlessly
+      // large.
+      if (key === 'taskAlertSchedule') return null;
+
+      // Generated artwork and uploaded supporting media are held by the
+      // server. Inline data URLs are only disposable browser copies and can
+      // consume several megabytes across the event catalogue.
+      if (typeof value === 'string' && value.length > 16_384 && /^data:(?:image|audio|video|application\/pdf)\//i.test(value)) {
+        return null;
+      }
+      return value;
+    });
+  }
+
+  function cacheBrowserState() {
+    if (browserStateCacheMode === 'disabled') return false;
+
+    const attempts = browserStateCacheMode === 'compact' ? [true] : [false, true];
+    let lastError = null;
+    for (const compact of attempts) {
+      try {
+        localStorage.setItem(STORAGE_STATE, serialiseBrowserStateForCache(compact));
+        browserStateCacheMode = compact ? 'compact' : 'full';
+        if (compact && !browserStateCacheWarningShown) {
+          browserStateCacheWarningShown = true;
+          console.warn('The browser cache is nearly full. Event planning data remains available from shared server storage; large media previews were omitted from the local fallback cache.');
+        }
+        return true;
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    // Once shared state is in memory, the separately cached reference library
+    // is safe to evict. It remains on the server and will be downloaded again.
+    if (sharedStateReady || applyingSharedState) {
+      try {
+        localStorage.removeItem(REFERENCE_LIBRARY_STORAGE);
+        localStorage.setItem(STORAGE_STATE, serialiseBrowserStateForCache(true));
+        browserStateCacheMode = 'compact';
+        if (!browserStateCacheWarningShown) {
+          browserStateCacheWarningShown = true;
+          console.warn('The oversized browser media cache was cleared. Shared server storage remains authoritative.', lastError);
+        }
+        return true;
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    browserStateCacheMode = 'disabled';
+    if (!browserStateCacheWarningShown) {
+      browserStateCacheWarningShown = true;
+      console.warn('Browser storage is unavailable or full. Continuing with shared server storage and without a local fallback cache.', lastError);
+    }
+    return false;
+  }
+
+  function cachePlaybookTemplate(template) {
+    try {
+      localStorage.setItem(STORAGE_TEMPLATE, JSON.stringify(template));
+      return true;
+    } catch (error) {
+      console.warn('The Playbook template could not be cached in this browser. The server copy will continue to be used.', error);
+      return false;
+    }
+  }
+
+  function cacheSharedMigrationMarker() {
+    try {
+      localStorage.setItem(STORAGE_SHARED_MIGRATED, '1');
+    } catch (error) {
+      console.warn('The shared-state migration marker could not be cached in this browser.', error);
+    }
+  }
+
+  function saveState() {
+    cacheBrowserState();
     if (sharedStateReady && !applyingSharedState) scheduleSharedStateSave();
   }
 
@@ -1342,8 +1425,7 @@
       state.activeEventId = null;
       state.activeView = 'catalogue';
     }
-    const { referenceLibrary: _, ...browserState } = state;
-    localStorage.setItem(STORAGE_STATE, JSON.stringify(browserState));
+    cacheBrowserState();
     try {
       localStorage.setItem(REFERENCE_LIBRARY_STORAGE, JSON.stringify(state.referenceLibrary));
     } catch (error) {
@@ -1501,10 +1583,10 @@
       if (needsMigrationSave) {
         const migrated = await persistSharedState();
         if (migrated && valuesEqual(getSharedStateSnapshot(), lastSyncedSharedState)) {
-          localStorage.setItem(STORAGE_SHARED_MIGRATED, '1');
+          cacheSharedMigrationMarker();
         }
       } else if (shouldMigrateBrowserData) {
-        localStorage.setItem(STORAGE_SHARED_MIGRATED, '1');
+        cacheSharedMigrationMarker();
       }
       window.setInterval(pollSharedState, 7000);
     } catch (error) {
@@ -1634,7 +1716,7 @@
             playbookTemplateNeedsMigration = true;
           }
         }
-        localStorage.setItem(STORAGE_TEMPLATE, JSON.stringify(serverTemplate));
+        cachePlaybookTemplate(serverTemplate);
         return serverTemplate;
       }
       if (response.status !== 404) throw new Error(`Unable to load the server Playbook template (${response.status}).`);
@@ -1670,7 +1752,7 @@
       }
       if (!versionsAreComparable || bundledVersion > storedVersion || sameVersionContentDiffers) {
         const merged = replayLocalAdminCustomisations(bundledPlaybook, storedTemplate);
-        localStorage.setItem(STORAGE_TEMPLATE, JSON.stringify(merged));
+        cachePlaybookTemplate(merged);
         return merged;
       }
       return bundledPlaybook;
@@ -8222,7 +8304,7 @@
     }
     protectedQuestionIds = Array.isArray(document.protectedQuestionIds) ? document.protectedQuestionIds.map(String) : protectedQuestionIds;
     playbookTemplateNeedsMigration = false;
-    localStorage.setItem(STORAGE_TEMPLATE, JSON.stringify(playbook));
+    cachePlaybookTemplate(playbook);
     indexPlaybook();
     migrateAdmissionPlanningState();
     migrateAdmissionModelV38();
