@@ -4734,17 +4734,20 @@
       ${renderIntelligentGolfPlannerMatchDialog(event)}
       ${renderIntelligentGolfPlannerLinkDialog(event)}
       ${renderPluginDialogs()}
+      ${accessSession.isAdmin ? '<section id="playbook-assistant-root" class="playbook-assistant-host" aria-label="Playbook Assistant"></section>' : ''}
     `;
 
     bindEvents();
     mountPendingPlaybookTemplateNotice();
     focusTaskBoardDeepLink();
-    if (state.activeView === 'admin' && accessSession.isAdmin) {
-      import('./playbook-assistant.js?v=20260919-playbook-assistant-1')
+    if (accessSession.isAdmin) {
+      import('./playbook-assistant.js?v=20260920-floating-assistant-1')
         .then(module => module.mountPlaybookAssistant({
           revision: playbookTemplateRevision,
           schemaVersion: playbook.schemaVersion,
           protectedQuestionIds: [...protectedQuestionIds],
+          viewLabel: shellTitle,
+          eventName: event?.name || '',
           onApplied: result => applyPlaybookTemplateDocument(result.document),
           onReset: document => applyPlaybookTemplateDocument(document)
         }))
@@ -6337,6 +6340,10 @@
             </div>
             ${expired
               ? `<div class="complete-toggle task-expired-control" title="${escapeHtml(completionControl.title)}"><span aria-hidden="true">—</span><small>Expired</small></div>`
+              : completionControl.integrationManaged
+                ? taskState.completed
+                  ? `<div class="complete-toggle task-status-control" title="${escapeHtml(completionControl.title)}"><span aria-hidden="true">✓</span><small>Configured</small></div>`
+                  : ''
               : completionControl.statusManaged
                 ? `<div class="complete-toggle task-status-control" title="${escapeHtml(completionControl.title)}"><span aria-hidden="true">${taskState.completed ? '✓' : '!'}</span><small>${escapeHtml(completionControl.label)}</small></div>`
               : `<label class="complete-toggle task-complete-control ${completionControl.blocked ? 'blocked' : ''}" title="${escapeHtml(completionControl.title)}">
@@ -8139,7 +8146,6 @@
   function renderAdmin() {
     return `
       <section class="page-header"><div><div class="eyebrow">Configuration</div><h2>Playbook admin</h2><p>Extend the data-driven Playbook without changing application code. People and responsibilities are maintained on the dedicated People & Roles page.</p></div><button class="button button-secondary" data-view="directory">Open People & Roles</button></section>
-      <section id="playbook-assistant-root" class="playbook-assistant-host" aria-label="Playbook Assistant"></section>
       <section class="admin-branding-card" aria-labelledby="club-identity-heading">
         <div class="admin-branding-preview">
           <span class="eyebrow">Club identity</span>
