@@ -215,7 +215,7 @@ test('the question UI makes not relevant available to every question', () => {
   const renderQuestion = functionSource('renderQuestion');
   assert.match(renderQuestion, /data-question-not-relevant/);
   assert.match(renderQuestion, /aria-pressed/);
-  assert.match(renderQuestion, /Not relevant — restore/);
+  assert.match(renderQuestion, /Restore question/);
   assert.match(source, /querySelectorAll\('\[data-question-not-relevant\]'\)/);
   assert.match(css, /\.optional-question-resolution/);
   assert.match(css, /\.choice-button\.not-relevant-choice\.selected/);

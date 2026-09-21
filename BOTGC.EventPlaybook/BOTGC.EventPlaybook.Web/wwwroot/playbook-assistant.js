@@ -1,5 +1,7 @@
 const assistantState = {
   revision: null,
+  open: false,
+  draft: '',
   conversation: [],
   proposal: null,
   busy: false,
@@ -29,18 +31,22 @@ function render(host) {
   const proposal = assistantState.proposal;
   const isRecording = assistantState.recorder?.state === 'recording';
   host.innerHTML = `
+    <button type="button" class="playbook-assistant-launcher ${assistantState.busy || isRecording ? 'is-working' : ''}" data-assistant-toggle aria-expanded="${assistantState.open ? 'true' : 'false'}" aria-controls="playbook-assistant-panel">
+      <span class="playbook-assistant-launcher-mark" aria-hidden="true">✦</span>
+      <span><strong>Playbook Assistant</strong><small>${assistantState.busy ? 'Working on your request…' : 'Ask me about the Playbook'}</small></span>
+    </button>
+    ${assistantState.open ? `
+    <button type="button" class="playbook-assistant-backdrop" data-assistant-close aria-label="Close Playbook Assistant"></button>
+    <aside id="playbook-assistant-panel" class="playbook-assistant-panel" role="dialog" aria-modal="true" aria-labelledby="playbook-assistant-title">
     <article class="playbook-assistant-card">
       <header class="playbook-assistant-heading">
         <div class="playbook-assistant-mark" aria-hidden="true">✦</div>
         <div>
           <span class="eyebrow">Club configuration assistant</span>
-          <h3>Discuss the Playbook with AI</h3>
-          <p>Describe how this club should ask a follow-up question or generate a task. Nothing changes until you review and apply a proposal.</p>
+          <h3 id="playbook-assistant-title">Discuss the Playbook with AI</h3>
+          <p>${escapeHtml(contextDescription(options))}</p>
         </div>
-        <div class="playbook-assistant-version">
-          <strong>v${escapeHtml(options.schemaVersion || '—')}</strong>
-          <span>revision ${Number(options.revision) || 0}</span>
-        </div>
+        <button type="button" class="playbook-assistant-close" data-assistant-close aria-label="Close Playbook Assistant">×</button>
       </header>
 
       <div class="playbook-assistant-guardrails">
@@ -60,7 +66,7 @@ function render(host) {
 
         <form class="playbook-assistant-composer" id="playbook-assistant-form">
           <label for="playbook-assistant-input">Your instruction</label>
-          <textarea id="playbook-assistant-input" rows="4" maxlength="5000" placeholder="For example: When catering is required, ask whether service is self-service or staffed, and create an event-day task if an adult server is needed." ${assistantState.busy || isRecording ? 'disabled' : ''}></textarea>
+          <textarea id="playbook-assistant-input" rows="4" maxlength="5000" placeholder="For example: When catering is required, ask whether service is self-service or staffed, and create an event-day task if an adult server is needed." ${assistantState.busy || isRecording ? 'disabled' : ''}>${escapeHtml(assistantState.draft)}</textarea>
           <div class="assistant-suggestions" aria-label="Example requests">
             <button type="button" data-assistant-example="Reword a secondary question so that it gives a clear example of what it means.">Clarify a question</button>
             <button type="button" data-assistant-example="Add a follow-up question and task for a club-specific operational requirement.">Add a club requirement</button>
@@ -79,12 +85,20 @@ function render(host) {
       </div>
 
       <footer class="playbook-assistant-footer">
-        <div><strong>Core recovery</strong><span>The original bundled question set is always available. Existing event records are retained where IDs match.</span></div>
+        <div><strong>Core recovery · v${escapeHtml(options.schemaVersion || '—')} · revision ${Number(options.revision) || 0}</strong><span>The original bundled question set is always available. Existing event records are retained where IDs match.</span></div>
         <button class="button button-secondary" type="button" data-assistant-reset-core ${assistantState.busy ? 'disabled' : ''}>Restore bundled core</button>
       </footer>
-    </article>`;
+    </article>
+    </aside>` : ''}`;
 
   bind(host);
+}
+
+function contextDescription(options) {
+  const location = options.eventName
+    ? `${options.viewLabel || 'Event Playbook'} for ${options.eventName}`
+    : (options.viewLabel || 'Event Playbook');
+  return `You are viewing ${location}. Describe how this club should ask a follow-up question or generate a task. Nothing changes until you review and apply a proposal.`;
 }
 
 function renderProposal(proposal) {
@@ -177,10 +191,19 @@ function bind(host) {
   const form = host.querySelector('#playbook-assistant-form');
   const input = host.querySelector('#playbook-assistant-input');
 
+  host.querySelector('[data-assistant-toggle]')?.addEventListener('click', () => {
+    assistantState.open = true;
+    render(host);
+    window.setTimeout(() => host.querySelector('#playbook-assistant-input')?.focus(), 0);
+  });
+  host.querySelectorAll('[data-assistant-close]').forEach(button => button.addEventListener('click', () => closeAssistant(host)));
+  input?.addEventListener('input', () => { assistantState.draft = input.value; });
+
   form?.addEventListener('submit', async event => {
     event.preventDefault();
     const message = input?.value.trim() || '';
     if (!message || assistantState.busy) return;
+    assistantState.draft = '';
     assistantState.busy = true;
     assistantState.notice = null;
     assistantState.proposal = null;
@@ -216,7 +239,8 @@ function bind(host) {
   host.querySelectorAll('[data-assistant-example]').forEach(button => {
     button.addEventListener('click', () => {
       if (!input) return;
-      input.value = button.dataset.assistantExample || '';
+      assistantState.draft = button.dataset.assistantExample || '';
+      input.value = assistantState.draft;
       input.focus();
     });
   });
@@ -357,7 +381,8 @@ async function transcribeRecording(host) {
     render(host);
     const input = host.querySelector('#playbook-assistant-input');
     if (input) {
-      input.value = result.text || '';
+      assistantState.draft = result.text || '';
+      input.value = assistantState.draft;
       input.focus();
     }
   } catch (error) {
@@ -383,9 +408,21 @@ function cancelActiveRecording() {
   assistantState.recordingTimeout = null;
 }
 
+function closeAssistant(host) {
+  if (assistantState.recorder?.state === 'recording') cancelActiveRecording();
+  assistantState.open = false;
+  render(host);
+  host.querySelector('[data-assistant-toggle]')?.focus();
+}
+
 window.addEventListener('pagehide', cancelActiveRecording);
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) cancelActiveRecording();
+});
+document.addEventListener('keydown', event => {
+  if (event.key !== 'Escape' || !assistantState.open) return;
+  const host = document.getElementById('playbook-assistant-root');
+  if (host) closeAssistant(host);
 });
 
 function apiError(response, payload) {
