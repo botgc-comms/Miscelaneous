@@ -35,6 +35,23 @@ public sealed class BrowserStateCacheSafetyTests
         Assert.Contains("cachePlaybookTemplate(playbook);", script, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void UnsavedQuestionAnswersAreJournalledUntilTheServerConfirmsTheirVersion()
+    {
+        var script = File.ReadAllText(Path.Combine(
+            FindSolutionRoot(),
+            "BOTGC.EventPlaybook.Web",
+            "wwwroot",
+            "playbook-app.js"));
+
+        Assert.Contains("function recordPendingQuestionChange(event, questionId)", script, StringComparison.Ordinal);
+        Assert.Contains("sessionStorage.setItem(STORAGE_PENDING_QUESTION_CHANGES, json);", script, StringComparison.Ordinal);
+        Assert.Contains("needsMigrationSave = applyPendingQuestionJournal() || needsMigrationSave;", script, StringComparison.Ordinal);
+        Assert.Contains("clearPendingQuestionJournal(pendingQuestionJournalVersion);", script, StringComparison.Ordinal);
+        Assert.Contains("recordPendingQuestionChange(event, questionId);", script, StringComparison.Ordinal);
+        Assert.Contains("if (pendingQuestionJournal.entries.length) cachePendingQuestionJournal();", script, StringComparison.Ordinal);
+    }
+
     private static string FindSolutionRoot()
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);

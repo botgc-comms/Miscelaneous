@@ -154,7 +154,9 @@ public sealed class PublishAsset
 
     public required string Name { get; init; }
 
-    public required string DataUrl { get; init; }
+    public string? DataUrl { get; init; }
+
+    public string? SourceUrl { get; init; }
 }
 
 public sealed class YodeckPublishCommand

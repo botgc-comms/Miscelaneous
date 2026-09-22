@@ -5,6 +5,7 @@
   const STORAGE_TEMPLATE = 'botgc-event-playbook-template-v1';
   const REFERENCE_LIBRARY_STORAGE = 'botgc-event-playbook-reference-library-v1';
   const STORAGE_SHARED_MIGRATED = 'botgc-event-playbook-shared-migration-v1';
+  const STORAGE_PENDING_QUESTION_CHANGES = 'botgc-event-playbook-pending-question-changes-v1';
   const CLUB_DATE_FORMATTER = new Intl.DateTimeFormat('en-GB', {
     timeZone: 'Europe/London',
     year: 'numeric',
@@ -198,6 +199,7 @@
   let itemIndex = new Map();
   let moduleIndex = new Map();
   let state = loadState();
+  let pendingQuestionJournal = loadPendingQuestionJournal();
   let sharedStateReady = false;
   let sharedStateRevision = 0;
   let lastSyncedSharedState = null;
@@ -1153,6 +1155,156 @@
     }
   }
 
+  function emptyPendingQuestionJournal() {
+    return { version: 0, entries: [] };
+  }
+
+  function normalisePendingQuestionJournal(value) {
+    const candidate = value && typeof value === 'object' ? value : {};
+    return {
+      version: Math.max(0, Number(candidate.version) || 0),
+      entries: Array.isArray(candidate.entries)
+        ? candidate.entries.filter(entry => entry?.eventId && entry?.questionId).map(entry => ({
+            eventId: String(entry.eventId),
+            questionId: String(entry.questionId),
+            bind: String(entry.bind ?? ''),
+            hasValue: entry.hasValue === true,
+            value: entry.value,
+            notRelevant: entry.notRelevant === true,
+            recordedAt: String(entry.recordedAt ?? '')
+          }))
+        : []
+    };
+  }
+
+  function loadPendingQuestionJournal() {
+    const candidates = [];
+    for (const storage of [localStorage, sessionStorage]) {
+      try {
+        const raw = storage.getItem(STORAGE_PENDING_QUESTION_CHANGES);
+        if (raw) candidates.push(normalisePendingQuestionJournal(JSON.parse(raw)));
+      } catch (error) {
+        console.warn('A pending question recovery journal could not be read.', error);
+      }
+    }
+    return candidates.sort((left, right) => right.version - left.version)[0] ?? emptyPendingQuestionJournal();
+  }
+
+  function cachePendingQuestionJournal() {
+    const json = JSON.stringify(pendingQuestionJournal);
+    try {
+      localStorage.setItem(STORAGE_PENDING_QUESTION_CHANGES, json);
+      try { sessionStorage.removeItem(STORAGE_PENDING_QUESTION_CHANGES); } catch { }
+      return true;
+    } catch (localError) {
+      try {
+        // Session storage has a separate allowance in modern browsers and is
+        // enough to survive a refresh of the current tab.
+        sessionStorage.setItem(STORAGE_PENDING_QUESTION_CHANGES, json);
+        return true;
+      } catch (sessionError) {
+        if (sharedStateReady) {
+          try {
+            // The large browser snapshot is disposable once shared storage is
+            // available. Prefer the tiny unsaved-answer journal when space is
+            // exhausted so a refresh cannot discard the latest answer.
+            localStorage.removeItem(STORAGE_STATE);
+            localStorage.removeItem(REFERENCE_LIBRARY_STORAGE);
+            browserStateCacheMode = 'disabled';
+            localStorage.setItem(STORAGE_PENDING_QUESTION_CHANGES, json);
+            return true;
+          } catch (retryError) {
+            console.warn('Question recovery storage is unavailable. Saving the answer to the server immediately.', retryError, localError, sessionError);
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  function recordPendingQuestionChange(event, questionId) {
+    const indexed = itemIndex.get(questionId);
+    if (!event?.id || !indexed || indexed.item.type !== 'question') return false;
+
+    const bind = String(indexed.item.bind ?? '');
+    const hasValue = bind === 'eventDate'
+      ? Boolean(event.eventDate)
+      : Object.prototype.hasOwnProperty.call(event.answers ?? {}, questionId);
+    const value = bind === 'eventDate' ? event.eventDate : event.answers?.[questionId];
+    const entry = {
+      eventId: event.id,
+      questionId,
+      bind,
+      hasValue,
+      value: hasValue ? structuredClone(value) : undefined,
+      notRelevant: isQuestionNotRelevant(event, questionId),
+      recordedAt: new Date().toISOString()
+    };
+    const existingIndex = pendingQuestionJournal.entries.findIndex(candidate =>
+      candidate.eventId === event.id && candidate.questionId === questionId);
+    if (existingIndex >= 0) pendingQuestionJournal.entries[existingIndex] = entry;
+    else pendingQuestionJournal.entries.push(entry);
+    pendingQuestionJournal.version += 1;
+
+    const cached = cachePendingQuestionJournal();
+    if (!cached && sharedStateReady) scheduleSharedStateSave(0);
+    return cached;
+  }
+
+  function applyPendingQuestionJournal() {
+    if (!pendingQuestionJournal.entries.length) return false;
+    let applied = false;
+    const touchedEvents = new Set();
+    for (const entry of pendingQuestionJournal.entries) {
+      const event = state.events.find(candidate => candidate.id === entry.eventId);
+      const indexed = itemIndex.get(entry.questionId);
+      if (!event || !indexed || indexed.item.type !== 'question') continue;
+
+      event.answers ??= {};
+      const questionMeta = normaliseQuestionMeta(event);
+      if (entry.notRelevant) {
+        questionMeta[entry.questionId] = { notRelevant: true };
+        if (entry.bind !== 'eventDate') delete event.answers[entry.questionId];
+      } else {
+        delete questionMeta[entry.questionId];
+        if (entry.bind === 'eventDate') {
+          if (entry.hasValue) reanchorEventDate(event, entry.value);
+        } else if (entry.hasValue) {
+          event.answers[entry.questionId] = structuredClone(entry.value);
+        } else {
+          delete event.answers[entry.questionId];
+        }
+      }
+
+      event.lifecycle ??= {};
+      if (entry.questionId === 'event-decision-owner' && !entry.notRelevant) {
+        event.lifecycle.decisionOwnerRef = assignmentReference(entry.value);
+        event.lifecycle.decisionOwner = assignmentDisplay(entry.value);
+      }
+      if (entry.questionId === 'event-communications-owner') {
+        event.lifecycle.communicationsOwnerRef = entry.notRelevant ? null : assignmentReference(entry.value);
+        event.lifecycle.communicationsOwner = entry.notRelevant ? '' : assignmentDisplay(entry.value);
+      }
+      touchedEvents.add(event);
+      applied = true;
+    }
+    for (const event of touchedEvents) {
+      // Apply every raw answer before evaluating conditional visibility. This
+      // prevents a dependent answer being discarded merely because its
+      // gateway answer appeared later in the recovery journal.
+      normaliseAnswers(event);
+      normaliseEventLifecycle(event);
+    }
+    return applied;
+  }
+
+  function clearPendingQuestionJournal(savedVersion) {
+    if (!pendingQuestionJournal.entries.length || pendingQuestionJournal.version !== savedVersion) return;
+    pendingQuestionJournal = { version: savedVersion, entries: [] };
+    try { localStorage.removeItem(STORAGE_PENDING_QUESTION_CHANGES); } catch { }
+    try { sessionStorage.removeItem(STORAGE_PENDING_QUESTION_CHANGES); } catch { }
+  }
+
   function cacheSharedMigrationMarker() {
     try {
       localStorage.setItem(STORAGE_SHARED_MIGRATED, '1');
@@ -1453,7 +1605,11 @@
     }
 
     const localSnapshot = getSharedStateSnapshot();
-    if (lastSyncedSharedState && valuesEqual(localSnapshot, lastSyncedSharedState)) return true;
+    const pendingQuestionJournalVersion = pendingQuestionJournal.version;
+    if (lastSyncedSharedState && valuesEqual(localSnapshot, lastSyncedSharedState)) {
+      clearPendingQuestionJournal(pendingQuestionJournalVersion);
+      return true;
+    }
 
     sharedStateSaveInFlight = true;
     let retry = false;
@@ -1477,6 +1633,7 @@
       } else {
         sharedStateRevision = Number(document.revision) || sharedStateRevision + 1;
         lastSyncedSharedState = normaliseSharedState(document.state ?? localSnapshot);
+        clearPendingQuestionJournal(pendingQuestionJournalVersion);
         saved = true;
       }
     } catch (error) {
@@ -1579,6 +1736,7 @@
         lastSyncedSharedState = emptySharedState();
         needsMigrationSave = browserSnapshot.roles.length > 0 || browserSnapshot.events.length > 0 || browserSnapshot.contacts.length > 0 || browserSnapshot.referenceLibrary.length > 0;
       }
+      needsMigrationSave = applyPendingQuestionJournal() || needsMigrationSave;
       sharedStateReady = true;
       if (needsMigrationSave) {
         const migrated = await persistSharedState();
@@ -4873,7 +5031,7 @@
       maybeOpenIntelligentGolfPlannerMatch(event);
     }
     if (state.activeView === 'artwork' && event) {
-      import('./poster-app.js?v=20260916-admission-context-1')
+      import('./poster-app.js?v=20260922-storage-reuse-1')
         .then(module => module.mountPosterStudio({
           eventId: event.id,
           eventName: event.name,
@@ -8618,6 +8776,7 @@
     for (const rule of playbook.advisoryRules ?? []) {
       if (rule.targetQuestionId === questionId && value !== rule.triggerAnswer) delete event.advisoryOverrides?.[rule.id];
     }
+    recordPendingQuestionChange(event, questionId);
     saveState();
     render();
   }
@@ -8648,6 +8807,7 @@
 
     invalidateTaskReviewConfirmations(event, questionId);
     normaliseAnswers(event);
+    recordPendingQuestionChange(event, questionId);
     saveState();
     render();
     return true;
@@ -9627,6 +9787,7 @@
           }
         }
         invalidateTaskReviewConfirmations(event, element.dataset.questionInput);
+        recordPendingQuestionChange(event, element.dataset.questionInput);
         saveState();
       });
       element.addEventListener('change', () => {
@@ -9668,6 +9829,7 @@
         event.answers[questionId] = collectTicketTypeAnswer(questionId);
         clearQuestionNotRelevant(event, questionId);
         invalidateTaskReviewConfirmations(event, questionId);
+        recordPendingQuestionChange(event, questionId);
         saveState();
       });
       element.addEventListener('change', () => render());
@@ -9683,6 +9845,7 @@
         event.answers[questionId] = rows;
         clearQuestionNotRelevant(event, questionId);
         invalidateTaskReviewConfirmations(event, questionId);
+        recordPendingQuestionChange(event, questionId);
         saveState();
         render();
       });
@@ -9700,6 +9863,7 @@
         rows.splice(removeIndex, 1);
         event.answers[questionId] = rows;
         invalidateTaskReviewConfirmations(event, questionId);
+        recordPendingQuestionChange(event, questionId);
         saveState();
         render();
       });
@@ -11160,6 +11324,15 @@
   window.addEventListener('pagehide', () => {
     if (playbookTemplatePollTimer) window.clearInterval(playbookTemplatePollTimer);
     playbookTemplatePollTimer = null;
+    if (pendingQuestionJournal.entries.length) cachePendingQuestionJournal();
+    if (sharedStateSaveTimer) {
+      window.clearTimeout(sharedStateSaveTimer);
+      sharedStateSaveTimer = null;
+    }
+    // Start the normal server write as the page exits. The synchronous
+    // question journal above remains the guaranteed refresh recovery path if
+    // the browser cancels this request.
+    if (sharedStateReady && !sharedStateSaveInFlight) persistSharedState();
   });
   window.addEventListener('pageshow', startPlaybookTemplatePolling);
 })();

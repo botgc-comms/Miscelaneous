@@ -114,6 +114,7 @@ builder.Services.AddSingleton<IIntelligentGolfMemberCommunicationsClient, Intell
 builder.Services.AddSingleton<IIntelligentGolfIntegrationLinkStore, IntelligentGolfIntegrationLinkStore>();
 builder.Services.AddSingleton<IIntegrationActivityStore, IntegrationActivityStore>();
 builder.Services.AddSingleton<IIntelligentGolfEventIntegration, IntelligentGolfEventIntegration>();
+builder.Services.AddHostedService<PersistentStorageMaintenanceService>();
 builder.Services.AddSingleton<PlaybookEventChangePipeline>();
 builder.Services.AddSingleton<IPlaybookEventChangePublisher>(services => services.GetRequiredService<PlaybookEventChangePipeline>());
 builder.Services.AddHostedService(services => services.GetRequiredService<PlaybookEventChangePipeline>());
@@ -1002,6 +1003,7 @@ app.MapPost("/api/poster/member-email/draft", async (
     MemberEmailDraftRequest draft,
     HttpRequest httpRequest,
     IMemberEmailArtworkStore artworkStore,
+    IPosterSessionStore posterSessionStore,
     IMemberEmailComposer composer,
     CancellationToken cancellationToken) =>
 {
@@ -1018,14 +1020,23 @@ app.MapPost("/api/poster/member-email/draft", async (
         return Results.BadRequest(new { error = "Finished campaign artwork is required." });
     }
 
-    if (!TryDecodePngDataUrl(draft.Artwork.DataUrl, out var artworkBytes, out var artworkError))
-    {
-        return Results.BadRequest(new { error = artworkError });
-    }
-
-    var artworkToken = await artworkStore.SaveAsync(draft.EventId, artworkBytes, cancellationToken);
     var publicScheme = httpRequest.Headers["X-Forwarded-Proto"].FirstOrDefault() ?? httpRequest.Scheme;
-    var artworkUrl = $"{publicScheme}://{httpRequest.Host}{httpRequest.PathBase}/api/poster/member-email/artwork/{artworkToken}";
+    var artworkUrl = await ResolveStoredPosterArtworkUrlAsync(
+        draft.Artwork.SourceUrl,
+        publicScheme,
+        httpRequest,
+        posterSessionStore,
+        cancellationToken);
+    if (artworkUrl is null)
+    {
+        if (!TryDecodePngDataUrl(draft.Artwork.DataUrl, out var artworkBytes, out var artworkError))
+        {
+            return Results.BadRequest(new { error = artworkError });
+        }
+
+        var artworkToken = await artworkStore.SaveAsync(draft.EventId, artworkBytes, cancellationToken);
+        artworkUrl = $"{publicScheme}://{httpRequest.Host}{httpRequest.PathBase}/api/poster/member-email/artwork/{artworkToken}";
+    }
     return Results.Ok(await composer.ComposeAsync(draft, artworkUrl, cancellationToken));
 });
 
@@ -2611,6 +2622,39 @@ static bool IsSupportedUploadedDesignContentType(string? contentType)
 {
     var mediaType = contentType?.Split(';', 2)[0].Trim();
     return mediaType?.ToLowerInvariant() is "image/png" or "image/jpeg" or "image/jpg" or "image/webp";
+}
+
+static async Task<string?> ResolveStoredPosterArtworkUrlAsync(
+    string? sourceUrl,
+    string publicScheme,
+    HttpRequest request,
+    IPosterSessionStore store,
+    CancellationToken cancellationToken)
+{
+    if (string.IsNullOrWhiteSpace(sourceUrl) ||
+        !sourceUrl.StartsWith("/api/poster/artwork?", StringComparison.Ordinal))
+    {
+        return null;
+    }
+
+    if (!Uri.TryCreate(new Uri("https://event-playbook.local"), sourceUrl, out var parsed) ||
+        !string.Equals(parsed.AbsolutePath, "/api/poster/artwork", StringComparison.Ordinal))
+    {
+        return null;
+    }
+
+    var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(parsed.Query);
+    var key = query["key"].ToString().Trim();
+    var outputId = query["outputId"].ToString().Trim();
+    var version = query["version"].ToString().Trim();
+    if (string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(outputId) || string.IsNullOrWhiteSpace(version))
+    {
+        return null;
+    }
+
+    var artwork = await store.GetArtworkAsync(key, outputId, version, cancellationToken);
+    if (artwork is null) return null;
+    return $"{publicScheme}://{request.Host}{request.PathBase}{parsed.PathAndQuery}";
 }
 
 static bool TryDecodePngDataUrl(string? dataUrl, out byte[] imageBytes, out string error)

@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Globalization;
 using BOTGC.EventPlaybook.Models;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace BOTGC.EventPlaybook.Services;
 
@@ -16,6 +17,7 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
 {
     private readonly string _path;
     private readonly TimeProvider _timeProvider;
+    private readonly ILogger<TaskCompletionRegistry> _logger;
     private readonly SemaphoreSlim _gate = new(1, 1);
     private readonly JsonSerializerOptions _jsonOptions = new(JsonSerializerDefaults.Web)
     {
@@ -23,16 +25,25 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
     };
 
     public TaskCompletionRegistry(IWebHostEnvironment environment)
-        : this(environment, TimeProvider.System)
+        : this(environment, TimeProvider.System, NullLogger<TaskCompletionRegistry>.Instance)
     {
     }
 
     public TaskCompletionRegistry(IWebHostEnvironment environment, TimeProvider timeProvider)
+        : this(environment, timeProvider, NullLogger<TaskCompletionRegistry>.Instance)
+    {
+    }
+
+    public TaskCompletionRegistry(
+        IWebHostEnvironment environment,
+        TimeProvider timeProvider,
+        ILogger<TaskCompletionRegistry> logger)
     {
         var directory = Path.Combine(environment.ContentRootPath, "App_Data");
         Directory.CreateDirectory(directory);
         _path = Path.Combine(directory, "task-completions.json");
         _timeProvider = timeProvider;
+        _logger = logger;
     }
 
     public async Task<TaskCompletionRecord> RegisterAsync(RegisterCompletionLinkRequest request, CancellationToken cancellationToken)
@@ -154,14 +165,65 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
             return [];
         }
 
-        await using var stream = File.OpenRead(_path);
-        return await JsonSerializer.DeserializeAsync<List<TaskCompletionRecord>>(stream, _jsonOptions, cancellationToken) ?? [];
+        try
+        {
+            await using var stream = File.OpenRead(_path);
+            return await JsonSerializer.DeserializeAsync<List<TaskCompletionRecord>>(stream, _jsonOptions, cancellationToken) ?? [];
+        }
+        catch (JsonException exception)
+        {
+            var recovered = await RecoverCompleteRecordsAsync(cancellationToken);
+            _logger.LogError(
+                exception,
+                "The task completion registry was truncated. Recovered {RecoveredCount} complete records from its valid prefix.",
+                recovered.Count);
+            await SaveAsync(recovered, cancellationToken);
+            return recovered;
+        }
     }
 
     private async Task SaveAsync(List<TaskCompletionRecord> records, CancellationToken cancellationToken)
     {
-        await using var stream = File.Create(_path);
-        await JsonSerializer.SerializeAsync(stream, records, _jsonOptions, cancellationToken);
+        var temporaryPath = $"{_path}.{Guid.NewGuid():N}.tmp";
+        try
+        {
+            await using (var stream = new FileStream(
+                temporaryPath,
+                FileMode.CreateNew,
+                FileAccess.Write,
+                FileShare.None,
+                65536,
+                FileOptions.Asynchronous | FileOptions.WriteThrough))
+            {
+                await JsonSerializer.SerializeAsync(stream, records, _jsonOptions, cancellationToken);
+                await stream.FlushAsync(cancellationToken);
+            }
+            File.Move(temporaryPath, _path, true);
+        }
+        finally
+        {
+            if (File.Exists(temporaryPath)) File.Delete(temporaryPath);
+        }
+    }
+
+    private async Task<List<TaskCompletionRecord>> RecoverCompleteRecordsAsync(CancellationToken cancellationToken)
+    {
+        var text = await File.ReadAllTextAsync(_path, cancellationToken);
+        var boundary = text.LastIndexOf("\n  }", StringComparison.Ordinal);
+        while (boundary >= 0)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var candidate = $"{text[..(boundary + 4)].TrimEnd().TrimEnd(',')}\n]";
+            try
+            {
+                return JsonSerializer.Deserialize<List<TaskCompletionRecord>>(candidate, _jsonOptions) ?? [];
+            }
+            catch (JsonException)
+            {
+                boundary = text.LastIndexOf("\n  }", boundary - 1, StringComparison.Ordinal);
+            }
+        }
+        return [];
     }
 
     private void ApplyExpiry(TaskCompletionRecord? record)

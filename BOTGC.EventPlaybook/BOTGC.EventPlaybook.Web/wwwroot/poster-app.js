@@ -3509,7 +3509,8 @@ function getMemberEmailArtwork(session) {
     const primaryOutput = getPrimaryOutput(session);
     const output = squareOutput ?? printOutput ?? primaryOutput;
     const canvas = output ? session.posterCanvases.get(output.id) : null;
-    return output && canvas ? { output, canvas } : null;
+    const sourceUrl = output ? session.artworkByOutput.get(output.id) : null;
+    return output && canvas ? { output, canvas, sourceUrl } : null;
 }
 
 function captureMemberEmailDialog(session) {
@@ -3597,7 +3598,12 @@ async function generateMemberEmailDraft(session) {
                 artwork: {
                     outputId: artwork.output.id,
                     name: artwork.output.name,
-                    dataUrl: artwork.canvas.toDataURL('image/png')
+                    sourceUrl: isPersistedArtworkSource(artwork.sourceUrl) && !isInlineArtworkSource(artwork.sourceUrl)
+                        ? artwork.sourceUrl
+                        : null,
+                    dataUrl: isPersistedArtworkSource(artwork.sourceUrl) && !isInlineArtworkSource(artwork.sourceUrl)
+                        ? null
+                        : artwork.canvas.toDataURL('image/png')
                 }
             })
         });

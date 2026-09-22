@@ -90,6 +90,7 @@ test('marking any question not relevant clears its typed value without using an 
     buildDontKnowTask: () => null,
     invalidateTaskReviewConfirmations: () => { invalidations += 1; },
     normaliseAnswers: () => {},
+    recordPendingQuestionChange: () => {},
     saveState: () => { saves += 1; },
     render: () => { renders += 1; }
   });
@@ -176,6 +177,7 @@ test('recording a real typed answer clears not relevant and preserves the origin
     normaliseAnswers: () => {},
     playbook: { advisoryRules: [] },
     ensureOperationalTaskState: () => {},
+    recordPendingQuestionChange: () => {},
     saveState: () => {},
     render: () => {}
   });

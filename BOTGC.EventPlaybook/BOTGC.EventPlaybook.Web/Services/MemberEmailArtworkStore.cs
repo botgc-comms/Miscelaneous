@@ -25,7 +25,18 @@ public sealed class MemberEmailArtworkStore : IMemberEmailArtworkStore
         var tokenBytes = SHA256.HashData(Encoding.UTF8.GetBytes($"{eventId.Trim()}:{Convert.ToHexString(SHA256.HashData(content))}"));
         var token = Convert.ToHexString(tokenBytes).ToLowerInvariant()[..32];
         var path = Path.Combine(_directory, $"{token}.png");
-        await File.WriteAllBytesAsync(path, content, cancellationToken);
+        if (File.Exists(path) && new FileInfo(path).Length == content.LongLength) return token;
+
+        var temporaryPath = $"{path}.{Guid.NewGuid():N}.tmp";
+        try
+        {
+            await File.WriteAllBytesAsync(temporaryPath, content, cancellationToken);
+            File.Move(temporaryPath, path, true);
+        }
+        finally
+        {
+            if (File.Exists(temporaryPath)) File.Delete(temporaryPath);
+        }
         return token;
     }
 

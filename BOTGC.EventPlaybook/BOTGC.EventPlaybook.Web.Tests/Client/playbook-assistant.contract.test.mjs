@@ -11,8 +11,8 @@ const [playbookSource, assistantSource, programSource] = await Promise.all([
   readFile(programPath, 'utf8')
 ]);
 
-test('Playbook administration mounts the assistant only in the authenticated admin view', () => {
-  assert.match(playbookSource, /state\.activeView === 'admin' && accessSession\.isAdmin/);
+test('the assistant is available throughout the Playbook while configuration writes remain admin protected', () => {
+  assert.match(playbookSource, /mountPlaybookAssistant/);
   assert.match(playbookSource, /import\('\.\/playbook-assistant\.js\?v=/);
   assert.match(playbookSource, /id="playbook-assistant-root"/);
   assert.match(programSource, /path\.StartsWithSegments\("\/api\/admin"\) && !isAdmin/);
@@ -77,9 +77,9 @@ test('proposal review exposes current and proposed values plus every material fi
 test('voice instructions are transcribed into editable text and are not automatically submitted', () => {
   assert.match(assistantSource, /navigator\.mediaDevices\.getUserMedia/);
   assert.match(assistantSource, /\/api\/admin\/playbook-assistant\/voice/);
-  assert.match(assistantSource, /input\.value = result\.text/);
+  assert.match(assistantSource, /assistantState\.draft = result\.text/);
   assert.match(assistantSource, /Review the wording, then send it when you are ready/);
-  assert.doesNotMatch(assistantSource, /input\.value = result\.text[\s\S]{0,100}requestSubmit/);
+  assert.doesNotMatch(assistantSource, /assistantState\.draft = result\.text[\s\S]{0,140}requestSubmit/);
 });
 
 test('retired club-specific items are hidden without deleting their IDs and core reset remains available', () => {
