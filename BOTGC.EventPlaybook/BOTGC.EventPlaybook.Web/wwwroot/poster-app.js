@@ -2762,6 +2762,11 @@ function finishCampaignWithMissingFormats(session) {
     renderGenerationError(session);
 }
 
+function getRetryableMasterArtworkSource(session) {
+    const primaryOutput = getPrimaryOutput(session);
+    return session.primaryArtworkDataUrl ?? session.artworkByOutput.get(primaryOutput?.id) ?? null;
+}
+
 async function retryMissingFormats(session) {
     if (session.isGenerating) return session.generationPromise;
     if (session.generationOrigin === 'uploaded-design') {
@@ -2769,8 +2774,7 @@ async function retryMissingFormats(session) {
         if (!session.sourceDesign?.artworkSource || missingSourceDesignOutputs.length === 0) return;
         return produceUploadedDesign(session, missingSourceDesignOutputs);
     }
-    const primaryOutput = getPrimaryOutput(session);
-    const masterArtworkSource = session.primaryArtworkDataUrl ?? session.artworkByOutput.get(primaryOutput?.id);
+    const masterArtworkSource = getRetryableMasterArtworkSource(session);
     const missingFormats = getMissingVariantOutputs(session);
     if (!masterArtworkSource || missingFormats.length === 0) return;
 
@@ -4661,7 +4665,7 @@ function renderGenerationError(session) {
     if (!isSessionVisible(session) || !session.errorMessage) return;
     const canRetryMissingFormats = session.generationOrigin === 'uploaded-design'
         ? Boolean(session.sourceDesign?.artworkSource) && session.sourceDesign.available !== false && getMissingSourceDesignOutputs(session).length > 0
-        : Boolean(session.primaryArtworkDataUrl) && getMissingVariantOutputs(session).length > 0;
+        : Boolean(getRetryableMasterArtworkSource(session)) && getMissingVariantOutputs(session).length > 0;
     elements.generationProgress.classList.remove('hidden');
     elements.generationProgress.querySelector('[data-generation-error]')?.remove();
     elements.generationProgress.insertAdjacentHTML('beforeend', `<div class="progress-row generation-error-row" data-generation-error><span class="progress-icon">!</span><div><strong>${canRetryMissingFormats ? 'Some formats are missing' : 'Generation stopped'}</strong><small>${escapeHtml(session.errorMessage)}</small></div><div class="generation-error-actions"><span class="progress-state">Error</span>${canRetryMissingFormats ? '<button class="button button-secondary" type="button" data-retry-missing-formats>Retry missing formats</button>' : ''}</div></div>`);
