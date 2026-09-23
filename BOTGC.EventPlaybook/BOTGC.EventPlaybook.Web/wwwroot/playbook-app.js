@@ -2,6 +2,7 @@
   'use strict';
 
   const STORAGE_STATE = 'botgc-event-playbook-state-v2';
+  const STORAGE_SESSION_UI = 'botgc-event-playbook-session-ui-v1';
   const STORAGE_TEMPLATE = 'botgc-event-playbook-template-v1';
   const REFERENCE_LIBRARY_STORAGE = 'botgc-event-playbook-reference-library-v1';
   const STORAGE_SHARED_MIGRATED = 'botgc-event-playbook-shared-migration-v1';
@@ -213,6 +214,7 @@
   let sharedStateSaveInFlight = false;
   let sharedStateSavePending = false;
   let applyingSharedState = false;
+  let catalogueIdeasExpanded = false;
   let browserStateCacheMode = 'full';
   let browserStateCacheWarningShown = false;
   const completionLinkRegistrationSignatures = new Map();
@@ -267,13 +269,14 @@
   }
 
   function loadState() {
+    const sessionUi = loadSessionUiState();
     try {
       const raw = localStorage.getItem(STORAGE_STATE);
       if (!raw) {
         return {
-          activeEventId: null,
-          activeView: 'dashboard',
-          catalogueFilter: 'all',
+          activeEventId: sessionUi.activeEventId,
+          activeView: sessionUi.activeView,
+          catalogueFilter: sessionUi.catalogueFilter,
           taskFilter: 'open',
           dashboardTaskFilter: 'open',
           taskBoardMode: 'mine',
@@ -295,9 +298,9 @@
 
       const parsed = JSON.parse(raw);
       return {
-        activeEventId: parsed.activeEventId ?? null,
-        activeView: parsed.activeView ?? 'dashboard',
-        catalogueFilter: ['all', 'events', 'ideas'].includes(parsed.catalogueFilter) ? parsed.catalogueFilter : 'all',
+        activeEventId: sessionUi.activeEventId,
+        activeView: sessionUi.activeView,
+        catalogueFilter: sessionUi.catalogueFilter,
         taskFilter: parsed.taskFilter ?? 'open',
         dashboardTaskFilter: ['open', 'done', 'all'].includes(parsed.dashboardTaskFilter) ? parsed.dashboardTaskFilter : 'open',
         taskBoardMode: parsed.taskBoardMode === 'overview' ? 'overview' : 'mine',
@@ -317,9 +320,9 @@
       };
     } catch {
       return {
-        activeEventId: null,
-        activeView: 'dashboard',
-        catalogueFilter: 'all',
+        activeEventId: sessionUi.activeEventId,
+        activeView: sessionUi.activeView,
+        catalogueFilter: sessionUi.catalogueFilter,
         taskFilter: 'open',
         dashboardTaskFilter: 'open',
         taskBoardMode: 'mine',
@@ -336,6 +339,19 @@
         adminDraftItems: [],
         events: []
       };
+    }
+  }
+
+  function loadSessionUiState() {
+    try {
+      const parsed = JSON.parse(sessionStorage.getItem(STORAGE_SESSION_UI) || '{}');
+      return {
+        activeEventId: typeof parsed.activeEventId === 'string' && parsed.activeEventId ? parsed.activeEventId : null,
+        activeView: typeof parsed.activeView === 'string' && parsed.activeView ? parsed.activeView : 'dashboard',
+        catalogueFilter: ['all', 'events', 'ideas'].includes(parsed.catalogueFilter) ? parsed.catalogueFilter : 'all'
+      };
+    } catch {
+      return { activeEventId: null, activeView: 'dashboard', catalogueFilter: 'all' };
     }
   }
 
@@ -1091,7 +1107,13 @@
   }
 
   function serialiseBrowserStateForCache(compact = false) {
-    const { referenceLibrary: _, ...browserState } = state;
+    const {
+      referenceLibrary: _,
+      activeEventId: _activeEventId,
+      activeView: _activeView,
+      catalogueFilter: _catalogueFilter,
+      ...browserState
+    } = state;
     if (!compact) return JSON.stringify(browserState);
 
     return JSON.stringify(browserState, (key, value) => {
@@ -1111,6 +1133,16 @@
   }
 
   function cacheBrowserState() {
+    try {
+      sessionStorage.setItem(STORAGE_SESSION_UI, JSON.stringify({
+        activeEventId: state.activeEventId ?? null,
+        activeView: state.activeView ?? 'dashboard',
+        catalogueFilter: state.catalogueFilter ?? 'all'
+      }));
+    } catch (error) {
+      console.warn('This tab could not retain its selected event and view.', error);
+    }
+
     if (browserStateCacheMode === 'disabled') return false;
 
     const attempts = browserStateCacheMode === 'compact' ? [true] : [false, true];
@@ -1661,20 +1693,21 @@
 
   async function flushSharedState() {
     if (!sharedStateReady) return false;
-    if (sharedStateSaveTimer) {
-      clearTimeout(sharedStateSaveTimer);
-      sharedStateSaveTimer = null;
-    }
     const timeoutAt = Date.now() + 10_000;
-    while (sharedStateSaveInFlight && Date.now() < timeoutAt) {
-      await new Promise(resolve => setTimeout(resolve, 25));
+    for (let attempt = 0; attempt < 3 && Date.now() < timeoutAt; attempt += 1) {
+      if (sharedStateSaveTimer) {
+        clearTimeout(sharedStateSaveTimer);
+        sharedStateSaveTimer = null;
+      }
+      while (sharedStateSaveInFlight && Date.now() < timeoutAt) {
+        await new Promise(resolve => setTimeout(resolve, 25));
+      }
+      if (sharedStateSaveInFlight) return false;
+      const saved = await persistSharedState();
+      if (saved || (lastSyncedSharedState && valuesEqual(getSharedStateSnapshot(), lastSyncedSharedState))) return true;
+      if (attempt < 2) await new Promise(resolve => setTimeout(resolve, 100));
     }
-    if (sharedStateSaveInFlight) return false;
-    if (sharedStateSaveTimer) {
-      clearTimeout(sharedStateSaveTimer);
-      sharedStateSaveTimer = null;
-    }
-    return persistSharedState();
+    return false;
   }
 
   async function pollSharedState() {
@@ -2392,14 +2425,9 @@
 
   function getActiveEvent() {
     let event = state.events.find(item => item.id === state.activeEventId) ?? null;
-    if (isEventIdea(event)) event = null;
-    if (!event) {
-      event = state.events.find(candidate => !isEventIdea(candidate)) ?? null;
-    }
-    if (event) {
-      state.activeEventId = event.id;
-    } else {
+    if (!event || isEventIdea(event)) {
       state.activeEventId = null;
+      return null;
     }
     if (event) {
       event.answers ??= {};
@@ -6093,9 +6121,10 @@
               }).join('') : '<p>No previous status changes have been recorded.</p>'}
             </aside>
           </div>
+          <p id="event-status-save-error" class="event-status-save-error hidden" role="alert"></p>
           <div class="modal-actions">
             <button class="button button-secondary" type="button" data-close-event-status>Cancel</button>
-            <button class="button button-primary" type="submit">Apply event status</button>
+            <button id="event-status-submit" class="button button-primary" type="submit">Apply event status</button>
           </div>
         </form>
       </dialog>`;
@@ -6298,11 +6327,9 @@
           ${renderDerivedContextForQuestion(item.id, event)}
           ${renderPriorLearning(event, item)}
           ${renderAnswerControl(item, value, priorHint)}
-          <div class="optional-question-resolution">
-            <button type="button" class="choice-button not-relevant-choice ${notRelevant ? 'selected' : ''}" data-question-not-relevant="${escapeHtml(item.id)}" aria-pressed="${notRelevant ? 'true' : 'false'}">
-              ${notRelevant ? 'Restore question' : 'Mark as not relevant'}
-            </button>
-          </div>
+          ${notRelevant
+            ? `<div class="question-restore-row"><span>This question is outside the active plan.</span><button type="button" class="button button-secondary" data-question-not-relevant="${escapeHtml(item.id)}" aria-pressed="true">Restore question</button></div>`
+            : `<div class="optional-question-resolution"><button type="button" class="choice-button not-relevant-choice" data-question-not-relevant="${escapeHtml(item.id)}" aria-pressed="false">Mark as not relevant</button></div>`}
           ${renderAdvisoriesForQuestion(item.id, event)}
         </div>
       </article>
@@ -6557,9 +6584,12 @@
 
   function renderTaskNotRelevantControl(item, event, taskState = event?.taskState?.[item?.id] ?? {}) {
     const notRelevant = taskState?.notRelevant === true;
+    if (notRelevant) {
+      return `<button type="button" class="button button-secondary task-restore-button" data-task-restore-not-relevant="${escapeHtml(item.id)}" data-task-not-relevant-event-id="${escapeHtml(event.id)}">Restore task</button>`;
+    }
     return `<label class="task-not-relevant-control ${notRelevant ? 'selected' : ''}" title="${notRelevant ? 'Return this task to the active plan' : 'Remove this task from the active plan because it does not apply to this event'}">
-      <input type="checkbox" data-task-not-relevant="${escapeHtml(item.id)}" data-task-not-relevant-event-id="${escapeHtml(event.id)}" ${notRelevant ? 'checked' : ''}>
-      <span aria-hidden="true"></span><small>${notRelevant ? 'Not relevant — restore' : 'Not relevant'}</small>
+      <input type="checkbox" data-task-not-relevant="${escapeHtml(item.id)}" data-task-not-relevant-event-id="${escapeHtml(event.id)}">
+      <span aria-hidden="true"></span><small>Not relevant</small>
     </label>`;
   }
 
@@ -6633,7 +6663,7 @@
                   ? `<div class="complete-toggle task-status-control" title="${escapeHtml(completionControl.title)}"><span aria-hidden="true">✓</span><small>Configured</small></div>`
                   : ''
               : completionControl.statusManaged
-                ? `<div class="complete-toggle task-status-control" title="${escapeHtml(completionControl.title)}"><span aria-hidden="true">${taskState.completed ? '✓' : '!'}</span><small>${escapeHtml(completionControl.label)}</small></div>`
+                ? `<div class="complete-toggle task-status-control ${taskState.completed ? 'completed' : ''}" title="${escapeHtml(completionControl.title)}"><span aria-hidden="true">${taskState.completed ? '✓' : '!'}</span><small>${taskState.completed ? 'Status recorded' : 'Status action'}</small></div>`
               : `<label class="complete-toggle task-complete-control ${completionControl.blocked ? 'blocked' : ''}" title="${escapeHtml(completionControl.title)}">
                   <input type="checkbox" data-task-complete="${item.id}" ${taskState.completed ? 'checked' : ''} ${completionControl.blocked ? 'disabled' : ''}>
                   <span></span><small>${escapeHtml(completionControl.label)}</small>
@@ -7303,6 +7333,7 @@
       : 'all';
     const showIdeas = catalogueFilter !== 'events';
     const showEvents = catalogueFilter !== 'ideas';
+    const ideasExpanded = catalogueFilter === 'ideas' || catalogueIdeasExpanded;
     const ideas = state.events
       .filter(isEventIdea)
       .sort((a, b) => String(b.idea?.proposedAt || b.createdAt || '').localeCompare(String(a.idea?.proposedAt || a.createdAt || '')));
@@ -7345,9 +7376,12 @@
               <h3 id="catalogue-ideas-heading">Ideas</h3>
               <p>These proposals do not create tasks, reminders or external integrations until somebody adopts them as an event.</p>
             </div>
-            <span>${ideas.length} idea${ideas.length === 1 ? '' : 's'}</span>
+            <div class="catalogue-ideas-heading-actions">
+              <span>${ideas.length} idea${ideas.length === 1 ? '' : 's'}</span>
+              <button type="button" class="button button-secondary" data-toggle-catalogue-ideas aria-expanded="${ideasExpanded}">${ideasExpanded ? 'Hide ideas' : 'View ideas'}</button>
+            </div>
           </div>
-          ${ideas.length
+          ${!ideasExpanded ? '' : ideas.length
             ? `<div class="catalogue-grid catalogue-ideas-grid">${ideas.map(renderIdeaCatalogueCard).join('')}</div>`
             : `<div class="catalogue-ideas-empty-inline">
                 <span class="catalogue-idea-mark" aria-hidden="true">✦</span>
@@ -7383,13 +7417,29 @@
   function renderIdeaCatalogueCard(event) {
     const proposedAt = event.idea?.proposedAt || event.createdAt || '';
     const proposer = event.idea?.proposedBy || event.organiser || '';
+    const usesPublishedArtwork = Boolean(event.publishedCataloguePosterThumbnail);
+    const catalogueArtwork = event.publishedCataloguePosterThumbnail || event.cataloguePosterThumbnail || '';
+    const sourceIsSquare = usesPublishedArtwork
+      ? event.publishedCataloguePosterSourceIsSquare ?? event.cataloguePosterSourceIsSquare
+      : event.cataloguePosterSourceIsSquare;
+    const sourceOutputId = usesPublishedArtwork
+      ? event.publishedCataloguePosterSourceOutputId ?? event.cataloguePosterSourceOutputId
+      : event.cataloguePosterSourceOutputId;
+    const thumbnailMode = usesPublishedArtwork
+      ? event.publishedCataloguePosterThumbnailMode ?? event.cataloguePosterThumbnailMode
+      : event.cataloguePosterThumbnailMode;
+    const legacyPortraitClass = catalogueArtwork && sourceIsSquare === false && thumbnailMode !== 'cover'
+      ? sourceOutputId === 'a4' ? ' legacy-fitted-a4' : ' legacy-fitted-portrait'
+      : '';
     return `
       <article class="catalogue-card catalogue-idea-card">
-        <div class="catalogue-idea-banner">
+        <button class="catalogue-poster" data-event-summary="${escapeHtml(event.id)}" aria-label="Review idea ${escapeHtml(event.name)}">
+          ${catalogueArtwork
+            ? `<img class="${legacyPortraitClass.trim()}" src="${escapeHtml(catalogueArtwork)}" alt="Campaign artwork for ${escapeHtml(event.name)}">`
+            : `<span class="catalogue-poster-placeholder"><img src="${escapeHtml(clubBranding.crestUrl)}" alt="${escapeHtml(clubBranding.clubName)} crest"><small>Artwork not generated yet</small></span>`}
           <span class="catalogue-status status-idea">Idea</span>
-          <span class="catalogue-idea-mark" aria-hidden="true">✦</span>
-          <small>Possible future event</small>
-        </div>
+          <span class="catalogue-idea-corner-mark" aria-hidden="true">✦</span>
+        </button>
         <div class="catalogue-card-body">
           <div class="catalogue-card-heading">
             <div>
@@ -9188,14 +9238,12 @@
     if (statusChanged && nextStatus === 'cancelled') {
       state.activeView = 'cancellation';
     } else if (nextStatus === 'idea') {
-      state.activeEventId = null;
       state.activeView = 'catalogue';
     } else if (state.activeView === 'cancellation' && nextStatus !== 'cancelled') {
       state.activeView = 'module:start';
     }
 
     saveState();
-    if (statusNotification) void dispatchEventStatusNotification(event);
     return true;
   }
 
@@ -9970,16 +10018,45 @@
     });
 
     document.getElementById('event-status-value')?.addEventListener('change', updateEventStatusDialogFields);
-    document.getElementById('event-status-form')?.addEventListener('submit', eventArgs => {
+    document.getElementById('event-status-form')?.addEventListener('submit', async eventArgs => {
       eventArgs.preventDefault();
       const event = getActiveEvent();
       const form = eventArgs.currentTarget;
+      const submitButton = document.getElementById('event-status-submit');
+      const saveError = document.getElementById('event-status-save-error');
       updateEventStatusDialogFields();
       if (!form.checkValidity()) {
         form.reportValidity();
         return;
       }
       if (!event || !applyEventStatusChange(event)) return;
+      if (saveError) {
+        saveError.textContent = '';
+        saveError.classList.add('hidden');
+      }
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = 'Saving status…';
+      }
+      const saved = await flushSharedState();
+      if (!saved) {
+        if (saveError) {
+          saveError.textContent = 'The status could not be saved to the shared database. It has not been reported as complete; please try again.';
+          saveError.classList.remove('hidden');
+        }
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = 'Retry saving status';
+        }
+        return;
+      }
+      if (isEventIdea(event)) {
+        state.activeEventId = null;
+        state.activeView = 'catalogue';
+        cacheBrowserState();
+      }
+      const statusNotification = event.lifecycle?.statusNotification;
+      if (statusNotification?.deliveryStatus === 'pending') void dispatchEventStatusNotification(event);
       document.getElementById('event-status-dialog')?.close();
       render();
     });
@@ -10499,7 +10576,34 @@
       element.addEventListener('click', () => {
         const filter = element.dataset.catalogueFilter;
         state.catalogueFilter = ['events', 'ideas'].includes(filter) ? filter : 'all';
+        catalogueIdeasExpanded = state.catalogueFilter === 'ideas';
         saveState();
+        render();
+      });
+    });
+
+    document.querySelectorAll('[data-task-restore-not-relevant]').forEach(element => {
+      element.addEventListener('click', () => {
+        const eventId = element.dataset.taskNotRelevantEventId;
+        const targetEvent = state.events.find(candidate => candidate.id === eventId) ?? getActiveEvent();
+        if (!targetEvent) return;
+        const task = getActiveTasks(targetEvent, { includeNotRelevant: true })
+          .find(candidate => candidate.item.id === element.dataset.taskRestoreNotRelevant);
+        if (!task || markTaskNotRelevant(targetEvent, task.item, false) === false) return;
+        saveState();
+        render();
+      });
+    });
+
+    document.querySelectorAll('[data-toggle-catalogue-ideas]').forEach(element => {
+      element.addEventListener('click', () => {
+        if (state.catalogueFilter === 'ideas') {
+          state.catalogueFilter = 'all';
+          catalogueIdeasExpanded = false;
+          cacheBrowserState();
+        } else {
+          catalogueIdeasExpanded = !catalogueIdeasExpanded;
+        }
         render();
       });
     });

@@ -56,6 +56,25 @@ public sealed class MemberCommunicationsComposerTests
     }
 
     [Fact]
+    public async Task EmailOpenAiDraftDoesNotDuplicateAnHtmlEncodedArtworkUrl()
+    {
+        const string artworkUrl = "https://events.example.test/artwork?key=event-1&outputId=social&version=2";
+        var encodedArtworkUrl = "https://events.example.test/artwork?key=event-1&amp;outputId=social&amp;version=2";
+        var response = OpenAiResponse(
+            "Autumn Supper",
+            $"<div><img src=\"{encodedArtworkUrl}\" alt=\"Autumn Supper poster\"><p>Please join us.</p></div>");
+        var composer = CreateEmailComposer(
+            new StaticHttpClientFactory(HttpStatusCode.OK, response),
+            apiKey: "test-key");
+
+        var result = await composer.ComposeAsync(EmailRequest(price: null), artworkUrl, CancellationToken.None);
+
+        Assert.Equal("openai", result.Mode);
+        Assert.Equal(1, Count(result.BodyHtml, "<img"));
+        Assert.Equal(1, Count(result.BodyHtml, encodedArtworkUrl));
+    }
+
+    [Fact]
     public async Task CancellationEmailFallbackUsesAuthoritativeMemberUpdateAndNeverInvitesAttendance()
     {
         var composer = CreateEmailComposer(new ThrowingHttpClientFactory(), apiKey: string.Empty);

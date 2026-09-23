@@ -91,14 +91,17 @@ test('active task queries omit not-relevant work unless the archive explicitly r
   assert.equal(getActiveTasks(event, { includeNotRelevant: true }).length, 1);
 });
 
-test('every task presentation exposes the shared not-relevant checkbox and the task board retains a restore view', () => {
+test('every task presentation exposes not relevant and the archive provides an explicit restore action', () => {
   for (const renderer of ['renderInlineTask', 'renderDashboardTaskCard', 'renderTaskBoardCard']) {
     assert.match(functionSource(renderer), /renderTaskNotRelevantControl/);
   }
   assert.match(functionSource('renderTaskNotRelevantControl'), /type="checkbox"/);
+  assert.match(functionSource('renderTaskNotRelevantControl'), /data-task-restore-not-relevant/);
+  assert.match(functionSource('renderTaskNotRelevantControl'), /Restore task/);
   assert.match(functionSource('renderTaskNotRelevantControl'), /data-task-not-relevant-event-id/);
   assert.match(functionSource('renderTaskBoard'), /value: 'not-relevant'/);
   assert.match(functionSource('bindEvents'), /querySelectorAll\('\[data-task-not-relevant\]'\)/);
+  assert.match(functionSource('bindEvents'), /querySelectorAll\('\[data-task-restore-not-relevant\]'\)/);
   assert.match(css, /\.task-not-relevant-control/);
   assert.match(css, /\.task-card\.not-relevant/);
 });

@@ -58,6 +58,17 @@ test('the catalogue has an explicit ideas filter with record counts', () => {
   assert.match(styleSource, /\.catalogue-ideas-empty-inline/);
 });
 
+test('ideas are collapsed by default and retain their campaign artwork', () => {
+  const catalogue = functionSource('renderCatalogue');
+  const ideaCard = functionSource('renderIdeaCatalogueCard');
+  assert.match(playbookSource, /let catalogueIdeasExpanded = false/);
+  assert.match(catalogue, /data-toggle-catalogue-ideas/);
+  assert.match(catalogue, /View ideas/);
+  assert.match(ideaCard, /publishedCataloguePosterThumbnail \|\| event\.cataloguePosterThumbnail/);
+  assert.match(ideaCard, /class="catalogue-poster"/);
+  assert.doesNotMatch(ideaCard, /Possible future event/);
+});
+
 test('adopting an idea preserves the record and starts provisional planning from an explicit date', () => {
   const adoption = functionSource('adoptIdeaAsEvent');
   assert.match(adoption, /idea\.eventDate = eventDate/);
@@ -79,4 +90,21 @@ test('idea is an event lifecycle status and legacy record types migrate to it', 
   assert.match(functionSource('applySharedState'), /ideaStatusMigrated = migrateIdeaStatusState\(\)/);
   assert.match(functionSource('isEventIdea'), /event\?\.lifecycle\?\.status === 'idea'/);
   assert.match(functionSource('applyEventStatusChange'), /nextStatus === 'idea'/);
+});
+
+test('status changes are saved before success is shown and do not select another event', () => {
+  const activeEvent = functionSource('getActiveEvent');
+  const bindings = functionSource('bindEvents');
+  assert.doesNotMatch(activeEvent, /state\.events\.find\(candidate => !isEventIdea/);
+  assert.match(bindings, /const saved = await flushSharedState\(\)/);
+  assert.match(bindings, /if \(!saved\)/);
+  assert.match(bindings, /state\.activeEventId = null/);
+  assert.match(functionSource('flushSharedState'), /attempt < 3/);
+});
+
+test('selected event state is isolated to the current browser tab', () => {
+  assert.match(playbookSource, /const STORAGE_SESSION_UI = 'botgc-event-playbook-session-ui-v1'/);
+  assert.match(functionSource('loadState'), /loadSessionUiState\(\)/);
+  assert.match(functionSource('cacheBrowserState'), /sessionStorage\.setItem\(STORAGE_SESSION_UI/);
+  assert.match(functionSource('serialiseBrowserStateForCache'), /activeEventId: _activeEventId/);
 });

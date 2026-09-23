@@ -1021,22 +1021,24 @@ app.MapPost("/api/poster/member-email/draft", async (
     }
 
     var publicScheme = httpRequest.Headers["X-Forwarded-Proto"].FirstOrDefault() ?? httpRequest.Scheme;
-    var artworkUrl = await ResolveStoredPosterArtworkUrlAsync(
+    var storedArtworkBytes = await ResolveStoredPosterArtworkBytesAsync(
         draft.Artwork.SourceUrl,
-        publicScheme,
-        httpRequest,
         posterSessionStore,
         cancellationToken);
-    if (artworkUrl is null)
+    byte[] artworkBytes;
+    if (storedArtworkBytes is null)
     {
-        if (!TryDecodePngDataUrl(draft.Artwork.DataUrl, out var artworkBytes, out var artworkError))
+        if (!TryDecodePngDataUrl(draft.Artwork.DataUrl, out artworkBytes, out var artworkError))
         {
             return Results.BadRequest(new { error = artworkError });
         }
-
-        var artworkToken = await artworkStore.SaveAsync(draft.EventId, artworkBytes, cancellationToken);
-        artworkUrl = $"{publicScheme}://{httpRequest.Host}{httpRequest.PathBase}/api/poster/member-email/artwork/{artworkToken}";
     }
+    else
+    {
+        artworkBytes = storedArtworkBytes;
+    }
+    var artworkToken = await artworkStore.SaveAsync(draft.EventId, artworkBytes, cancellationToken);
+    var artworkUrl = $"{publicScheme}://{httpRequest.Host}{httpRequest.PathBase}/api/poster/member-email/artwork/{artworkToken}";
     return Results.Ok(await composer.ComposeAsync(draft, artworkUrl, cancellationToken));
 });
 
@@ -2624,10 +2626,8 @@ static bool IsSupportedUploadedDesignContentType(string? contentType)
     return mediaType?.ToLowerInvariant() is "image/png" or "image/jpeg" or "image/jpg" or "image/webp";
 }
 
-static async Task<string?> ResolveStoredPosterArtworkUrlAsync(
+static async Task<byte[]?> ResolveStoredPosterArtworkBytesAsync(
     string? sourceUrl,
-    string publicScheme,
-    HttpRequest request,
     IPosterSessionStore store,
     CancellationToken cancellationToken)
 {
@@ -2654,7 +2654,7 @@ static async Task<string?> ResolveStoredPosterArtworkUrlAsync(
 
     var artwork = await store.GetArtworkAsync(key, outputId, version, cancellationToken);
     if (artwork is null) return null;
-    return $"{publicScheme}://{request.Host}{request.PathBase}{parsed.PathAndQuery}";
+    return await File.ReadAllBytesAsync(artwork.Path, cancellationToken);
 }
 
 static bool TryDecodePngDataUrl(string? dataUrl, out byte[] imageBytes, out string error)

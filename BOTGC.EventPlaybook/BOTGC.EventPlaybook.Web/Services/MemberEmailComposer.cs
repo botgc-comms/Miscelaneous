@@ -98,9 +98,11 @@ public sealed class MemberEmailComposer(
             var generated = Parse(raw);
             if (generated is null) return fallback;
             var body = Sanitise(generated.BodyHtml);
-            if (!body.Contains(artworkUrl, StringComparison.OrdinalIgnoreCase))
+            var encodedArtworkUrl = HtmlEncoder.Default.Encode(artworkUrl);
+            if (!body.Contains(artworkUrl, StringComparison.OrdinalIgnoreCase) &&
+                !body.Contains(encodedArtworkUrl, StringComparison.OrdinalIgnoreCase))
             {
-                body = $"<p style=\"margin:0 0 24px\"><img src=\"{HtmlEncoder.Default.Encode(artworkUrl)}\" alt=\"{HtmlEncoder.Default.Encode(request.EventName)} poster\" style=\"display:block;width:100%;max-width:640px;height:auto;margin:0 auto\"></p>{body}";
+                body = $"<p style=\"margin:0 0 24px\"><img src=\"{encodedArtworkUrl}\" alt=\"{HtmlEncoder.Default.Encode(request.EventName)} poster\" style=\"display:block;width:100%;max-width:640px;height:auto;margin:0 auto\"></p>{body}";
             }
 
             return new MemberEmailDraftResult
