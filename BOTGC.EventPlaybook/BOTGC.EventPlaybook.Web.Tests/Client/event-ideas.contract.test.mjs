@@ -25,7 +25,9 @@ test('new catalogue records can be created as events or ideas', () => {
   assert.match(dialog, /id="new-event-record-type"/);
   assert.match(playbookSource, /idea:\s*\{\s*label:\s*'Idea for consideration'/);
   assert.match(functionSource('updateNewEventRecordTypeUi'), /Save idea/);
-  assert.match(functionSource('createEvent'), /recordType === 'idea'/);
+  assert.match(functionSource('createEvent'), /initialStatus = integrationDetails\.status === 'idea'/);
+  assert.match(functionSource('createEvent'), /status: initialStatus/);
+  assert.doesNotMatch(functionSource('createEvent'), /recordType,/);
 });
 
 test('ideas have a separate catalogue space and cannot leak into operational work', () => {
@@ -41,9 +43,23 @@ test('ideas have a separate catalogue space and cannot leak into operational wor
   assert.match(styleSource, /\.catalogue-idea-card/);
 });
 
+test('the catalogue has an explicit ideas filter with record counts', () => {
+  const catalogue = functionSource('renderCatalogue');
+  const bindings = functionSource('bindEvents');
+  assert.match(catalogue, /data-catalogue-filter="all"/);
+  assert.match(catalogue, /data-catalogue-filter="events"/);
+  assert.match(catalogue, /data-catalogue-filter="ideas"/);
+  assert.match(catalogue, /Ideas <strong>\$\{ideas\.length\}<\/strong>/);
+  assert.match(catalogue, /No ideas have been recorded yet/);
+  assert.match(catalogue, /data-new-record-type="idea"/);
+  assert.match(bindings, /state\.catalogueFilter = \['events', 'ideas'\]\.includes\(filter\) \? filter : 'all'/);
+  assert.match(bindings, /element\.dataset\.newRecordType === 'idea'/);
+  assert.match(styleSource, /\.catalogue-filter-button\.active/);
+  assert.match(styleSource, /\.catalogue-ideas-empty-inline/);
+});
+
 test('adopting an idea preserves the record and starts provisional planning from an explicit date', () => {
   const adoption = functionSource('adoptIdeaAsEvent');
-  assert.match(adoption, /idea\.recordType = 'event'/);
   assert.match(adoption, /idea\.eventDate = eventDate/);
   assert.match(adoption, /idea\.milestoneDates = defaultMilestoneDates\(eventDate\)/);
   assert.match(adoption, /lifecycle\.status = 'provisional'/);
@@ -51,4 +67,16 @@ test('adopting an idea preserves the record and starts provisional planning from
   assert.match(adoption, /state\.activeEventId = idea\.id/);
   assert.match(functionSource('renderAdoptIdeaDialog'), /id="adopt-idea-date" type="date" required/);
   assert.match(functionSource('renderIdeaCatalogueCard'), /Adopt as event/);
+});
+
+test('idea is an event lifecycle status and legacy record types migrate to it', () => {
+  assert.match(playbookSource, /idea:\s*\{\s*label:\s*'Idea',\s*summary:/);
+  const lifecycle = functionSource('normaliseEventLifecycle');
+  assert.match(lifecycle, /legacyIdeaRecord = event\.recordType === 'idea'/);
+  assert.match(lifecycle, /event\.lifecycle\.status = 'idea'/);
+  assert.match(lifecycle, /delete event\.recordType/);
+  assert.match(functionSource('migrateIdeaStatusState'), /event\.lifecycle\.status = 'idea'/);
+  assert.match(functionSource('applySharedState'), /ideaStatusMigrated = migrateIdeaStatusState\(\)/);
+  assert.match(functionSource('isEventIdea'), /event\?\.lifecycle\?\.status === 'idea'/);
+  assert.match(functionSource('applyEventStatusChange'), /nextStatus === 'idea'/);
 });

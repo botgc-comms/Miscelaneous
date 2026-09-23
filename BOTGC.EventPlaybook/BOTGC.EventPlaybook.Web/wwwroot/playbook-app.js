@@ -39,6 +39,7 @@
   });
 
   const EVENT_STATUS_DEFINITIONS = Object.freeze({
+    idea: { label: 'Idea', summary: 'A proposal for consideration. Operational planning, tasks, reminders and integrations remain paused until it is adopted.' },
     provisional: { label: 'Provisional', summary: 'Planning is under way, but operational commitments do not yet have a firm go-ahead.' },
     confirmed: { label: 'Confirmed', summary: 'The decision owner has confirmed that the event is proceeding.' },
     'at-risk': { label: 'At risk', summary: 'The event may change. Avoid new commitments until the recorded risk is resolved.' },
@@ -272,6 +273,7 @@
         return {
           activeEventId: null,
           activeView: 'dashboard',
+          catalogueFilter: 'all',
           taskFilter: 'open',
           dashboardTaskFilter: 'open',
           taskBoardMode: 'mine',
@@ -295,6 +297,7 @@
       return {
         activeEventId: parsed.activeEventId ?? null,
         activeView: parsed.activeView ?? 'dashboard',
+        catalogueFilter: ['all', 'events', 'ideas'].includes(parsed.catalogueFilter) ? parsed.catalogueFilter : 'all',
         taskFilter: parsed.taskFilter ?? 'open',
         dashboardTaskFilter: ['open', 'done', 'all'].includes(parsed.dashboardTaskFilter) ? parsed.dashboardTaskFilter : 'open',
         taskBoardMode: parsed.taskBoardMode === 'overview' ? 'overview' : 'mine',
@@ -316,6 +319,7 @@
       return {
         activeEventId: null,
         activeView: 'dashboard',
+        catalogueFilter: 'all',
         taskFilter: 'open',
         dashboardTaskFilter: 'open',
         taskBoardMode: 'mine',
@@ -1571,13 +1575,14 @@
     state.referenceLibrary = shared.referenceLibrary;
     state.taskAlertSchedule = shared.taskAlertSchedule;
     state.events = shared.events;
+    const ideaStatusMigrated = migrateIdeaStatusState();
     const admissionPlanningMigrated = migrateAdmissionPlanningState();
     const admissionModelMigrated = migrateAdmissionModelV38();
     const admissionPricingMigrated = migrateAdmissionPricingState();
     const foodServiceReviewMigrated = migrateFoodServiceReviewCompletionState();
     const eventControlMigrated = migrateEventControlStateV37();
     const planningNotesMigrated = materialiseIntelligentGolfPlanningNotes();
-    const eventStateMigrated = admissionPlanningMigrated || admissionModelMigrated || admissionPricingMigrated || foodServiceReviewMigrated || eventControlMigrated || planningNotesMigrated;
+    const eventStateMigrated = ideaStatusMigrated || admissionPlanningMigrated || admissionModelMigrated || admissionPricingMigrated || foodServiceReviewMigrated || eventControlMigrated || planningNotesMigrated;
     if (state.activeEventId && !state.events.some(event => event.id === state.activeEventId)) {
       state.activeEventId = null;
       state.activeView = 'catalogue';
@@ -2116,12 +2121,12 @@
   function createEvent(name, organiser = '', eventDate = '', description = '', milestoneDates = {}, organiserRef = null, integrationDetails = {}) {
     const id = crypto.randomUUID();
     const now = new Date().toISOString();
-    const recordType = integrationDetails.recordType === 'idea' ? 'idea' : 'event';
+    const initialStatus = integrationDetails.status === 'idea' ? 'idea' : 'provisional';
+    const isIdea = initialStatus === 'idea';
     const resolvedOrganiserRef = assignmentReference(organiserRef ?? organiser);
     const organiserName = assignmentDisplay(resolvedOrganiserRef ?? organiser, organiser);
     const event = {
       id,
-      recordType,
       name: name || 'Untitled event',
       organiser: organiserName,
       organiserRef: resolvedOrganiserRef,
@@ -2145,7 +2150,7 @@
       finances: { entries: [] },
       milestoneDates: { ...milestoneDates, DT: eventDate || milestoneDates.DT || '' },
       lifecycle: {
-        status: 'provisional',
+        status: initialStatus,
         statusChangedAt: now,
         decisionOwner: organiserName,
         decisionOwnerRef: resolvedOrganiserRef,
@@ -2169,7 +2174,7 @@
       eventSeriesId: id,
       learningInsights: [],
       cataloguePosterThumbnail: null,
-      idea: recordType === 'idea' ? {
+      idea: isIdea ? {
         proposedAt: now,
         proposedBy: organiserName,
         adoptedAt: null,
@@ -2178,14 +2183,14 @@
     };
 
     state.events.push(event);
-    if (recordType === 'event') {
+    if (!isIdea) {
       state.activeEventId = id;
       state.activeView = 'module:start';
     } else {
       state.activeView = 'catalogue';
     }
     saveState();
-    if (recordType === 'event') scheduleIntelligentGolfStatusRefresh(id);
+    if (!isIdea) scheduleIntelligentGolfStatusRefresh(id);
     return event;
   }
 
@@ -2307,10 +2312,12 @@
   }
 
   function normaliseEventLifecycle(event) {
-    event.recordType = event.recordType === 'idea' ? 'idea' : 'event';
+    const legacyIdeaRecord = event.recordType === 'idea';
     const fallbackStatus = event.closedAt ? 'completed' : 'provisional';
     event.lifecycle = event.lifecycle && typeof event.lifecycle === 'object' ? event.lifecycle : {};
-    if (!EVENT_STATUS_DEFINITIONS[event.lifecycle.status]) event.lifecycle.status = fallbackStatus;
+    if (legacyIdeaRecord) event.lifecycle.status = 'idea';
+    else if (!EVENT_STATUS_DEFINITIONS[event.lifecycle.status]) event.lifecycle.status = fallbackStatus;
+    delete event.recordType;
     event.lifecycle.statusChangedAt ??= event.closedAt ?? event.createdAt ?? new Date().toISOString();
     event.organiserRef = assignmentReference(event.organiserRef ?? event.organiser);
     if (event.organiserRef) event.organiser = assignmentDisplay(event.organiserRef, event.organiser);
@@ -2347,8 +2354,20 @@
     return event.lifecycle;
   }
 
+  function migrateIdeaStatusState() {
+    let changed = false;
+    for (const event of state.events ?? []) {
+      if (event?.recordType !== 'idea') continue;
+      event.lifecycle = event.lifecycle && typeof event.lifecycle === 'object' ? event.lifecycle : {};
+      event.lifecycle.status = 'idea';
+      delete event.recordType;
+      changed = true;
+    }
+    return changed;
+  }
+
   function isEventIdea(event) {
-    return event?.recordType === 'idea';
+    return event?.lifecycle?.status === 'idea' || event?.recordType === 'idea';
   }
 
   function normaliseEventFinances(event) {
@@ -7279,6 +7298,11 @@
 
   function renderCatalogue() {
     const grouped = new Map();
+    const catalogueFilter = ['all', 'events', 'ideas'].includes(state.catalogueFilter)
+      ? state.catalogueFilter
+      : 'all';
+    const showIdeas = catalogueFilter !== 'events';
+    const showEvents = catalogueFilter !== 'ideas';
     const ideas = state.events
       .filter(isEventIdea)
       .sort((a, b) => String(b.idea?.proposedAt || b.createdAt || '').localeCompare(String(a.idea?.proposedAt || a.createdAt || '')));
@@ -7304,7 +7328,16 @@
         <button class="button button-primary button-large" data-action="new-event">Create new event</button>
       </section>
 
-      ${ideas.length ? `
+      <nav class="catalogue-filter-bar" aria-label="Filter event catalogue">
+        <span>Show</span>
+        <div class="catalogue-filter-options" role="group" aria-label="Catalogue record type">
+          <button type="button" class="catalogue-filter-button ${catalogueFilter === 'all' ? 'active' : ''}" data-catalogue-filter="all" aria-pressed="${catalogueFilter === 'all'}">All <strong>${state.events.length}</strong></button>
+          <button type="button" class="catalogue-filter-button ${catalogueFilter === 'events' ? 'active' : ''}" data-catalogue-filter="events" aria-pressed="${catalogueFilter === 'events'}">Events <strong>${sortedEvents.length}</strong></button>
+          <button type="button" class="catalogue-filter-button ${catalogueFilter === 'ideas' ? 'active' : ''}" data-catalogue-filter="ideas" aria-pressed="${catalogueFilter === 'ideas'}">Ideas <strong>${ideas.length}</strong></button>
+        </div>
+      </nav>
+
+      ${showIdeas ? `
         <section class="catalogue-ideas-section" aria-labelledby="catalogue-ideas-heading">
           <div class="catalogue-year-heading catalogue-ideas-heading">
             <div>
@@ -7314,23 +7347,24 @@
             </div>
             <span>${ideas.length} idea${ideas.length === 1 ? '' : 's'}</span>
           </div>
-          <div class="catalogue-grid catalogue-ideas-grid">
-            ${ideas.map(renderIdeaCatalogueCard).join('')}
-          </div>
+          ${ideas.length
+            ? `<div class="catalogue-grid catalogue-ideas-grid">${ideas.map(renderIdeaCatalogueCard).join('')}</div>`
+            : `<div class="catalogue-ideas-empty-inline">
+                <span class="catalogue-idea-mark" aria-hidden="true">✦</span>
+                <div><strong>No ideas have been recorded yet</strong><p>Existing events are not automatically reclassified. Add a proposal here when it should remain outside operational planning until the club agrees to proceed.</p></div>
+                <button class="button button-secondary" data-action="new-event" data-new-record-type="idea">Add an idea</button>
+              </div>`}
         </section>` : ''}
 
-      ${state.events.length === 0 ? `
-        <section class="empty-catalogue-state">
-          <span class="eyebrow">No events or ideas yet</span>
-          <h2>Add the first proposal</h2>
-          <p>Create an event when planning should start immediately, or save an idea for discussion without producing tasks and reminders.</p>
-          <button class="button button-primary" data-action="new-event">Add event or idea</button>
-        </section>` : sortedEvents.length === 0 ? `
+      ${showEvents && sortedEvents.length === 0 ? `
         <section class="empty-catalogue-state catalogue-events-empty">
           <span class="eyebrow">No adopted events yet</span>
           <h2>Ideas can stay here until the club agrees</h2>
           <p>Use “Adopt as event” when an idea has approval. Its description and proposer will carry into the operational plan.</p>
-        </section>` : [...grouped.entries()].map(([year, events]) => `
+          <button class="button button-primary" data-action="new-event">Create an event</button>
+        </section>` : ''}
+
+      ${showEvents && sortedEvents.length ? [...grouped.entries()].map(([year, events]) => `
         <section class="catalogue-year-section">
           <div class="catalogue-year-heading">
             <div>
@@ -7342,7 +7376,7 @@
           <div class="catalogue-grid">
             ${events.map(event => renderCatalogueCard(event)).join('')}
           </div>
-        </section>`).join('')}
+        </section>`).join('') : ''}
     `;
   }
 
@@ -9153,6 +9187,9 @@
 
     if (statusChanged && nextStatus === 'cancelled') {
       state.activeView = 'cancellation';
+    } else if (nextStatus === 'idea') {
+      state.activeEventId = null;
+      state.activeView = 'catalogue';
     } else if (state.activeView === 'cancellation' && nextStatus !== 'cancelled') {
       state.activeView = 'module:start';
     }
@@ -9220,7 +9257,6 @@
     if (!idea || !isValidIsoDate(eventDate)) return false;
     const now = new Date().toISOString();
     const previousDate = idea.eventDate;
-    idea.recordType = 'event';
     idea.eventDate = eventDate;
     idea.milestoneDates = defaultMilestoneDates(eventDate);
     idea.milestoneDates.DT = eventDate;
@@ -10449,9 +10485,22 @@
       element.addEventListener('click', () => {
         const dialog = document.getElementById('new-event-dialog');
         resetNewEventForm();
+        const recordType = element.dataset.newRecordType === 'idea' ? 'idea' : 'event';
+        const recordTypeInput = document.getElementById('new-event-record-type');
+        if (recordTypeInput) recordTypeInput.value = recordType;
+        updateNewEventRecordTypeUi();
         populateNewEventMilestones('', true);
         dialog.showModal();
         requestAnimationFrame(() => document.getElementById('new-event-name')?.focus());
+      });
+    });
+
+    document.querySelectorAll('[data-catalogue-filter]').forEach(element => {
+      element.addEventListener('click', () => {
+        const filter = element.dataset.catalogueFilter;
+        state.catalogueFilter = ['events', 'ideas'].includes(filter) ? filter : 'all';
+        saveState();
+        render();
       });
     });
 
@@ -11386,7 +11435,7 @@
 
         if (eventDate) milestoneDates.DT = eventDate;
         createEvent(name, organiser, eventDate, description, milestoneDates, organiserRef, {
-          recordType,
+          status: recordType === 'idea' ? 'idea' : 'provisional',
           eventTypeId: recordType === 'event' ? Number(eventTypeInput?.value) || 0 : 0,
           expectedAttendees: recordType === 'event' ? Math.max(0, Number(attendeesInput.value) || 0) : 0,
           startTime: recordType === 'event' ? startTimeInput.value : '',

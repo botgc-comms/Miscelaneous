@@ -53,7 +53,7 @@ public sealed class PlaybookEventTicketConfigurationTests
     {
         using var document = JsonDocument.Parse(StateJson.Replace(
             "\"id\": \"event-123\",",
-            "\"id\": \"event-123\", \"recordType\": \"idea\","));
+            "\"id\": \"event-123\", \"lifecycle\": { \"status\": \"idea\" },"));
 
         Assert.Empty(PlaybookEventChangePipeline.ReadEvents(document.RootElement));
     }
