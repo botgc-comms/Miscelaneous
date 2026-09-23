@@ -56,6 +56,6 @@ test('the ordinary non-IG booking setup task remains available', () => {
 });
 
 test('the ticket editor release changes are cache-busted', () => {
-  assert.match(indexSource, /playbook\.css\?v=20260920-floating-assistant-1/);
-  assert.match(indexSource, /playbook-app\.js\?v=20260922-answer-journal-1/);
+  assert.match(indexSource, /playbook\.css\?v=20260923-event-ideas-1/);
+  assert.match(indexSource, /playbook-app\.js\?v=20260923-event-ideas-1/);
 });

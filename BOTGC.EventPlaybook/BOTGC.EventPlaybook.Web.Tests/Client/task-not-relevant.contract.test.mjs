@@ -77,6 +77,7 @@ test('active task queries omit not-relevant work unless the archive explicitly r
   const event = { taskState: { 'task-1': { notRelevant: true } } };
   const getActiveTasks = compileFunction('getActiveTasks', {
     playbook,
+    isEventIdea: () => false,
     isModuleActive: () => true,
     isItemVisible: () => true,
     buildDontKnowTask: () => null,

@@ -47,6 +47,11 @@
     completed: { label: 'Completed', summary: 'The event has finished and can be reviewed or reused.' }
   });
 
+  const EVENT_RECORD_TYPES = Object.freeze({
+    event: { label: 'Event to plan', summary: 'Create the operational plan, milestones and tasks now.' },
+    idea: { label: 'Idea for consideration', summary: 'Capture a possible event without starting operational planning or reminders.' }
+  });
+
   const CHANGE_RESPONSE_STATUSES = new Set(['cancelled', 'postponed']);
   const NOTIFIABLE_EVENT_STATUSES = new Set(['confirmed', 'at-risk', 'postponed', 'cancelled']);
   const EVENT_STATUS_RECIPIENT_DEFINITIONS = Object.freeze([
@@ -1368,7 +1373,7 @@
         normaliseAnswers(event);
         normaliseMilestoneDates(event);
         const lifecycle = normaliseEventLifecycle(event);
-        if (event.closedAt || lifecycle.status === 'completed') continue;
+        if (isEventIdea(event) || event.closedAt || lifecycle.status === 'completed') continue;
 
         const organiser = assignmentRecipient(event.organiserRef ?? event.organiser, event);
         const planningProgress = getOverallQuestionProgress(event);
@@ -2111,10 +2116,12 @@
   function createEvent(name, organiser = '', eventDate = '', description = '', milestoneDates = {}, organiserRef = null, integrationDetails = {}) {
     const id = crypto.randomUUID();
     const now = new Date().toISOString();
+    const recordType = integrationDetails.recordType === 'idea' ? 'idea' : 'event';
     const resolvedOrganiserRef = assignmentReference(organiserRef ?? organiser);
     const organiserName = assignmentDisplay(resolvedOrganiserRef ?? organiser, organiser);
     const event = {
       id,
+      recordType,
       name: name || 'Untitled event',
       organiser: organiserName,
       organiserRef: resolvedOrganiserRef,
@@ -2161,14 +2168,24 @@
       sourceEventId: null,
       eventSeriesId: id,
       learningInsights: [],
-      cataloguePosterThumbnail: null
+      cataloguePosterThumbnail: null,
+      idea: recordType === 'idea' ? {
+        proposedAt: now,
+        proposedBy: organiserName,
+        adoptedAt: null,
+        adoptedBy: ''
+      } : null
     };
 
     state.events.push(event);
-    state.activeEventId = id;
-    state.activeView = 'module:start';
+    if (recordType === 'event') {
+      state.activeEventId = id;
+      state.activeView = 'module:start';
+    } else {
+      state.activeView = 'catalogue';
+    }
     saveState();
-    scheduleIntelligentGolfStatusRefresh(id);
+    if (recordType === 'event') scheduleIntelligentGolfStatusRefresh(id);
     return event;
   }
 
@@ -2290,6 +2307,7 @@
   }
 
   function normaliseEventLifecycle(event) {
+    event.recordType = event.recordType === 'idea' ? 'idea' : 'event';
     const fallbackStatus = event.closedAt ? 'completed' : 'provisional';
     event.lifecycle = event.lifecycle && typeof event.lifecycle === 'object' ? event.lifecycle : {};
     if (!EVENT_STATUS_DEFINITIONS[event.lifecycle.status]) event.lifecycle.status = fallbackStatus;
@@ -2329,6 +2347,10 @@
     return event.lifecycle;
   }
 
+  function isEventIdea(event) {
+    return event?.recordType === 'idea';
+  }
+
   function normaliseEventFinances(event) {
     event.finances = event.finances && typeof event.finances === 'object' ? event.finances : {};
     event.finances.entries = Array.isArray(event.finances.entries) ? event.finances.entries : [];
@@ -2351,9 +2373,14 @@
 
   function getActiveEvent() {
     let event = state.events.find(item => item.id === state.activeEventId) ?? null;
-    if (!event && state.events.length > 0) {
-      event = state.events[0];
+    if (isEventIdea(event)) event = null;
+    if (!event) {
+      event = state.events.find(candidate => !isEventIdea(candidate)) ?? null;
+    }
+    if (event) {
       state.activeEventId = event.id;
+    } else {
+      state.activeEventId = null;
     }
     if (event) {
       event.answers ??= {};
@@ -3465,6 +3492,7 @@
   }
 
   function getActiveTasks(event, { includeNotRelevant = false } = {}) {
+    if (isEventIdea(event)) return [];
     const tasks = [];
     for (const module of playbook.modules) {
       if (!isModuleActive(module, event)) {
@@ -4968,6 +4996,7 @@
       </div>
 
       ${renderNewEventDialog()}
+      ${renderAdoptIdeaDialog()}
       <dialog id="event-summary-dialog" class="modal event-summary-dialog"><div id="event-summary-content"></div></dialog>
       ${renderTaskNoteDialog()}
       ${renderEventStatusDialog(event)}
@@ -6821,7 +6850,7 @@
   function dashboardEvents() {
     return (state.events ?? []).filter(event => {
       const lifecycle = normaliseEventLifecycle(event);
-      return !event.closedAt && lifecycle.status !== 'completed';
+      return !isEventIdea(event) && !event.closedAt && lifecycle.status !== 'completed';
     });
   }
 
@@ -7217,6 +7246,7 @@
   }
 
   function getEventTaskSnapshot(event) {
+    if (isEventIdea(event)) return [];
     const tasks = [];
     for (const module of playbook.modules) {
       if (!isModuleActive(module, event)) continue;
@@ -7249,7 +7279,10 @@
 
   function renderCatalogue() {
     const grouped = new Map();
-    const sortedEvents = [...state.events].sort((a, b) => {
+    const ideas = state.events
+      .filter(isEventIdea)
+      .sort((a, b) => String(b.idea?.proposedAt || b.createdAt || '').localeCompare(String(a.idea?.proposedAt || a.createdAt || '')));
+    const sortedEvents = state.events.filter(event => !isEventIdea(event)).sort((a, b) => {
       const aDate = a.eventDate || a.createdAt || '';
       const bDate = b.eventDate || b.createdAt || '';
       return bDate.localeCompare(aDate);
@@ -7266,17 +7299,37 @@
         <div>
           <span class="eyebrow">Club event history</span>
           <h2>Event catalogue</h2>
-          <p>Every event lives here. Review what was planned, see the tasks that were created, capture what was learned and reuse successful events when they return.</p>
+          <p>Develop possible ideas separately, then adopt the ones the club agrees to run. Planned and completed events retain their tasks, decisions and learning here.</p>
         </div>
         <button class="button button-primary button-large" data-action="new-event">Create new event</button>
       </section>
 
+      ${ideas.length ? `
+        <section class="catalogue-ideas-section" aria-labelledby="catalogue-ideas-heading">
+          <div class="catalogue-year-heading catalogue-ideas-heading">
+            <div>
+              <span class="eyebrow">For consideration</span>
+              <h3 id="catalogue-ideas-heading">Ideas</h3>
+              <p>These proposals do not create tasks, reminders or external integrations until somebody adopts them as an event.</p>
+            </div>
+            <span>${ideas.length} idea${ideas.length === 1 ? '' : 's'}</span>
+          </div>
+          <div class="catalogue-grid catalogue-ideas-grid">
+            ${ideas.map(renderIdeaCatalogueCard).join('')}
+          </div>
+        </section>` : ''}
+
       ${state.events.length === 0 ? `
         <section class="empty-catalogue-state">
-          <span class="eyebrow">No events yet</span>
-          <h2>Create the first event</h2>
-          <p>Start by recording the event date, key planning milestones and a detailed description. The description will also be used by the AI artwork and planning features.</p>
-          <button class="button button-primary" data-action="new-event">Create new event</button>
+          <span class="eyebrow">No events or ideas yet</span>
+          <h2>Add the first proposal</h2>
+          <p>Create an event when planning should start immediately, or save an idea for discussion without producing tasks and reminders.</p>
+          <button class="button button-primary" data-action="new-event">Add event or idea</button>
+        </section>` : sortedEvents.length === 0 ? `
+        <section class="empty-catalogue-state catalogue-events-empty">
+          <span class="eyebrow">No adopted events yet</span>
+          <h2>Ideas can stay here until the club agrees</h2>
+          <p>Use “Adopt as event” when an idea has approval. Its description and proposer will carry into the operational plan.</p>
         </section>` : [...grouped.entries()].map(([year, events]) => `
         <section class="catalogue-year-section">
           <div class="catalogue-year-heading">
@@ -7293,7 +7346,39 @@
     `;
   }
 
+  function renderIdeaCatalogueCard(event) {
+    const proposedAt = event.idea?.proposedAt || event.createdAt || '';
+    const proposer = event.idea?.proposedBy || event.organiser || '';
+    return `
+      <article class="catalogue-card catalogue-idea-card">
+        <div class="catalogue-idea-banner">
+          <span class="catalogue-status status-idea">Idea</span>
+          <span class="catalogue-idea-mark" aria-hidden="true">✦</span>
+          <small>Possible future event</small>
+        </div>
+        <div class="catalogue-card-body">
+          <div class="catalogue-card-heading">
+            <div>
+              <span class="eyebrow">${escapeHtml(event.eventDate ? `Possible date · ${formatDate(event.eventDate)}` : 'Date to be agreed')}</span>
+              <h3>${escapeHtml(event.name)}</h3>
+            </div>
+            <button class="catalogue-delete-event" type="button" data-delete-event="${escapeHtml(event.id)}" aria-label="Delete ${escapeHtml(event.name)}" title="Delete this idea"><span aria-hidden="true">×</span> Delete</button>
+          </div>
+          <p class="catalogue-description">${escapeHtml(event.description || 'No proposal description has been recorded yet.')}</p>
+          <div class="catalogue-idea-meta">
+            <span><strong>Proposed by</strong>${escapeHtml(proposer || 'Not recorded')}</span>
+            <span><strong>Added</strong>${escapeHtml(proposedAt ? formatDate(proposedAt.substring(0, 10)) : 'Not recorded')}</span>
+          </div>
+          <div class="button-row">
+            <button class="button button-secondary" data-event-summary="${escapeHtml(event.id)}">Review idea</button>
+            <button class="button button-primary" data-adopt-idea="${escapeHtml(event.id)}">Adopt as event</button>
+          </div>
+        </div>
+      </article>`;
+  }
+
   function renderCatalogueCard(event) {
+    if (isEventIdea(event)) return renderIdeaCatalogueCard(event);
     const lifecycle = normaliseEventLifecycle(event);
     const statusDefinition = eventStatusDefinition(event);
     const tasks = getEventTaskSnapshot(event);
@@ -7353,6 +7438,7 @@
   }
 
   function renderEventSummaryContent(event) {
+    if (isEventIdea(event)) return renderIdeaSummaryContent(event);
     const lifecycle = normaliseEventLifecycle(event);
     const statusDefinition = eventStatusDefinition(event);
     const tasks = getEventTaskSnapshot(event);
@@ -7411,6 +7497,41 @@
         <div class="button-row">
           <button class="button button-secondary" data-manage-event-status="${escapeHtml(event.id)}">Manage status</button>
           ${event.closedAt ? `<button class="button button-primary" data-reopen-event="${escapeHtml(event.id)}">Reopen event</button><button class="button button-secondary" data-clone-event="${escapeHtml(event.id)}">Create from this event</button>` : `<button class="button button-secondary" data-open-event="${escapeHtml(event.id)}">Open planner</button><button class="button button-primary" data-close-event="${escapeHtml(event.id)}">Close & create new</button>`}
+        </div>
+      </div>`;
+  }
+
+  function renderIdeaSummaryContent(event) {
+    const proposedAt = event.idea?.proposedAt || event.createdAt || '';
+    const proposer = event.idea?.proposedBy || event.organiser || '';
+    return `
+      <div class="summary-dialog-header idea-summary-header">
+        <div>
+          <span class="eyebrow">Event idea</span>
+          <h2>${escapeHtml(event.name)}</h2>
+          <p>${escapeHtml(event.eventDate ? `Possible date: ${formatDate(event.eventDate)}` : 'No date has been agreed yet')}${proposer ? ` · Proposed by ${escapeHtml(proposer)}` : ''}</p>
+        </div>
+        <button class="icon-button" data-action="close-summary" aria-label="Close">×</button>
+      </div>
+      <div class="summary-dialog-body">
+        <section class="summary-description idea-summary-description">
+          <span class="eyebrow">Proposal</span>
+          <p>${escapeHtml(cleanSummaryDescription(event.description || 'No proposal description was recorded.'))}</p>
+        </section>
+        <section class="summary-section idea-decision-panel">
+          <div class="summary-section-heading"><h3>Ready for a decision</h3><span class="event-status-pill status-idea">Idea</span></div>
+          <p>This proposal is deliberately outside operational planning. It has no tasks, reminders or external-system records. Adopt it when the club agrees to proceed; the proposal will become a provisional event and planning will begin.</p>
+          <div class="summary-retro-grid">
+            <div class="summary-retro-item"><span>Proposed by</span><strong>${escapeHtml(proposer || 'Not recorded')}</strong></div>
+            <div class="summary-retro-item"><span>Added</span><strong>${escapeHtml(proposedAt ? formatDate(proposedAt.substring(0, 10)) : 'Not recorded')}</strong></div>
+          </div>
+        </section>
+      </div>
+      <div class="summary-dialog-footer">
+        <span>An event date is required when this idea is adopted.</span>
+        <div class="button-row">
+          <button class="button button-secondary" data-action="close-summary">Keep as idea</button>
+          <button class="button button-primary" data-adopt-idea="${escapeHtml(event.id)}">Adopt as event</button>
         </div>
       </div>`;
   }
@@ -8573,54 +8694,61 @@
         <form method="dialog" id="new-event-form">
           <div class="modal-heading">
             <div>
-              <span class="eyebrow">New event</span>
-              <h2>Create an event plan</h2>
-              <p>Record the event clearly now so the Playbook, task engine and Communications Centre all start from the same information.</p>
+              <span class="eyebrow" id="new-event-dialog-eyebrow">New event</span>
+              <h2 id="new-event-dialog-title">Create an event plan</h2>
+              <p id="new-event-dialog-intro">Record the event clearly now so the Playbook, task engine and Communications Centre all start from the same information.</p>
             </div>
             <button class="icon-button" type="button" data-cancel-new-event aria-label="Close">×</button>
           </div>
 
           <div class="new-event-grid">
             <section class="new-event-section">
-              <div class="new-event-section-heading"><span>01</span><div><h3>Event details</h3><p>The core information that identifies the event.</p></div></div>
+              <div class="new-event-section-heading"><span>01</span><div><h3 id="new-event-details-title">Event details</h3><p id="new-event-details-intro">The core information that identifies the event.</p></div></div>
               <div class="new-event-fields">
+                <label class="wide new-event-record-type-field">
+                  <span>Playbook entry type</span>
+                  <select id="new-event-record-type">
+                    ${Object.entries(EVENT_RECORD_TYPES).map(([value, item]) => `<option value="${escapeHtml(value)}">${escapeHtml(item.label)}</option>`).join('')}
+                  </select>
+                  <small id="new-event-record-type-help">${escapeHtml(EVENT_RECORD_TYPES.event.summary)}</small>
+                </label>
                 <label class="wide">
                   <span>Event name</span>
                   <input id="new-event-name" type="text" required autocomplete="off">
                 </label>
                 <label>
-                  <span>Provisional event date</span>
+                  <span id="new-event-date-label">Provisional event date</span>
                   <input id="new-event-date" type="date" required>
                 </label>
-                ${pluginCapabilities.intelligentGolfEnabled ? `<label>
+                ${pluginCapabilities.intelligentGolfEnabled ? `<label data-new-event-only>
                   <span>Intelligent Golf event type</span>
-                  <select id="new-event-type">${renderIntelligentGolfEventTypeOptions(0)}</select>
+                  <select id="new-event-ig-type">${renderIntelligentGolfEventTypeOptions(0)}</select>
                 </label>` : ''}
-                <label>
+                <label data-new-event-only>
                   <span>Expected attendees</span>
                   <input id="new-event-attendees" type="number" min="0" step="1" value="0">
                 </label>
-                <label>
+                <label data-new-event-only>
                   <span>Start time <em>optional</em></span>
                   <input id="new-event-start-time" type="time">
                 </label>
-                <label>
+                <label data-new-event-only>
                   <span>End time <em>optional</em></span>
                   <input id="new-event-end-time" type="time">
                 </label>
                 <div class="new-event-organiser-field">
-                  <span>Organiser</span>
+                  <span id="new-event-organiser-label">Organiser</span>
                   ${renderAssignmentPicker({ mode: 'person', newEventField: 'organiser', id: 'new-event-organiser' })}
                 </div>
                 <label class="wide description-field">
-                  <span>Detailed event description</span>
+                  <span id="new-event-description-label">Detailed event description</span>
                   <textarea id="new-event-description" rows="7" required placeholder="Describe the format of the event, who it is for, what happens on the day, how golf or clubhouse facilities are used, expected atmosphere, unusual features, catering requirements and anything else that makes the event distinctive."></textarea>
                   <small>The more detailed this description is, the better placed the AI will be to generate appropriate artwork and assist with the running and planning of the event.</small>
                 </label>
               </div>
             </section>
 
-            <section class="new-event-section milestone-setup-section">
+            <section class="new-event-section milestone-setup-section" data-new-event-planning-section>
               <div class="new-event-section-heading"><span>02</span><div><h3>Planning milestones</h3><p>Choose the key dates that generated tasks will work back from. Sensible defaults are filled in from the event date and can be changed now.</p></div></div>
               <div class="new-event-milestones">
                 ${playbook.deadlineCodes.filter(code => !code.dynamic).map(code => `
@@ -8667,6 +8795,67 @@
       organiserInput.dataset.selectedId = '';
       organiserInput.setCustomValidity('');
     }
+    updateNewEventRecordTypeUi();
+  }
+
+  function updateNewEventRecordTypeUi() {
+    const recordType = document.getElementById('new-event-record-type')?.value === 'idea' ? 'idea' : 'event';
+    const isIdea = recordType === 'idea';
+    const dateInput = document.getElementById('new-event-date');
+    const help = document.getElementById('new-event-record-type-help');
+    const dateLabel = document.getElementById('new-event-date-label');
+    const eyebrow = document.getElementById('new-event-dialog-eyebrow');
+    const title = document.getElementById('new-event-dialog-title');
+    const intro = document.getElementById('new-event-dialog-intro');
+    const organiserLabel = document.getElementById('new-event-organiser-label');
+    const descriptionLabel = document.getElementById('new-event-description-label');
+    const detailsTitle = document.getElementById('new-event-details-title');
+    const detailsIntro = document.getElementById('new-event-details-intro');
+    const dialog = document.getElementById('new-event-dialog');
+    const submit = document.querySelector('[data-submit-new-event]');
+    if (dateInput) dateInput.required = !isIdea;
+    if (help) help.textContent = EVENT_RECORD_TYPES[recordType].summary;
+    if (dateLabel) dateLabel.textContent = isIdea ? 'Possible event date (optional)' : 'Provisional event date';
+    if (eyebrow) eyebrow.textContent = isIdea ? 'New idea' : 'New event';
+    if (title) title.textContent = isIdea ? 'Propose an event idea' : 'Create an event plan';
+    if (intro) intro.textContent = isIdea
+      ? 'Capture the proposal for discussion. No planning tasks, reminders or integrations will start until the idea is adopted.'
+      : 'Record the event clearly now so the Playbook, task engine and Communications Centre all start from the same information.';
+    if (organiserLabel) organiserLabel.textContent = isIdea ? 'Proposed by' : 'Organiser';
+    if (descriptionLabel) descriptionLabel.textContent = isIdea ? 'Detailed proposal' : 'Detailed event description';
+    if (detailsTitle) detailsTitle.textContent = isIdea ? 'Idea details' : 'Event details';
+    if (detailsIntro) detailsIntro.textContent = isIdea
+      ? 'Capture enough information for the club to discuss and decide whether to proceed.'
+      : 'The core information that identifies the event.';
+    if (dialog) dialog.classList.toggle('idea-mode', isIdea);
+    if (submit) submit.textContent = isIdea ? 'Save idea' : 'Create event';
+    document.querySelectorAll('[data-new-event-only], [data-new-event-planning-section]').forEach(element => {
+      element.classList.toggle('hidden', isIdea);
+      element.querySelectorAll('input, select, textarea, button').forEach(control => {
+        control.disabled = isIdea;
+      });
+    });
+  }
+
+  function renderAdoptIdeaDialog() {
+    return `
+      <dialog id="adopt-idea-dialog" class="modal adopt-idea-dialog">
+        <form id="adopt-idea-form">
+          <div class="modal-heading">
+            <div><span class="eyebrow">Idea agreed</span><h2>Adopt this idea as an event</h2><p>The proposal becomes a provisional event. Planning milestones, questions and tasks will start from the date chosen here.</p></div>
+            <button class="icon-button" type="button" data-close-adopt-idea aria-label="Close">×</button>
+          </div>
+          <div class="adopt-idea-body">
+            <div class="adopt-idea-preview"><span class="eyebrow">Selected idea</span><strong id="adopt-idea-name"></strong><p id="adopt-idea-description"></p></div>
+            <label class="field"><span>Provisional event date</span><input id="adopt-idea-date" type="date" required><small>The standard milestone dates will be calculated from this date and can then be adjusted in the planner.</small></label>
+            <input id="adopt-idea-id" type="hidden">
+          </div>
+          <div class="modal-actions">
+            <button class="button button-secondary" type="button" data-close-adopt-idea>Keep as idea</button>
+            <button class="button button-primary" type="submit">Adopt and start planning</button>
+          </div>
+        </form>
+      </dialog>`;
   }
 
   function populateNewEventMilestones(eventDate, force = false) {
@@ -9013,6 +9202,53 @@
     render();
   }
 
+  function openAdoptIdeaDialog(eventId) {
+    const idea = state.events.find(event => event.id === eventId && isEventIdea(event));
+    const dialog = document.getElementById('adopt-idea-dialog');
+    if (!idea || !dialog) return;
+    document.getElementById('adopt-idea-id').value = idea.id;
+    document.getElementById('adopt-idea-name').textContent = idea.name;
+    document.getElementById('adopt-idea-description').textContent = idea.description || 'No proposal description was recorded.';
+    document.getElementById('adopt-idea-date').value = isValidIsoDate(idea.eventDate) ? idea.eventDate : '';
+    document.getElementById('event-summary-dialog')?.close();
+    dialog.showModal();
+    requestAnimationFrame(() => document.getElementById('adopt-idea-date')?.focus());
+  }
+
+  function adoptIdeaAsEvent(eventId, eventDate) {
+    const idea = state.events.find(event => event.id === eventId && isEventIdea(event));
+    if (!idea || !isValidIsoDate(eventDate)) return false;
+    const now = new Date().toISOString();
+    const previousDate = idea.eventDate;
+    idea.recordType = 'event';
+    idea.eventDate = eventDate;
+    idea.milestoneDates = defaultMilestoneDates(eventDate);
+    idea.milestoneDates.DT = eventDate;
+    idea.idea = {
+      ...(idea.idea ?? {}),
+      adoptedAt: now,
+      adoptedBy: accessSession.displayName || idea.organiser || idea.lifecycle?.decisionOwner || ''
+    };
+    const lifecycle = normaliseEventLifecycle(idea);
+    lifecycle.status = 'provisional';
+    lifecycle.statusChangedAt = now;
+    lifecycle.changedBy = idea.idea.adoptedBy;
+    lifecycle.reason = 'Idea adopted as a provisional event.';
+    lifecycle.history.push({
+      status: 'provisional',
+      changedAt: now,
+      changedBy: lifecycle.changedBy,
+      reason: lifecycle.reason,
+      previousRecordType: 'idea',
+      previousEventDate: previousDate || null
+    });
+    state.activeEventId = idea.id;
+    state.activeView = 'module:start';
+    saveState();
+    scheduleIntelligentGolfStatusRefresh(idea.id);
+    return true;
+  }
+
   function bindSummaryDialogEvents() {
     document.querySelectorAll('#event-summary-dialog [data-action="close-summary"]').forEach(element => {
       element.addEventListener('click', () => document.getElementById('event-summary-dialog')?.close());
@@ -9046,6 +9282,9 @@
     });
     document.querySelectorAll('#event-summary-dialog [data-manage-event-status]').forEach(element => {
       element.addEventListener('click', () => openEventStatusDialog(element.dataset.manageEventStatus));
+    });
+    document.querySelectorAll('#event-summary-dialog [data-adopt-idea]').forEach(element => {
+      element.addEventListener('click', () => openAdoptIdeaDialog(element.dataset.adoptIdea));
     });
   }
 
@@ -9731,7 +9970,8 @@
         feedbackRequests.delete(eventId);
         briefingGenerationRequests.delete(eventId);
         if (state.activeEventId === eventId) {
-          state.activeEventId = state.events.find(candidate => !candidate.closedAt)?.id ?? state.events[0]?.id ?? null;
+          state.activeEventId = state.events.find(candidate => !isEventIdea(candidate) && !candidate.closedAt)?.id ??
+            state.events.find(candidate => !isEventIdea(candidate))?.id ?? null;
         }
         document.getElementById('event-summary-dialog')?.close();
         saveState();
@@ -10215,6 +10455,30 @@
       });
     });
 
+    document.getElementById('new-event-record-type')?.addEventListener('change', updateNewEventRecordTypeUi);
+
+    document.querySelectorAll('[data-adopt-idea]').forEach(element => {
+      element.addEventListener('click', () => openAdoptIdeaDialog(element.dataset.adoptIdea));
+    });
+
+    document.querySelectorAll('[data-close-adopt-idea]').forEach(element => {
+      element.addEventListener('click', () => document.getElementById('adopt-idea-dialog')?.close());
+    });
+
+    document.getElementById('adopt-idea-form')?.addEventListener('submit', eventArgs => {
+      eventArgs.preventDefault();
+      const form = eventArgs.currentTarget;
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      const eventId = document.getElementById('adopt-idea-id')?.value ?? '';
+      const eventDate = document.getElementById('adopt-idea-date')?.value ?? '';
+      if (!adoptIdeaAsEvent(eventId, eventDate)) return;
+      document.getElementById('adopt-idea-dialog')?.close();
+      render();
+    });
+
     const newEventDateInput = document.getElementById('new-event-date');
     if (newEventDateInput) {
       // Re-anchor every milestone to the new event date while preserving any
@@ -10236,7 +10500,7 @@
     document.querySelectorAll('[data-open-event]').forEach(element => {
       element.addEventListener('click', () => {
         const eventId = element.dataset.openEvent;
-        if (!state.events.some(item => item.id === eventId)) return;
+        if (!state.events.some(item => item.id === eventId && !isEventIdea(item))) return;
         document.getElementById('event-summary-dialog')?.close();
         state.activeEventId = eventId;
         state.activeView = 'module:start';
@@ -11059,7 +11323,8 @@
         const nameInput = document.getElementById('new-event-name');
         const eventDateInput = document.getElementById('new-event-date');
         const descriptionInput = document.getElementById('new-event-description');
-        const eventTypeInput = document.getElementById('new-event-type');
+        const recordTypeInput = document.getElementById('new-event-record-type');
+        const eventTypeInput = document.getElementById('new-event-ig-type');
         const attendeesInput = document.getElementById('new-event-attendees');
         const startTimeInput = document.getElementById('new-event-start-time');
         const endTimeInput = document.getElementById('new-event-end-time');
@@ -11070,6 +11335,7 @@
         const organiser = organiserInput.value.trim();
         const organiserRef = assignmentReferenceFromInput(organiserInput, 'person');
         const description = descriptionInput.value.trim();
+        const recordType = recordTypeInput?.value === 'idea' ? 'idea' : 'event';
 
         if (startTimeInput.value && endTimeInput.value && endTimeInput.value <= startTimeInput.value) {
           endTimeInput.setCustomValidity('Choose an end time after the start time.');
@@ -11102,10 +11368,14 @@
 
         const milestoneDates = {};
         let milestoneInvalid = false;
-        document.querySelectorAll('[data-new-event-milestone]').forEach(input => {
-          if (!input.value) milestoneInvalid = true;
-          milestoneDates[input.dataset.newEventMilestone] = input.value;
-        });
+        if (recordType === 'event') {
+          document.querySelectorAll('[data-new-event-milestone]').forEach(input => {
+            if (!input.value) milestoneInvalid = true;
+            milestoneDates[input.dataset.newEventMilestone] = input.value;
+          });
+        } else if (eventDate) {
+          Object.assign(milestoneDates, defaultMilestoneDates(eventDate));
+        }
 
         if (milestoneInvalid) {
           eventDateInput.setCustomValidity('Choose an event date so the planning milestones can be calculated.');
@@ -11114,12 +11384,13 @@
           return;
         }
 
-        milestoneDates.DT = eventDate;
+        if (eventDate) milestoneDates.DT = eventDate;
         createEvent(name, organiser, eventDate, description, milestoneDates, organiserRef, {
-          eventTypeId: Number(eventTypeInput?.value) || 0,
-          expectedAttendees: Math.max(0, Number(attendeesInput.value) || 0),
-          startTime: startTimeInput.value,
-          endTime: endTimeInput.value
+          recordType,
+          eventTypeId: recordType === 'event' ? Number(eventTypeInput?.value) || 0 : 0,
+          expectedAttendees: recordType === 'event' ? Math.max(0, Number(attendeesInput.value) || 0) : 0,
+          startTime: recordType === 'event' ? startTimeInput.value : '',
+          endTime: recordType === 'event' ? endTimeInput.value : ''
         });
         newEventDialog?.close();
         render();

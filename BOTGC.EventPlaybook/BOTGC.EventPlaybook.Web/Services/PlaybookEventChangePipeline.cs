@@ -84,6 +84,9 @@ public sealed class PlaybookEventChangePipeline : BackgroundService, IPlaybookEv
 
         foreach (var item in events.EnumerateArray())
         {
+            if (string.Equals(ReadString(item, "recordType"), "idea", StringComparison.OrdinalIgnoreCase))
+                continue;
+
             var eventId = ReadString(item, "id");
             var name = ReadString(item, "name");
             var eventDate = ReadString(item, "eventDate");

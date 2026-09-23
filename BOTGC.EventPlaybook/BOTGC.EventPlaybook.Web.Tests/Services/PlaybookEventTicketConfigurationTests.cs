@@ -48,6 +48,16 @@ public sealed class PlaybookEventTicketConfigurationTests
             snapshot.IntelligentGolfTicketValidationError);
     }
 
+    [Fact]
+    public void ReadEvents_ExcludesIdeasFromIntelligentGolfSynchronisation()
+    {
+        using var document = JsonDocument.Parse(StateJson.Replace(
+            "\"id\": \"event-123\",",
+            "\"id\": \"event-123\", \"recordType\": \"idea\","));
+
+        Assert.Empty(PlaybookEventChangePipeline.ReadEvents(document.RootElement));
+    }
+
     private const string StateJson = """
         {
           "events": [
