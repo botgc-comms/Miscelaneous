@@ -15,6 +15,9 @@ public sealed class OpenAiPromptService(
     IOptions<OpenAiOptions> options,
     ILogger<OpenAiPromptService> logger) : IImagePromptService
 {
+    private const string VibrancyFinishingDirection =
+        "FINAL COLOUR FINISH: Apply a restrained vibrancy pass for an inviting event poster: gently lift the midtones, strengthen local tonal separation and enrich selected accent colours. Preserve the chosen style and natural skin, food and material colours; avoid neon colour, excessive saturation, crushed shadows or clipped highlights.";
+
     private readonly OpenAiOptions _options = options.Value;
 
     public async Task<ImagePromptResult> BuildPrimaryPromptAsync(
@@ -27,14 +30,14 @@ public sealed class OpenAiPromptService(
         var configuration = posterConfiguration.Get();
         var clubName = (await clubBrandingStore.GetOverviewAsync(cancellationToken)).ClubName;
         var styleVariation = ResolveStyleVariation(style, request.StyleVariationId);
-        var fallbackPrompt = BuildPrimaryFallbackPrompt(
+        var fallbackPrompt = AppendVibrancyFinishingDirection(BuildPrimaryFallbackPrompt(
             configuration,
             clubName,
             request,
             eventDefinition,
             style,
             styleVariation,
-            output);
+            output));
 
         if (string.IsNullOrWhiteSpace(_options.ApiKey))
         {
@@ -156,14 +159,14 @@ public sealed class OpenAiPromptService(
         var configuration = posterConfiguration.Get();
         var clubName = (await clubBrandingStore.GetOverviewAsync(cancellationToken)).ClubName;
         var styleVariation = ResolveStyleVariation(style, request.StyleVariationId);
-        var fallbackPrompt = BuildVariantFallbackPrompt(
+        var fallbackPrompt = AppendVibrancyFinishingDirection(BuildVariantFallbackPrompt(
             configuration,
             clubName,
             request,
             eventDefinition,
             style,
             styleVariation,
-            output);
+            output));
 
         if (string.IsNullOrWhiteSpace(_options.ApiKey))
         {
@@ -371,9 +374,15 @@ public sealed class OpenAiPromptService(
 
         return new ImagePromptResult
         {
-            Prompt = prompt,
+            Prompt = AppendVibrancyFinishingDirection(prompt),
             Model = _options.PromptModel
         };
+    }
+
+    private static string AppendVibrancyFinishingDirection(string prompt)
+    {
+        if (prompt.Contains(VibrancyFinishingDirection, StringComparison.Ordinal)) return prompt;
+        return $"{prompt.TrimEnd()}\n\n{VibrancyFinishingDirection}";
     }
 
     private static string ParseChatCompletion(string body)
