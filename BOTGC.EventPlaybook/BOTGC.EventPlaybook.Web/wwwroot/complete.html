@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title data-club-title-prefix="Complete Event Task">Complete Event Task | Burton-on-Trent Golf Club</title>
   <link rel="stylesheet" href="./playbook.css?v=20260829-retrospective-analysis-1">
-  <link rel="stylesheet" href="./complete.css?v=20260828-attendee-feedback-1">
+  <link rel="stylesheet" href="./complete.css?v=20260925-email-workspace-1">
 </head>
 <body class="completion-body">
   <main class="completion-page">
@@ -19,27 +19,93 @@
           <h1>Event task</h1>
         </div>
       </header>
-      <div id="completionContent" class="completion-content">Loading task…</div>
+      <div id="completionWorkspace" class="completion-workspace">
+        <nav id="completionTaskList" class="completion-task-list" aria-label="Tasks in this email" hidden></nav>
+        <div id="completionContent" class="completion-content">Loading task…</div>
+      </div>
     </section>
   </main>
   <script src="./branding.js?v=20260829-club-branding-1"></script>
   <script type="module">
     const content = document.getElementById('completionContent');
-    const token = new URLSearchParams(location.search).get('token');
+    const taskList = document.getElementById('completionTaskList');
+    const params = new URLSearchParams(location.search);
+    const accessToken = params.get('access');
+    const requestedTaskToken = params.get('task');
+    const legacyTaskToken = params.get('token');
+    let tasks = [];
+    let token = requestedTaskToken || legacyTaskToken;
 
     try {
-      if (!token) {
+      if (accessToken) {
+        const response = await fetch(`/api/tasks/email-access/${encodeURIComponent(accessToken)}`);
+        if (!response.ok) {
+          renderError('Task email not found', 'This secure email link is invalid or is no longer available.');
+        } else {
+          const workspace = await response.json();
+          tasks = Array.isArray(workspace.tasks) ? workspace.tasks : [];
+          if (!tasks.length) {
+            renderError('No tasks available', 'There are no tasks attached to this email link.');
+          } else {
+            token = tasks.some(task => task.token === requestedTaskToken)
+              ? requestedTaskToken
+              : tasks[0].token;
+            renderWorkspace();
+          }
+        }
+      } else if (!token) {
         content.innerHTML = '<div class="completion-state-mark">!</div><h2>Invalid task link</h2><p>This completion link does not contain a task token.</p>';
       } else {
         const response = await fetch(`/api/tasks/completion-links/${encodeURIComponent(token)}`);
         if (!response.ok) {
           content.innerHTML = '<div class="completion-state-mark">!</div><h2>Task link not found</h2><p>The link may have expired or may not have been registered.</p>';
         } else {
-          render(await response.json());
+          tasks = [await response.json()];
+          renderWorkspace();
         }
       }
     } catch {
-      content.innerHTML = '<div class="completion-state-mark">!</div><h2>Unable to load this task</h2><p>Please check your connection and try the link again.</p>';
+      renderError('Unable to load this task', 'Please check your connection and try the link again.');
+    }
+
+    function renderError(title, message) {
+      taskList.hidden = true;
+      content.innerHTML = `<div class="completion-state-mark">!</div><h2>${escapeHtml(title)}</h2><p>${escapeHtml(message)}</p>`;
+    }
+
+    function renderWorkspace() {
+      const selected = tasks.find(task => task.token === token) || tasks[0];
+      token = selected.token;
+      taskList.hidden = tasks.length < 2;
+      taskList.innerHTML = tasks.length < 2 ? '' : `
+        <div class="completion-task-list-heading">
+          <span class="eyebrow">This email</span>
+          <strong>${tasks.length} tasks requiring attention</strong>
+          <small>You can open only the tasks included in this email.</small>
+        </div>
+        ${tasks.map(task => `
+          <button type="button" class="completion-task-link ${task.token === token ? 'selected' : ''}" data-task-token="${escapeHtml(task.token)}">
+            <span>${escapeHtml(task.eventName)}</span>
+            <strong>${escapeHtml(task.taskTitle)}</strong>
+            <small>${taskStatus(task)}</small>
+          </button>`).join('')}`;
+      taskList.querySelectorAll('[data-task-token]').forEach(button => button.addEventListener('click', () => {
+        token = button.dataset.taskToken;
+        const url = new URL(location.href);
+        url.searchParams.set('task', token);
+        history.replaceState(null, '', url);
+        renderWorkspace();
+      }));
+      render(selected);
+    }
+
+    function taskStatus(task) {
+      if (task.completedAtUtc) return 'Completed';
+      if (task.expiresOn && currentClubIsoDate() > task.expiresOn) return 'Expired';
+      if (task.canCompleteFromLink === false) return 'Needs information';
+      return task.dueDate
+        ? `Due ${new Date(task.dueDate + 'T12:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`
+        : 'Open task';
     }
 
     function render(task) {
@@ -64,22 +130,21 @@
       }
 
       if (task.canCompleteFromLink === false) {
-        const taskPath = `/?view=tasks&event=${encodeURIComponent(task.eventId)}&task=${encodeURIComponent(task.taskId)}`;
         content.innerHTML = `
           <span class="eyebrow completion-eyebrow">${escapeHtml(task.eventName)}</span>
           <h2>${escapeHtml(task.taskTitle)}</h2>
-          <p>This task needs information to be completed in Event Playbook before it can be confirmed.</p>
-          <a class="button button-primary" href="${escapeHtml(taskPath)}">Open task in Event Playbook</a>`;
+          ${renderDetails(task)}
+          ${renderTaskNote(task.notes)}
+          ${renderLearning(task.learningInsights)}
+          <div class="completion-restricted-notice"><strong>More information is needed</strong><p>This task cannot be completed from the restricted email view because its planning information must be reviewed first. Please contact the event organiser to provide or confirm the missing details.</p></div>`;
         return;
       }
 
       content.innerHTML = `
         <span class="eyebrow completion-eyebrow">${escapeHtml(task.eventName)}</span>
         <h2>${escapeHtml(task.taskTitle)}</h2>
-        <div class="completion-details">
-          ${task.assignee ? `<div><span>Assigned to</span><strong>${escapeHtml(task.assignee)}</strong></div>` : ''}
-          ${task.dueDate ? `<div><span>Due</span><strong>${new Date(task.dueDate + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</strong></div>` : ''}
-        </div>
+        ${renderDetails(task)}
+        ${renderTaskNote(task.notes)}
         ${renderLearning(task.learningInsights)}
         <label class="completion-notes"><span>Completion note <em>optional</em></span><textarea id="completionNotes" rows="4" placeholder="Add anything the event coordinator should know"></textarea></label>
         <button class="button button-primary" id="completeButton">Mark task complete</button>`;
@@ -99,8 +164,21 @@
           alert('The task could not be completed.');
           return;
         }
-        render(await result.json());
+        const completed = await result.json();
+        tasks = tasks.map(task => task.token === completed.token ? completed : task);
+        renderWorkspace();
       });
+    }
+
+    function renderDetails(task) {
+      return `<div class="completion-details">
+        ${task.assignee ? `<div><span>Assigned to</span><strong>${escapeHtml(task.assignee)}</strong></div>` : ''}
+        ${task.dueDate ? `<div><span>Due</span><strong>${new Date(task.dueDate + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</strong></div>` : ''}
+      </div>`;
+    }
+
+    function renderTaskNote(note) {
+      return note ? `<aside class="completion-task-note"><strong>Task note</strong><p>${escapeHtml(note)}</p></aside>` : '';
     }
 
     function renderLearning(insights) {

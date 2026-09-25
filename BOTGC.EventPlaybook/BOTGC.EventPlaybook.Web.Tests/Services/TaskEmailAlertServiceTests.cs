@@ -39,6 +39,7 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
         Assert.Equal(2, result.SentRecipientCount);
         Assert.Equal(0, result.FailedRecipientCount);
         Assert.Equal(5, registry.RegisteredTokens.Count);
+        Assert.Equal(2, registry.EmailWorkspaces.Count);
 
         var alice = Assert.Single(sender.Messages, message => message.RecipientEmail == "alice@example.com");
         Assert.Equal(5, alice.TaskCount);
@@ -279,6 +280,7 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
     {
         var token = Guid.NewGuid();
         var sender = new RecordingEmailSender();
+        var registry = new RecordingCompletionRegistry();
         var dispatcher = CreateDispatcher(
             StateWithBaseUrl(
                 "https://alerts.example.test/ignored/path",
@@ -291,7 +293,7 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
                     null,
                     eventName: "Club & <Event>",
                     token: token)),
-            new RecordingCompletionRegistry(),
+            registry,
             sender);
 
         await dispatcher.RunOnceAsync(Today, CancellationToken.None);
@@ -299,11 +301,12 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
         var message = Assert.Single(sender.Messages);
         Assert.DoesNotContain("<script>", message.BodyHtml, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Club &amp; &lt;Event&gt;", message.BodyHtml);
-        Assert.Contains($"href=\"https://alerts.example.test/complete.html?token={token:D}\"", message.BodyHtml);
+        var accessToken = Assert.Single(registry.EmailWorkspaces).Key;
+        Assert.Contains($"href=\"https://alerts.example.test/complete.html?access={accessToken}&amp;task={token:D}\"", message.BodyHtml);
     }
 
     [Fact]
-    public async Task RunOnceAsync_ReviewGatedTaskLinksToTheAuthenticatedTaskCardAndCannotBeCompleted()
+    public async Task RunOnceAsync_ReviewGatedTaskUsesTheRestrictedEmailWorkspaceAndCannotBeCompleted()
     {
         Directory.CreateDirectory(_contentRoot);
         var registry = new TaskCompletionRegistry(new TestWebHostEnvironment(_contentRoot));
@@ -325,8 +328,9 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
         await dispatcher.RunOnceAsync(Today, CancellationToken.None);
 
         var message = Assert.Single(sender.Messages);
-        Assert.Contains("https://events.example.test/?view=tasks&amp;event=event-1&amp;task=review-task", message.BodyHtml);
-        Assert.DoesNotContain("/complete.html?token=", message.BodyHtml);
+        Assert.Contains($"https://events.example.test/complete.html?access=", message.BodyHtml);
+        Assert.Contains($"&amp;task={token:D}", message.BodyHtml);
+        Assert.DoesNotContain("?view=tasks", message.BodyHtml);
         var record = await registry.GetAsync(token.ToString("D"), CancellationToken.None);
         Assert.NotNull(record);
         Assert.False(record!.CanCompleteFromLink);
@@ -630,6 +634,7 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
         public HashSet<string> RegisteredTokens { get; } = new(StringComparer.Ordinal);
         public HashSet<string> CompletedTokens { get; } = new(StringComparer.Ordinal);
         private readonly Dictionary<string, TaskCompletionRecord> _records = new(StringComparer.Ordinal);
+        public Dictionary<string, TaskEmailWorkspace> EmailWorkspaces { get; } = new(StringComparer.Ordinal);
 
         public Task<TaskCompletionRecord> RegisterAsync(
             RegisterCompletionLinkRequest request,
@@ -649,6 +654,8 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
                     AssigneeEmail = request.AssigneeEmail,
                     DueDate = request.DueDate,
                     ExpiresOn = request.ExpiresOn,
+                    Notes = request.Notes,
+                    CanCompleteFromLink = request.CanCompleteFromLink,
                     RegisteredAtUtc = DateTimeOffset.UtcNow,
                     CompletedAtUtc = CompletedTokens.Contains(request.Token) ? DateTimeOffset.UtcNow : null
                 };
@@ -671,6 +678,72 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
             CancellationToken cancellationToken) =>
             Task.FromResult<IReadOnlyList<TaskCompletionRecord>>(
                 _records.Values.Where(record => record.EventId == eventId && record.CompletedAtUtc is not null).ToArray());
+
+        public Task<TaskEmailWorkspace> RegisterEmailAccessAsync(
+            string accessToken,
+            IReadOnlyCollection<string> taskTokens,
+            CancellationToken cancellationToken)
+        {
+            var workspace = new TaskEmailWorkspace
+            {
+                AccessToken = accessToken,
+                Tasks = taskTokens
+                    .Select(token => _records.GetValueOrDefault(token))
+                    .Where(record => record is not null)
+                    .Cast<TaskCompletionRecord>()
+                    .ToArray()
+            };
+            EmailWorkspaces[accessToken] = workspace;
+            return Task.FromResult(workspace);
+        }
+
+        public Task<TaskEmailWorkspace?> GetEmailAccessAsync(
+            string accessToken,
+            CancellationToken cancellationToken) =>
+            Task.FromResult(EmailWorkspaces.GetValueOrDefault(accessToken));
+    }
+
+    [Fact]
+    public async Task CompletionRegistry_EmailAccessReturnsOnlyTasksGrantedForThatEmail()
+    {
+        Directory.CreateDirectory(_contentRoot);
+        var registry = new TaskCompletionRegistry(new TestWebHostEnvironment(_contentRoot));
+        var includedOne = Guid.NewGuid().ToString("D");
+        var includedTwo = Guid.NewGuid().ToString("D");
+        var unrelated = Guid.NewGuid().ToString("D");
+        foreach (var item in new[]
+                 {
+                     (includedOne, "First included task"),
+                     (includedTwo, "Second included task"),
+                     (unrelated, "Unrelated task")
+                 })
+        {
+            await registry.RegisterAsync(
+                new RegisterCompletionLinkRequest
+                {
+                    Token = item.Item1,
+                    EventId = "event-1",
+                    EventName = "Autumn Event",
+                    TaskId = $"task-{item.Item1}",
+                    TaskTitle = item.Item2,
+                    AssigneeEmail = "private@example.com"
+                },
+                CancellationToken.None);
+        }
+
+        var accessToken = Guid.NewGuid().ToString("D");
+        await registry.RegisterEmailAccessAsync(
+            accessToken,
+            [includedOne, includedTwo],
+            CancellationToken.None);
+
+        var reopened = new TaskCompletionRegistry(new TestWebHostEnvironment(_contentRoot));
+        var workspace = await reopened.GetEmailAccessAsync(accessToken, CancellationToken.None);
+
+        Assert.NotNull(workspace);
+        Assert.Equal([includedOne, includedTwo], workspace!.Tasks.Select(task => task.Token));
+        Assert.DoesNotContain(workspace.Tasks, task => task.Token == unrelated);
+        Assert.Null(await reopened.GetEmailAccessAsync(Guid.NewGuid().ToString("D"), CancellationToken.None));
     }
 
     private sealed class RecordingActivityStore : IIntegrationActivityStore

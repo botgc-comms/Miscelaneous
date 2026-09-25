@@ -11,11 +11,17 @@ public interface ITaskCompletionRegistry
     Task<TaskCompletionRecord?> GetAsync(string token, CancellationToken cancellationToken);
     Task<TaskCompletionRecord?> CompleteAsync(string token, string? notes, CancellationToken cancellationToken);
     Task<IReadOnlyList<TaskCompletionRecord>> GetCompletedForEventAsync(string eventId, CancellationToken cancellationToken);
+    Task<TaskEmailWorkspace> RegisterEmailAccessAsync(
+        string accessToken,
+        IReadOnlyCollection<string> taskTokens,
+        CancellationToken cancellationToken);
+    Task<TaskEmailWorkspace?> GetEmailAccessAsync(string accessToken, CancellationToken cancellationToken);
 }
 
 public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
 {
     private readonly string _path;
+    private readonly string _emailAccessPath;
     private readonly TimeProvider _timeProvider;
     private readonly ILogger<TaskCompletionRegistry> _logger;
     private readonly SemaphoreSlim _gate = new(1, 1);
@@ -42,6 +48,7 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
         var directory = Path.Combine(environment.ContentRootPath, "App_Data");
         Directory.CreateDirectory(directory);
         _path = Path.Combine(directory, "task-completions.json");
+        _emailAccessPath = Path.Combine(directory, "task-email-access.json");
         _timeProvider = timeProvider;
         _logger = logger;
     }
@@ -62,6 +69,7 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
                 existing.AssigneeEmail = request.AssigneeEmail;
                 existing.DueDate = request.DueDate;
                 existing.ExpiresOn = request.ExpiresOn;
+                existing.Notes = request.Notes;
                 existing.CanCompleteFromLink = request.CanCompleteFromLink;
                 if (!request.PreserveLearningInsights)
                 {
@@ -82,6 +90,7 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
                 AssigneeEmail = request.AssigneeEmail,
                 DueDate = request.DueDate,
                 ExpiresOn = request.ExpiresOn,
+                Notes = request.Notes,
                 LearningInsights = request.LearningInsights ?? [],
                 CanCompleteFromLink = request.CanCompleteFromLink,
                 RegisteredAtUtc = DateTimeOffset.UtcNow
@@ -158,6 +167,72 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
         }
     }
 
+    public async Task<TaskEmailWorkspace> RegisterEmailAccessAsync(
+        string accessToken,
+        IReadOnlyCollection<string> taskTokens,
+        CancellationToken cancellationToken)
+    {
+        if (!Guid.TryParse(accessToken, out _))
+        {
+            throw new ArgumentException("The email access token must be a GUID.", nameof(accessToken));
+        }
+
+        await _gate.WaitAsync(cancellationToken);
+        try
+        {
+            var records = await LoadAsync(cancellationToken);
+            var available = records.ToDictionary(record => record.Token, StringComparer.Ordinal);
+            var allowedTokens = taskTokens
+                .Where(token => available.ContainsKey(token))
+                .Distinct(StringComparer.Ordinal)
+                .ToList();
+            if (allowedTokens.Count == 0)
+            {
+                throw new InvalidOperationException("An email task workspace must contain at least one registered task.");
+            }
+
+            var grants = await LoadEmailAccessAsync(cancellationToken);
+            grants.RemoveAll(grant => string.Equals(grant.Token, accessToken, StringComparison.Ordinal));
+            grants.Add(new TaskEmailAccessGrant
+            {
+                Token = accessToken,
+                TaskTokens = allowedTokens,
+                RegisteredAtUtc = _timeProvider.GetUtcNow()
+            });
+            await SaveEmailAccessAsync(grants, cancellationToken);
+            return BuildWorkspace(accessToken, allowedTokens, available);
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    public async Task<TaskEmailWorkspace?> GetEmailAccessAsync(
+        string accessToken,
+        CancellationToken cancellationToken)
+    {
+        await _gate.WaitAsync(cancellationToken);
+        try
+        {
+            var grant = (await LoadEmailAccessAsync(cancellationToken))
+                .SingleOrDefault(item => string.Equals(item.Token, accessToken, StringComparison.Ordinal));
+            if (grant is null) return null;
+
+            var records = (await LoadAsync(cancellationToken))
+                .ToDictionary(record => record.Token, StringComparer.Ordinal);
+            foreach (var token in grant.TaskTokens)
+            {
+                if (records.TryGetValue(token, out var record)) ApplyExpiry(record);
+            }
+            return BuildWorkspace(accessToken, grant.TaskTokens, records);
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
     private async Task<List<TaskCompletionRecord>> LoadAsync(CancellationToken cancellationToken)
     {
         if (!File.Exists(_path))
@@ -205,6 +280,56 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
             if (File.Exists(temporaryPath)) File.Delete(temporaryPath);
         }
     }
+
+    private async Task<List<TaskEmailAccessGrant>> LoadEmailAccessAsync(CancellationToken cancellationToken)
+    {
+        if (!File.Exists(_emailAccessPath)) return [];
+        await using var stream = File.OpenRead(_emailAccessPath);
+        return await JsonSerializer.DeserializeAsync<List<TaskEmailAccessGrant>>(
+                   stream,
+                   _jsonOptions,
+                   cancellationToken) ?? [];
+    }
+
+    private async Task SaveEmailAccessAsync(
+        List<TaskEmailAccessGrant> grants,
+        CancellationToken cancellationToken)
+    {
+        var temporaryPath = $"{_emailAccessPath}.{Guid.NewGuid():N}.tmp";
+        try
+        {
+            await using (var stream = new FileStream(
+                             temporaryPath,
+                             FileMode.CreateNew,
+                             FileAccess.Write,
+                             FileShare.None,
+                             65536,
+                             FileOptions.Asynchronous | FileOptions.WriteThrough))
+            {
+                await JsonSerializer.SerializeAsync(stream, grants, _jsonOptions, cancellationToken);
+                await stream.FlushAsync(cancellationToken);
+            }
+            File.Move(temporaryPath, _emailAccessPath, true);
+        }
+        finally
+        {
+            if (File.Exists(temporaryPath)) File.Delete(temporaryPath);
+        }
+    }
+
+    private static TaskEmailWorkspace BuildWorkspace(
+        string accessToken,
+        IEnumerable<string> taskTokens,
+        IReadOnlyDictionary<string, TaskCompletionRecord> records) =>
+        new()
+        {
+            AccessToken = accessToken,
+            Tasks = taskTokens
+                .Select(token => records.GetValueOrDefault(token))
+                .Where(record => record is not null)
+                .Cast<TaskCompletionRecord>()
+                .ToArray()
+        };
 
     private async Task<List<TaskCompletionRecord>> RecoverCompleteRecordsAsync(CancellationToken cancellationToken)
     {

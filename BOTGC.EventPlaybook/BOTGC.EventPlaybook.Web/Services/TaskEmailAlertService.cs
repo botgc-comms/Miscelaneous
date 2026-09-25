@@ -250,6 +250,7 @@ public sealed class TaskEmailAlertDispatcher(
                             AssigneeEmail = task.AssigneeEmail,
                             DueDate = task.DueDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
                             ExpiresOn = task.ExpiresOn?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                            Notes = task.Notes,
                             PreserveLearningInsights = true,
                             CanCompleteFromLink = task.CanCompleteFromLink
                         },
@@ -327,10 +328,21 @@ public sealed class TaskEmailAlertDispatcher(
                         continue;
                     }
 
+                    string? emailAccessToken = null;
+                    if (digest.Tasks.Count > 0)
+                    {
+                        emailAccessToken = Guid.NewGuid().ToString("D");
+                        await completionRegistry.RegisterEmailAccessAsync(
+                            emailAccessToken,
+                            digest.Tasks.Select(item => item.Task.CompletionToken).ToArray(),
+                            cancellationToken);
+                    }
+
                     var message = TaskAlertEmailComposer.Compose(
                         digest,
                         schedule.PublicBaseUrl,
-                        londonDate);
+                        londonDate,
+                        emailAccessToken);
                     await emailSender.SendAsync(message, cancellationToken);
                     await deliveryLedger.MarkSentAsync(
                         londonDate,
@@ -799,7 +811,8 @@ internal static class TaskAlertEmailComposer
     public static TaskAlertEmailMessage Compose(
         RecipientDigest digest,
         Uri publicBaseUrl,
-        DateOnly localDate)
+        DateOnly localDate,
+        string? emailAccessToken = null)
     {
         var tasks = digest.Tasks
             .OrderBy(item => TimingOrder(item.DaysUntilDue))
@@ -868,9 +881,9 @@ internal static class TaskAlertEmailComposer
                 .Append("</h2><ul style=\"padding-left:22px\">");
             foreach (var item in section.Tasks)
             {
-                var taskPath = item.Task.CanCompleteFromLink
+                var taskPath = string.IsNullOrWhiteSpace(emailAccessToken)
                     ? item.Task.CompletionPath
-                    : $"/?view=tasks&event={Uri.EscapeDataString(item.Task.EventId)}&task={Uri.EscapeDataString(item.Task.TaskId)}";
+                    : $"/complete.html?access={Uri.EscapeDataString(emailAccessToken)}&task={Uri.EscapeDataString(item.Task.CompletionToken)}";
                 var completionUrl = new Uri(publicBaseUrl, taskPath).AbsoluteUri;
                 body.Append("<li style=\"margin:0 0 14px\"><a style=\"font-weight:700;color:#07546b\" href=\"")
                     .Append(encoder.Encode(completionUrl))
@@ -894,7 +907,7 @@ internal static class TaskAlertEmailComposer
             body.Append("</ul>");
         }
 
-        body.Append("<p style=\"margin-top:24px;color:#52666b\">Links open the relevant event planning area or individual task. This combined alert replaces separate emails for each item.</p></div>");
+        body.Append("<p style=\"margin-top:24px;color:#52666b\">Task links open a secure view containing only the tasks listed in this email. This combined alert replaces separate emails for each item.</p></div>");
         var subject = tasks.Length > 0 && planningReminders.Length > 0
             ? $"Event Playbook: {tasks.Length} task{(tasks.Length == 1 ? string.Empty : "s")} and {planningReminders.Length} event plan{(planningReminders.Length == 1 ? string.Empty : "s")} need attention"
             : planningReminders.Length > 0

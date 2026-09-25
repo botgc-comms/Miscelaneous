@@ -222,6 +222,7 @@ if (!string.IsNullOrWhiteSpace(demoPassword))
                            path.StartsWithSegments("/assets") ||
                            path.StartsWithSegments("/api/feedback/public") ||
                            IsPublicTaskCompletionPath(context.Request) ||
+                           IsPublicTaskEmailAccessPath(context.Request) ||
                            path.StartsWithSegments("/api/poster/member-email/artwork") ||
                            path.StartsWithSegments("/health");
 
@@ -2538,7 +2539,22 @@ app.MapGet("/api/tasks/completion-links/{token}", async (
     CancellationToken cancellationToken) =>
 {
     var record = await registry.GetAsync(token, cancellationToken);
-    return record is null ? Results.NotFound() : Results.Ok(record);
+    return record is null ? Results.NotFound() : Results.Ok(ToPublicTaskCompletion(record));
+});
+
+app.MapGet("/api/tasks/email-access/{token}", async (
+    string token,
+    ITaskCompletionRegistry registry,
+    CancellationToken cancellationToken) =>
+{
+    var workspace = await registry.GetEmailAccessAsync(token, cancellationToken);
+    return workspace is null
+        ? Results.NotFound()
+        : Results.Ok(new
+        {
+            workspace.AccessToken,
+            Tasks = workspace.Tasks.Select(ToPublicTaskCompletion).ToArray()
+        });
 });
 
 app.MapPost("/api/tasks/completion-links/{token}/complete", async (
@@ -2559,7 +2575,7 @@ app.MapPost("/api/tasks/completion-links/{token}/complete", async (
                 ? "This task has expired because its event cutoff has passed."
                 : "This task requires information in Event Playbook before it can be completed."
         })
-        : Results.Ok(record);
+        : Results.Ok(ToPublicTaskCompletion(record));
 });
 
 app.MapGet("/api/tasks/events/{eventId}/completions", async (
@@ -2601,6 +2617,37 @@ static bool IsPublicTaskCompletionPath(HttpRequest request)
             segments.Length == 5 &&
             string.Equals(segments[4], "complete", StringComparison.OrdinalIgnoreCase));
 }
+
+static bool IsPublicTaskEmailAccessPath(HttpRequest request)
+{
+    var segments = request.Path.Value?
+        .Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        ?? [];
+    return HttpMethods.IsGet(request.Method) &&
+           segments.Length == 4 &&
+           string.Equals(segments[0], "api", StringComparison.OrdinalIgnoreCase) &&
+           string.Equals(segments[1], "tasks", StringComparison.OrdinalIgnoreCase) &&
+           string.Equals(segments[2], "email-access", StringComparison.OrdinalIgnoreCase) &&
+           Guid.TryParse(segments[3], out _);
+}
+
+static object ToPublicTaskCompletion(TaskCompletionRecord record) => new
+{
+    record.Token,
+    record.EventId,
+    record.EventName,
+    record.TaskId,
+    record.TaskTitle,
+    record.Assignee,
+    record.DueDate,
+    record.ExpiresOn,
+    record.Notes,
+    record.LearningInsights,
+    record.CanCompleteFromLink,
+    record.RegisteredAtUtc,
+    record.CompletedAtUtc,
+    record.CompletionNotes
+};
 
 static void ValidatePosterArtworkId(string outputId, IPosterConfigurationService posterConfiguration)
 {
