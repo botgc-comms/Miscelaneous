@@ -34,6 +34,10 @@ public sealed class TaskCompletionRecord
     public DateTimeOffset RegisteredAtUtc { get; init; }
     public DateTimeOffset? CompletedAtUtc { get; set; }
     public string? CompletionNotes { get; set; }
+    public bool CompletedViaEmailAccess { get; set; }
+    public string? AssignmentKind { get; set; }
+    public string? AssignmentId { get; set; }
+    public DateTimeOffset? ReassignedAtUtc { get; set; }
 }
 
 public sealed class TaskEmailAccessGrant
@@ -61,4 +65,18 @@ public sealed class TaskLearningInsightSnapshot
 public sealed class CompleteTaskRequest
 {
     public string? Notes { get; init; }
+}
+
+public sealed class ReassignEmailTaskRequest
+{
+    public required string AssignmentKind { get; init; }
+    public required string AssignmentId { get; init; }
+}
+
+public sealed class TaskReassignmentSelection
+{
+    public required string Kind { get; init; }
+    public required string Id { get; init; }
+    public required string Name { get; init; }
+    public string? Email { get; init; }
 }

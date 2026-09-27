@@ -673,6 +673,45 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
             CancellationToken cancellationToken) =>
             Task.FromResult<TaskCompletionRecord?>(_records.GetValueOrDefault(token));
 
+        public Task<TaskCompletionRecord?> CompleteFromEmailAccessAsync(
+            string accessToken,
+            string taskToken,
+            string? notes,
+            CancellationToken cancellationToken)
+        {
+            var record = EmailWorkspaces.GetValueOrDefault(accessToken)?.Tasks
+                .SingleOrDefault(task => task.Token == taskToken);
+            if (record is not null)
+            {
+                record.CompletedAtUtc = DateTimeOffset.UtcNow;
+                record.CompletionNotes = notes;
+                record.CompletedViaEmailAccess = true;
+                record.CanCompleteFromLink = true;
+            }
+
+            return Task.FromResult(record);
+        }
+
+        public Task<TaskCompletionRecord?> ReassignFromEmailAccessAsync(
+            string accessToken,
+            string taskToken,
+            TaskReassignmentSelection selection,
+            CancellationToken cancellationToken)
+        {
+            var record = EmailWorkspaces.GetValueOrDefault(accessToken)?.Tasks
+                .SingleOrDefault(task => task.Token == taskToken);
+            if (record is not null)
+            {
+                record.Assignee = selection.Name;
+                record.AssigneeEmail = selection.Email;
+                record.AssignmentKind = selection.Kind;
+                record.AssignmentId = selection.Id;
+                record.ReassignedAtUtc = DateTimeOffset.UtcNow;
+            }
+
+            return Task.FromResult(record);
+        }
+
         public Task<IReadOnlyList<TaskCompletionRecord>> GetCompletedForEventAsync(
             string eventId,
             CancellationToken cancellationToken) =>
@@ -744,6 +783,56 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
         Assert.Equal([includedOne, includedTwo], workspace!.Tasks.Select(task => task.Token));
         Assert.DoesNotContain(workspace.Tasks, task => task.Token == unrelated);
         Assert.Null(await reopened.GetEmailAccessAsync(Guid.NewGuid().ToString("D"), CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task CompletionRegistry_EmailAccessCanCompleteAndReassignAReviewGatedTask()
+    {
+        Directory.CreateDirectory(_contentRoot);
+        var registry = new TaskCompletionRegistry(
+            new TestWebHostEnvironment(_contentRoot),
+            new FixedTimeProvider(new DateTimeOffset(2026, 9, 27, 8, 0, 0, TimeSpan.Zero)));
+        var taskToken = Guid.NewGuid().ToString("D");
+        var accessToken = Guid.NewGuid().ToString("D");
+        await registry.RegisterAsync(
+            new RegisterCompletionLinkRequest
+            {
+                Token = taskToken,
+                EventId = "event-1",
+                EventName = "Autumn Event",
+                TaskId = "review-task",
+                TaskTitle = "Review the duty plan",
+                CanCompleteFromLink = false,
+                ExpiresOn = "2026-09-20"
+            },
+            CancellationToken.None);
+        await registry.RegisterEmailAccessAsync(accessToken, [taskToken], CancellationToken.None);
+
+        var reassigned = await registry.ReassignFromEmailAccessAsync(
+            accessToken,
+            taskToken,
+            new TaskReassignmentSelection
+            {
+                Kind = "person",
+                Id = "person-alice",
+                Name = "Alice Example",
+                Email = "alice@example.com"
+            },
+            CancellationToken.None);
+        var completed = await registry.CompleteFromEmailAccessAsync(
+            accessToken,
+            taskToken,
+            "Done from the email.",
+            CancellationToken.None);
+
+        Assert.NotNull(reassigned);
+        Assert.Equal("person-alice", reassigned!.AssignmentId);
+        Assert.NotNull(reassigned.ReassignedAtUtc);
+        Assert.NotNull(completed);
+        Assert.True(completed!.CompletedViaEmailAccess);
+        Assert.True(completed.CanCompleteFromLink);
+        Assert.NotNull(completed.CompletedAtUtc);
+        Assert.Equal("Done from the email.", completed.CompletionNotes);
     }
 
     private sealed class RecordingActivityStore : IIntegrationActivityStore

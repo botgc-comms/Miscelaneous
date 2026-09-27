@@ -19,6 +19,10 @@ function functionSource(name) {
 }
 
 function compileFunction(name, dependencies = {}) {
+  dependencies = {
+    EMAIL_ACCESS_COMPLETION_PROVENANCE: 'email-access',
+    ...dependencies
+  };
   const dependencyNames = Object.keys(dependencies);
   const dependencyValues = Object.values(dependencies);
   return Function(

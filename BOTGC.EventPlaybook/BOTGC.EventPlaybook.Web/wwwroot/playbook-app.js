@@ -140,6 +140,7 @@
     'event-day-food-service-task'
   ]);
   const LEGACY_FOOD_REVIEW_COMPLETION_PROVENANCE = 'pre-v3.6-food-review';
+  const EMAIL_ACCESS_COMPLETION_PROVENANCE = 'email-access';
   const RETIRED_EVENT_CONTROL_TASK_IDS_V37 = Object.freeze([
     'decide-operational-commitments',
     'check-event-communications-already-sent',
@@ -3248,12 +3249,13 @@
 
   function applyServerTaskCompletion(event, item, taskState, record) {
     if (taskState.notRelevant === true) return false;
-    if (item.completionMode === 'event-status-decision' || item.canCompleteFromLink === false) {
+    const completedViaEmailAccess = record.completedViaEmailAccess === true;
+    if (!completedViaEmailAccess && (item.completionMode === 'event-status-decision' || item.canCompleteFromLink === false)) {
       rotateTaskCompletionLink(taskState);
       return false;
     }
     const review = taskReviewState(item, event);
-    if (review && !review.ready) {
+    if (!completedViaEmailAccess && review && !review.ready) {
       // This server completion was submitted against an answer set that cannot
       // currently complete the reviewed task. Rotate the token so it cannot be
       // accepted later merely because somebody subsequently supplies answers.
@@ -3261,15 +3263,28 @@
       return false;
     }
 
-    delete taskState.reviewCompletionProvenance;
+    if (completedViaEmailAccess) taskState.reviewCompletionProvenance = EMAIL_ACCESS_COMPLETION_PROVENANCE;
+    else delete taskState.reviewCompletionProvenance;
     taskState.completed = true;
     taskState.status = 'completed';
     taskState.completedAt = record.completedAtUtc ?? taskState.completedAt ?? new Date().toISOString();
-    if (review) {
+    if (review && review.ready) {
       taskState.reviewSignature = review.signature;
       taskState.reviewInvalidatedAt = null;
     }
     if (record.completionNotes) taskState.notes = record.completionNotes;
+    return true;
+  }
+
+  function applyServerTaskReassignment(taskState, record) {
+    if (!record.reassignedAtUtc || !record.assignmentKind || !record.assignmentId) return false;
+    if (taskState.assignedAt && new Date(taskState.assignedAt) >= new Date(record.reassignedAtUtc)) return false;
+    taskState.assignmentKind = record.assignmentKind;
+    taskState.assignmentId = record.assignmentId;
+    taskState.assignee = record.assignee || taskState.assignee || '';
+    taskState.assigneeEmail = record.assigneeEmail || '';
+    taskState.assignedAt = record.reassignedAtUtc;
+    taskState.assignedBy = 'email-access';
     return true;
   }
 
@@ -3295,7 +3310,8 @@
           if (!indexed) continue;
           const taskState = ensureTaskState(event, record.taskId);
           if (!taskState.completionToken || taskState.completionToken !== record.token) continue;
-          applyServerTaskCompletion(event, indexed.item, taskState, record);
+          applyServerTaskReassignment(taskState, record);
+          if (record.completedAtUtc) applyServerTaskCompletion(event, indexed.item, taskState, record);
         }
       } catch (error) {
         console.warn('Could not synchronise task completions.', error);
@@ -3893,6 +3909,7 @@
           if (item.type !== 'task' || !item.reviewSummary?.fields?.some(field => field.questionId === questionId)) continue;
           const taskState = event.taskState?.[item.id];
           if (!taskState || (!taskState.completed && !taskState.reviewSignature)) continue;
+          if (taskState.reviewCompletionProvenance === EMAIL_ACCESS_COMPLETION_PROVENANCE) continue;
           const wasConfirmed = taskState.completed === true;
           if (wasConfirmed) rotateTaskCompletionLink(taskState);
           delete taskState.reviewCompletionProvenance;
@@ -3909,6 +3926,7 @@
   function reconcileTaskReviewCompletion(item, event, taskState) {
     const review = taskReviewState(item, event);
     if (!review || taskState.completed !== true) return review;
+    if (taskState.reviewCompletionProvenance === EMAIL_ACCESS_COMPLETION_PROVENANCE) return review;
 
     // Only the v3.6 migration may grandfather a completion created before these
     // food tasks gained review summaries. An unsigned current/server completion
@@ -3975,6 +3993,7 @@
 
   function reconcileEventStatusDecisionCompletion(item, event, taskState) {
     if (item?.completionMode !== 'event-status-decision') return;
+    if (taskState.reviewCompletionProvenance === EMAIL_ACCESS_COMPLETION_PROVENANCE && taskState.completed === true) return;
     const completed = eventStatusDecisionIsSatisfied(item, event);
     if (taskState.completed === completed && taskState.status === (completed ? 'completed' : 'open')) return;
     if (!completed && taskState.completed === true) rotateTaskCompletionLink(taskState);

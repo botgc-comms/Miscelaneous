@@ -16,6 +16,16 @@ public interface ITaskCompletionRegistry
         IReadOnlyCollection<string> taskTokens,
         CancellationToken cancellationToken);
     Task<TaskEmailWorkspace?> GetEmailAccessAsync(string accessToken, CancellationToken cancellationToken);
+    Task<TaskCompletionRecord?> CompleteFromEmailAccessAsync(
+        string accessToken,
+        string taskToken,
+        string? notes,
+        CancellationToken cancellationToken);
+    Task<TaskCompletionRecord?> ReassignFromEmailAccessAsync(
+        string accessToken,
+        string taskToken,
+        TaskReassignmentSelection selection,
+        CancellationToken cancellationToken);
 }
 
 public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
@@ -158,7 +168,8 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
         {
             var records = await LoadAsync(cancellationToken);
             return records
-                .Where(x => string.Equals(x.EventId, eventId, StringComparison.OrdinalIgnoreCase) && x.CompletedAtUtc is not null)
+                .Where(x => string.Equals(x.EventId, eventId, StringComparison.OrdinalIgnoreCase) &&
+                            (x.CompletedAtUtc is not null || x.ReassignedAtUtc is not null))
                 .ToList();
         }
         finally
@@ -226,6 +237,67 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
                 if (records.TryGetValue(token, out var record)) ApplyExpiry(record);
             }
             return BuildWorkspace(accessToken, grant.TaskTokens, records);
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    public async Task<TaskCompletionRecord?> CompleteFromEmailAccessAsync(
+        string accessToken,
+        string taskToken,
+        string? notes,
+        CancellationToken cancellationToken)
+    {
+        await _gate.WaitAsync(cancellationToken);
+        try
+        {
+            var grant = (await LoadEmailAccessAsync(cancellationToken))
+                .SingleOrDefault(item => string.Equals(item.Token, accessToken, StringComparison.Ordinal));
+            if (grant is null || !grant.TaskTokens.Contains(taskToken, StringComparer.Ordinal)) return null;
+
+            var records = await LoadAsync(cancellationToken);
+            var record = records.SingleOrDefault(item => string.Equals(item.Token, taskToken, StringComparison.Ordinal));
+            if (record is null) return null;
+
+            record.CompletedAtUtc = _timeProvider.GetUtcNow();
+            record.CompletionNotes = string.IsNullOrWhiteSpace(notes) ? null : notes.Trim();
+            record.CompletedViaEmailAccess = true;
+            record.CanCompleteFromLink = true;
+            await SaveAsync(records, cancellationToken);
+            return record;
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    public async Task<TaskCompletionRecord?> ReassignFromEmailAccessAsync(
+        string accessToken,
+        string taskToken,
+        TaskReassignmentSelection selection,
+        CancellationToken cancellationToken)
+    {
+        await _gate.WaitAsync(cancellationToken);
+        try
+        {
+            var grant = (await LoadEmailAccessAsync(cancellationToken))
+                .SingleOrDefault(item => string.Equals(item.Token, accessToken, StringComparison.Ordinal));
+            if (grant is null || !grant.TaskTokens.Contains(taskToken, StringComparer.Ordinal)) return null;
+
+            var records = await LoadAsync(cancellationToken);
+            var record = records.SingleOrDefault(item => string.Equals(item.Token, taskToken, StringComparison.Ordinal));
+            if (record is null) return null;
+
+            record.AssignmentKind = selection.Kind;
+            record.AssignmentId = selection.Id;
+            record.Assignee = selection.Name;
+            record.AssigneeEmail = selection.Email;
+            record.ReassignedAtUtc = _timeProvider.GetUtcNow();
+            await SaveAsync(records, cancellationToken);
+            return record;
         }
         finally
         {

@@ -19,17 +19,13 @@
 }
 
 .completion-workspace {
-  display: grid;
-  grid-template-columns: minmax(240px, .8fr) minmax(0, 1.7fr);
-  align-items: stretch;
+  display: block;
 }
 
 .completion-task-list {
-  display: grid;
-  align-content: start;
-  gap: 9px;
-  padding: 28px 18px 34px;
-  border-right: 1px solid var(--border);
+  display: block;
+  padding: 22px clamp(18px, 4vw, 36px) 26px;
+  border-bottom: 1px solid var(--border);
   background: #f3f7f5;
 }
 
@@ -38,15 +34,16 @@
 }
 
 .completion-task-list[hidden] + .completion-content {
-  grid-column: 1 / -1;
   width: min(100%, 720px);
   margin-inline: auto;
 }
 
 .completion-task-list-heading {
-  display: grid;
-  gap: 5px;
-  padding: 0 6px 12px;
+  display: flex;
+  align-items: baseline;
+  gap: 9px 18px;
+  padding: 0 2px 14px;
+  flex-wrap: wrap;
 }
 
 .completion-task-list-heading .eyebrow {
@@ -59,9 +56,23 @@
 }
 
 .completion-task-list-heading small {
+  margin-left: auto;
   color: var(--muted);
   font-size: .7rem;
   line-height: 1.45;
+}
+
+.completion-task-strip {
+  display: grid;
+  grid-auto-columns: minmax(250px, 31%);
+  grid-auto-flow: column;
+  gap: 11px;
+  overflow-x: auto;
+  padding: 2px 2px 10px;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: inline mandatory;
+  scrollbar-color: #9db3ad transparent;
+  scrollbar-width: thin;
 }
 
 .completion-task-link {
@@ -75,6 +86,7 @@
   color: var(--ink);
   background: #fff;
   cursor: pointer;
+  scroll-snap-align: start;
 }
 
 .completion-task-link:hover,
@@ -263,6 +275,68 @@
   margin-bottom: 18px;
 }
 
+.completion-reassignment {
+  margin: -8px 0 26px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #f7faf9;
+}
+
+.completion-reassignment summary {
+  padding: 13px 16px;
+  color: var(--navy);
+  cursor: pointer;
+  font-size: .78rem;
+  font-weight: 850;
+}
+
+.completion-reassignment[open] summary {
+  border-bottom: 1px solid var(--border);
+}
+
+.completion-reassignment-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+  padding: 16px 16px 8px;
+}
+
+.completion-reassignment-controls label {
+  display: grid;
+  gap: 7px;
+}
+
+.completion-reassignment-controls label > span {
+  color: #42575b;
+  font-size: .7rem;
+  font-weight: 850;
+}
+
+.completion-reassignment-controls select {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 38px 0 12px;
+  border: 1px solid #b9cbc7;
+  border-radius: 10px;
+  color: var(--text);
+  background: #fff;
+  font-size: .82rem;
+}
+
+.completion-reassignment-status {
+  min-height: 1.2em;
+  margin: 0;
+  padding: 0 16px 12px;
+  color: var(--green-dark);
+  font-size: .72rem;
+  font-weight: 750;
+}
+
+.completion-reassignment-status.error {
+  color: #a43f38;
+}
+
 .completion-task-note,
 .completion-restricted-notice {
   margin: -8px 0 28px;
@@ -370,15 +444,26 @@
   }
 
   .completion-workspace {
-    grid-template-columns: 1fr;
+    display: block;
   }
 
   .completion-task-list {
-    max-height: 44vh;
-    overflow-y: auto;
-    padding: 18px;
-    border-right: 0;
+    padding: 16px 14px 18px;
     border-bottom: 1px solid var(--border);
+  }
+
+  .completion-task-list-heading {
+    display: grid;
+    gap: 4px;
+    padding-inline: 5px;
+  }
+
+  .completion-task-list-heading small {
+    margin-left: 0;
+  }
+
+  .completion-task-strip {
+    grid-auto-columns: minmax(260px, 84vw);
   }
 
   .completion-brand {
@@ -408,5 +493,9 @@
 
   .completion-content .button {
     width: 100%;
+  }
+
+  .completion-reassignment-controls {
+    grid-template-columns: 1fr;
   }
 }

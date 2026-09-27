@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title data-club-title-prefix="Complete Event Task">Complete Event Task | Burton-on-Trent Golf Club</title>
   <link rel="stylesheet" href="./playbook.css?v=20260829-retrospective-analysis-1">
-  <link rel="stylesheet" href="./complete.css?v=20260925-email-workspace-1">
+  <link rel="stylesheet" href="./complete.css?v=20260927-email-actions-1">
 </head>
 <body class="completion-body">
   <main class="completion-page">
@@ -34,7 +34,9 @@
     const requestedTaskToken = params.get('task');
     const legacyTaskToken = params.get('token');
     let tasks = [];
+    let reassignmentOptions = [];
     let token = requestedTaskToken || legacyTaskToken;
+    let reassignmentMessageToken = '';
 
     try {
       if (accessToken) {
@@ -44,6 +46,7 @@
         } else {
           const workspace = await response.json();
           tasks = Array.isArray(workspace.tasks) ? workspace.tasks : [];
+          reassignmentOptions = Array.isArray(workspace.reassignmentOptions) ? workspace.reassignmentOptions : [];
           if (!tasks.length) {
             renderError('No tasks available', 'There are no tasks attached to this email link.');
           } else {
@@ -80,15 +83,17 @@
       taskList.innerHTML = tasks.length < 2 ? '' : `
         <div class="completion-task-list-heading">
           <span class="eyebrow">This email</span>
-          <strong>${tasks.length} tasks requiring attention</strong>
+          <strong>${tasks.length} tasks in this email</strong>
           <small>You can open only the tasks included in this email.</small>
         </div>
-        ${tasks.map(task => `
-          <button type="button" class="completion-task-link ${task.token === token ? 'selected' : ''}" data-task-token="${escapeHtml(task.token)}">
-            <span>${escapeHtml(task.eventName)}</span>
-            <strong>${escapeHtml(task.taskTitle)}</strong>
-            <small>${taskStatus(task)}</small>
-          </button>`).join('')}`;
+        <div class="completion-task-strip">
+          ${tasks.map(task => `
+            <button type="button" class="completion-task-link ${task.token === token ? 'selected' : ''}" data-task-token="${escapeHtml(task.token)}">
+              <span>${escapeHtml(task.eventName)}</span>
+              <strong>${escapeHtml(task.taskTitle)}</strong>
+              <small>${taskStatus(task)}</small>
+            </button>`).join('')}
+        </div>`;
       taskList.querySelectorAll('[data-task-token]').forEach(button => button.addEventListener('click', () => {
         token = button.dataset.taskToken;
         const url = new URL(location.href);
@@ -101,8 +106,6 @@
 
     function taskStatus(task) {
       if (task.completedAtUtc) return 'Completed';
-      if (task.expiresOn && currentClubIsoDate() > task.expiresOn) return 'Expired';
-      if (task.canCompleteFromLink === false) return 'Needs information';
       return task.dueDate
         ? `Due ${new Date(task.dueDate + 'T12:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`
         : 'Open task';
@@ -119,7 +122,7 @@
         return;
       }
 
-      if (task.expiresOn && currentClubIsoDate() > task.expiresOn) {
+      if (!accessToken && task.expiresOn && currentClubIsoDate() > task.expiresOn) {
         content.innerHTML = `
           <div class="completion-state-mark">—</div>
           <h2>Task expired</h2>
@@ -129,45 +132,99 @@
         return;
       }
 
-      if (task.canCompleteFromLink === false) {
-        content.innerHTML = `
-          <span class="eyebrow completion-eyebrow">${escapeHtml(task.eventName)}</span>
-          <h2>${escapeHtml(task.taskTitle)}</h2>
-          ${renderDetails(task)}
-          ${renderTaskNote(task.notes)}
-          ${renderLearning(task.learningInsights)}
-          <div class="completion-restricted-notice"><strong>More information is needed</strong><p>This task cannot be completed from the restricted email view because its planning information must be reviewed first. Please contact the event organiser to provide or confirm the missing details.</p></div>`;
-        return;
-      }
-
       content.innerHTML = `
         <span class="eyebrow completion-eyebrow">${escapeHtml(task.eventName)}</span>
         <h2>${escapeHtml(task.taskTitle)}</h2>
         ${renderDetails(task)}
         ${renderTaskNote(task.notes)}
         ${renderLearning(task.learningInsights)}
+        ${renderReassignment(task)}
         <label class="completion-notes"><span>Completion note <em>optional</em></span><textarea id="completionNotes" rows="4" placeholder="Add anything the event coordinator should know"></textarea></label>
         <button class="button button-primary" id="completeButton">Mark task complete</button>`;
+
+      document.getElementById('reassignButton')?.addEventListener('click', () => reassignTask(task));
 
       document.getElementById('completeButton').addEventListener('click', async () => {
         const button = document.getElementById('completeButton');
         button.disabled = true;
         button.textContent = 'Completing…';
-        const result = await fetch(`/api/tasks/completion-links/${encodeURIComponent(token)}/complete`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ notes: document.getElementById('completionNotes').value })
-        });
-        if (!result.ok) {
+        try {
+          const completionPath = accessToken
+            ? `/api/tasks/email-access/${encodeURIComponent(accessToken)}/tasks/${encodeURIComponent(token)}/complete`
+            : `/api/tasks/completion-links/${encodeURIComponent(token)}/complete`;
+          const result = await fetch(completionPath, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ notes: document.getElementById('completionNotes').value })
+          });
+          if (!result.ok) throw new Error('Completion failed');
+          const completed = await result.json();
+          tasks = tasks.map(task => task.token === completed.token ? completed : task);
+          renderWorkspace();
+        } catch {
           button.disabled = false;
           button.textContent = 'Mark task complete';
           alert('The task could not be completed.');
-          return;
         }
-        const completed = await result.json();
-        tasks = tasks.map(task => task.token === completed.token ? completed : task);
-        renderWorkspace();
       });
+    }
+
+    function renderReassignment(task) {
+      if (!accessToken || !reassignmentOptions.length) return '';
+      const currentValue = task.assignmentKind && task.assignmentId ? `${task.assignmentKind}:${task.assignmentId}` : '';
+      return `<details class="completion-reassignment">
+        <summary>Reassign this task</summary>
+        <div class="completion-reassignment-controls">
+          <label for="reassignTask"><span>New owner</span>
+            <select id="reassignTask">
+              <option value="">Choose a person or role</option>
+              ${reassignmentOptions.map(option => {
+                const value = `${option.kind}:${option.id}`;
+                const type = option.kind === 'role' ? 'Role' : 'Person';
+                return `<option value="${escapeHtml(value)}" ${value === currentValue ? 'selected' : ''}>${escapeHtml(type)} — ${escapeHtml(option.name)}</option>`;
+              }).join('')}
+            </select>
+          </label>
+          <button type="button" class="button button-secondary" id="reassignButton">Reassign task</button>
+        </div>
+        <p class="completion-reassignment-status" id="reassignmentStatus">${reassignmentMessageToken === task.token ? 'Task reassigned.' : ''}</p>
+      </details>`;
+    }
+
+    async function reassignTask(task) {
+      const select = document.getElementById('reassignTask');
+      const button = document.getElementById('reassignButton');
+      const status = document.getElementById('reassignmentStatus');
+      const option = reassignmentOptions.find(candidate => `${candidate.kind}:${candidate.id}` === select.value);
+      if (!option) {
+        status.textContent = 'Choose a person or role first.';
+        status.classList.add('error');
+        return;
+      }
+      button.disabled = true;
+      button.textContent = 'Reassigning…';
+      status.textContent = '';
+      status.classList.remove('error');
+      try {
+        const response = await fetch(`/api/tasks/email-access/${encodeURIComponent(accessToken)}/tasks/${encodeURIComponent(task.token)}/reassign`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ assignmentKind: option.kind, assignmentId: option.id })
+        });
+        if (!response.ok) {
+          const failure = await response.json().catch(() => ({}));
+          throw new Error(failure.error || 'The task could not be reassigned.');
+        }
+        const updated = await response.json();
+        tasks = tasks.map(candidate => candidate.token === updated.token ? updated : candidate);
+        reassignmentMessageToken = updated.token;
+        renderWorkspace();
+      } catch (error) {
+        button.disabled = false;
+        button.textContent = 'Reassign task';
+        status.textContent = error instanceof Error ? error.message : 'The task could not be reassigned.';
+        status.classList.add('error');
+      }
     }
 
     function renderDetails(task) {

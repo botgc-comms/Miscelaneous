@@ -122,6 +122,7 @@ builder.Services.AddSingleton<IMemberEmailComposer, MemberEmailComposer>();
 builder.Services.AddSingleton<IMemberDiaryComposer, MemberDiaryComposer>();
 builder.Services.AddSingleton<IMemberEmailArtworkStore, MemberEmailArtworkStore>();
 builder.Services.AddSingleton<ITaskCompletionRegistry, TaskCompletionRegistry>();
+builder.Services.AddSingleton<ITaskEmailAssignmentService, TaskEmailAssignmentService>();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<ITaskAlertDeliveryLedger, TaskAlertDeliveryLedger>();
 builder.Services.AddSingleton<ITaskAlertEmailSender, IntelligentGolfTaskAlertEmailSender>();
@@ -2545,16 +2546,66 @@ app.MapGet("/api/tasks/completion-links/{token}", async (
 app.MapGet("/api/tasks/email-access/{token}", async (
     string token,
     ITaskCompletionRegistry registry,
+    ITaskEmailAssignmentService assignments,
     CancellationToken cancellationToken) =>
 {
     var workspace = await registry.GetEmailAccessAsync(token, cancellationToken);
-    return workspace is null
-        ? Results.NotFound()
-        : Results.Ok(new
+    if (workspace is null) return Results.NotFound();
+    var reassignmentOptions = await assignments.GetOptionsAsync(cancellationToken);
+    return Results.Ok(new
+    {
+        workspace.AccessToken,
+        Tasks = workspace.Tasks.Select(ToPublicTaskCompletion).ToArray(),
+        ReassignmentOptions = reassignmentOptions.Select(option => new
         {
-            workspace.AccessToken,
-            Tasks = workspace.Tasks.Select(ToPublicTaskCompletion).ToArray()
-        });
+            option.Kind,
+            option.Id,
+            option.Name
+        }).ToArray()
+    });
+});
+
+app.MapPost("/api/tasks/email-access/{accessToken}/tasks/{taskToken}/complete", async (
+    string accessToken,
+    string taskToken,
+    CompleteTaskRequest request,
+    ITaskCompletionRegistry registry,
+    CancellationToken cancellationToken) =>
+{
+    var record = await registry.CompleteFromEmailAccessAsync(
+        accessToken,
+        taskToken,
+        request.Notes,
+        cancellationToken);
+    return record is null ? Results.NotFound() : Results.Ok(ToPublicTaskCompletion(record));
+});
+
+app.MapPost("/api/tasks/email-access/{accessToken}/tasks/{taskToken}/reassign", async (
+    string accessToken,
+    string taskToken,
+    ReassignEmailTaskRequest request,
+    ITaskCompletionRegistry registry,
+    ITaskEmailAssignmentService assignments,
+    CancellationToken cancellationToken) =>
+{
+    var workspace = await registry.GetEmailAccessAsync(accessToken, cancellationToken);
+    var task = workspace?.Tasks.SingleOrDefault(item => string.Equals(item.Token, taskToken, StringComparison.Ordinal));
+    if (task is null) return Results.NotFound();
+
+    var selection = await assignments.ReassignAsync(
+        task.EventId,
+        task.TaskId,
+        request.AssignmentKind,
+        request.AssignmentId,
+        cancellationToken);
+    if (selection is null) return Results.BadRequest(new { error = "Choose an active person or role." });
+
+    var record = await registry.ReassignFromEmailAccessAsync(
+        accessToken,
+        taskToken,
+        selection,
+        cancellationToken);
+    return record is null ? Results.NotFound() : Results.Ok(ToPublicTaskCompletion(record));
 });
 
 app.MapPost("/api/tasks/completion-links/{token}/complete", async (
@@ -2623,12 +2674,22 @@ static bool IsPublicTaskEmailAccessPath(HttpRequest request)
     var segments = request.Path.Value?
         .Split('/', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
         ?? [];
-    return HttpMethods.IsGet(request.Method) &&
-           segments.Length == 4 &&
-           string.Equals(segments[0], "api", StringComparison.OrdinalIgnoreCase) &&
-           string.Equals(segments[1], "tasks", StringComparison.OrdinalIgnoreCase) &&
-           string.Equals(segments[2], "email-access", StringComparison.OrdinalIgnoreCase) &&
-           Guid.TryParse(segments[3], out _);
+    if (segments.Length < 4 ||
+        !string.Equals(segments[0], "api", StringComparison.OrdinalIgnoreCase) ||
+        !string.Equals(segments[1], "tasks", StringComparison.OrdinalIgnoreCase) ||
+        !string.Equals(segments[2], "email-access", StringComparison.OrdinalIgnoreCase) ||
+        !Guid.TryParse(segments[3], out _))
+    {
+        return false;
+    }
+
+    return (HttpMethods.IsGet(request.Method) && segments.Length == 4) ||
+           (HttpMethods.IsPost(request.Method) &&
+            segments.Length == 7 &&
+            string.Equals(segments[4], "tasks", StringComparison.OrdinalIgnoreCase) &&
+            Guid.TryParse(segments[5], out _) &&
+            (string.Equals(segments[6], "complete", StringComparison.OrdinalIgnoreCase) ||
+             string.Equals(segments[6], "reassign", StringComparison.OrdinalIgnoreCase)));
 }
 
 static object ToPublicTaskCompletion(TaskCompletionRecord record) => new
@@ -2646,7 +2707,11 @@ static object ToPublicTaskCompletion(TaskCompletionRecord record) => new
     record.CanCompleteFromLink,
     record.RegisteredAtUtc,
     record.CompletedAtUtc,
-    record.CompletionNotes
+    record.CompletionNotes,
+    record.CompletedViaEmailAccess,
+    record.AssignmentKind,
+    record.AssignmentId,
+    record.ReassignedAtUtc
 };
 
 static void ValidatePosterArtworkId(string outputId, IPosterConfigurationService posterConfiguration)
