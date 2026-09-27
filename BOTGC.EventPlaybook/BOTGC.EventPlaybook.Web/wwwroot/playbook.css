@@ -5170,6 +5170,31 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(198,161,91,.22)!i
 
 .feedback-response-total strong { color: var(--navy); font: 700 1.5rem/1 Georgia, "Times New Roman", serif; }
 .feedback-response-total span { margin-top: 4px; color: var(--muted); font-size: .63rem; font-weight: 800; text-transform: uppercase; }
+.retrospective-bookings-section { margin-top: 18px; overflow: hidden; }
+.booking-section-heading { align-items: center; }
+.booking-section-note { max-width: 620px; margin: 7px 0 0; color: var(--muted); font-size: .72rem; line-height: 1.45; }
+.booking-heading-actions { display: flex; align-items: center; gap: 9px; }
+.booking-heading-actions .feedback-response-total { min-width: 122px; }
+.booking-summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; padding: 17px; }
+.booking-summary-grid > div { display: grid; min-height: 86px; align-content: center; gap: 7px; padding: 13px 15px; border: 1px solid #d5e1de; border-radius: 12px; background: #f8fbfa; }
+.booking-summary-grid span { color: var(--muted); font-size: .64rem; font-weight: 850; letter-spacing: .04em; text-transform: uppercase; }
+.booking-summary-grid strong { color: var(--navy); font: 700 1.55rem/1 Georgia, "Times New Roman", serif; }
+.ticket-booking-details { margin: 0 17px 17px; border: 1px solid #d2dfdc; border-radius: 13px; overflow: hidden; background: #fff; }
+.ticket-booking-details > summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 16px; color: var(--navy); background: #f3f7f6; cursor: pointer; font-size: .76rem; font-weight: 900; }
+.ticket-booking-details > summary small { color: var(--muted); font-size: .63rem; font-weight: 650; }
+.ticket-booking-details[open] > summary { border-bottom: 1px solid #dbe5e2; }
+.ticket-booking-list { display: grid; }
+.ticket-booking-row { display: grid; grid-template-columns: minmax(180px, 1.35fr) minmax(160px, 1fr) minmax(150px, .9fr) minmax(130px, .75fr); gap: 16px; padding: 15px 16px; border-bottom: 1px solid #e1e9e7; }
+.ticket-booking-row:last-child { border-bottom: 0; }
+.ticket-booking-row > div { display: grid; align-content: start; gap: 4px; min-width: 0; }
+.ticket-booking-row > div > span:not(.booking-member-status) { color: var(--muted); font-size: .58rem; font-weight: 900; letter-spacing: .05em; text-transform: uppercase; }
+.ticket-booking-row strong { overflow-wrap: anywhere; color: var(--navy); font-size: .76rem; line-height: 1.35; }
+.ticket-booking-row small { overflow-wrap: anywhere; color: var(--muted); font-size: .64rem; line-height: 1.4; }
+.ticket-booker { position: relative; padding-top: 21px; }
+.booking-member-status { position: absolute; inset: 0 auto auto 0; width: max-content; padding: 3px 7px; border-radius: 999px; font-size: .55rem; font-weight: 900; letter-spacing: .04em; text-transform: uppercase; }
+.booking-member-status.member { color: #286955; background: #e5f3ed; }
+.booking-member-status.visitor { color: #725f3c; background: #f4ebda; }
+.booking-empty { margin: 0 17px 17px; }
 .feedback-manager-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
 .feedback-manager-grid { padding: 17px; }
 .feedback-manager-grid.has-campaign { grid-template-columns: minmax(0, 1.45fr) minmax(270px, .55fr); }
@@ -5273,6 +5298,8 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(198,161,91,.22)!i
 .task-learning-chip { padding: 4px 7px; border: 1px solid #e0ca98; border-radius: 999px; color: #775a22; background: #fff7df; font-size: .58rem; font-weight: 850; }
 
 @media (max-width: 1050px) {
+  .booking-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ticket-booking-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .feedback-manager-grid.has-campaign { grid-template-columns: 1fr; }
   .feedback-share-card { grid-template-columns: 150px 1fr; align-items: center; }
   .feedback-share-card > input,
@@ -5295,6 +5322,14 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(198,161,91,.22)!i
   .feedback-share-card > .feedback-attendee-email { grid-column: auto; }
   .feedback-comment > div,
   .carry-forward-list article { align-items: flex-start; flex-direction: column; }
+  .booking-heading-actions { width: 100%; justify-content: space-between; }
+  .booking-heading-actions .feedback-response-total { flex: 1 1 auto; }
+  .booking-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 13px; }
+  .ticket-booking-details { margin: 0 13px 13px; }
+  .ticket-booking-details > summary { align-items: flex-start; flex-direction: column; gap: 4px; }
+  .ticket-booking-row { grid-template-columns: 1fr; gap: 12px; }
+  .ticket-booking-row > div:not(:last-child) { padding-bottom: 10px; border-bottom: 1px solid #edf2f1; }
+  .booking-empty { margin: 0 13px 13px; }
   .retrospective-analysis-actions,
   .retrospective-analysis-result > header,
   .retrospective-proposal > header,

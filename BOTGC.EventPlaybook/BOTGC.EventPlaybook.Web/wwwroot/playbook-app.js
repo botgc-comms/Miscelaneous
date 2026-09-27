@@ -223,6 +223,8 @@
   let taskBoardDeepLinkTarget = null;
   const feedbackCache = new Map();
   const feedbackRequests = new Set();
+  const ticketBookingCache = new Map();
+  const ticketBookingRequests = new Set();
   const briefingGenerationRequests = new Map();
   let taskNoteReturnFocus = null;
   const taskBoardSelection = {
@@ -386,6 +388,7 @@
   function invalidateIntelligentGolfEventStatusCache() {
     intelligentGolfStatusCacheEpoch += 1;
     intelligentGolfEventStatuses.clear();
+    ticketBookingCache.clear();
     intelligentGolfStatusRequests.clear();
     intelligentGolfStatusRefreshTimers.forEach(timer => window.clearTimeout(timer));
     intelligentGolfStatusRefreshTimers.clear();
@@ -5095,7 +5098,10 @@
       ensurePluginSettingsLoaded();
       ensureIntegrationActivityLoaded();
     }
-    if (state.activeView === 'retrospective' && event) ensureFeedbackLoaded(event.id);
+    if (state.activeView === 'retrospective' && event) {
+      ensureFeedbackLoaded(event.id);
+      ensureTicketBookingsLoaded(event.id);
+    }
     if (state.activeView === 'briefing' && event) ensureEventBriefing(event);
     if (state.activeView === 'cancellation' && event && lifecycle?.status === 'cancelled') {
       import('./cancellation-app.js?v=20260918-cancellation-1')
@@ -7646,6 +7652,7 @@
     const outcomeFields = fields.filter(field => !agileFieldIds.has(field.id));
     return `
       <section class="page-header retrospective-page-header"><div><div class="eyebrow">Learn and improve</div><h2>Event retrospective</h2><p>Bring the member voice and the delivery team's experience together, then turn the evidence into useful guidance for the next running.</p></div>${event.retrospective?.finalisedAt ? `<div class="retrospective-finalised-badge"><span>✓ Finalised</span><small>${escapeHtml(new Date(event.retrospective.finalisedAt).toLocaleString('en-GB'))}</small></div>` : ''}</section>
+      ${renderTicketBookings(event)}
       ${renderAttendeeFeedback(event)}
       ${renderMemberFeedbackSummary(event)}
       <section class="playbook-section retrospective-section agile-retrospective-section">
@@ -7936,6 +7943,94 @@
         button.textContent = originalText;
       }
     }
+  }
+
+  async function ensureTicketBookingsLoaded(eventId, force = false) {
+    if (!pluginCapabilities.intelligentGolfEnabled || !eventId) return;
+    if ((!force && ticketBookingCache.has(eventId)) || ticketBookingRequests.has(eventId)) return;
+    ticketBookingRequests.add(eventId);
+    try {
+      const response = await fetch(`/api/integrations/intelligent-golf/events/${encodeURIComponent(eventId)}/ticket-bookings?refresh=${force ? 'true' : 'false'}`, {
+        cache: 'no-store'
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(payload.error || payload.detail || `Intelligent Golf bookings could not be loaded (${response.status}).`);
+      }
+      ticketBookingCache.set(eventId, {
+        intelligentGolfEventId: Number(payload.intelligentGolfEventId) || null,
+        bookingCount: Math.max(0, Number(payload.bookingCount) || 0),
+        ticketCount: Math.max(0, Number(payload.ticketCount) || 0),
+        memberBookingCount: Math.max(0, Number(payload.memberBookingCount) || 0),
+        memberBookingsWithEmailCount: Math.max(0, Number(payload.memberBookingsWithEmailCount) || 0),
+        bookings: Array.isArray(payload.bookings) ? payload.bookings : [],
+        loadedAt: new Date().toISOString()
+      });
+    } catch (error) {
+      ticketBookingCache.set(eventId, {
+        error: error.message || 'Intelligent Golf bookings could not be loaded.',
+        bookings: [],
+        loadedAt: new Date().toISOString()
+      });
+    } finally {
+      ticketBookingRequests.delete(eventId);
+      if (state.activeView === 'retrospective' && state.activeEventId === eventId) render();
+    }
+  }
+
+  function renderTicketBookings(event) {
+    if (!pluginCapabilities.intelligentGolfEnabled) return '';
+    const data = ticketBookingCache.get(event.id);
+    if (!data) {
+      return `<section class="playbook-section retrospective-bookings-section"><div class="feedback-loading"><span>…</span><div><strong>Loading current ticket bookings</strong><small>Checking the linked Intelligent Golf planner event.</small></div></div></section>`;
+    }
+    if (data.error) {
+      return `<section class="playbook-section retrospective-bookings-section"><div class="feedback-error"><div><strong>Ticket bookings are unavailable</strong><p>${escapeHtml(data.error)}</p></div><button class="button button-secondary" type="button" data-action="refresh-ticket-bookings">Try again</button></div></section>`;
+    }
+
+    const bookings = data.bookings ?? [];
+    const ticketCount = Math.max(0, Number(data.ticketCount) || 0);
+    const bookingCount = Math.max(0, Number(data.bookingCount) || bookings.length);
+    const memberBookingCount = Math.max(0, Number(data.memberBookingCount) || 0);
+    const visitorBookingCount = Math.max(0, bookingCount - memberBookingCount);
+    const loadedAt = data.loadedAt ? new Date(data.loadedAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '';
+    return `<section class="playbook-section retrospective-bookings-section">
+      <header class="retrospective-section-heading booking-section-heading">
+        <div><span class="eyebrow">Attendance evidence</span><h3>Intelligent Golf ticket bookings</h3><p class="booking-section-note">These are current bookings, not a record of who physically attended.</p></div>
+        <div class="booking-heading-actions">
+          <div class="feedback-response-total"><strong>${ticketCount}</strong><span>ticket${ticketCount === 1 ? '' : 's'} booked</span></div>
+          <button class="button button-secondary" type="button" data-action="refresh-ticket-bookings">Refresh</button>
+        </div>
+      </header>
+      <div class="booking-summary-grid">
+        <div><span>Booking records</span><strong>${bookingCount}</strong></div>
+        <div><span>Member bookings</span><strong>${memberBookingCount}</strong></div>
+        <div><span>Visitor bookings</span><strong>${visitorBookingCount}</strong></div>
+        <div><span>Email-ready member bookings</span><strong>${Math.max(0, Number(data.memberBookingsWithEmailCount) || 0)}</strong></div>
+      </div>
+      ${bookings.length ? `<details class="ticket-booking-details" ${bookings.length <= 8 ? 'open' : ''}>
+        <summary><span>View who booked</span><small>${bookingCount} booking record${bookingCount === 1 ? '' : 's'}${loadedAt ? ` · checked ${escapeHtml(loadedAt)}` : ''}</small></summary>
+        <div class="ticket-booking-list">${bookings.map(renderTicketBookingRow).join('')}</div>
+      </details>` : `<div class="feedback-empty booking-empty"><span>0</span><div><strong>No tickets are currently booked</strong><p>Refresh this section after bookings have opened to retrieve the latest Intelligent Golf records.</p></div></div>`}
+    </section>`;
+  }
+
+  function renderTicketBookingRow(booking) {
+    const isMember = booking?.isMember === true;
+    const matchedMember = booking?.memberMatched === true && Number(booking?.bookerMemberNumber) > 0;
+    const memberDetail = matchedMember
+      ? `Member ${Number(booking.bookerMemberNumber)}${booking.membershipCategory ? ` · ${booking.membershipCategory}` : ''}`
+      : isMember ? 'Member booking · member record not matched' : 'Visitor booking';
+    const holders = Array.isArray(booking?.ticketHolderNames)
+      ? booking.ticketHolderNames.map(name => String(name ?? '').trim()).filter(Boolean)
+      : [];
+    const ticketCount = Math.max(0, Number(booking?.ticketCount) || 0);
+    return `<article class="ticket-booking-row">
+      <div class="ticket-booker"><span class="booking-member-status ${isMember ? 'member' : 'visitor'}">${isMember ? 'Member' : 'Visitor'}</span><strong>${escapeHtml(booking?.bookerName || 'Unknown booker')}</strong><small>${escapeHtml(memberDetail)}</small></div>
+      <div><span>Tickets</span><strong>${ticketCount}</strong><small>${escapeHtml(holders.length ? holders.join(', ') : 'No ticket-holder names recorded')}</small></div>
+      <div><span>Booking</span><strong>${escapeHtml(booking?.bookingReference || 'No reference')}</strong><small>${escapeHtml(booking?.bookedAt || 'Booking time not recorded')}</small></div>
+      <div><span>Payment</span><strong>${escapeHtml(booking?.price || 'Not recorded')}</strong><small>${escapeHtml(booking?.paymentStatus || 'Payment status not recorded')}</small></div>
+    </article>`;
   }
 
   async function ensureFeedbackLoaded(eventId, force = false) {
@@ -10836,6 +10931,22 @@
         feedbackCache.delete(event.id);
         ensureFeedbackLoaded(event.id, true);
         render();
+      });
+    });
+
+    document.querySelectorAll('[data-action="refresh-ticket-bookings"]').forEach(element => {
+      element.addEventListener('click', async () => {
+        const event = getActiveEvent();
+        if (!event) return;
+        const originalText = element.textContent;
+        element.disabled = true;
+        element.textContent = 'Refreshing…';
+        ticketBookingCache.delete(event.id);
+        await ensureTicketBookingsLoaded(event.id, true);
+        if (element.isConnected) {
+          element.disabled = false;
+          element.textContent = originalText;
+        }
       });
     });
 
