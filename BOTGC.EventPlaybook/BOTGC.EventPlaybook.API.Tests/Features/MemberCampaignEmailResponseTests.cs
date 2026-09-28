@@ -71,12 +71,18 @@ public sealed class MemberCampaignEmailResponseTests
     }
 
     [Fact]
-    public void EnsureSendConfirmed_RequiresAnExplicitSuccessAction()
+    public void EnsureSendConfirmed_AcceptsSuccessfulUiUpdateAction()
     {
         const string response = """{"actions":[{"type":"closedialog","id":"confirm"}]}""";
 
+        IntelligentGolfBulkEmailResponse.EnsureSendConfirmed(response);
+    }
+
+    [Fact]
+    public void EnsureSendConfirmed_RejectsAnEmptyActionResponse()
+    {
         Assert.Throws<IntelligentGolfEmailDeliveryException>(() =>
-            IntelligentGolfBulkEmailResponse.EnsureSendConfirmed(response));
+            IntelligentGolfBulkEmailResponse.EnsureSendConfirmed("{\"actions\":[]}"));
     }
 
     [Theory]

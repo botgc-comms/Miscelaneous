@@ -250,17 +250,16 @@ internal static class IntelligentGolfBulkEmailResponse
 
         using (json)
         {
-            foreach (var action in EnumerateActions(json.RootElement))
+            // `confirmsend` reports completion through Intelligent Golf's normal
+            // UI action list. Depending on the page version this may redirect,
+            // display a message, close the modal or replace part of the page. A
+            // non-empty action list is therefore the success contract once the
+            // failure actions above have been rejected.
+            if (json.RootElement.TryGetProperty("actions", out var actions) &&
+                actions.ValueKind == JsonValueKind.Array &&
+                actions.GetArrayLength() > 0)
             {
-                var type = TryGetString(action, "type", out var actionType) ? actionType : string.Empty;
-                var message = ReadActionMessage(action);
-                if (type.Equals("redirect", StringComparison.OrdinalIgnoreCase) ||
-                    type.Equals("reload", StringComparison.OrdinalIgnoreCase) ||
-                    message.Contains("sent", StringComparison.OrdinalIgnoreCase) ||
-                    message.Contains("queued", StringComparison.OrdinalIgnoreCase))
-                {
-                    return;
-                }
+                return;
             }
         }
 
