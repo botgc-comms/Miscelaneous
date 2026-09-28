@@ -1,4 +1,5 @@
 using BOTGC.EventPlaybook.API.Features;
+using BOTGC.EventPlaybook.API.Features.MemberEmail;
 using BOTGC.EventPlaybook.API.Infrastructure.IntelligentGolf;
 using Microsoft.AspNetCore.Diagnostics;
 
@@ -20,6 +21,8 @@ public static class ApiExceptionResponse
                 (StatusCodes.Status409Conflict, matchRequired.Message),
             IntelligentGolfEmailSenderNotConfiguredException sender =>
                 (StatusCodes.Status501NotImplemented, sender.Message),
+            IntelligentGolfEmailDeliveryException delivery =>
+                (StatusCodes.Status502BadGateway, delivery.Message),
             IntelligentGolfFeatureNotConfiguredException feature =>
                 (StatusCodes.Status501NotImplemented, feature.Message),
             IntelligentGolfAuthenticationException =>

@@ -108,16 +108,21 @@ public sealed class SendMemberCampaignEmailHandler(
             settings.Endpoints.BulkEmailPreparePath,
             fields,
             cancellationToken);
-        IntelligentGolfBulkEmailResponse.ThrowIfFailure(prepared.Body, "prepare");
-        var draftId = IntelligentGolfBulkEmailResponse.ExtractDraftId(prepared.Body)
-            ?? throw new InvalidOperationException(
-                "Intelligent Golf did not return a draft ID while preparing the member email. No member email was sent.");
+        IntelligentGolfBulkEmailResponse.EnsureSendPrepared(prepared.Body);
+        var draftId = IntelligentGolfBulkEmailResponse.ExtractDraftId(prepared.Body);
 
-        fields = fields
-            .Select(field => field.Key.Equals("id", StringComparison.OrdinalIgnoreCase)
-                ? new KeyValuePair<string, string>(field.Key, draftId)
-                : field)
-            .ToList();
+        // A newly composed Intelligent Golf email legitimately has no draft ID.
+        // The browser posts the same blank `id` to `confirmsend`; only an email
+        // that was saved as a draft first receives a numeric value. Preserve the
+        // blank value unless the prepare response explicitly supplies an ID.
+        if (!string.IsNullOrWhiteSpace(draftId))
+        {
+            fields = fields
+                .Select(field => field.Key.Equals("id", StringComparison.OrdinalIgnoreCase)
+                    ? new KeyValuePair<string, string>(field.Key, draftId)
+                    : field)
+                .ToList();
+        }
 
         var delivery = await transport.PostFormResponseAsync(
             settings.Endpoints.BulkEmailSendPath,
@@ -126,12 +131,12 @@ public sealed class SendMemberCampaignEmailHandler(
         IntelligentGolfBulkEmailResponse.EnsureSendConfirmed(delivery.Body);
         logger.LogInformation(
             "Submitted member campaign email draft {DraftId} to {RecipientCount} selected Intelligent Golf members.",
-            draftId,
+            string.IsNullOrWhiteSpace(draftId) ? "new" : draftId,
             requestedMemberNumbers.Length);
         return new MemberCampaignEmailResult(
             requestedMemberNumbers.Length,
             requestedMemberNumbers.Length,
-            draftId,
+            draftId ?? string.Empty,
             requestedMemberNumbers);
     }
 
@@ -148,7 +153,31 @@ public sealed class SendMemberCampaignEmailHandler(
 internal static class IntelligentGolfBulkEmailResponse
 {
     private static readonly string[] FailureTerms =
-        ["error", "failed", "could not", "cannot", "no recipient", "required"];
+        ["error", "failed", "could not", "cannot", "no recipient"];
+
+    public static void EnsureSendPrepared(string raw)
+    {
+        ThrowIfFailure(raw, "prepare");
+        if (!TryParseJson(raw, out var json))
+            throw new IntelligentGolfEmailDeliveryException(
+                "Intelligent Golf did not return the send-confirmation step. No member email was sent.");
+
+        using (json)
+        {
+            foreach (var action in EnumerateActions(json.RootElement))
+            {
+                var type = TryGetString(action, "type", out var actionType) ? actionType : string.Empty;
+                if (type.Equals("opendialog", StringComparison.OrdinalIgnoreCase) ||
+                    type.Equals("setvalue", StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+            }
+        }
+
+        throw new IntelligentGolfEmailDeliveryException(
+            "Intelligent Golf did not return the send-confirmation step. No member email was sent.");
+    }
 
     public static string? ExtractDraftId(string raw)
     {
@@ -186,7 +215,7 @@ internal static class IntelligentGolfBulkEmailResponse
     public static void ThrowIfFailure(string raw, string stage)
     {
         if (string.IsNullOrWhiteSpace(raw))
-            throw new InvalidOperationException($"Intelligent Golf returned an empty response while attempting to {stage} the member email.");
+            throw new IntelligentGolfEmailDeliveryException($"Intelligent Golf returned an empty response while attempting to {stage} the member email.");
 
         if (!TryParseJson(raw, out var json)) return;
         using (json)
@@ -195,11 +224,13 @@ internal static class IntelligentGolfBulkEmailResponse
             {
                 var type = TryGetString(action, "type", out var actionType) ? actionType : string.Empty;
                 var message = ReadActionMessage(action);
-                if (type.Equals("showerrors", StringComparison.OrdinalIgnoreCase) ||
-                    type.Contains("error", StringComparison.OrdinalIgnoreCase) ||
-                    FailureTerms.Any(term => message.Contains(term, StringComparison.OrdinalIgnoreCase)))
+                var isErrorAction = type.Equals("showerrors", StringComparison.OrdinalIgnoreCase) ||
+                                    type.Contains("error", StringComparison.OrdinalIgnoreCase);
+                var isFailureMessage = type.Equals("message", StringComparison.OrdinalIgnoreCase) &&
+                                       FailureTerms.Any(term => message.Contains(term, StringComparison.OrdinalIgnoreCase));
+                if (isErrorAction || isFailureMessage)
                 {
-                    throw new InvalidOperationException(
+                    throw new IntelligentGolfEmailDeliveryException(
                         string.IsNullOrWhiteSpace(message)
                             ? $"Intelligent Golf rejected the request while attempting to {stage} the member email."
                             : $"Intelligent Golf rejected the member email: {message}");
@@ -212,7 +243,7 @@ internal static class IntelligentGolfBulkEmailResponse
     {
         ThrowIfFailure(raw, "send");
         if (!TryParseJson(raw, out var json))
-            throw new InvalidOperationException("Intelligent Golf did not confirm that the member email was sent.");
+            throw new IntelligentGolfEmailDeliveryException("Intelligent Golf did not confirm that the member email was sent.");
 
         using (json)
         {
@@ -230,7 +261,7 @@ internal static class IntelligentGolfBulkEmailResponse
             }
         }
 
-        throw new InvalidOperationException("Intelligent Golf did not confirm that the member email was sent.");
+        throw new IntelligentGolfEmailDeliveryException("Intelligent Golf did not confirm that the member email was sent.");
     }
 
     private static IEnumerable<string> EnumerateFragments(string raw)
@@ -270,6 +301,19 @@ internal static class IntelligentGolfBulkEmailResponse
                 if (!string.IsNullOrWhiteSpace(decoded)) values.Add(decoded);
             }
         }
+
+        if (action.TryGetProperty("errors", out var errors) && errors.ValueKind == JsonValueKind.Array)
+        {
+            foreach (var error in errors.EnumerateArray())
+            {
+                if (error.ValueKind != JsonValueKind.Object) continue;
+                foreach (var property in new[] { "message", "detail", "text", "error" })
+                {
+                    if (TryGetString(error, property, out var value) && !string.IsNullOrWhiteSpace(value))
+                        values.Add(System.Net.WebUtility.HtmlDecode(value).Trim());
+                }
+            }
+        }
         return string.Join(" ", values);
     }
 
@@ -295,6 +339,9 @@ internal static class IntelligentGolfBulkEmailResponse
         }
     }
 }
+
+public sealed class IntelligentGolfEmailDeliveryException(string message)
+    : InvalidOperationException(message);
 
 public static class MemberCampaignEmailEndpoints
 {
