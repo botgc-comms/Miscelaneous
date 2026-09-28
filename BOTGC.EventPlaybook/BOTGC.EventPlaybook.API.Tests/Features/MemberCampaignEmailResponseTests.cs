@@ -41,6 +41,21 @@ public sealed class MemberCampaignEmailResponseTests
         Assert.Null(IntelligentGolfBulkEmailResponse.ExtractDraftId(response));
     }
 
+    [Theory]
+    [InlineData("{\"actions\":[{\"type\":\"closedialog\",\"id\":\"progress\"}]}")]
+    [InlineData("{\"actions\":[{\"type\":\"replacecontent\",\"selector\":\"#status\",\"html\":\"Ready\"}]}")]
+    public void EnsureSendPrepared_AcceptsAnyNonErrorActionResponse(string response)
+    {
+        IntelligentGolfBulkEmailResponse.EnsureSendPrepared(response);
+    }
+
+    [Fact]
+    public void EnsureSendPrepared_RejectsAnEmptyActionResponse()
+    {
+        Assert.Throws<IntelligentGolfEmailDeliveryException>(() =>
+            IntelligentGolfBulkEmailResponse.EnsureSendPrepared("{\"actions\":[]}"));
+    }
+
     [Fact]
     public void ThrowIfFailure_RejectsHttp200ValidationActions()
     {

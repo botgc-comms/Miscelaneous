@@ -164,14 +164,17 @@ internal static class IntelligentGolfBulkEmailResponse
 
         using (json)
         {
-            foreach (var action in EnumerateActions(json.RootElement))
+            // Intelligent Golf has used several different action types for this
+            // intermediate response. It may open a dialog, update the existing
+            // form or simply close its progress state. The important contract is
+            // that it returned a non-empty action list without a validation/error
+            // action. The following `confirmsend` response remains the authoritative
+            // proof that delivery was accepted.
+            if (json.RootElement.TryGetProperty("actions", out var actions) &&
+                actions.ValueKind == JsonValueKind.Array &&
+                actions.GetArrayLength() > 0)
             {
-                var type = TryGetString(action, "type", out var actionType) ? actionType : string.Empty;
-                if (type.Equals("opendialog", StringComparison.OrdinalIgnoreCase) ||
-                    type.Equals("setvalue", StringComparison.OrdinalIgnoreCase))
-                {
-                    return;
-                }
+                return;
             }
         }
 
