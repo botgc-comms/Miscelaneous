@@ -232,6 +232,8 @@
   let taskBoardDeepLinkTarget = null;
   const feedbackCache = new Map();
   const feedbackRequests = new Set();
+  const memberFeedbackSummaryRequests = new Map();
+  const memberFeedbackSummaryFailedSignatures = new Map();
   const ticketBookingCache = new Map();
   const ticketBookingRequests = new Set();
   const briefingGenerationRequests = new Map();
@@ -8143,7 +8145,6 @@
       ${isRepeatingSeries(event) ? `<aside class="series-retrospective-summary"><div><span class="eyebrow">Series review</span><h3>Review patterns across the runnings</h3><p>This is the periodic retrospective for the shared format. Individual dates retain their own attendee feedback and operational retrospective.</p></div><strong>${finalisedOccurrenceCount}<small>of ${seriesChildren.length} occurrence retrospectives finalised</small></strong></aside>` : ''}
       ${renderTicketBookings(event)}
       ${renderAttendeeFeedback(event)}
-      ${renderMemberFeedbackSummary(event)}
       <section class="playbook-section retrospective-section agile-retrospective-section">
         <header class="retrospective-section-heading"><div><span class="eyebrow">Delivery team retrospective</span><h3>How did the event feel?</h3></div><p>Choose the face that best represents the team's overall feeling, then use the three agile prompts to capture what should be repeated or changed.</p></header>
         ${renderRetrospectiveSentiment(event)}
@@ -8184,16 +8185,65 @@
     const responseCount = data?.responses?.length ?? 0;
     const summary = event.retrospective?.memberFeedbackSummary;
     const summarisedResponseCount = Number(event.retrospective?.memberFeedbackSummaryResponseCount ?? 0);
-    const hasNewResponses = Boolean(summary) && responseCount > summarisedResponseCount;
-    const canSummarise = responseCount > 0 && !data?.error;
-    return `<section class="playbook-section member-feedback-summary-section">
-      <header class="retrospective-section-heading"><div><span class="eyebrow">AI member-feedback summary</span><h3>What members told us</h3></div><p>The summary keeps recurring themes and useful minority views visible without attributing comments to individuals.</p></header>
+    const hasNewResponses = Boolean(summary) && memberFeedbackSummaryNeedsRefresh(event, data);
+    const canSummarise = responseCount > 0 && Boolean(data?.campaign) && !data?.error;
+    const isUpdating = memberFeedbackSummaryRequests.has(event.id);
+    return `<section class="member-feedback-summary-section" aria-labelledby="member-feedback-summary-title">
+      <header class="member-feedback-summary-heading"><div><span class="eyebrow">AI member-feedback summary</span><h4 id="member-feedback-summary-title">What members told us</h4></div><p>Recurring themes and useful minority views, without identifying individual respondents.</p></header>
       <div class="member-feedback-summary ${summary ? 'has-summary' : ''}">
         <div class="member-feedback-summary-icon">✦</div>
-        <div><strong>${hasNewResponses ? `${responseCount - summarisedResponseCount} new response${responseCount - summarisedResponseCount === 1 ? '' : 's'} since the summary` : summary ? `${responseCount} response${responseCount === 1 ? '' : 's'} summarised` : canSummarise ? `${responseCount} response${responseCount === 1 ? '' : 's'} ready to summarise` : 'Waiting for member feedback'}</strong><p>${escapeHtml(summary || (canSummarise ? 'Generate a concise AI summary when the feedback window has closed, or refresh it whenever more responses arrive.' : 'Once responses arrive, their ratings and comments can be condensed into a neutral summary here.'))}</p>${event.retrospective?.memberFeedbackSummaryAt ? `<small>Last generated ${escapeHtml(new Date(event.retrospective.memberFeedbackSummaryAt).toLocaleString('en-GB'))}</small>` : ''}</div>
-        ${canSummarise ? `<button class="button button-secondary" type="button" data-action="summarise-member-feedback">${summary ? 'Refresh summary' : 'Summarise member feedback'}</button>` : ''}
+        <div><strong>${isUpdating ? 'Updating the member-feedback summary…' : hasNewResponses ? 'New responses are waiting to be included' : summary ? `${responseCount} response${responseCount === 1 ? '' : 's'} summarised` : canSummarise ? `${responseCount} response${responseCount === 1 ? '' : 's'} ready to summarise` : 'Waiting for member feedback'}</strong><p>${escapeHtml(summary || (canSummarise ? 'The response summary will be generated automatically.' : 'Once responses arrive, their ratings and comments will be condensed into a neutral summary here.'))}</p>${event.retrospective?.memberFeedbackSummaryAt ? `<small>Last generated ${escapeHtml(new Date(event.retrospective.memberFeedbackSummaryAt).toLocaleString('en-GB'))}</small>` : ''}</div>
+        ${canSummarise ? `<button class="button button-secondary" type="button" data-action="summarise-member-feedback" ${isUpdating ? 'disabled' : ''}>${isUpdating ? 'Updating…' : summary ? 'Refresh summary' : 'Summarise now'}</button>` : ''}
       </div>
     </section>`;
+  }
+
+  function memberFeedbackSummarySignature(data) {
+    const responses = data?.responses ?? [];
+    const latestResponseAt = responses.reduce((latest, response) => {
+      const timestamp = Date.parse(response?.submittedAtUtc ?? '');
+      return Number.isFinite(timestamp) ? Math.max(latest, timestamp) : latest;
+    }, 0);
+    return `${responses.length}:${latestResponseAt}`;
+  }
+
+  function memberFeedbackSummaryNeedsRefresh(event, data = feedbackCache.get(event.id)) {
+    const responses = data?.responses ?? [];
+    if (!responses.length || !data?.campaign || data?.error) return false;
+    const summary = String(event.retrospective?.memberFeedbackSummary ?? '').trim();
+    const summarisedResponseCount = Number(event.retrospective?.memberFeedbackSummaryResponseCount ?? 0);
+    if (!summary || summarisedResponseCount !== responses.length) return true;
+    const summaryAt = Date.parse(event.retrospective?.memberFeedbackSummaryAt ?? '');
+    if (!Number.isFinite(summaryAt)) return true;
+    return responses.some(response => {
+      const submittedAt = Date.parse(response?.submittedAtUtc ?? '');
+      return Number.isFinite(submittedAt) && submittedAt > summaryAt;
+    });
+  }
+
+  async function ensureMemberFeedbackSummary(event) {
+    const data = feedbackCache.get(event.id);
+    const signature = memberFeedbackSummarySignature(data);
+    if (!memberFeedbackSummaryNeedsRefresh(event, data)
+      || memberFeedbackSummaryRequests.has(event.id)
+      || memberFeedbackSummaryFailedSignatures.get(event.id) === signature) return;
+
+    const request = runRetrospectiveAnalysis(event, null, {
+      finalise: false,
+      renderAfter: true,
+      scrollAfter: false,
+      silent: true
+    });
+    memberFeedbackSummaryRequests.set(event.id, request);
+    render();
+    try {
+      const succeeded = await request;
+      if (succeeded) memberFeedbackSummaryFailedSignatures.delete(event.id);
+      else memberFeedbackSummaryFailedSignatures.set(event.id, signature);
+    } finally {
+      memberFeedbackSummaryRequests.delete(event.id);
+      if (state.activeView === 'retrospective' && state.activeEventId === event.id) render();
+    }
   }
 
   function renderRetrospectiveAnalysis(event) {
@@ -8481,12 +8531,12 @@
     if (narrative) setRetrospectiveContentValue(event, 'aiNarrative', narrative.value);
   }
 
-  async function runRetrospectiveAnalysis(event, button, { finalise = false, renderAfter = true } = {}) {
+  async function runRetrospectiveAnalysis(event, button, { finalise = false, renderAfter = true, scrollAfter = true, silent = false } = {}) {
     captureRetrospectiveInputs(event);
     const retrospectiveText = retrospectiveTextForAnalysis(event);
     const customerFeedbackText = memberFeedbackTextForAnalysis(event);
     if (!retrospectiveText && !customerFeedbackText) {
-      alert(finalise
+      if (!silent) alert(finalise
         ? 'Record how the event felt, add something to the three retrospective prompts, or collect member feedback before finalising it.'
         : 'There is no member feedback to summarise yet.');
       return false;
@@ -8554,11 +8604,11 @@
       saveState();
       if (renderAfter) {
         render();
-        requestAnimationFrame(() => document.querySelector(finalise ? '.retrospective-analysis-result' : '.member-feedback-summary-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+        if (scrollAfter) requestAnimationFrame(() => document.querySelector(finalise ? '.retrospective-analysis-result' : '.member-feedback-summary-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
       }
       return true;
     } catch (error) {
-      alert(error.message || 'The retrospective could not be analysed.');
+      if (!silent) alert(error.message || 'The retrospective could not be analysed.');
       if (button) {
         button.disabled = false;
         button.textContent = originalText;
@@ -8666,7 +8716,11 @@
       feedbackCache.set(eventId, { campaign: null, responses: [], error: error.message || 'Feedback could not be loaded.' });
     } finally {
       feedbackRequests.delete(eventId);
-      if (state.activeView === 'retrospective' && state.activeEventId === eventId) render();
+      if (state.activeView === 'retrospective' && state.activeEventId === eventId) {
+        render();
+        const event = state.events.find(candidate => candidate.id === eventId);
+        if (event) void ensureMemberFeedbackSummary(event);
+      }
     }
   }
 
@@ -8710,6 +8764,7 @@
             <label class="feedback-open-toggle"><input id="feedbackIsOpen" type="checkbox" ${campaign?.isOpen !== false ? 'checked' : ''}><span>Accept responses</span></label>
           </div>
           <button class="button button-primary" type="submit">${campaign ? 'Save feedback form' : 'Create link and QR code'}</button>
+          ${renderMemberFeedbackSummary(event)}
         </form>
         ${campaign ? `<aside class="feedback-share-card">
           <img src="/api/feedback/public/${encodeURIComponent(campaign.publicToken)}/qr.svg" alt="QR code linking to feedback for ${escapeHtml(event.name)}">

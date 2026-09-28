@@ -5252,8 +5252,9 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(198,161,91,.22)!i
 .carry-forward-builder-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 18px 0; }
 .feedback-campaign-fields label,
 .carry-forward-builder-fields label { display: grid; gap: 6px; color: var(--navy); font-size: .68rem; font-weight: 850; }
+.carry-forward-builder-fields > label { align-content: start; align-self: start; }
 .feedback-campaign-fields label.wide,
-.carry-forward-builder-fields label.wide { grid-column: 1 / -1; }
+.carry-forward-builder-fields label.wide { grid-column: 1 / -1; align-self: stretch; }
 .feedback-campaign-fields input,
 .carry-forward-builder-fields input,
 .carry-forward-builder-fields select,
@@ -5801,8 +5802,12 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(198,161,91,.22)!i
 .retrospective-finalised-badge { display: grid; min-width: 170px; gap: 4px; padding: 13px 16px; border: 1px solid #bcd9cd; border-radius: 11px; background: #eef8f3; text-align: right; }
 .retrospective-finalised-badge span { color: #25654f; font-size: .72rem; font-weight: 900; text-transform: uppercase; letter-spacing: .05em; }
 .retrospective-finalised-badge small { color: var(--muted); font-size: .62rem; }
-.member-feedback-summary-section,.agile-retrospective-section { margin-top: 18px; }
-.member-feedback-summary { display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: 14px; margin: 17px; padding: 17px; border: 1px solid #d5e1de; border-radius: 13px; background: linear-gradient(110deg,#f7faf9,#fff); }
+.agile-retrospective-section { margin-top: 18px; }
+.member-feedback-summary-section { display: grid; gap: 11px; margin-top: 18px; padding-top: 18px; border-top: 1px solid #d8e3e0; }
+.member-feedback-summary-heading { display: grid; grid-template-columns: minmax(0,1fr) minmax(220px,.75fr); align-items: end; gap: 16px; }
+.member-feedback-summary-heading h4 { margin: 3px 0 0; color: var(--navy); font: 700 1.05rem/1.2 Georgia,"Times New Roman",serif; }
+.member-feedback-summary-heading p { margin: 0; color: var(--muted); font-size: .68rem; line-height: 1.45; text-align: right; }
+.member-feedback-summary { display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: 14px; margin: 0; padding: 15px; border: 1px solid #d5e1de; border-radius: 13px; background: linear-gradient(110deg,#f7faf9,#fff); }
 .member-feedback-summary.has-summary { border-color: #bcd9cd; background: linear-gradient(110deg,#edf7f2,#fff); }
 .member-feedback-summary-icon { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 50%; color: #fff; background: var(--green); font-size: 1.05rem; }
 .member-feedback-summary>div:nth-child(2) { display: grid; gap: 4px; }
@@ -5853,6 +5858,8 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(198,161,91,.22)!i
   .sentiment-choice small { font-size: .55rem; }
   .member-feedback-summary { grid-template-columns: auto 1fr; }
   .member-feedback-summary .button { grid-column: 1/-1; width: 100%; }
+  .member-feedback-summary-heading { grid-template-columns: 1fr; }
+  .member-feedback-summary-heading p { text-align: left; }
   .retrospective-outcome-details>summary { grid-template-columns: 1fr; }
 }
 
