@@ -23,9 +23,6 @@ public sealed class IntelligentGolfEndpointOptions
     public string ActiveCompetitionsPath { get; init; } = string.Empty;
     public string UpcomingCompetitionsPath { get; init; } = string.Empty;
     public string SendEmailPathTemplate { get; init; } = string.Empty;
-    public string BulkEmailComposerPath { get; init; } = string.Empty;
-    public string BulkEmailPreparePath { get; init; } = string.Empty;
-    public string BulkEmailSendPath { get; init; } = string.Empty;
     public string DiaryReadPathTemplate { get; init; } = string.Empty;
     public string DiaryUpdatePathTemplate { get; init; } = string.Empty;
     public string PlannerReadPathTemplate { get; init; } = string.Empty;

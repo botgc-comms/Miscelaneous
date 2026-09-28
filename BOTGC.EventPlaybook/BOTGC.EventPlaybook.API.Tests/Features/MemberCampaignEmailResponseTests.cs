@@ -1,116 +1,50 @@
 using BOTGC.EventPlaybook.API.Features.MemberEmail;
-using BOTGC.EventPlaybook.API.Infrastructure;
-using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using System.Text.Json;
+using BOTGC.EventPlaybook.API.Features.Members;
 using Xunit;
 
 namespace BOTGC.EventPlaybook.API.Tests.Features;
 
-public sealed class MemberCampaignEmailResponseTests
+public sealed class MemberCampaignEmailRecipientsTests
 {
     [Fact]
-    public void ExtractDraftId_IgnoresUnrelatedIdInEmailHtml()
+    public void Resolve_UsesMemberEmailAddressesAndDeduplicatesThem()
     {
-        const string response = """
-            {"actions":[{"type":"opendialog","html":"<p><a href='https://example.test/survey?id=2809'>Feedback</a></p>"}]}
-            """;
+        var members = new Dictionary<int, MemberSummary>
+        {
+            [3104] = Member(3104, " simon@example.test "),
+            [3105] = Member(3105, "SIMON@example.test")
+        };
 
-        Assert.Null(IntelligentGolfBulkEmailResponse.ExtractDraftId(response));
+        var recipients = MemberCampaignEmailRecipients.Resolve([3104, 3105], members);
+
+        Assert.Equal(["simon@example.test"], recipients);
     }
 
     [Fact]
-    public void ExtractDraftId_ReadsOnlyTheDraftIdFormField()
+    public void Resolve_RejectsAMemberWithoutAnEmailAddress()
     {
-        const string response = """
-            {"actions":[{"type":"opendialog","html":"<form><input name='id' value='1145904'><a href='?id=2809'>Feedback</a></form>"}]}
-            """;
+        var members = new Dictionary<int, MemberSummary>
+        {
+            [3104] = Member(3104, null)
+        };
 
-        Assert.Equal("1145904", IntelligentGolfBulkEmailResponse.ExtractDraftId(response));
+        var exception = Assert.Throws<InvalidOperationException>(() =>
+            MemberCampaignEmailRecipients.Resolve([3104], members));
+
+        Assert.Contains("did not return an email address", exception.Message, StringComparison.OrdinalIgnoreCase);
     }
 
-    [Fact]
-    public void EnsureSendPrepared_AcceptsNewEmailWithoutDraftId()
-    {
-        const string response = """
-            {"actions":[{"type":"opendialog","id":"confirm-send","html":"<p>Send this email now?</p>"}]}
-            """;
-
-        IntelligentGolfBulkEmailResponse.EnsureSendPrepared(response);
-        Assert.Null(IntelligentGolfBulkEmailResponse.ExtractDraftId(response));
-    }
-
-    [Theory]
-    [InlineData("{\"actions\":[{\"type\":\"closedialog\",\"id\":\"progress\"}]}")]
-    [InlineData("{\"actions\":[{\"type\":\"replacecontent\",\"selector\":\"#status\",\"html\":\"Ready\"}]}")]
-    public void EnsureSendPrepared_AcceptsAnyNonErrorActionResponse(string response)
-    {
-        IntelligentGolfBulkEmailResponse.EnsureSendPrepared(response);
-    }
-
-    [Fact]
-    public void EnsureSendPrepared_RejectsAnEmptyActionResponse()
-    {
-        Assert.Throws<IntelligentGolfEmailDeliveryException>(() =>
-            IntelligentGolfBulkEmailResponse.EnsureSendPrepared("{\"actions\":[]}"));
-    }
-
-    [Fact]
-    public void ThrowIfFailure_RejectsHttp200ValidationActions()
-    {
-        const string response = """
-            {"actions":[{"type":"showerrors","errors":[{"selector":"#id","text":"The draft could not be found"}]}]}
-            """;
-
-        var exception = Assert.Throws<IntelligentGolfEmailDeliveryException>(() =>
-            IntelligentGolfBulkEmailResponse.ThrowIfFailure(response, "send"));
-
-        Assert.Contains("rejected", exception.Message, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("draft could not be found", exception.Message, StringComparison.OrdinalIgnoreCase);
-    }
-
-    [Fact]
-    public void EnsureSendConfirmed_AcceptsSuccessfulUiUpdateAction()
-    {
-        const string response = """{"actions":[{"type":"closedialog","id":"confirm"}]}""";
-
-        IntelligentGolfBulkEmailResponse.EnsureSendConfirmed(response);
-    }
-
-    [Fact]
-    public void EnsureSendConfirmed_RejectsAnEmptyActionResponse()
-    {
-        Assert.Throws<IntelligentGolfEmailDeliveryException>(() =>
-            IntelligentGolfBulkEmailResponse.EnsureSendConfirmed("{\"actions\":[]}"));
-    }
-
-    [Theory]
-    [InlineData("{\"actions\":[{\"type\":\"redirect\",\"data\":\"/membership_communications3.php?tab=sentemails\"}]}")]
-    [InlineData("{\"actions\":[{\"type\":\"message\",\"data\":\"Email sent successfully\"}]}")]
-    public void EnsureSendConfirmed_AcceptsExplicitSuccess(string response)
-    {
-        IntelligentGolfBulkEmailResponse.EnsureSendConfirmed(response);
-    }
-
-    [Fact]
-    public async Task DeliveryFailure_IsReturnedAsUsefulBadGatewayProblem()
-    {
-        var exception = new IntelligentGolfEmailDeliveryException(
-            "Intelligent Golf did not return the send-confirmation step. No member email was sent.");
-        await using var services = new ServiceCollection()
-            .AddLogging()
-            .AddProblemDetails()
-            .BuildServiceProvider();
-        var context = new DefaultHttpContext { RequestServices = services };
-        context.Response.Body = new MemoryStream();
-        context.Features.Set<IExceptionHandlerFeature>(new ExceptionHandlerFeature { Error = exception });
-
-        await ApiExceptionResponse.WriteAsync(context);
-
-        Assert.Equal(StatusCodes.Status502BadGateway, context.Response.StatusCode);
-        context.Response.Body.Position = 0;
-        using var problem = await JsonDocument.ParseAsync(context.Response.Body);
-        Assert.Equal(exception.Message, problem.RootElement.GetProperty("title").GetString());
-    }
+    private static MemberSummary Member(int memberNumber, string? email) =>
+        new(
+            memberNumber,
+            IntelligentGolfUserId: 83642,
+            Title: null,
+            FirstName: "Simon",
+            LastName: "Parsons",
+            FullName: "Simon Parsons",
+            Email: email,
+            MembershipCategory: "Member",
+            MembershipStatus: "Active",
+            LeaveDate: null,
+            IsActive: true);
 }
