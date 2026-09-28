@@ -85,7 +85,9 @@ public sealed class PlaybookEventChangePipeline : BackgroundService, IPlaybookEv
         foreach (var item in events.EnumerateArray())
         {
             if (string.Equals(ReadNestedString(item, "lifecycle", "status"), "idea", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(ReadString(item, "recordType"), "idea", StringComparison.OrdinalIgnoreCase))
+                string.Equals(ReadString(item, "recordType"), "idea", StringComparison.OrdinalIgnoreCase) ||
+                (ReadNestedBoolean(item, "recurrence", "enabled") == true &&
+                 string.IsNullOrWhiteSpace(ReadString(item, "seriesParentId"))))
                 continue;
 
             var eventId = ReadString(item, "id");
@@ -253,5 +255,18 @@ public sealed class PlaybookEventChangePipeline : BackgroundService, IPlaybookEv
         if (!element.TryGetProperty(objectName, out var nested) || nested.ValueKind != JsonValueKind.Object)
             return null;
         return ReadString(nested, propertyName);
+    }
+
+    private static bool? ReadNestedBoolean(JsonElement element, string objectName, string propertyName)
+    {
+        if (!element.TryGetProperty(objectName, out var nested) || nested.ValueKind != JsonValueKind.Object ||
+            !nested.TryGetProperty(propertyName, out var value))
+            return null;
+        return value.ValueKind switch
+        {
+            JsonValueKind.True => true,
+            JsonValueKind.False => false,
+            _ => null
+        };
     }
 }

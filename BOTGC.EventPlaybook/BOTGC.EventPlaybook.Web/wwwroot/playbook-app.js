@@ -54,6 +54,14 @@
     idea: { label: 'Idea for consideration', summary: 'Capture a possible event without starting operational planning or reminders.' }
   });
 
+  const WEEKDAY_LABELS = Object.freeze(['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']);
+  const SERIES_OCCURRENCE_STATUSES = Object.freeze({
+    draft: 'Not published',
+    published: 'Published',
+    skipped: 'Skipped',
+    cancelled: 'Cancelled'
+  });
+
   const CHANGE_RESPONSE_STATUSES = new Set(['cancelled', 'postponed']);
   const NOTIFIABLE_EVENT_STATUSES = new Set(['confirmed', 'at-risk', 'postponed', 'cancelled']);
   const EVENT_STATUS_RECIPIENT_DEFINITIONS = Object.freeze([
@@ -268,7 +276,7 @@
     displayName: ''
   };
   const requestedView = new URLSearchParams(window.location.search).get('view');
-  if (['dashboard', 'tasks', 'finances', 'briefing', 'catalogue', 'artwork', 'cancellation', 'retrospective', 'admin', 'plugins', 'references', 'directory'].includes(requestedView)) {
+  if (['dashboard', 'tasks', 'finances', 'briefing', 'catalogue', 'artwork', 'cancellation', 'retrospective', 'series', 'admin', 'plugins', 'references', 'directory'].includes(requestedView)) {
     state.activeView = requestedView;
   }
 
@@ -1121,7 +1129,19 @@
     } = state;
     if (!compact) return JSON.stringify(browserState);
 
-    return JSON.stringify(browserState, (key, value) => {
+    const compactState = structuredClone(browserState);
+    for (const event of compactState.events ?? []) {
+      if (!event?.seriesParentId || !event?.seriesOccurrenceId) continue;
+      // Occurrences inherit these potentially large collections from their
+      // series and are rehydrated before use. Do not multiply the emergency
+      // browser cache by every date in a long-running series.
+      delete event.answers;
+      delete event.questionMeta;
+      delete event.team;
+      delete event.learningInsights;
+    }
+
+    return JSON.stringify(compactState, (key, value) => {
       // This schedule is derived from the event/task state and is rebuilt on
       // start-up. Keeping a second copy makes the emergency cache needlessly
       // large.
@@ -1360,8 +1380,10 @@
   }
 
   function saveState() {
+    const automaticallyPublished = synchronisePublishedSeriesOccurrences();
     cacheBrowserState();
     if (sharedStateReady && !applyingSharedState) scheduleSharedStateSave();
+    for (const occurrenceEvent of automaticallyPublished) scheduleIntelligentGolfStatusRefresh(occurrenceEvent.id);
   }
 
   function normaliseTaskAlertSchedule(value) {
@@ -2217,18 +2239,38 @@
         proposedBy: organiserName,
         adoptedAt: null,
         adoptedBy: ''
-      } : null
+      } : null,
+      recurrence: !isIdea && integrationDetails.recurrence?.enabled === true
+        ? {
+            enabled: true,
+            frequency: 'weekly',
+            interval: Math.max(1, Number(integrationDetails.recurrence.interval) || 1),
+            weekdays: Array.isArray(integrationDetails.recurrence.weekdays)
+              ? [...new Set(integrationDetails.recurrence.weekdays.map(Number).filter(day => day >= 0 && day <= 6))]
+              : eventDate ? [isoWeekday(eventDate)] : [],
+            startsOn: integrationDetails.recurrence.startsOn || eventDate,
+            endsOn: integrationDetails.recurrence.endsOn || eventDate,
+            publicationHorizonWeeks: Math.max(1, Number(integrationDetails.recurrence.publicationHorizonWeeks) || 12),
+            autoPublish: integrationDetails.recurrence.autoPublish === true,
+            occurrences: [],
+            updatedAt: now
+          }
+        : null
     };
 
+    if (event.recurrence?.enabled) refreshSeriesOccurrences(event);
+
     state.events.push(event);
+    const automaticallyPublished = event.recurrence?.autoPublish ? publishSeriesOccurrencesWithinHorizon(event) : [];
     if (!isIdea) {
       state.activeEventId = id;
-      state.activeView = 'module:start';
+      state.activeView = event.recurrence?.enabled ? 'series' : 'module:start';
     } else {
       state.activeView = 'catalogue';
     }
     saveState();
-    if (!isIdea) scheduleIntelligentGolfStatusRefresh(id);
+    if (!isIdea && !event.recurrence?.enabled) scheduleIntelligentGolfStatusRefresh(id);
+    for (const occurrenceEvent of automaticallyPublished) scheduleIntelligentGolfStatusRefresh(occurrenceEvent.id);
     return event;
   }
 
@@ -2408,6 +2450,201 @@
     return event?.lifecycle?.status === 'idea' || event?.recordType === 'idea';
   }
 
+  function isSeriesOccurrence(event) {
+    return Boolean(event?.seriesParentId && event?.seriesOccurrenceId);
+  }
+
+  function isRepeatingSeries(event) {
+    return !isSeriesOccurrence(event) && event?.recurrence?.enabled === true;
+  }
+
+  function isoWeekday(value) {
+    if (!isValidIsoDate(value)) return 0;
+    return new Date(`${value}T12:00:00Z`).getUTCDay();
+  }
+
+  function normaliseEventRecurrence(event) {
+    if (!event || isSeriesOccurrence(event) || event.recurrence?.enabled !== true) return null;
+    const recurrence = event.recurrence;
+    recurrence.frequency = 'weekly';
+    recurrence.interval = Math.max(1, Math.min(12, Number(recurrence.interval) || 1));
+    recurrence.startsOn = isValidIsoDate(recurrence.startsOn) ? recurrence.startsOn : event.eventDate;
+    recurrence.endsOn = isValidIsoDate(recurrence.endsOn) ? recurrence.endsOn : recurrence.startsOn;
+    recurrence.weekdays = [...new Set((Array.isArray(recurrence.weekdays) ? recurrence.weekdays : [isoWeekday(recurrence.startsOn)])
+      .map(Number).filter(day => day >= 0 && day <= 6))].sort((left, right) => left - right);
+    if (recurrence.weekdays.length === 0 && isValidIsoDate(recurrence.startsOn)) recurrence.weekdays = [isoWeekday(recurrence.startsOn)];
+    recurrence.publicationHorizonWeeks = Math.max(1, Math.min(52, Number(recurrence.publicationHorizonWeeks) || 12));
+    recurrence.autoPublish = recurrence.autoPublish === true;
+    recurrence.occurrences = Array.isArray(recurrence.occurrences) ? recurrence.occurrences : [];
+    return recurrence;
+  }
+
+  function generateSeriesDates(recurrence) {
+    if (!recurrence || !isValidIsoDate(recurrence.startsOn) || !isValidIsoDate(recurrence.endsOn) || recurrence.endsOn < recurrence.startsOn) return [];
+    const dates = [];
+    const start = new Date(`${recurrence.startsOn}T12:00:00Z`);
+    const end = new Date(`${recurrence.endsOn}T12:00:00Z`);
+    for (let cursor = new Date(start), guard = 0; cursor <= end && guard < 2000; cursor.setUTCDate(cursor.getUTCDate() + 1), guard += 1) {
+      const daysFromStart = Math.floor((cursor - start) / 86400000);
+      const weekIndex = Math.floor(daysFromStart / 7);
+      if (weekIndex % recurrence.interval !== 0 || !recurrence.weekdays.includes(cursor.getUTCDay())) continue;
+      dates.push(cursor.toISOString().substring(0, 10));
+    }
+    return dates;
+  }
+
+  function refreshSeriesOccurrences(event) {
+    const recurrence = normaliseEventRecurrence(event);
+    if (!recurrence) return [];
+    const existingByDate = new Map(recurrence.occurrences.filter(item => isValidIsoDate(item?.date)).map(item => [item.date, item]));
+    const generatedDates = new Set(generateSeriesDates(recurrence));
+    const occurrences = [...generatedDates].map(date => {
+      const existing = existingByDate.get(date);
+      if (existing) {
+        existing.outsideSchedule = false;
+        return existing;
+      }
+      return { id: crypto.randomUUID(), date, status: 'draft', childEventId: null, createdAt: new Date().toISOString(), outsideSchedule: false };
+    });
+    for (const existing of recurrence.occurrences) {
+      if (generatedDates.has(existing.date) || !['published', 'cancelled'].includes(existing.status)) continue;
+      existing.outsideSchedule = true;
+      occurrences.push(existing);
+    }
+    recurrence.occurrences = occurrences.sort((left, right) => left.date.localeCompare(right.date));
+    return recurrence.occurrences;
+  }
+
+  function seriesParentFor(event) {
+    return isSeriesOccurrence(event) ? state.events.find(candidate => candidate.id === event.seriesParentId) ?? null : null;
+  }
+
+  function seriesOccurrenceChild(parent, occurrence) {
+    return occurrence?.childEventId
+      ? state.events.find(candidate => candidate.id === occurrence.childEventId) ?? null
+      : null;
+  }
+
+  function seriesMilestonesForDate(parent, eventDate) {
+    const dates = {};
+    for (const code of Object.keys(DEFAULT_MILESTONE_OFFSETS)) {
+      const savedDate = parent.milestoneDates?.[code];
+      const customOffset = isValidIsoDate(parent.eventDate) && isValidIsoDate(savedDate)
+        ? daysBetweenIsoDates(parent.eventDate, savedDate)
+        : null;
+      dates[code] = addDaysToIsoDate(eventDate, customOffset ?? DEFAULT_MILESTONE_OFFSETS[code] ?? 0);
+    }
+    dates.DT = eventDate;
+    return dates;
+  }
+
+  function synchroniseSeriesOccurrenceFromParent(parent, child) {
+    if (!parent || !child || !isSeriesOccurrence(child)) return;
+    child.name = parent.name;
+    child.description = parent.description;
+    child.organiser = parent.organiser;
+    child.organiserRef = structuredClone(parent.organiserRef ?? null);
+    child.startTime = parent.startTime;
+    child.endTime = parent.endTime;
+    child.intelligentGolfEventTypeId = parent.intelligentGolfEventTypeId;
+    child.expectedAttendees = parent.expectedAttendees;
+    child.intelligentGolfGroupId = parent.intelligentGolfGroupId;
+    child.intelligentGolfGroupName = parent.intelligentGolfGroupName;
+    child.answers = structuredClone(parent.answers ?? {});
+    child.questionMeta = structuredClone(parent.questionMeta ?? {});
+    child.team = structuredClone(parent.team ?? []);
+    child.learningInsights = structuredClone(parent.learningInsights ?? []);
+    child.milestoneDates = seriesMilestonesForDate(parent, child.eventDate);
+    child.seriesPlanUpdatedAt = parent.recurrence?.updatedAt ?? parent.createdAt;
+  }
+
+  function synchronisePublishedSeriesOccurrences() {
+    const automaticallyPublished = [];
+    for (const parent of state.events ?? []) {
+      if (isRepeatingSeries(parent) && !parent.closedAt && parent.recurrence.autoPublish === true) automaticallyPublished.push(...publishSeriesOccurrencesWithinHorizon(parent));
+    }
+    for (const child of state.events ?? []) {
+      if (!isSeriesOccurrence(child)) continue;
+      const parent = seriesParentFor(child);
+      if (parent) synchroniseSeriesOccurrenceFromParent(parent, child);
+    }
+    return automaticallyPublished;
+  }
+
+  function materialiseSeriesOccurrence(parent, occurrence) {
+    if (!parent || !occurrence || occurrence.status === 'skipped') return null;
+    const existing = seriesOccurrenceChild(parent, occurrence);
+    if (existing) return existing;
+    const now = new Date().toISOString();
+    const parentLifecycle = normaliseEventLifecycle(parent);
+    const initialStatus = ['confirmed', 'at-risk'].includes(parentLifecycle.status) ? parentLifecycle.status : 'provisional';
+    const child = {
+      id: crypto.randomUUID(),
+      name: parent.name,
+      organiser: parent.organiser,
+      organiserRef: structuredClone(parent.organiserRef ?? null),
+      eventDate: occurrence.date,
+      description: parent.description,
+      startTime: parent.startTime,
+      endTime: parent.endTime,
+      intelligentGolfEventTypeId: parent.intelligentGolfEventTypeId,
+      expectedAttendees: parent.expectedAttendees,
+      intelligentGolfGroupId: parent.intelligentGolfGroupId,
+      intelligentGolfGroupName: parent.intelligentGolfGroupName,
+      createdAt: now,
+      closedAt: null,
+      answers: structuredClone(parent.answers ?? {}),
+      questionMeta: structuredClone(parent.questionMeta ?? {}),
+      taskState: {},
+      team: structuredClone(parent.team ?? []),
+      advisoryOverrides: {},
+      retrospective: {},
+      briefing: {},
+      finances: { entries: [] },
+      milestoneDates: seriesMilestonesForDate(parent, occurrence.date),
+      lifecycle: {
+        ...structuredClone(parentLifecycle),
+        status: initialStatus,
+        statusChangedAt: now,
+        reason: '',
+        memberUpdate: '',
+        history: []
+      },
+      playbookVersion: parent.playbookVersion,
+      dataMigrations: structuredClone(parent.dataMigrations ?? {}),
+      sourceEventId: parent.id,
+      eventSeriesId: parent.id,
+      seriesParentId: parent.id,
+      seriesOccurrenceId: occurrence.id,
+      seriesPlanUpdatedAt: parent.recurrence?.updatedAt ?? now,
+      recurrence: null,
+      learningInsights: structuredClone(parent.learningInsights ?? []),
+      cataloguePosterThumbnail: null,
+      idea: null
+    };
+    state.events.push(child);
+    occurrence.childEventId = child.id;
+    occurrence.status = 'published';
+    occurrence.publishedAt = now;
+    return child;
+  }
+
+  function seriesPublicationCutoff(parent) {
+    const recurrence = normaliseEventRecurrence(parent);
+    if (!recurrence) return '';
+    const rolling = addDaysToIsoDate(currentClubIsoDate(), recurrence.publicationHorizonWeeks * 7);
+    return rolling < recurrence.endsOn ? rolling : recurrence.endsOn;
+  }
+
+  function publishSeriesOccurrencesWithinHorizon(parent) {
+    const cutoff = seriesPublicationCutoff(parent);
+    if (!cutoff) return [];
+    return refreshSeriesOccurrences(parent)
+      .filter(occurrence => occurrence.status === 'draft' && occurrence.date <= cutoff)
+      .map(occurrence => materialiseSeriesOccurrence(parent, occurrence))
+      .filter(Boolean);
+  }
+
   function normaliseEventFinances(event) {
     event.finances = event.finances && typeof event.finances === 'object' ? event.finances : {};
     event.finances.entries = Array.isArray(event.finances.entries) ? event.finances.entries : [];
@@ -2456,6 +2693,7 @@
       event.eventDate ??= '';
       event.description ??= '';
       normaliseEventLifecycle(event);
+      if (event.recurrence?.enabled) refreshSeriesOccurrences(event);
       saveState();
     }
     return event;
@@ -3558,6 +3796,11 @@
     return hints;
   }
 
+  function repeatingTaskScope(item) {
+    if (item?.recurrenceScope === 'series' || item?.recurrenceScope === 'occurrence') return item.recurrenceScope;
+    return ['B4', 'B3', 'CD', 'GO'].includes(String(item?.deadlineCode ?? '').toUpperCase()) ? 'series' : 'occurrence';
+  }
+
   function getActiveTasks(event, { includeNotRelevant = false } = {}) {
     if (isEventIdea(event)) return [];
     const tasks = [];
@@ -3574,6 +3817,9 @@
               ? [buildDontKnowTask(item)].filter(Boolean)
               : [];
           for (const taskItem of taskItems) {
+            const recurrenceScope = repeatingTaskScope(taskItem);
+            if (isRepeatingSeries(event) && recurrenceScope === 'occurrence') continue;
+            if (isSeriesOccurrence(event) && recurrenceScope === 'series') continue;
             if (!isItemVisible(taskItem, event)) continue;
             const dueDate = getDueDate(taskItem.deadlineCode, event);
             const task = { item: taskItem, module, section, dueDate, state: event.taskState[taskItem.id] ?? {} };
@@ -4897,6 +5143,7 @@
       : state.activeView === 'admin' ? 'Playbook Administration'
       : state.activeView === 'plugins' ? 'Plugin Administration'
       : state.activeView === 'retrospective' ? 'Event Retrospective'
+      : state.activeView === 'series' ? 'Repeating Event'
       : 'Event Playbook';
     const shellIntro = state.activeView === 'dashboard' ? 'See the work that needs your attention across every active event, in one calm daily view.'
       : state.activeView === 'tasks' ? 'See every action generated by the playbook, who owns it, when it is due and what needs attention.'
@@ -4910,10 +5157,11 @@
       : state.activeView === 'admin' ? 'Configure the questions, tasks, ownership rules and advisories that make up the club event planning process.'
       : state.activeView === 'plugins' ? 'Securely configure the external services that connect the Event Playbook to the rest of the club’s systems.'
       : state.activeView === 'retrospective' ? 'Release the member feedback form, review what went well, what did not, and turn the evidence into guidance for next time.'
+      : state.activeView === 'series' ? 'Manage the shared plan, repeating schedule and independently publishable event occurrences.'
       : 'Plan the event consistently from first decision to final close-down, with every relevant question, responsibility and deadline in one place.';
-    const showEventEditor = Boolean(event) && state.activeView === 'module:start';
+    const showEventEditor = Boolean(event) && state.activeView === 'module:start' && !isSeriesOccurrence(event);
     const showEventTools = Boolean(event) && (isPlanningView || state.activeView === 'tasks' || state.activeView === 'retrospective');
-    const showLifecycleBanner = Boolean(event) && (isPlanningView || ['tasks', 'finances', 'briefing', 'artwork', 'cancellation', 'retrospective'].includes(state.activeView));
+    const showLifecycleBanner = Boolean(event) && (isPlanningView || ['tasks', 'finances', 'briefing', 'artwork', 'cancellation', 'retrospective', 'series'].includes(state.activeView));
     const lifecycle = event ? normaliseEventLifecycle(event) : null;
     const lifecycleDefinition = event ? eventStatusDefinition(event) : null;
 
@@ -4936,6 +5184,7 @@
             <button class="${state.activeView === 'briefing' ? 'active' : ''}" data-view="briefing" ${event ? '' : 'disabled'}><span class="nav-icon">☷</span>Briefing Summary</button>
             <button class="${state.activeView === 'tasks' ? 'active' : ''}" data-view="tasks" ${event ? '' : 'disabled'}><span class="nav-icon">✓</span>Task Board</button>
             <button class="${state.activeView === 'finances' ? 'active' : ''}" data-view="finances" ${event ? '' : 'disabled'}><span class="nav-icon">£</span>Event Finances</button>
+            <button class="${state.activeView === 'series' ? 'active' : ''}" data-view="series" ${event ? '' : 'disabled'}><span class="nav-icon">↻</span>${event && (isRepeatingSeries(event) || isSeriesOccurrence(event)) ? 'Series Schedule' : 'Repeat Event'}</button>
             <button class="${state.activeView === 'artwork' ? 'active' : ''}" data-view="artwork" ${event ? '' : 'disabled'}><span class="nav-icon">✦</span>Communications Centre</button>
             ${lifecycle?.status === 'cancelled' ? `<button class="cancellation-nav ${state.activeView === 'cancellation' ? 'active' : ''}" data-view="cancellation"><span class="nav-icon">!</span>Cancellation Control</button>` : ''}
             <button class="${state.activeView === 'retrospective' ? 'active' : ''}" data-view="retrospective" ${event ? '' : 'disabled'}><span class="nav-icon">↺</span>Retrospectives</button>
@@ -5005,7 +5254,7 @@
                   <div class="hero-event-context-copy">
                     <span><i></i>Current selected event · ${escapeHtml(lifecycleDefinition.label)}</span>
                     <strong>${escapeHtml(event.name || 'Untitled event')}</strong>
-                    <small>${escapeHtml(event.eventDate ? formatDate(event.eventDate) : 'Date not set')} · ${escapeHtml(event.organiser || 'Organiser not assigned')}</small>
+                    <small>${isSeriesOccurrence(event) ? 'Series occurrence · ' : isRepeatingSeries(event) ? 'Repeating series · ' : ''}${escapeHtml(event.eventDate ? formatDate(event.eventDate) : 'Date not set')} · ${escapeHtml(event.organiser || 'Organiser not assigned')}</small>
                   </div>
                   <div class="hero-event-context-actions">
                     ${pluginCapabilities.intelligentGolfEnabled && intelligentGolfStatus?.linked
@@ -5058,9 +5307,9 @@
             </section>` : ''}
 
           <main class="main-content ${state.activeView === 'artwork' ? 'poster-studio' : ''}">
-            ${event ? renderIntelligentGolfPlannerMatchBanner(event) : ''}
+            ${event && !isRepeatingSeries(event) ? renderIntelligentGolfPlannerMatchBanner(event) : ''}
             ${showLifecycleBanner ? renderEventLifecycleBanner(event) : ''}
-            ${state.activeView === 'dashboard' ? renderDashboard() : state.activeView === 'catalogue' ? renderCatalogue() : state.activeView === 'directory' ? renderDirectory() : state.activeView === 'references' ? renderReferenceLibrary() : state.activeView === 'plugins' ? renderPluginAdministration() : state.activeView === 'admin' ? renderAdmin() : !event ? renderEmptyState() : state.activeView === 'tasks' ? renderTaskBoard(event, tasks) : state.activeView === 'finances' ? renderEventFinances(event) : state.activeView === 'briefing' ? renderBriefing(event) : state.activeView === 'artwork' ? renderArtworkStudio(event) : state.activeView === 'cancellation' ? renderCancellationWorkspace(event) : state.activeView === 'retrospective' ? renderRetrospective(event) : renderModuleView(event)}
+            ${state.activeView === 'dashboard' ? renderDashboard() : state.activeView === 'catalogue' ? renderCatalogue() : state.activeView === 'directory' ? renderDirectory() : state.activeView === 'references' ? renderReferenceLibrary() : state.activeView === 'plugins' ? renderPluginAdministration() : state.activeView === 'admin' ? renderAdmin() : !event ? renderEmptyState() : state.activeView === 'tasks' ? renderTaskBoard(event, tasks) : state.activeView === 'finances' ? renderEventFinances(event) : state.activeView === 'briefing' ? renderBriefing(event) : state.activeView === 'series' ? renderSeriesWorkspace(event) : state.activeView === 'artwork' ? renderArtworkStudio(event) : state.activeView === 'cancellation' ? renderCancellationWorkspace(event) : state.activeView === 'retrospective' ? renderRetrospective(event) : isPlanningView && isSeriesOccurrence(event) ? renderOccurrencePlan(event) : renderModuleView(event)}
           </main>
         </main>
       </div>
@@ -5129,7 +5378,7 @@
           if (workspace) workspace.innerHTML = `<div class="cancellation-page-error"><strong>Cancellation Control could not start.</strong><span>${escapeHtml(error.message || 'The module could not be loaded.')}</span></div>`;
         });
     }
-    if (event && pluginCapabilities.intelligentGolfEnabled) {
+    if (event && pluginCapabilities.intelligentGolfEnabled && !isRepeatingSeries(event)) {
       ensureIntelligentGolfEventStatus(event.id);
       maybeOpenIntelligentGolfPlannerMatch(event);
     }
@@ -5830,11 +6079,15 @@
     const result = financeResult(totals.net);
     const actualResult = financeResult(totals.actualNet);
     const previous = finance.priorEventSummary;
+    const seriesParent = seriesParentFor(event);
+    const seriesRollup = isRepeatingSeries(event) ? seriesFinanceRollup(event) : null;
     return `
       <section class="finance-intro">
         <div><span class="eyebrow">Event profit and loss</span><h2>Is this event paying its way?</h2><p>Start with sensible estimates, then replace them with actual figures as ticket sales, supplier invoices and takings become known.</p></div>
         <span class="finance-entry-count">${totals.count}<small>ledger entr${totals.count === 1 ? 'y' : 'ies'}</small></span>
       </section>
+      ${seriesParent ? `<aside class="series-occurrence-context"><div><strong>Occurrence P&amp;L · ${escapeHtml(formatDate(event.eventDate))}</strong><span>These figures belong only to this running of ${escapeHtml(seriesParent.name)}.</span></div><button class="button button-secondary" type="button" data-return-to-series="${escapeHtml(seriesParent.id)}">View series totals</button></aside>` : ''}
+      ${seriesRollup ? `<section class="series-finance-rollup"><div><span class="eyebrow">All published occurrences</span><h3>Series financial roll-up</h3><p>Keep assumptions in the template ledger below. Actual figures are recorded on each occurrence and totalled here.</p></div><div><span>Actual income</span><strong>${seriesRollup.actualCount ? escapeHtml(formatMoney(seriesRollup.actualIncome)) : '—'}</strong></div><div><span>Actual costs</span><strong>${seriesRollup.actualCount ? escapeHtml(formatMoney(seriesRollup.actualExpenses)) : '—'}</strong></div><div><span>Actual net</span><strong>${seriesRollup.actualCount ? escapeHtml(formatMoney(seriesRollup.actualNet)) : '—'}</strong></div></section>` : ''}
       ${previous ? `<aside class="finance-prior-summary"><span>Previous event</span><strong>${escapeHtml(formatMoney(previous.net))}</strong><small>${previous.net > 0 ? 'profit' : previous.net < 0 ? 'loss' : 'break even'} from ${previous.count} recorded figure${previous.count === 1 ? '' : 's'} — use this as context, not as a current-event entry.</small></aside>` : ''}
       <section class="finance-summary-grid" aria-label="Event financial summary">
         <article><span>Expected income</span><strong>${escapeHtml(formatMoney(totals.income))}</strong><small>Best available estimate or actual</small></article>
@@ -7474,10 +7727,11 @@
     const showIdeas = catalogueFilter !== 'events';
     const showEvents = catalogueFilter !== 'ideas';
     const ideasExpanded = catalogueFilter === 'ideas' || catalogueIdeasExpanded;
-    const ideas = state.events
+    const catalogueEvents = state.events.filter(event => !isSeriesOccurrence(event));
+    const ideas = catalogueEvents
       .filter(isEventIdea)
       .sort((a, b) => String(b.idea?.proposedAt || b.createdAt || '').localeCompare(String(a.idea?.proposedAt || a.createdAt || '')));
-    const sortedEvents = state.events.filter(event => !isEventIdea(event)).sort((a, b) => {
+    const sortedEvents = catalogueEvents.filter(event => !isEventIdea(event)).sort((a, b) => {
       const aDate = a.eventDate || a.createdAt || '';
       const bDate = b.eventDate || b.createdAt || '';
       return bDate.localeCompare(aDate);
@@ -7503,7 +7757,7 @@
       <nav class="catalogue-filter-bar" aria-label="Filter event catalogue">
         <span>Show</span>
         <div class="catalogue-filter-options" role="group" aria-label="Catalogue record type">
-          <button type="button" class="catalogue-filter-button ${catalogueFilter === 'all' ? 'active' : ''}" data-catalogue-filter="all" aria-pressed="${catalogueFilter === 'all'}">All <strong>${state.events.length}</strong></button>
+          <button type="button" class="catalogue-filter-button ${catalogueFilter === 'all' ? 'active' : ''}" data-catalogue-filter="all" aria-pressed="${catalogueFilter === 'all'}">All <strong>${catalogueEvents.length}</strong></button>
           <button type="button" class="catalogue-filter-button ${catalogueFilter === 'events' ? 'active' : ''}" data-catalogue-filter="events" aria-pressed="${catalogueFilter === 'events'}">Events <strong>${sortedEvents.length}</strong></button>
           <button type="button" class="catalogue-filter-button ${catalogueFilter === 'ideas' ? 'active' : ''}" data-catalogue-filter="ideas" aria-pressed="${catalogueFilter === 'ideas'}">Ideas <strong>${ideas.length}</strong></button>
         </div>
@@ -7612,6 +7866,9 @@
     const retroCount = Object.values(event.retrospective ?? {}).filter(value => value !== '' && value !== null && value !== undefined).length;
     const closed = Boolean(event.closedAt);
     const current = event.id === state.activeEventId;
+    const recurrence = normaliseEventRecurrence(event);
+    const occurrences = recurrence ? refreshSeriesOccurrences(event) : [];
+    const publishedOccurrences = occurrences.filter(occurrence => occurrence.status === 'published').length;
     const usesPublishedArtwork = Boolean(event.publishedCataloguePosterThumbnail);
     const catalogueArtwork = event.publishedCataloguePosterThumbnail || event.cataloguePosterThumbnail || '';
     const sourceIsSquare = usesPublishedArtwork
@@ -7633,6 +7890,7 @@
             ? `<img class="${legacyPortraitClass.trim()}" src="${escapeHtml(catalogueArtwork)}" alt="Campaign artwork for ${escapeHtml(event.name)}">`
             : `<span class="catalogue-poster-placeholder"><img src="${escapeHtml(clubBranding.crestUrl)}" alt="${escapeHtml(clubBranding.clubName)} crest"><small>Artwork not generated yet</small></span>`}
           <span class="catalogue-status status-${escapeHtml(lifecycle.status)}">${escapeHtml(statusDefinition.label)}</span>
+          ${recurrence ? '<span class="catalogue-series-badge">Repeating series</span>' : ''}
           ${current ? '<span class="catalogue-current-badge">Current event</span>' : ''}
         </button>
         <div class="catalogue-card-body">
@@ -7645,6 +7903,7 @@
           </div>
           <p class="catalogue-description">${escapeHtml(event.description || 'No event description has been recorded yet.')}</p>
           <div class="catalogue-stats">
+            ${recurrence ? `<span><strong>${occurrences.length}</strong> dates</span><span><strong>${publishedOccurrences}</strong> published</span>` : ''}
             <span><strong>${tasks.length}</strong> tasks</span>
             <span><strong>${completed}</strong> complete</span>
             ${expired ? `<span><strong>${expired}</strong> expired</span>` : ''}
@@ -7656,6 +7915,7 @@
               ? `<button class="button button-primary" data-reopen-event="${escapeHtml(event.id)}">Reopen event</button>
                  <button class="button button-secondary" data-clone-event="${escapeHtml(event.id)}">Create from this event</button>`
               : `<button class="button button-secondary" data-open-event="${escapeHtml(event.id)}" aria-label="${escapeHtml(current ? `Continue planning ${event.name}` : `Select ${event.name} and open planner`)}">${current ? 'Continue planning' : 'Select & open planner'}</button>
+                 ${recurrence ? `<button class="button button-secondary" data-open-series="${escapeHtml(event.id)}">Manage dates</button>` : ''}
                  <button class="button button-secondary catalogue-close" data-close-event="${escapeHtml(event.id)}">Close & create new</button>`}
           </div>
         </div>
@@ -7761,13 +8021,126 @@
       </div>`;
   }
 
+  function seriesOccurrenceEvents(parent) {
+    return state.events.filter(event => event.seriesParentId === parent.id && event.seriesOccurrenceId);
+  }
+
+  function seriesFinanceRollup(parent) {
+    const children = seriesOccurrenceEvents(parent);
+    return children.reduce((summary, child) => {
+      const totals = financeTotals(child);
+      summary.income += totals.income;
+      summary.expenses += totals.expenses;
+      summary.net += totals.net;
+      summary.actualIncome += totals.actualIncome;
+      summary.actualExpenses += totals.actualExpenses;
+      summary.actualNet += totals.actualNet;
+      summary.actualCount += totals.actualCount;
+      return summary;
+    }, { income: 0, expenses: 0, net: 0, actualIncome: 0, actualExpenses: 0, actualNet: 0, actualCount: 0, occurrenceCount: children.length });
+  }
+
+  function seriesScheduleDescription(recurrence) {
+    if (!recurrence) return 'Not repeating';
+    const days = recurrence.weekdays.map(day => WEEKDAY_LABELS[day]).join(', ');
+    const interval = recurrence.interval === 1 ? 'Every week' : `Every ${recurrence.interval} weeks`;
+    return `${interval} on ${days}, from ${formatDate(recurrence.startsOn)} to ${formatDate(recurrence.endsOn)}`;
+  }
+
+  function renderSeriesOccurrenceRow(parent, occurrence) {
+    const child = seriesOccurrenceChild(parent, occurrence);
+    const integration = child ? intelligentGolfEventStatuses.get(child.id) : null;
+    const finance = child ? financeTotals(child) : null;
+    const retrospectiveComplete = Boolean(child?.retrospective?.finalisedAt);
+    const status = occurrence.status === 'published' && child?.lifecycle?.status === 'cancelled' ? 'cancelled' : occurrence.status;
+    const statusLabel = SERIES_OCCURRENCE_STATUSES[status] ?? status;
+    return `<article class="series-occurrence-row status-${escapeHtml(status)}${occurrence.outsideSchedule ? ' outside-schedule' : ''}">
+      <div class="series-occurrence-date"><strong>${escapeHtml(formatDate(occurrence.date))}</strong><small>${escapeHtml(WEEKDAY_LABELS[isoWeekday(occurrence.date)])}${occurrence.outsideSchedule ? ' · no longer in schedule' : ''}</small></div>
+      <div class="series-occurrence-state"><span>${escapeHtml(statusLabel)}</span><small>${occurrence.publishedAt ? `Created ${escapeHtml(new Date(occurrence.publishedAt).toLocaleDateString('en-GB'))}` : 'No external records created'}</small></div>
+      <div class="series-occurrence-integration"><strong>${integration?.linked ? `IG planner #${escapeHtml(integration.plannerEntryId)}` : child && pluginCapabilities.intelligentGolfEnabled ? 'Planner pending' : 'Planner not created'}</strong><small>${integration?.diaryEntryId ? `Member diary #${escapeHtml(integration.diaryEntryId)}` : 'Member diary not published'}</small></div>
+      <div class="series-occurrence-outcome"><strong>${finance?.actualCount ? escapeHtml(formatMoney(finance.actualNet)) : 'No actuals'}</strong><small>${retrospectiveComplete ? 'Retrospective finalised' : child ? 'Retrospective outstanding' : 'Available after publication'}</small></div>
+      <div class="series-occurrence-actions">
+        ${status === 'draft' ? `<button class="button button-primary" type="button" data-publish-series-occurrence="${escapeHtml(occurrence.id)}">Publish occurrence</button><button class="button button-secondary" type="button" data-skip-series-occurrence="${escapeHtml(occurrence.id)}">Skip date</button>` : ''}
+        ${status === 'skipped' ? `<button class="button button-secondary" type="button" data-restore-series-occurrence="${escapeHtml(occurrence.id)}">Restore date</button>` : ''}
+        ${child ? `<button class="button button-secondary" type="button" data-open-series-occurrence="${escapeHtml(child.id)}" data-occurrence-view="tasks">Open occurrence</button><button class="button button-secondary" type="button" data-open-series-occurrence="${escapeHtml(child.id)}" data-occurrence-view="artwork">Communications</button>` : ''}
+      </div>
+    </article>`;
+  }
+
+  function renderSeriesWorkspace(event) {
+    const parent = seriesParentFor(event) ?? event;
+    const recurrence = normaliseEventRecurrence(parent);
+    if (!recurrence) {
+      const weekday = isoWeekday(parent.eventDate);
+      return `<section class="series-intro"><div><span class="eyebrow">Repeating event</span><h2>Run this event on a schedule</h2><p>Keep one shared plan and create independently manageable occurrences for each date.</p></div></section>
+        <section class="series-enable-panel">
+          <div><span class="series-enable-icon" aria-hidden="true">↻</span><h3>Make ${escapeHtml(parent.name)} repeat</h3><p>The current event becomes the planning template. Nothing will be added to Intelligent Golf or the member diary until occurrences are published.</p></div>
+          <button class="button button-primary button-large" type="button" data-enable-event-series data-default-weekday="${weekday}">Set up repeating dates</button>
+        </section>`;
+    }
+
+    const occurrences = refreshSeriesOccurrences(parent);
+    const published = occurrences.filter(occurrence => occurrence.status === 'published').length;
+    const drafts = occurrences.filter(occurrence => occurrence.status === 'draft').length;
+    const skipped = occurrences.filter(occurrence => occurrence.status === 'skipped').length;
+    const cutoff = seriesPublicationCutoff(parent);
+    const readyToPublish = occurrences.filter(occurrence => occurrence.status === 'draft' && occurrence.date <= cutoff).length;
+    const rollup = seriesFinanceRollup(parent);
+    for (const occurrence of occurrences) {
+      if (occurrence.childEventId && !intelligentGolfEventStatuses.has(occurrence.childEventId)) ensureIntelligentGolfEventStatus(occurrence.childEventId);
+    }
+    return `<section class="series-intro">
+        <div><span class="eyebrow">Repeating event series</span><h2>${escapeHtml(parent.name)}</h2><p>${escapeHtml(seriesScheduleDescription(recurrence))}</p></div>
+        <span class="series-count">${occurrences.length}<small>scheduled dates</small></span>
+      </section>
+      ${isSeriesOccurrence(event) ? `<aside class="series-occurrence-context"><div><strong>You are viewing one occurrence</strong><span>${escapeHtml(formatDate(event.eventDate))}. Shared planning is controlled by the series.</span></div><button class="button button-secondary" type="button" data-return-to-series="${escapeHtml(parent.id)}">Return to series</button></aside>` : ''}
+      <section class="series-summary-grid">
+        <article><span>Published</span><strong>${published}</strong><small>Individual occurrences created</small></article>
+        <article><span>Waiting</span><strong>${drafts}</strong><small>${readyToPublish} inside the current horizon</small></article>
+        <article><span>Skipped</span><strong>${skipped}</strong><small>Dates deliberately excluded</small></article>
+        <article><span>Series actual P&amp;L</span><strong>${rollup.actualCount ? escapeHtml(formatMoney(rollup.actualNet)) : '—'}</strong><small>${rollup.actualCount ? `${rollup.actualCount} actual figures recorded` : 'No occurrence actuals yet'}</small></article>
+      </section>
+      <section class="series-settings-panel">
+        <header><div><span class="eyebrow">Shared schedule</span><h3>Dates and publication policy</h3></div><p>Changing the plan updates published future occurrences without replacing their task completion, bookings, finances or retrospective.</p></header>
+        <form id="event-series-form" class="series-settings-form">
+          <label><span>Starts on</span><input id="series-starts-on" type="date" required value="${escapeHtml(recurrence.startsOn)}"></label>
+          <label><span>Ends on</span><input id="series-ends-on" type="date" required value="${escapeHtml(recurrence.endsOn)}"></label>
+          <label><span>Repeat every</span><select id="series-interval">${[1,2,3,4].map(interval => `<option value="${interval}" ${recurrence.interval === interval ? 'selected' : ''}>${interval === 1 ? 'Week' : `${interval} weeks`}</option>`).join('')}</select></label>
+          <label><span>Rolling publication horizon</span><select id="series-publication-horizon">${[4,8,12,16,26,52].map(weeks => `<option value="${weeks}" ${recurrence.publicationHorizonWeeks === weeks ? 'selected' : ''}>${weeks} weeks</option>`).join('')}</select></label>
+          <fieldset class="series-weekdays"><legend>Runs on</legend>${WEEKDAY_LABELS.map((label, day) => `<label><input type="checkbox" name="series-weekday" value="${day}" ${recurrence.weekdays.includes(day) ? 'checked' : ''}><span>${escapeHtml(label.substring(0, 3))}</span></label>`).join('')}</fieldset>
+          <label class="series-auto-publish"><input id="series-auto-publish" type="checkbox" ${recurrence.autoPublish ? 'checked' : ''}><span><strong>Automatically create occurrences inside the rolling horizon</strong><small>New dates are created whenever the Playbook is opened or saved. Planner entries and configured tickets are then synchronised through Intelligent Golf; member diary and communications still require approval for each occurrence.</small></span></label>
+          <div class="series-settings-actions"><button class="button button-primary" type="submit">Save repeating schedule</button><button class="button button-secondary" type="button" data-publish-series-horizon ${readyToPublish ? '' : 'disabled'}>Publish ${readyToPublish} occurrence${readyToPublish === 1 ? '' : 's'} through ${escapeHtml(formatDate(cutoff))}</button></div>
+        </form>
+      </section>
+      <section class="series-occurrences-panel">
+        <header><div><span class="eyebrow">Individual runnings</span><h3>Occurrences</h3></div><p>Each published date has its own external records, operational tasks, bookings, actual P&amp;L, cancellation controls and retrospective.</p></header>
+        <div class="series-occurrence-list">${occurrences.length ? occurrences.map(occurrence => renderSeriesOccurrenceRow(parent, occurrence)).join('') : '<div class="series-empty">No dates match this schedule.</div>'}</div>
+      </section>`;
+  }
+
+  function renderOccurrencePlan(event) {
+    const parent = seriesParentFor(event);
+    if (!parent) return renderModuleView(event);
+    const progress = getOverallQuestionProgress(parent);
+    return `<section class="occurrence-plan-panel">
+      <div class="occurrence-plan-heading"><span class="eyebrow">Inherited series plan</span><h2>${escapeHtml(event.name)} · ${escapeHtml(formatDate(event.eventDate))}</h2><p>This occurrence uses the questions and decisions answered once on the repeating series. Date-specific work, bookings, finances and feedback remain separate.</p></div>
+      <div class="occurrence-plan-progress"><strong>${progress.percent}%</strong><span>${progress.answered} of ${progress.total} shared planning questions complete</span></div>
+      <div class="occurrence-plan-actions"><button class="button button-primary" type="button" data-open-series-parent-plan="${escapeHtml(parent.id)}">Open shared plan</button><button class="button button-secondary" type="button" data-view="tasks">View occurrence tasks</button><button class="button button-secondary" type="button" data-return-to-series="${escapeHtml(parent.id)}">Return to series schedule</button></div>
+    </section>`;
+  }
+
   function renderRetrospective(event) {
     const fields = playbook.retrospective?.fields ?? [];
     const agileFieldIds = new Set(['worked-well', 'did-not-work', 'change-next-time']);
     const agileFields = fields.filter(field => agileFieldIds.has(field.id));
     const outcomeFields = fields.filter(field => !agileFieldIds.has(field.id));
+    const seriesParent = seriesParentFor(event);
+    const seriesChildren = isRepeatingSeries(event) ? seriesOccurrenceEvents(event) : [];
+    const finalisedOccurrenceCount = seriesChildren.filter(child => child.retrospective?.finalisedAt).length;
     return `
       <section class="page-header retrospective-page-header"><div><div class="eyebrow">Learn and improve</div><h2>Event retrospective</h2><p>Bring the member voice and the delivery team's experience together, then turn the evidence into useful guidance for the next running.</p></div>${event.retrospective?.finalisedAt ? `<div class="retrospective-finalised-badge"><span>✓ Finalised</span><small>${escapeHtml(new Date(event.retrospective.finalisedAt).toLocaleString('en-GB'))}</small></div>` : ''}</section>
+      ${seriesParent ? `<aside class="series-occurrence-context"><div><strong>Occurrence retrospective · ${escapeHtml(formatDate(event.eventDate))}</strong><span>Record what was distinctive about this date. Approved learning can still improve the shared series plan.</span></div><button class="button button-secondary" type="button" data-return-to-series="${escapeHtml(seriesParent.id)}">Return to series</button></aside>` : ''}
+      ${isRepeatingSeries(event) ? `<aside class="series-retrospective-summary"><div><span class="eyebrow">Series review</span><h3>Review patterns across the runnings</h3><p>This is the periodic retrospective for the shared format. Individual dates retain their own attendee feedback and operational retrospective.</p></div><strong>${finalisedOccurrenceCount}<small>of ${seriesChildren.length} occurrence retrospectives finalised</small></strong></aside>` : ''}
       ${renderTicketBookings(event)}
       ${renderAttendeeFeedback(event)}
       ${renderMemberFeedbackSummary(event)}
@@ -9297,6 +9670,13 @@
                   <span>End time <em>optional</em></span>
                   <input id="new-event-end-time" type="time">
                 </label>
+                <label class="wide new-event-repeat-toggle" data-new-event-only><input id="new-event-repeating" type="checkbox"><span><strong>Repeat this event</strong><small>Create one shared plan with separately publishable dates.</small></span></label>
+                <div class="wide new-event-repeat-fields" id="new-event-repeat-fields" data-new-event-only hidden>
+                  <label><span>Repeat</span><select id="new-event-repeat-interval"><option value="1">Every week</option><option value="2">Every 2 weeks</option><option value="3">Every 3 weeks</option><option value="4">Every 4 weeks</option></select></label>
+                  <label><span>Series finishes</span><input id="new-event-repeat-until" type="date"></label>
+                  <label><span>Publish ahead</span><select id="new-event-repeat-horizon"><option value="4">4 weeks</option><option value="8">8 weeks</option><option value="12" selected>12 weeks</option><option value="16">16 weeks</option><option value="26">26 weeks</option></select></label>
+                  <label class="new-event-repeat-auto"><input id="new-event-repeat-auto" type="checkbox"><span>Automatically create occurrences inside that horizon</span></label>
+                </div>
                 <div class="new-event-organiser-field">
                   <span id="new-event-organiser-label">Organiser</span>
                   ${renderAssignmentPicker({ mode: 'person', newEventField: 'organiser', id: 'new-event-organiser' })}
@@ -9357,6 +9737,22 @@
       organiserInput.setCustomValidity('');
     }
     updateNewEventRecordTypeUi();
+    updateNewEventRepeatingUi();
+  }
+
+  function updateNewEventRepeatingUi() {
+    const isIdea = document.getElementById('new-event-record-type')?.value === 'idea';
+    const enabled = !isIdea && document.getElementById('new-event-repeating')?.checked === true;
+    const fields = document.getElementById('new-event-repeat-fields');
+    if (fields) fields.hidden = !enabled;
+    fields?.querySelectorAll('input, select').forEach(control => { control.disabled = !enabled; });
+    const until = document.getElementById('new-event-repeat-until');
+    if (until) {
+      until.required = enabled;
+      const eventDate = document.getElementById('new-event-date')?.value ?? '';
+      until.min = eventDate;
+      if (enabled && eventDate && !until.value) until.value = addDaysToIsoDate(eventDate, 84);
+    }
   }
 
   function updateNewEventRecordTypeUi() {
@@ -9396,6 +9792,7 @@
         control.disabled = isIdea;
       });
     });
+    updateNewEventRepeatingUi();
   }
 
   function renderAdoptIdeaDialog() {
@@ -9644,6 +10041,10 @@
     const now = new Date().toISOString();
     const previousStatus = lifecycle.status;
     const statusChanged = nextStatus !== previousStatus;
+    if (statusChanged && nextStatus === 'cancelled' && isRepeatingSeries(event)) {
+      const futureOccurrences = refreshSeriesOccurrences(event).filter(occurrence => occurrence.date >= currentClubIsoDate() && occurrence.status !== 'skipped');
+      if (futureOccurrences.length && !confirm(`Cancel the repeating series and its ${futureOccurrences.length} current or future occurrence${futureOccurrences.length === 1 ? '' : 's'}?\n\nPublished occurrences will each retain a Cancellation Control record so their planner, diary, communications and screen actions can be reviewed.`)) return false;
+    }
     const statusNotification = statusChanged && NOTIFIABLE_EVENT_STATUSES.has(nextStatus)
       ? createEventStatusNotification(event, nextStatus, now)
       : null;
@@ -9712,7 +10113,25 @@
     if (nextStatus === 'completed') event.closedAt ??= now;
     else if (event.closedAt) event.closedAt = null;
 
-    if (statusChanged && nextStatus === 'cancelled') {
+    if (statusChanged && nextStatus === 'cancelled' && isRepeatingSeries(event)) {
+      event.recurrence.autoPublish = false;
+      for (const occurrence of refreshSeriesOccurrences(event).filter(candidate => candidate.date >= currentClubIsoDate() && candidate.status !== 'skipped')) {
+        const child = seriesOccurrenceChild(event, occurrence);
+        occurrence.status = 'cancelled';
+        occurrence.cancelledAt = now;
+        if (!child) continue;
+        const childLifecycle = normaliseEventLifecycle(child);
+        childLifecycle.status = 'cancelled';
+        childLifecycle.statusChangedAt = now;
+        childLifecycle.reason = reason;
+        childLifecycle.memberUpdate = memberUpdate;
+        childLifecycle.changedBy = decisionOwner;
+        child.cancelledAt = now;
+        child.milestoneDates ??= {};
+        child.milestoneDates.CX = localDateFromTimestamp(now);
+      }
+      state.activeView = 'series';
+    } else if (statusChanged && nextStatus === 'cancelled') {
       state.activeView = 'cancellation';
     } else if (nextStatus === 'idea') {
       state.activeView = 'catalogue';
@@ -9727,8 +10146,13 @@
   async function closeEventAndCreateNew(eventId) {
     const target = state.events.find(item => item.id === eventId);
     if (!target) return;
+    if (!target.closedAt && isRepeatingSeries(target)) {
+      const futureCount = refreshSeriesOccurrences(target).filter(occurrence => occurrence.date >= currentClubIsoDate() && !['skipped', 'cancelled'].includes(occurrence.status)).length;
+      if (futureCount > 0 && !confirm(`Close the repeating series “${target.name}”?\n\n${futureCount} current or future scheduled date${futureCount === 1 ? '' : 's'} remain. Closing the series stops automatic publication but does not delete or cancel occurrences that have already been published.`)) return;
+    }
     if (!target.closedAt && !await confirmEventClosure(target)) return;
     if (!target.closedAt) target.closedAt = new Date().toISOString();
+    if (isRepeatingSeries(target)) target.recurrence.autoPublish = false;
     normaliseEventLifecycle(target);
     if (!CHANGE_RESPONSE_STATUSES.has(target.lifecycle.status)) {
       target.lifecycle.status = 'completed';
@@ -10559,14 +10983,17 @@
         const target = state.events.find(item => item.id === eventId);
         if (!target) return;
         if (!confirm(`Permanently delete “${target.name}” from the Event Catalogue?\n\nThis removes its plan, answers, task state and retrospective from the Playbook. Generated files and media already sent to external services are not deleted automatically.`)) return;
-        state.events = state.events.filter(item => item.id !== eventId);
-        state.notificationOutbox = (state.notificationOutbox ?? []).filter(notification => notification.eventId !== eventId);
-        feedbackCache.delete(eventId);
-        feedbackRequests.delete(eventId);
-        briefingGenerationRequests.delete(eventId);
-        if (state.activeEventId === eventId) {
-          state.activeEventId = state.events.find(candidate => !isEventIdea(candidate) && !candidate.closedAt)?.id ??
-            state.events.find(candidate => !isEventIdea(candidate))?.id ?? null;
+        const removedIds = new Set([eventId, ...state.events.filter(item => item.seriesParentId === eventId).map(item => item.id)]);
+        state.events = state.events.filter(item => !removedIds.has(item.id));
+        state.notificationOutbox = (state.notificationOutbox ?? []).filter(notification => !removedIds.has(notification.eventId));
+        for (const removedId of removedIds) {
+          feedbackCache.delete(removedId);
+          feedbackRequests.delete(removedId);
+          briefingGenerationRequests.delete(removedId);
+        }
+        if (removedIds.has(state.activeEventId)) {
+          state.activeEventId = state.events.find(candidate => !isEventIdea(candidate) && !isSeriesOccurrence(candidate) && !candidate.closedAt)?.id ??
+            state.events.find(candidate => !isEventIdea(candidate) && !isSeriesOccurrence(candidate))?.id ?? null;
         }
         document.getElementById('event-summary-dialog')?.close();
         saveState();
@@ -11118,8 +11545,12 @@
     if (newEventDateInput) {
       // Re-anchor every milestone to the new event date while preserving any
       // offsets the organiser has deliberately customised.
-      newEventDateInput.addEventListener('change', () => populateNewEventMilestones(newEventDateInput.value, false));
+      newEventDateInput.addEventListener('change', () => {
+        populateNewEventMilestones(newEventDateInput.value, false);
+        updateNewEventRepeatingUi();
+      });
     }
+    document.getElementById('new-event-repeating')?.addEventListener('change', updateNewEventRepeatingUi);
 
     document.querySelectorAll('[data-new-event-milestone-offset]').forEach(input => {
       const update = () => updateNewEventMilestoneFromOffset(input.dataset.newEventMilestoneOffset);
@@ -11412,6 +11843,152 @@
         ? 'The list is filtered by question, task, section and planner-area wording.'
         : 'Choose a target, or select a comment above for an automatic suggestion.';
       status.className = 'learning-target-match-status';
+    });
+
+    document.querySelectorAll('[data-open-series]').forEach(element => {
+      element.addEventListener('click', () => {
+        const event = state.events.find(candidate => candidate.id === element.dataset.openSeries);
+        if (!event) return;
+        state.activeEventId = event.id;
+        state.activeView = 'series';
+        saveState();
+        render();
+      });
+    });
+
+    document.querySelectorAll('[data-return-to-series]').forEach(element => {
+      element.addEventListener('click', () => {
+        const parent = state.events.find(candidate => candidate.id === element.dataset.returnToSeries);
+        if (!parent) return;
+        state.activeEventId = parent.id;
+        state.activeView = 'series';
+        saveState();
+        render();
+      });
+    });
+
+    document.querySelector('[data-open-series-parent-plan]')?.addEventListener('click', eventArgs => {
+      const parent = state.events.find(candidate => candidate.id === eventArgs.currentTarget.dataset.openSeriesParentPlan);
+      if (!parent) return;
+      state.activeEventId = parent.id;
+      state.activeView = 'module:start';
+      saveState();
+      render();
+    });
+
+    document.querySelector('[data-enable-event-series]')?.addEventListener('click', () => {
+      const event = getActiveEvent();
+      if (!event || isSeriesOccurrence(event)) return;
+      const startsOn = isValidIsoDate(event.eventDate) ? event.eventDate : currentClubIsoDate();
+      event.recurrence = {
+        enabled: true,
+        frequency: 'weekly',
+        interval: 1,
+        weekdays: [isoWeekday(startsOn)],
+        startsOn,
+        endsOn: addDaysToIsoDate(startsOn, 84),
+        publicationHorizonWeeks: 12,
+        autoPublish: false,
+        occurrences: [],
+        updatedAt: new Date().toISOString()
+      };
+      refreshSeriesOccurrences(event);
+      saveState();
+      render();
+    });
+
+    document.getElementById('event-series-form')?.addEventListener('submit', eventArgs => {
+      eventArgs.preventDefault();
+      const event = getActiveEvent();
+      const parent = seriesParentFor(event) ?? event;
+      const recurrence = normaliseEventRecurrence(parent);
+      if (!parent || !recurrence) return;
+      const startsOn = document.getElementById('series-starts-on').value;
+      const endsOn = document.getElementById('series-ends-on').value;
+      const weekdays = [...document.querySelectorAll('input[name="series-weekday"]:checked')].map(input => Number(input.value));
+      if (!isValidIsoDate(startsOn) || !isValidIsoDate(endsOn) || endsOn < startsOn) {
+        alert('Choose a valid series start and end date.');
+        return;
+      }
+      if (weekdays.length === 0) {
+        alert('Choose at least one day of the week.');
+        return;
+      }
+      if (parent.eventDate !== startsOn) reanchorEventDate(parent, startsOn);
+      recurrence.startsOn = startsOn;
+      recurrence.endsOn = endsOn;
+      recurrence.interval = Number(document.getElementById('series-interval').value) || 1;
+      recurrence.weekdays = weekdays;
+      recurrence.publicationHorizonWeeks = Number(document.getElementById('series-publication-horizon').value) || 12;
+      recurrence.autoPublish = document.getElementById('series-auto-publish').checked;
+      recurrence.updatedAt = new Date().toISOString();
+      refreshSeriesOccurrences(parent);
+      const published = recurrence.autoPublish ? publishSeriesOccurrencesWithinHorizon(parent) : [];
+      saveState();
+      for (const child of published) scheduleIntelligentGolfStatusRefresh(child.id);
+      render();
+    });
+
+    document.querySelector('[data-publish-series-horizon]')?.addEventListener('click', () => {
+      const event = getActiveEvent();
+      const parent = seriesParentFor(event) ?? event;
+      if (!parent) return;
+      const candidates = refreshSeriesOccurrences(parent).filter(occurrence => occurrence.status === 'draft' && occurrence.date <= seriesPublicationCutoff(parent));
+      if (!candidates.length || !confirm(`Publish ${candidates.length} occurrence${candidates.length === 1 ? '' : 's'}? Each date will become independently manageable and will be synchronised with configured integrations.`)) return;
+      const published = candidates.map(occurrence => materialiseSeriesOccurrence(parent, occurrence)).filter(Boolean);
+      saveState();
+      for (const child of published) scheduleIntelligentGolfStatusRefresh(child.id);
+      render();
+    });
+
+    document.querySelectorAll('[data-publish-series-occurrence]').forEach(element => {
+      element.addEventListener('click', () => {
+        const event = getActiveEvent();
+        const parent = seriesParentFor(event) ?? event;
+        const occurrence = refreshSeriesOccurrences(parent).find(candidate => candidate.id === element.dataset.publishSeriesOccurrence);
+        if (!occurrence) return;
+        const child = materialiseSeriesOccurrence(parent, occurrence);
+        saveState();
+        if (child) scheduleIntelligentGolfStatusRefresh(child.id);
+        render();
+      });
+    });
+
+    document.querySelectorAll('[data-skip-series-occurrence]').forEach(element => {
+      element.addEventListener('click', () => {
+        const event = getActiveEvent();
+        const parent = seriesParentFor(event) ?? event;
+        const occurrence = refreshSeriesOccurrences(parent).find(candidate => candidate.id === element.dataset.skipSeriesOccurrence);
+        if (!occurrence || occurrence.childEventId) return;
+        occurrence.status = 'skipped';
+        occurrence.skippedAt = new Date().toISOString();
+        saveState();
+        render();
+      });
+    });
+
+    document.querySelectorAll('[data-restore-series-occurrence]').forEach(element => {
+      element.addEventListener('click', () => {
+        const event = getActiveEvent();
+        const parent = seriesParentFor(event) ?? event;
+        const occurrence = refreshSeriesOccurrences(parent).find(candidate => candidate.id === element.dataset.restoreSeriesOccurrence);
+        if (!occurrence || occurrence.childEventId) return;
+        occurrence.status = 'draft';
+        delete occurrence.skippedAt;
+        saveState();
+        render();
+      });
+    });
+
+    document.querySelectorAll('[data-open-series-occurrence]').forEach(element => {
+      element.addEventListener('click', () => {
+        const child = state.events.find(candidate => candidate.id === element.dataset.openSeriesOccurrence);
+        if (!child) return;
+        state.activeEventId = child.id;
+        state.activeView = element.dataset.occurrenceView || 'module:start';
+        saveState();
+        render();
+      });
     });
 
     document.querySelectorAll('[data-seed-feedback-insight]').forEach(element => {
@@ -11992,6 +12569,8 @@
         const attendeesInput = document.getElementById('new-event-attendees');
         const startTimeInput = document.getElementById('new-event-start-time');
         const endTimeInput = document.getElementById('new-event-end-time');
+        const repeatingInput = document.getElementById('new-event-repeating');
+        const repeatUntilInput = document.getElementById('new-event-repeat-until');
 
         const name = nameInput.value.trim();
         const eventDate = eventDateInput.value;
@@ -12005,6 +12584,14 @@
           endTimeInput.setCustomValidity('Choose an end time after the start time.');
           endTimeInput.reportValidity();
           endTimeInput.setCustomValidity('');
+          return;
+        }
+
+        const repeating = recordType === 'event' && repeatingInput?.checked === true;
+        if (repeating && (!isValidIsoDate(repeatUntilInput?.value) || repeatUntilInput.value < eventDate)) {
+          repeatUntilInput.setCustomValidity('Choose a series end date on or after the first occurrence.');
+          repeatUntilInput.reportValidity();
+          repeatUntilInput.setCustomValidity('');
           return;
         }
 
@@ -12054,7 +12641,16 @@
           eventTypeId: recordType === 'event' ? Number(eventTypeInput?.value) || 0 : 0,
           expectedAttendees: recordType === 'event' ? Math.max(0, Number(attendeesInput.value) || 0) : 0,
           startTime: recordType === 'event' ? startTimeInput.value : '',
-          endTime: recordType === 'event' ? endTimeInput.value : ''
+          endTime: recordType === 'event' ? endTimeInput.value : '',
+          recurrence: repeating ? {
+            enabled: true,
+            startsOn: eventDate,
+            endsOn: repeatUntilInput.value,
+            interval: Number(document.getElementById('new-event-repeat-interval')?.value) || 1,
+            weekdays: [isoWeekday(eventDate)],
+            publicationHorizonWeeks: Number(document.getElementById('new-event-repeat-horizon')?.value) || 12,
+            autoPublish: document.getElementById('new-event-repeat-auto')?.checked === true
+          } : null
         });
         newEventDialog?.close();
         render();
@@ -12096,6 +12692,9 @@
         organiserRef: event.organiserRef ?? null,
         eventDate: event.eventDate,
         description: event.description,
+        recurrence: structuredClone(event.recurrence ?? null),
+        seriesParentId: event.seriesParentId ?? null,
+        seriesOccurrenceId: event.seriesOccurrenceId ?? null,
         lifecycle: structuredClone(event.lifecycle),
         deadlineOffsets: Object.fromEntries(playbook.deadlineCodes.map(code => [code.code, getDeadlineOffset(code.code, event)])),
         answers: event.answers,

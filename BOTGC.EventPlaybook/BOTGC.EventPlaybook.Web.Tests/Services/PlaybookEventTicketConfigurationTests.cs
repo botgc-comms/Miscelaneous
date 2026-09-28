@@ -58,6 +58,28 @@ public sealed class PlaybookEventTicketConfigurationTests
         Assert.Empty(PlaybookEventChangePipeline.ReadEvents(document.RootElement));
     }
 
+    [Fact]
+    public void ReadEvents_ExcludesRepeatingSeriesTemplateFromIntelligentGolfSynchronisation()
+    {
+        using var document = JsonDocument.Parse(StateJson.Replace(
+            "\"id\": \"event-123\",",
+            "\"id\": \"event-123\", \"recurrence\": { \"enabled\": true },"));
+
+        Assert.Empty(PlaybookEventChangePipeline.ReadEvents(document.RootElement));
+    }
+
+    [Fact]
+    public void ReadEvents_IncludesPublishedSeriesOccurrence()
+    {
+        using var document = JsonDocument.Parse(StateJson.Replace(
+            "\"id\": \"event-123\",",
+            "\"id\": \"event-123\", \"seriesParentId\": \"series-1\", \"seriesOccurrenceId\": \"occurrence-1\","));
+
+        var snapshot = Assert.Single(PlaybookEventChangePipeline.ReadEvents(document.RootElement)).Value;
+
+        Assert.Equal("event-123", snapshot.EventId);
+    }
+
     private const string StateJson = """
         {
           "events": [

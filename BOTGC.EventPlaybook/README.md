@@ -38,6 +38,16 @@ http://localhost:5098
 
 Open the root URL for the Event Playbook. Use **Communications Centre** from the Playbook to open the campaign workflow for the selected event.
 
+## Repeating event series
+
+An event can be marked as repeating when it is created, or converted later from the **Repeat Event** workspace. A series stores one shared plan and a weekly schedule with selectable weekdays, an end date and a rolling publication horizon. Its generated dates remain drafts until they are published, skipped or automatically brought inside the configured horizon.
+
+Publishing a date materialises a separate occurrence with its own stable Event Playbook ID. This is what Intelligent Golf synchronises, so the series template can never create a duplicate planner entry. Each occurrence keeps independent task completion, planner and member-diary links, ticket bookings, cancellation response, actual P&L and retrospective. Shared answers and planning decisions continue to flow from the series; the occurrence planner is therefore read-only and directs organisers back to the shared plan.
+
+Early planning, commitment and go/no-go work is series-scoped by default. Final arrangements, event-day work and follow-up are occurrence-scoped. A task definition can override this default with `recurrenceScope: "series"` or `recurrenceScope: "occurrence"`.
+
+Member-diary and outward communications remain an explicit approval step for each occurrence. Cancelling the series stops automatic publication and marks current and future occurrences for individual cancellation review, preserving the audit trail needed to withdraw records that were already published.
+
 Run the private API separately when working on Intelligent Golf integration:
 
 ```powershell
