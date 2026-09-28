@@ -8346,11 +8346,11 @@
           ${pluginCapabilities.intelligentGolfEnabled ? `<div class="feedback-attendee-email"><strong>Email confirmed bookings</strong><p>Intelligent Golf records current ticket bookers, not physical check-in. One email will be sent to each active member booker whose player ID resolves to a member email address.</p><small>${escapeHtml(attendeeEmailStatus)}</small><button class="button button-secondary" type="button" data-action="email-feedback-attendees">${attendeeEmailSent ? 'Send again to current bookers' : 'Email booked members'}</button></div>` : ''}
         </aside>` : ''}
       </div>
-      ${campaign ? renderFeedbackResponses(campaign, responses) : ''}
+      ${campaign ? renderFeedbackResponses(event, campaign, responses) : ''}
     </section>`;
   }
 
-  function renderFeedbackResponses(campaign, responses) {
+  function renderFeedbackResponses(event, campaign, responses) {
     if (!responses.length) {
       return `<div class="feedback-empty"><span>◎</span><div><strong>No attendee responses yet</strong><p>Share the link or QR code. Anonymous responses will appear here as soon as they are submitted.</p></div></div>`;
     }
@@ -8379,10 +8379,30 @@
       </div>
       <div class="feedback-comments-heading"><h4>Anonymous comments</h4><span>${textEntries.length}</span></div>
       <div class="feedback-comment-list">
-        ${textEntries.length ? textEntries.map(entry => `<article class="feedback-comment"><span>${escapeHtml(entry.question.label)}</span><p>${escapeHtml(entry.answer)}</p><div><small>Submitted ${escapeHtml(new Date(entry.response.submittedAtUtc).toLocaleDateString('en-GB'))}</small><button class="text-button inline" type="button" data-seed-feedback-insight="${escapeHtml(entry.response.id)}" data-feedback-question="${escapeHtml(entry.question.id)}">Carry this learning forward</button></div></article>`).join('') : '<p class="help-text">No free-text comments have been submitted.</p>'}
+        ${textEntries.length ? textEntries.map(entry => {
+          const carriedForward = feedbackEntryCarriedForward(event, entry);
+          return `<article class="feedback-comment ${carriedForward ? 'carried-forward' : ''}"><span>${escapeHtml(entry.question.label)}</span><p>${escapeHtml(entry.answer)}</p><div><small>Submitted ${escapeHtml(new Date(entry.response.submittedAtUtc).toLocaleDateString('en-GB'))}</small>${carriedForward ? '<span class="feedback-comment-status">✓ Carried forward</span>' : `<button class="text-button inline" type="button" data-seed-feedback-insight="${escapeHtml(entry.response.id)}" data-feedback-question="${escapeHtml(entry.question.id)}">Carry forward</button>`}</div></article>`;
+        }).join('') : '<p class="help-text">No free-text comments have been submitted.</p>'}
       </div>
       ${renderInsightBuilder(campaign, responses)}
     </div>`;
+  }
+
+  function feedbackEntryCarriedForward(event, entry) {
+    const responseId = String(entry?.response?.id ?? '');
+    const questionId = String(entry?.question?.id ?? '');
+    const answer = String(entry?.answer ?? '').trim().toLocaleLowerCase();
+    return (event?.learningInsights ?? []).some(insight => {
+      const linked = responseId && questionId &&
+        insight.sourceFeedbackResponseId === responseId &&
+        insight.sourceFeedbackQuestionId === questionId;
+      // Learning saved before source IDs were introduced can still be recognised
+      // when its approved summary is the original anonymous comment verbatim.
+      const legacyMatch = answer &&
+        insight.sourceType !== 'internal-retrospective' &&
+        String(insight.summary ?? '').trim().toLocaleLowerCase() === answer;
+      return linked || legacyMatch;
+    });
   }
 
   function feedbackAnswer(response, questionId) {
@@ -11300,6 +11320,9 @@
         document.getElementById('insightTitle').value = question.id === 'dietary-choice-comment' ? 'Review food and dietary choice' : question.label;
         document.getElementById('insightSummary').value = answer;
         document.getElementById('insightEvidenceCount').value = '1';
+        const form = document.getElementById('carryForwardInsightForm');
+        form.dataset.sourceFeedbackResponseId = response.id;
+        form.dataset.sourceFeedbackQuestionId = question.id;
         const preferredTargetItemId = question.targetItemIds?.find(itemId => itemIndex.get(itemId)?.item?.type === 'task') ?? question.targetItemIds?.[0];
         const target = preferredTargetItemId
           ? `item:${preferredTargetItemId}`
@@ -11318,6 +11341,7 @@
       eventArgs.preventDefault();
       const event = getActiveEvent();
       if (!event) return;
+      const form = eventArgs.currentTarget;
       const targetValue = document.getElementById('insightTarget').value;
       if (!targetValue) return;
       const [targetType, targetModuleId, targetSectionId] = targetValue.split(':');
@@ -11332,6 +11356,9 @@
         targetItemIds: targetType === 'item' ? [targetModuleId] : [],
         sourceEventName: event.name,
         sourceEventDate: event.eventDate,
+        sourceType: form.dataset.sourceFeedbackResponseId ? 'attendee-feedback' : 'organiser-retrospective',
+        sourceFeedbackResponseId: form.dataset.sourceFeedbackResponseId || undefined,
+        sourceFeedbackQuestionId: form.dataset.sourceFeedbackQuestionId || undefined,
         createdAt: new Date().toISOString()
       };
       event.learningInsights ??= [];

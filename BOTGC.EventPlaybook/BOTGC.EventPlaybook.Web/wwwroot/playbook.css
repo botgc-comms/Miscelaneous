@@ -5299,12 +5299,14 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(198,161,91,.22)!i
 .choice-metric > div strong { color: var(--navy); font-size: .9rem; }
 .feedback-comments-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px; }
 .feedback-comments-heading span { display: grid; min-width: 26px; height: 26px; place-items: center; border-radius: 999px; color: var(--navy); background: #e7f0ee; font-size: .7rem; font-weight: 900; }
-.feedback-comment-list { display: grid; gap: 9px; }
-.feedback-comment { padding: 15px 17px; border: 1px solid #d5e1de; border-left: 4px solid var(--gold); border-radius: 11px; background: #fff; }
+.feedback-comment-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.feedback-comment { display: grid; grid-template-rows: auto 1fr auto; min-width: 0; padding: 15px 17px; border: 1px solid #d5e1de; border-left: 4px solid var(--gold); border-radius: 11px; background: #fff; }
 .feedback-comment > span { color: var(--green); font-size: .62rem; font-weight: 900; text-transform: uppercase; letter-spacing: .05em; }
 .feedback-comment p { margin: 7px 0 10px; color: var(--ink); line-height: 1.5; }
 .feedback-comment > div { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .feedback-comment small { color: var(--muted); }
+.feedback-comment.carried-forward { border-color: #a9d1c1; border-left-color: #2f8066; background: linear-gradient(135deg, #f0faf5, #f8fcfa); box-shadow: inset 0 0 0 1px rgba(47, 128, 102, .05); }
+.feedback-comment-status { display: inline-flex; align-items: center; gap: 4px; padding: 5px 8px; border-radius: 999px; color: #1f684f; background: #d9f0e5; font-size: .61rem; font-weight: 900; white-space: nowrap; }
 .carry-forward-builder { margin-top: 20px; border-top: 4px solid var(--navy); }
 .carry-forward-builder-copy h4 { margin-top: 4px; font-size: 1.25rem; }
 .carry-forward-list { display: grid; gap: 10px; }
@@ -5345,7 +5347,8 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(198,161,91,.22)!i
   .feedback-results > header > small { text-align: left; }
   .feedback-campaign-fields,
   .carry-forward-builder-fields,
-  .feedback-metrics { grid-template-columns: 1fr; }
+  .feedback-metrics,
+  .feedback-comment-list { grid-template-columns: 1fr; }
   .feedback-campaign-fields label.wide,
   .carry-forward-builder-fields label.wide { grid-column: auto; }
   .feedback-share-card { grid-template-columns: 1fr; }
