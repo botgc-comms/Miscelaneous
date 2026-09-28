@@ -1,4 +1,4 @@
-using System.Text.RegularExpressions;
+using System.Text.Json;
 using BOTGC.EventPlaybook.API.Features.Members;
 using BOTGC.EventPlaybook.API.Infrastructure.IntelligentGolf;
 using BOTGC.EventPlaybook.API.Options;
@@ -52,7 +52,7 @@ public sealed class SendMemberCampaignEmailHandler(
         if (sender.MemberNumber is null or <= 0 ||
             string.IsNullOrWhiteSpace(sender.FromName) ||
             string.IsNullOrWhiteSpace(sender.FromAddress) ||
-            string.IsNullOrWhiteSpace(settings.Endpoints.BulkEmailComposerPath) ||
+            string.IsNullOrWhiteSpace(settings.Endpoints.BulkEmailPreparePath) ||
             string.IsNullOrWhiteSpace(settings.Endpoints.BulkEmailSendPath))
         {
             throw new IntelligentGolfEmailSenderNotConfiguredException();
@@ -74,10 +74,6 @@ public sealed class SendMemberCampaignEmailHandler(
             throw new InvalidOperationException($"Intelligent Golf could not resolve a recipient ID for {unmapped.Length} selected member(s). Refresh the member directory and try again.");
         }
 
-        var composer = await transport.GetDocumentAsync(settings.Endpoints.BulkEmailComposerPath, cancellationToken);
-        var draftId = ExtractDraftId(composer)
-            ?? throw new InvalidOperationException("Intelligent Golf did not provide an email draft ID. No member email was sent.");
-
         var fields = new List<KeyValuePair<string, string>>
         {
             new("searchtype", "simple"),
@@ -93,7 +89,7 @@ public sealed class SendMemberCampaignEmailHandler(
         fields.AddRange(
         [
             new("searchemails", string.Empty),
-            new("id", draftId),
+            new("id", string.Empty),
             new("email_subject", request.Subject.Trim()),
             new("email_fromname", sender.FromName.Trim()),
             new("email_fromaddress", sender.FromAddress.Trim()),
@@ -102,7 +98,32 @@ public sealed class SendMemberCampaignEmailHandler(
             new("email_content", bodyHtml)
         ]);
 
-        await transport.PostFormAsync(settings.Endpoints.BulkEmailSendPath, fields, cancellationToken);
+        // Intelligent Golf's own UI is a two-step flow. The first `send` request
+        // creates/updates the draft and returns the real numeric draft ID in its
+        // confirmation dialog. Only then may `confirmsend` be called. Previously
+        // this integration skipped the first step and guessed an ID from arbitrary
+        // page HTML; an unrelated survey URL could therefore be mistaken for the
+        // draft while Intelligent Golf returned an HTTP-200 error action.
+        var prepared = await transport.PostFormResponseAsync(
+            settings.Endpoints.BulkEmailPreparePath,
+            fields,
+            cancellationToken);
+        IntelligentGolfBulkEmailResponse.ThrowIfFailure(prepared.Body, "prepare");
+        var draftId = IntelligentGolfBulkEmailResponse.ExtractDraftId(prepared.Body)
+            ?? throw new InvalidOperationException(
+                "Intelligent Golf did not return a draft ID while preparing the member email. No member email was sent.");
+
+        fields = fields
+            .Select(field => field.Key.Equals("id", StringComparison.OrdinalIgnoreCase)
+                ? new KeyValuePair<string, string>(field.Key, draftId)
+                : field)
+            .ToList();
+
+        var delivery = await transport.PostFormResponseAsync(
+            settings.Endpoints.BulkEmailSendPath,
+            fields,
+            cancellationToken);
+        IntelligentGolfBulkEmailResponse.EnsureSendConfirmed(delivery.Body);
         logger.LogInformation(
             "Submitted member campaign email draft {DraftId} to {RecipientCount} selected Intelligent Golf members.",
             draftId,
@@ -122,19 +143,156 @@ public sealed class SendMemberCampaignEmailHandler(
         if (bodyHtml.Length > 200_000) throw new ArgumentException("The HTML email body is too large.");
     }
 
-    private static string? ExtractDraftId(HtmlDocument document)
-    {
-        var value = document.DocumentNode
-            .SelectSingleNode("//input[@name='id']")?
-            .GetAttributeValue("value", string.Empty)
-            .Trim();
-        if (!string.IsNullOrWhiteSpace(value) && long.TryParse(value, out _)) return value;
+}
 
-        var match = Regex.Match(
-            document.DocumentNode.OuterHtml,
-            @"(?:name=[""']id[""'][^>]*value|\bid\s*[:=])\s*=?\s*[""']?(\d+)",
-            RegexOptions.IgnoreCase);
-        return match.Success ? match.Groups[1].Value : null;
+internal static class IntelligentGolfBulkEmailResponse
+{
+    private static readonly string[] FailureTerms =
+        ["error", "failed", "could not", "cannot", "no recipient", "required"];
+
+    public static string? ExtractDraftId(string raw)
+    {
+        foreach (var fragment in EnumerateFragments(raw))
+        {
+            var document = new HtmlDocument();
+            document.LoadHtml(fragment);
+            var value = document.DocumentNode
+                .SelectSingleNode("//input[translate(@name,'ID','id')='id']")?
+                .GetAttributeValue("value", string.Empty)
+                .Trim();
+            if (long.TryParse(value, out var draftId) && draftId > 0) return value;
+        }
+
+        if (!TryParseJson(raw, out var json)) return null;
+        using (json)
+        {
+            foreach (var action in EnumerateActions(json.RootElement))
+            {
+                if (!TryGetString(action, "selector", out var selector) ||
+                    !selector.Equals("#id", StringComparison.OrdinalIgnoreCase) ||
+                    !TryGetString(action, "value", out var value) ||
+                    !long.TryParse(value, out var draftId) || draftId <= 0)
+                {
+                    continue;
+                }
+
+                return value;
+            }
+        }
+
+        return null;
+    }
+
+    public static void ThrowIfFailure(string raw, string stage)
+    {
+        if (string.IsNullOrWhiteSpace(raw))
+            throw new InvalidOperationException($"Intelligent Golf returned an empty response while attempting to {stage} the member email.");
+
+        if (!TryParseJson(raw, out var json)) return;
+        using (json)
+        {
+            foreach (var action in EnumerateActions(json.RootElement))
+            {
+                var type = TryGetString(action, "type", out var actionType) ? actionType : string.Empty;
+                var message = ReadActionMessage(action);
+                if (type.Equals("showerrors", StringComparison.OrdinalIgnoreCase) ||
+                    type.Contains("error", StringComparison.OrdinalIgnoreCase) ||
+                    FailureTerms.Any(term => message.Contains(term, StringComparison.OrdinalIgnoreCase)))
+                {
+                    throw new InvalidOperationException(
+                        string.IsNullOrWhiteSpace(message)
+                            ? $"Intelligent Golf rejected the request while attempting to {stage} the member email."
+                            : $"Intelligent Golf rejected the member email: {message}");
+                }
+            }
+        }
+    }
+
+    public static void EnsureSendConfirmed(string raw)
+    {
+        ThrowIfFailure(raw, "send");
+        if (!TryParseJson(raw, out var json))
+            throw new InvalidOperationException("Intelligent Golf did not confirm that the member email was sent.");
+
+        using (json)
+        {
+            foreach (var action in EnumerateActions(json.RootElement))
+            {
+                var type = TryGetString(action, "type", out var actionType) ? actionType : string.Empty;
+                var message = ReadActionMessage(action);
+                if (type.Equals("redirect", StringComparison.OrdinalIgnoreCase) ||
+                    type.Equals("reload", StringComparison.OrdinalIgnoreCase) ||
+                    message.Contains("sent", StringComparison.OrdinalIgnoreCase) ||
+                    message.Contains("queued", StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+            }
+        }
+
+        throw new InvalidOperationException("Intelligent Golf did not confirm that the member email was sent.");
+    }
+
+    private static IEnumerable<string> EnumerateFragments(string raw)
+    {
+        yield return raw;
+        if (!TryParseJson(raw, out var json)) yield break;
+        using (json)
+        {
+            foreach (var action in EnumerateActions(json.RootElement))
+            {
+                foreach (var property in new[] { "html", "data" })
+                {
+                    if (TryGetString(action, property, out var value) && !string.IsNullOrWhiteSpace(value))
+                        yield return value;
+                }
+            }
+        }
+    }
+
+    private static IEnumerable<JsonElement> EnumerateActions(JsonElement root)
+    {
+        if (!root.TryGetProperty("actions", out var actions) || actions.ValueKind != JsonValueKind.Array) yield break;
+        foreach (var action in actions.EnumerateArray())
+            if (action.ValueKind == JsonValueKind.Object) yield return action;
+    }
+
+    private static string ReadActionMessage(JsonElement action)
+    {
+        var values = new List<string>();
+        foreach (var property in new[] { "message", "detail", "data", "text", "shortmessage" })
+        {
+            if (TryGetString(action, property, out var value) && !string.IsNullOrWhiteSpace(value))
+            {
+                var document = new HtmlDocument();
+                document.LoadHtml(value);
+                var decoded = System.Net.WebUtility.HtmlDecode(document.DocumentNode.InnerText).Trim();
+                if (!string.IsNullOrWhiteSpace(decoded)) values.Add(decoded);
+            }
+        }
+        return string.Join(" ", values);
+    }
+
+    private static bool TryGetString(JsonElement element, string name, out string value)
+    {
+        value = string.Empty;
+        if (!element.TryGetProperty(name, out var property) || property.ValueKind != JsonValueKind.String) return false;
+        value = property.GetString() ?? string.Empty;
+        return true;
+    }
+
+    private static bool TryParseJson(string raw, out JsonDocument document)
+    {
+        try
+        {
+            document = JsonDocument.Parse(raw);
+            return document.RootElement.ValueKind == JsonValueKind.Object;
+        }
+        catch (JsonException)
+        {
+            document = null!;
+            return false;
+        }
     }
 }
 

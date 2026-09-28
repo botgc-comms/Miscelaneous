@@ -216,6 +216,7 @@
   let sharedStateSavePending = false;
   let applyingSharedState = false;
   let catalogueIdeasExpanded = false;
+  const catalogueArtworkRecoveryChecks = new Map();
   let browserStateCacheMode = 'full';
   let browserStateCacheWarningShown = false;
   const completionLinkRegistrationSignatures = new Map();
@@ -5067,6 +5068,7 @@
       ${renderNewEventDialog()}
       ${renderAdoptIdeaDialog()}
       <dialog id="event-summary-dialog" class="modal event-summary-dialog"><div id="event-summary-content"></div></dialog>
+      <dialog id="event-close-review-dialog" class="modal event-close-review-dialog"><div id="event-close-review-content"></div></dialog>
       ${renderTaskNoteDialog()}
       ${renderEventStatusDialog(event)}
       ${renderIntelligentGolfPlannerMatchDialog(event)}
@@ -7351,6 +7353,119 @@
     return 'Date not set';
   }
 
+  function isRecoverableCatalogueArtworkSource(value) {
+    return typeof value === 'string'
+      && (value.startsWith('/api/poster/artwork?') || value.startsWith('data:image/'));
+  }
+
+  function selectRecoveredCatalogueArtwork(storedSession) {
+    if (!storedSession || typeof storedSession !== 'object') return null;
+
+    const artworkByOutput = storedSession.artworkByOutput && typeof storedSession.artworkByOutput === 'object'
+      ? storedSession.artworkByOutput
+      : {};
+    const selectedOutputIds = Array.isArray(storedSession.generationSnapshot?.selectedOutputIds)
+      ? storedSession.generationSnapshot.selectedOutputIds
+      : [];
+    const outputIds = [...new Set(['social', 'clubhouse', 'a4', ...selectedOutputIds, ...Object.keys(artworkByOutput)])];
+    for (const outputId of outputIds) {
+      const source = artworkByOutput[outputId];
+      if (!isRecoverableCatalogueArtworkSource(source)) continue;
+      return {
+        source,
+        outputId,
+        isSquare: outputId === 'social',
+        generationId: storedSession.generationSnapshot?.id ?? null,
+        generatedAt: storedSession.contentUpdatedAt ?? storedSession.generationSnapshot?.generatedAt ?? storedSession.savedAt ?? null
+      };
+    }
+
+    if (isRecoverableCatalogueArtworkSource(storedSession.primaryArtworkDataUrl)) {
+      return {
+        source: storedSession.primaryArtworkDataUrl,
+        outputId: 'clubhouse',
+        isSquare: false,
+        generationId: storedSession.generationSnapshot?.id ?? null,
+        generatedAt: storedSession.contentUpdatedAt ?? storedSession.generationSnapshot?.generatedAt ?? storedSession.savedAt ?? null
+      };
+    }
+
+    const concepts = Array.isArray(storedSession.concepts)
+      ? storedSession.concepts.filter(concept => isRecoverableCatalogueArtworkSource(concept?.artworkSource))
+      : [];
+    const selectedConcept = concepts.find(concept => concept.id === storedSession.selectedConceptId);
+    const concept = selectedConcept ?? concepts.sort((left, right) => (Number(left.index) || 0) - (Number(right.index) || 0))[0];
+    if (concept) {
+      return {
+        source: concept.artworkSource,
+        outputId: concept.id ?? 'concept',
+        isSquare: false,
+        generationId: concept.generationId ?? storedSession.generationSnapshot?.id ?? null,
+        generatedAt: storedSession.contentUpdatedAt ?? storedSession.generationSnapshot?.generatedAt ?? storedSession.savedAt ?? null
+      };
+    }
+
+    if (isRecoverableCatalogueArtworkSource(storedSession.sourceDesign?.artworkSource)) {
+      return {
+        source: storedSession.sourceDesign.artworkSource,
+        outputId: 'uploaded-design',
+        isSquare: Number(storedSession.sourceDesign.width) > 0
+          && Number(storedSession.sourceDesign.width) === Number(storedSession.sourceDesign.height),
+        generationId: storedSession.generationSnapshot?.id ?? null,
+        generatedAt: storedSession.sourceDesign.uploadedAt ?? storedSession.savedAt ?? null
+      };
+    }
+
+    return null;
+  }
+
+  async function recoverMissingCatalogueArtwork(eventId) {
+    const event = state.events.find(candidate => candidate.id === eventId);
+    if (!event || event.publishedCataloguePosterThumbnail || event.cataloguePosterThumbnail) return false;
+
+    try {
+      const response = await fetch(`/api/poster/session?key=${encodeURIComponent(eventId)}`, { cache: 'no-store' });
+      if (response.status === 404) return false;
+      if (!response.ok) throw new Error(`Communications Centre session lookup failed (${response.status}).`);
+
+      const document = await response.json();
+      const recovered = selectRecoveredCatalogueArtwork(document?.session ?? document);
+      const target = state.events.find(candidate => candidate.id === eventId);
+      if (!recovered || !target || target.publishedCataloguePosterThumbnail || target.cataloguePosterThumbnail) return false;
+
+      target.cataloguePosterThumbnail = recovered.source;
+      target.cataloguePosterSourceOutputId = recovered.outputId;
+      target.cataloguePosterSourceIsSquare = recovered.isSquare;
+      target.cataloguePosterGenerationId = recovered.generationId;
+      target.cataloguePosterThumbnailMode = 'cover';
+      target.posterUpdatedAt = recovered.generatedAt ?? new Date().toISOString();
+      target.cataloguePosterRecoveredAt = new Date().toISOString();
+      return true;
+    } catch (error) {
+      catalogueArtworkRecoveryChecks.delete(eventId);
+      console.warn(`Unable to recover catalogue artwork for event ${eventId}.`, error);
+      return false;
+    }
+  }
+
+  function scheduleMissingCatalogueArtworkRecovery(events) {
+    const candidates = events.filter(event =>
+      event?.id
+      && !event.publishedCataloguePosterThumbnail
+      && !event.cataloguePosterThumbnail
+      && Date.now() - (catalogueArtworkRecoveryChecks.get(event.id) ?? 0) > 60_000);
+    if (candidates.length === 0) return;
+
+    const checkedAt = Date.now();
+    for (const event of candidates) catalogueArtworkRecoveryChecks.set(event.id, checkedAt);
+    Promise.all(candidates.map(event => recoverMissingCatalogueArtwork(event.id)))
+      .then(results => {
+        if (!results.some(Boolean)) return;
+        saveState();
+        if (state.activeView === 'catalogue') render();
+      });
+  }
+
   function renderCatalogue() {
     const grouped = new Map();
     const catalogueFilter = ['all', 'events', 'ideas'].includes(state.catalogueFilter)
@@ -7367,6 +7482,7 @@
       const bDate = b.eventDate || b.createdAt || '';
       return bDate.localeCompare(aDate);
     });
+    scheduleMissingCatalogueArtworkRecovery([...ideas, ...sortedEvents]);
 
     for (const event of sortedEvents) {
       const year = catalogueYear(event);
@@ -7769,6 +7885,19 @@
     return [sentiment ? `Overall team feeling: ${sentimentLabels[sentiment]} (${sentiment}/5)` : '', ...structured, String(event.retrospective?.aiNarrative ?? '').trim()].filter(Boolean).join('\n\n');
   }
 
+  function isRecordedRetrospectiveValue(value) {
+    if (typeof value === 'string') return value.trim().length > 0;
+    return value !== '' && value !== null && value !== undefined;
+  }
+
+  function setRetrospectiveContentValue(event, key, value) {
+    event.retrospective ??= {};
+    if (valuesEqual(event.retrospective[key], value)) return false;
+    event.retrospective[key] = value;
+    event.retrospective.contentUpdatedAt = new Date().toISOString();
+    return true;
+  }
+
   function retrospectivePlannerContexts(event) {
     const contexts = new Map();
     for (const module of playbook.modules.filter(candidate => isModuleActive(candidate, event))) {
@@ -7836,6 +7965,121 @@
     return lines.join('\n').slice(0, 16000);
   }
 
+  function retrospectiveFinalisationSignature(event) {
+    const fields = Object.fromEntries((playbook.retrospective?.fields ?? []).map(field => [
+      field.id,
+      event.retrospective?.[field.id] ?? null
+    ]));
+    const responseCount = feedbackCache.get(event.id)?.responses?.length
+      ?? Number(event.retrospective?.memberFeedbackSummaryResponseCount ?? 0);
+    return JSON.stringify({
+      fields,
+      sentimentRating: Number(event.retrospective?.sentimentRating || 0),
+      aiNarrative: String(event.retrospective?.aiNarrative ?? '').trim(),
+      memberFeedbackResponseCount: responseCount
+    });
+  }
+
+  function getEventClosureRetrospectiveStatus(event) {
+    const fields = playbook.retrospective?.fields ?? [];
+    const answeredFields = fields.filter(field => isRecordedRetrospectiveValue(event.retrospective?.[field.id]));
+    const feedbackResponseCount = feedbackCache.get(event.id)?.responses?.length ?? 0;
+    const summarisedResponseCount = Number(event.retrospective?.memberFeedbackSummaryResponseCount ?? 0);
+    const finalisedAt = event.retrospective?.finalisedAt ?? '';
+    const contentUpdatedAt = event.retrospective?.contentUpdatedAt ?? '';
+    const currentSignature = retrospectiveFinalisationSignature(event);
+    const signatureMatches = event.retrospective?.finalisedSignature
+      ? event.retrospective.finalisedSignature === currentSignature
+      : !contentUpdatedAt || Date.parse(finalisedAt) >= Date.parse(contentUpdatedAt);
+    const finalisationCurrent = Boolean(finalisedAt)
+      && signatureMatches
+      && feedbackResponseCount <= summarisedResponseCount;
+    const hasFinalisableContent = Boolean(retrospectiveTextForAnalysis(event) || memberFeedbackTextForAnalysis(event));
+    const taskCompleted = event.taskState?.['complete-retrospective']?.completed === true;
+    return {
+      answeredFieldCount: answeredFields.length,
+      totalFieldCount: fields.length,
+      taskCompleted,
+      finalisedAt,
+      finalisationCurrent,
+      hasFinalisableContent,
+      complete: taskCompleted && answeredFields.length === fields.length && finalisationCurrent
+    };
+  }
+
+  function renderEventCloseReviewContent(event, status) {
+    const finalisationLabel = status.finalisationCurrent
+      ? 'AI learning is finalised and up to date'
+      : status.finalisedAt
+        ? 'Retrospective content or feedback has changed since AI finalisation'
+        : 'Retrospective comments have not been finalised with AI';
+    return `
+      <div class="modal-heading">
+        <div><span class="eyebrow">Before this event is closed</span><h2>Finish the retrospective?</h2><p>${escapeHtml(event.name)} still has retrospective work that has not been completed or carried forward.</p></div>
+        <button class="icon-button" type="button" data-close-review-cancel aria-label="Close">×</button>
+      </div>
+      <div class="event-close-review-body">
+        <div class="event-close-review-warning"><span aria-hidden="true">!</span><div><strong>Closing now removes the event from active work.</strong><p>Any learning that has not been finalised will not be attached to its relevant planning questions and tasks when this event is cloned.</p></div></div>
+        <div class="event-close-review-checks">
+          <div class="${status.answeredFieldCount === status.totalFieldCount ? 'complete' : 'warning'}"><span>${status.answeredFieldCount === status.totalFieldCount ? '✓' : '!'}</span><div><strong>${status.answeredFieldCount} of ${status.totalFieldCount} retrospective questions answered</strong><small>${status.answeredFieldCount === status.totalFieldCount ? 'The event outcome and organiser comments are recorded.' : 'Review the missing outcome figures or retrospective prompts.'}</small></div></div>
+          <div class="${status.taskCompleted ? 'complete' : 'warning'}"><span>${status.taskCompleted ? '✓' : '!'}</span><div><strong>${status.taskCompleted ? 'Retrospective task completed' : 'Retrospective task is still open'}</strong><small>The mandatory post-event task should be completed once the review is finished.</small></div></div>
+          <div class="${status.finalisationCurrent ? 'complete' : 'warning'}"><span>${status.finalisationCurrent ? '✓' : '!'}</span><div><strong>${escapeHtml(finalisationLabel)}</strong><small>AI finalisation turns the evidence into reusable notes attached to the relevant questions and tasks.</small></div></div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="button button-secondary" type="button" data-close-review-anyway>Close without finishing</button>
+        <button class="button button-secondary" type="button" data-close-review-open>Review retrospective</button>
+        ${status.hasFinalisableContent && !status.finalisationCurrent ? '<button class="button button-primary" type="button" data-close-review-finalise>Finalise with AI and close</button>' : ''}
+      </div>`;
+  }
+
+  async function confirmEventClosure(event) {
+    await ensureFeedbackLoaded(event.id);
+    const status = getEventClosureRetrospectiveStatus(event);
+    if (status.complete) return true;
+
+    const dialog = document.getElementById('event-close-review-dialog');
+    const content = document.getElementById('event-close-review-content');
+    if (!dialog || !content) return false;
+    content.innerHTML = renderEventCloseReviewContent(event, status);
+    if (dialog.open) dialog.close();
+    dialog.showModal();
+
+    return new Promise(resolve => {
+      let resolved = false;
+      const finish = result => {
+        if (resolved) return;
+        resolved = true;
+        if (dialog.open) dialog.close();
+        resolve(result);
+      };
+      const cancel = eventArgs => {
+        eventArgs.preventDefault();
+        finish(false);
+      };
+      dialog.addEventListener('cancel', cancel, { once: true });
+      content.querySelector('[data-close-review-cancel]')?.addEventListener('click', () => finish(false));
+      content.querySelector('[data-close-review-anyway]')?.addEventListener('click', () => finish(true));
+      content.querySelector('[data-close-review-open]')?.addEventListener('click', () => {
+        state.activeEventId = event.id;
+        state.activeView = 'retrospective';
+        saveState();
+        finish(false);
+        render();
+      });
+      content.querySelector('[data-close-review-finalise]')?.addEventListener('click', async buttonEvent => {
+        const button = buttonEvent.currentTarget;
+        content.querySelectorAll('button').forEach(candidate => { candidate.disabled = true; });
+        const finalised = await runRetrospectiveAnalysis(event, button, { finalise: true, renderAfter: false });
+        if (finalised) {
+          finish(true);
+          return;
+        }
+        content.querySelectorAll('button').forEach(candidate => { candidate.disabled = false; });
+      });
+    });
+  }
+
   function questionIdsFromCondition(condition, result = []) {
     if (!condition) return result;
     if (condition.questionId) result.push(condition.questionId);
@@ -7858,13 +8102,13 @@
   function captureRetrospectiveInputs(event) {
     document.querySelectorAll('[data-retro-field]').forEach(element => {
       const value = element.type === 'number' && element.value !== '' ? Number(element.value) : element.value;
-      event.retrospective[element.dataset.retroField] = value;
+      setRetrospectiveContentValue(event, element.dataset.retroField, value);
     });
     const narrative = document.getElementById('retrospectiveNarrative');
-    if (narrative) event.retrospective.aiNarrative = narrative.value;
+    if (narrative) setRetrospectiveContentValue(event, 'aiNarrative', narrative.value);
   }
 
-  async function runRetrospectiveAnalysis(event, button, { finalise = false } = {}) {
+  async function runRetrospectiveAnalysis(event, button, { finalise = false, renderAfter = true } = {}) {
     captureRetrospectiveInputs(event);
     const retrospectiveText = retrospectiveTextForAnalysis(event);
     const customerFeedbackText = memberFeedbackTextForAnalysis(event);
@@ -7872,7 +8116,7 @@
       alert(finalise
         ? 'Record how the event felt, add something to the three retrospective prompts, or collect member feedback before finalising it.'
         : 'There is no member feedback to summarise yet.');
-      return;
+      return false;
     }
 
     const originalText = button?.textContent ?? '';
@@ -7900,15 +8144,16 @@
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error || 'The retrospective could not be analysed.');
 
-      event.retrospective.memberFeedbackSummary = payload.customerFeedbackSummary || 'No member feedback has been received yet.';
+      setRetrospectiveContentValue(event, 'memberFeedbackSummary', payload.customerFeedbackSummary || 'No member feedback has been received yet.');
       event.retrospective.memberFeedbackSummaryAt = new Date().toISOString();
-      event.retrospective.memberFeedbackSummaryResponseCount = responseCount;
+      setRetrospectiveContentValue(event, 'memberFeedbackSummaryResponseCount', responseCount);
       if (finalise) {
         const analysisId = crypto.randomUUID();
         const generatedAt = new Date().toISOString();
         const proposals = (payload.proposals ?? []).map(proposal => ({ ...proposal, approved: true }));
         event.retrospective.taskAnalysis = { ...payload, analysisId, generatedAt, proposals };
         event.retrospective.finalisedAt = generatedAt;
+        event.retrospective.finalisedSignature = retrospectiveFinalisationSignature(event);
         event.learningInsights ??= [];
         event.learningInsights = event.learningInsights.filter(insight => insight.sourceType !== 'finalised-retrospective');
         for (const proposal of proposals) {
@@ -7934,14 +8179,18 @@
         }
       }
       saveState();
-      render();
-      requestAnimationFrame(() => document.querySelector(finalise ? '.retrospective-analysis-result' : '.member-feedback-summary-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+      if (renderAfter) {
+        render();
+        requestAnimationFrame(() => document.querySelector(finalise ? '.retrospective-analysis-result' : '.member-feedback-summary-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+      }
+      return true;
     } catch (error) {
       alert(error.message || 'The retrospective could not be analysed.');
       if (button) {
         button.disabled = false;
         button.textContent = originalText;
       }
+      return false;
     }
   }
 
@@ -9361,9 +9610,10 @@
     return true;
   }
 
-  function closeEventAndCreateNew(eventId) {
+  async function closeEventAndCreateNew(eventId) {
     const target = state.events.find(item => item.id === eventId);
     if (!target) return;
+    if (!target.closedAt && !await confirmEventClosure(target)) return;
     if (!target.closedAt) target.closedAt = new Date().toISOString();
     normaliseEventLifecycle(target);
     if (!CHANGE_RESPONSE_STATUSES.has(target.lifecycle.status)) {
@@ -9461,7 +9711,7 @@
       });
     });
     document.querySelectorAll('#event-summary-dialog [data-close-event]').forEach(element => {
-      element.addEventListener('click', () => closeEventAndCreateNew(element.dataset.closeEvent));
+      element.addEventListener('click', () => void closeEventAndCreateNew(element.dataset.closeEvent));
     });
     document.querySelectorAll('#event-summary-dialog [data-reopen-event]').forEach(element => {
       element.addEventListener('click', () => reopenEvent(element.dataset.reopenEvent));
@@ -10143,7 +10393,11 @@
         form.reportValidity();
         return;
       }
-      if (!event || !applyEventStatusChange(event)) return;
+      if (!event) return;
+      if (document.getElementById('event-status-value')?.value === 'completed'
+        && normaliseEventLifecycle(event).status !== 'completed'
+        && !await confirmEventClosure(event)) return;
+      if (!applyEventStatusChange(event)) return;
       if (saveError) {
         saveError.textContent = '';
         saveError.classList.add('hidden');
@@ -10790,7 +11044,7 @@
     });
 
     document.querySelectorAll('[data-close-event]').forEach(element => {
-      element.addEventListener('click', () => closeEventAndCreateNew(element.dataset.closeEvent));
+      element.addEventListener('click', () => void closeEventAndCreateNew(element.dataset.closeEvent));
     });
 
     document.querySelectorAll('[data-reopen-event]').forEach(element => {
@@ -10812,14 +11066,14 @@
     document.querySelectorAll('[data-retro-field]').forEach(element => {
       element.addEventListener('change', () => {
         const event = getActiveEvent(); if (!event) return;
-        event.retrospective[element.dataset.retroField] = element.type === 'number' && element.value !== '' ? Number(element.value) : element.value;
+        setRetrospectiveContentValue(event, element.dataset.retroField, element.type === 'number' && element.value !== '' ? Number(element.value) : element.value);
         saveState();
       });
     });
     document.querySelectorAll('[data-retro-choice]').forEach(element => {
       element.addEventListener('click', () => {
         const event = getActiveEvent(); if (!event) return;
-        event.retrospective[element.dataset.retroChoice] = element.dataset.value === 'true';
+        setRetrospectiveContentValue(event, element.dataset.retroChoice, element.dataset.value === 'true');
         saveState(); render();
       });
     });
@@ -10828,7 +11082,7 @@
       element.addEventListener('click', () => {
         const event = getActiveEvent();
         if (!event) return;
-        event.retrospective.sentimentRating = Number(element.dataset.retroSentiment);
+        setRetrospectiveContentValue(event, 'sentimentRating', Number(element.dataset.retroSentiment));
         saveState();
         render();
       });
@@ -10837,7 +11091,7 @@
     document.getElementById('retrospectiveNarrative')?.addEventListener('change', elementEvent => {
       const event = getActiveEvent();
       if (!event) return;
-      event.retrospective.aiNarrative = elementEvent.currentTarget.value;
+      setRetrospectiveContentValue(event, 'aiNarrative', elementEvent.currentTarget.value);
       saveState();
     });
 
