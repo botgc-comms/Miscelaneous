@@ -8415,7 +8415,7 @@
       <div class="carry-forward-builder-copy"><span class="eyebrow">Organiser approval</span><h4>Carry useful learning into the next event</h4><p>Review and rewrite the evidence as an operationally useful note. Only approved notes appear beside questions and tasks in a cloned event.</p></div>
       <div class="carry-forward-builder-fields">
         <label><span>Short title</span><input id="insightTitle" type="text" maxlength="120" required placeholder="For example: Include a non-spicy meal option"></label>
-        <label><span>Show this learning beside</span><select id="insightTarget" required><option value="">Choose a planner area or task</option>${renderLearningTargetOptions()}</select></label>
+        <label class="learning-target-picker"><span>Show this learning beside</span><input id="insightTargetSearch" type="search" autocomplete="off" placeholder="Search questions and tasks"><select id="insightTarget" required><option value="">Choose a planner question or task</option>${renderLearningTargetOptions()}</select><small id="insightTargetMatchStatus" class="learning-target-match-status">Choose a target, or select a comment above for an automatic suggestion.</small></label>
         <label class="wide"><span>Learning for the next organiser</span><textarea id="insightSummary" rows="4" maxlength="1500" required placeholder="State what should be considered next time and why."></textarea></label>
         <label><span>Evidence</span><input id="insightEvidenceCount" type="number" min="1" max="${responses.length}" value="1"></label>
         <label><span>Importance</span><select id="insightImportance"><option value="consider">Consider</option><option value="important">Important</option><option value="critical">Critical</option></select></label>
@@ -8424,11 +8424,105 @@
     </form>`;
   }
 
-  function renderLearningTargetOptions(selectedValue = '') {
-    return playbook.modules.map(module => `<optgroup label="${escapeHtml(module.title)}">
-      <option value="module:${escapeHtml(module.id)}" ${selectedValue === `module:${module.id}` ? 'selected' : ''}>Whole module — ${escapeHtml(module.title)}</option>
-      ${module.sections.map(section => `<option value="section:${escapeHtml(module.id)}:${escapeHtml(section.id)}" ${selectedValue === `section:${module.id}:${section.id}` ? 'selected' : ''}>Section — ${escapeHtml(section.title)}</option>${section.items.filter(item => ['question', 'task'].includes(item.type)).map(item => `<option value="item:${escapeHtml(item.id)}" ${selectedValue === `item:${item.id}` ? 'selected' : ''}>${item.type === 'task' ? 'Task' : 'Question'} — ${escapeHtml(item.title ?? item.label)}</option>`).join('')}`).join('')}
-    </optgroup>`).join('');
+  function renderLearningTargetOptions(selectedValue = '', search = '') {
+    const query = normaliseLearningTargetSearch(search);
+    return playbook.modules.map(module => {
+      const options = [];
+      const moduleValue = `module:${module.id}`;
+      if (!query || learningTargetMatches(query, module.title, module.id) || selectedValue === moduleValue) {
+        options.push(`<option value="${escapeHtml(moduleValue)}" ${selectedValue === moduleValue ? 'selected' : ''}>Whole module — ${escapeHtml(module.title)}</option>`);
+      }
+      for (const section of module.sections) {
+        const sectionValue = `section:${module.id}:${section.id}`;
+        if (!query || learningTargetMatches(query, module.title, section.title, section.id) || selectedValue === sectionValue) {
+          options.push(`<option value="${escapeHtml(sectionValue)}" ${selectedValue === sectionValue ? 'selected' : ''}>Section — ${escapeHtml(section.title)}</option>`);
+        }
+        for (const item of section.items.filter(candidate => ['question', 'task'].includes(candidate.type))) {
+          const itemValue = `item:${item.id}`;
+          if (query && !learningTargetMatches(query, module.title, section.title, item.id, item.title, item.label, item.detail) && selectedValue !== itemValue) continue;
+          options.push(`<option value="${escapeHtml(itemValue)}" ${selectedValue === itemValue ? 'selected' : ''}>${item.type === 'task' ? 'Task' : 'Question'} — ${escapeHtml(item.title ?? item.label)}</option>`);
+        }
+      }
+      return options.length ? `<optgroup label="${escapeHtml(module.title)}">${options.join('')}</optgroup>` : '';
+    }).join('');
+  }
+
+  function normaliseLearningTargetSearch(value) {
+    return String(value ?? '').toLocaleLowerCase().replace(/[^a-z0-9£]+/g, ' ').trim();
+  }
+
+  function learningTargetMatches(query, ...values) {
+    if (!query) return true;
+    const haystack = normaliseLearningTargetSearch(values.filter(Boolean).join(' '));
+    return query.split(/\s+/).every(term => haystack.includes(term));
+  }
+
+  function setLearningTargetOptions(search = '', preferredValue = '') {
+    const select = document.getElementById('insightTarget');
+    if (!select) return;
+    const currentValue = preferredValue || select.value;
+    select.innerHTML = `<option value="">Choose a planner question or task</option>${renderLearningTargetOptions(currentValue, search)}`;
+    if ([...select.options].some(option => option.value === currentValue)) select.value = currentValue;
+  }
+
+  function configuredFeedbackLearningTarget(question) {
+    const preferredTargetItemId = question.targetItemIds?.find(itemId => itemIndex.get(itemId)?.item?.type === 'task') ?? question.targetItemIds?.[0];
+    return preferredTargetItemId
+      ? `item:${preferredTargetItemId}`
+      : question.targetSectionId
+        ? `section:${question.targetModuleId ?? ''}:${question.targetSectionId}`
+        : question.targetModuleId
+          ? `module:${question.targetModuleId}`
+          : '';
+  }
+
+  async function suggestFeedbackLearningTarget(event, question, answer, button) {
+    const select = document.getElementById('insightTarget');
+    const status = document.getElementById('insightTargetMatchStatus');
+    const search = document.getElementById('insightTargetSearch');
+    if (!select || !status) return;
+    const configuredTarget = configuredFeedbackLearningTarget(question);
+    if (configuredTarget) setLearningTargetOptions('', configuredTarget);
+    status.textContent = 'Finding the most relevant planner question or task…';
+    status.className = 'learning-target-match-status working';
+    if (button) button.disabled = true;
+    try {
+      const response = await fetch('/api/retrospective/analyse', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          eventName: event.name,
+          eventDescription: event.description,
+          retrospectiveText: '',
+          customerFeedbackText: `${question.label}\n${answer}`,
+          customerFeedbackResponseCount: 1,
+          sentimentRating: null,
+          tasks: retrospectivePlannerContexts(event)
+        })
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.error || 'No automatic match was returned.');
+      const proposal = (payload.proposals ?? []).find(candidate => itemIndex.has(candidate.targetItemId));
+      if (!proposal) throw new Error('No confident automatic match was found.');
+      const target = `item:${proposal.targetItemId}`;
+      if (search) search.value = '';
+      setLearningTargetOptions('', target);
+      const indexed = itemIndex.get(proposal.targetItemId);
+      const label = indexed?.item?.title ?? indexed?.item?.label ?? 'the selected planner item';
+      const confidence = Number(proposal.confidence) > 0 ? ` · ${Number(proposal.confidence)}% confidence` : '';
+      const reason = String(proposal.reason ?? '').trim();
+      status.textContent = `Suggested automatically: ${label}${confidence}.${reason ? ` ${reason}` : ''} You can search for a different target.`;
+      status.className = 'learning-target-match-status matched';
+      const title = document.getElementById('insightTitle');
+      if (proposal.title && title?.value === question.label) title.value = proposal.title;
+    } catch (error) {
+      status.textContent = configuredTarget
+        ? 'Suggested from the feedback category. Search to choose a more specific question or task.'
+        : 'No confident automatic match was found. Search for the most relevant question or task.';
+      status.className = 'learning-target-match-status fallback';
+    } finally {
+      if (button?.isConnected) button.disabled = false;
+    }
   }
 
   function renderCarryForwardLibrary(event) {
@@ -11309,8 +11403,19 @@
       });
     });
 
+    document.getElementById('insightTargetSearch')?.addEventListener('input', eventArgs => {
+      const search = eventArgs.currentTarget.value;
+      setLearningTargetOptions(search);
+      const status = document.getElementById('insightTargetMatchStatus');
+      if (!status) return;
+      status.textContent = search
+        ? 'The list is filtered by question, task, section and planner-area wording.'
+        : 'Choose a target, or select a comment above for an automatic suggestion.';
+      status.className = 'learning-target-match-status';
+    });
+
     document.querySelectorAll('[data-seed-feedback-insight]').forEach(element => {
-      element.addEventListener('click', () => {
+      element.addEventListener('click', async () => {
         const event = getActiveEvent();
         const data = event ? feedbackCache.get(event.id) : null;
         const response = data?.responses?.find(candidate => candidate.id === element.dataset.seedFeedbackInsight);
@@ -11323,17 +11428,12 @@
         const form = document.getElementById('carryForwardInsightForm');
         form.dataset.sourceFeedbackResponseId = response.id;
         form.dataset.sourceFeedbackQuestionId = question.id;
-        const preferredTargetItemId = question.targetItemIds?.find(itemId => itemIndex.get(itemId)?.item?.type === 'task') ?? question.targetItemIds?.[0];
-        const target = preferredTargetItemId
-          ? `item:${preferredTargetItemId}`
-          : question.targetSectionId
-            ? `section:${question.targetModuleId ?? ''}:${question.targetSectionId}`
-            : question.targetModuleId
-              ? `module:${question.targetModuleId}`
-              : '';
-        document.getElementById('insightTarget').value = target;
+        const search = document.getElementById('insightTargetSearch');
+        if (search) search.value = '';
+        setLearningTargetOptions('', configuredFeedbackLearningTarget(question));
         document.getElementById('carryForwardInsightForm')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         requestAnimationFrame(() => document.getElementById('insightSummary')?.focus());
+        await suggestFeedbackLearningTarget(event, question, answer, element);
       });
     });
 

@@ -5259,6 +5259,13 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(198,161,91,.22)!i
 .carry-forward-builder-fields select,
 .carry-forward-builder-fields textarea,
 .feedback-share-card > input { width: 100%; border: 1px solid #bdcfcb; border-radius: 9px; padding: 10px 11px; color: var(--ink); background: #fff; font: inherit; }
+.learning-target-picker { align-content: start; }
+.learning-target-picker input[type="search"] { min-height: 38px; background: #fff; }
+.learning-target-picker select { margin-top: 2px; }
+.learning-target-match-status { min-height: 30px; color: var(--muted); font-size: .62rem; font-weight: 650; line-height: 1.4; }
+.learning-target-match-status.working { color: #75591f; }
+.learning-target-match-status.matched { color: #246b53; }
+.learning-target-match-status.fallback { color: #7d6532; }
 .feedback-open-toggle { display: flex !important; align-items: center; grid-column: 1 / -1; grid-template-columns: auto 1fr; }
 .feedback-open-toggle input { width: 17px; height: 17px; }
 .feedback-share-card { display: grid; align-content: start; gap: 12px; }
