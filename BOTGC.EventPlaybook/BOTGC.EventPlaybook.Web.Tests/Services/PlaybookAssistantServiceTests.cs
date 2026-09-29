@@ -144,7 +144,7 @@ public sealed class PlaybookAssistantServiceTests : IDisposable
         var item = FindItem(applied.Document.Template, "event-viability-triggers");
         Assert.Equal("event-viability-triggers", item.GetProperty("id").GetString());
         Assert.Equal("What circumstances would make the club reconsider this event?", item.GetProperty("label").GetString());
-        Assert.Equal("4.1", applied.Document.Template.GetProperty("schemaVersion").GetString());
+        Assert.Equal("4.2", applied.Document.Template.GetProperty("schemaVersion").GetString());
     }
 
     [Fact]

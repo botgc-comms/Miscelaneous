@@ -27,7 +27,7 @@ public sealed class PlaybookTemplateStoreTests : IDisposable
         Assert.Equal("bundled-core", document.Source);
         Assert.Contains("event-date", document.ProtectedQuestionIds);
         Assert.Contains("communications-involved", document.ProtectedQuestionIds);
-        Assert.Equal("4.0", document.Template.GetProperty("schemaVersion").GetString());
+        Assert.Equal("4.1", document.Template.GetProperty("schemaVersion").GetString());
     }
 
     [Fact]

@@ -76,7 +76,7 @@ public sealed class PlaybookConfigurationTests
 
         using var document = JsonDocument.Parse(dataJson);
         var root = document.RootElement;
-        Assert.Equal("4.0", root.GetProperty("schemaVersion").GetString());
+        Assert.Equal("4.1", root.GetProperty("schemaVersion").GetString());
 
         var closeDownQuestion = FindItem(root, "general-close-down-required");
         var context = closeDownQuestion.GetProperty("planningContext");
@@ -122,7 +122,7 @@ public sealed class PlaybookConfigurationTests
     }
 
     [Fact]
-    public void AdmissionDistinguishesAttendanceEstimatesLimitedPlacesAndPaidEntry()
+    public void AdmissionDistinguishesCompetitionFeesFromRegistrationTicketsAndPaidEntry()
     {
         var solutionRoot = FindSolutionRoot();
         var dataPath = Path.Combine(solutionRoot, "BOTGC.EventPlaybook.Web", "Data", "event-playbook.json");
@@ -131,15 +131,28 @@ public sealed class PlaybookConfigurationTests
 
         var gateway = FindItem(root, "entry-charge");
         Assert.Equal(
-            "Will attendees need to book to come to the event and/or will they be charged?",
+            "Will attendees need to book, enter the competition and/or pay to take part?",
             gateway.GetProperty("label").GetString());
         Assert.Equal(
             "decide-booking-or-entry-charge",
             gateway.GetProperty("dontKnowTask").GetProperty("id").GetString());
 
         var admission = FindModule(root, "admission");
-        Assert.Equal("Bookings, tickets and admission payments", admission.GetProperty("title").GetString());
+        Assert.Equal("Entry, bookings, tickets and payments", admission.GetProperty("title").GetString());
         Assert.True(ContainsCondition(admission.GetProperty("activation"), "entry-charge", "equals", true));
+
+        var feeRoute = FindItem(root, "admission-fee-route");
+        Assert.Equal("singleChoice", feeRoute.GetProperty("answerType").GetString());
+        Assert.Equal(
+            new[] { "no-fee-booking", "competition-fee", "event-ticket", "competition-and-ticket" },
+            feeRoute.GetProperty("options").EnumerateArray().Select(option => option.GetProperty("value").GetString()).ToArray());
+        Assert.True(ContainsCondition(feeRoute.GetProperty("showWhen"), "golf-type", "equals", "competition"));
+        Assert.True(ContainsCondition(feeRoute.GetProperty("showWhen"), "golf-type", "equals", "match"));
+
+        var competitionFees = FindItem(root, "competition-entry-fee-details");
+        Assert.Equal("text", competitionFees.GetProperty("answerType").GetString());
+        Assert.True(ContainsCondition(competitionFees.GetProperty("showWhen"), "admission-fee-route", "in", new[] { "competition-fee", "competition-and-ticket" }));
+        Assert.Equal("golf-manager", FindItem(root, "configure-competition-entry-task").GetProperty("defaultOwnerRoleId").GetString());
 
         var arrangements = FindItem(root, "admission-arrangements");
         Assert.Equal("singleChoice", arrangements.GetProperty("answerType").GetString());
@@ -431,7 +444,7 @@ public sealed class PlaybookConfigurationTests
 
         using var document = JsonDocument.Parse(dataJson);
         var root = document.RootElement;
-        Assert.Equal("4.0", root.GetProperty("schemaVersion").GetString());
+        Assert.Equal("4.1", root.GetProperty("schemaVersion").GetString());
 
         foreach (var retiredId in new[]
         {
@@ -620,6 +633,8 @@ public sealed class PlaybookConfigurationTests
             {
                 bool boolean => value.ValueKind is JsonValueKind.True or JsonValueKind.False && value.GetBoolean() == boolean,
                 string text => value.ValueKind == JsonValueKind.String && value.GetString() == text,
+                string[] texts => value.ValueKind == JsonValueKind.Array &&
+                    value.EnumerateArray().Select(item => item.GetString()).SequenceEqual(texts),
                 _ => false
             };
         }

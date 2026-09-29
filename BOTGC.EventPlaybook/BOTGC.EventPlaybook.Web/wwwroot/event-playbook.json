@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "4.0",
+  "schemaVersion": "4.1",
   "id": "botgc-event-playbook",
   "title": "Event Playbook",
   "description": "A data-driven event planning guide that turns answers into dated, assignable tasks, operational advisories and reusable event knowledge.",
@@ -166,13 +166,13 @@
               "id": "entry-charge",
               "type": "question",
               "answerType": "yesNo",
-              "label": "Will attendees need to book to come to the event and/or will they be charged?",
-              "helpText": "Choose Yes if attendees must book, register, reserve or confirm a place, if they will pay an entry charge, or both. This opens the Bookings and Tickets planning area. It does not cover optional bar or food purchases or routine golf fees.",
+              "label": "Will attendees need to book, enter the competition and/or pay to take part?",
+              "helpText": "Choose Yes if attendees must book, register, reserve or confirm a place, pay a competition entry fee or buy an event ticket. This opens the Entry, Bookings and Tickets planning area. It does not cover optional bar or food purchases or routine green fees.",
               "allowDontKnow": true,
               "dontKnowTask": {
                 "id": "decide-booking-or-entry-charge",
-                "title": "Decide whether attendees need to book and/or pay for entry",
-                "detail": "Confirm whether attendance must be reserved or registered and whether an entry charge is needed, then return to this question before booking arrangements or publicity begin.",
+                "title": "Decide whether attendees need to book, enter the competition and/or pay",
+                "detail": "Confirm whether attendance or competition entry must be reserved or registered and whether a competition fee or event ticket is needed, then return to this question before entry arrangements or publicity begin.",
                 "deadlineCode": "B4",
                 "responsibleArea": "Event Coordination",
                 "defaultOwnerRoleId": "event-coordinator",
@@ -531,7 +531,8 @@
               "deadlineCode": "CX",
               "showWhen": { "all": [
                 { "eventField": "lifecycle.status", "operator": "in", "value": ["cancelled", "postponed"] },
-                { "questionId": "entry-charge", "operator": "equals", "value": true }
+                { "questionId": "entry-charge", "operator": "equals", "value": true },
+                { "questionId": "admission-fee-route", "operator": "notEquals", "value": "competition-fee" }
               ] },
               "responsibleArea": "Administration",
               "defaultOwnerRoleId": "office",
@@ -546,6 +547,7 @@
               "showWhen": { "all": [
                 { "eventField": "lifecycle.status", "operator": "in", "value": ["cancelled", "postponed"] },
                 { "questionId": "entry-charge", "operator": "equals", "value": true },
+                { "questionId": "admission-fee-route", "operator": "notEquals", "value": "competition-fee" },
                 { "questionId": "admission-arrangements", "operator": "equals", "value": "paid-entry" },
                 { "questionId": "admission-free-entry", "operator": "answered" },
                 { "any": [
@@ -957,6 +959,20 @@
               "source": "refined"
             },
             {
+              "id": "close-competition-entry-after-event-change",
+              "type": "task",
+              "title": "Close or amend competition entry and resolve the competition fees already collected",
+              "detail": "Close the competition-entry route, preserve the entrant list, apply the agreed refund or transfer position and ensure the competition listing shows the same cancellation or postponement status.",
+              "deadlineCode": "CX",
+              "showWhen": { "all": [
+                { "eventField": "lifecycle.status", "operator": "in", "value": ["cancelled", "postponed"] },
+                { "questionId": "admission-fee-route", "operator": "in", "value": ["competition-fee", "competition-and-ticket"] }
+              ] },
+              "responsibleArea": "Golf Operations",
+              "defaultOwnerRoleId": "golf-manager",
+              "source": "refined"
+            },
+            {
               "id": "competition-playing-format",
               "type": "question",
               "answerType": "singleChoice",
@@ -1032,6 +1048,16 @@
                 ]
               },
               "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "competition-entry-fee-routing-note",
+              "type": "note",
+              "title": "Competition entry fees",
+              "body": "Competition fees are owned by Golf Operations but recorded once in the shared Entry & Tickets plan so organisers can find them from either area.",
+              "showWhen": { "all": [
+                { "questionId": "entry-charge", "operator": "equals", "value": true }
+              ] },
               "source": "refined"
             },
             {
@@ -4300,9 +4326,9 @@
     },
     {
       "id": "admission",
-      "title": "Bookings, tickets and admission payments",
-      "shortTitle": "Bookings & Tickets",
-      "description": "Decide whether attendees must book and/or pay, how places or tickets are made available, what people must do to register and how admission is managed.",
+      "title": "Entry, bookings, tickets and payments",
+      "shortTitle": "Entry & Tickets",
+      "description": "Decide whether a golf competition fee, event ticket or free registration applies, then configure only the entry, booking and payment arrangements that route requires.",
       "activation": {
         "all": [
           {
@@ -4315,8 +4341,108 @@
       "sections": [
         {
           "id": "admission-offer",
-          "title": "Registration, booking and ticket offer",
+          "title": "Competition entry, registration and ticket offer",
           "items": [
+            {
+              "id": "admission-fee-route",
+              "type": "question",
+              "answerType": "singleChoice",
+              "label": "For this golf event, how will places and any entry fees be handled?",
+              "helpText": "A competition entry fee belongs to the golf competition entry rather than the event-ticket system. Choose Both only when entrants pay a competition fee and also need a separate event or hospitality ticket.",
+              "options": [
+                { "value": "no-fee-booking", "label": "No entry fee — use free registration or booking if required" },
+                { "value": "competition-fee", "label": "Competition entry fee collected through the competition entry" },
+                { "value": "event-ticket", "label": "Event ticket or admission sold through the booking system" },
+                { "value": "competition-and-ticket", "label": "Both a competition entry fee and a separate event ticket or admission charge" }
+              ],
+              "showWhen": { "any": [
+                { "questionId": "golf-type", "operator": "equals", "value": "competition" },
+                { "questionId": "golf-type", "operator": "equals", "value": "match" }
+              ] },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "competition-entry-fee-details",
+              "type": "question",
+              "answerType": "text",
+              "label": "What competition entry fee applies to each entrant category, and what does it include?",
+              "helpText": "Record member, visitor, junior, team or other rates clearly. These are competition fees, not event-ticket prices.",
+              "example": "Members £8; visitors £25 including the competition green fee; juniors £5.",
+              "showWhen": { "all": [{ "questionId": "admission-fee-route", "operator": "in", "value": ["competition-fee", "competition-and-ticket"] }] },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "competition-entry-payment-route",
+              "type": "question",
+              "answerType": "multiChoice",
+              "label": "How will competition entry fees be charged or collected?",
+              "options": [
+                { "value": "competition-system", "label": "Through the competition entry system" },
+                { "value": "member-account", "label": "Charged to the member account" },
+                { "value": "professional-shop", "label": "Paid through the Professional Shop" },
+                { "value": "club-office", "label": "Paid through the club office" },
+                { "value": "cash-card", "label": "Cash or card payment collected separately" },
+                { "value": "external-platform", "label": "External competition or payment platform" },
+                { "value": "other", "label": "Other collection route" }
+              ],
+              "showWhen": { "all": [{ "questionId": "admission-fee-route", "operator": "in", "value": ["competition-fee", "competition-and-ticket"] }] },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "competition-entry-open-date",
+              "type": "question",
+              "answerType": "date",
+              "label": "When should competition entry open?",
+              "showWhen": { "all": [{ "questionId": "admission-fee-route", "operator": "in", "value": ["competition-fee", "competition-and-ticket"] }] },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "competition-entry-close-date",
+              "type": "question",
+              "answerType": "date",
+              "label": "When should competition entry close?",
+              "showWhen": { "all": [{ "questionId": "admission-fee-route", "operator": "in", "value": ["competition-fee", "competition-and-ticket"] }] },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "competition-entry-instructions",
+              "type": "question",
+              "answerType": "text",
+              "label": "What competition-entry instructions should be included in communications?",
+              "helpText": "Explain where entrants find the competition, who may enter, how the fee is collected and any deadline or eligibility information members need.",
+              "showWhen": { "all": [{ "questionId": "admission-fee-route", "operator": "in", "value": ["competition-fee", "competition-and-ticket"] }] },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "configure-competition-entry-task",
+              "type": "task",
+              "title": "Configure and test the competition entry and fee arrangements",
+              "detail": "Create or update the competition entry, apply the agreed fees and opening and closing dates, test the entrant journey and confirm that the published instructions match the live entry route.",
+              "deadlineCode": "B3",
+              "showWhen": { "all": [{ "questionId": "admission-fee-route", "operator": "in", "value": ["competition-fee", "competition-and-ticket"] }] },
+              "responsibleArea": "Golf Operations",
+              "defaultOwnerRoleId": "golf-manager",
+              "reviewSummary": {
+                "title": "Competition entry and fee setup",
+                "instruction": "Check the competition fees, collection route, entry dates and member instructions before marking the setup complete.",
+                "confirmLabel": "Confirm competition entry setup",
+                "confirmedLabel": "Competition entry setup confirmed",
+                "fields": [
+                  { "questionId": "competition-entry-fee-details", "label": "Competition entry fees" },
+                  { "questionId": "competition-entry-payment-route", "label": "Fee collection route" },
+                  { "questionId": "competition-entry-open-date", "label": "Entries open" },
+                  { "questionId": "competition-entry-close-date", "label": "Entries close" },
+                  { "questionId": "competition-entry-instructions", "label": "Entry instructions" }
+                ]
+              },
+              "source": "refined"
+            },
             {
               "id": "admission-arrangements",
               "type": "question",
@@ -4329,6 +4455,13 @@
                 { "value": "limited-place-booking", "label": "Free booking or reservation for a limited number of places" },
                 { "value": "paid-entry", "label": "Paid tickets or admission, in advance and/or at the door" }
               ],
+              "showWhen": { "any": [
+                { "questionId": "admission-fee-route", "operator": "in", "value": ["no-fee-booking", "event-ticket", "competition-and-ticket"] },
+                { "all": [
+                  { "questionId": "golf-type", "operator": "notEquals", "value": "competition" },
+                  { "questionId": "golf-type", "operator": "notEquals", "value": "match" }
+                ] }
+              ] },
               "required": true,
               "source": "refined"
             },
@@ -4678,6 +4811,7 @@
               "answerType": "text",
               "label": "What booking instructions should be included in communications?",
               "helpText": "Provide the exact wording members need in order to book or register, including a working link, contact or other steps where applicable. Do not repeat details already captured by the registration mode, dates, capacity, table-booking and price answers. The Communications module controls which channels publish it.",
+              "showWhen": { "all": [{ "questionId": "admission-arrangements", "operator": "answered" }] },
               "required": true,
               "source": "refined"
             },

@@ -108,7 +108,10 @@
       ['food-service-owner', 'Food-service owner'], ['dietary-requirements-summary', 'Dietary/allergen requirements']
     ] },
     { title: 'Bookings and admission', fields: [
-      ['admission-arrangements', 'Booking/admission arrangement'], ['admission-price-details', 'Prices and inclusions'],
+      ['admission-fee-route', 'Entry-fee route'], ['competition-entry-fee-details', 'Competition entry fees'],
+      ['competition-entry-payment-route', 'Competition fee collection'],
+      ['competition-entry-open-date', 'Competition entry opens'], ['competition-entry-close-date', 'Competition entry closes'],
+      ['admission-arrangements', 'Booking/admission arrangement'], ['admission-price-details', 'Ticket prices and inclusions'],
       ['admission-capacity', 'Capacity'], ['ticket-sales-open-date', 'Bookings open'],
       ['ticket-sales-close-date', 'Bookings close'], ['ig-ticket-allocation', 'IG ticket allocation'],
       ['ig-ticket-types', 'IG ticket types'], ['guest-table-booking', 'Separate table booking'],
@@ -140,6 +143,16 @@
       ['close-down-actions', 'Items/areas to reset'], ['close-down-plan-details', 'Close-down instructions'],
       ['additional-close-down-details', 'Additional recovery work'], ['close-down-lead', 'Close-down lead/team']
     ] }
+  ]);
+
+  const COMPETITION_FEE_ADMISSION_ITEM_IDS = new Set([
+    'admission-fee-route',
+    'competition-entry-fee-details',
+    'competition-entry-payment-route',
+    'competition-entry-open-date',
+    'competition-entry-close-date',
+    'competition-entry-instructions',
+    'configure-competition-entry-task'
   ]);
 
   const FOOD_SERVICE_REVIEW_TASK_IDS_V36 = Object.freeze([
@@ -1191,6 +1204,37 @@
     return changed;
   }
 
+  function migrateAdmissionFeeRouteStateV41() {
+    const configuredVersion = Number.parseFloat(playbook?.schemaVersion ?? '0');
+    if (!Number.isFinite(configuredVersion) || configuredVersion < 4.1 || !itemIndex.has('admission-fee-route')) return false;
+
+    let changed = false;
+    for (const event of state.events ?? []) {
+      event.dataMigrations = event.dataMigrations && typeof event.dataMigrations === 'object'
+        ? event.dataMigrations
+        : {};
+      if (event.dataMigrations.admissionFeeRouteV41 === true) continue;
+
+      const migrateRecord = (record, fallbackRecord = null) => {
+        if (!record || typeof record !== 'object' || record['admission-fee-route']) return;
+        const golfType = record['golf-type'] ?? fallbackRecord?.['golf-type'];
+        if (golfType !== 'competition' && golfType !== 'match') return;
+        const arrangement = record['admission-arrangements'];
+        if (arrangement === 'paid-entry') record['admission-fee-route'] = 'event-ticket';
+        if (arrangement === 'attendance-registration' || arrangement === 'limited-place-booking') {
+          record['admission-fee-route'] = 'no-fee-booking';
+        }
+      };
+
+      event.answers = event.answers && typeof event.answers === 'object' ? event.answers : {};
+      migrateRecord(event.answers);
+      migrateRecord(event.clonedAnswerHints, event.answers);
+      event.dataMigrations.admissionFeeRouteV41 = true;
+      changed = true;
+    }
+    return changed;
+  }
+
   function migratePlaybookMilestoneCodes(candidate) {
     const copy = structuredClone(candidate);
     const remap = { B5: 'B4', A7: 'A2' };
@@ -1737,8 +1781,9 @@
     const eventControlMigrated = migrateEventControlStateV37();
     const golfPaceMigrated = migrateGolfPaceStateV39();
     const competitionFormatMigrated = migrateCompetitionFormatStateV40();
+    const admissionFeeRouteMigrated = migrateAdmissionFeeRouteStateV41();
     const planningNotesMigrated = materialiseIntelligentGolfPlanningNotes();
-    const eventStateMigrated = ideaStatusMigrated || admissionPlanningMigrated || admissionModelMigrated || admissionPricingMigrated || foodServiceReviewMigrated || eventControlMigrated || golfPaceMigrated || competitionFormatMigrated || planningNotesMigrated;
+    const eventStateMigrated = ideaStatusMigrated || admissionPlanningMigrated || admissionModelMigrated || admissionPricingMigrated || foodServiceReviewMigrated || eventControlMigrated || golfPaceMigrated || competitionFormatMigrated || admissionFeeRouteMigrated || planningNotesMigrated;
     if (state.activeEventId && !state.events.some(event => event.id === state.activeEventId)) {
       state.activeEventId = null;
       state.activeView = 'catalogue';
@@ -2327,7 +2372,8 @@
         foodServiceReviewCompletionV36: true,
         eventControlV37: true,
         golfPacePerHoleV39: true,
-        competitionFormatSplitV40: true
+        competitionFormatSplitV40: true,
+        admissionFeeRouteV41: true
       },
       sourceEventId: null,
       eventSeriesId: id,
@@ -2911,7 +2957,10 @@
       (item.requiresPlugin === 'intelligentGolf' && pluginCapabilities.intelligentGolfEnabled) ||
       (item.requiresPlugin === 'monday' && pluginCapabilities.mondayEnabled) ||
       (item.requiresPlugin === 'yodeck' && pluginCapabilities.yodeckEnabled);
-    return item?.assistantDisabled !== true && requiredPluginEnabled &&
+    const admissionRouteAllowsItem = itemIndex.get(item?.id)?.module?.id !== 'admission' ||
+      getQuestionValue('admission-fee-route', event) !== 'competition-fee' ||
+      COMPETITION_FEE_ADMISSION_ITEM_IDS.has(item.id);
+    return item?.assistantDisabled !== true && requiredPluginEnabled && admissionRouteAllowsItem &&
       conditionMatches(item.showWhen, event) && handoverIsRequired(item, event);
   }
 
@@ -2925,6 +2974,7 @@
   }
 
   function hasPaidAdmissionCategories(event) {
+    if (getQuestionValue('admission-fee-route', event) === 'competition-fee') return false;
     const arrangements = getQuestionValue('admission-arrangements', event);
     if (arrangements !== 'paid-entry') return false;
     const hasFreeEntry = getQuestionValue('admission-free-entry', event);
@@ -4201,6 +4251,12 @@
   function buildCommunicationsPlanningContext(event) {
     const fields = [
       ['registrationMode', 'admission-arrangements'],
+      ['entryFeeRoute', 'admission-fee-route'],
+      ['competitionEntryFees', 'competition-entry-fee-details'],
+      ['competitionFeeCollection', 'competition-entry-payment-route'],
+      ['competitionEntryOpens', 'competition-entry-open-date'],
+      ['competitionEntryCloses', 'competition-entry-close-date'],
+      ['competitionEntryInstructions', 'competition-entry-instructions'],
       ['freeEntry', 'admission-free-entry'],
       ['freeEntryCategories', 'admission-free-categories'],
       ['ticketPriceDetails', 'admission-price-details'],
@@ -6692,6 +6748,27 @@
             </div>
             <p class="golf-return-pattern">${escapeHtml(pattern)}</p>
             <p class="golf-return-impact">${escapeHtml(impactMessage)}</p>
+          </div>
+        </article>`;
+    }
+
+    if (item.id === 'competition-entry-fee-routing-note') {
+      const route = getQuestionValue('admission-fee-route', event);
+      const routeLabels = {
+        'no-fee-booking': 'No competition entry fee is currently planned.',
+        'competition-fee': 'A competition entry fee is being managed by Golf Operations.',
+        'event-ticket': 'An event ticket or admission charge is being managed through the booking route.',
+        'competition-and-ticket': 'Both a competition entry fee and a separate event ticket are planned.'
+      };
+      const status = routeLabels[route] ?? 'Choose whether this competition uses a competition fee, an event ticket, free registration or both.';
+      return `
+        <article class="flow-item note-item competition-entry-fee-note" data-item-id="${item.id}">
+          <div class="flow-rail"><span class="type-badge note-badge">Info</span></div>
+          <div class="flow-body">
+            <div class="task-title">${escapeHtml(item.title)}</div>
+            <p class="help-text">${escapeHtml(item.body)}</p>
+            <p><strong>${escapeHtml(status)}</strong></p>
+            <div class="button-row"><button class="button button-secondary" data-view="module:admission">Open shared entry and fee questions</button></div>
           </div>
         </article>`;
     }
@@ -9775,6 +9852,7 @@
     migrateEventControlStateV37();
     migrateGolfPaceStateV39();
     migrateCompetitionFormatStateV40();
+    migrateAdmissionFeeRouteStateV41();
     saveState();
     if (renderAfter) render();
   }
@@ -13072,6 +13150,7 @@
       migrateEventControlStateV37();
       migrateGolfPaceStateV39();
       migrateCompetitionFormatStateV40();
+      migrateAdmissionFeeRouteStateV41();
       await initialiseClubBranding();
       await initialiseAccessSession();
       if (accessSession.isAdmin && playbookTemplateNeedsMigration) {
@@ -13091,6 +13170,7 @@
       migrateEventControlStateV37();
       migrateGolfPaceStateV39();
       migrateCompetitionFormatStateV40();
+      migrateAdmissionFeeRouteStateV41();
       initialiseOperationalState();
       const params = new URLSearchParams(location.search);
       const requestedView = params.get('view');

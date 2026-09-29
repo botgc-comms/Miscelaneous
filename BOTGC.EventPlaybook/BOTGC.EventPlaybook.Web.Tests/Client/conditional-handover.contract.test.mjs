@@ -82,6 +82,9 @@ test('a pure handover is omitted only when both sides resolve to the same person
 
 test('active-item visibility includes the ownership-boundary check', () => {
   const isItemVisible = compileFunction('isItemVisible', {
+    itemIndex: new Map(),
+    getQuestionValue: () => undefined,
+    COMPETITION_FEE_ADMISSION_ITEM_IDS: new Set(),
     conditionMatches: () => true,
     handoverIsRequired: item => item.handoverAllowed !== false
   });

@@ -35,7 +35,7 @@ test('competition planning separates scoring method from playing or team format'
   const scoring = question('competition-format');
   const playing = question('competition-playing-format');
 
-  assert.equal(playbook.schemaVersion, '4.0');
+  assert.equal(playbook.schemaVersion, '4.1');
   assert.equal(scoring.label, 'How will the competition be scored?');
   assert.deepEqual(scoring.options.map(option => option.value), [
     'stableford', 'medal', 'match-play', 'other'

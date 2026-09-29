@@ -109,7 +109,7 @@ test('the playbook describes the input explicitly as pace per hole', () => {
     .flatMap(section => section.items);
   const question = questions.find(item => item.id === 'golf-expected-round-minutes');
 
-  assert.equal(playbookTemplate.schemaVersion, '4.0');
+  assert.equal(playbookTemplate.schemaVersion, '4.1');
   assert.equal(question.unit, 'minutes per hole');
   assert.match(question.label, /per hole/i);
   assert.match(question.helpText, /multiplies this by the selected number of holes/i);

@@ -45,5 +45,5 @@ test('sending feedback previews fresh bookings and requires explicit confirmatio
 
 test('the booking-feedback release is cache-busted', () => {
   assert.match(indexSource, /playbook\.css\?v=20260929-member-email-editor-1/);
-  assert.match(indexSource, /playbook-app\.js\?v=20260929-competition-format-split-1/);
+  assert.match(indexSource, /playbook-app\.js\?v=20260929-competition-entry-route-1/);
 });
