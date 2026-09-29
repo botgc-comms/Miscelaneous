@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "3.8",
+  "schemaVersion": "4.0",
   "id": "botgc-event-playbook",
   "title": "Event Playbook",
   "description": "A data-driven event planning guide that turns answers into dated, assignable tasks, operational advisories and reusable event knowledge.",
@@ -822,12 +822,12 @@
               "id": "golf-expected-round-minutes",
               "type": "question",
               "answerType": "number",
-              "label": "How long do you expect one group to take to complete the round?",
-              "helpText": "Use the likely pace for this age group, competition format and number of holes. This duration drives the expected clubhouse return time.",
-              "min": 15,
-              "max": 720,
-              "step": 5,
-              "unit": "minutes",
+              "label": "On average, how many minutes should one group take per hole?",
+              "helpText": "Use the likely pace per hole for this age group and competition format. The Playbook multiplies this by the selected number of holes to calculate the round duration and expected clubhouse return time.",
+              "min": 1,
+              "max": 60,
+              "step": 1,
+              "unit": "minutes per hole",
               "required": true,
               "source": "refined"
             },
@@ -902,7 +902,8 @@
               "id": "competition-format",
               "type": "question",
               "answerType": "singleChoice",
-              "label": "What competition format will be used?",
+              "label": "How will the competition be scored?",
+              "helpText": "Choose the scoring method. The way players compete individually, in pairs or in teams is recorded separately below.",
               "options": [
                 {
                   "value": "stableford",
@@ -917,16 +918,8 @@
                   "label": "Match play"
                 },
                 {
-                  "value": "betterball",
-                  "label": "Fourball / betterball"
-                },
-                {
-                  "value": "team",
-                  "label": "Team / scramble"
-                },
-                {
                   "value": "other",
-                  "label": "Other"
+                  "label": "Other scoring method"
                 }
               ],
               "showWhen": {
@@ -950,7 +943,7 @@
               "id": "competition-format-other",
               "type": "question",
               "answerType": "text",
-              "label": "Describe the competition format",
+              "label": "Describe the scoring method",
               "showWhen": {
                 "all": [
                   {
@@ -964,9 +957,87 @@
               "source": "refined"
             },
             {
+              "id": "competition-playing-format",
+              "type": "question",
+              "answerType": "singleChoice",
+              "label": "How will players compete?",
+              "helpText": "Choose how players are organised and play their shots. This is separate from whether the event is scored as Stableford, medal or match play.",
+              "options": [
+                {
+                  "value": "individual",
+                  "label": "Individual"
+                },
+                {
+                  "value": "fourball-betterball",
+                  "label": "Fourball / betterball"
+                },
+                {
+                  "value": "foursomes",
+                  "label": "Foursomes"
+                },
+                {
+                  "value": "greensomes",
+                  "label": "Greensomes"
+                },
+                {
+                  "value": "texas-scramble",
+                  "label": "Texas scramble"
+                },
+                {
+                  "value": "am-am",
+                  "label": "Am-Am"
+                },
+                {
+                  "value": "pro-am",
+                  "label": "Pro-Am"
+                },
+                {
+                  "value": "team-aggregate",
+                  "label": "Team aggregate"
+                },
+                {
+                  "value": "other",
+                  "label": "Other playing or team format"
+                }
+              ],
+              "showWhen": {
+                "any": [
+                  {
+                    "questionId": "golf-type",
+                    "operator": "equals",
+                    "value": "competition"
+                  },
+                  {
+                    "questionId": "golf-type",
+                    "operator": "equals",
+                    "value": "match"
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "competition-playing-format-other",
+              "type": "question",
+              "answerType": "text",
+              "label": "Describe the playing or team format",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "competition-playing-format",
+                    "operator": "equals",
+                    "value": "other"
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
               "id": "competition-setup-task",
               "type": "task",
-              "title": "Confirm the competition format, tees, handicap rules and scoring arrangements",
+              "title": "Confirm the scoring and playing formats, tees, handicap rules and results arrangements",
               "deadlineCode": "B3",
               "showWhen": {
                 "any": [

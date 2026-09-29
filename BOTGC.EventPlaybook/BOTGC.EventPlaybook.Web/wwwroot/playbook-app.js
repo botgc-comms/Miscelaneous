@@ -83,7 +83,8 @@
     { title: 'Golf operations', fields: [
       ['golf-type', 'Golf format'], ['golf-player-count', 'Players'], ['golf-supporter-count', 'Supporters'],
       ['golf-start-method', 'Start method'], ['tee-time-window', 'Tee-time window'], ['shotgun-start-time', 'Shotgun start'],
-      ['competition-format', 'Competition'], ['golf-results-technology-plan', 'Scoring technology and fallback'],
+      ['competition-format', 'Scoring method'], ['competition-playing-format', 'Playing / team format'],
+      ['golf-results-technology-plan', 'Scoring technology and fallback'],
       ['special-course-details', 'Non-standard course setup'], ['arrival-sign-in', 'Player check-in'],
       ['arrival-direction-signage', 'Arrival signage'], ['starter-required', 'Starter required'],
       ['course-marshals-required', 'Course marshals required']
@@ -1098,6 +1099,98 @@
     return changed || state.notificationOutbox.length !== previousOutboxLength;
   }
 
+  function migrateGolfPaceStateV39() {
+    const configuredVersion = Number.parseFloat(playbook?.schemaVersion ?? '0');
+    if (!Number.isFinite(configuredVersion) || configuredVersion < 3.9) return false;
+
+    let changed = false;
+    for (const event of state.events ?? []) {
+      event.dataMigrations = event.dataMigrations && typeof event.dataMigrations === 'object'
+        ? event.dataMigrations
+        : {};
+      if (event.dataMigrations.golfPacePerHoleV39 === true) continue;
+
+      const resolveHoles = (record, fallbackRecord = null) => {
+        const holesAnswer = record?.['competition-holes'] ?? fallbackRecord?.['competition-holes'];
+        const customHoles = Number(record?.['competition-holes-other'] ?? fallbackRecord?.['competition-holes-other']);
+        return holesAnswer === 'other' ? customHoles : Number(holesAnswer);
+      };
+      const migrateRecord = (record, fallbackRecord = null) => {
+        if (!record || typeof record !== 'object') return;
+        const rawDuration = record['golf-expected-round-minutes'];
+        const numericDuration = Number(rawDuration);
+        if (rawDuration === null || rawDuration === undefined || rawDuration === '' || !Number.isFinite(numericDuration) || numericDuration <= 30) return;
+
+        const holes = resolveHoles(record, fallbackRecord);
+        if (Number.isFinite(holes) && holes > 0) {
+          // Values above 30 came from the former whole-round question. Convert
+          // them to the new per-hole pace while the number of holes is known.
+          record['golf-expected-round-minutes'] = Math.round((numericDuration / holes) * 10) / 10;
+        } else {
+          // A whole-round value cannot be converted safely without a hole
+          // count, so require an explicit pace instead of silently guessing.
+          delete record['golf-expected-round-minutes'];
+        }
+      };
+
+      event.answers = event.answers && typeof event.answers === 'object' ? event.answers : {};
+      migrateRecord(event.answers);
+      migrateRecord(event.clonedAnswerHints, event.answers);
+      event.dataMigrations.golfPacePerHoleV39 = true;
+      changed = true;
+    }
+    return changed;
+  }
+
+  function migrateCompetitionFormatStateV40() {
+    const configuredVersion = Number.parseFloat(playbook?.schemaVersion ?? '0');
+    if (!Number.isFinite(configuredVersion) || configuredVersion < 4 || !itemIndex.has('competition-playing-format')) return false;
+
+    const playingFormatRemap = {
+      betterball: 'fourball-betterball',
+      fourball: 'fourball-betterball',
+      'fourball-betterball': 'fourball-betterball',
+      foursomes: 'foursomes',
+      foresomes: 'foursomes',
+      greensomes: 'greensomes',
+      scramble: 'texas-scramble',
+      'texas-scramble': 'texas-scramble',
+      'am-am': 'am-am',
+      'pro-am': 'pro-am',
+      'team-aggregate': 'team-aggregate'
+    };
+    let changed = false;
+    for (const event of state.events ?? []) {
+      event.dataMigrations = event.dataMigrations && typeof event.dataMigrations === 'object'
+        ? event.dataMigrations
+        : {};
+      if (event.dataMigrations.competitionFormatSplitV40 === true) continue;
+
+      const migrateRecord = record => {
+        if (!record || typeof record !== 'object') return;
+        const legacyFormat = String(record['competition-format'] ?? '').trim().toLowerCase();
+        const mappedPlayingFormat = playingFormatRemap[legacyFormat];
+        if (mappedPlayingFormat) {
+          if (!record['competition-playing-format']) record['competition-playing-format'] = mappedPlayingFormat;
+          delete record['competition-format'];
+        } else if (legacyFormat === 'team') {
+          if (!record['competition-playing-format']) record['competition-playing-format'] = 'other';
+          if (!record['competition-playing-format-other']) {
+            record['competition-playing-format-other'] = 'Previously recorded as Team / scramble — confirm the exact playing format.';
+          }
+          delete record['competition-format'];
+        }
+      };
+
+      event.answers = event.answers && typeof event.answers === 'object' ? event.answers : {};
+      migrateRecord(event.answers);
+      migrateRecord(event.clonedAnswerHints);
+      event.dataMigrations.competitionFormatSplitV40 = true;
+      changed = true;
+    }
+    return changed;
+  }
+
   function migratePlaybookMilestoneCodes(candidate) {
     const copy = structuredClone(candidate);
     const remap = { B5: 'B4', A7: 'A2' };
@@ -1642,8 +1735,10 @@
     const admissionPricingMigrated = migrateAdmissionPricingState();
     const foodServiceReviewMigrated = migrateFoodServiceReviewCompletionState();
     const eventControlMigrated = migrateEventControlStateV37();
+    const golfPaceMigrated = migrateGolfPaceStateV39();
+    const competitionFormatMigrated = migrateCompetitionFormatStateV40();
     const planningNotesMigrated = materialiseIntelligentGolfPlanningNotes();
-    const eventStateMigrated = ideaStatusMigrated || admissionPlanningMigrated || admissionModelMigrated || admissionPricingMigrated || foodServiceReviewMigrated || eventControlMigrated || planningNotesMigrated;
+    const eventStateMigrated = ideaStatusMigrated || admissionPlanningMigrated || admissionModelMigrated || admissionPricingMigrated || foodServiceReviewMigrated || eventControlMigrated || golfPaceMigrated || competitionFormatMigrated || planningNotesMigrated;
     if (state.activeEventId && !state.events.some(event => event.id === state.activeEventId)) {
       state.activeEventId = null;
       state.activeView = 'catalogue';
@@ -2230,7 +2325,9 @@
         admissionPricingV35: true,
         admissionModelV38: true,
         foodServiceReviewCompletionV36: true,
-        eventControlV37: true
+        eventControlV37: true,
+        golfPacePerHoleV39: true,
+        competitionFormatSplitV40: true
       },
       sourceEventId: null,
       eventSeriesId: id,
@@ -3682,22 +3779,25 @@
     const holes = holesAnswer === 'other' ? customHoles : Number(holesAnswer);
     const playerCountValue = getQuestionValue('golf-player-count', event);
     const supporterCountValue = getQuestionValue('golf-supporter-count', event);
-    const roundDurationValue = getQuestionValue('golf-expected-round-minutes', event);
+    const pacePerHoleValue = getQuestionValue('golf-expected-round-minutes', event);
     const startMethod = getQuestionValue('golf-start-method', event);
     const teeWindow = getQuestionValue('tee-time-window', event) ?? {};
     const shotgunStart = getQuestionValue('shotgun-start-time', event);
 
     const playerCountNumber = Number(playerCountValue);
     const supporterCountNumber = Number(supporterCountValue);
-    const roundDurationNumber = Number(roundDurationValue);
+    const pacePerHoleNumber = Number(pacePerHoleValue);
     const playerCount = playerCountValue !== null && playerCountValue !== undefined && playerCountValue !== '' && Number.isFinite(playerCountNumber) && playerCountNumber > 0
       ? playerCountNumber
       : null;
     const supporterCount = supporterCountValue !== null && supporterCountValue !== undefined && supporterCountValue !== '' && Number.isFinite(supporterCountNumber) && supporterCountNumber >= 0
       ? supporterCountNumber
       : null;
-    const duration = roundDurationValue !== null && roundDurationValue !== undefined && roundDurationValue !== '' && Number.isFinite(roundDurationNumber) && roundDurationNumber > 0
-      ? roundDurationNumber
+    const pacePerHole = pacePerHoleValue !== null && pacePerHoleValue !== undefined && pacePerHoleValue !== '' && Number.isFinite(pacePerHoleNumber) && pacePerHoleNumber > 0
+      ? pacePerHoleNumber
+      : null;
+    const duration = Number.isFinite(holes) && holes > 0 && pacePerHole !== null
+      ? Math.round(holes * pacePerHole * 10) / 10
       : null;
     const expectedClubhouseReturnCount = playerCount !== null && supporterCount !== null
       ? playerCount + supporterCount
@@ -3730,6 +3830,7 @@
       golfStartMethod: startMethod ?? null,
       golfArrivalPattern,
       golfReturnSeverity,
+      expectedMinutesPerHole: pacePerHole,
       expectedRoundMinutes: duration,
       expectedFirstGolfFinish,
       expectedLatestGolfFinish,
@@ -6560,8 +6661,8 @@
         ? `${facts.expectedClubhouseReturnCount} people`
         : 'Add players and supporters';
       const roundDuration = facts.expectedRoundMinutes !== null
-        ? `${facts.expectedRoundMinutes} minutes`
-        : 'Add expected duration';
+        ? `${facts.expectedRoundMinutes} minutes (${facts.competitionHoles} holes × ${facts.expectedMinutesPerHole})`
+        : 'Add holes and pace per hole';
       const pattern = facts.golfArrivalPattern === 'concentrated'
         ? 'Concentrated shotgun return'
         : facts.golfArrivalPattern === 'staggered'
@@ -9672,6 +9773,8 @@
     migrateAdmissionPricingState();
     migrateFoodServiceReviewCompletionState();
     migrateEventControlStateV37();
+    migrateGolfPaceStateV39();
+    migrateCompetitionFormatStateV40();
     saveState();
     if (renderAfter) render();
   }
@@ -12967,6 +13070,8 @@
       indexPlaybook();
       migrateFoodServiceReviewCompletionState();
       migrateEventControlStateV37();
+      migrateGolfPaceStateV39();
+      migrateCompetitionFormatStateV40();
       await initialiseClubBranding();
       await initialiseAccessSession();
       if (accessSession.isAdmin && playbookTemplateNeedsMigration) {
@@ -12984,6 +13089,8 @@
       migrateAdmissionPricingState();
       migrateFoodServiceReviewCompletionState();
       migrateEventControlStateV37();
+      migrateGolfPaceStateV39();
+      migrateCompetitionFormatStateV40();
       initialiseOperationalState();
       const params = new URLSearchParams(location.search);
       const requestedView = params.get('view');
