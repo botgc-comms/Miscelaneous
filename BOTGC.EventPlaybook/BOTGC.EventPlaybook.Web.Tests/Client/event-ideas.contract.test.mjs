@@ -8,6 +8,9 @@ const playbookSource = await readFile(
 const styleSource = await readFile(
   new URL('../../BOTGC.EventPlaybook.Web/wwwroot/playbook.css', import.meta.url),
   'utf8');
+const posterSource = await readFile(
+  new URL('../../BOTGC.EventPlaybook.Web/wwwroot/poster-app.js', import.meta.url),
+  'utf8');
 
 function functionSource(name) {
   const declaration = new RegExp(`(?:async\\s+)?function\\s+${name}\\s*\\(`);
@@ -17,6 +20,16 @@ function functionSource(name) {
   nextDeclaration.lastIndex = match.index + match[0].length;
   const next = nextDeclaration.exec(playbookSource);
   return playbookSource.slice(match.index, next?.index ?? playbookSource.length);
+}
+
+function posterFunctionSource(name) {
+  const declaration = new RegExp(`(?:async\\s+)?function\\s+${name}\\s*\\(`);
+  const match = declaration.exec(posterSource);
+  assert.ok(match, `Expected poster-app.js to declare ${name}().`);
+  const nextDeclaration = /\n\s*(?:async\s+)?function\s+[A-Za-z0-9_$]+\s*\(/g;
+  nextDeclaration.lastIndex = match.index + match[0].length;
+  const next = nextDeclaration.exec(posterSource);
+  return posterSource.slice(match.index, next?.index ?? posterSource.length);
 }
 
 test('new catalogue records can be created as events or ideas', () => {
@@ -67,6 +80,23 @@ test('ideas are collapsed by default and retain their campaign artwork', () => {
   assert.match(ideaCard, /publishedCataloguePosterThumbnail \|\| event\.cataloguePosterThumbnail/);
   assert.match(ideaCard, /class="catalogue-poster"/);
   assert.doesNotMatch(ideaCard, /Possible future event/);
+});
+
+test('ideas can open the artwork studio without enabling operational publishing', () => {
+  const ideaCard = functionSource('renderIdeaCatalogueCard');
+  const ideaSummary = functionSource('renderIdeaSummaryContent');
+  const openArtwork = functionSource('openIdeaArtwork');
+  const artworkStudio = functionSource('renderArtworkStudio');
+
+  assert.match(ideaCard, /data-create-idea-artwork/);
+  assert.match(ideaSummary, /data-create-idea-artwork/);
+  assert.match(openArtwork, /state\.activeView = 'artwork'/);
+  assert.match(playbookSource, /publishingEnabled: !isEventIdea\(event\)/);
+  assert.match(artworkStudio, /Create the visual before committing to the event/);
+  assert.match(artworkStudio, /Publishing to members, the member diary and clubhouse screens becomes available only after the idea is adopted/);
+  assert.match(functionSource('render'), /!isEventIdea\(event\).*pluginCapabilities\.intelligentGolfEnabled/);
+  assert.match(posterFunctionSource('restoreSessionToDom'), /canPublishSession\(session\) && session\.publishVisible/);
+  assert.match(posterFunctionSource('revealReviewAndShare'), /if \(!canPublishSession\(session\)\)/);
 });
 
 test('adopting an idea preserves the record and starts provisional planning from an explicit date', () => {

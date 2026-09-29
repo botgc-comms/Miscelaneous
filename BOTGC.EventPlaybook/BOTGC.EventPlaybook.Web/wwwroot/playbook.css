@@ -423,11 +423,104 @@
   line-height: 1.4 !important;
 }
 
-.member-email-fields #memberEmailBody {
-  min-height: 220px !important;
-  font-family: Consolas,"Courier New",monospace !important;
-  font-size: .68rem !important;
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0,0,0,0) !important;
+  white-space: nowrap !important;
+  clip-path: inset(50%) !important;
 }
+
+.member-email-editor-field {
+  gap: 0 !important;
+}
+
+.member-email-editor-field > span {
+  margin-bottom: 6px !important;
+}
+
+.member-email-editor-toolbar {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  align-items: center !important;
+  padding: 8px !important;
+  border: 1px solid #afc0bd !important;
+  border-bottom: 0 !important;
+  border-radius: 10px 10px 0 0 !important;
+  background: #edf3f1 !important;
+}
+
+.member-email-editor-toolbar label,
+.member-email-toolbar-group {
+  display: flex !important;
+  gap: 4px !important;
+  align-items: center !important;
+}
+
+.member-email-toolbar-group + .member-email-toolbar-group {
+  padding-left: 7px !important;
+  border-left: 1px solid #cbd8d5 !important;
+}
+
+.member-email-editor-toolbar select,
+.member-email-editor-toolbar button {
+  width: auto !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
+  padding: 6px 9px !important;
+  border: 1px solid #b9c9c6 !important;
+  border-radius: 7px !important;
+  color: #173f4d !important;
+  background: #fff !important;
+  font-size: .67rem !important;
+  font-weight: 750 !important;
+}
+
+.member-email-editor-toolbar button:hover,
+.member-email-editor-toolbar button:focus-visible {
+  border-color: #537c76 !important;
+  background: #f8fbfa !important;
+}
+
+.member-email-rich-editor {
+  min-height: 300px !important;
+  max-height: 520px !important;
+  overflow-y: auto !important;
+  padding: 20px !important;
+  border: 1px solid #afc0bd !important;
+  border-radius: 0 0 10px 10px !important;
+  color: #24383e !important;
+  background: #fff !important;
+  font: 400 .82rem/1.6 Arial,Helvetica,sans-serif !important;
+  outline: 0 !important;
+}
+
+.member-email-rich-editor:focus {
+  border-color: #134a63 !important;
+  box-shadow: 0 0 0 3px rgba(19,74,99,.14) !important;
+}
+
+.member-email-rich-editor.invalid {
+  border-color: #a34238 !important;
+  box-shadow: 0 0 0 3px rgba(163,66,56,.12) !important;
+}
+
+.member-email-rich-editor:empty::before {
+  color: #84938f !important;
+  content: attr(data-placeholder) !important;
+  pointer-events: none !important;
+}
+
+.member-email-rich-editor img { max-width: 100% !important; height: auto !important; }
+.member-email-rich-editor h1,
+.member-email-rich-editor h2,
+.member-email-rich-editor h3 { color: #0d3548 !important; font-family: Georgia,"Times New Roman",serif !important; }
+.member-email-rich-editor a { color: #0d5570 !important; text-decoration: underline !important; }
+.member-email-editor-field > small { margin-top: 6px !important; }
+.member-email-editor-field > small.error { color: #a34238 !important; font-weight: 800 !important; }
 
 .member-email-preview-panel {
   overflow: hidden !important;
@@ -832,6 +925,34 @@ button{cursor:pointer}
 .poster-studio .campaign-column{display:grid!important;gap:16px!important}
 .poster-studio .empty-state{min-height:410px!important}
 .poster-studio .publish-panel{margin-top:16px!important}
+.poster-studio .idea-artwork-notice {
+  display: grid;
+  grid-template-columns: 42px minmax(0,1fr) auto;
+  gap: 14px;
+  align-items: center;
+  margin: 0 0 15px;
+  padding: 15px 17px;
+  border: 1px solid #dfca93;
+  border-radius: 12px;
+  background: linear-gradient(135deg,#fffaf0,#f1f8f6 78%);
+  box-shadow: var(--shadow);
+}
+.poster-studio .idea-artwork-notice .catalogue-idea-mark {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  background: #b68b36;
+  font-size: 1.35rem;
+}
+.poster-studio .idea-artwork-notice strong { color: var(--navy); font-family: Georgia,"Times New Roman",serif; font-size: .9rem; }
+.poster-studio .idea-artwork-notice p { margin: 4px 0 0; color: var(--muted); font-size: .66rem; line-height: 1.45; }
+@media(max-width:700px){
+  .poster-studio .idea-artwork-notice{grid-template-columns:42px minmax(0,1fr)}
+  .poster-studio .idea-artwork-notice .button{grid-column:1/-1;width:100%}
+}
 
 /* Focus */
 input:focus,select:focus,textarea:focus{outline:3px solid rgba(198,161,91,.22)!important;outline-offset:1px!important;border-color:#8a7238!important;background:#fff!important}
@@ -1376,6 +1497,10 @@ input:focus,select:focus,textarea:focus{outline:3px solid rgba(198,161,91,.22)!i
 
 .catalogue-idea-card .button-row .button:first-child {
   grid-column: auto;
+}
+
+.catalogue-idea-card .button-row .button:last-child {
+  grid-column: 1 / -1;
 }
 
 .catalogue-card .button {

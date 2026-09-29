@@ -17,11 +17,20 @@ const SOURCE_DESIGN_OUTPUT_ID = 'source-design';
 const SOURCE_DESIGN_MAX_BYTES = 40 * 1024 * 1024;
 const SOURCE_DESIGN_MIME_TYPES = new Set(['image/png', 'image/jpeg', 'image/webp']);
 const INTERRUPTED_GENERATION_MESSAGE = 'The previous generation did not finish. Completed artwork and settings have been kept so only the missing formats need to be retried.';
+const MEMBER_EMAIL_HTML_LIMIT = 200000;
+const MEMBER_EMAIL_ALLOWED_ELEMENTS = new Set([
+    'A', 'B', 'BLOCKQUOTE', 'BR', 'DIV', 'EM', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'HR', 'I', 'IMG',
+    'LI', 'OL', 'P', 'S', 'SPAN', 'STRONG', 'TABLE', 'TBODY', 'TD', 'TFOOT', 'TH', 'THEAD', 'TR', 'U', 'UL'
+]);
+const MEMBER_EMAIL_ALLOWED_ATTRIBUTES = new Set([
+    'align', 'alt', 'border', 'cellpadding', 'cellspacing', 'height', 'href', 'role', 'src', 'style', 'target', 'title', 'width'
+]);
 let activeSession = null;
 let configCache = null;
 let studioDatabasePromise = null;
 let elements = {};
 let currentContext = {};
+let memberEmailEditorSelection = null;
 
 function clonePlanningContext(value) {
     const source = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
@@ -62,7 +71,7 @@ function createSession(key, context) {
             eventDate: context?.eventDate ?? '',
             description: context?.description ?? '',
             planningContext: clonePlanningContext(context?.planningContext),
-            includeDate: true,
+            includeDate: context?.publishingEnabled === false ? Boolean(context?.eventDate) : true,
             includePrice: false,
             includeClubBranding: false,
             price: '',
@@ -112,6 +121,10 @@ function createSession(key, context) {
 
 function getSessionKey(context) {
     return String(context?.eventId || context?.eventName || 'current-event');
+}
+
+function canPublishSession(session) {
+    return session?.context?.publishingEnabled !== false;
 }
 
 function getOrCreateSession(context) {
@@ -1305,6 +1318,10 @@ export async function mountPosterStudio(context = {}) {
         emailGenerateButton: document.querySelector('#generateMemberEmail'),
         emailSubject: document.querySelector('#memberEmailSubject'),
         emailBody: document.querySelector('#memberEmailBody'),
+        emailEditor: document.querySelector('#memberEmailEditor'),
+        emailToolbar: document.querySelector('#memberEmailToolbar'),
+        emailFormat: document.querySelector('#memberEmailFormat'),
+        emailEditorHelp: document.querySelector('#memberEmailEditorHelp'),
         emailBodyPreview: document.querySelector('#memberEmailBodyPreview'),
         emailLoadAudienceButton: document.querySelector('#loadMemberEmailAudience'),
         emailAudienceModes: document.querySelectorAll('input[name="memberEmailAudienceMode"]'),
@@ -1381,7 +1398,7 @@ async function initialise(session) {
     wireEvents(session);
     updateSourceDesignUi(session);
     configureShareConnections(session);
-    if (session.config?.memberDiary?.configured) {
+    if (canPublishSession(session) && session.config?.memberDiary?.configured) {
         refreshMemberDiaryIntegrationStatus(session);
     }
     updateAutomaticReferenceSelection(session);
@@ -1596,10 +1613,29 @@ function wireEvents(session) {
         captureMemberEmailDialog(session);
         scheduleSessionPersistence(session);
     });
-    elements.emailBody?.addEventListener('input', () => {
+    elements.emailEditor?.addEventListener('input', () => {
+        rememberMemberEmailEditorSelection();
         captureMemberEmailDialog(session);
         renderMemberEmailPreview();
         scheduleSessionPersistence(session);
+    });
+    elements.emailEditor?.addEventListener('keyup', rememberMemberEmailEditorSelection);
+    elements.emailEditor?.addEventListener('mouseup', rememberMemberEmailEditorSelection);
+    elements.emailEditor?.addEventListener('blur', () => {
+        captureMemberEmailDialog(session);
+        setMemberEmailEditorHtml(session.form.emailBodyHtml);
+    });
+    elements.emailToolbar?.addEventListener('mousedown', event => {
+        if (event.target.closest('button')) event.preventDefault();
+    });
+    elements.emailToolbar?.addEventListener('click', event => {
+        const button = event.target.closest('button');
+        if (!button) return;
+        applyMemberEmailEditorAction(button.dataset.emailEditorCommand, button.dataset.emailEditorAction);
+    });
+    elements.emailFormat?.addEventListener('change', () => {
+        applyMemberEmailEditorAction('formatBlock', null, elements.emailFormat.value);
+        elements.emailFormat.value = 'p';
     });
     elements.emailTestAddress?.addEventListener('input', () => {
         captureMemberEmailDialog(session);
@@ -1736,8 +1772,10 @@ function restoreSessionToDom(session) {
     renderConceptChoices(session);
     if (session.posterCanvases.size > 0) renderCampaignResults(session);
     elements.refinementPanel.classList.toggle('hidden', !session.refinementVisible);
-    elements.sharePanel.classList.toggle('hidden', !session.publishVisible);
-    elements.shareTopButton.disabled = !session.publishVisible;
+    const publishingAvailable = canPublishSession(session) && session.publishVisible;
+    elements.sharePanel.classList.toggle('hidden', !publishingAvailable);
+    elements.shareTopButton.disabled = !publishingAvailable;
+    if (!canPublishSession(session)) elements.shareTopButton.textContent = 'Adopt idea to publish';
     if (elements.shareMessage) {
         const shareHistory = [];
         if (session.screenPublication) {
@@ -2734,6 +2772,13 @@ function revealReviewAndShare(session) {
     session.publishVisible = true;
     if (!isSessionVisible(session)) return;
     elements.refinementPanel.classList.remove('hidden');
+    if (!canPublishSession(session)) {
+        elements.sharePanel.classList.add('hidden');
+        elements.shareTopButton.disabled = true;
+        elements.shareTopButton.textContent = 'Adopt idea to publish';
+        updateGenerationOriginUi(session);
+        return;
+    }
     elements.sharePanel.classList.remove('hidden');
     elements.shareTopButton.disabled = false;
     updateGenerationOriginUi(session);
@@ -3517,10 +3562,124 @@ function getMemberEmailArtwork(session) {
     return output && canvas ? { output, canvas, sourceUrl } : null;
 }
 
+function isSafeMemberEmailUrl(value, attributeName) {
+    const url = String(value ?? '').trim();
+    if (!url) return false;
+    if (url.startsWith('/') || url.startsWith('#')) return true;
+    if (/^(https?:|mailto:|tel:)/i.test(url)) return true;
+    return attributeName === 'src' && /^data:image\/(?:png|jpe?g|webp|gif);base64,/i.test(url);
+}
+
+function sanitiseMemberEmailHtml(html) {
+    const template = document.createElement('template');
+    template.innerHTML = String(html ?? '');
+    const removeWithContent = new Set(['SCRIPT', 'STYLE', 'IFRAME', 'OBJECT', 'EMBED', 'FORM', 'INPUT', 'BUTTON', 'META', 'LINK']);
+
+    for (const element of [...template.content.querySelectorAll('*')]) {
+        if (!MEMBER_EMAIL_ALLOWED_ELEMENTS.has(element.tagName)) {
+            if (removeWithContent.has(element.tagName)) element.remove();
+            else element.replaceWith(...element.childNodes);
+            continue;
+        }
+
+        for (const attribute of [...element.attributes]) {
+            const name = attribute.name.toLocaleLowerCase();
+            const allowed = MEMBER_EMAIL_ALLOWED_ATTRIBUTES.has(name) || name.startsWith('aria-');
+            if (!allowed || name.startsWith('on')) {
+                element.removeAttribute(attribute.name);
+                continue;
+            }
+            if ((name === 'href' || name === 'src') && !isSafeMemberEmailUrl(attribute.value, name)) {
+                element.removeAttribute(attribute.name);
+                continue;
+            }
+            if (name === 'style' && /(expression\s*\(|url\s*\(|javascript\s*:|behavior\s*:|-moz-binding)/i.test(attribute.value)) {
+                element.removeAttribute(attribute.name);
+            }
+            if (name === 'target' && !['_blank', '_self'].includes(attribute.value.toLocaleLowerCase())) {
+                element.removeAttribute(attribute.name);
+            }
+        }
+    }
+
+    return template.innerHTML.trim();
+}
+
+function setMemberEmailEditorHtml(html) {
+    const safeHtml = sanitiseMemberEmailHtml(html);
+    if (elements.emailEditor) elements.emailEditor.innerHTML = safeHtml;
+    if (elements.emailBody) elements.emailBody.value = safeHtml;
+    memberEmailEditorSelection = null;
+}
+
+function memberEmailHtmlHasContent(html) {
+    const template = document.createElement('template');
+    template.innerHTML = sanitiseMemberEmailHtml(html);
+    return Boolean(template.content.textContent?.replace(/\u00a0/g, ' ').trim() || template.content.querySelector('img'));
+}
+
+function rememberMemberEmailEditorSelection() {
+    const editor = elements.emailEditor;
+    const selection = window.getSelection?.();
+    if (!editor || !selection?.rangeCount) return;
+    const range = selection.getRangeAt(0);
+    if (!editor.contains(range.commonAncestorContainer)) return;
+    memberEmailEditorSelection = range.cloneRange();
+}
+
+function restoreMemberEmailEditorSelection() {
+    const editor = elements.emailEditor;
+    const selection = window.getSelection?.();
+    if (!editor || !selection) return;
+    editor.focus();
+    selection.removeAllRanges();
+    if (memberEmailEditorSelection && editor.contains(memberEmailEditorSelection.commonAncestorContainer)) {
+        selection.addRange(memberEmailEditorSelection);
+        return;
+    }
+    const range = document.createRange();
+    range.selectNodeContents(editor);
+    range.collapse(false);
+    selection.addRange(range);
+}
+
+function normaliseMemberEmailLink(value) {
+    const link = String(value ?? '').trim();
+    if (!link) return '';
+    if (/^(https?:|mailto:|tel:|#|\/)/i.test(link)) return link;
+    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(link)) return `mailto:${link}`;
+    return `https://${link}`;
+}
+
+function applyMemberEmailEditorAction(command, action, value = null) {
+    const session = activeSession;
+    if (!session || !elements.emailEditor) return;
+    restoreMemberEmailEditorSelection();
+
+    if (action === 'link') {
+        const link = normaliseMemberEmailLink(window.prompt('Enter the web page or email address to link to:') ?? '');
+        if (!link) return;
+        const selection = window.getSelection?.();
+        if (selection?.isCollapsed) {
+            document.execCommand('insertHTML', false, `<a href="${escapeHtml(link)}">${escapeHtml(link.replace(/^mailto:/i, ''))}</a>`);
+        } else {
+            document.execCommand('createLink', false, link);
+        }
+    } else if (command) {
+        document.execCommand(command, false, value);
+    }
+
+    rememberMemberEmailEditorSelection();
+    captureMemberEmailDialog(session);
+    renderMemberEmailPreview();
+    scheduleSessionPersistence(session);
+}
+
 function captureMemberEmailDialog(session) {
     if (!elements.emailSubject) return;
     session.form.emailSubject = elements.emailSubject.value.trim();
-    session.form.emailBodyHtml = elements.emailBody.value;
+    session.form.emailBodyHtml = sanitiseMemberEmailHtml(elements.emailEditor?.innerHTML ?? elements.emailBody?.value ?? '');
+    if (elements.emailBody) elements.emailBody.value = session.form.emailBodyHtml;
     session.form.emailTestAddress = elements.emailTestAddress.value.trim();
     session.form.emailAudienceMode = Array.from(elements.emailAudienceModes ?? [])
         .find(input => input.checked)?.value ?? 'all';
@@ -3543,7 +3702,7 @@ async function openMemberEmailDialog() {
     elements.emailArtworkPreview.style.aspectRatio = `${artwork.output.width} / ${artwork.output.height}`;
     elements.emailArtworkName.textContent = artwork.output.name;
     elements.emailSubject.value = session.form.emailSubject || '';
-    elements.emailBody.value = session.form.emailBodyHtml || '';
+    setMemberEmailEditorHtml(session.form.emailBodyHtml || '');
     elements.emailTestAddress.value = session.form.emailTestAddress || '';
     elements.emailAudienceModes?.forEach(input => {
         input.checked = input.value === (session.form.emailAudienceMode || 'all');
@@ -3613,9 +3772,9 @@ async function generateMemberEmailDraft(session) {
         });
         const result = await readApiResponse(response);
         session.form.emailSubject = String(result.subject ?? '');
-        session.form.emailBodyHtml = String(result.bodyHtml ?? '');
+        session.form.emailBodyHtml = sanitiseMemberEmailHtml(result.bodyHtml ?? '');
         elements.emailSubject.value = session.form.emailSubject;
-        elements.emailBody.value = session.form.emailBodyHtml;
+        setMemberEmailEditorHtml(session.form.emailBodyHtml);
         renderMemberEmailPreview();
         elements.emailDialogMessage.textContent = result.mode === 'openai'
             ? 'The AI-assisted draft is ready. Review and edit it before sending a test.'
@@ -3635,7 +3794,7 @@ async function generateMemberEmailDraft(session) {
 function renderMemberEmailPreview() {
     if (!elements.emailBodyPreview) return;
     const subject = elements.emailSubject?.value.trim() || 'Member email preview';
-    const body = elements.emailBody?.value || '<p style="font-family:Arial,sans-serif;color:#52666b">Generate or enter an email to preview it here.</p>';
+    const body = sanitiseMemberEmailHtml(elements.emailEditor?.innerHTML ?? elements.emailBody?.value ?? '') || '<p style="font-family:Arial,sans-serif;color:#52666b">Generate or enter an email to preview it here.</p>';
     elements.emailBodyPreview.srcdoc = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(subject)}</title></head><body style="margin:18px;background:#fff">${body}</body></html>`;
 }
 
@@ -3712,9 +3871,20 @@ function captureMemberEmailCategorySelection(session) {
 function updateMemberEmailSendState(session) {
     if (!elements.emailDialogConfirm) return;
     const recipients = getSelectedMemberEmailRecipients(session);
+    const bodyHtml = sanitiseMemberEmailHtml(elements.emailEditor?.innerHTML ?? elements.emailBody?.value ?? '');
+    const withinLimit = bodyHtml.length <= MEMBER_EMAIL_HTML_LIMIT;
+    elements.emailEditor?.classList.toggle('invalid', !withinLimit);
+    elements.emailEditor?.setAttribute('aria-invalid', withinLimit ? 'false' : 'true');
+    if (elements.emailEditorHelp) {
+        elements.emailEditorHelp.textContent = withinLimit
+            ? 'Edit the message as you would a document. The formatted HTML is retained automatically for the preview and the email that is sent.'
+            : 'This email is too large to send. Remove some content or large pasted formatting.';
+        elements.emailEditorHelp.classList.toggle('error', !withinLimit);
+    }
     const ready = session.config?.memberEmail?.configured &&
         elements.emailSubject?.value.trim() &&
-        elements.emailBody?.value.trim() &&
+        memberEmailHtmlHasContent(bodyHtml) &&
+        withinLimit &&
         recipients.length > 0;
     elements.emailDialogConfirm.disabled = !ready;
     elements.emailDialogConfirm.textContent = recipients.length > 0
@@ -3724,8 +3894,13 @@ function updateMemberEmailSendState(session) {
 
 async function sendMemberEmailTest(session) {
     captureMemberEmailDialog(session);
-    if (!elements.emailSubject.value.trim() || !elements.emailBody.value.trim()) {
+    if (!elements.emailSubject.value.trim() || !memberEmailHtmlHasContent(session.form.emailBodyHtml)) {
         elements.emailDialogMessage.textContent = 'Generate or enter the email subject and body before sending a test.';
+        elements.emailDialogMessage.className = 'poster-publish-dialog-message error';
+        return;
+    }
+    if (session.form.emailBodyHtml.length > MEMBER_EMAIL_HTML_LIMIT) {
+        elements.emailDialogMessage.textContent = 'This email is too large to send. Remove some content or pasted formatting first.';
         elements.emailDialogMessage.className = 'poster-publish-dialog-message error';
         return;
     }
@@ -3767,6 +3942,13 @@ async function sendMemberCampaignEmail() {
     const session = activeSession;
     if (!session) return;
     captureMemberEmailDialog(session);
+    if (!memberEmailHtmlHasContent(session.form.emailBodyHtml) || session.form.emailBodyHtml.length > MEMBER_EMAIL_HTML_LIMIT) {
+        elements.emailDialogMessage.textContent = session.form.emailBodyHtml.length > MEMBER_EMAIL_HTML_LIMIT
+            ? 'This email is too large to send. Remove some content or pasted formatting first.'
+            : 'Add some content to the email before sending it.';
+        elements.emailDialogMessage.className = 'poster-publish-dialog-message error';
+        return;
+    }
     const recipients = getSelectedMemberEmailRecipients(session);
     if (!recipients.length) return;
     if (!window.confirm(`Send “${session.form.emailSubject}” to ${recipients.length} active club member${recipients.length === 1 ? '' : 's'} now?`)) return;
@@ -3804,6 +3986,7 @@ async function sendMemberCampaignEmail() {
 }
 
 function configureShareConnections(session) {
+    if (!canPublishSession(session)) return;
     const diaryConnection = session.config?.memberDiary ?? {};
     elements.shareDiaryCard?.classList.toggle('pending', !diaryConnection.configured);
     if (elements.shareDiaryStatus) {

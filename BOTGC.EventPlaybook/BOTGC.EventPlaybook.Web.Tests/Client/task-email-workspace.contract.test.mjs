@@ -38,7 +38,9 @@ test('the public completion page lists only tasks returned by its email access t
 });
 
 test('email tasks use scoped completion and reassignment actions', () => {
-  assert.match(completeHtml, /email-access\/\$\{encodeURIComponent\(accessToken\)\}\/tasks\/\$\{encodeURIComponent\(token\)\}\/complete/);
+  assert.match(completeHtml, /email-access\/\$\{encodeURIComponent\(accessToken\)\}\/tasks\/\$\{encodeURIComponent\(token\)\}\/\$\{action\}/);
+  assert.match(completeHtml, /updateTaskStatus\('complete'\)/);
+  assert.match(completeHtml, /updateTaskStatus\('not-applicable'\)/);
   assert.match(completeHtml, /Reassign this task/);
   assert.match(completeHtml, /tasks\/\$\{encodeURIComponent\(task\.token\)\}\/reassign/);
   assert.doesNotMatch(completeHtml, /task\.canCompleteFromLink\s*===\s*false/);

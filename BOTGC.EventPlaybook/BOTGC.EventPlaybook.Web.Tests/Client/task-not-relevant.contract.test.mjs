@@ -78,6 +78,9 @@ test('active task queries omit not-relevant work unless the archive explicitly r
   const getActiveTasks = compileFunction('getActiveTasks', {
     playbook,
     isEventIdea: () => false,
+    isRepeatingSeries: () => false,
+    isSeriesOccurrence: () => false,
+    repeatingTaskScope: () => 'occurrence',
     isModuleActive: () => true,
     isItemVisible: () => true,
     buildDontKnowTask: () => null,

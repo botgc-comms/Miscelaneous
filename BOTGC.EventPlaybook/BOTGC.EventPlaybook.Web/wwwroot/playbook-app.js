@@ -5148,6 +5148,7 @@
       : state.activeView === 'finances' ? 'Event Finances'
       : state.activeView === 'briefing' ? 'Briefing Summary'
       : state.activeView === 'catalogue' ? 'Event Catalogue'
+      : state.activeView === 'artwork' && event && isEventIdea(event) ? 'Idea Artwork'
       : state.activeView === 'artwork' ? 'Communications Centre'
       : state.activeView === 'cancellation' ? 'Cancellation Control'
       : state.activeView === 'directory' ? 'People & Roles'
@@ -5162,6 +5163,7 @@
       : state.activeView === 'finances' ? 'Track estimated and actual income and costs so the club can see whether this event is likely to make a profit, break even or make a loss.'
       : state.activeView === 'briefing' ? 'Read the latest event and staff briefings compiled from the description, planning answers and operational work.'
       : state.activeView === 'catalogue' ? 'Review previous events, clone successful plans and reuse the knowledge captured from earlier events.'
+      : state.activeView === 'artwork' && event && isEventIdea(event) ? 'Create a visual concept for this proposal. The selected artwork is saved with the idea so people can judge it before it becomes an operational event.'
       : state.activeView === 'artwork' ? 'Create a campaign from three AI concepts or adapt an existing supplied design into matching artwork for screens, member communications and print.'
       : state.activeView === 'cancellation' ? 'Review every recorded publication and commitment, then coordinate the actions needed to withdraw or correct them.'
       : state.activeView === 'directory' ? 'Maintain the people, shared mailboxes, responsibilities and platform access used throughout every event.'
@@ -5284,7 +5286,7 @@
                     <div class="hero-event-context-copy"><span>No event selected</span><strong>Choose an event to begin</strong><small>Planner, tasks, artwork and retrospectives share one selected event.</small></div>
                     <button type="button" data-view="catalogue">Choose event</button>
                   </section>`}
-              ${state.activeView === 'artwork' ? '<button id="shareTopButton" class="button button-gold hero-page-action" type="button" disabled>Share artwork</button>'
+              ${state.activeView === 'artwork' ? `<button id="shareTopButton" class="button button-gold hero-page-action" type="button" disabled>${event && isEventIdea(event) ? 'Adopt idea to publish' : 'Share artwork'}</button>`
                 : state.activeView === 'directory' ? '<button class="button button-gold hero-page-action" data-action="add-directory-contact">Add person</button>'
                 : state.activeView === 'references' ? '<button class="button button-gold hero-page-action" data-action="add-library-image">Add image</button>'
                 : state.activeView === 'catalogue' ? '<button class="button button-gold hero-page-action" data-action="new-event">New event</button>'
@@ -5390,12 +5392,12 @@
           if (workspace) workspace.innerHTML = `<div class="cancellation-page-error"><strong>Cancellation Control could not start.</strong><span>${escapeHtml(error.message || 'The module could not be loaded.')}</span></div>`;
         });
     }
-    if (event && pluginCapabilities.intelligentGolfEnabled && !isRepeatingSeries(event)) {
+    if (event && !isEventIdea(event) && pluginCapabilities.intelligentGolfEnabled && !isRepeatingSeries(event)) {
       ensureIntelligentGolfEventStatus(event.id);
       maybeOpenIntelligentGolfPlannerMatch(event);
     }
     if (state.activeView === 'artwork' && event) {
-      import('./poster-app.js?v=20260922-storage-reuse-1')
+      import('./poster-app.js?v=20260929-member-email-editor-1')
         .then(module => module.mountPosterStudio({
           eventId: event.id,
           eventName: event.name,
@@ -5405,6 +5407,7 @@
           endTime: event.endTime,
           eventTypeId: event.intelligentGolfEventTypeId,
           expectedAttendees: event.expectedAttendees,
+          publishingEnabled: !isEventIdea(event),
           planningContext: buildCommunicationsPlanningContext(event),
           cataloguePosterGenerationId: event.cataloguePosterGenerationId,
           referenceLibrary: loadReferenceLibrary(),
@@ -5717,6 +5720,7 @@
   }
 
   function renderArtworkStudio(event) {
+    const ideaMode = isEventIdea(event);
     const retainedArtworkThumbnail = event.publishedCataloguePosterThumbnail || event.cataloguePosterThumbnail || '';
     return `
       <section class="workflow-strip" aria-label="Poster creation workflow">
@@ -5726,8 +5730,14 @@
         <div class="workflow-line"></div>
         <div class="workflow-step" data-step="3"><span>3</span><strong>Produce</strong><small>Master & formats</small></div>
         <div class="workflow-line"></div>
-        <div class="workflow-step" data-step="4"><span>4</span><strong>Share</strong><small>Screens & members</small></div>
+        <div class="workflow-step" data-step="4"><span>4</span><strong>${ideaMode ? 'Save' : 'Share'}</strong><small>${ideaMode ? 'Idea artwork' : 'Screens & members'}</small></div>
       </section>
+
+      ${ideaMode ? `<section class="idea-artwork-notice" aria-label="Idea artwork">
+        <span class="catalogue-idea-mark" aria-hidden="true">✦</span>
+        <div><strong>Create the visual before committing to the event</strong><p>Generated artwork is saved with this idea and shown in the catalogue. Publishing to members, the member diary and clubhouse screens becomes available only after the idea is adopted as an event.</p></div>
+        <button class="button button-secondary" type="button" data-adopt-idea="${escapeHtml(event.id)}">Adopt as event</button>
+      </section>` : ''}
 
       <div class="content-grid">
         <section class="panel brief-panel">
@@ -5884,7 +5894,31 @@
               <div id="memberEmailConnectionStatus" class="yodeck-connection-status checking"><span></span><div><strong>Checking the member email connection…</strong><small>The connection is managed securely by Event Playbook.</small></div></div>
               <div class="member-email-section-heading"><div><strong>Email message</strong><small>Generated from the selected event and editable before sending.</small></div><button id="generateMemberEmail" class="button button-secondary" type="button">Generate email with AI</button></div>
               <label class="field"><span>Subject</span><input id="memberEmailSubject" type="text" maxlength="250" required></label>
-              <label class="field"><span>HTML email body</span><textarea id="memberEmailBody" rows="12" maxlength="200000" required spellcheck="true"></textarea><small>You can edit the generated HTML. Use Preview to check the finished message.</small></label>
+              <div class="field member-email-editor-field">
+                <span>Email body</span>
+                <div id="memberEmailToolbar" class="member-email-editor-toolbar" role="toolbar" aria-label="Email formatting">
+                  <label><span class="sr-only">Text style</span><select id="memberEmailFormat" aria-label="Text style"><option value="p">Paragraph</option><option value="h2">Heading</option><option value="h3">Subheading</option></select></label>
+                  <span class="member-email-toolbar-group" aria-label="Text formatting">
+                    <button type="button" data-email-editor-command="bold" aria-label="Bold" title="Bold"><strong>B</strong></button>
+                    <button type="button" data-email-editor-command="italic" aria-label="Italic" title="Italic"><em>I</em></button>
+                    <button type="button" data-email-editor-command="underline" aria-label="Underline" title="Underline"><u>U</u></button>
+                  </span>
+                  <span class="member-email-toolbar-group" aria-label="Lists and links">
+                    <button type="button" data-email-editor-command="insertUnorderedList" aria-label="Bulleted list" title="Bulleted list">• List</button>
+                    <button type="button" data-email-editor-command="insertOrderedList" aria-label="Numbered list" title="Numbered list">1. List</button>
+                    <button type="button" data-email-editor-action="link" aria-label="Add link" title="Add link">Link</button>
+                    <button type="button" data-email-editor-command="unlink" aria-label="Remove link" title="Remove link">Unlink</button>
+                  </span>
+                  <span class="member-email-toolbar-group" aria-label="Editing">
+                    <button type="button" data-email-editor-command="undo" aria-label="Undo" title="Undo">↶</button>
+                    <button type="button" data-email-editor-command="redo" aria-label="Redo" title="Redo">↷</button>
+                    <button type="button" data-email-editor-command="removeFormat" aria-label="Clear formatting" title="Clear formatting">Clear</button>
+                  </span>
+                </div>
+                <div id="memberEmailEditor" class="member-email-rich-editor" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Email body" spellcheck="true" data-placeholder="Write the email to members here…"></div>
+                <textarea id="memberEmailBody" hidden aria-hidden="true" tabindex="-1"></textarea>
+                <small id="memberEmailEditorHelp">Edit the message as you would a document. The formatted HTML is retained automatically for the preview and the email that is sent.</small>
+              </div>
               <details class="member-email-preview-panel"><summary>Preview email</summary><iframe id="memberEmailBodyPreview" title="Member email preview" sandbox></iframe></details>
               <section class="member-email-audience">
                 <div class="member-email-section-heading"><div><strong>Recipients</strong><small>Only active members with an email address are included.</small></div><button id="loadMemberEmailAudience" class="button button-secondary" type="button">Retrieve active members</button></div>
@@ -7838,6 +7872,7 @@
     const legacyPortraitClass = catalogueArtwork && sourceIsSquare === false && thumbnailMode !== 'cover'
       ? sourceOutputId === 'a4' ? ' legacy-fitted-a4' : ' legacy-fitted-portrait'
       : '';
+    const artworkAction = catalogueArtwork ? 'Edit artwork' : 'Create artwork';
     return `
       <article class="catalogue-card catalogue-idea-card">
         <button class="catalogue-poster" data-event-summary="${escapeHtml(event.id)}" aria-label="Review idea ${escapeHtml(event.name)}">
@@ -7862,6 +7897,7 @@
           </div>
           <div class="button-row">
             <button class="button button-secondary" data-event-summary="${escapeHtml(event.id)}">Review idea</button>
+            <button class="button button-secondary" data-create-idea-artwork="${escapeHtml(event.id)}">${artworkAction}</button>
             <button class="button button-primary" data-adopt-idea="${escapeHtml(event.id)}">Adopt as event</button>
           </div>
         </div>
@@ -8028,6 +8064,7 @@
         <span>An event date is required when this idea is adopted.</span>
         <div class="button-row">
           <button class="button button-secondary" data-action="close-summary">Keep as idea</button>
+          <button class="button button-secondary" data-create-idea-artwork="${escapeHtml(event.id)}">${event.cataloguePosterThumbnail ? 'Edit artwork' : 'Create artwork'}</button>
           <button class="button button-primary" data-adopt-idea="${escapeHtml(event.id)}">Adopt as event</button>
         </div>
       </div>`;
@@ -10293,6 +10330,17 @@
     requestAnimationFrame(() => document.getElementById('adopt-idea-date')?.focus());
   }
 
+  function openIdeaArtwork(eventId) {
+    const idea = state.events.find(event => event.id === eventId && isEventIdea(event));
+    if (!idea) return false;
+    state.activeEventId = idea.id;
+    state.activeView = 'artwork';
+    saveState();
+    document.getElementById('event-summary-dialog')?.close();
+    render();
+    return true;
+  }
+
   function adoptIdeaAsEvent(eventId, eventDate) {
     const idea = state.events.find(event => event.id === eventId && isEventIdea(event));
     if (!idea || !isValidIsoDate(eventDate)) return false;
@@ -10362,6 +10410,9 @@
     });
     document.querySelectorAll('#event-summary-dialog [data-adopt-idea]').forEach(element => {
       element.addEventListener('click', () => openAdoptIdeaDialog(element.dataset.adoptIdea));
+    });
+    document.querySelectorAll('#event-summary-dialog [data-create-idea-artwork]').forEach(element => {
+      element.addEventListener('click', () => openIdeaArtwork(element.dataset.createIdeaArtwork));
     });
   }
 
@@ -11612,6 +11663,10 @@
 
     document.querySelectorAll('[data-adopt-idea]').forEach(element => {
       element.addEventListener('click', () => openAdoptIdeaDialog(element.dataset.adoptIdea));
+    });
+
+    document.querySelectorAll('[data-create-idea-artwork]').forEach(element => {
+      element.addEventListener('click', () => openIdeaArtwork(element.dataset.createIdeaArtwork));
     });
 
     document.querySelectorAll('[data-close-adopt-idea]').forEach(element => {
