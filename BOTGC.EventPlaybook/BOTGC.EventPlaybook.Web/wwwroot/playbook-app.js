@@ -2669,9 +2669,25 @@
 
   function getActiveEvent() {
     let event = state.events.find(item => item.id === state.activeEventId) ?? null;
-    if (!event || isEventIdea(event)) {
+    if (!event) {
       state.activeEventId = null;
       return null;
+    }
+    if (isEventIdea(event)) {
+      // Ideas are deliberately excluded from every operational workspace, but
+      // they are valid creative records in the artwork studio. Returning the
+      // idea here is what lets the catalogue action open that studio instead
+      // of being rejected and falling back to the dashboard/task workspace.
+      if (state.activeView !== 'artwork') {
+        state.activeEventId = null;
+        return null;
+      }
+      event.name ??= 'Untitled idea';
+      event.eventDate ??= '';
+      event.description ??= '';
+      event.startTime = typeof event.startTime === 'string' ? event.startTime : '';
+      event.endTime = typeof event.endTime === 'string' ? event.endTime : '';
+      return event;
     }
     if (event) {
       event.answers ??= {};
@@ -5118,7 +5134,8 @@
       saveState();
     }
 
-    if (event) {
+    const ideaArtworkMode = Boolean(event && isEventIdea(event) && state.activeView === 'artwork');
+    if (event && !ideaArtworkMode) {
       normaliseAnswers(event);
       normaliseMilestoneDates(event);
       if (state.activeView === 'cancellation' && normaliseEventLifecycle(event).status !== 'cancelled') {
@@ -5127,12 +5144,12 @@
     }
     saveState();
 
-    const activeModules = event ? playbook.modules.filter(module => isModuleActive(module, event)) : [];
+    const activeModules = event && !ideaArtworkMode ? playbook.modules.filter(module => isModuleActive(module, event)) : [];
     const tasks = event ? getActiveTasks(event) : [];
     const actionableTasks = tasks.filter(task => !task.expired);
     const doneTasks = actionableTasks.filter(task => task.state.completed).length;
-    const questionProgress = event ? getOverallQuestionProgress(event) : { total: 0, answered: 0, percent: 0 };
-    const intelligentGolfStatus = event ? intelligentGolfEventStatuses.get(event.id) : null;
+    const questionProgress = event && !ideaArtworkMode ? getOverallQuestionProgress(event) : { total: 0, answered: 0, percent: 0 };
+    const intelligentGolfStatus = event && !ideaArtworkMode ? intelligentGolfEventStatuses.get(event.id) : null;
 
     const currentModuleId = state.activeView.startsWith('module:')
       ? state.activeView.substring('module:'.length)
@@ -5173,11 +5190,11 @@
       : state.activeView === 'retrospective' ? 'Release the member feedback form, review what went well, what did not, and turn the evidence into guidance for next time.'
       : state.activeView === 'series' ? 'Manage the shared plan, repeating schedule and independently publishable event occurrences.'
       : 'Plan the event consistently from first decision to final close-down, with every relevant question, responsibility and deadline in one place.';
-    const showEventEditor = Boolean(event) && state.activeView === 'module:start' && !isSeriesOccurrence(event);
-    const showEventTools = Boolean(event) && (isPlanningView || state.activeView === 'tasks' || state.activeView === 'retrospective');
-    const showLifecycleBanner = Boolean(event) && (isPlanningView || ['tasks', 'finances', 'briefing', 'artwork', 'cancellation', 'retrospective', 'series'].includes(state.activeView));
-    const lifecycle = event ? normaliseEventLifecycle(event) : null;
-    const lifecycleDefinition = event ? eventStatusDefinition(event) : null;
+    const showEventEditor = Boolean(event) && !ideaArtworkMode && state.activeView === 'module:start' && !isSeriesOccurrence(event);
+    const showEventTools = Boolean(event) && !ideaArtworkMode && (isPlanningView || state.activeView === 'tasks' || state.activeView === 'retrospective');
+    const showLifecycleBanner = Boolean(event) && !ideaArtworkMode && (isPlanningView || ['tasks', 'finances', 'briefing', 'artwork', 'cancellation', 'retrospective', 'series'].includes(state.activeView));
+    const lifecycle = event ? (ideaArtworkMode ? event.lifecycle : normaliseEventLifecycle(event)) : null;
+    const lifecycleDefinition = event ? (ideaArtworkMode ? EVENT_STATUS_DEFINITIONS.idea : eventStatusDefinition(event)) : null;
 
     app.innerHTML = `
       <div class="app-shell">
@@ -5193,15 +5210,15 @@
           <nav class="side-nav" aria-label="Event Playbook">
             <button class="${state.activeView === 'dashboard' ? 'active' : ''}" data-view="dashboard"><span class="nav-icon">⌂</span>My Dashboard</button>
             <button class="${state.activeView === 'catalogue' ? 'active' : ''}" data-view="catalogue"><span class="nav-icon">▦</span>Event Catalogue</button>
-            <span class="side-nav-group-label">Current event workspace</span>
-            <button class="${isPlanningView ? 'active' : ''}" data-view="module:start" ${event ? '' : 'disabled'}><span class="nav-icon">◇</span>Event Planner</button>
-            <button class="${state.activeView === 'briefing' ? 'active' : ''}" data-view="briefing" ${event ? '' : 'disabled'}><span class="nav-icon">☷</span>Briefing Summary</button>
-            <button class="${state.activeView === 'tasks' ? 'active' : ''}" data-view="tasks" ${event ? '' : 'disabled'}><span class="nav-icon">✓</span>Task Board</button>
-            <button class="${state.activeView === 'finances' ? 'active' : ''}" data-view="finances" ${event ? '' : 'disabled'}><span class="nav-icon">£</span>Event Finances</button>
-            <button class="${state.activeView === 'series' ? 'active' : ''}" data-view="series" ${event ? '' : 'disabled'}><span class="nav-icon">↻</span>${event && (isRepeatingSeries(event) || isSeriesOccurrence(event)) ? 'Series Schedule' : 'Repeat Event'}</button>
-            <button class="${state.activeView === 'artwork' ? 'active' : ''}" data-view="artwork" ${event ? '' : 'disabled'}><span class="nav-icon">✦</span>Communications Centre</button>
+            <span class="side-nav-group-label">${ideaArtworkMode ? 'Current idea workspace' : 'Current event workspace'}</span>
+            <button class="${isPlanningView ? 'active' : ''}" data-view="module:start" ${event && !ideaArtworkMode ? '' : 'disabled'}><span class="nav-icon">◇</span>Event Planner</button>
+            <button class="${state.activeView === 'briefing' ? 'active' : ''}" data-view="briefing" ${event && !ideaArtworkMode ? '' : 'disabled'}><span class="nav-icon">☷</span>Briefing Summary</button>
+            <button class="${state.activeView === 'tasks' ? 'active' : ''}" data-view="tasks" ${event && !ideaArtworkMode ? '' : 'disabled'}><span class="nav-icon">✓</span>Task Board</button>
+            <button class="${state.activeView === 'finances' ? 'active' : ''}" data-view="finances" ${event && !ideaArtworkMode ? '' : 'disabled'}><span class="nav-icon">£</span>Event Finances</button>
+            <button class="${state.activeView === 'series' ? 'active' : ''}" data-view="series" ${event && !ideaArtworkMode ? '' : 'disabled'}><span class="nav-icon">↻</span>${event && !ideaArtworkMode && (isRepeatingSeries(event) || isSeriesOccurrence(event)) ? 'Series Schedule' : 'Repeat Event'}</button>
+            <button class="${state.activeView === 'artwork' ? 'active' : ''}" data-view="artwork" ${event ? '' : 'disabled'}><span class="nav-icon">✦</span>${ideaArtworkMode ? 'Idea Artwork' : 'Communications Centre'}</button>
             ${lifecycle?.status === 'cancelled' ? `<button class="cancellation-nav ${state.activeView === 'cancellation' ? 'active' : ''}" data-view="cancellation"><span class="nav-icon">!</span>Cancellation Control</button>` : ''}
-            <button class="${state.activeView === 'retrospective' ? 'active' : ''}" data-view="retrospective" ${event ? '' : 'disabled'}><span class="nav-icon">↺</span>Retrospectives</button>
+            <button class="${state.activeView === 'retrospective' ? 'active' : ''}" data-view="retrospective" ${event && !ideaArtworkMode ? '' : 'disabled'}><span class="nav-icon">↺</span>Retrospectives</button>
           </nav>
 
           ${isPlanningView && event ? `<section class="sidebar-section module-nav" aria-label="Planning modules">
@@ -5247,11 +5264,12 @@
           </nav>
 
           <div class="sidebar-footer">
-            ${event ? `<div class="sidebar-progress-copy">
+            ${event && !ideaArtworkMode ? `<div class="sidebar-progress-copy">
                 <strong>${questionProgress.percent}% planned</strong>
                 <small>${doneTasks} of ${actionableTasks.length} actionable tasks complete</small>
               </div>
               <div class="progress-track"><div class="progress-fill" style="width:${questionProgress.percent}%"></div></div>`
+              : ideaArtworkMode ? '<div class="sidebar-progress-copy"><strong>Idea artwork</strong><small>Planning starts only after adoption</small></div>'
               : '<div class="sidebar-progress-copy"><strong>No event selected</strong><small>Choose one from the catalogue</small></div>'}
           </div>
         </aside>
@@ -5264,17 +5282,17 @@
               <p>${escapeHtml(shellIntro)}</p>
             </div>
             <div class="app-page-hero-actions">
-              ${event ? `<section class="hero-event-context status-${escapeHtml(lifecycle.status)}${event.closedAt ? ' closed' : ''}" aria-label="Current selected event">
+              ${event ? `<section class="hero-event-context status-${escapeHtml(lifecycle.status)}${event.closedAt ? ' closed' : ''}" aria-label="Current selected ${ideaArtworkMode ? 'idea' : 'event'}">
                   <div class="hero-event-context-copy">
-                    <span><i></i>Current selected event · ${escapeHtml(lifecycleDefinition.label)}</span>
+                    <span><i></i>Current selected ${ideaArtworkMode ? 'idea' : 'event'} · ${escapeHtml(lifecycleDefinition.label)}</span>
                     <strong>${escapeHtml(event.name || 'Untitled event')}</strong>
-                    <small>${isSeriesOccurrence(event) ? 'Series occurrence · ' : isRepeatingSeries(event) ? 'Repeating series · ' : ''}${escapeHtml(event.eventDate ? formatDate(event.eventDate) : 'Date not set')} · ${escapeHtml(event.organiser || 'Organiser not assigned')}</small>
+                    <small>${isSeriesOccurrence(event) ? 'Series occurrence · ' : isRepeatingSeries(event) ? 'Repeating series · ' : ''}${escapeHtml(event.eventDate ? formatDate(event.eventDate) : ideaArtworkMode ? 'Possible date not set' : 'Date not set')} · ${escapeHtml(event.organiser || (ideaArtworkMode ? 'Proposer not recorded' : 'Organiser not assigned'))}</small>
                   </div>
                   <div class="hero-event-context-actions">
-                    ${pluginCapabilities.intelligentGolfEnabled && intelligentGolfStatus?.linked
+                    ${!ideaArtworkMode && pluginCapabilities.intelligentGolfEnabled && intelligentGolfStatus?.linked
                       ? `<button type="button" data-action="change-ig-planner-link"${intelligentGolfStatus.available ? '' : ' disabled title="The Intelligent Golf connection is not currently available."'}>Change linked planner event</button>`
                       : ''}
-                    <button type="button" data-action="manage-event-status">Manage status</button>
+                    ${ideaArtworkMode ? '' : '<button type="button" data-action="manage-event-status">Manage status</button>'}
                     <button type="button" data-view="catalogue">Change event</button>
                   </div>
                 </section>`
@@ -5286,7 +5304,9 @@
                     <div class="hero-event-context-copy"><span>No event selected</span><strong>Choose an event to begin</strong><small>Planner, tasks, artwork and retrospectives share one selected event.</small></div>
                     <button type="button" data-view="catalogue">Choose event</button>
                   </section>`}
-              ${state.activeView === 'artwork' ? `<button id="shareTopButton" class="button button-gold hero-page-action" type="button" disabled>${event && isEventIdea(event) ? 'Adopt idea to publish' : 'Share artwork'}</button>`
+              ${state.activeView === 'artwork' ? event && isEventIdea(event)
+                  ? `<button class="button button-gold hero-page-action" type="button" data-adopt-idea="${escapeHtml(event.id)}">Adopt idea as event</button>`
+                  : '<button id="shareTopButton" class="button button-gold hero-page-action" type="button" disabled>Share artwork</button>'
                 : state.activeView === 'directory' ? '<button class="button button-gold hero-page-action" data-action="add-directory-contact">Add person</button>'
                 : state.activeView === 'references' ? '<button class="button button-gold hero-page-action" data-action="add-library-image">Add image</button>'
                 : state.activeView === 'catalogue' ? '<button class="button button-gold hero-page-action" data-action="new-event">New event</button>'
@@ -10335,6 +10355,12 @@
     if (!idea) return false;
     state.activeEventId = idea.id;
     state.activeView = 'artwork';
+    taskBoardDeepLinkTarget = null;
+    const route = new URL(location.href);
+    route.search = '';
+    route.searchParams.set('view', 'artwork');
+    route.searchParams.set('event', idea.id);
+    history.replaceState({}, '', `${route.pathname}${route.search}${route.hash}`);
     saveState();
     document.getElementById('event-summary-dialog')?.close();
     render();
@@ -12966,6 +12992,10 @@
         return;
       }
       if (requestedView) state.activeView = requestedView;
+      const requestedEventId = params.get('event');
+      if (requestedView === 'artwork' && requestedEventId && state.events.some(event => event.id === requestedEventId)) {
+        state.activeEventId = requestedEventId;
+      }
       const completeToken = params.get('complete');
       if (completeToken) {
         const eventId = params.get('event');

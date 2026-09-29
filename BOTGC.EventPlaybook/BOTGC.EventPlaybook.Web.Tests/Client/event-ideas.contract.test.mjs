@@ -86,11 +86,18 @@ test('ideas can open the artwork studio without enabling operational publishing'
   const ideaCard = functionSource('renderIdeaCatalogueCard');
   const ideaSummary = functionSource('renderIdeaSummaryContent');
   const openArtwork = functionSource('openIdeaArtwork');
+  const activeEvent = functionSource('getActiveEvent');
   const artworkStudio = functionSource('renderArtworkStudio');
 
   assert.match(ideaCard, /data-create-idea-artwork/);
   assert.match(ideaSummary, /data-create-idea-artwork/);
   assert.match(openArtwork, /state\.activeView = 'artwork'/);
+  assert.match(openArtwork, /history\.replaceState/);
+  assert.match(openArtwork, /searchParams\.set\('event', idea\.id\)/);
+  assert.match(activeEvent, /if \(isEventIdea\(event\)\)/);
+  assert.match(activeEvent, /state\.activeView !== 'artwork'/);
+  assert.match(activeEvent, /return event/);
+  assert.match(functionSource('render'), /ideaArtworkMode/);
   assert.match(playbookSource, /publishingEnabled: !isEventIdea\(event\)/);
   assert.match(artworkStudio, /Create the visual before committing to the event/);
   assert.match(artworkStudio, /Publishing to members, the member diary and clubhouse screens becomes available only after the idea is adopted/);
