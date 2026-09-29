@@ -4642,23 +4642,6 @@
               "source": "refined"
             },
             {
-              "id": "publish-admission-details-task",
-              "type": "task",
-              "title": "Give the communications owner the approved attendance, booking and price instructions",
-              "detail": "Give the communications owner one approved statement so every selected channel uses the same registration or booking route, price where applicable, dates, table-booking requirement and attendance conditions. This handover is omitted when the event coordinator and communications owner resolve to the same person.",
-              "deadlineCode": "B3",
-              "showWhen": { "all": [{ "questionId": "communications-involved", "operator": "equals", "value": true }] },
-              "responsibleArea": "Event Coordination",
-              "defaultOwnerRoleId": "event-coordinator",
-              "handover": {
-                "from": { "roleId": "event-coordinator" },
-                "to": { "questionId": "event-communications-owner", "fallbackRoleId": "communications" }
-              },
-              "actionView": "artwork",
-              "actionLabel": "Open Communications Centre",
-              "source": "refined"
-            },
-            {
               "id": "confirm-admission-terms-task",
               "type": "task",
               "title": "Agree and publish the ticket cancellation, transfer and refund terms",

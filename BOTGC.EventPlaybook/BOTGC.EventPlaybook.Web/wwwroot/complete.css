@@ -102,6 +102,24 @@
   box-shadow: inset 4px 0 0 var(--blue);
 }
 
+.completion-task-link.completed {
+  border-color: #8ebcab;
+  background: #edf8f3;
+  box-shadow: inset 4px 0 0 var(--green);
+}
+
+.completion-task-link.completed span,
+.completion-task-link.completed small { color: #39725e; }
+.completion-task-link.completed strong { color: #185945; }
+.completion-task-link.completed.selected { border-color: var(--green); box-shadow: inset 4px 0 0 var(--green), 0 0 0 3px rgba(48,111,91,.1); }
+
+.completion-task-link.not-applicable {
+  border-color: #c9c2b2;
+  color: #69716e;
+  background: #f4f3ef;
+  box-shadow: inset 4px 0 0 #948a74;
+}
+
 .completion-task-link span,
 .completion-task-link small {
   color: var(--muted);
@@ -410,6 +428,9 @@
   opacity: .65;
 }
 
+.completion-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.completion-actions .button-secondary { border-color: #aebdb9; color: #526762; background: #fff; }
+
 .success-mark,
 .completion-state-mark {
   display: grid;
@@ -429,6 +450,8 @@
   color: var(--navy);
   background: var(--gold);
 }
+
+.completion-state-mark.not-applicable { color: #fff; background: #857c69; }
 
 @media (max-width: 560px) {
   .completion-page {
@@ -494,6 +517,8 @@
   .completion-content .button {
     width: 100%;
   }
+
+  .completion-actions { display: grid; grid-template-columns: 1fr; }
 
   .completion-reassignment-controls {
     grid-template-columns: 1fr;

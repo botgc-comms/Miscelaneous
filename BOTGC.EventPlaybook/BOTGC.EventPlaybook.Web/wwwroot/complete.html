@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title data-club-title-prefix="Complete Event Task">Complete Event Task | Burton-on-Trent Golf Club</title>
   <link rel="stylesheet" href="./playbook.css?v=20260829-retrospective-analysis-1">
-  <link rel="stylesheet" href="./complete.css?v=20260927-email-actions-1">
+  <link rel="stylesheet" href="./complete.css?v=20260929-task-status-actions-1">
 </head>
 <body class="completion-body">
   <main class="completion-page">
@@ -88,7 +88,7 @@
         </div>
         <div class="completion-task-strip">
           ${tasks.map(task => `
-            <button type="button" class="completion-task-link ${task.token === token ? 'selected' : ''}" data-task-token="${escapeHtml(task.token)}">
+            <button type="button" class="completion-task-link ${task.token === token ? 'selected' : ''} ${task.completedAtUtc ? 'completed' : ''} ${task.notApplicableAtUtc ? 'not-applicable' : ''}" data-task-token="${escapeHtml(task.token)}">
               <span>${escapeHtml(task.eventName)}</span>
               <strong>${escapeHtml(task.taskTitle)}</strong>
               <small>${taskStatus(task)}</small>
@@ -102,9 +102,19 @@
         renderWorkspace();
       }));
       render(selected);
+      requestAnimationFrame(() => centreSelectedTask());
+    }
+
+    function centreSelectedTask() {
+      const strip = taskList.querySelector('.completion-task-strip');
+      const selected = strip?.querySelector('.completion-task-link.selected');
+      if (!strip || !selected) return;
+      const left = selected.offsetLeft - ((strip.clientWidth - selected.offsetWidth) / 2);
+      strip.scrollTo({ left: Math.max(0, left), behavior: 'smooth' });
     }
 
     function taskStatus(task) {
+      if (task.notApplicableAtUtc) return 'Not applicable';
       if (task.completedAtUtc) return 'Completed';
       return task.dueDate
         ? `Due ${new Date(task.dueDate + 'T12:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}`
@@ -112,6 +122,17 @@
     }
 
     function render(task) {
+      if (task.notApplicableAtUtc) {
+        content.innerHTML = `
+          <div class="completion-state-mark not-applicable">—</div>
+          <h2>Task marked not applicable</h2>
+          <p><strong>${escapeHtml(task.taskTitle)}</strong></p>
+          <p class="help-text">${escapeHtml(task.eventName)}</p>
+          <p>This task was removed from the active plan on ${new Date(task.notApplicableAtUtc).toLocaleString('en-GB')}.</p>
+          ${task.notApplicableNotes ? `<aside class="completion-task-note"><strong>Reason recorded</strong><p>${escapeHtml(task.notApplicableNotes)}</p></aside>` : ''}`;
+        return;
+      }
+
       if (task.completedAtUtc) {
         content.innerHTML = `
           <div class="success-mark">✓</div>
@@ -140,33 +161,41 @@
         ${renderLearning(task.learningInsights)}
         ${renderReassignment(task)}
         <label class="completion-notes"><span>Completion note <em>optional</em></span><textarea id="completionNotes" rows="4" placeholder="Add anything the event coordinator should know"></textarea></label>
-        <button class="button button-primary" id="completeButton">Mark task complete</button>`;
+        <div class="completion-actions"><button class="button button-primary" id="completeButton">Mark task complete</button><button class="button button-secondary" id="notApplicableButton">Not applicable</button></div>`;
 
       document.getElementById('reassignButton')?.addEventListener('click', () => reassignTask(task));
 
-      document.getElementById('completeButton').addEventListener('click', async () => {
-        const button = document.getElementById('completeButton');
-        button.disabled = true;
-        button.textContent = 'Completing…';
-        try {
-          const completionPath = accessToken
-            ? `/api/tasks/email-access/${encodeURIComponent(accessToken)}/tasks/${encodeURIComponent(token)}/complete`
-            : `/api/tasks/completion-links/${encodeURIComponent(token)}/complete`;
-          const result = await fetch(completionPath, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ notes: document.getElementById('completionNotes').value })
-          });
-          if (!result.ok) throw new Error('Completion failed');
-          const completed = await result.json();
-          tasks = tasks.map(task => task.token === completed.token ? completed : task);
-          renderWorkspace();
-        } catch {
-          button.disabled = false;
-          button.textContent = 'Mark task complete';
-          alert('The task could not be completed.');
+      document.getElementById('completeButton').addEventListener('click', () => updateTaskStatus('complete'));
+      document.getElementById('notApplicableButton').addEventListener('click', () => updateTaskStatus('not-applicable'));
+    }
+
+    async function updateTaskStatus(action) {
+      const button = document.getElementById(action === 'complete' ? 'completeButton' : 'notApplicableButton');
+      const buttons = document.querySelectorAll('.completion-actions button');
+      const originalText = button.textContent;
+      buttons.forEach(candidate => { candidate.disabled = true; });
+      button.textContent = action === 'complete' ? 'Completing…' : 'Removing…';
+      try {
+        const path = accessToken
+          ? `/api/tasks/email-access/${encodeURIComponent(accessToken)}/tasks/${encodeURIComponent(token)}/${action}`
+          : `/api/tasks/completion-links/${encodeURIComponent(token)}/${action}`;
+        const result = await fetch(path, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ notes: document.getElementById('completionNotes').value })
+        });
+        if (!result.ok) {
+          const failure = await result.json().catch(() => ({}));
+          throw new Error(failure.error || 'The task could not be updated.');
         }
-      });
+        const updated = await result.json();
+        tasks = tasks.map(task => task.token === updated.token ? updated : task);
+        renderWorkspace();
+      } catch (error) {
+        buttons.forEach(candidate => { candidate.disabled = false; });
+        button.textContent = originalText;
+        alert(error instanceof Error ? error.message : 'The task could not be updated.');
+      }
     }
 
     function renderReassignment(task) {

@@ -542,22 +542,17 @@ public sealed class PlaybookConfigurationTests
     }
 
     [Fact]
-    public void AdmissionInstructionsAreOnlyHandedOverAcrossAnOwnershipBoundary()
+    public void AdmissionInstructionsRemainAvailableWithoutADuplicateHandoverTask()
     {
         var solutionRoot = FindSolutionRoot();
         var dataPath = Path.Combine(solutionRoot, "BOTGC.EventPlaybook.Web", "Data", "event-playbook.json");
         using var document = JsonDocument.Parse(File.ReadAllText(dataPath));
 
-        var task = FindItem(document.RootElement, "publish-admission-details-task");
-        Assert.Equal("Event Coordination", task.GetProperty("responsibleArea").GetString());
-        Assert.Equal("event-coordinator", task.GetProperty("defaultOwnerRoleId").GetString());
-        Assert.False(task.TryGetProperty("ownerFromQuestionId", out _));
-        Assert.True(ContainsCondition(task.GetProperty("showWhen"), "communications-involved", "equals", true));
-
-        var handover = task.GetProperty("handover");
-        Assert.Equal("event-coordinator", handover.GetProperty("from").GetProperty("roleId").GetString());
-        Assert.Equal("event-communications-owner", handover.GetProperty("to").GetProperty("questionId").GetString());
-        Assert.Equal("communications", handover.GetProperty("to").GetProperty("fallbackRoleId").GetString());
+        Assert.False(ContainsItem(document.RootElement, "publish-admission-details-task"));
+        Assert.Equal(
+            "What booking instructions should be included in communications?",
+            FindItem(document.RootElement, "admission-public-instructions").GetProperty("label").GetString());
+        Assert.True(ContainsItem(document.RootElement, "admission-price-details"));
     }
 
     private static bool ContainsItem(JsonElement root, string itemId)

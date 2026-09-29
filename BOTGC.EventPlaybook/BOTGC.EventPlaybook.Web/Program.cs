@@ -2580,6 +2580,21 @@ app.MapPost("/api/tasks/email-access/{accessToken}/tasks/{taskToken}/complete", 
     return record is null ? Results.NotFound() : Results.Ok(ToPublicTaskCompletion(record));
 });
 
+app.MapPost("/api/tasks/email-access/{accessToken}/tasks/{taskToken}/not-applicable", async (
+    string accessToken,
+    string taskToken,
+    CompleteTaskRequest request,
+    ITaskCompletionRegistry registry,
+    CancellationToken cancellationToken) =>
+{
+    var record = await registry.MarkNotApplicableFromEmailAccessAsync(
+        accessToken,
+        taskToken,
+        request.Notes,
+        cancellationToken);
+    return record is null ? Results.NotFound() : Results.Ok(ToPublicTaskCompletion(record));
+});
+
 app.MapPost("/api/tasks/email-access/{accessToken}/tasks/{taskToken}/reassign", async (
     string accessToken,
     string taskToken,
@@ -2629,6 +2644,19 @@ app.MapPost("/api/tasks/completion-links/{token}/complete", async (
         : Results.Ok(ToPublicTaskCompletion(record));
 });
 
+app.MapPost("/api/tasks/completion-links/{token}/not-applicable", async (
+    string token,
+    CompleteTaskRequest request,
+    ITaskCompletionRegistry registry,
+    CancellationToken cancellationToken) =>
+{
+    var record = await registry.MarkNotApplicableAsync(token, request.Notes, cancellationToken);
+    if (record is null) return Results.NotFound();
+    return record.NotApplicableAtUtc is null
+        ? Results.Conflict(new { error = "This task link is no longer active." })
+        : Results.Ok(ToPublicTaskCompletion(record));
+});
+
 app.MapGet("/api/tasks/events/{eventId}/completions", async (
     string eventId,
     ITaskCompletionRegistry registry,
@@ -2666,7 +2694,8 @@ static bool IsPublicTaskCompletionPath(HttpRequest request)
     return (HttpMethods.IsGet(request.Method) && segments.Length == 4) ||
            (HttpMethods.IsPost(request.Method) &&
             segments.Length == 5 &&
-            string.Equals(segments[4], "complete", StringComparison.OrdinalIgnoreCase));
+            (string.Equals(segments[4], "complete", StringComparison.OrdinalIgnoreCase) ||
+             string.Equals(segments[4], "not-applicable", StringComparison.OrdinalIgnoreCase)));
 }
 
 static bool IsPublicTaskEmailAccessPath(HttpRequest request)
@@ -2689,6 +2718,7 @@ static bool IsPublicTaskEmailAccessPath(HttpRequest request)
             string.Equals(segments[4], "tasks", StringComparison.OrdinalIgnoreCase) &&
             Guid.TryParse(segments[5], out _) &&
             (string.Equals(segments[6], "complete", StringComparison.OrdinalIgnoreCase) ||
+             string.Equals(segments[6], "not-applicable", StringComparison.OrdinalIgnoreCase) ||
              string.Equals(segments[6], "reassign", StringComparison.OrdinalIgnoreCase)));
 }
 
@@ -2709,6 +2739,9 @@ static object ToPublicTaskCompletion(TaskCompletionRecord record) => new
     record.CompletedAtUtc,
     record.CompletionNotes,
     record.CompletedViaEmailAccess,
+    record.NotApplicableAtUtc,
+    record.NotApplicableNotes,
+    record.NotApplicableViaEmailAccess,
     record.AssignmentKind,
     record.AssignmentId,
     record.ReassignedAtUtc

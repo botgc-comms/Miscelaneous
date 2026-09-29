@@ -3532,6 +3532,15 @@
     return true;
   }
 
+  function applyServerTaskNotApplicable(event, item, taskState, record) {
+    if (!record.notApplicableAtUtc) return false;
+    if (taskState.notRelevant !== true) markTaskNotRelevant(event, item, true);
+    taskState.notRelevantAt = record.notApplicableAtUtc;
+    taskState.notRelevantSource = record.notApplicableViaEmailAccess === true ? 'email-access' : 'completion-link';
+    if (String(record.notApplicableNotes ?? '').trim()) taskState.notes = record.notApplicableNotes.trim();
+    return true;
+  }
+
   async function syncServerCompletions() {
     for (const event of state.events) {
       try {
@@ -3555,7 +3564,8 @@
           const taskState = ensureTaskState(event, record.taskId);
           if (!taskState.completionToken || taskState.completionToken !== record.token) continue;
           applyServerTaskReassignment(taskState, record);
-          if (record.completedAtUtc) applyServerTaskCompletion(event, indexed.item, taskState, record);
+          if (record.notApplicableAtUtc) applyServerTaskNotApplicable(event, indexed.item, taskState, record);
+          else if (record.completedAtUtc) applyServerTaskCompletion(event, indexed.item, taskState, record);
         }
       } catch (error) {
         console.warn('Could not synchronise task completions.', error);
@@ -9493,7 +9503,29 @@
       </dialog>`;
   }
 
+  function taskRelevanceSignals() {
+    const counts = new Map();
+    for (const event of state.events ?? []) {
+      for (const [taskId, taskState] of Object.entries(event.taskState ?? {})) {
+        if (taskState?.notRelevant !== true) continue;
+        const indexed = itemIndex.get(taskId);
+        if (!indexed || indexed.item.type !== 'task') continue;
+        const existing = counts.get(taskId) ?? {
+          taskId,
+          title: indexed.item.title,
+          moduleTitle: indexed.module.title,
+          sectionTitle: indexed.section.title,
+          count: 0
+        };
+        existing.count += 1;
+        counts.set(taskId, existing);
+      }
+    }
+    return [...counts.values()].sort((left, right) => right.count - left.count || left.title.localeCompare(right.title));
+  }
+
   function renderAdmin() {
+    const relevanceSignals = taskRelevanceSignals();
     return `
       <section class="page-header"><div><div class="eyebrow">Configuration</div><h2>Playbook admin</h2><p>Extend the data-driven Playbook without changing application code. People and responsibilities are maintained on the dedicated People & Roles page.</p></div><button class="button button-secondary" data-view="directory">Open People & Roles</button></section>
       <section class="admin-branding-card" aria-labelledby="club-identity-heading">
@@ -9519,6 +9551,10 @@
           </div>
           ${clubBrandingNotice ? `<div class="admin-branding-notice" role="status">${escapeHtml(clubBrandingNotice)}</div>` : ''}
         </form>
+      </section>
+      <section class="admin-relevance-card" aria-labelledby="task-relevance-heading">
+        <header><div><span class="eyebrow">Task quality</span><h3 id="task-relevance-heading">Tasks frequently marked not applicable</h3><p>Repeated dismissals can indicate that a task is duplicated, too broad or no longer useful. Review the strongest signals before changing the shared Playbook.</p></div><strong>${relevanceSignals.reduce((sum, signal) => sum + signal.count, 0)}<small>recorded dismissals</small></strong></header>
+        ${relevanceSignals.length ? `<div class="admin-relevance-list">${relevanceSignals.map(signal => `<article class="${signal.count >= 2 ? 'review' : ''}"><div><span>${signal.count >= 2 ? 'Review for removal' : 'Watch'}</span><h4>${escapeHtml(signal.title)}</h4><p>${escapeHtml(signal.moduleTitle)} · ${escapeHtml(signal.sectionTitle)}</p></div><strong>${signal.count}<small>event${signal.count === 1 ? '' : 's'}</small></strong></article>`).join('')}</div>` : '<div class="admin-relevance-empty"><span>✓</span><div><strong>No relevance concerns recorded</strong><p>Tasks marked not applicable from event boards or email task links will be summarised here.</p></div></div>'}
       </section>
       <section class="admin-grid">
         <article class="admin-card"><div class="section-heading"><h3>Add a question or task</h3></div>

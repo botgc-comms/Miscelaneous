@@ -673,6 +673,20 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
             CancellationToken cancellationToken) =>
             Task.FromResult<TaskCompletionRecord?>(_records.GetValueOrDefault(token));
 
+        public Task<TaskCompletionRecord?> MarkNotApplicableAsync(
+            string token,
+            string? notes,
+            CancellationToken cancellationToken)
+        {
+            var record = _records.GetValueOrDefault(token);
+            if (record is not null)
+            {
+                record.NotApplicableAtUtc = DateTimeOffset.UtcNow;
+                record.NotApplicableNotes = notes;
+            }
+            return Task.FromResult(record);
+        }
+
         public Task<TaskCompletionRecord?> CompleteFromEmailAccessAsync(
             string accessToken,
             string taskToken,
@@ -689,6 +703,24 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
                 record.CanCompleteFromLink = true;
             }
 
+            return Task.FromResult(record);
+        }
+
+        public Task<TaskCompletionRecord?> MarkNotApplicableFromEmailAccessAsync(
+            string accessToken,
+            string taskToken,
+            string? notes,
+            CancellationToken cancellationToken)
+        {
+            var record = EmailWorkspaces.GetValueOrDefault(accessToken)?.Tasks
+                .SingleOrDefault(task => task.Token == taskToken);
+            if (record is not null)
+            {
+                record.CompletedAtUtc = null;
+                record.NotApplicableAtUtc = DateTimeOffset.UtcNow;
+                record.NotApplicableNotes = notes;
+                record.NotApplicableViaEmailAccess = true;
+            }
             return Task.FromResult(record);
         }
 
@@ -716,7 +748,8 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
             string eventId,
             CancellationToken cancellationToken) =>
             Task.FromResult<IReadOnlyList<TaskCompletionRecord>>(
-                _records.Values.Where(record => record.EventId == eventId && record.CompletedAtUtc is not null).ToArray());
+                _records.Values.Where(record => record.EventId == eventId &&
+                    (record.CompletedAtUtc is not null || record.NotApplicableAtUtc is not null)).ToArray());
 
         public Task<TaskEmailWorkspace> RegisterEmailAccessAsync(
             string accessToken,
@@ -833,6 +866,46 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
         Assert.True(completed.CanCompleteFromLink);
         Assert.NotNull(completed.CompletedAtUtc);
         Assert.Equal("Done from the email.", completed.CompletionNotes);
+    }
+
+    [Fact]
+    public async Task CompletionRegistry_EmailAccessCanMarkGrantedTaskNotApplicable()
+    {
+        Directory.CreateDirectory(_contentRoot);
+        var now = new DateTimeOffset(2026, 9, 29, 8, 30, 0, TimeSpan.Zero);
+        var registry = new TaskCompletionRegistry(
+            new TestWebHostEnvironment(_contentRoot),
+            new FixedTimeProvider(now));
+        var taskToken = Guid.NewGuid().ToString("D");
+        var accessToken = Guid.NewGuid().ToString("D");
+        await registry.RegisterAsync(
+            new RegisterCompletionLinkRequest
+            {
+                Token = taskToken,
+                EventId = "event-1",
+                EventName = "Autumn Event",
+                TaskId = "optional-task",
+                TaskTitle = "An optional task",
+                CanCompleteFromLink = false,
+                ExpiresOn = "2026-09-20"
+            },
+            CancellationToken.None);
+        await registry.RegisterEmailAccessAsync(accessToken, [taskToken], CancellationToken.None);
+
+        var updated = await registry.MarkNotApplicableFromEmailAccessAsync(
+            accessToken,
+            taskToken,
+            "This is handled elsewhere.",
+            CancellationToken.None);
+
+        Assert.NotNull(updated);
+        Assert.Equal(now, updated!.NotApplicableAtUtc);
+        Assert.True(updated.NotApplicableViaEmailAccess);
+        Assert.Equal("This is handled elsewhere.", updated.NotApplicableNotes);
+        Assert.Null(updated.CompletedAtUtc);
+        Assert.Contains(
+            await registry.GetCompletedForEventAsync("event-1", CancellationToken.None),
+            record => record.Token == taskToken && record.NotApplicableAtUtc == now);
     }
 
     private sealed class RecordingActivityStore : IIntegrationActivityStore
