@@ -1061,6 +1061,39 @@
               "source": "refined"
             },
             {
+              "id": "competition-already-created",
+              "type": "question",
+              "answerType": "yesNo",
+              "label": "Has the competition already been set up in Intelligent Golf?",
+              "helpText": "Choose Yes if the competition exists already. Choose No if Golf Operations still needs to create it; the following task will always verify and save the final Intelligent Golf competition ID.",
+              "showWhen": { "any": [
+                { "questionId": "golf-type", "operator": "equals", "value": "competition" },
+                { "questionId": "golf-type", "operator": "equals", "value": "match" }
+              ] },
+              "requiresPlugin": "intelligentGolf",
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "link-intelligent-golf-competition-task",
+              "type": "task",
+              "title": "Create or verify the Intelligent Golf competition and link its competition ID",
+              "detail": "If the competition does not yet exist, create it in Intelligent Golf first. Then retrieve the competitions on the event date, choose the correct record and verify its competition ID. The saved link will be used by later advertising and competition updates.",
+              "deadlineCode": "B3",
+              "showWhen": { "any": [
+                { "questionId": "golf-type", "operator": "equals", "value": "competition" },
+                { "questionId": "golf-type", "operator": "equals", "value": "match" }
+              ] },
+              "requiresPlugin": "intelligentGolf",
+              "responsibleArea": "Golf Operations",
+              "defaultOwnerRoleId": "golf-manager",
+              "completionMode": "intelligent-golf-competition-link",
+              "canCompleteFromLink": false,
+              "actionType": "link-intelligent-golf-competition",
+              "actionLabel": "Find and link competition",
+              "source": "refined"
+            },
+            {
               "id": "competition-setup-task",
               "type": "task",
               "title": "Confirm the scoring and playing formats, tees, handicap rules and results arrangements",

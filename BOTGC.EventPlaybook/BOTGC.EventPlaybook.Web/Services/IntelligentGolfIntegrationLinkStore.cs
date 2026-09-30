@@ -33,6 +33,13 @@ public interface IIntelligentGolfIntegrationLinkStore
         int intelligentGolfEventId,
         int diaryEntryId,
         CancellationToken cancellationToken);
+    Task<IntelligentGolfIntegrationLink> SaveCompetitionAsync(
+        string eventId,
+        int intelligentGolfCompetitionId,
+        string competitionName,
+        string competitionDate,
+        DateTimeOffset linkedAtUtc,
+        CancellationToken cancellationToken);
     Task ClearDiaryAsync(
         string eventId,
         int expectedIntelligentGolfEventId,
@@ -56,6 +63,9 @@ public interface IIntelligentGolfIntegrationLinkStore
     Task ClearMatchRequiredAsync(string eventId, CancellationToken cancellationToken);
     Task<string?> FindPlaybookEventIdByIntelligentGolfEventIdAsync(
         int intelligentGolfEventId,
+        CancellationToken cancellationToken);
+    Task<string?> FindPlaybookEventIdByIntelligentGolfCompetitionIdAsync(
+        int intelligentGolfCompetitionId,
         CancellationToken cancellationToken);
     Task<IntelligentGolfIntegrationLink> RelinkEventAsync(
         string eventId,
@@ -168,6 +178,59 @@ public sealed class IntelligentGolfIntegrationLinkStore : IIntelligentGolfIntegr
             link.IntelligentGolfEventId = intelligentGolfEventId;
             link.IntelligentGolfDiaryEntryId = diaryEntryId;
         }, cancellationToken);
+
+    public async Task<IntelligentGolfIntegrationLink> SaveCompetitionAsync(
+        string eventId,
+        int intelligentGolfCompetitionId,
+        string competitionName,
+        string competitionDate,
+        DateTimeOffset linkedAtUtc,
+        CancellationToken cancellationToken)
+    {
+        var key = eventId.Trim();
+        if (string.IsNullOrWhiteSpace(key))
+            throw new ArgumentException("The Event Playbook event ID is required.", nameof(eventId));
+        if (intelligentGolfCompetitionId <= 0)
+            throw new ArgumentException("The Intelligent Golf competition ID must be greater than zero.", nameof(intelligentGolfCompetitionId));
+        if (string.IsNullOrWhiteSpace(competitionName))
+            throw new ArgumentException("The Intelligent Golf competition name is required.", nameof(competitionName));
+        if (!DateOnly.TryParseExact(competitionDate, "yyyy-MM-dd", out _))
+            throw new ArgumentException("The Intelligent Golf competition date is invalid.", nameof(competitionDate));
+
+        await _gate.WaitAsync(cancellationToken);
+        try
+        {
+            var document = await LoadAsync(cancellationToken);
+            var owner = document.Events.Values.FirstOrDefault(candidate =>
+                !string.Equals(candidate.EventPlaybookEventId, key, StringComparison.OrdinalIgnoreCase) &&
+                candidate.IntelligentGolfCompetitionId == intelligentGolfCompetitionId);
+            if (owner is not null)
+                throw new InvalidOperationException(
+                    $"Intelligent Golf competition {intelligentGolfCompetitionId} is already linked to another Event Playbook event.");
+
+            if (!document.Events.TryGetValue(key, out var link))
+            {
+                link = new IntelligentGolfIntegrationLink
+                {
+                    EventPlaybookEventId = key,
+                    UpdatedAtUtc = DateTimeOffset.UtcNow
+                };
+                document.Events[key] = link;
+            }
+
+            link.IntelligentGolfCompetitionId = intelligentGolfCompetitionId;
+            link.IntelligentGolfCompetitionName = competitionName.Trim();
+            link.IntelligentGolfCompetitionDate = competitionDate;
+            link.CompetitionLinkedAtUtc = linkedAtUtc;
+            link.UpdatedAtUtc = DateTimeOffset.UtcNow;
+            await SaveAsync(document, cancellationToken);
+            return Clone(link);
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
 
     public async Task ClearDiaryAsync(
         string eventId,
@@ -320,6 +383,24 @@ public sealed class IntelligentGolfIntegrationLinkStore : IIntelligentGolfIntegr
         }
     }
 
+    public async Task<string?> FindPlaybookEventIdByIntelligentGolfCompetitionIdAsync(
+        int intelligentGolfCompetitionId,
+        CancellationToken cancellationToken)
+    {
+        if (intelligentGolfCompetitionId <= 0) return null;
+        await _gate.WaitAsync(cancellationToken);
+        try
+        {
+            var document = await LoadAsync(cancellationToken);
+            return document.Events.Values.FirstOrDefault(link =>
+                link.IntelligentGolfCompetitionId == intelligentGolfCompetitionId)?.EventPlaybookEventId;
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
     public async Task<IntelligentGolfIntegrationLink> RelinkEventAsync(
         string eventId,
         int expectedIntelligentGolfEventId,
@@ -434,6 +515,10 @@ public sealed class IntelligentGolfIntegrationLinkStore : IIntelligentGolfIntegr
         IntelligentGolfEventId = link.IntelligentGolfEventId,
         IntelligentGolfDiaryEntryId = link.IntelligentGolfDiaryEntryId,
         IntelligentGolfNoteId = link.IntelligentGolfNoteId,
+        IntelligentGolfCompetitionId = link.IntelligentGolfCompetitionId,
+        IntelligentGolfCompetitionName = link.IntelligentGolfCompetitionName,
+        IntelligentGolfCompetitionDate = link.IntelligentGolfCompetitionDate,
+        CompetitionLinkedAtUtc = link.CompetitionLinkedAtUtc,
         LastEventFingerprint = link.LastEventFingerprint,
         LastPlannerNoteFingerprint = link.LastPlannerNoteFingerprint,
         EventSynchronisedAtUtc = link.EventSynchronisedAtUtc,
@@ -462,7 +547,7 @@ public sealed class IntelligentGolfIntegrationLinkStore : IIntelligentGolfIntegr
 
     private sealed class LinkDocument
     {
-        public int Version { get; init; } = 2;
+        public int Version { get; init; } = 3;
         public Dictionary<string, IntelligentGolfIntegrationLink> Events { get; init; } =
             new(StringComparer.OrdinalIgnoreCase);
     }

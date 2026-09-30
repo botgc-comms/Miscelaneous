@@ -28,6 +28,14 @@ public interface IIntelligentGolfEventIntegration
         string eventPlaybookEventId,
         bool refresh,
         CancellationToken cancellationToken);
+    Task<IntelligentGolfCompetitionCandidatesResult> GetCompetitionCandidatesAsync(
+        PlaybookEventIntegrationSnapshot eventSnapshot,
+        bool refresh,
+        CancellationToken cancellationToken);
+    Task<IntelligentGolfCompetitionLinkResult> LinkCompetitionAsync(
+        PlaybookEventIntegrationSnapshot eventSnapshot,
+        int intelligentGolfCompetitionId,
+        CancellationToken cancellationToken);
     Task<IntelligentGolfPlannerEventCandidatesResult> GetPlannerEventCandidatesAsync(
         PlaybookEventIntegrationSnapshot eventSnapshot,
         CancellationToken cancellationToken);
@@ -236,6 +244,83 @@ public sealed class IntelligentGolfEventIntegration(
                 })
                 .OrderBy(candidate => candidate.IntelligentGolfEventId)
                 .ToArray()
+        };
+    }
+
+    public async Task<IntelligentGolfCompetitionCandidatesResult> GetCompetitionCandidatesAsync(
+        PlaybookEventIntegrationSnapshot eventSnapshot,
+        bool refresh,
+        CancellationToken cancellationToken)
+    {
+        ValidateSnapshot(eventSnapshot);
+        if (!DateOnly.TryParseExact(eventSnapshot.EventDate, "yyyy-MM-dd", out var eventDate))
+            throw new ArgumentException("The event date is invalid.", nameof(eventSnapshot));
+
+        await EnsureAvailableAsync(cancellationToken);
+        using var message = CreateRequest(
+            HttpMethod.Get,
+            $"api/competitions/available?date={Uri.EscapeDataString(eventSnapshot.EventDate)}&refresh={refresh.ToString().ToLowerInvariant()}");
+        using var response = await SendAsync(message, cancellationToken);
+        var candidates = await response.Content.ReadFromJsonAsync<IReadOnlyList<IntelligentGolfCompetitionCandidate>>(
+            JsonOptions,
+            cancellationToken) ?? [];
+        var link = await linkStore.GetAsync(eventSnapshot.EventId, cancellationToken);
+
+        return new IntelligentGolfCompetitionCandidatesResult
+        {
+            EventDate = eventSnapshot.EventDate,
+            LinkedCompetitionId = link?.IntelligentGolfCompetitionId,
+            Candidates = candidates
+                .Where(candidate => candidate.Id > 0 && candidate.Date.HasValue &&
+                    DateOnly.FromDateTime(candidate.Date.Value) == eventDate)
+                .GroupBy(candidate => candidate.Id)
+                .Select(group => group.First())
+                .OrderBy(candidate => candidate.Name)
+                .ToArray()
+        };
+    }
+
+    public async Task<IntelligentGolfCompetitionLinkResult> LinkCompetitionAsync(
+        PlaybookEventIntegrationSnapshot eventSnapshot,
+        int intelligentGolfCompetitionId,
+        CancellationToken cancellationToken)
+    {
+        ValidateSnapshot(eventSnapshot);
+        if (intelligentGolfCompetitionId <= 0)
+            throw new ArgumentException(
+                "The Intelligent Golf competition ID must be greater than zero.",
+                nameof(intelligentGolfCompetitionId));
+
+        var available = await GetCompetitionCandidatesAsync(eventSnapshot, true, cancellationToken);
+        var candidate = available.Candidates.FirstOrDefault(value => value.Id == intelligentGolfCompetitionId)
+            ?? throw new InvalidOperationException(
+                $"Intelligent Golf competition {intelligentGolfCompetitionId} was not found on {eventSnapshot.EventDate}. Refresh the competition list and choose a competition on the event date.");
+        var linkedAtUtc = DateTimeOffset.UtcNow;
+        await linkStore.SaveCompetitionAsync(
+            eventSnapshot.EventId,
+            candidate.Id,
+            candidate.Name,
+            eventSnapshot.EventDate,
+            linkedAtUtc,
+            cancellationToken);
+        await RecordActivitySafelyAsync(new IntegrationActivityWrite
+        {
+            Operation = "Link competition",
+            Outcome = "succeeded",
+            EventPlaybookEventId = eventSnapshot.EventId,
+            EventName = eventSnapshot.Name,
+            ExternalRecordId = candidate.Id,
+            Stage = "competition-link-verification",
+            Message = $"Verified and linked Intelligent Golf competition {candidate.Id} ({candidate.Name}) on {eventSnapshot.EventDate}."
+        }, cancellationToken);
+
+        return new IntelligentGolfCompetitionLinkResult
+        {
+            EventPlaybookEventId = eventSnapshot.EventId,
+            IntelligentGolfCompetitionId = candidate.Id,
+            CompetitionName = candidate.Name,
+            CompetitionDate = eventSnapshot.EventDate,
+            LinkedAtUtc = linkedAtUtc
         };
     }
 

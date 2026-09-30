@@ -95,6 +95,10 @@ public sealed class IntelligentGolfIntegrationLink
     public string? LastEventFingerprint { get; set; }
     public string? LastPlannerNoteFingerprint { get; set; }
     public int? IntelligentGolfNoteId { get; set; }
+    public int? IntelligentGolfCompetitionId { get; set; }
+    public string? IntelligentGolfCompetitionName { get; set; }
+    public string? IntelligentGolfCompetitionDate { get; set; }
+    public DateTimeOffset? CompetitionLinkedAtUtc { get; set; }
     public DateTimeOffset? EventSynchronisedAtUtc { get; set; }
     public DateTimeOffset? DiaryPublishedAtUtc { get; set; }
     public string? LastError { get; set; }
@@ -104,6 +108,33 @@ public sealed class IntelligentGolfIntegrationLink
     public List<IntelligentGolfPlannerEventCandidate> PendingMatchCandidates { get; set; } = [];
     public DateTimeOffset? MatchRequiredAtUtc { get; set; }
     public DateTimeOffset UpdatedAtUtc { get; set; }
+}
+
+public sealed class IntelligentGolfCompetitionCandidate
+{
+    public int Id { get; init; }
+    public required string Name { get; init; }
+    public DateTime? Date { get; init; }
+    public required string Gender { get; init; }
+    public bool IsHandicapQualifying { get; init; }
+    public bool IsMultiday { get; init; }
+    public bool IsAlternateDay { get; init; }
+}
+
+public sealed class IntelligentGolfCompetitionCandidatesResult
+{
+    public required string EventDate { get; init; }
+    public int? LinkedCompetitionId { get; init; }
+    public IReadOnlyList<IntelligentGolfCompetitionCandidate> Candidates { get; init; } = [];
+}
+
+public sealed class IntelligentGolfCompetitionLinkResult
+{
+    public required string EventPlaybookEventId { get; init; }
+    public int IntelligentGolfCompetitionId { get; init; }
+    public required string CompetitionName { get; init; }
+    public required string CompetitionDate { get; init; }
+    public DateTimeOffset LinkedAtUtc { get; init; }
 }
 
 public sealed class IntelligentGolfPlannerEventCandidate
@@ -229,4 +260,9 @@ public sealed class RelinkIntelligentGolfPlannerEventRequest
 {
     public int ExpectedIntelligentGolfEventId { get; init; }
     public int IntelligentGolfEventId { get; init; }
+}
+
+public sealed class LinkIntelligentGolfCompetitionRequest
+{
+    public int IntelligentGolfCompetitionId { get; init; }
 }

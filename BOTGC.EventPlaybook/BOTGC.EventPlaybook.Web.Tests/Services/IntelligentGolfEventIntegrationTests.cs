@@ -1290,6 +1290,22 @@ public sealed class IntelligentGolfEventIntegrationTests
             return Task.CompletedTask;
         }
 
+        public Task<IntelligentGolfIntegrationLink> SaveCompetitionAsync(
+            string eventId,
+            int intelligentGolfCompetitionId,
+            string competitionName,
+            string competitionDate,
+            DateTimeOffset linkedAtUtc,
+            CancellationToken cancellationToken)
+        {
+            var link = GetOrCreate(eventId);
+            link.IntelligentGolfCompetitionId = intelligentGolfCompetitionId;
+            link.IntelligentGolfCompetitionName = competitionName;
+            link.IntelligentGolfCompetitionDate = competitionDate;
+            link.CompetitionLinkedAtUtc = linkedAtUtc;
+            return Task.FromResult(link);
+        }
+
         public Task ClearDiaryAsync(
             string eventId,
             int expectedIntelligentGolfEventId,
@@ -1359,6 +1375,14 @@ public sealed class IntelligentGolfEventIntegrationTests
                     : _link?.IntelligentGolfEventId == intelligentGolfEventId
                         ? _link.EventPlaybookEventId
                         : null);
+
+        public Task<string?> FindPlaybookEventIdByIntelligentGolfCompetitionIdAsync(
+            int intelligentGolfCompetitionId,
+            CancellationToken cancellationToken) =>
+            Task.FromResult(
+                _link?.IntelligentGolfCompetitionId == intelligentGolfCompetitionId
+                    ? _link.EventPlaybookEventId
+                    : null);
 
         public Task<IntelligentGolfIntegrationLink> RelinkEventAsync(
             string eventId,

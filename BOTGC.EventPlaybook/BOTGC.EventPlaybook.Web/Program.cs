@@ -488,6 +488,10 @@ app.MapGet("/api/integrations/intelligent-golf/events/{eventId}", async (
         linked = link?.IntelligentGolfEventId is > 0,
         plannerEntryId = link?.IntelligentGolfEventId,
         diaryEntryId = link?.IntelligentGolfDiaryEntryId,
+        competitionId = link?.IntelligentGolfCompetitionId,
+        competitionName = link?.IntelligentGolfCompetitionName,
+        competitionDate = link?.IntelligentGolfCompetitionDate,
+        competitionLinkedAtUtc = link?.CompetitionLinkedAtUtc,
         eventSynchronisedAtUtc = link?.EventSynchronisedAtUtc,
         diaryPublishedAtUtc = link?.DiaryPublishedAtUtc,
         lastError = link?.LastError,
@@ -499,6 +503,137 @@ app.MapGet("/api/integrations/intelligent-golf/events/{eventId}", async (
         matchRequiredAtUtc = link?.MatchRequiredAtUtc,
         updatedAtUtc = link?.UpdatedAtUtc
     });
+});
+
+app.MapGet("/api/integrations/intelligent-golf/events/{eventId}/competition-candidates", async (
+    string eventId,
+    bool? refresh,
+    ISharedPlaybookStateStore stateStore,
+    IIntelligentGolfIntegrationLinkStore linkStore,
+    IIntelligentGolfEventIntegration intelligentGolfIntegration,
+    CancellationToken cancellationToken) =>
+{
+    var key = eventId.Trim();
+    if (string.IsNullOrWhiteSpace(key))
+        return Results.BadRequest(new { error = "An Event Playbook event ID is required." });
+
+    var sharedState = await stateStore.GetAsync(cancellationToken);
+    if (!PlaybookEventChangePipeline.ReadEvents(sharedState.State).TryGetValue(key, out var snapshot))
+        return Results.NotFound(new { error = "The Event Playbook event could not be found in shared storage." });
+
+    try
+    {
+        var result = await intelligentGolfIntegration.GetCompetitionCandidatesAsync(
+            snapshot,
+            refresh ?? false,
+            cancellationToken);
+        var candidates = new List<object>();
+        foreach (var candidate in result.Candidates)
+        {
+            var owner = await linkStore.FindPlaybookEventIdByIntelligentGolfCompetitionIdAsync(
+                candidate.Id,
+                cancellationToken);
+            candidates.Add(new
+            {
+                id = candidate.Id,
+                candidate.Name,
+                date = candidate.Date?.ToString("yyyy-MM-dd"),
+                candidate.Gender,
+                candidate.IsHandicapQualifying,
+                candidate.IsMultiday,
+                candidate.IsAlternateDay,
+                current = result.LinkedCompetitionId == candidate.Id,
+                linkedToAnotherPlaybookEvent = !string.IsNullOrWhiteSpace(owner) &&
+                    !string.Equals(owner, key, StringComparison.OrdinalIgnoreCase)
+            });
+        }
+
+        return Results.Ok(new
+        {
+            result.EventDate,
+            result.LinkedCompetitionId,
+            candidates
+        });
+    }
+    catch (IntelligentGolfApiRequestException exception)
+    {
+        return Results.Problem(
+            title: "Intelligent Golf competitions could not be loaded",
+            detail: exception.Message,
+            statusCode: StatusCodes.Status502BadGateway,
+            extensions: new Dictionary<string, object?>
+            {
+                ["stage"] = exception.Stage,
+                ["upstreamStatusCode"] = exception.StatusCode,
+                ["retryable"] = exception.Retryable
+            });
+    }
+    catch (InvalidOperationException exception)
+    {
+        return Results.Problem(
+            title: "Intelligent Golf competitions could not be loaded",
+            detail: exception.Message,
+            statusCode: StatusCodes.Status409Conflict);
+    }
+});
+
+app.MapPost("/api/integrations/intelligent-golf/events/{eventId}/competition-link", async (
+    string eventId,
+    LinkIntelligentGolfCompetitionRequest request,
+    ISharedPlaybookStateStore stateStore,
+    IIntelligentGolfEventIntegration intelligentGolfIntegration,
+    CancellationToken cancellationToken) =>
+{
+    var key = eventId.Trim();
+    if (string.IsNullOrWhiteSpace(key))
+        return Results.BadRequest(new { error = "An Event Playbook event ID is required." });
+    if (request.IntelligentGolfCompetitionId <= 0)
+        return Results.BadRequest(new { error = "Choose an Intelligent Golf competition to link." });
+
+    var sharedState = await stateStore.GetAsync(cancellationToken);
+    if (!PlaybookEventChangePipeline.ReadEvents(sharedState.State).TryGetValue(key, out var snapshot))
+        return Results.NotFound(new { error = "The Event Playbook event could not be found in shared storage." });
+
+    try
+    {
+        var result = await intelligentGolfIntegration.LinkCompetitionAsync(
+            snapshot,
+            request.IntelligentGolfCompetitionId,
+            cancellationToken);
+        return Results.Ok(new
+        {
+            linked = true,
+            competitionId = result.IntelligentGolfCompetitionId,
+            competitionName = result.CompetitionName,
+            competitionDate = result.CompetitionDate,
+            result.LinkedAtUtc,
+            message = $"Verified and linked {result.CompetitionName} (competition {result.IntelligentGolfCompetitionId})."
+        });
+    }
+    catch (ArgumentException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
+    catch (IntelligentGolfApiRequestException exception)
+    {
+        return Results.Problem(
+            title: "The competition could not be verified",
+            detail: exception.Message,
+            statusCode: StatusCodes.Status502BadGateway,
+            extensions: new Dictionary<string, object?>
+            {
+                ["stage"] = exception.Stage,
+                ["upstreamStatusCode"] = exception.StatusCode,
+                ["retryable"] = exception.Retryable
+            });
+    }
+    catch (InvalidOperationException exception)
+    {
+        return Results.Problem(
+            title: "The competition could not be linked",
+            detail: exception.Message,
+            statusCode: StatusCodes.Status409Conflict);
+    }
 });
 
 app.MapGet("/api/integrations/intelligent-golf/events/{eventId}/ticket-bookings", async (

@@ -44,7 +44,7 @@ test('the Intelligent Golf task is an explicit reviewed integration action', () 
   assert.match(source, /\/api\/integrations\/intelligent-golf\/events\/\$\{encodeURIComponent\(event\.id\)\}\/tickets/);
   assert.match(source, /if \(!await flushSharedState\(\)\)/);
   assert.match(source, /taskState\.completed = true/);
-  assert.match(source, /completionMode === 'intelligent-golf-ticket-sync'/);
+  assert.match(source, /\['intelligent-golf-ticket-sync', 'intelligent-golf-competition-link'\]\.includes\(item\.completionMode\)/);
 });
 
 test('the ordinary non-IG booking setup task remains available', () => {
@@ -57,5 +57,5 @@ test('the ordinary non-IG booking setup task remains available', () => {
 
 test('the ticket editor release changes are cache-busted', () => {
   assert.match(indexSource, /playbook\.css\?v=20260930-shared-rich-text-editor-1/);
-  assert.match(indexSource, /playbook-app\.js\?v=20260930-shared-rich-text-editor-1/);
+  assert.match(indexSource, /playbook-app\.js\?v=20260930-competition-link-1/);
 });

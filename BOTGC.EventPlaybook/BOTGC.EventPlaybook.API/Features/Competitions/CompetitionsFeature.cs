@@ -30,6 +30,7 @@ public sealed record GetAvailableCompetitionsQuery(
     bool IncludeActive,
     bool IncludeUpcoming,
     int? Year,
+    DateOnly? Date,
     bool Refresh) : IRequest<IReadOnlyList<AvailableCompetition>>;
 
 public sealed class GetAvailableCompetitionsHandler(
@@ -50,7 +51,7 @@ public sealed class GetAvailableCompetitionsHandler(
 
         var settings = intelligentGolfOptions.Value.Endpoints;
         var ttl = TimeSpan.FromMinutes(cacheOptions.Value.CompetitionTtlMinutes);
-        var year = request.Year?.ToString(CultureInfo.InvariantCulture) ?? "all";
+        var year = (request.Date?.Year ?? request.Year)?.ToString(CultureInfo.InvariantCulture) ?? "all";
         var fetches = new List<Task<IReadOnlyList<AvailableCompetition>>>();
 
         if (request.IncludeActive)
@@ -64,15 +65,17 @@ public sealed class GetAvailableCompetitionsHandler(
         }
 
         var resultSets = await Task.WhenAll(fetches);
-        return resultSets
+        var competitions = resultSets
             .SelectMany(result => result)
             .GroupBy(competition => competition.Id)
             .Select(group => group.First())
-            .Where(competition => !competition.Date.HasValue ||
-                                  competition.Date.Value.Date >= DateTime.Today)
+            .Where(competition => request.Date.HasValue
+                ? competition.Date.HasValue && DateOnly.FromDateTime(competition.Date.Value) == request.Date.Value
+                : !competition.Date.HasValue || competition.Date.Value.Date >= DateTime.Today)
             .OrderBy(competition => competition.Date)
             .ThenBy(competition => competition.Name)
             .ToList();
+        return competitions;
 
         Task<IReadOnlyList<AvailableCompetition>> FetchAsync(string path, string status)
         {
@@ -203,6 +206,7 @@ public static class CompetitionEndpoints
                     bool? includeActive,
                     bool? includeUpcoming,
                     int? year,
+                    DateOnly? date,
                     bool? refresh,
                     IMediator mediator,
                     CancellationToken cancellationToken) =>
@@ -211,6 +215,7 @@ public static class CompetitionEndpoints
                             includeActive ?? true,
                             includeUpcoming ?? true,
                             year,
+                            date,
                             refresh ?? false),
                         cancellationToken)))
             .WithName("GetAvailableCompetitions")

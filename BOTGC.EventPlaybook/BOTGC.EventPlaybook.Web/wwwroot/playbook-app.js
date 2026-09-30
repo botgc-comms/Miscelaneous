@@ -84,6 +84,7 @@
       ['golf-type', 'Golf format'], ['golf-player-count', 'Players'], ['golf-supporter-count', 'Supporters'],
       ['golf-start-method', 'Start method'], ['tee-time-window', 'Tee-time window'], ['shotgun-start-time', 'Shotgun start'],
       ['competition-format', 'Scoring method'], ['competition-playing-format', 'Playing / team format'],
+      ['competition-already-created', 'Competition already created in Intelligent Golf'],
       ['golf-results-technology-plan', 'Scoring technology and fallback'],
       ['special-course-details', 'Non-standard course setup'], ['arrival-sign-in', 'Player check-in'],
       ['arrival-direction-signage', 'Arrival signage'], ['starter-required', 'Starter required'],
@@ -274,6 +275,9 @@
   let intelligentGolfPlannerLinkDialogState = null;
   let intelligentGolfPlannerLinkRequest = null;
   let intelligentGolfPlannerLinkShouldRestoreFocus = false;
+  let intelligentGolfCompetitionDialogState = null;
+  let intelligentGolfCompetitionRequest = null;
+  let intelligentGolfCompetitionReturnFocus = null;
   let integrationActivityCache = null;
   let integrationActivityRequest = null;
   const DEFAULT_CLUB_BRANDING = Object.freeze({
@@ -436,6 +440,10 @@
       linked: value?.linked === true || Number(value?.plannerEntryId) > 0,
       plannerEntryId: Number(value?.plannerEntryId) || null,
       diaryEntryId: Number(value?.diaryEntryId) || null,
+      competitionId: Number(value?.competitionId) || null,
+      competitionName: String(value?.competitionName ?? ''),
+      competitionDate: String(value?.competitionDate ?? ''),
+      competitionLinkedAtUtc: value?.competitionLinkedAtUtc ?? null,
       plannerMatchRequired: value?.plannerMatchRequired === true,
       plannerMatchEventDate: String(value?.plannerMatchEventDate ?? ''),
       plannerMatchCandidates: Array.isArray(value?.plannerMatchCandidates)
@@ -457,6 +465,32 @@
   function intelligentGolfMatchSignature(eventId, status) {
     if (!status?.plannerMatchRequired || status.plannerMatchCandidates.length === 0) return '';
     return `${eventId}:${status.plannerMatchEventDate}:${status.plannerMatchCandidates.map(candidate => candidate.intelligentGolfEventId).join(',')}`;
+  }
+
+  function reconcileIntelligentGolfCompetitionTask(eventId, status) {
+    const event = state.events.find(candidate => candidate.id === eventId);
+    const taskId = 'link-intelligent-golf-competition-task';
+    if (!event || !itemIndex.has(taskId)) return false;
+    const taskState = ensureTaskState(event, taskId);
+    const current = Number(status?.competitionId) > 0 && status.competitionDate === event.eventDate;
+    if (current && taskState.completed !== true) {
+      taskState.completed = true;
+      taskState.status = 'completed';
+      taskState.completedAt = status.competitionLinkedAtUtc || new Date().toISOString();
+      taskState.integrationStatus = 'succeeded';
+      taskState.integrationMessage = `Verified Intelligent Golf competition ${status.competitionId}${status.competitionName ? ` · ${status.competitionName}` : ''}.`;
+      return true;
+    }
+    if (!current && taskState.completed === true && status?.competitionId) {
+      rotateTaskCompletionLink(taskState);
+      taskState.completed = false;
+      taskState.status = 'open';
+      taskState.completedAt = null;
+      taskState.integrationStatus = 'needs-review';
+      taskState.integrationMessage = `Competition ${status.competitionId} was verified for ${status.competitionDate || 'a different date'}. Choose a competition on the current event date.`;
+      return true;
+    }
+    return false;
   }
 
   function normaliseIntelligentGolfPlannerCandidates(value, fallbackPlannerEntryId = null) {
@@ -503,6 +537,7 @@
         const next = normaliseIntelligentGolfEventStatus(result);
         const previous = intelligentGolfEventStatuses.get(eventId);
         intelligentGolfEventStatuses.set(eventId, next);
+        if (reconcileIntelligentGolfCompetitionTask(eventId, next)) saveState();
         if (next.linked && !next.available && !intelligentGolfStatusRefreshTimers.has(eventId)) {
           scheduleIntelligentGolfStatusRefresh(eventId);
         }
@@ -3767,7 +3802,7 @@
     const taskState = ensureTaskState(event, item.id);
     if (taskState.notRelevant === true) return false;
     if (item.completionMode === 'event-status-decision' ||
-        (item.completionMode === 'intelligent-golf-ticket-sync' && completed)) return false;
+        (['intelligent-golf-ticket-sync', 'intelligent-golf-competition-link'].includes(item.completionMode) && completed)) return false;
     if (completed && isTaskExpired(item, event, taskState)) return false;
     const review = taskReviewState(item, event);
     if (completed && review && !review.ready) return false;
@@ -4447,7 +4482,8 @@
     const expiresOn = getTaskExpiryDate(item, event);
     const expired = isTaskExpired(item, event, taskState, expiresOn);
     const statusManaged = item.completionMode === 'event-status-decision';
-    const integrationManaged = item.completionMode === 'intelligent-golf-ticket-sync';
+    const integrationManaged = ['intelligent-golf-ticket-sync', 'intelligent-golf-competition-link'].includes(item.completionMode);
+    const competitionManaged = item.completionMode === 'intelligent-golf-competition-link';
     const actionRequired = (statusManaged || integrationManaged) && !completed && !expired;
     const blocked = expired || statusManaged || integrationManaged || Boolean(review && !completed && !review.ready);
     return {
@@ -4460,7 +4496,11 @@
       actionRequired,
       title: integrationManaged
         ? completed
-          ? 'The Intelligent Golf ticket configuration has been verified'
+          ? competitionManaged
+            ? 'The Intelligent Golf competition ID has been verified'
+            : 'The Intelligent Golf ticket configuration has been verified'
+          : competitionManaged
+            ? 'Use the Intelligent Golf action to find and verify the competition ID'
           : review && !review.ready
             ? `Complete ${review.missing.length} missing ticket answer${review.missing.length === 1 ? '' : 's'} first`
             : 'Use the Intelligent Golf action to configure and verify the tickets'
@@ -4480,7 +4520,7 @@
           ? `Complete ${review.missing.length} missing Event control answer${review.missing.length === 1 ? '' : 's'} first`
           : (review?.config.confirmLabel || 'Mark task complete'),
       label: integrationManaged
-        ? completed ? 'Configured' : 'Use IG action'
+        ? completed ? (competitionManaged ? 'Linked' : 'Configured') : 'Use IG action'
         : statusManaged
         ? completed ? 'Recorded' : expired ? 'Expired' : 'Use status'
         : completed
@@ -4526,7 +4566,7 @@
             ? '<span class="task-review-confirmed">— Expired</span>'
             : completed
             ? `<span class="task-review-confirmed">✓ ${escapeHtml(review.config.confirmedLabel || 'Confirmed')}</span>`
-            : showCompletionAction && item.completionMode !== 'intelligent-golf-ticket-sync'
+            : showCompletionAction && !['intelligent-golf-ticket-sync', 'intelligent-golf-competition-link'].includes(item.completionMode)
               ? `<button type="button" class="button button-primary" data-task-confirm="${escapeHtml(item.id)}" data-task-confirm-event-id="${escapeHtml(event.id)}" ${review.ready ? '' : 'disabled'}>${escapeHtml(confirmText)}</button>`
               : ''}
         </div>
@@ -5182,6 +5222,220 @@
     }
   }
 
+  function renderIntelligentGolfCompetitionDialog(event) {
+    const dialogState = intelligentGolfCompetitionDialogState;
+    if (!pluginCapabilities.intelligentGolfEnabled || !event || dialogState?.eventId !== event.id) return '';
+    const candidates = Array.isArray(dialogState.candidates) ? dialogState.candidates : [];
+    const selectedId = Number(dialogState.selectedCompetitionId) || Number(dialogState.linkedCompetitionId) || 0;
+    const selected = candidates.find(candidate => candidate.id === selectedId && !candidate.linkedToAnotherPlaybookEvent);
+    const alreadyCreated = event.answers?.['competition-already-created'];
+    const setupGuidance = alreadyCreated === false
+      ? 'You said the competition has not been created yet. Create it in Intelligent Golf, then refresh this list and choose it.'
+      : 'Choose the competition that represents this event. Saving verifies that its date matches the Event Playbook event date.';
+
+    return `<dialog id="ig-competition-link-dialog" class="modal ig-planner-match-dialog ig-competition-link-dialog" data-event-id="${escapeHtml(event.id)}" aria-labelledby="ig-competition-link-heading"${dialogState.loading || dialogState.saving ? ' aria-busy="true"' : ''}>
+      <div class="modal-heading">
+        <div><span class="eyebrow">Golf competition link</span><h2 id="ig-competition-link-heading">Link the Intelligent Golf competition</h2><p>${escapeHtml(event.name)} · ${escapeHtml(formatDate(dialogState.eventDate || event.eventDate))}</p></div>
+        <button class="icon-button" type="button" data-close-ig-competition-link aria-label="Close">×</button>
+      </div>
+      <div class="ig-planner-match-body">
+        <section class="ig-planner-match-summary">
+          <span class="eyebrow">Verified competition ID</span>
+          <h3>${dialogState.linkedCompetitionId ? `Competition ${escapeHtml(dialogState.linkedCompetitionId)}` : 'No competition linked yet'}</h3>
+          <p>${dialogState.linkedCompetitionName ? escapeHtml(dialogState.linkedCompetitionName) : escapeHtml(setupGuidance)}</p>
+          <div><strong>The competition and planner event are separate records</strong><span>This task saves the competition ID without changing the linked planner-event ID.</span></div>
+        </section>
+        ${dialogState.loading
+          ? '<div class="ig-planner-link-loading" role="status"><span aria-hidden="true"></span><div><strong>Checking Intelligent Golf…</strong><p>Retrieving competitions scheduled on the event date.</p></div></div>'
+          : `<fieldset class="ig-planner-match-candidates">
+              <legend>Competitions on ${escapeHtml(formatDate(dialogState.eventDate || event.eventDate))}</legend>
+              ${candidates.map(candidate => {
+                const unavailable = candidate.linkedToAnotherPlaybookEvent;
+                const current = candidate.current || candidate.id === Number(dialogState.linkedCompetitionId);
+                const details = [
+                  `Competition ${candidate.id}`,
+                  candidate.gender && candidate.gender !== 'Unknown' ? candidate.gender : '',
+                  candidate.isHandicapQualifying ? 'handicap qualifying' : '',
+                  candidate.isMultiday ? 'multiday' : '',
+                  candidate.isAlternateDay ? 'alternate day' : '',
+                  unavailable ? 'already linked to another Playbook event' : current ? 'currently linked' : ''
+                ].filter(Boolean).join(' · ');
+                return `<label class="ig-planner-match-candidate${current ? ' current' : ''}${unavailable ? ' unavailable' : ''}">
+                  <input type="radio" name="ig-competition-link-candidate" value="${candidate.id}"${candidate.id === selectedId ? ' checked' : ''}${unavailable ? ' disabled' : ''}>
+                  <span><strong>${escapeHtml(candidate.name)}</strong><small>${escapeHtml(details)}</small></span>
+                </label>`;
+              }).join('')}
+              ${candidates.length ? '' : `<p class="ig-planner-link-empty">No competitions were returned for this date. ${escapeHtml(setupGuidance)}</p>`}
+            </fieldset>`}
+        <div class="ig-planner-link-warning"><strong>No competition is edited by this step</strong><span>The selected ID is verified against a fresh Intelligent Golf list and saved for later competition advertising and updates.</span></div>
+        <div class="ig-planner-match-error" role="alert"${dialogState.error ? '' : ' hidden'}>${escapeHtml(dialogState.error || '')}</div>
+      </div>
+      <div class="modal-actions">
+        <button class="button button-secondary" type="button" data-close-ig-competition-link>Cancel</button>
+        <span></span>
+        ${dialogState.loading ? '' : '<button class="button button-secondary" type="button" data-refresh-ig-competition-link>Refresh competitions</button>'}
+        <button class="button button-primary" type="button" data-confirm-ig-competition-link${selected && !dialogState.saving ? '' : ' disabled'}>${dialogState.saving ? 'Verifying link…' : 'Verify and link competition'}</button>
+      </div>
+    </dialog>`;
+  }
+
+  function showIntelligentGolfCompetitionDialog() {
+    requestAnimationFrame(() => {
+      const dialog = document.getElementById('ig-competition-link-dialog');
+      const otherDialog = document.querySelector('dialog[open]');
+      if (!dialog || (otherDialog && otherDialog !== dialog)) return;
+      if (!dialog.open) dialog.showModal();
+      dialog.querySelector('input[name="ig-competition-link-candidate"]:checked')?.focus();
+    });
+  }
+
+  function closeIntelligentGolfCompetitionDialog(dialog, restoreFocus = true) {
+    intelligentGolfCompetitionRequest = null;
+    intelligentGolfCompetitionDialogState = null;
+    dialog?.close();
+    if (!restoreFocus) return;
+    const eventId = intelligentGolfCompetitionReturnFocus?.eventId;
+    const taskId = intelligentGolfCompetitionReturnFocus?.taskId;
+    intelligentGolfCompetitionReturnFocus = null;
+    requestAnimationFrame(() => document.querySelector(
+      `[data-link-ig-competition="${CSS.escape(taskId || '')}"][data-link-ig-competition-event-id="${CSS.escape(eventId || '')}"]`)?.focus());
+  }
+
+  async function openIntelligentGolfCompetitionDialog(event, item, trigger = null) {
+    if (!event || !item || !pluginCapabilities.intelligentGolfEnabled) return false;
+    if (trigger) intelligentGolfCompetitionReturnFocus = { eventId: event.id, taskId: item.id };
+    const taskState = ensureTaskState(event, item.id);
+    taskState.integrationStatus = 'sending';
+    taskState.integrationMessage = 'Retrieving competitions from Intelligent Golf.';
+    const requestToken = {};
+    intelligentGolfCompetitionRequest = requestToken;
+    intelligentGolfCompetitionDialogState = {
+      eventId: event.id,
+      taskId: item.id,
+      eventDate: event.eventDate,
+      linkedCompetitionId: Number(intelligentGolfEventStatuses.get(event.id)?.competitionId) || 0,
+      linkedCompetitionName: intelligentGolfEventStatuses.get(event.id)?.competitionName || '',
+      selectedCompetitionId: Number(intelligentGolfEventStatuses.get(event.id)?.competitionId) || 0,
+      candidates: [],
+      loading: true,
+      saving: false,
+      error: ''
+    };
+    render();
+    showIntelligentGolfCompetitionDialog();
+
+    try {
+      if (!await flushSharedState()) {
+        throw new Error('The latest event date and golf answers could not be saved. No Intelligent Golf competition has been linked.');
+      }
+      const response = await fetch(`/api/integrations/intelligent-golf/events/${encodeURIComponent(event.id)}/competition-candidates?refresh=true`, {
+        method: 'GET',
+        cache: 'no-store'
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(result.detail || result.error || result.title || `Competitions could not be loaded (${response.status}).`);
+      }
+      if (intelligentGolfCompetitionRequest !== requestToken) return false;
+      const candidates = Array.isArray(result.candidates)
+        ? result.candidates.map(candidate => ({
+            ...candidate,
+            id: Number(candidate.id) || 0,
+            name: String(candidate.name || '').trim()
+          })).filter(candidate => candidate.id > 0 && candidate.name)
+        : [];
+      const linkedCompetitionId = Number(result.linkedCompetitionId) || 0;
+      intelligentGolfCompetitionDialogState = {
+        ...intelligentGolfCompetitionDialogState,
+        eventDate: result.eventDate || event.eventDate,
+        linkedCompetitionId,
+        linkedCompetitionName: candidates.find(candidate => candidate.id === linkedCompetitionId)?.name || intelligentGolfCompetitionDialogState.linkedCompetitionName,
+        selectedCompetitionId: linkedCompetitionId || candidates.find(candidate => !candidate.linkedToAnotherPlaybookEvent)?.id || 0,
+        candidates,
+        loading: false,
+        error: ''
+      };
+      taskState.integrationStatus = linkedCompetitionId ? 'succeeded' : 'ready';
+      taskState.integrationMessage = candidates.length
+        ? `${candidates.length} competition${candidates.length === 1 ? '' : 's'} found on the event date.`
+        : 'No competitions were found on the event date.';
+      saveState();
+      return true;
+    } catch (error) {
+      if (intelligentGolfCompetitionRequest !== requestToken) return false;
+      intelligentGolfCompetitionDialogState = {
+        ...intelligentGolfCompetitionDialogState,
+        loading: false,
+        error: error.message || 'The Intelligent Golf competitions could not be loaded.'
+      };
+      taskState.integrationStatus = 'failed';
+      taskState.integrationMessage = intelligentGolfCompetitionDialogState.error;
+      saveState();
+      return false;
+    } finally {
+      if (intelligentGolfCompetitionRequest === requestToken) intelligentGolfCompetitionRequest = null;
+      if (intelligentGolfCompetitionDialogState?.eventId === event.id) {
+        render();
+        showIntelligentGolfCompetitionDialog();
+      }
+    }
+  }
+
+  async function saveIntelligentGolfCompetitionLink(dialog) {
+    const eventId = dialog?.dataset.eventId;
+    const dialogState = intelligentGolfCompetitionDialogState;
+    const selected = dialog?.querySelector('input[name="ig-competition-link-candidate"]:checked:not(:disabled)');
+    const intelligentGolfCompetitionId = Number(selected?.value) || 0;
+    const event = state.events.find(candidate => candidate.id === eventId);
+    const indexed = dialogState?.taskId ? itemIndex.get(dialogState.taskId) : null;
+    if (!event || !indexed || !intelligentGolfCompetitionId || dialogState?.saving) return false;
+
+    intelligentGolfCompetitionDialogState = { ...dialogState, saving: true, error: '' };
+    render();
+    showIntelligentGolfCompetitionDialog();
+    try {
+      const response = await fetch(`/api/integrations/intelligent-golf/events/${encodeURIComponent(event.id)}/competition-link`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ intelligentGolfCompetitionId })
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(result.detail || result.error || result.title || `The competition could not be linked (${response.status}).`);
+      }
+
+      const taskState = ensureTaskState(event, indexed.item.id);
+      delete taskState.reviewCompletionProvenance;
+      taskState.completed = true;
+      taskState.status = 'completed';
+      taskState.completedAt = new Date().toISOString();
+      taskState.integrationStatus = 'succeeded';
+      taskState.integrationMessage = result.message || `Verified Intelligent Golf competition ${intelligentGolfCompetitionId}.`;
+      saveState();
+      intelligentGolfCompetitionDialogState = null;
+      dialog.close();
+      invalidateIntelligentGolfEventStatusCache();
+      await ensureIntelligentGolfEventStatus(event.id, true);
+      render();
+      const focus = intelligentGolfCompetitionReturnFocus;
+      intelligentGolfCompetitionReturnFocus = null;
+      requestAnimationFrame(() => document.querySelector(
+        `[data-link-ig-competition="${CSS.escape(focus?.taskId || '')}"][data-link-ig-competition-event-id="${CSS.escape(focus?.eventId || '')}"]`)?.focus());
+      return true;
+    } catch (error) {
+      if (intelligentGolfCompetitionDialogState?.eventId === event.id) {
+        intelligentGolfCompetitionDialogState = {
+          ...intelligentGolfCompetitionDialogState,
+          saving: false,
+          error: error.message || 'The Intelligent Golf competition could not be linked.'
+        };
+        render();
+        showIntelligentGolfCompetitionDialog();
+      }
+      return false;
+    }
+  }
+
   function maybeOpenIntelligentGolfPlannerMatch(event) {
     if (!event) return;
     const status = intelligentGolfEventStatuses.get(event.id);
@@ -5513,6 +5767,7 @@
       ${renderEventStatusDialog(event)}
       ${renderIntelligentGolfPlannerMatchDialog(event)}
       ${renderIntelligentGolfPlannerLinkDialog(event)}
+      ${renderIntelligentGolfCompetitionDialog(event)}
       ${renderPluginDialogs()}
       ${accessSession.isAdmin ? '<section id="playbook-assistant-root" class="playbook-assistant-host" aria-label="Playbook Assistant"></section>' : ''}
     `;
@@ -7023,7 +7278,16 @@
 
   function renderTaskWorkspaceAction(item, event) {
     const actions = [];
-    if (item.actionType === 'configure-intelligent-golf-tickets') {
+    if (item.actionType === 'link-intelligent-golf-competition') {
+      const taskState = ensureTaskState(event, item.id);
+      const loading = taskState.integrationStatus === 'sending';
+      const status = intelligentGolfEventStatuses.get(event.id);
+      const linkedCompetitionId = Number(status?.competitionId) || 0;
+      actions.push(`<div class="task-integration-action ${escapeHtml(taskState.integrationStatus ?? '')}">
+        <button type="button" class="button button-primary task-workspace-action" data-link-ig-competition="${escapeHtml(item.id)}" data-link-ig-competition-event-id="${escapeHtml(event.id)}" ${loading ? 'disabled' : ''}>${loading ? 'Checking competitions…' : linkedCompetitionId ? 'Review linked competition' : escapeHtml(item.actionLabel || 'Find and link competition')}</button>
+        ${linkedCompetitionId ? `<small>Linked to Intelligent Golf competition ${escapeHtml(linkedCompetitionId)}${status?.competitionName ? ` · ${escapeHtml(status.competitionName)}` : ''}</small>` : taskState.integrationMessage ? `<small>${escapeHtml(taskState.integrationMessage)}</small>` : ''}
+      </div>`);
+    } else if (item.actionType === 'configure-intelligent-golf-tickets') {
       const taskState = ensureTaskState(event, item.id);
       if (taskState.completed === true) return '';
       const review = taskReviewState(item, event);
@@ -10968,6 +11232,36 @@
       saveIntelligentGolfPlannerLink(plannerLinkDialog);
     });
 
+    const competitionLinkDialog = document.getElementById('ig-competition-link-dialog');
+    competitionLinkDialog?.addEventListener('cancel', eventArgs => {
+      eventArgs.preventDefault();
+      closeIntelligentGolfCompetitionDialog(competitionLinkDialog);
+    });
+    competitionLinkDialog?.querySelectorAll('[data-close-ig-competition-link]').forEach(button => {
+      button.addEventListener('click', () => closeIntelligentGolfCompetitionDialog(competitionLinkDialog));
+    });
+    competitionLinkDialog?.querySelectorAll('input[name="ig-competition-link-candidate"]').forEach(input => {
+      input.addEventListener('change', () => {
+        if (intelligentGolfCompetitionDialogState) {
+          intelligentGolfCompetitionDialogState.selectedCompetitionId = Number(input.value) || 0;
+        }
+        const confirm = competitionLinkDialog.querySelector('[data-confirm-ig-competition-link]');
+        if (confirm) confirm.disabled = !competitionLinkDialog.querySelector('input[name="ig-competition-link-candidate"]:checked:not(:disabled)');
+      });
+    });
+    competitionLinkDialog?.querySelector('[data-refresh-ig-competition-link]')?.addEventListener('click', () => {
+      const event = state.events.find(candidate => candidate.id === intelligentGolfCompetitionDialogState?.eventId);
+      const indexed = intelligentGolfCompetitionDialogState?.taskId
+        ? itemIndex.get(intelligentGolfCompetitionDialogState.taskId)
+        : null;
+      if (!event || !indexed) return;
+      closeIntelligentGolfCompetitionDialog(competitionLinkDialog, false);
+      openIntelligentGolfCompetitionDialog(event, indexed.item);
+    });
+    competitionLinkDialog?.querySelector('[data-confirm-ig-competition-link]')?.addEventListener('click', () => {
+      saveIntelligentGolfCompetitionLink(competitionLinkDialog);
+    });
+
     const brandingForm = document.getElementById('club-branding-form');
     const brandingCrestInput = document.getElementById('club-branding-crest');
     const brandingPreview = document.getElementById('club-branding-preview');
@@ -11894,6 +12188,16 @@
 
     document.querySelectorAll('[data-adopt-idea]').forEach(element => {
       element.addEventListener('click', () => openAdoptIdeaDialog(element.dataset.adoptIdea));
+    });
+
+    document.querySelectorAll('[data-link-ig-competition]').forEach(element => {
+      element.addEventListener('click', async () => {
+        const eventId = element.dataset.linkIgCompetitionEventId;
+        const event = state.events.find(candidate => candidate.id === eventId) ?? getActiveEvent();
+        const indexed = itemIndex.get(element.dataset.linkIgCompetition);
+        if (!event || !indexed) return;
+        await openIntelligentGolfCompetitionDialog(event, indexed.item, element);
+      });
     });
 
     document.querySelectorAll('[data-create-idea-artwork]').forEach(element => {

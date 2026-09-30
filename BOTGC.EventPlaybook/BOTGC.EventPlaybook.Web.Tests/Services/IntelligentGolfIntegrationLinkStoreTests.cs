@@ -16,6 +16,65 @@ public sealed class IntelligentGolfIntegrationLinkStoreTests
         new(2026, 9, 10, 9, 0, 0, TimeSpan.Zero);
 
     [Fact]
+    public async Task SaveCompetitionAsync_PersistsVerifiedCompetitionWithoutChangingPlannerLink()
+    {
+        using var root = new TemporaryContentRoot();
+        var store = CreateStore(root.Path);
+        await store.SaveEventAsync(
+            "event-123",
+            4713,
+            "planner-fingerprint",
+            InitialSynchronisedAt,
+            CancellationToken.None);
+
+        var result = await store.SaveCompetitionAsync(
+            "event-123",
+            6201,
+            "Sunday Winter Stableford",
+            "2026-10-04",
+            RelinkedAt,
+            CancellationToken.None);
+
+        Assert.Equal(4713, result.IntelligentGolfEventId);
+        Assert.Equal(6201, result.IntelligentGolfCompetitionId);
+        Assert.Equal("Sunday Winter Stableford", result.IntelligentGolfCompetitionName);
+        Assert.Equal("2026-10-04", result.IntelligentGolfCompetitionDate);
+        Assert.Equal(RelinkedAt, result.CompetitionLinkedAtUtc);
+
+        var reloaded = await CreateStore(root.Path).GetAsync("event-123", CancellationToken.None);
+        Assert.Equal(4713, reloaded?.IntelligentGolfEventId);
+        Assert.Equal(6201, reloaded?.IntelligentGolfCompetitionId);
+        Assert.Equal("event-123", await CreateStore(root.Path)
+            .FindPlaybookEventIdByIntelligentGolfCompetitionIdAsync(6201, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task SaveCompetitionAsync_WhenCompetitionBelongsToAnotherEvent_RejectsDuplicateLink()
+    {
+        using var root = new TemporaryContentRoot();
+        var store = CreateStore(root.Path);
+        await store.SaveCompetitionAsync(
+            "event-123",
+            6201,
+            "Sunday Winter Stableford",
+            "2026-10-04",
+            RelinkedAt,
+            CancellationToken.None);
+
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            store.SaveCompetitionAsync(
+                "event-456",
+                6201,
+                "Sunday Winter Stableford",
+                "2026-10-04",
+                RelinkedAt,
+                CancellationToken.None));
+
+        Assert.Contains("already linked", exception.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Null(await store.GetAsync("event-456", CancellationToken.None));
+    }
+
+    [Fact]
     public async Task RelinkEventAsync_AtomicallyPersistsNewPlannerAndClearsPlannerSpecificState()
     {
         using var root = new TemporaryContentRoot();
