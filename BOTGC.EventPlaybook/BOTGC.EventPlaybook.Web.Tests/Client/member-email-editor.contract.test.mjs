@@ -33,12 +33,31 @@ test('member emails use a rich-text editor instead of exposing HTML', () => {
   assert.match(studio, /id="memberEmailBody" hidden/);
 });
 
+test('member diary entries reuse the visual rich-text editor instead of exposing HTML', () => {
+  const studio = functionSource(playbookSource, 'renderArtworkStudio');
+  assert.match(studio, /id="memberDiaryEditor"[^>]*contenteditable="true"/);
+  assert.match(studio, /id="memberDiaryToolbar"/);
+  assert.match(studio, /data-rich-text-command="bold"/);
+  assert.match(studio, /data-rich-text-command="insertUnorderedList"/);
+  assert.match(studio, /data-rich-text-action="link"/);
+  assert.doesNotMatch(studio, />HTML diary body</);
+  assert.match(studio, /id="memberDiaryDescription" hidden/);
+});
+
 test('rich-text changes remain the canonical HTML used for preview and delivery', () => {
   assert.match(functionSource(posterSource, 'captureMemberEmailDialog'), /emailEditor\?\.innerHTML/);
   assert.match(functionSource(posterSource, 'generateMemberEmailDraft'), /setMemberEmailEditorHtml\(session\.form\.emailBodyHtml\)/);
   assert.match(functionSource(posterSource, 'renderMemberEmailPreview'), /sanitiseMemberEmailHtml/);
   assert.match(functionSource(posterSource, 'sendMemberEmailTest'), /bodyHtml: session\.form\.emailBodyHtml/);
   assert.match(functionSource(posterSource, 'sendMemberCampaignEmail'), /bodyHtml: session\.form\.emailBodyHtml/);
+});
+
+test('member diary edits are sanitised and used for preview and publication', () => {
+  assert.match(functionSource(posterSource, 'captureMemberDiaryDialog'), /diaryEditor\?\.innerHTML/);
+  assert.match(functionSource(posterSource, 'generateMemberDiaryDraft'), /setMemberDiaryEditorHtml\(session\.form\.diaryDescription\)/);
+  assert.match(functionSource(posterSource, 'renderMemberDiaryPreview'), /sanitiseMemberEmailHtml/);
+  assert.match(functionSource(posterSource, 'addToMemberDiary'), /description: session\.form\.diaryDescription/);
+  assert.match(functionSource(posterSource, 'bindRichTextEditor'), /applyRichTextEditorAction/);
 });
 
 test('the editor sanitises pasted markup and is styled like a document editor', () => {

@@ -30,7 +30,7 @@ let configCache = null;
 let studioDatabasePromise = null;
 let elements = {};
 let currentContext = {};
-let memberEmailEditorSelection = null;
+const richTextEditorSelections = new WeakMap();
 
 function clonePlanningContext(value) {
     const source = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
@@ -1352,6 +1352,10 @@ export async function mountPosterStudio(context = {}) {
         diaryStartTime: document.querySelector('#memberDiaryStartTime'),
         diaryEndTime: document.querySelector('#memberDiaryEndTime'),
         diaryDescription: document.querySelector('#memberDiaryDescription'),
+        diaryEditor: document.querySelector('#memberDiaryEditor'),
+        diaryToolbar: document.querySelector('#memberDiaryToolbar'),
+        diaryFormat: document.querySelector('#memberDiaryFormat'),
+        diaryEditorHelp: document.querySelector('#memberDiaryEditorHelp'),
         diaryBodyPreview: document.querySelector('#memberDiaryBodyPreview'),
         diaryBookingUrl: document.querySelector('#memberDiaryBookingUrl')
     };
@@ -1613,29 +1617,14 @@ function wireEvents(session) {
         captureMemberEmailDialog(session);
         scheduleSessionPersistence(session);
     });
-    elements.emailEditor?.addEventListener('input', () => {
-        rememberMemberEmailEditorSelection();
-        captureMemberEmailDialog(session);
-        renderMemberEmailPreview();
-        scheduleSessionPersistence(session);
-    });
-    elements.emailEditor?.addEventListener('keyup', rememberMemberEmailEditorSelection);
-    elements.emailEditor?.addEventListener('mouseup', rememberMemberEmailEditorSelection);
-    elements.emailEditor?.addEventListener('blur', () => {
-        captureMemberEmailDialog(session);
-        setMemberEmailEditorHtml(session.form.emailBodyHtml);
-    });
-    elements.emailToolbar?.addEventListener('mousedown', event => {
-        if (event.target.closest('button')) event.preventDefault();
-    });
-    elements.emailToolbar?.addEventListener('click', event => {
-        const button = event.target.closest('button');
-        if (!button) return;
-        applyMemberEmailEditorAction(button.dataset.emailEditorCommand, button.dataset.emailEditorAction);
-    });
-    elements.emailFormat?.addEventListener('change', () => {
-        applyMemberEmailEditorAction('formatBlock', null, elements.emailFormat.value);
-        elements.emailFormat.value = 'p';
+    bindRichTextEditor({
+        editor: elements.emailEditor,
+        toolbar: elements.emailToolbar,
+        format: elements.emailFormat,
+        session,
+        capture: captureMemberEmailDialog,
+        renderPreview: renderMemberEmailPreview,
+        normalise: () => setMemberEmailEditorHtml(session.form.emailBodyHtml)
     });
     elements.emailTestAddress?.addEventListener('input', () => {
         captureMemberEmailDialog(session);
@@ -1675,10 +1664,14 @@ function wireEvents(session) {
         renderMemberDiaryPreview();
         scheduleSessionPersistence(session);
     });
-    elements.diaryDescription?.addEventListener('input', () => {
-        captureMemberDiaryDialog(session);
-        renderMemberDiaryPreview();
-        scheduleSessionPersistence(session);
+    bindRichTextEditor({
+        editor: elements.diaryEditor,
+        toolbar: elements.diaryToolbar,
+        format: elements.diaryFormat,
+        session,
+        capture: captureMemberDiaryDialog,
+        renderPreview: renderMemberDiaryPreview,
+        normalise: () => setMemberDiaryEditorHtml(session.form.diaryDescription)
     });
 }
 
@@ -3605,11 +3598,21 @@ function sanitiseMemberEmailHtml(html) {
     return template.innerHTML.trim();
 }
 
-function setMemberEmailEditorHtml(html) {
+function setRichTextEditorHtml(editor, hiddenField, html) {
     const safeHtml = sanitiseMemberEmailHtml(html);
-    if (elements.emailEditor) elements.emailEditor.innerHTML = safeHtml;
-    if (elements.emailBody) elements.emailBody.value = safeHtml;
-    memberEmailEditorSelection = null;
+    if (editor) {
+        editor.innerHTML = safeHtml;
+        richTextEditorSelections.delete(editor);
+    }
+    if (hiddenField) hiddenField.value = safeHtml;
+}
+
+function setMemberEmailEditorHtml(html) {
+    setRichTextEditorHtml(elements.emailEditor, elements.emailBody, html);
+}
+
+function setMemberDiaryEditorHtml(html) {
+    setRichTextEditorHtml(elements.diaryEditor, elements.diaryDescription, html);
 }
 
 function memberEmailHtmlHasContent(html) {
@@ -3618,29 +3621,36 @@ function memberEmailHtmlHasContent(html) {
     return Boolean(template.content.textContent?.replace(/\u00a0/g, ' ').trim() || template.content.querySelector('img'));
 }
 
-function rememberMemberEmailEditorSelection() {
-    const editor = elements.emailEditor;
+function rememberRichTextEditorSelection(editor) {
     const selection = window.getSelection?.();
     if (!editor || !selection?.rangeCount) return;
     const range = selection.getRangeAt(0);
     if (!editor.contains(range.commonAncestorContainer)) return;
-    memberEmailEditorSelection = range.cloneRange();
+    richTextEditorSelections.set(editor, range.cloneRange());
 }
 
-function restoreMemberEmailEditorSelection() {
-    const editor = elements.emailEditor;
+function restoreRichTextEditorSelection(editor) {
     const selection = window.getSelection?.();
     if (!editor || !selection) return;
     editor.focus();
     selection.removeAllRanges();
-    if (memberEmailEditorSelection && editor.contains(memberEmailEditorSelection.commonAncestorContainer)) {
-        selection.addRange(memberEmailEditorSelection);
+    const savedSelection = richTextEditorSelections.get(editor);
+    if (savedSelection && editor.contains(savedSelection.commonAncestorContainer)) {
+        selection.addRange(savedSelection);
         return;
     }
     const range = document.createRange();
     range.selectNodeContents(editor);
     range.collapse(false);
     selection.addRange(range);
+}
+
+function rememberMemberEmailEditorSelection() {
+    rememberRichTextEditorSelection(elements.emailEditor);
+}
+
+function restoreMemberEmailEditorSelection() {
+    restoreRichTextEditorSelection(elements.emailEditor);
 }
 
 function normaliseMemberEmailLink(value) {
@@ -3651,10 +3661,9 @@ function normaliseMemberEmailLink(value) {
     return `https://${link}`;
 }
 
-function applyMemberEmailEditorAction(command, action, value = null) {
-    const session = activeSession;
-    if (!session || !elements.emailEditor) return;
-    restoreMemberEmailEditorSelection();
+function applyRichTextEditorAction(editor, command, action, value, onChange) {
+    if (!editor) return;
+    restoreRichTextEditorSelection(editor);
 
     if (action === 'link') {
         const link = normaliseMemberEmailLink(window.prompt('Enter the web page or email address to link to:') ?? '');
@@ -3669,10 +3678,50 @@ function applyMemberEmailEditorAction(command, action, value = null) {
         document.execCommand(command, false, value);
     }
 
-    rememberMemberEmailEditorSelection();
-    captureMemberEmailDialog(session);
-    renderMemberEmailPreview();
-    scheduleSessionPersistence(session);
+    rememberRichTextEditorSelection(editor);
+    onChange?.();
+}
+
+function bindRichTextEditor({ editor, toolbar, format, session, capture, renderPreview, normalise }) {
+    if (!editor) return;
+    const recordChange = () => {
+        rememberRichTextEditorSelection(editor);
+        capture(session);
+        renderPreview();
+        scheduleSessionPersistence(session);
+    };
+
+    editor.addEventListener('input', recordChange);
+    editor.addEventListener('keyup', () => rememberRichTextEditorSelection(editor));
+    editor.addEventListener('mouseup', () => rememberRichTextEditorSelection(editor));
+    editor.addEventListener('blur', () => {
+        capture(session);
+        normalise();
+    });
+    toolbar?.addEventListener('mousedown', event => {
+        if (event.target.closest('button')) event.preventDefault();
+    });
+    toolbar?.addEventListener('click', event => {
+        const button = event.target.closest('button');
+        if (!button) return;
+        const command = button.dataset.richTextCommand ?? button.dataset.emailEditorCommand;
+        const action = button.dataset.richTextAction ?? button.dataset.emailEditorAction;
+        applyRichTextEditorAction(editor, command, action, null, recordChange);
+    });
+    format?.addEventListener('change', () => {
+        applyRichTextEditorAction(editor, 'formatBlock', null, format.value, recordChange);
+        format.value = 'p';
+    });
+}
+
+function applyMemberEmailEditorAction(command, action, value = null) {
+    const session = activeSession;
+    if (!session || !elements.emailEditor) return;
+    applyRichTextEditorAction(elements.emailEditor, command, action, value, () => {
+        captureMemberEmailDialog(session);
+        renderMemberEmailPreview();
+        scheduleSessionPersistence(session);
+    });
 }
 
 function captureMemberEmailDialog(session) {
@@ -4116,10 +4165,25 @@ function getMemberDiaryArtwork(session) {
 function captureMemberDiaryDialog(session) {
     if (!elements.diaryTitle) return;
     session.form.diaryTitle = elements.diaryTitle.value.trim();
-    session.form.diaryDescription = elements.diaryDescription.value.trim();
+    session.form.diaryDescription = sanitiseMemberEmailHtml(elements.diaryEditor?.innerHTML ?? elements.diaryDescription?.value ?? '');
+    if (elements.diaryDescription) elements.diaryDescription.value = session.form.diaryDescription;
     session.form.diaryStartTime = elements.diaryStartTime.value;
     session.form.diaryEndTime = elements.diaryEndTime.value;
     session.form.diaryBookingUrl = elements.diaryBookingUrl.value.trim();
+    updateMemberDiaryEditorState(session);
+}
+
+function updateMemberDiaryEditorState(session) {
+    const bodyHtml = session?.form?.diaryDescription ?? '';
+    const withinLimit = bodyHtml.length <= MEMBER_EMAIL_HTML_LIMIT;
+    elements.diaryEditor?.classList.toggle('invalid', !withinLimit);
+    elements.diaryEditor?.setAttribute('aria-invalid', withinLimit ? 'false' : 'true');
+    if (elements.diaryEditorHelp) {
+        elements.diaryEditorHelp.textContent = withinLimit
+            ? 'Edit the diary entry as you would a document. The formatted HTML is retained automatically for the preview and publication.'
+            : `This diary entry is too large (${bodyHtml.length.toLocaleString()} of ${MEMBER_EMAIL_HTML_LIMIT.toLocaleString()} characters).`;
+        elements.diaryEditorHelp.classList.toggle('error', !withinLimit);
+    }
 }
 
 function memberDiaryStageLabel(stage) {
@@ -4174,7 +4238,8 @@ async function openMemberDiaryDialog() {
     elements.diaryDate.value = session.form.eventDate;
     elements.diaryStartTime.value = session.form.diaryStartTime || '';
     elements.diaryEndTime.value = session.form.diaryEndTime || '';
-    elements.diaryDescription.value = session.form.diaryDescription || '';
+    setMemberDiaryEditorHtml(session.form.diaryDescription || '');
+    updateMemberDiaryEditorState(session);
     elements.diaryBookingUrl.value = session.form.diaryBookingUrl || '';
     elements.diaryDialogMessage.textContent = '';
     elements.diaryDialogMessage.className = 'poster-publish-dialog-message';
@@ -4313,9 +4378,10 @@ async function generateMemberDiaryDraft(session) {
         });
         const result = await readApiResponse(response);
         session.form.diaryTitle = String(result.title ?? '').trim();
-        session.form.diaryDescription = String(result.bodyHtml ?? '').trim();
+        session.form.diaryDescription = sanitiseMemberEmailHtml(result.bodyHtml ?? '');
         elements.diaryTitle.value = session.form.diaryTitle;
-        elements.diaryDescription.value = session.form.diaryDescription;
+        setMemberDiaryEditorHtml(session.form.diaryDescription);
+        updateMemberDiaryEditorState(session);
         renderMemberDiaryPreview();
         elements.diaryDialogMessage.textContent = result.mode === 'openai'
             ? 'The AI draft is ready. Review and edit it before publishing.'
@@ -4336,7 +4402,7 @@ async function generateMemberDiaryDraft(session) {
 function renderMemberDiaryPreview() {
     if (!elements.diaryBodyPreview) return;
     const title = elements.diaryTitle?.value.trim() || 'Member diary preview';
-    const body = elements.diaryDescription?.value || '<p style="font-family:Arial,sans-serif;color:#52666b">Generate or enter a diary entry to preview it here.</p>';
+    const body = sanitiseMemberEmailHtml(elements.diaryEditor?.innerHTML ?? elements.diaryDescription?.value ?? '') || '<p style="font-family:Arial,sans-serif;color:#52666b">Generate or enter a diary entry to preview it here.</p>';
     elements.diaryBodyPreview.srcdoc = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(title)}</title></head><body style="margin:18px;background:#fff">${body}</body></html>`;
 }
 
@@ -4355,6 +4421,20 @@ async function addToMemberDiary() {
     if (!session || !diaryArtwork) return;
 
     captureMemberDiaryDialog(session);
+    if (!memberEmailHtmlHasContent(session.form.diaryDescription)) {
+        elements.diaryDialogMessage.textContent = 'Add some content to the diary entry before publishing it.';
+        elements.diaryDialogMessage.className = 'poster-publish-dialog-message error';
+        elements.diaryEditor?.classList.add('invalid');
+        elements.diaryEditor?.setAttribute('aria-invalid', 'true');
+        elements.diaryEditor?.focus();
+        return;
+    }
+    if (session.form.diaryDescription.length > MEMBER_EMAIL_HTML_LIMIT) {
+        elements.diaryDialogMessage.textContent = `Shorten the diary entry to ${MEMBER_EMAIL_HTML_LIMIT.toLocaleString()} characters or fewer before publishing it.`;
+        elements.diaryDialogMessage.className = 'poster-publish-dialog-message error';
+        elements.diaryEditor?.focus();
+        return;
+    }
     if (!elements.diaryForm.reportValidity()) return;
     if (session.form.diaryStartTime && session.form.diaryEndTime && session.form.diaryEndTime <= session.form.diaryStartTime) {
         elements.diaryDialogMessage.textContent = 'Choose an end time after the start time.';

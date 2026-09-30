@@ -5574,7 +5574,7 @@
       maybeOpenIntelligentGolfPlannerMatch(event);
     }
     if (state.activeView === 'artwork' && event) {
-      import('./poster-app.js?v=20260929-member-email-editor-1')
+      import('./poster-app.js?v=20260930-shared-rich-text-editor-1')
         .then(module => module.mountPosterStudio({
           eventId: event.id,
           eventName: event.name,
@@ -6156,7 +6156,31 @@
                 <label class="field"><span>Start time <em>optional</em></span><input id="memberDiaryStartTime" type="time"></label>
                 <label class="field"><span>End time <em>optional</em></span><input id="memberDiaryEndTime" type="time"></label>
               </div>
-              <label class="field"><span>HTML diary body</span><textarea id="memberDiaryDescription" rows="12" maxlength="200000" required spellcheck="true"></textarea><small>You can edit the generated HTML before it is published.</small></label>
+              <div class="field member-email-editor-field">
+                <span>Diary body</span>
+                <div id="memberDiaryToolbar" class="member-email-editor-toolbar" role="toolbar" aria-label="Diary entry formatting">
+                  <label><span class="sr-only">Text style</span><select id="memberDiaryFormat" aria-label="Text style"><option value="p">Paragraph</option><option value="h2">Heading</option><option value="h3">Subheading</option></select></label>
+                  <span class="member-email-toolbar-group" aria-label="Text formatting">
+                    <button type="button" data-rich-text-command="bold" aria-label="Bold" title="Bold"><strong>B</strong></button>
+                    <button type="button" data-rich-text-command="italic" aria-label="Italic" title="Italic"><em>I</em></button>
+                    <button type="button" data-rich-text-command="underline" aria-label="Underline" title="Underline"><u>U</u></button>
+                  </span>
+                  <span class="member-email-toolbar-group" aria-label="Lists and links">
+                    <button type="button" data-rich-text-command="insertUnorderedList" aria-label="Bulleted list" title="Bulleted list">• List</button>
+                    <button type="button" data-rich-text-command="insertOrderedList" aria-label="Numbered list" title="Numbered list">1. List</button>
+                    <button type="button" data-rich-text-action="link" aria-label="Add link" title="Add link">Link</button>
+                    <button type="button" data-rich-text-command="unlink" aria-label="Remove link" title="Remove link">Unlink</button>
+                  </span>
+                  <span class="member-email-toolbar-group" aria-label="Editing">
+                    <button type="button" data-rich-text-command="undo" aria-label="Undo" title="Undo">↶</button>
+                    <button type="button" data-rich-text-command="redo" aria-label="Redo" title="Redo">↷</button>
+                    <button type="button" data-rich-text-command="removeFormat" aria-label="Clear formatting" title="Clear formatting">Clear</button>
+                  </span>
+                </div>
+                <div id="memberDiaryEditor" class="member-email-rich-editor" contenteditable="true" role="textbox" aria-multiline="true" aria-required="true" aria-label="Diary body" spellcheck="true" data-placeholder="Write the member diary entry here…"></div>
+                <textarea id="memberDiaryDescription" hidden aria-hidden="true" tabindex="-1"></textarea>
+                <small id="memberDiaryEditorHelp">Edit the diary entry as you would a document. The formatted HTML is retained automatically for the preview and publication.</small>
+              </div>
               <details class="member-email-preview-panel"><summary>Preview diary entry</summary><iframe id="memberDiaryBodyPreview" title="Member diary entry preview" sandbox></iframe></details>
               <label class="field"><span>Booking or information link <em>optional</em></span><input id="memberDiaryBookingUrl" type="url" maxlength="1000" placeholder="https://"></label>
               <div id="memberDiaryDialogMessage" class="poster-publish-dialog-message" role="status"></div>
