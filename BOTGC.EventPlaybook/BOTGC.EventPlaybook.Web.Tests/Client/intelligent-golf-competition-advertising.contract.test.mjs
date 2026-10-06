@@ -3,9 +3,10 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
 const read = relativePath => readFile(new URL(relativePath, import.meta.url), 'utf8');
-const [playbookSource, posterSource, webServiceSource, apiSource, transportSource] = await Promise.all([
+const [playbookSource, posterSource, stylesheetSource, webServiceSource, apiSource, transportSource] = await Promise.all([
   read('../../BOTGC.EventPlaybook.Web/wwwroot/playbook-app.js'),
   read('../../BOTGC.EventPlaybook.Web/wwwroot/poster-app.js'),
+  read('../../BOTGC.EventPlaybook.Web/wwwroot/playbook.css'),
   read('../../BOTGC.EventPlaybook.Web/Services/IntelligentGolfEventIntegration.cs'),
   read('../../BOTGC.EventPlaybook.API/Features/Competitions/CompetitionsFeature.cs'),
   read('../../BOTGC.EventPlaybook.API/Infrastructure/IntelligentGolf/IntelligentGolfTransport.cs')
@@ -67,4 +68,16 @@ test('the Communications Centre explains and collects the replacement decision',
   const publish = functionSource(posterSource, 'addToMemberDiary');
   assert.match(publish, /replaceExistingDiaryEntry/);
   assert.match(publish, /publicationTarget === 'competition'/);
+});
+
+test('the linked-competition replacement control remains compact inside the diary dialog', () => {
+  assert.match(stylesheetSource, /\.poster-publish-body\s*\{[^}]*overflow-x:\s*hidden\s*!important/s);
+  assert.match(
+    stylesheetSource,
+    /\.poster-publish-fields \.member-diary-replacement-option\s*\{[^}]*grid-template-columns:\s*18px minmax\(0,1fr\)\s*!important/s
+  );
+  assert.match(
+    stylesheetSource,
+    /\.poster-publish-fields \.member-diary-replacement-option input\[type="checkbox"\]\s*\{[^}]*width:\s*18px\s*!important[^}]*min-height:\s*18px\s*!important/s
+  );
 });

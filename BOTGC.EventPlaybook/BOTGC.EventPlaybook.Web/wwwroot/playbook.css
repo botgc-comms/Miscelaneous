@@ -96,6 +96,7 @@
   min-height: 0 !important;
   grid-template-columns: 250px minmax(0,1fr) !important;
   gap: 23px !important;
+  overflow-x: hidden !important;
   overflow-y: auto !important;
   padding: 23px 25px !important;
   background: #f5f8f7 !important;
@@ -433,38 +434,47 @@
   clip-path: inset(50%) !important;
 }
 
-.member-diary-replacement-option {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 14px 16px;
-  border: 1px solid #d8b66d;
-  border-radius: 12px;
-  background: #fff9ec;
-  color: var(--navy);
+.poster-publish-fields .member-diary-replacement-option {
+  display: grid !important;
+  min-width: 0 !important;
+  grid-template-columns: 18px minmax(0,1fr) !important;
+  align-items: start !important;
+  gap: 11px !important;
+  padding: 13px 14px !important;
+  border: 1px solid #d8b66d !important;
+  border-radius: 12px !important;
+  color: var(--navy) !important;
+  background: #fff9ec !important;
+  cursor: pointer;
 }
 
-.member-diary-replacement-option input {
-  flex: 0 0 auto;
-  width: 18px;
-  height: 18px;
-  margin-top: 2px;
-  accent-color: var(--green);
+.poster-publish-fields .member-diary-replacement-option input[type="checkbox"] {
+  width: 18px !important;
+  min-width: 18px !important;
+  height: 18px !important;
+  min-height: 18px !important;
+  margin: 1px 0 0 !important;
+  padding: 0 !important;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+  accent-color: var(--green) !important;
 }
 
-.member-diary-replacement-option span {
-  display: grid;
-  gap: 3px;
+.poster-publish-fields .member-diary-replacement-option > span {
+  display: grid !important;
+  min-width: 0 !important;
+  gap: 3px !important;
 }
 
 .member-diary-replacement-option strong,
 .member-diary-replacement-option small {
-  display: block;
+  display: block !important;
+  overflow-wrap: break-word;
 }
 
 .member-diary-replacement-option small {
-  color: var(--muted);
-  line-height: 1.45;
+  color: var(--muted) !important;
+  line-height: 1.45 !important;
 }
 
 .member-email-editor-field {
