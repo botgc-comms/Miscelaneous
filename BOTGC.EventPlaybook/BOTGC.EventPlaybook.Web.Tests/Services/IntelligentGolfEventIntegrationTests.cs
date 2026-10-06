@@ -43,6 +43,73 @@ public sealed class IntelligentGolfEventIntegrationTests
     }
 
     [Fact]
+    public async Task PublishDiaryAsync_WithLinkedCompetition_UpdatesCompetitionInsteadOfCreatingDiary()
+    {
+        var scenario = new PrivateApiScenario(SynchronisedAt);
+        var linkStore = new RecordingLinkStore();
+        linkStore.Seed(CreateCompetitionLink(includeDiary: false));
+        var integration = CreateIntegration(scenario, linkStore, new RecordingActivityStore());
+
+        var result = await integration.PublishDiaryAsync(CreateRequest(), PngBytes, CancellationToken.None);
+
+        var request = Assert.Single(scenario.Requests);
+        Assert.Equal(HttpMethod.Put, request.Method);
+        Assert.Equal("/api/competitions/8541/member-advertising", request.Path);
+        using var payload = JsonDocument.Parse(request.Body);
+        Assert.Equal("<p>Join fellow members for the 2027 forum.</p>", payload.RootElement.GetProperty("descriptionHtml").GetString());
+        Assert.Equal("image/png", payload.RootElement.GetProperty("artwork").GetProperty("contentType").GetString());
+        Assert.Equal("competition", result.PublicationTarget);
+        Assert.Equal(8541, result.IntelligentGolfCompetitionId);
+        Assert.Equal(0, result.IntelligentGolfDiaryEntryId);
+    }
+
+    [Fact]
+    public async Task PublishDiaryAsync_WithCompetitionAndExistingDiary_RequiresExplicitReplacement()
+    {
+        var scenario = new PrivateApiScenario(SynchronisedAt);
+        var linkStore = new RecordingLinkStore();
+        linkStore.Seed(CreateCompetitionLink(includeDiary: true));
+        var integration = CreateIntegration(scenario, linkStore, new RecordingActivityStore());
+
+        var exception = await Assert.ThrowsAsync<IntelligentGolfDiaryReplacementRequiredException>(() =>
+            integration.PublishDiaryAsync(CreateRequest(), PngBytes, CancellationToken.None));
+
+        Assert.Equal(8541, exception.IntelligentGolfCompetitionId);
+        Assert.Equal(4963, exception.IntelligentGolfDiaryEntryId);
+        Assert.Empty(scenario.Requests);
+    }
+
+    [Fact]
+    public async Task PublishDiaryAsync_WhenReplacementConfirmed_UpdatesCompetitionBeforeRemovingDiary()
+    {
+        var scenario = new PrivateApiScenario(SynchronisedAt);
+        var linkStore = new RecordingLinkStore();
+        linkStore.Seed(CreateCompetitionLink(includeDiary: true));
+        var integration = CreateIntegration(scenario, linkStore, new RecordingActivityStore());
+        var request = CreateRequest(replaceExistingDiaryEntry: true);
+
+        var result = await integration.PublishDiaryAsync(request, PngBytes, CancellationToken.None);
+
+        Assert.Collection(
+            scenario.Requests,
+            competitionRequest =>
+            {
+                Assert.Equal(HttpMethod.Put, competitionRequest.Method);
+                Assert.Equal("/api/competitions/8541/member-advertising", competitionRequest.Path);
+            },
+            removalRequest =>
+            {
+                Assert.Equal(HttpMethod.Delete, removalRequest.Method);
+                Assert.Equal("/api/event-planner/member-diary", removalRequest.Path);
+            });
+        Assert.Equal(4963, result.ReplacedIntelligentGolfDiaryEntryId);
+        Assert.Equal("competition", result.PublicationTarget);
+        var link = await linkStore.GetAsync("event-123", CancellationToken.None);
+        Assert.Null(link?.IntelligentGolfDiaryEntryId);
+        Assert.Equal(8541, link?.IntelligentGolfCompetitionId);
+    }
+
+    [Fact]
     public async Task PublishDiaryAsync_ForwardsSelectedPngWithEventDerivedSocialFileName()
     {
         var publishedAt = new DateTimeOffset(2026, 9, 9, 8, 35, 0, TimeSpan.Zero);
@@ -772,7 +839,7 @@ public sealed class IntelligentGolfEventIntegrationTests
             }),
             NullLogger<IntelligentGolfEventIntegration>.Instance);
 
-    private static MemberDiaryPublishRequest CreateRequest() => new()
+    private static MemberDiaryPublishRequest CreateRequest(bool replaceExistingDiaryEntry = false) => new()
     {
         EventId = "event-123",
         EventName = "The 2027 Forum",
@@ -785,12 +852,25 @@ public sealed class IntelligentGolfEventIntegrationTests
         Venue = "Clubhouse",
         StartTime = "19:00",
         EndTime = "22:00",
+        ReplaceExistingDiaryEntry = replaceExistingDiaryEntry,
         Artwork = new PublishAsset
         {
             OutputId = "social-square",
             Name = "Social square",
             DataUrl = "data:image/png;base64,unused-by-service-test"
         }
+    };
+
+    private static IntelligentGolfIntegrationLink CreateCompetitionLink(bool includeDiary) => new()
+    {
+        EventPlaybookEventId = "event-123",
+        IntelligentGolfEventId = includeDiary ? 4713 : null,
+        IntelligentGolfDiaryEntryId = includeDiary ? 4963 : null,
+        IntelligentGolfCompetitionId = 8541,
+        IntelligentGolfCompetitionName = "The 2027 Forum Competition",
+        IntelligentGolfCompetitionDate = "2027-02-20",
+        CompetitionLinkedAtUtc = SynchronisedAt,
+        UpdatedAtUtc = SynchronisedAt
     };
 
     private static PlaybookEventIntegrationSnapshot CreateSnapshot() => new()
@@ -1020,6 +1100,20 @@ public sealed class IntelligentGolfEventIntegrationTests
                     created = true,
                     eventImageAttached = true,
                     publishedAtUtc = diaryPublishedAt
+                });
+            }
+
+            if (request.Method == HttpMethod.Put &&
+                request.Path == "/api/competitions/8541/member-advertising")
+            {
+                return Json(HttpStatusCode.OK, new
+                {
+                    eventPlaybookEventId = "event-123",
+                    intelligentGolfCompetitionId = 8541,
+                    imageFileName = "the-2027-forum-social.png",
+                    descriptionUpdated = true,
+                    imageAttached = true,
+                    updatedAtUtc = diaryPublishedAt
                 });
             }
 
@@ -1304,6 +1398,21 @@ public sealed class IntelligentGolfEventIntegrationTests
             link.IntelligentGolfCompetitionDate = competitionDate;
             link.CompetitionLinkedAtUtc = linkedAtUtc;
             return Task.FromResult(link);
+        }
+
+        public Task SaveCompetitionPublicationAsync(
+            string eventId,
+            int intelligentGolfCompetitionId,
+            string imageFileName,
+            DateTimeOffset publishedAtUtc,
+            CancellationToken cancellationToken)
+        {
+            var link = GetOrCreate(eventId);
+            if (link.IntelligentGolfCompetitionId != intelligentGolfCompetitionId)
+                throw new InvalidOperationException("The competition link changed.");
+            link.CompetitionImageFileName = imageFileName;
+            link.CompetitionPublishedAtUtc = publishedAtUtc;
+            return Task.CompletedTask;
         }
 
         public Task ClearDiaryAsync(

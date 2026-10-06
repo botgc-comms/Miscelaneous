@@ -65,6 +65,41 @@ public sealed class CompetitionsFeatureTests
         Assert.All(reportClient.RefreshValues, Assert.True);
     }
 
+    [Fact]
+    public async Task AdvertisingHandler_PreservesCompetitionSettingsAndChangesOnlyCommentsAndImage()
+    {
+        const string description = "<p><strong>Member-facing event information</strong></p>";
+        var transport = new CompetitionSettingsTransport(description, "halloween-night-golf-social.png");
+        var handler = new UpdateCompetitionAdvertisingHandler(
+            transport,
+            new ImmediateLockManager(),
+            NullLogger<UpdateCompetitionAdvertisingHandler>.Instance);
+        byte[] png = [137, 80, 78, 71, 13, 10, 26, 10, 1, 2, 3];
+
+        var result = await handler.Handle(
+            new UpdateCompetitionAdvertisingCommand(
+                8541,
+                new UpdateCompetitionAdvertisingRequest(
+                    "event-123",
+                    description,
+                    new CompetitionAdvertisingArtwork(
+                        "halloween-night-golf-social.png",
+                        "image/png",
+                        Convert.ToBase64String(png)))),
+            CancellationToken.None);
+
+        Assert.Equal(8541, result.IntelligentGolfCompetitionId);
+        Assert.True(result.DescriptionUpdated);
+        Assert.True(result.ImageAttached);
+        Assert.Equal("halloween-night-golf-social.png", result.ImageFileName);
+        Assert.Equal("10", Assert.Single(transport.SavedFields, field => field.Key == "comptype").Value);
+        Assert.Equal("2", Assert.Single(transport.SavedFields, field => field.Key == "tees[]").Value);
+        Assert.Contains(transport.SavedFields, field => field.Key == "usepi" && field.Value == "1");
+        Assert.DoesNotContain(transport.SavedFields, field => field.Key == "unchecked-setting");
+        Assert.Equal(description, Assert.Single(transport.SavedFields, field => field.Key == "comments").Value);
+        Assert.Equal("halloween-night-golf-social.png", Assert.Single(transport.SavedFields, field => field.Key == "image").Value);
+    }
+
     private sealed class StubParser : IIntelligentGolfReportParser<AvailableCompetition>
     {
         public Task<IReadOnlyList<AvailableCompetition>> ParseAsync(
@@ -101,5 +136,92 @@ public sealed class CompetitionsFeatureTests
             bool refresh = false,
             CancellationToken cancellationToken = default) =>
             throw new NotSupportedException();
+    }
+
+    private sealed class CompetitionSettingsTransport(
+        string verifiedDescription,
+        string verifiedImageFileName) : IIntelligentGolfTransport
+    {
+        private int _settingsReads;
+        public IReadOnlyCollection<KeyValuePair<string, string>> SavedFields { get; private set; } = [];
+
+        public Task<T> ExecuteExclusiveAsync<T>(
+            Func<CancellationToken, Task<T>> operation,
+            CancellationToken cancellationToken = default) => operation(cancellationToken);
+
+        public Task<IntelligentGolfTransportResponse> GetResponseAsync(
+            string path,
+            CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
+
+        public Task<HtmlDocument> GetDocumentAsync(
+            string path,
+            CancellationToken cancellationToken = default)
+        {
+            _settingsReads++;
+            var comments = _settingsReads > 1 ? verifiedDescription : "<p>Old description</p>";
+            var image = _settingsReads > 1 ? verifiedImageFileName : "old-image.png";
+            var document = new HtmlDocument();
+            document.LoadHtml($$"""
+                <form id="compform">
+                  <input name="compname" value="Halloween Night Golf 2026">
+                  <input name="compdate" value="31-10-2026">
+                  <textarea name="comments">{{comments}}</textarea>
+                  <textarea name="rules"><p>Pairs Greensomes</p></textarea>
+                  <input type="hidden" name="image" value="{{image}}">
+                  <select name="comptype"><option value="9">Other</option><option value="10" selected>Greensomes</option></select>
+                  <select name="tees[]"><option value="2" selected>Yellow</option></select>
+                  <input type="checkbox" name="usepi" value="1" checked>
+                  <input type="checkbox" name="unchecked-setting" value="1">
+                </form>
+                """);
+            return Task.FromResult(document);
+        }
+
+        public Task<HtmlDocument> PostFormDocumentAsync(
+            string path,
+            IReadOnlyCollection<KeyValuePair<string, string>> fields,
+            CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
+
+        public Task<IntelligentGolfTransportResponse> PostFormResponseAsync(
+            string path,
+            IReadOnlyCollection<KeyValuePair<string, string>> fields,
+            CancellationToken cancellationToken = default)
+        {
+            SavedFields = fields;
+            return Task.FromResult(new IntelligentGolfTransportResponse(
+                "{\"actions\":[{\"type\":\"redirect\",\"data\":\"/compadmin3.php?compid=8541&tab=settings\"}]}",
+                null));
+        }
+
+        public Task<IntelligentGolfTransportResponse> PostMultipartResponseAsync(
+            string path,
+            IReadOnlyCollection<KeyValuePair<string, string>> fields,
+            IntelligentGolfMultipartFile file,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult(new IntelligentGolfTransportResponse(
+                "{\"actions\":[{\"type\":\"message\",\"data\":\"Image uploaded\"},{\"type\":\"setvalue\",\"value\":\"halloween-night-golf-social.png\",\"selector\":\"#compImageInput\"}]}",
+                null));
+
+        public Task<string> PostFormAsync(
+            string path,
+            IReadOnlyCollection<KeyValuePair<string, string>> fields,
+            CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
+    }
+
+    private sealed class ImmediateLockManager : IDistributedLockManager
+    {
+        public Task<IDistributedLock> AcquireAsync(
+            string resource,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult<IDistributedLock>(new ImmediateLock());
+    }
+
+    private sealed class ImmediateLock : IDistributedLock
+    {
+        public bool IsAcquired => true;
+        public ValueTask DisposeAsync() => ValueTask.CompletedTask;
     }
 }

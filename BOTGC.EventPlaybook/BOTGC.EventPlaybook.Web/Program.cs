@@ -492,6 +492,8 @@ app.MapGet("/api/integrations/intelligent-golf/events/{eventId}", async (
         competitionName = link?.IntelligentGolfCompetitionName,
         competitionDate = link?.IntelligentGolfCompetitionDate,
         competitionLinkedAtUtc = link?.CompetitionLinkedAtUtc,
+        competitionPublishedAtUtc = link?.CompetitionPublishedAtUtc,
+        competitionImageFileName = link?.CompetitionImageFileName,
         eventSynchronisedAtUtc = link?.EventSynchronisedAtUtc,
         diaryPublishedAtUtc = link?.DiaryPublishedAtUtc,
         lastError = link?.LastError,
@@ -1978,9 +1980,18 @@ app.MapPut("/api/poster/member-diary", async (
         return Results.Ok(new
         {
             success = true,
-            diaryEntryId = published.IntelligentGolfDiaryEntryId,
-            intelligentGolfEventId = published.IntelligentGolfEventId,
-            operation = published.Created ? "created" : "updated",
+            publicationTarget = published.PublicationTarget,
+            diaryEntryId = published.IntelligentGolfDiaryEntryId > 0
+                ? published.IntelligentGolfDiaryEntryId
+                : (int?)null,
+            intelligentGolfEventId = published.IntelligentGolfEventId > 0
+                ? published.IntelligentGolfEventId
+                : (int?)null,
+            competitionId = published.IntelligentGolfCompetitionId,
+            replacedDiaryEntryId = published.ReplacedIntelligentGolfDiaryEntryId,
+            operation = published.PublicationTarget == "competition"
+                ? "competition-updated"
+                : published.Created ? "created" : "updated",
             eventImageAttached = published.EventImageAttached,
             eventDate = request.EventDate
         });
@@ -2006,6 +2017,19 @@ app.MapPut("/api/poster/member-diary", async (
                 ["memberDiaryPublishedAtUtc"] = exception.MemberDiaryPublishedAtUtc,
                 ["eventDate"] = exception.EventDate,
                 ["candidates"] = exception.Candidates
+            });
+    }
+    catch (IntelligentGolfDiaryReplacementRequiredException exception)
+    {
+        return Results.Problem(
+            title: "Confirm replacement of the existing member diary entry",
+            detail: exception.Message,
+            statusCode: StatusCodes.Status409Conflict,
+            extensions: new Dictionary<string, object?>
+            {
+                ["replacementRequired"] = true,
+                ["competitionId"] = exception.IntelligentGolfCompetitionId,
+                ["diaryEntryId"] = exception.IntelligentGolfDiaryEntryId
             });
     }
     catch (InvalidOperationException exception)

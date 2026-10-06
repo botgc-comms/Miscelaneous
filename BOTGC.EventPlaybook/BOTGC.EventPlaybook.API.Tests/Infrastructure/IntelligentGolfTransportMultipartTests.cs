@@ -9,6 +9,34 @@ namespace BOTGC.EventPlaybook.API.Tests.Infrastructure;
 public sealed class IntelligentGolfTransportMultipartTests
 {
     [Fact]
+    public async Task CompetitionImageUpload_UsesTheCompetitionSettingsPageAsReferrer()
+    {
+        var handler = new RecordingHandler();
+        var transport = new IntelligentGolfTransport(
+            new SingleClientFactory(new HttpClient(handler)),
+            new AuthenticatedSession("https://www.botgc.co.uk/"),
+            new IntelligentGolfSessionOperationGate(),
+            NullLogger<IntelligentGolfTransport>.Instance);
+
+        await transport.PostMultipartResponseAsync(
+            "/compadmin3.php?compid=8541&tab=settings&requestType=ajax&ajaxaction=compimageupload",
+            [new("name", "halloween-night-golf-social.png"), new("undefined", "undefined")],
+            new IntelligentGolfMultipartFile(
+                "file",
+                "halloween-night-golf-social.png",
+                "image/png",
+                [137, 80, 78, 71, 13, 10, 26, 10]),
+            CancellationToken.None);
+
+        var request = Assert.Single(handler.Requests);
+        Assert.Equal("XMLHttpRequest", Assert.Single(request.RequestedWith));
+        Assert.Equal("https://www.botgc.co.uk", request.Origin);
+        Assert.Equal(
+            "https://www.botgc.co.uk/compadmin3.php?compid=8541&tab=settings",
+            request.Referrer?.ToString());
+    }
+
+    [Fact]
     public async Task PostMultipart_ReproducesTheIntelligentGolfAjaxUploadRequest()
     {
         var handler = new RecordingHandler();

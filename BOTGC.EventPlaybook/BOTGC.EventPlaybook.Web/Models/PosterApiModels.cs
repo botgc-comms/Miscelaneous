@@ -286,6 +286,8 @@ public sealed class MemberDiaryPublishRequest
 
     public string? BookingUrl { get; init; }
 
+    public bool ReplaceExistingDiaryEntry { get; init; }
+
     public PublishAsset? Artwork { get; init; }
 }
 

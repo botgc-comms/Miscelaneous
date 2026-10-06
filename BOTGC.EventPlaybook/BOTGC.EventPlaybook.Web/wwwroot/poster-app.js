@@ -627,6 +627,7 @@ function applyStoredSession(session, stored) {
         session.diaryPublication = {
             remoteId: String(stored.diaryPublication.remoteId),
             externalId: String(stored.diaryPublication.externalId ?? ''),
+            target: stored.diaryPublication.target === 'competition' ? 'competition' : 'member-diary',
             operation: String(stored.diaryPublication.operation ?? 'saved'),
             eventImageAttached: stored.diaryPublication.eventImageAttached === false
                 ? false
@@ -1346,6 +1347,9 @@ export async function mountPosterStudio(context = {}) {
         diaryDialogConfirm: document.querySelector('#confirmMemberDiary'),
         diaryDialogMessage: document.querySelector('#memberDiaryDialogMessage'),
         diaryConnectionStatus: document.querySelector('#memberDiaryConnectionStatus'),
+        diaryRoutingNotice: document.querySelector('#memberDiaryRoutingNotice'),
+        diaryReplacementOption: document.querySelector('#memberDiaryReplacementOption'),
+        diaryReplacementCheckbox: document.querySelector('#replaceExistingMemberDiary'),
         diaryGenerateButton: document.querySelector('#generateMemberDiary'),
         diaryTitle: document.querySelector('#memberDiaryTitle'),
         diaryDate: document.querySelector('#memberDiaryDate'),
@@ -1659,6 +1663,9 @@ function wireEvents(session) {
         addToMemberDiary();
     });
     elements.diaryGenerateButton?.addEventListener('click', () => generateMemberDiaryDraft(session));
+    elements.diaryReplacementCheckbox?.addEventListener('change', () => {
+        updateMemberDiaryRoutingUi(session, session.intelligentGolfPublicationStatus);
+    });
     elements.diaryTitle?.addEventListener('input', () => {
         captureMemberDiaryDialog(session);
         renderMemberDiaryPreview();
@@ -1779,7 +1786,9 @@ function restoreSessionToDom(session) {
             shareHistory.push(`“${publication.mediaName}” is scheduled on ${publication.destinationName} from ${publication.startDate} to ${publication.endDate}. ${pushCopy}`);
         }
         if (session.diaryPublication) {
-            shareHistory.push(session.diaryPublication.eventImageAttached === false
+            shareHistory.push(session.diaryPublication.target === 'competition'
+                ? `The linked Intelligent Golf competition is carrying the member-facing description and artwork for ${session.diaryPublication.eventDate}.`
+                : session.diaryPublication.eventImageAttached === false
                 ? `The event is in the member diary for ${session.diaryPublication.eventDate}, but its planner artwork still needs attaching.`
                 : `The event is linked to the member diary for ${session.diaryPublication.eventDate}.`);
         }
@@ -4043,7 +4052,9 @@ function configureShareConnections(session) {
             elements.shareDiaryStatus.textContent = 'Connection setup required';
             elements.shareDiaryStatus.classList.remove('hidden');
         } else if (session.diaryPublication) {
-            elements.shareDiaryStatus.textContent = session.diaryPublication.eventImageAttached === false
+            elements.shareDiaryStatus.textContent = session.diaryPublication.target === 'competition'
+                ? 'Linked competition updated · send again to update'
+                : session.diaryPublication.eventImageAttached === false
                 ? 'Diary published · planner artwork needs retry'
                 : 'Already in the diary · send again to update';
             elements.shareDiaryStatus.classList.remove('hidden');
@@ -4203,7 +4214,15 @@ function memberDiaryStageLabel(stage) {
         'member-diary-update': 'saving the member diary HTML',
         'planner-event-image-upload': 'uploading the approved artwork to the Intelligent Golf planner',
         'planner-event-image-save': 'attaching the uploaded artwork to the Intelligent Golf planner event',
-        'planner-event-image-contract': 'confirming the planner artwork attachment with the Event Playbook API'
+        'planner-event-image-contract': 'confirming the planner artwork attachment with the Event Playbook API',
+        'competition-settings-read': 'reading the linked competition settings',
+        'competition-settings-read-response': 'checking the linked competition settings form',
+        'competition-image-upload': 'uploading the approved competition artwork',
+        'competition-image-upload-response': 'reading the uploaded competition image name',
+        'competition-settings-save': 'saving the competition description and image',
+        'competition-settings-save-response': 'confirming the competition update',
+        'competition-settings-verification': 'verifying the saved competition description and image',
+        'competition-advertising': 'updating the linked competition'
     };
     return labels[stage] ?? null;
 }
@@ -4215,7 +4234,10 @@ function formatMemberDiaryFailure(error) {
     const stage = memberDiaryStageLabel(error?.stage);
     const identifiers = [];
     if (error?.intelligentGolfEventId) identifiers.push(`planner entry ${error.intelligentGolfEventId}`);
-    if (error?.intelligentGolfRecordId) identifiers.push(`diary entry ${error.intelligentGolfRecordId}`);
+    if (error?.intelligentGolfRecordId) identifiers.push(
+        String(error?.stage ?? '').startsWith('competition-')
+            ? `competition ${error.intelligentGolfRecordId}`
+            : `diary entry ${error.intelligentGolfRecordId}`);
     const context = [stage ? `failed while ${stage}` : null, identifiers.length ? identifiers.join(', ') : null]
         .filter(Boolean)
         .join(' · ');
@@ -4243,6 +4265,10 @@ async function openMemberDiaryDialog() {
     elements.diaryBookingUrl.value = session.form.diaryBookingUrl || '';
     elements.diaryDialogMessage.textContent = '';
     elements.diaryDialogMessage.className = 'poster-publish-dialog-message';
+    session.intelligentGolfPublicationStatus = null;
+    elements.diaryRoutingNotice?.classList.add('hidden');
+    elements.diaryReplacementOption?.classList.add('hidden');
+    if (elements.diaryReplacementCheckbox) elements.diaryReplacementCheckbox.checked = false;
 
     const connection = session.config?.memberDiary ?? {};
     elements.diaryConnectionStatus.className = `yodeck-connection-status ${connection.configured ? 'ready' : 'unavailable'}`;
@@ -4278,6 +4304,16 @@ async function openMemberDiaryDialog() {
 function reconcileMemberDiaryPublication(session, status) {
     const publication = session?.diaryPublication;
     if (!publication) return false;
+
+    if (publication.target === 'competition') {
+        const linkedCompetitionId = Number(status?.competitionId) || 0;
+        const publishedCompetitionId = Number(publication.remoteId) || 0;
+        if (linkedCompetitionId > 0 && linkedCompetitionId === publishedCompetitionId) return false;
+        session.diaryPublication = null;
+        scheduleSessionPersistence(session);
+        if (isSessionVisible(session)) configureShareConnections(session);
+        return true;
+    }
 
     const linkedPlannerEntryId = Number(status?.plannerEntryId) || 0;
     const linkedDiaryEntryId = Number(status?.diaryEntryId) || 0;
@@ -4317,8 +4353,10 @@ async function refreshMemberDiaryIntegrationStatus(session) {
         });
         if (!response.ok) return;
         const status = await response.json();
+        session.intelligentGolfPublicationStatus = status;
         reconcileMemberDiaryPublication(session, status);
         if (!isSessionVisible(session)) return;
+        updateMemberDiaryRoutingUi(session, status);
         if (status.lastError) {
             const failedStage = memberDiaryStageLabel(status.lastErrorStage);
             const stage = failedStage ? ` The last attempt failed while ${failedStage}.` : '';
@@ -4335,7 +4373,10 @@ async function refreshMemberDiaryIntegrationStatus(session) {
             return;
         }
 
-        if (status.plannerEntryId) {
+        if (status.competitionId) {
+            elements.diaryConnectionStatus.className = 'yodeck-connection-status ready';
+            elements.diaryConnectionStatus.innerHTML = `<span></span><div><strong>Competition ${escapeHtml(String(status.competitionId))} is linked</strong><small>Publishing will update the competition description and image instead of creating a separate diary entry.</small></div>`;
+        } else if (status.plannerEntryId) {
             elements.diaryConnectionStatus.className = 'yodeck-connection-status ready';
             elements.diaryConnectionStatus.innerHTML = `<span></span><div><strong>Planner entry ${escapeHtml(String(status.plannerEntryId))} is linked</strong><small>The event details will be checked and updated before the diary entry is published.</small></div>`;
         }
@@ -4406,6 +4447,43 @@ function renderMemberDiaryPreview() {
     elements.diaryBodyPreview.srcdoc = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(title)}</title></head><body style="margin:18px;background:#fff">${body}</body></html>`;
 }
 
+function updateMemberDiaryRoutingUi(session, status) {
+    if (!elements.diaryDialogConfirm) return;
+    const competitionId = Number(status?.competitionId) || 0;
+    const diaryEntryId = Number(status?.diaryEntryId) || 0;
+    const connectionConfigured = session.config?.memberDiary?.configured === true;
+    if (!competitionId) {
+        elements.diaryRoutingNotice?.classList.add('hidden');
+        elements.diaryReplacementOption?.classList.add('hidden');
+        elements.diaryDialogConfirm.disabled = !connectionConfigured;
+        if (elements.shareDiaryButton) elements.shareDiaryButton.textContent = session.diaryPublication ? 'Update member diary' : 'Add to member diary';
+        return;
+    }
+
+    if (elements.shareDiaryButton) elements.shareDiaryButton.textContent = 'Update linked competition';
+
+    if (elements.diaryRoutingNotice) {
+        elements.diaryRoutingNotice.className = 'yodeck-connection-status ready';
+        elements.diaryRoutingNotice.innerHTML = `<span></span><div><strong>Publish through the linked competition</strong><small>The formatted body will become the competition comments and the approved artwork will become the competition image.</small></div>`;
+    }
+    if (elements.diaryReplacementOption) {
+        elements.diaryReplacementOption.classList.toggle('hidden', !diaryEntryId);
+    }
+    const replacementConfirmed = !diaryEntryId || elements.diaryReplacementCheckbox?.checked === true;
+    elements.diaryDialogConfirm.disabled = !connectionConfigured || !replacementConfirmed;
+    elements.diaryDialogConfirm.textContent = diaryEntryId
+        ? replacementConfirmed
+            ? 'Update competition and replace diary entry'
+            : 'Confirm diary replacement above'
+        : session.diaryPublication?.target === 'competition'
+            ? 'Update linked competition'
+            : 'Publish through linked competition';
+    if (diaryEntryId && elements.diaryDialogMessage) {
+        elements.diaryDialogMessage.textContent = `Member diary entry ${diaryEntryId} is still published. Confirm its replacement; the competition will be updated before the old diary entry is removed.`;
+        elements.diaryDialogMessage.className = 'poster-publish-dialog-message';
+    }
+}
+
 function closeMemberDiaryDialog() {
     const session = activeSession;
     if (session) {
@@ -4442,16 +4520,39 @@ async function addToMemberDiary() {
         return;
     }
 
+    const publicationStatus = session.intelligentGolfPublicationStatus;
+    const linkedCompetitionId = Number(publicationStatus?.competitionId) || 0;
+    const existingDiaryEntryId = Number(publicationStatus?.diaryEntryId) || 0;
+    const replaceExistingDiaryEntry = linkedCompetitionId > 0 &&
+        existingDiaryEntryId > 0 &&
+        elements.diaryReplacementCheckbox?.checked === true;
+    if (linkedCompetitionId > 0 && existingDiaryEntryId > 0 && !replaceExistingDiaryEntry) {
+        elements.diaryDialogMessage.textContent = 'Confirm that the existing member diary entry should be replaced by the linked competition.';
+        elements.diaryDialogMessage.className = 'poster-publish-dialog-message error';
+        elements.diaryReplacementCheckbox?.focus();
+        return;
+    }
+
     elements.shareDiaryButton.disabled = true;
     elements.diaryDialogConfirm.disabled = true;
-    elements.diaryDialogConfirm.textContent = session.diaryPublication?.eventImageAttached === false
+    elements.diaryDialogConfirm.textContent = linkedCompetitionId > 0
+        ? replaceExistingDiaryEntry
+            ? 'Updating competition, then removing diary entry…'
+            : 'Updating linked competition…'
+        : session.diaryPublication?.eventImageAttached === false
         ? 'Retrying planner artwork…'
         : session.diaryPublication
             ? 'Updating member diary…'
             : 'Adding to member diary…';
-    elements.diaryDialogMessage.textContent = 'Publishing the linked diary entry, then attaching the approved artwork to its Intelligent Golf planner event…';
+    elements.diaryDialogMessage.textContent = linkedCompetitionId > 0
+        ? replaceExistingDiaryEntry
+            ? 'Updating the linked competition description and image first. The previous diary entry will be removed only after the competition update is confirmed.'
+            : 'Updating the linked competition description and image instead of creating a separate diary entry…'
+        : 'Publishing the linked diary entry, then attaching the approved artwork to its Intelligent Golf planner event…';
     elements.diaryDialogMessage.className = 'poster-publish-dialog-message working';
-    elements.shareMessage.textContent = 'Saving this event to the member diary…';
+    elements.shareMessage.textContent = linkedCompetitionId > 0
+        ? 'Updating the linked Intelligent Golf competition…'
+        : 'Saving this event to the member diary…';
 
     try {
         const response = await fetch('/api/poster/member-diary', {
@@ -4470,6 +4571,7 @@ async function addToMemberDiary() {
                 startTime: session.form.diaryStartTime || null,
                 endTime: session.form.diaryEndTime || null,
                 bookingUrl: session.form.diaryBookingUrl || null,
+                replaceExistingDiaryEntry,
                 artwork: {
                     outputId: diaryArtwork.output.id,
                     name: diaryArtwork.output.name,
@@ -4478,15 +4580,21 @@ async function addToMemberDiary() {
             })
         });
         const result = await readApiResponse(response);
+        const publicationTarget = result.publicationTarget === 'competition' ? 'competition' : 'member-diary';
         session.diaryPublication = {
-            remoteId: String(result.diaryEntryId),
+            remoteId: String(publicationTarget === 'competition' ? result.competitionId : result.diaryEntryId),
             externalId: String(result.intelligentGolfEventId ?? ''),
+            target: publicationTarget,
             operation: String(result.operation ?? 'saved'),
             eventImageAttached: result.eventImageAttached === true,
             eventDate: String(result.eventDate ?? session.form.eventDate),
             updatedAt: new Date().toISOString()
         };
-        elements.shareMessage.textContent = `“${session.form.diaryTitle}” is now advertised in the member diary and its approved artwork is attached to the Intelligent Golf planner event.`;
+        elements.shareMessage.textContent = publicationTarget === 'competition'
+            ? result.replacedDiaryEntryId
+                ? `Competition ${result.competitionId} now contains the approved member-facing description and artwork. Superseded diary entry ${result.replacedDiaryEntryId} was removed.`
+                : `Competition ${result.competitionId} now contains the approved member-facing description and artwork; no separate diary entry was created.`
+            : `“${session.form.diaryTitle}” is now advertised in the member diary and its approved artwork is attached to the Intelligent Golf planner event.`;
         configureShareConnections(session);
         setWorkflowStep(session, 4, true);
         await persistSession(session);

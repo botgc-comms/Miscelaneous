@@ -825,6 +825,17 @@ public sealed class IntelligentGolfEventIntegration(
             Attendees = Math.Max(0, request.Attendees ?? 0)
         };
 
+        var existingLink = await linkStore.GetAsync(request.EventId, cancellationToken);
+        if (existingLink?.IntelligentGolfCompetitionId is > 0)
+        {
+            return await PublishCompetitionAdvertisingAsync(
+                request,
+                snapshot,
+                existingLink,
+                artworkBytes,
+                cancellationToken);
+        }
+
         // This deliberately provisions the IG event when an older Playbook event
         // has no external link yet, then immediately uses that link for the diary.
         // A linked event (including one deliberately adopted from IG) is left
@@ -945,6 +956,167 @@ public sealed class IntelligentGolfEventIntegration(
                 Message = requestException?.MemberDiaryPublished == true
                     ? $"Member diary entry {requestException.IntelligentGolfRecordId} was published, but its planner artwork was not attached. {exception.Message}"
                     : exception.Message
+            }, cancellationToken);
+            throw;
+        }
+        finally
+        {
+            eventLock.Release();
+        }
+    }
+
+    private async Task<IntelligentGolfDiaryPublishResult> PublishCompetitionAdvertisingAsync(
+        MemberDiaryPublishRequest request,
+        PlaybookEventIntegrationSnapshot snapshot,
+        IntelligentGolfIntegrationLink initialLink,
+        byte[] artworkBytes,
+        CancellationToken cancellationToken)
+    {
+        var competitionId = initialLink.IntelligentGolfCompetitionId!.Value;
+        if (!string.Equals(initialLink.IntelligentGolfCompetitionDate, request.EventDate, StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException(
+                $"The linked Intelligent Golf competition is dated {initialLink.IntelligentGolfCompetitionDate ?? "unknown"}, not {request.EventDate}. Re-link the competition before publishing.");
+        }
+        if (initialLink.IntelligentGolfDiaryEntryId is > 0 && !request.ReplaceExistingDiaryEntry)
+        {
+            throw new IntelligentGolfDiaryReplacementRequiredException(
+                competitionId,
+                initialLink.IntelligentGolfDiaryEntryId.Value);
+        }
+
+        var eventLock = _eventLocks.GetOrAdd(snapshot.EventId, _ => new SemaphoreSlim(1, 1));
+        await eventLock.WaitAsync(cancellationToken);
+        try
+        {
+            await EnsureAvailableAsync(cancellationToken);
+            var currentLink = await linkStore.GetAsync(snapshot.EventId, cancellationToken)
+                ?? throw new InvalidOperationException("The Intelligent Golf competition link is no longer available.");
+            if (currentLink.IntelligentGolfCompetitionId != competitionId)
+                throw new InvalidOperationException("The linked Intelligent Golf competition changed. Refresh the event before publishing.");
+            if (currentLink.IntelligentGolfDiaryEntryId is > 0 && !request.ReplaceExistingDiaryEntry)
+                throw new IntelligentGolfDiaryReplacementRequiredException(
+                    competitionId,
+                    currentLink.IntelligentGolfDiaryEntryId.Value);
+
+            using var message = CreateRequest(
+                HttpMethod.Put,
+                $"api/competitions/{competitionId}/member-advertising");
+            message.Content = JsonContent.Create(new
+            {
+                eventPlaybookEventId = request.EventId.Trim(),
+                descriptionHtml = request.Description.Trim(),
+                artwork = new
+                {
+                    fileName = BuildEventArtworkFileName(request),
+                    contentType = "image/png",
+                    base64Data = Convert.ToBase64String(artworkBytes)
+                }
+            });
+            using var response = await SendAsync(message, cancellationToken);
+            var result = await response.Content.ReadFromJsonAsync<IntelligentGolfCompetitionAdvertisingResult>(
+                JsonOptions,
+                cancellationToken)
+                ?? throw new InvalidOperationException(
+                    "The Event Playbook API did not confirm the Intelligent Golf competition update.");
+            if (result.IntelligentGolfCompetitionId != competitionId ||
+                !result.DescriptionUpdated ||
+                !result.ImageAttached)
+            {
+                throw new InvalidOperationException(
+                    "The Event Playbook API did not confirm both the competition description and image update.");
+            }
+
+            await linkStore.SaveCompetitionPublicationAsync(
+                snapshot.EventId,
+                competitionId,
+                result.ImageFileName,
+                result.UpdatedAtUtc,
+                cancellationToken);
+
+            int? replacedDiaryEntryId = null;
+            currentLink = await linkStore.GetAsync(snapshot.EventId, cancellationToken) ?? currentLink;
+            if (currentLink.IntelligentGolfDiaryEntryId is > 0)
+            {
+                var plannerEventId = currentLink.IntelligentGolfEventId
+                    ?? throw new InvalidOperationException(
+                        "The competition was updated, but the existing member diary entry cannot be removed because its planner link is missing.");
+                var diaryEntryId = currentLink.IntelligentGolfDiaryEntryId.Value;
+                using var removalMessage = CreateRequest(HttpMethod.Delete, "api/event-planner/member-diary");
+                removalMessage.Content = JsonContent.Create(new
+                {
+                    eventPlaybookEventId = snapshot.EventId,
+                    intelligentGolfEventId = plannerEventId,
+                    intelligentGolfDiaryEntryId = diaryEntryId
+                });
+                using var removalResponse = await SendAsync(removalMessage, cancellationToken);
+                var removal = await removalResponse.Content.ReadFromJsonAsync<IntelligentGolfDiaryRemovalResult>(
+                    JsonOptions,
+                    cancellationToken)
+                    ?? throw new InvalidOperationException(
+                        "The competition was updated, but the Event Playbook API did not confirm removal of the previous member diary entry.");
+                if (removal.IntelligentGolfEventId != plannerEventId ||
+                    removal.IntelligentGolfDiaryEntryId != diaryEntryId ||
+                    !removal.ConfirmedAbsent)
+                {
+                    throw new InvalidOperationException(
+                        "The competition was updated, but the previous member diary entry was not confirmed as removed.");
+                }
+                await linkStore.ClearDiaryAsync(
+                    snapshot.EventId,
+                    plannerEventId,
+                    diaryEntryId,
+                    cancellationToken);
+                replacedDiaryEntryId = diaryEntryId;
+            }
+
+            await RecordActivitySafelyAsync(new IntegrationActivityWrite
+            {
+                Operation = "Publish linked competition",
+                Outcome = "succeeded",
+                EventPlaybookEventId = snapshot.EventId,
+                EventName = snapshot.Name,
+                ExternalRecordId = competitionId,
+                Stage = replacedDiaryEntryId.HasValue
+                    ? "competition-advertising-and-diary-replacement"
+                    : "competition-advertising",
+                Message = replacedDiaryEntryId.HasValue
+                    ? $"Updated Intelligent Golf competition {competitionId} with the member-facing HTML and artwork, then removed superseded diary entry {replacedDiaryEntryId}."
+                    : $"Updated Intelligent Golf competition {competitionId} with the member-facing HTML and artwork instead of creating a separate diary entry."
+            }, cancellationToken);
+
+            return new IntelligentGolfDiaryPublishResult
+            {
+                EventPlaybookEventId = snapshot.EventId,
+                IntelligentGolfEventId = currentLink.IntelligentGolfEventId ?? 0,
+                IntelligentGolfDiaryEntryId = 0,
+                IntelligentGolfCompetitionId = competitionId,
+                ReplacedIntelligentGolfDiaryEntryId = replacedDiaryEntryId,
+                PublicationTarget = "competition",
+                Created = false,
+                EventImageAttached = true,
+                PublishedAtUtc = result.UpdatedAtUtc
+            };
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            var requestException = exception as IntelligentGolfApiRequestException;
+            await linkStore.RecordFailureAsync(
+                snapshot.EventId,
+                exception.Message,
+                requestException?.Stage ?? "competition-advertising",
+                requestException?.StatusCode,
+                cancellationToken);
+            await RecordActivitySafelyAsync(new IntegrationActivityWrite
+            {
+                Operation = "Publish linked competition",
+                Outcome = exception is IntelligentGolfDiaryReplacementRequiredException ? "action-required" : "failed",
+                EventPlaybookEventId = snapshot.EventId,
+                EventName = snapshot.Name,
+                ExternalRecordId = competitionId,
+                Stage = requestException?.Stage ?? "competition-advertising",
+                StatusCode = requestException?.StatusCode,
+                Message = exception.Message
             }, cancellationToken);
             throw;
         }

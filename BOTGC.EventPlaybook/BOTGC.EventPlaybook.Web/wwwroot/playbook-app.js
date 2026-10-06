@@ -5829,7 +5829,7 @@
       maybeOpenIntelligentGolfPlannerMatch(event);
     }
     if (state.activeView === 'artwork' && event) {
-      import('./poster-app.js?v=20260930-shared-rich-text-editor-1')
+      import('./poster-app.js?v=20260930-competition-advertising-1')
         .then(module => module.mountPosterStudio({
           eventId: event.id,
           eventName: event.name,
@@ -6404,6 +6404,11 @@
             <aside class="poster-publish-preview diary-preview"><img id="memberDiaryPreview" alt="Campaign artwork for the member diary"><span>Member diary artwork</span><small>Square artwork is preferred when available</small></aside>
             <div class="poster-publish-fields">
               <div id="memberDiaryConnectionStatus" class="yodeck-connection-status checking"><span></span><div><strong>Checking the member diary connection…</strong><small>The connection is managed securely by Event Playbook.</small></div></div>
+              <div id="memberDiaryRoutingNotice" class="yodeck-connection-status ready hidden"></div>
+              <label id="memberDiaryReplacementOption" class="member-diary-replacement-option hidden">
+                <input id="replaceExistingMemberDiary" type="checkbox">
+                <span><strong>Replace the existing member diary entry</strong><small>The linked competition will be updated first. Only after that succeeds will the previous diary entry be removed.</small></span>
+              </label>
               <div class="member-email-section-heading"><div><strong>Diary entry</strong><small>Generated from the event details and editable before publishing.</small></div><button id="generateMemberDiary" class="button button-secondary" type="button">Generate diary entry with AI</button></div>
               <label class="field"><span>Diary title</span><input id="memberDiaryTitle" type="text" maxlength="180" required></label>
               <div class="poster-publish-date-grid diary-date-grid">

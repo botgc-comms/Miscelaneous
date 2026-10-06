@@ -75,6 +75,39 @@ public sealed class IntelligentGolfIntegrationLinkStoreTests
     }
 
     [Fact]
+    public async Task SaveCompetitionPublicationAsync_RecordsTheVerifiedImageWithoutChangingOtherLinks()
+    {
+        using var root = new TemporaryContentRoot();
+        var store = CreateStore(root.Path);
+        await store.SaveEventAsync(
+            "event-123",
+            4713,
+            "planner-fingerprint",
+            InitialSynchronisedAt,
+            CancellationToken.None);
+        await store.SaveCompetitionAsync(
+            "event-123",
+            6201,
+            "Sunday Winter Stableford",
+            "2026-10-04",
+            RelinkedAt,
+            CancellationToken.None);
+
+        await store.SaveCompetitionPublicationAsync(
+            "event-123",
+            6201,
+            "sunday-winter-stableford-social.png",
+            RelinkedAt,
+            CancellationToken.None);
+
+        var reloaded = await CreateStore(root.Path).GetAsync("event-123", CancellationToken.None);
+        Assert.Equal(4713, reloaded?.IntelligentGolfEventId);
+        Assert.Equal(6201, reloaded?.IntelligentGolfCompetitionId);
+        Assert.Equal("sunday-winter-stableford-social.png", reloaded?.CompetitionImageFileName);
+        Assert.Equal(RelinkedAt, reloaded?.CompetitionPublishedAtUtc);
+    }
+
+    [Fact]
     public async Task RelinkEventAsync_AtomicallyPersistsNewPlannerAndClearsPlannerSpecificState()
     {
         using var root = new TemporaryContentRoot();

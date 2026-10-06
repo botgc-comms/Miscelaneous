@@ -271,6 +271,13 @@ public sealed class IntelligentGolfTransport(
                 builder.Query = query;
             }
         }
+        else if (requestUri.AbsolutePath.EndsWith("/compadmin3.php", StringComparison.OrdinalIgnoreCase) &&
+                 TryGetQueryParameter(requestUri.Query, "compid", out var competitionId))
+        {
+            var query = $"compid={competitionId}";
+            if (TryGetQueryParameter(requestUri.Query, "tab", out var tab)) query += $"&tab={tab}";
+            builder.Query = query;
+        }
         else if (requestUri.AbsolutePath.EndsWith("/eventview.php", StringComparison.OrdinalIgnoreCase) &&
                  TryGetQueryParameter(requestUri.Query, "ajaxaction", out var ajaxAction) &&
                  ajaxAction.Equals("displaymonthtable", StringComparison.OrdinalIgnoreCase))

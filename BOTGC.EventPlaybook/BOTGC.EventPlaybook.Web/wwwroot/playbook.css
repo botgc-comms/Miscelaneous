@@ -433,6 +433,40 @@
   clip-path: inset(50%) !important;
 }
 
+.member-diary-replacement-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid #d8b66d;
+  border-radius: 12px;
+  background: #fff9ec;
+  color: var(--navy);
+}
+
+.member-diary-replacement-option input {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: var(--green);
+}
+
+.member-diary-replacement-option span {
+  display: grid;
+  gap: 3px;
+}
+
+.member-diary-replacement-option strong,
+.member-diary-replacement-option small {
+  display: block;
+}
+
+.member-diary-replacement-option small {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
 .member-email-editor-field {
   gap: 0 !important;
 }

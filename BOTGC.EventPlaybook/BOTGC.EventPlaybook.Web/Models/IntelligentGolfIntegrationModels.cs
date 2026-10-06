@@ -99,6 +99,8 @@ public sealed class IntelligentGolfIntegrationLink
     public string? IntelligentGolfCompetitionName { get; set; }
     public string? IntelligentGolfCompetitionDate { get; set; }
     public DateTimeOffset? CompetitionLinkedAtUtc { get; set; }
+    public DateTimeOffset? CompetitionPublishedAtUtc { get; set; }
+    public string? CompetitionImageFileName { get; set; }
     public DateTimeOffset? EventSynchronisedAtUtc { get; set; }
     public DateTimeOffset? DiaryPublishedAtUtc { get; set; }
     public string? LastError { get; set; }
@@ -156,9 +158,32 @@ public sealed class IntelligentGolfDiaryPublishResult
     public required string EventPlaybookEventId { get; init; }
     public int IntelligentGolfEventId { get; init; }
     public int IntelligentGolfDiaryEntryId { get; init; }
+    public int? IntelligentGolfCompetitionId { get; init; }
+    public int? ReplacedIntelligentGolfDiaryEntryId { get; init; }
+    public string PublicationTarget { get; init; } = "member-diary";
     public bool Created { get; init; }
     public bool? EventImageAttached { get; init; }
     public DateTimeOffset PublishedAtUtc { get; init; }
+}
+
+public sealed class IntelligentGolfCompetitionAdvertisingResult
+{
+    public required string EventPlaybookEventId { get; init; }
+    public int IntelligentGolfCompetitionId { get; init; }
+    public required string ImageFileName { get; init; }
+    public bool DescriptionUpdated { get; init; }
+    public bool ImageAttached { get; init; }
+    public DateTimeOffset UpdatedAtUtc { get; init; }
+}
+
+public sealed class IntelligentGolfDiaryReplacementRequiredException(
+    int intelligentGolfCompetitionId,
+    int intelligentGolfDiaryEntryId)
+    : InvalidOperationException(
+        $"This event is linked to Intelligent Golf competition {intelligentGolfCompetitionId}, but member diary entry {intelligentGolfDiaryEntryId} is still published. Confirm that the diary entry should be replaced by the linked competition before continuing.")
+{
+    public int IntelligentGolfCompetitionId { get; } = intelligentGolfCompetitionId;
+    public int IntelligentGolfDiaryEntryId { get; } = intelligentGolfDiaryEntryId;
 }
 
 public sealed class CancelIntelligentGolfEventRequest

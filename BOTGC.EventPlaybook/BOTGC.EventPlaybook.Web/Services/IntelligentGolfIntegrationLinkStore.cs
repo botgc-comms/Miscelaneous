@@ -40,6 +40,12 @@ public interface IIntelligentGolfIntegrationLinkStore
         string competitionDate,
         DateTimeOffset linkedAtUtc,
         CancellationToken cancellationToken);
+    Task SaveCompetitionPublicationAsync(
+        string eventId,
+        int intelligentGolfCompetitionId,
+        string imageFileName,
+        DateTimeOffset publishedAtUtc,
+        CancellationToken cancellationToken);
     Task ClearDiaryAsync(
         string eventId,
         int expectedIntelligentGolfEventId,
@@ -218,10 +224,17 @@ public sealed class IntelligentGolfIntegrationLinkStore : IIntelligentGolfIntegr
                 document.Events[key] = link;
             }
 
+            var competitionChanged = link.IntelligentGolfCompetitionId != intelligentGolfCompetitionId ||
+                !string.Equals(link.IntelligentGolfCompetitionDate, competitionDate, StringComparison.Ordinal);
             link.IntelligentGolfCompetitionId = intelligentGolfCompetitionId;
             link.IntelligentGolfCompetitionName = competitionName.Trim();
             link.IntelligentGolfCompetitionDate = competitionDate;
             link.CompetitionLinkedAtUtc = linkedAtUtc;
+            if (competitionChanged)
+            {
+                link.CompetitionPublishedAtUtc = null;
+                link.CompetitionImageFileName = null;
+            }
             link.UpdatedAtUtc = DateTimeOffset.UtcNow;
             await SaveAsync(document, cancellationToken);
             return Clone(link);
@@ -231,6 +244,24 @@ public sealed class IntelligentGolfIntegrationLinkStore : IIntelligentGolfIntegr
             _gate.Release();
         }
     }
+
+    public Task SaveCompetitionPublicationAsync(
+        string eventId,
+        int intelligentGolfCompetitionId,
+        string imageFileName,
+        DateTimeOffset publishedAtUtc,
+        CancellationToken cancellationToken) =>
+        UpdateAsync(eventId, link =>
+        {
+            if (link.IntelligentGolfCompetitionId != intelligentGolfCompetitionId)
+                throw new InvalidOperationException(
+                    $"This event is no longer linked to Intelligent Golf competition {intelligentGolfCompetitionId}. Refresh the event before trying again.");
+            link.CompetitionImageFileName = imageFileName.Trim();
+            link.CompetitionPublishedAtUtc = publishedAtUtc;
+            link.LastError = null;
+            link.LastErrorStage = null;
+            link.LastErrorStatusCode = null;
+        }, cancellationToken);
 
     public async Task ClearDiaryAsync(
         string eventId,
@@ -519,6 +550,8 @@ public sealed class IntelligentGolfIntegrationLinkStore : IIntelligentGolfIntegr
         IntelligentGolfCompetitionName = link.IntelligentGolfCompetitionName,
         IntelligentGolfCompetitionDate = link.IntelligentGolfCompetitionDate,
         CompetitionLinkedAtUtc = link.CompetitionLinkedAtUtc,
+        CompetitionPublishedAtUtc = link.CompetitionPublishedAtUtc,
+        CompetitionImageFileName = link.CompetitionImageFileName,
         LastEventFingerprint = link.LastEventFingerprint,
         LastPlannerNoteFingerprint = link.LastPlannerNoteFingerprint,
         EventSynchronisedAtUtc = link.EventSynchronisedAtUtc,
@@ -547,7 +580,7 @@ public sealed class IntelligentGolfIntegrationLinkStore : IIntelligentGolfIntegr
 
     private sealed class LinkDocument
     {
-        public int Version { get; init; } = 3;
+        public int Version { get; init; } = 4;
         public Dictionary<string, IntelligentGolfIntegrationLink> Events { get; init; } =
             new(StringComparer.OrdinalIgnoreCase);
     }
