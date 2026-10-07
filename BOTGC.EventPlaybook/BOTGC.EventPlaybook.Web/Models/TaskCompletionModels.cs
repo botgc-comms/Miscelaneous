@@ -70,6 +70,11 @@ public sealed class CompleteTaskRequest
     public string? Notes { get; init; }
 }
 
+public sealed class RetireEventTasksRequest
+{
+    public string? Reason { get; init; }
+}
+
 public sealed class ReassignEmailTaskRequest
 {
     public required string AssignmentKind { get; init; }

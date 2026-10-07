@@ -226,6 +226,22 @@ public sealed class TaskEmailAlertDispatcher(
             foreach (var task in schedule.Tasks)
             {
                 if (task.ExpiresOn is { } expiresOn && londonDate > expiresOn) continue;
+                if (!task.AllowAfterEvent && task.ExpiresOn is null &&
+                    DateOnly.TryParseExact(
+                        task.EventDate,
+                        "yyyy-MM-dd",
+                        CultureInfo.InvariantCulture,
+                        DateTimeStyles.None,
+                        out var eventDate) &&
+                    londonDate > eventDate &&
+                    task.DueDate <= eventDate)
+                {
+                    // Defensive handling for schedules written before the
+                    // browser supplied an explicit event-day cutoff. Genuine
+                    // retrospective work has a due date after the event and is
+                    // deliberately allowed to continue while the event is open.
+                    continue;
+                }
                 var daysUntilDue = task.DueDate.DayNumber - londonDate.DayNumber;
                 if (daysUntilDue is not (2 or 0) && daysUntilDue >= 0) continue;
 
@@ -279,7 +295,7 @@ public sealed class TaskEmailAlertDispatcher(
                         task.TaskId);
                     continue;
                 }
-                if (completion.CompletedAtUtc is not null && task.CanCompleteFromLink) continue;
+                if (completion.CompletedAtUtc is not null || completion.NotApplicableAtUtc is not null) continue;
 
                 candidateTaskCount++;
                 if (ownerEmail is not null)
@@ -631,6 +647,7 @@ public static class TaskAlertScheduleReader
             Notes = ReadString(element, "notes", 2_000),
             DueDate = dueDate,
             ExpiresOn = expiresOn,
+            AllowAfterEvent = ReadBoolean(element, "allowAfterEvent", defaultValue: false),
             AssigneeName = ReadString(element, "assigneeName", 300),
             AssigneeEmail = ReadString(element, "assigneeEmail", 500),
             OrganiserName = ReadString(element, "organiserName", 300),

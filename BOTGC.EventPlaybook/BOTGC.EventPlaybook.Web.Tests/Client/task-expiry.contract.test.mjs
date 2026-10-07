@@ -41,10 +41,11 @@ test('the browser evaluates expiry using the Europe/London calendar date', () =>
 });
 
 test('expiry is computed only after the configured milestone and never expires completed work', () => {
-  const getTaskExpiryDate = compileFunction('getTaskExpiryDate', {
-    getDueDate: (code) => code === 'DT' ? '2026-09-11' : null
-  });
   const isValidIsoDate = value => /^\d{4}-\d{2}-\d{2}$/.test(String(value ?? ''));
+  const getTaskExpiryDate = compileFunction('getTaskExpiryDate', {
+    getDueDate: (code) => code === 'DT' ? '2026-09-11' : null,
+    isValidIsoDate
+  });
   const isTaskExpired = compileFunction('isTaskExpired', {
     getTaskExpiryDate,
     isValidIsoDate,
@@ -57,6 +58,20 @@ test('expiry is computed only after the configured milestone and never expires c
   assert.equal(isTaskExpired(item, {}, { completed: false }, '2026-09-12'), false);
   assert.equal(isTaskExpired(item, {}, { completed: true }), false);
   assert.equal(isTaskExpired({}, {}, { completed: false }), false);
+});
+
+test('ordinary event work defaults to the event-day cutoff while genuine follow-up remains open', () => {
+  const getTaskExpiryDate = compileFunction('getTaskExpiryDate', {
+    getDueDate: () => null,
+    isValidIsoDate: value => /^\d{4}-\d{2}-\d{2}$/.test(String(value ?? ''))
+  });
+  const event = { eventDate: '2026-10-06' };
+
+  assert.equal(getTaskExpiryDate({ deadlineCode: 'B1' }, event), '2026-10-06');
+  assert.equal(getTaskExpiryDate({ deadlineCode: 'DT' }, event), '2026-10-06');
+  assert.equal(getTaskExpiryDate({ deadlineCode: 'A1' }, event), null);
+  assert.equal(getTaskExpiryDate({ deadlineCode: 'A2' }, event), null);
+  assert.equal(getTaskExpiryDate({ deadlineCode: 'DT', staffBriefing: { phase: 'after-event' } }, event), null);
 });
 
 test('expiry blocks completion and gives the user a specific status', () => {

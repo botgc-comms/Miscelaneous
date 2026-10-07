@@ -295,6 +295,8 @@
     administratorLoginConfigured: false,
     displayName: ''
   };
+  let taskActionJustificationRequest = null;
+  let taskActionReturnFocus = null;
   const requestedView = new URLSearchParams(window.location.search).get('view');
   if (['dashboard', 'tasks', 'finances', 'briefing', 'catalogue', 'artwork', 'cancellation', 'retrospective', 'series', 'admin', 'plugins', 'references', 'directory'].includes(requestedView)) {
     state.activeView = requestedView;
@@ -1575,6 +1577,7 @@
             notes: String(task.notes ?? ''),
             dueDate: String(task.dueDate ?? ''),
             expiresOn: String(task.expiresOn ?? ''),
+            allowAfterEvent: task.allowAfterEvent === true,
             assigneeName: String(task.assigneeName ?? ''),
             assigneeEmail: String(task.assigneeEmail ?? ''),
             organiserName: String(task.organiserName ?? ''),
@@ -1651,6 +1654,7 @@
             notes: String(task.state.notes ?? '').trim(),
             dueDate: task.dueDate,
             expiresOn: task.expiresOn ?? '',
+            allowAfterEvent: ['A1', 'A2'].includes(String(task.item.deadlineCode ?? '').toUpperCase()) || task.item.staffBriefing?.phase === 'after-event',
             assigneeName: assignee.name || task.state.assignee || '',
             assigneeEmail: assignee.email || legacyTaskAssigneeEmail(task.state, assigneeReference) || '',
             organiserName: organiser.name || event.organiser || '',
@@ -3734,8 +3738,13 @@
     if (!record.notApplicableAtUtc) return false;
     if (taskState.notRelevant !== true) markTaskNotRelevant(event, item, true);
     taskState.notRelevantAt = record.notApplicableAtUtc;
-    taskState.notRelevantSource = record.notApplicableViaEmailAccess === true ? 'email-access' : 'completion-link';
-    if (String(record.notApplicableNotes ?? '').trim()) taskState.notes = record.notApplicableNotes.trim();
+    const closedWithEvent = taskState.notRelevantSource === 'event-closed';
+    if (!closedWithEvent) {
+      taskState.notRelevantSource = record.notApplicableViaEmailAccess === true ? 'email-access' : 'completion-link';
+      taskState.notRelevantBy = record.notApplicableViaEmailAccess === true ? 'Email task recipient' : 'Task link recipient';
+      taskState.notRelevantReason = String(record.notApplicableNotes ?? '').trim() || null;
+    }
+    if (taskState.notRelevantReason) taskState.notes = taskState.notRelevantReason;
     return true;
   }
 
@@ -3798,7 +3807,7 @@
     taskState.completionToken = crypto.randomUUID();
   }
 
-  function markTaskComplete(event, item, completed) {
+  function markTaskComplete(event, item, completed, audit = {}) {
     const taskState = ensureTaskState(event, item.id);
     if (taskState.notRelevant === true) return false;
     if (item.completionMode === 'event-status-decision' ||
@@ -3811,6 +3820,8 @@
     taskState.completed = Boolean(completed);
     taskState.status = completed ? 'completed' : 'open';
     taskState.completedAt = completed ? new Date().toISOString() : null;
+    taskState.completedBy = completed ? String(audit.actor ?? '').trim() || null : null;
+    taskState.completionJustification = completed ? String(audit.justification ?? '').trim() || null : null;
     if (review) {
       taskState.reviewSignature = completed ? review.signature : null;
       if (completed) taskState.reviewInvalidatedAt = null;
@@ -3818,7 +3829,7 @@
     return true;
   }
 
-  function markTaskNotRelevant(event, item, notRelevant) {
+  function markTaskNotRelevant(event, item, notRelevant, audit = {}) {
     const taskState = ensureTaskState(event, item.id);
     const excluded = Boolean(notRelevant);
     if (taskState.notRelevant === excluded) return true;
@@ -3827,6 +3838,9 @@
     delete taskState.reviewCompletionProvenance;
     taskState.notRelevant = excluded;
     taskState.notRelevantAt = excluded ? new Date().toISOString() : null;
+    taskState.notRelevantBy = excluded ? String(audit.actor ?? '').trim() || null : null;
+    taskState.notRelevantReason = excluded ? String(audit.justification ?? '').trim() || null : null;
+    taskState.notRelevantSource = excluded ? String(audit.source ?? '').trim() || null : null;
     taskState.completed = false;
     taskState.completedAt = null;
     taskState.reviewSignature = null;
@@ -4116,7 +4130,15 @@
 
   function getTaskExpiryDate(item, event) {
     const code = String(item?.expiresAfterDeadlineCode ?? '').trim();
-    return code ? getDueDate(code, event) : null;
+    if (code) return getDueDate(code, event);
+
+    // Post-event work remains actionable while the event is open. Everything
+    // else naturally stops after the event date even when the template did not
+    // declare an explicit cutoff, preventing obsolete operational work from
+    // becoming an indefinitely overdue dashboard item.
+    const deadlineCode = String(item?.deadlineCode ?? '').trim().toUpperCase();
+    if (['A1', 'A2'].includes(deadlineCode) || item?.staffBriefing?.phase === 'after-event') return null;
+    return isValidIsoDate(event?.eventDate) ? event.eventDate : null;
   }
 
   function currentClubIsoDate(date = new Date()) {
@@ -5764,6 +5786,7 @@
       <dialog id="event-summary-dialog" class="modal event-summary-dialog"><div id="event-summary-content"></div></dialog>
       <dialog id="event-close-review-dialog" class="modal event-close-review-dialog"><div id="event-close-review-content"></div></dialog>
       ${renderTaskNoteDialog()}
+      ${renderTaskActionJustificationDialog()}
       ${renderEventStatusDialog(event)}
       ${renderIntelligentGolfPlannerMatchDialog(event)}
       ${renderIntelligentGolfPlannerLinkDialog(event)}
@@ -7424,6 +7447,19 @@
     </dialog>`;
   }
 
+  function renderTaskActionJustificationDialog() {
+    return `<dialog id="task-action-justification-dialog" class="plugin-dialog task-action-justification-dialog" aria-labelledby="task-action-justification-title">
+      <form id="task-action-justification-form">
+        <header class="modal-heading"><div><span class="eyebrow">Acting for another owner</span><h2 id="task-action-justification-title">Explain this task update</h2><p id="task-action-justification-intro">Record why you are updating work assigned to someone else.</p></div><button class="icon-button" type="button" data-cancel-task-action-justification aria-label="Close">×</button></header>
+        <div class="plugin-dialog-body">
+          <div class="task-action-justification-context"><span id="task-action-justification-event"></span><strong id="task-action-justification-tasks"></strong><small id="task-action-justification-owners"></small></div>
+          <label class="wide"><span>Reason <em>required</em></span><textarea id="task-action-justification-reason" rows="6" maxlength="1000" required placeholder="For example: I confirmed this directly with the task owner and completed it on their behalf."></textarea><small>This explanation is retained on the event task record so the override is transparent.</small></label>
+        </div>
+        <footer class="modal-actions"><span></span><button class="button button-secondary" type="button" data-cancel-task-action-justification>Cancel</button><button id="task-action-justification-submit" class="button button-primary" type="submit">Continue</button></footer>
+      </form>
+    </dialog>`;
+  }
+
   function openTaskNoteDialog(trigger) {
     const event = state.events.find(candidate => candidate.id === trigger.dataset.taskNoteEventId);
     const indexed = itemIndex.get(trigger.dataset.taskNoteAction);
@@ -7606,6 +7642,82 @@
     }
     const assigned = String(task.state.assignee ?? '').trim().toLocaleLowerCase();
     return Boolean(assigned && (assigned === person.name.toLocaleLowerCase() || assigned === person.email?.toLocaleLowerCase()));
+  }
+
+  function currentTaskActor(event) {
+    const sessionName = String(accessSession.displayName ?? '').trim();
+    const sessionContact = (state.contacts ?? []).find(contact => contact.active !== false && (
+      contact.name?.toLocaleLowerCase() === sessionName.toLocaleLowerCase() ||
+      contact.email?.toLocaleLowerCase() === sessionName.toLocaleLowerCase()
+    ));
+    const loginContacts = (state.contacts ?? []).filter(contact => contact.active !== false && contact.canLogin === true);
+    const sharedTesterSession = !sessionName || sessionName === 'Development tester';
+    const contact = sessionContact ?? (sharedTesterSession && loginContacts.length === 1 ? loginContacts[0] : null);
+    return {
+      name: contact?.name || sessionName || 'Current user',
+      contact
+    };
+  }
+
+  function taskOwnedByActor(event, task, actor) {
+    const reference = taskAssignmentReference(task.state);
+    const legacyAssignee = String(task.state?.assignee ?? '').trim();
+    if (!reference && !legacyAssignee) return true;
+    if (actor.contact && taskBelongsToPerson(task, event, actor.contact)) return true;
+    const recipient = assignmentRecipient(reference ?? legacyAssignee, event);
+    const actorName = String(actor.name ?? '').trim().toLocaleLowerCase();
+    return Boolean(actorName && String(recipient.name ?? legacyAssignee).trim().toLocaleLowerCase() === actorName);
+  }
+
+  function settleTaskActionJustification(result) {
+    const request = taskActionJustificationRequest;
+    taskActionJustificationRequest = null;
+    if (request) request.resolve(result);
+  }
+
+  function requestTaskActionJustification(event, tasks, action, trigger = document.activeElement) {
+    const actor = currentTaskActor(event);
+    const foreignTasks = tasks.filter(task => !taskOwnedByActor(event, task, actor));
+    if (!foreignTasks.length) return Promise.resolve({ actor: actor.name, justification: '' });
+
+    const dialog = document.getElementById('task-action-justification-dialog');
+    if (!dialog) return Promise.resolve(null);
+    if (taskActionJustificationRequest) settleTaskActionJustification(null);
+    taskActionReturnFocus = trigger instanceof HTMLElement ? trigger : null;
+    const actionLabel = action === 'not-relevant' ? 'marking as not relevant' : 'completing';
+    const owners = [...new Set(foreignTasks.map(task => assignmentDisplay(taskAssignmentReference(task.state), task.state.assignee || 'Unassigned')).filter(Boolean))];
+    document.getElementById('task-action-justification-title').textContent = action === 'not-relevant'
+      ? 'Explain why this work is not relevant'
+      : 'Explain why you are completing this work';
+    document.getElementById('task-action-justification-intro').textContent = `You are ${actionLabel} ${foreignTasks.length === 1 ? 'a task' : `${foreignTasks.length} tasks`} assigned to someone else. Anyone may make this update, but a reason is required.`;
+    document.getElementById('task-action-justification-event').textContent = event.name || 'Event';
+    document.getElementById('task-action-justification-tasks').textContent = foreignTasks.length === 1
+      ? foreignTasks[0].item.title
+      : `${foreignTasks.length} selected tasks`;
+    document.getElementById('task-action-justification-owners').textContent = `Assigned to: ${owners.join(', ') || 'another owner'} · Acting as: ${actor.name}`;
+    document.getElementById('task-action-justification-reason').value = '';
+    document.getElementById('task-action-justification-submit').textContent = action === 'not-relevant' ? 'Mark not relevant' : 'Complete task';
+    dialog.showModal();
+    requestAnimationFrame(() => document.getElementById('task-action-justification-reason')?.focus());
+    return new Promise(resolve => {
+      taskActionJustificationRequest = { resolve, actor: actor.name };
+    });
+  }
+
+  async function completeTaskForCurrentActor(event, task, completed, trigger = document.activeElement) {
+    const audit = completed
+      ? await requestTaskActionJustification(event, [task], 'complete', trigger)
+      : { actor: currentTaskActor(event).name, justification: '' };
+    if (!audit) return false;
+    return markTaskComplete(event, task.item, completed, audit);
+  }
+
+  async function setTaskNotRelevantForCurrentActor(event, task, notRelevant, trigger = document.activeElement) {
+    const audit = notRelevant
+      ? await requestTaskActionJustification(event, [task], 'not-relevant', trigger)
+      : { actor: currentTaskActor(event).name, justification: '' };
+    if (!audit) return false;
+    return markTaskNotRelevant(event, task.item, notRelevant, audit);
   }
 
   function taskDaysUntilDue(task) {
@@ -8857,6 +8969,78 @@
     event.retrospective[key] = value;
     event.retrospective.contentUpdatedAt = new Date().toISOString();
     return true;
+  }
+
+  function isTerminalEvent(event) {
+    if (!event) return false;
+    const lifecycle = normaliseEventLifecycle(event);
+    return Boolean(event.closedAt) || lifecycle.status === 'completed';
+  }
+
+  function retireOutstandingEventTasks(event, reason = 'The event has been closed or completed.') {
+    if (!event || isEventIdea(event)) return 0;
+    event.taskState ??= {};
+    const tasksById = new Map(getActiveTasks(event, { includeNotRelevant: true }).map(task => [task.item.id, task.item]));
+    for (const taskId of Object.keys(event.taskState)) {
+      const indexed = itemIndex.get(taskId);
+      if (indexed?.item?.type === 'task') tasksById.set(taskId, indexed.item);
+    }
+    let retired = 0;
+    for (const item of tasksById.values()) {
+      const taskState = ensureTaskState(event, item.id);
+      if (taskState.completed || taskState.notRelevant) continue;
+      if (markTaskNotRelevant(event, item, true, {
+        actor: 'Event Playbook',
+        justification: reason,
+        source: 'event-closed'
+      })) retired += 1;
+    }
+    return retired;
+  }
+
+  function restoreTasksRetiredWithEvent(event) {
+    if (!event?.taskState) return 0;
+    const taskItems = new Map(getActiveTasks(event, { includeNotRelevant: true }).map(task => [task.item.id, task.item]));
+    let restored = 0;
+    for (const [taskId, taskState] of Object.entries(event.taskState)) {
+      if (taskState?.notRelevant !== true || taskState.notRelevantSource !== 'event-closed') continue;
+      const indexed = itemIndex.get(taskId);
+      const item = taskItems.get(taskId) ?? (indexed?.item?.type === 'task' ? indexed.item : null);
+      if (!item) continue;
+      if (markTaskNotRelevant(event, item, false, { source: 'event-reopened' })) restored += 1;
+    }
+    return restored;
+  }
+
+  async function retireRegisteredEventTasks(event, reason) {
+    if (!event?.id) return;
+    const response = await fetch(`/api/tasks/events/${encodeURIComponent(event.id)}/retire`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reason })
+    });
+    if (!response.ok) {
+      const result = await response.json().catch(() => ({}));
+      throw new Error(result.error || result.detail || 'The event task links could not be retired.');
+    }
+    event.taskLinksRetiredAt = new Date().toISOString();
+  }
+
+  async function reconcileTerminalEventTasks() {
+    const terminalEvents = (state.events ?? []).filter(isTerminalEvent);
+    let changed = false;
+    for (const event of terminalEvents) {
+      if (retireOutstandingEventTasks(event) > 0) changed = true;
+      if (!event.taskLinksRetiredAt) {
+        try {
+          await retireRegisteredEventTasks(event, 'The event has been closed or completed.');
+          changed = true;
+        } catch (error) {
+          console.warn(`Could not retire task links for ${event.name || event.id}.`, error);
+        }
+      }
+    }
+    if (changed) saveState();
   }
 
   function retrospectivePlannerContexts(event) {
@@ -10732,8 +10916,14 @@
       delete event.milestoneDates.CX;
     }
     if (nextStatus === 'confirmed') event.confirmedAt = now;
-    if (nextStatus === 'completed') event.closedAt ??= now;
-    else if (event.closedAt) event.closedAt = null;
+    if (nextStatus === 'completed') {
+      event.closedAt ??= now;
+      retireOutstandingEventTasks(event, 'The event was marked completed.');
+    } else if (event.closedAt) {
+      event.closedAt = null;
+      delete event.taskLinksRetiredAt;
+      restoreTasksRetiredWithEvent(event);
+    }
 
     if (statusChanged && nextStatus === 'cancelled' && isRepeatingSeries(event)) {
       event.recurrence.autoPublish = false;
@@ -10782,7 +10972,15 @@
       target.lifecycle.changedBy = target.organiser || target.lifecycle.decisionOwner;
       target.lifecycle.history.push({ status: 'completed', changedAt: target.closedAt, changedBy: target.lifecycle.changedBy, reason: 'Event closed from the catalogue.' });
     }
+    retireOutstandingEventTasks(target, 'The event was closed from the catalogue.');
     saveState();
+    await flushSharedState();
+    try {
+      await retireRegisteredEventTasks(target, 'The event was closed from the catalogue.');
+      saveState();
+    } catch (error) {
+      console.warn('The event closed, but its previously issued task links could not yet be retired.', error);
+    }
     document.getElementById('event-summary-dialog')?.close();
     render();
     const dialog = document.getElementById('new-event-dialog');
@@ -10804,6 +11002,8 @@
       target.lifecycle.reason = 'Event reopened for further planning.';
       target.lifecycle.history.push({ status: 'provisional', changedAt: target.reopenedAt, changedBy: target.organiser || target.lifecycle.decisionOwner, reason: target.lifecycle.reason });
     }
+    delete target.taskLinksRetiredAt;
+    restoreTasksRetiredWithEvent(target);
     state.activeEventId = target.id;
     state.activeView = 'module:start';
     saveState();
@@ -11628,6 +11828,18 @@
         }
         return;
       }
+      if (normaliseEventLifecycle(event).status === 'completed') {
+        try {
+          await retireRegisteredEventTasks(event, 'The event was marked completed.');
+          saveState();
+        } catch (error) {
+          console.warn('The event completed, but its previously issued task links could not yet be retired.', error);
+          if (saveError) {
+            saveError.textContent = 'The event is complete and will no longer appear in dashboards or chasers. Previously issued task links could not yet be retired and will be retried automatically.';
+            saveError.classList.remove('hidden');
+          }
+        }
+      }
       if (isEventIdea(event)) {
         state.activeEventId = null;
         state.activeView = 'catalogue';
@@ -11804,11 +12016,12 @@
     });
 
     document.querySelectorAll('[data-task-complete]').forEach(element => {
-      element.addEventListener('change', () => {
+      element.addEventListener('change', async () => {
         const event = getActiveEvent();
         if (!event) return;
         const indexed = itemIndex.get(element.dataset.taskComplete);
-        if (!indexed || markTaskComplete(event, indexed.item, element.checked) === false) {
+        const task = indexed ? getActiveTasks(event, { includeNotRelevant: true }).find(candidate => candidate.item.id === indexed.item.id) : null;
+        if (!indexed || !task || await completeTaskForCurrentActor(event, task, element.checked, element) === false) {
           render();
           return;
         }
@@ -11844,11 +12057,12 @@
     if (document.querySelector('[data-task-select]')) updateTaskBoardSelectionUi();
 
     document.querySelectorAll('[data-task-completion-action]').forEach(element => {
-      element.addEventListener('click', () => {
+      element.addEventListener('click', async () => {
         const event = getActiveEvent();
         const indexed = itemIndex.get(element.dataset.taskCompletionAction);
         const completed = element.dataset.taskTargetCompleted === 'true';
-        if (!event || !indexed || markTaskComplete(event, indexed.item, completed) === false) {
+        const task = event && indexed ? getActiveTasks(event, { includeNotRelevant: true }).find(candidate => candidate.item.id === indexed.item.id) : null;
+        if (!event || !indexed || !task || await completeTaskForCurrentActor(event, task, completed, element) === false) {
           render();
           return;
         }
@@ -11858,17 +12072,23 @@
       });
     });
 
-    document.querySelector('[data-task-complete-selected]')?.addEventListener('click', () => {
+    document.querySelector('[data-task-complete-selected]')?.addEventListener('click', async eventArgs => {
       const event = getActiveEvent();
       if (!event || taskBoardSelection.eventId !== event.id || !taskBoardSelection.taskIds.size) return;
       const tasksById = new Map(getActiveTasks(event).map(task => [task.item.id, task]));
+      const selectedTasks = [...taskBoardSelection.taskIds].map(taskId => tasksById.get(taskId)).filter(task => task && !task.state.completed);
+      const audit = await requestTaskActionJustification(event, selectedTasks, 'complete', eventArgs.currentTarget);
+      if (!audit) {
+        render();
+        return;
+      }
       let completedCount = 0;
       let skippedCount = 0;
 
       for (const taskId of taskBoardSelection.taskIds) {
         const task = tasksById.get(taskId);
         if (!task || task.state.completed) continue;
-        if (markTaskComplete(event, task.item, true) === false) skippedCount += 1;
+        if (markTaskComplete(event, task.item, true, audit) === false) skippedCount += 1;
         else completedCount += 1;
       }
 
@@ -11879,13 +12099,14 @@
     });
 
     document.querySelectorAll('[data-task-confirm]').forEach(element => {
-      element.addEventListener('click', () => {
+      element.addEventListener('click', async () => {
         const eventId = element.dataset.taskConfirmEventId;
         const event = eventId
           ? state.events.find(candidate => candidate.id === eventId)
           : getActiveEvent();
         const indexed = itemIndex.get(element.dataset.taskConfirm);
-        if (!event || !indexed || markTaskComplete(event, indexed.item, true) === false) {
+        const task = event && indexed ? getActiveTasks(event, { includeNotRelevant: true }).find(candidate => candidate.item.id === indexed.item.id) : null;
+        if (!event || !indexed || !task || await completeTaskForCurrentActor(event, task, true, element) === false) {
           render();
           return;
         }
@@ -11918,13 +12139,13 @@
     });
 
     document.querySelectorAll('[data-task-not-relevant]').forEach(element => {
-      element.addEventListener('change', () => {
+      element.addEventListener('change', async () => {
         const eventId = element.dataset.taskNotRelevantEventId;
         const targetEvent = state.events.find(candidate => candidate.id === eventId) ?? getActiveEvent();
         if (!targetEvent) return;
         const task = getActiveTasks(targetEvent, { includeNotRelevant: true })
           .find(candidate => candidate.item.id === element.dataset.taskNotRelevant);
-        if (!task || markTaskNotRelevant(targetEvent, task.item, element.checked) === false) {
+        if (!task || await setTaskNotRelevantForCurrentActor(targetEvent, task, element.checked, element) === false) {
           render();
           return;
         }
@@ -11962,6 +12183,35 @@
       taskNoteDialog?.close();
       render();
       requestAnimationFrame(() => document.querySelector(`[data-task-note-action="${CSS.escape(taskId)}"][data-task-note-event-id="${CSS.escape(eventId)}"]`)?.focus());
+    });
+
+    const taskActionDialog = document.getElementById('task-action-justification-dialog');
+    document.querySelectorAll('[data-cancel-task-action-justification]').forEach(element => {
+      element.addEventListener('click', () => {
+        settleTaskActionJustification(null);
+        taskActionDialog?.close();
+      });
+    });
+    taskActionDialog?.addEventListener('cancel', eventArgs => {
+      eventArgs.preventDefault();
+      settleTaskActionJustification(null);
+      taskActionDialog.close();
+    });
+    taskActionDialog?.addEventListener('close', () => {
+      settleTaskActionJustification(null);
+      if (taskActionReturnFocus?.isConnected) taskActionReturnFocus.focus();
+      taskActionReturnFocus = null;
+    });
+    document.getElementById('task-action-justification-form')?.addEventListener('submit', eventArgs => {
+      eventArgs.preventDefault();
+      const reason = document.getElementById('task-action-justification-reason')?.value.trim() ?? '';
+      if (!reason || !taskActionJustificationRequest) {
+        document.getElementById('task-action-justification-reason')?.focus();
+        return;
+      }
+      const result = { actor: taskActionJustificationRequest.actor, justification: reason };
+      settleTaskActionJustification(result);
+      taskActionDialog?.close();
     });
 
     document.querySelectorAll('[data-save-advisory]').forEach(element => {
@@ -12125,12 +12375,12 @@
     });
 
     document.querySelectorAll('[data-dashboard-task-complete]').forEach(element => {
-      element.addEventListener('change', () => {
+      element.addEventListener('change', async () => {
         const event = state.events.find(candidate => candidate.id === element.dataset.dashboardEventId);
         if (!event) return;
         const task = getActiveTasks(event).find(candidate => candidate.item.id === element.dataset.dashboardTaskComplete);
         if (!task) return;
-        if (markTaskComplete(event, task.item, element.checked) === false) {
+        if (await completeTaskForCurrentActor(event, task, element.checked, element) === false) {
           render();
           return;
         }
@@ -12164,13 +12414,13 @@
     });
 
     document.querySelectorAll('[data-task-restore-not-relevant]').forEach(element => {
-      element.addEventListener('click', () => {
+      element.addEventListener('click', async () => {
         const eventId = element.dataset.taskNotRelevantEventId;
         const targetEvent = state.events.find(candidate => candidate.id === eventId) ?? getActiveEvent();
         if (!targetEvent) return;
         const task = getActiveTasks(targetEvent, { includeNotRelevant: true })
           .find(candidate => candidate.item.id === element.dataset.taskRestoreNotRelevant);
-        if (!task || markTaskNotRelevant(targetEvent, task.item, false) === false) return;
+        if (!task || await setTaskNotRelevantForCurrentActor(targetEvent, task, false, element) === false) return;
         saveState();
         render();
       });
@@ -13347,7 +13597,7 @@
   function exportEventPlan() {
     const event = getActiveEvent();
     if (!event) return;
-    const tasks = getActiveTasks(event).map(task => {
+    const tasks = getActiveTasks(event, { includeNotRelevant: true }).map(task => {
       const assignment = taskAssignmentReference(task.state);
       const recipient = assignmentRecipient(assignment ?? task.state.assignee, event);
       return {
@@ -13362,7 +13612,12 @@
         assignee: assignmentDisplay(assignment, task.state.assignee ?? '') || null,
         recipient: recipient.name || recipient.email ? recipient : null,
         completed: Boolean(task.state.completed),
-        status: task.state.completed ? 'completed' : task.expired ? 'expired' : 'open',
+        status: task.state.completed ? 'completed' : task.state.notRelevant ? 'not-relevant' : task.expired ? 'expired' : 'open',
+        completedBy: task.state.completedBy ?? null,
+        completionJustification: task.state.completionJustification ?? null,
+        notRelevantBy: task.state.notRelevantBy ?? null,
+        notRelevantReason: task.state.notRelevantReason ?? null,
+        notRelevantSource: task.state.notRelevantSource ?? null,
         notes: task.state.notes ?? null
       };
     });
@@ -13403,9 +13658,9 @@
     const event = getActiveEvent();
     if (!event) return;
     const rows = [
-      ['Event', 'Module', 'Task', 'Deadline code', 'Due date', 'Expires after', 'Assigned to', 'Status', 'Notes']
+      ['Event', 'Module', 'Task', 'Deadline code', 'Due date', 'Expires after', 'Assigned to', 'Status', 'Actioned by', 'Override reason', 'Notes']
     ];
-    for (const task of getActiveTasks(event)) {
+    for (const task of getActiveTasks(event, { includeNotRelevant: true })) {
       rows.push([
         event.name,
         task.module.title,
@@ -13414,7 +13669,9 @@
         task.dueDate ?? '',
         task.expiresOn ?? '',
         task.state.assignee ?? '',
-        task.state.completed ? 'Complete' : task.expired ? 'Expired' : 'Open',
+        task.state.completed ? 'Complete' : task.state.notRelevant ? 'Not relevant' : task.expired ? 'Expired' : 'Open',
+        task.state.completed ? task.state.completedBy ?? '' : task.state.notRelevantBy ?? '',
+        task.state.completed ? task.state.completionJustification ?? '' : task.state.notRelevantReason ?? '',
         task.state.notes ?? ''
       ]);
     }
@@ -13505,6 +13762,7 @@
       migrateCompetitionFormatStateV40();
       migrateAdmissionFeeRouteStateV41();
       initialiseOperationalState();
+      await reconcileTerminalEventTasks();
       const params = new URLSearchParams(location.search);
       const requestedView = params.get('view');
       if (requestedView && ADMIN_VIEWS.has(requestedView) && !accessSession.isAdmin) {

@@ -2825,6 +2825,16 @@ app.MapGet("/api/tasks/events/{eventId}/completions", async (
     return Results.Ok(records);
 });
 
+app.MapPost("/api/tasks/events/{eventId}/retire", async (
+    string eventId,
+    RetireEventTasksRequest request,
+    ITaskCompletionRegistry registry,
+    CancellationToken cancellationToken) =>
+{
+    var retired = await registry.RetireEventAsync(eventId, request.Reason, cancellationToken);
+    return Results.Ok(new { eventId, retired });
+});
+
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
 app.Run();

@@ -57,6 +57,8 @@ public sealed class ScheduledTaskAlert
 
     public DateOnly? ExpiresOn { get; init; }
 
+    public bool AllowAfterEvent { get; init; }
+
     public string? AssigneeName { get; init; }
 
     public string? AssigneeEmail { get; init; }

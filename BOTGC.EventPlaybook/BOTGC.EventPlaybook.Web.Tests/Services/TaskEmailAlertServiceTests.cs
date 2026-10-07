@@ -181,6 +181,26 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task RunOnceAsync_DefensivelySkipsOldOperationalTasksForPastEventsButKeepsFollowUpWork()
+    {
+        var sender = new RecordingEmailSender();
+        var registry = new RecordingCompletionRegistry();
+        var dispatcher = CreateDispatcher(
+            State(
+                Alert("old-setup", "Set up the room", "2026-09-09", "alice@example.com", "Alice", null, eventDate: "2026-09-10"),
+                Alert("follow-up", "Complete the retrospective", "2026-09-11", "alice@example.com", "Alice", null, eventDate: "2026-09-10", allowAfterEvent: true)),
+            registry,
+            sender);
+
+        var result = await dispatcher.RunOnceAsync(Today, CancellationToken.None);
+
+        Assert.Equal(1, result.CandidateTaskCount);
+        var message = Assert.Single(sender.Messages);
+        Assert.DoesNotContain("Set up the room", message.BodyHtml);
+        Assert.Contains("Complete the retrospective", message.BodyHtml);
+    }
+
+    [Fact]
     public async Task CompletionRegistry_RejectsAnIncompleteTaskAfterItsExpiryDate()
     {
         Directory.CreateDirectory(_contentRoot);
@@ -510,11 +530,13 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
         Guid? token = null,
         bool canCompleteFromLink = true,
         string? expiresOn = null,
-        string? notes = null) =>
+        string? notes = null,
+        string? eventDate = null,
+        bool allowAfterEvent = false) =>
         new(
             "event-1",
             eventName,
-            "2026-09-20",
+            eventDate ?? "2026-09-20",
             taskId,
             title,
             dueDate,
@@ -525,7 +547,8 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
             $"/complete.html?token={(token ?? DeterministicToken(taskId)):D}",
             canCompleteFromLink,
             expiresOn,
-            notes);
+            notes,
+            allowAfterEvent);
 
     private static Guid DeterministicToken(string value)
     {
@@ -565,7 +588,8 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
         string CompletionPath,
         bool CanCompleteFromLink = true,
         string? ExpiresOn = null,
-        string? Notes = null);
+        string? Notes = null,
+        bool AllowAfterEvent = false);
 
     private sealed record PlanningProjection(
         string EventId,
@@ -751,6 +775,22 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
                 _records.Values.Where(record => record.EventId == eventId &&
                     (record.CompletedAtUtc is not null || record.NotApplicableAtUtc is not null)).ToArray());
 
+        public Task<int> RetireEventAsync(
+            string eventId,
+            string? reason,
+            CancellationToken cancellationToken)
+        {
+            var records = _records.Values.Where(record => record.EventId == eventId &&
+                record.CompletedAtUtc is null && record.NotApplicableAtUtc is null).ToArray();
+            foreach (var record in records)
+            {
+                record.NotApplicableAtUtc = DateTimeOffset.UtcNow;
+                record.NotApplicableNotes = reason;
+                record.CanCompleteFromLink = false;
+            }
+            return Task.FromResult(records.Length);
+        }
+
         public Task<TaskEmailWorkspace> RegisterEmailAccessAsync(
             string accessToken,
             IReadOnlyCollection<string> taskTokens,
@@ -906,6 +946,53 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
         Assert.Contains(
             await registry.GetCompletedForEventAsync("event-1", CancellationToken.None),
             record => record.Token == taskToken && record.NotApplicableAtUtc == now);
+    }
+
+    [Fact]
+    public async Task CompletionRegistry_RetiringAnEventClosesOutstandingLinksAndEmailAccess()
+    {
+        Directory.CreateDirectory(_contentRoot);
+        var now = new DateTimeOffset(2026, 10, 7, 9, 0, 0, TimeSpan.Zero);
+        var registry = new TaskCompletionRegistry(
+            new TestWebHostEnvironment(_contentRoot),
+            new FixedTimeProvider(now));
+        var openToken = Guid.NewGuid().ToString("D");
+        var completedToken = Guid.NewGuid().ToString("D");
+        var emailAccessToken = Guid.NewGuid().ToString("D");
+        foreach (var token in new[] { openToken, completedToken })
+        {
+            await registry.RegisterAsync(
+                new RegisterCompletionLinkRequest
+                {
+                    Token = token,
+                    EventId = "closed-event",
+                    EventName = "Closed Event",
+                    TaskId = $"task-{token}",
+                    TaskTitle = "Event task"
+                },
+                CancellationToken.None);
+        }
+        await registry.CompleteAsync(completedToken, "Already done", CancellationToken.None);
+        await registry.RegisterEmailAccessAsync(emailAccessToken, [openToken], CancellationToken.None);
+
+        var retired = await registry.RetireEventAsync(
+            "closed-event",
+            "The event was completed.",
+            CancellationToken.None);
+        var attemptedCompletion = await registry.CompleteFromEmailAccessAsync(
+            emailAccessToken,
+            openToken,
+            "Should not replace the terminal state.",
+            CancellationToken.None);
+
+        Assert.Equal(1, retired);
+        Assert.NotNull(attemptedCompletion);
+        Assert.Null(attemptedCompletion!.CompletedAtUtc);
+        Assert.Equal(now, attemptedCompletion.NotApplicableAtUtc);
+        Assert.Equal("The event was completed.", attemptedCompletion.NotApplicableNotes);
+        Assert.False(attemptedCompletion.CanCompleteFromLink);
+        var completed = await registry.GetAsync(completedToken, CancellationToken.None);
+        Assert.NotNull(completed?.CompletedAtUtc);
     }
 
     private sealed class RecordingActivityStore : IIntegrationActivityStore

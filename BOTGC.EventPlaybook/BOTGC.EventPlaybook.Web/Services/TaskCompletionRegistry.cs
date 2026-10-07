@@ -12,6 +12,7 @@ public interface ITaskCompletionRegistry
     Task<TaskCompletionRecord?> CompleteAsync(string token, string? notes, CancellationToken cancellationToken);
     Task<TaskCompletionRecord?> MarkNotApplicableAsync(string token, string? notes, CancellationToken cancellationToken);
     Task<IReadOnlyList<TaskCompletionRecord>> GetCompletedForEventAsync(string eventId, CancellationToken cancellationToken);
+    Task<int> RetireEventAsync(string eventId, string? reason, CancellationToken cancellationToken);
     Task<TaskEmailWorkspace> RegisterEmailAccessAsync(
         string accessToken,
         IReadOnlyCollection<string> taskTokens,
@@ -86,7 +87,9 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
                 existing.DueDate = request.DueDate;
                 existing.ExpiresOn = request.ExpiresOn;
                 existing.Notes = request.Notes;
-                existing.CanCompleteFromLink = request.CanCompleteFromLink;
+                existing.CanCompleteFromLink = existing.CompletedAtUtc is null && existing.NotApplicableAtUtc is null
+                    ? request.CanCompleteFromLink
+                    : false;
                 if (!request.PreserveLearningInsights)
                 {
                     existing.LearningInsights = request.LearningInsights ?? [];
@@ -151,7 +154,7 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
             }
 
             ApplyExpiry(record);
-            if (!record.CanCompleteFromLink)
+            if (!record.CanCompleteFromLink || record.CompletedAtUtc is not null || record.NotApplicableAtUtc is not null)
             {
                 return record;
             }
@@ -183,7 +186,10 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
             if (record is null) return null;
 
             ApplyExpiry(record);
-            if (!record.CanCompleteFromLink) return record;
+            if (!record.CanCompleteFromLink || record.CompletedAtUtc is not null || record.NotApplicableAtUtc is not null)
+            {
+                return record;
+            }
 
             MarkNotApplicable(record, notes, viaEmailAccess: false);
             await SaveAsync(records, cancellationToken);
@@ -205,6 +211,42 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
                 .Where(x => string.Equals(x.EventId, eventId, StringComparison.OrdinalIgnoreCase) &&
                             (x.CompletedAtUtc is not null || x.NotApplicableAtUtc is not null || x.ReassignedAtUtc is not null))
                 .ToList();
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    public async Task<int> RetireEventAsync(
+        string eventId,
+        string? reason,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(eventId)) return 0;
+
+        await _gate.WaitAsync(cancellationToken);
+        try
+        {
+            var records = await LoadAsync(cancellationToken);
+            var retired = 0;
+            foreach (var record in records.Where(record =>
+                         string.Equals(record.EventId, eventId, StringComparison.OrdinalIgnoreCase) &&
+                         record.CompletedAtUtc is null &&
+                         record.NotApplicableAtUtc is null))
+            {
+                MarkNotApplicable(
+                    record,
+                    string.IsNullOrWhiteSpace(reason)
+                        ? "The event has been closed or completed."
+                        : reason,
+                    viaEmailAccess: false);
+                record.CanCompleteFromLink = false;
+                retired++;
+            }
+
+            if (retired > 0) await SaveAsync(records, cancellationToken);
+            return retired;
         }
         finally
         {
@@ -294,6 +336,10 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
             var records = await LoadAsync(cancellationToken);
             var record = records.SingleOrDefault(item => string.Equals(item.Token, taskToken, StringComparison.Ordinal));
             if (record is null) return null;
+            if (record.CompletedAtUtc is not null || record.NotApplicableAtUtc is not null)
+            {
+                return record;
+            }
 
             record.CompletedAtUtc = _timeProvider.GetUtcNow();
             record.CompletionNotes = string.IsNullOrWhiteSpace(notes) ? null : notes.Trim();
@@ -327,6 +373,10 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
             var records = await LoadAsync(cancellationToken);
             var record = records.SingleOrDefault(item => string.Equals(item.Token, taskToken, StringComparison.Ordinal));
             if (record is null) return null;
+            if (record.CompletedAtUtc is not null || record.NotApplicableAtUtc is not null)
+            {
+                return record;
+            }
 
             MarkNotApplicable(record, notes, viaEmailAccess: true);
             record.CanCompleteFromLink = true;
@@ -355,6 +405,10 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
             var records = await LoadAsync(cancellationToken);
             var record = records.SingleOrDefault(item => string.Equals(item.Token, taskToken, StringComparison.Ordinal));
             if (record is null) return null;
+            if (record.CompletedAtUtc is not null || record.NotApplicableAtUtc is not null)
+            {
+                return record;
+            }
 
             record.AssignmentKind = selection.Kind;
             record.AssignmentId = selection.Id;
