@@ -13,6 +13,7 @@ namespace BOTGC.EventPlaybook.Web.Tests.Services;
 public sealed class PosterPromptVibrancyTests
 {
     private const string ExpectedDirection = "Apply a restrained vibrancy pass";
+    private const string ExpectedStyleAuthority = "SELECTED VISUAL DIRECTION — AUTHORITATIVE";
 
     [Fact]
     public async Task GeneratedCreativeDirectorPromptAlwaysReceivesRestrainedVibrancyFinish()
@@ -33,6 +34,11 @@ public sealed class PosterPromptVibrancyTests
         Assert.Contains("Create an elegant finished event poster.", result.Prompt, StringComparison.Ordinal);
         Assert.Contains(ExpectedDirection, result.Prompt, StringComparison.Ordinal);
         Assert.Contains("avoid neon colour", result.Prompt, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(ExpectedStyleAuthority, result.Prompt, StringComparison.Ordinal);
+        Assert.Contains("foreground characters remain unmistakably hand-drawn", result.Prompt, StringComparison.Ordinal);
+        Assert.True(
+            result.Prompt.IndexOf(ExpectedStyleAuthority, StringComparison.Ordinal) <
+            result.Prompt.IndexOf(ExpectedDirection, StringComparison.Ordinal));
     }
 
     [Fact]
@@ -49,6 +55,7 @@ public sealed class PosterPromptVibrancyTests
 
         Assert.Equal("deterministic-fallback", result.Model);
         Assert.Contains(ExpectedDirection, result.Prompt, StringComparison.Ordinal);
+        Assert.Contains(ExpectedStyleAuthority, result.Prompt, StringComparison.Ordinal);
     }
 
     private static OpenAiPromptService CreateService(string apiKey, IHttpClientFactory httpClientFactory) =>
@@ -68,7 +75,8 @@ public sealed class PosterPromptVibrancyTests
         IncludeDate = true,
         IncludePrice = true,
         Price = "£30",
-        IsConceptPreview = true
+        IsConceptPreview = true,
+        StyleVariationId = "hybrid"
     };
 
     private static EventDefinition Event() => new()
@@ -98,7 +106,19 @@ public sealed class PosterPromptVibrancyTests
         ColourDirection = "Use a warm, balanced palette.",
         VisualLanguage = [],
         Mood = [],
-        Avoid = []
+        Avoid = [],
+        Variations =
+        [
+            new PosterStyleVariationDefinition
+            {
+                Id = "hybrid",
+                Name = "Illustrated people in a photographic setting",
+                StyleDirection = "Use a realistic photographic environment with loose hand-drawn foreground characters.",
+                DiversityFamily = "hybrid-family",
+                PaletteTone = "bright",
+                IsMixedMedia = true
+            }
+        ]
     };
 
     private static PosterOutputDefinition Output() => new()

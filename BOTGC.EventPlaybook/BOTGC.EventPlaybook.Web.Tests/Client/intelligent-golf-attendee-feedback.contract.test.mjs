@@ -45,5 +45,5 @@ test('sending feedback previews fresh bookings and requires explicit confirmatio
 
 test('the booking-feedback release is cache-busted', () => {
   assert.match(indexSource, /playbook\.css\?v=20261007-task-lifecycle-1/);
-  assert.match(indexSource, /playbook-app\.js\?v=20261007-task-lifecycle-1/);
+  assert.match(indexSource, /playbook-app\.js\?v=20261008-style-diversity-1/);
 });

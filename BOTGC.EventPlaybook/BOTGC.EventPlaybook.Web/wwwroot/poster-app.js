@@ -3,9 +3,14 @@ import {
     conceptsForGeneration,
     getSessionContentTimestamp
 } from './poster-session-state.js?v=20260909-latest-concepts-1';
+import {
+    selectDiverseStyleVariationIds,
+    updateStyleVariationHistory
+} from './poster-style-selection.js?v=20261008-style-diversity-1';
 
 const sessions = new Map();
 const REFERENCE_LIBRARY_STORAGE_KEY = 'botgc-event-playbook-reference-library-v1';
+const STYLE_VARIATION_HISTORY_STORAGE_KEY = 'botgc-event-playbook-style-variation-history-v1';
 const MAX_AUTOMATIC_REFERENCES = 3;
 const STUDIO_DATABASE_NAME = 'botgc-event-playbook-poster-studio';
 const STUDIO_DATABASE_VERSION = 1;
@@ -1016,22 +1021,35 @@ function getSelectedStyle(session) {
 
 function selectStyleVariationIds(session, count) {
     const style = getSelectedStyle(session);
-    const variations = Array.isArray(style?.variations) ? style.variations : [];
-    if (variations.length === 0) return [];
-
-    const previousVariationIds = new Set([
+    const previousVariationIds = [
         ...(session.generationSnapshot?.conceptStyleVariationIds ?? []),
         session.generationSnapshot?.styleVariationId
-    ].filter(Boolean));
-    const isSameStyleAsPrevious = session.generationSnapshot?.selectedStyleId === session.selectedStyleId;
-    const freshCandidates = isSameStyleAsPrevious
-        ? variations.filter(variation => !previousVariationIds.has(variation.id))
-        : variations;
-    const candidates = freshCandidates.length >= count ? freshCandidates : variations;
-    return [...candidates]
-        .sort(() => Math.random() - 0.5)
-        .slice(0, count)
-        .map(variation => variation.id);
+    ].filter(Boolean);
+    const recentIds = [
+        ...previousVariationIds,
+        ...readStyleVariationHistory()
+    ];
+    const selectedIds = selectDiverseStyleVariationIds(style, count, { recentIds });
+    rememberStyleVariations(selectedIds);
+    return selectedIds;
+}
+
+function readStyleVariationHistory() {
+    try {
+        const stored = JSON.parse(localStorage.getItem(STYLE_VARIATION_HISTORY_STORAGE_KEY) ?? '[]');
+        return Array.isArray(stored) ? stored.filter(value => typeof value === 'string') : [];
+    } catch {
+        return [];
+    }
+}
+
+function rememberStyleVariations(selectedIds) {
+    try {
+        const history = updateStyleVariationHistory(readStyleVariationHistory(), selectedIds);
+        localStorage.setItem(STYLE_VARIATION_HISTORY_STORAGE_KEY, JSON.stringify(history));
+    } catch {
+        // Browser privacy settings must not prevent artwork generation.
+    }
 }
 
 function selectAlternativeStyleVariationId(session, selectedStyleId, currentVariationId, excludedVariationIds = []) {

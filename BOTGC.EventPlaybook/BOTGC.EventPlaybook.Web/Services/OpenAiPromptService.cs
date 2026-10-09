@@ -30,14 +30,18 @@ public sealed class OpenAiPromptService(
         var configuration = posterConfiguration.Get();
         var clubName = (await clubBrandingStore.GetOverviewAsync(cancellationToken)).ClubName;
         var styleVariation = ResolveStyleVariation(style, request.StyleVariationId);
-        var fallbackPrompt = AppendVibrancyFinishingDirection(BuildPrimaryFallbackPrompt(
-            configuration,
-            clubName,
-            request,
-            eventDefinition,
-            style,
-            styleVariation,
-            output));
+        var fallbackPrompt = AppendVibrancyFinishingDirection(
+            AppendSelectedStyleAuthority(
+                BuildPrimaryFallbackPrompt(
+                    configuration,
+                    clubName,
+                    request,
+                    eventDefinition,
+                    style,
+                    styleVariation,
+                    output),
+                styleVariation,
+                preserveExistingArtwork: !request.IsConceptPreview));
 
         if (string.IsNullOrWhiteSpace(_options.ApiKey))
         {
@@ -142,11 +146,21 @@ public sealed class OpenAiPromptService(
             }
         };
 
-        return await CreatePromptAsync(
+        var promptResult = await CreatePromptAsync(
             ApplyClubName(configuration.Prompting.CreativeDirectorInstruction, configuration.Brand.Name, clubName),
             brief,
             fallbackPrompt,
             cancellationToken);
+
+        return new ImagePromptResult
+        {
+            Prompt = AppendVibrancyFinishingDirection(
+                AppendSelectedStyleAuthority(
+                    promptResult.Prompt,
+                    styleVariation,
+                    preserveExistingArtwork: !request.IsConceptPreview)),
+            Model = promptResult.Model
+        };
     }
 
     public async Task<ImagePromptResult> BuildVariantPromptAsync(
@@ -159,14 +173,18 @@ public sealed class OpenAiPromptService(
         var configuration = posterConfiguration.Get();
         var clubName = (await clubBrandingStore.GetOverviewAsync(cancellationToken)).ClubName;
         var styleVariation = ResolveStyleVariation(style, request.StyleVariationId);
-        var fallbackPrompt = AppendVibrancyFinishingDirection(BuildVariantFallbackPrompt(
-            configuration,
-            clubName,
-            request,
-            eventDefinition,
-            style,
-            styleVariation,
-            output));
+        var fallbackPrompt = AppendVibrancyFinishingDirection(
+            AppendSelectedStyleAuthority(
+                BuildVariantFallbackPrompt(
+                    configuration,
+                    clubName,
+                    request,
+                    eventDefinition,
+                    style,
+                    styleVariation,
+                    output),
+                styleVariation,
+                preserveExistingArtwork: true));
 
         if (string.IsNullOrWhiteSpace(_options.ApiKey))
         {
@@ -252,11 +270,21 @@ public sealed class OpenAiPromptService(
             globalExclusions = configuration.Prompting.GlobalExclusions
         };
 
-        return await CreatePromptAsync(
+        var promptResult = await CreatePromptAsync(
             ApplyClubName(configuration.Prompting.CreativeDirectorInstruction, configuration.Brand.Name, clubName),
             brief,
             fallbackPrompt,
             cancellationToken);
+
+        return new ImagePromptResult
+        {
+            Prompt = AppendVibrancyFinishingDirection(
+                AppendSelectedStyleAuthority(
+                    promptResult.Prompt,
+                    styleVariation,
+                    preserveExistingArtwork: true)),
+            Model = promptResult.Model
+        };
     }
 
     public async Task<ImagePromptResult> BuildUploadedDesignPromptAsync(
@@ -374,7 +402,9 @@ public sealed class OpenAiPromptService(
 
         return new ImagePromptResult
         {
-            Prompt = AppendVibrancyFinishingDirection(prompt),
+            // The caller appends the selected-style authority block first so
+            // the common colour finish remains the final instruction.
+            Prompt = prompt,
             Model = _options.PromptModel
         };
     }
@@ -383,6 +413,34 @@ public sealed class OpenAiPromptService(
     {
         if (prompt.Contains(VibrancyFinishingDirection, StringComparison.Ordinal)) return prompt;
         return $"{prompt.TrimEnd()}\n\n{VibrancyFinishingDirection}";
+    }
+
+    private static string AppendSelectedStyleAuthority(
+        string prompt,
+        PosterStyleVariationDefinition? variation,
+        bool preserveExistingArtwork)
+    {
+        const string marker = "SELECTED VISUAL DIRECTION — AUTHORITATIVE";
+        if (variation is null || prompt.Contains(marker, StringComparison.Ordinal)) return prompt;
+
+        var builder = new StringBuilder(prompt.TrimEnd());
+        builder.AppendLine();
+        builder.AppendLine();
+        builder.AppendLine(marker);
+        builder.AppendLine(preserveExistingArtwork
+            ? "Preserve the selected treatment visibly and specifically while refining or recomposing the supplied campaign artwork. Do not smooth it into generic cinematic, painterly, photographic or cartoon styling."
+            : "Make the selected treatment visibly and specifically recognisable in the finished concept. Do not summarise or smooth it into generic cinematic, painterly, photographic or cartoon styling.");
+        builder.AppendLine(variation.StyleDirection.Trim());
+        if (!string.IsNullOrWhiteSpace(variation.ColourDirection))
+        {
+            builder.AppendLine(variation.ColourDirection.Trim());
+        }
+        if (variation.IsMixedMedia)
+        {
+            builder.AppendLine("The contrast of media is mandatory: the environment must remain convincingly photographic while the foreground characters remain unmistakably hand-drawn. Do not render the whole scene in one medium.");
+        }
+        builder.AppendLine("Preserve the distinguishing mark-making, material texture, optics, spatial treatment and character construction described above. The separate final colour-finish instruction may lift clarity and accents, but must not erase this direction's identity.");
+        return builder.ToString();
     }
 
     private static string ParseChatCompletion(string body)

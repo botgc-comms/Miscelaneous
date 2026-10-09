@@ -423,7 +423,10 @@ app.MapGet("/api/poster/config", async (
             variations = x.Variations.Select(variation => new
             {
                 variation.Id,
-                variation.Name
+                variation.Name,
+                variation.DiversityFamily,
+                variation.PaletteTone,
+                variation.IsMixedMedia
             })
         }),
         outputs = configurationModel.Outputs,

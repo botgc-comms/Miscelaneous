@@ -73,6 +73,14 @@ public sealed class PosterConfigurationService : IPosterConfigurationService
 
         var parentId = Slugify(parentName);
         var metadata = ParentMetadata(parentName);
+        var repeatedReferences = entries
+            .SelectMany(entry => entry.References)
+            .Where(reference => !string.IsNullOrWhiteSpace(reference))
+            .Select(reference => reference.Trim())
+            .GroupBy(reference => reference, StringComparer.OrdinalIgnoreCase)
+            .Where(group => group.Count() > 1)
+            .Select(group => group.Key)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
         var variations = entries.Select(entry =>
         {
             if (string.IsNullOrWhiteSpace(entry.Name) || string.IsNullOrWhiteSpace(entry.Description))
@@ -88,7 +96,10 @@ public sealed class PosterConfigurationService : IPosterConfigurationService
                     .Select(reference => reference.Trim())
                     .ToList(),
                 Camera = string.IsNullOrWhiteSpace(entry.Camera) ? null : entry.Camera.Trim(),
-                StyleDirection = entry.Description.Trim()
+                StyleDirection = entry.Description.Trim(),
+                DiversityFamily = ResolveDiversityFamily(entry, repeatedReferences),
+                PaletteTone = ResolvePaletteTone(entry.Description),
+                IsMixedMedia = IsMixedMedia(entry)
             };
         }).ToList();
 
@@ -151,6 +162,46 @@ public sealed class PosterConfigurationService : IPosterConfigurationService
     {
         var slug = Regex.Replace(value.Trim().ToLowerInvariant(), "[^a-z0-9]+", "-").Trim('-');
         return string.IsNullOrWhiteSpace(slug) ? "style" : slug;
+    }
+
+    private static string ResolveDiversityFamily(
+        VisualStyleLibraryEntry entry,
+        IReadOnlySet<string> repeatedReferences)
+    {
+        var sharedReference = entry.References.FirstOrDefault(reference =>
+            !string.IsNullOrWhiteSpace(reference) && repeatedReferences.Contains(reference.Trim()));
+        if (!string.IsNullOrWhiteSpace(sharedReference)) return sharedReference.Trim();
+
+        var separator = entry.Name.IndexOf(" - ", StringComparison.Ordinal);
+        return separator > 0 ? entry.Name[..separator].Trim() : entry.Name.Trim();
+    }
+
+    private static string ResolvePaletteTone(string description)
+    {
+        var value = description.ToLowerInvariant();
+        string[] darkSignals =
+        [
+            "deep black", "brown-black", "midnight-blue", "dark background", "deep shadows",
+            "nearly monochrome", "ominous", "nocturnal", "night photograph", "muted color",
+            "muted colour", "restrained palette", "faded pigment", "faded ink"
+        ];
+        if (darkSignals.Any(value.Contains)) return "dark";
+
+        string[] brightSignals =
+        [
+            "bright color", "bright colour", "vivid", "luminous", "saturated", "cheerful",
+            "sunny", "high-chroma", "intense complementary", "electric-blue", "acid green"
+        ];
+        return brightSignals.Any(value.Contains) ? "bright" : "balanced";
+    }
+
+    private static bool IsMixedMedia(VisualStyleLibraryEntry entry)
+    {
+        var value = $"{entry.Name} {entry.Description}";
+        return value.Contains("photoreal background", StringComparison.OrdinalIgnoreCase) ||
+               value.Contains("photorealistic environment", StringComparison.OrdinalIgnoreCase) ||
+               value.Contains("photographic environment", StringComparison.OrdinalIgnoreCase) ||
+               value.Contains("photographic world", StringComparison.OrdinalIgnoreCase);
     }
 
     private sealed record ParentStyleMetadata(string DisplayName, string Summary, string Direction);

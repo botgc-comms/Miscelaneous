@@ -5852,7 +5852,7 @@
       maybeOpenIntelligentGolfPlannerMatch(event);
     }
     if (state.activeView === 'artwork' && event) {
-      import('./poster-app.js?v=20261006-diary-layout-1')
+      import('./poster-app.js?v=20261008-style-diversity-1')
         .then(module => module.mountPosterStudio({
           eventId: event.id,
           eventName: event.name,

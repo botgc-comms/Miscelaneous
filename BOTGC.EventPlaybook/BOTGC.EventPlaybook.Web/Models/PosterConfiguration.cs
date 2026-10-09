@@ -114,6 +114,12 @@ public sealed class PosterStyleVariationDefinition
     public required string StyleDirection { get; init; }
 
     public string? ColourDirection { get; init; }
+
+    public string DiversityFamily { get; init; } = string.Empty;
+
+    public string PaletteTone { get; init; } = "balanced";
+
+    public bool IsMixedMedia { get; init; }
 }
 
 public sealed class VisualStyleLibraryEntry

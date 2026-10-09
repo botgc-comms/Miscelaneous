@@ -57,5 +57,5 @@ test('the ordinary non-IG booking setup task remains available', () => {
 
 test('the ticket editor release changes are cache-busted', () => {
   assert.match(indexSource, /playbook\.css\?v=20261007-task-lifecycle-1/);
-  assert.match(indexSource, /playbook-app\.js\?v=20261007-task-lifecycle-1/);
+  assert.match(indexSource, /playbook-app\.js\?v=20261008-style-diversity-1/);
 });
