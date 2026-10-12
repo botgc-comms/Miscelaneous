@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title data-club-title-prefix="Complete Event Task">Complete Event Task | Burton-on-Trent Golf Club</title>
   <link rel="stylesheet" href="./playbook.css?v=20260829-retrospective-analysis-1">
-  <link rel="stylesheet" href="./complete.css?v=20260929-task-status-actions-1">
+  <link rel="stylesheet" href="./complete.css?v=20261012-task-strip-scroll-2">
 </head>
 <body class="completion-body">
   <main class="completion-page">
@@ -78,6 +78,8 @@
 
     function renderWorkspace() {
       const selected = tasks.find(task => task.token === token) || tasks[0];
+      const previousStrip = taskList.querySelector('.completion-task-strip');
+      const previousScrollLeft = previousStrip?.scrollLeft ?? null;
       token = selected.token;
       taskList.hidden = tasks.length < 2;
       taskList.innerHTML = tasks.length < 2 ? '' : `
@@ -88,29 +90,61 @@
         </div>
         <div class="completion-task-strip">
           ${tasks.map(task => `
-            <button type="button" class="completion-task-link ${task.token === token ? 'selected' : ''} ${task.completedAtUtc ? 'completed' : ''} ${task.notApplicableAtUtc ? 'not-applicable' : ''}" data-task-token="${escapeHtml(task.token)}">
+            <button type="button" class="completion-task-link ${task.token === token ? 'selected' : ''} ${task.completedAtUtc ? 'completed' : ''} ${task.notApplicableAtUtc ? 'not-applicable' : ''}" data-task-token="${escapeHtml(task.token)}" ${task.token === token ? 'aria-current="true"' : ''}>
               <span>${escapeHtml(task.eventName)}</span>
               <strong>${escapeHtml(task.taskTitle)}</strong>
               <small>${taskStatus(task)}</small>
             </button>`).join('')}
         </div>`;
+      const strip = taskList.querySelector('.completion-task-strip');
+      if (strip && previousScrollLeft !== null) {
+        // Re-rendering replaces the strip. Restore its current viewport before
+        // the browser paints so centring starts from where the user was looking,
+        // rather than visibly sweeping across from the first task every time.
+        strip.scrollLeft = previousScrollLeft;
+      }
       taskList.querySelectorAll('[data-task-token]').forEach(button => button.addEventListener('click', () => {
-        token = button.dataset.taskToken;
-        const url = new URL(location.href);
-        url.searchParams.set('task', token);
-        history.replaceState(null, '', url);
-        renderWorkspace();
+        selectWorkspaceTask(button.dataset.taskToken);
       }));
       render(selected);
-      requestAnimationFrame(() => centreSelectedTask());
+      requestAnimationFrame(centreSelectedTask);
+    }
+
+    function selectWorkspaceTask(taskToken) {
+      const selected = tasks.find(task => task.token === taskToken);
+      if (!selected) return;
+
+      token = selected.token;
+      const url = new URL(location.href);
+      url.searchParams.set('task', token);
+      history.replaceState(null, '', url);
+
+      // Do not rebuild the strip when a task is selected. Replacing it resets
+      // the horizontal viewport before the browser can reveal the new card,
+      // which produces a visible sweep from the start of the list on mobile.
+      taskList.querySelectorAll('[data-task-token]').forEach(button => {
+        const isSelected = button.dataset.taskToken === token;
+        button.classList.toggle('selected', isSelected);
+        if (isSelected) {
+          button.setAttribute('aria-current', 'true');
+        } else {
+          button.removeAttribute('aria-current');
+        }
+      });
+      render(selected);
+      requestAnimationFrame(centreSelectedTask);
     }
 
     function centreSelectedTask() {
       const strip = taskList.querySelector('.completion-task-strip');
       const selected = strip?.querySelector('.completion-task-link.selected');
       if (!strip || !selected) return;
-      const left = selected.offsetLeft - ((strip.clientWidth - selected.offsetWidth) / 2);
-      strip.scrollTo({ left: Math.max(0, left), behavior: 'smooth' });
+      const stripRect = strip.getBoundingClientRect();
+      const selectedRect = selected.getBoundingClientRect();
+      const relativeLeft = selectedRect.left - stripRect.left;
+      const left = strip.scrollLeft + relativeLeft - ((strip.clientWidth - selectedRect.width) / 2);
+      const maximumLeft = Math.max(0, strip.scrollWidth - strip.clientWidth);
+      strip.scrollTo({ left: Math.min(maximumLeft, Math.max(0, left)), behavior: 'auto' });
     }
 
     function taskStatus(task) {

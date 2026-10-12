@@ -32,9 +32,23 @@ test('the public completion page lists only tasks returned by its email access t
   assert.match(completeHtml, /data-task-token/);
   assert.doesNotMatch(completeHtml, /Open task in Event Playbook/);
   assert.match(completeCss, /\.completion-task-strip\s*\{[^}]*grid-auto-flow:\s*column;[^}]*overflow-x:\s*auto;/s);
-  assert.match(completeCss, /scroll-snap-type:\s*inline mandatory/);
+  assert.match(completeCss, /scroll-snap-type:\s*inline proximity/);
+  assert.match(completeCss, /scroll-behavior:\s*auto/);
+  assert.match(completeCss, /scroll-snap-align:\s*center/);
   assert.match(completeCss, /@media \(max-width: 560px\)[\s\S]*grid-auto-columns:\s*minmax\(260px, 84vw\)/);
   assert.match(completeCss, /@media \(max-width: 560px\)[\s\S]*\.completion-reassignment-controls\s*\{[^}]*grid-template-columns:\s*1fr;/);
+});
+
+test('selecting an email task keeps the strip in place and centres without an animated sweep', () => {
+  assert.match(completeHtml, /const previousScrollLeft = previousStrip\?\.scrollLeft \?\? null/);
+  assert.match(completeHtml, /strip\.scrollLeft = previousScrollLeft/);
+  assert.match(completeHtml, /selectWorkspaceTask\(button\.dataset\.taskToken\)/);
+  assert.match(completeHtml, /button\.classList\.toggle\('selected', isSelected\)/);
+  assert.match(completeHtml, /selected\.getBoundingClientRect\(\)/);
+  assert.match(completeHtml, /strip\.scrollLeft \+ relativeLeft/);
+  assert.match(completeHtml, /behavior: 'auto'/);
+  assert.doesNotMatch(completeHtml, /behavior: 'smooth'/);
+  assert.doesNotMatch(completeHtml, /selected\.offsetLeft/);
 });
 
 test('email tasks use scoped completion and reassignment actions', () => {

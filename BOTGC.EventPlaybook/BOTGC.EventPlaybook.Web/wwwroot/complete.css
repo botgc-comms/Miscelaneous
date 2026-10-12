@@ -70,7 +70,8 @@
   overflow-x: auto;
   padding: 2px 2px 10px;
   overscroll-behavior-inline: contain;
-  scroll-snap-type: inline mandatory;
+  scroll-snap-type: inline proximity;
+  scroll-behavior: auto;
   scrollbar-color: #9db3ad transparent;
   scrollbar-width: thin;
 }
@@ -86,7 +87,7 @@
   color: var(--ink);
   background: #fff;
   cursor: pointer;
-  scroll-snap-align: start;
+  scroll-snap-align: center;
 }
 
 .completion-task-link:hover,
