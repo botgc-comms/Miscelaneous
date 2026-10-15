@@ -748,6 +748,28 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
             return Task.FromResult(record);
         }
 
+        public Task<TaskCompletionRecord?> ReopenFromEmailAccessAsync(
+            string accessToken,
+            string taskToken,
+            CancellationToken cancellationToken)
+        {
+            var record = EmailWorkspaces.GetValueOrDefault(accessToken)?.Tasks
+                .SingleOrDefault(task => task.Token == taskToken);
+            if (record is not null)
+            {
+                record.CompletedAtUtc = null;
+                record.CompletionNotes = null;
+                record.CompletedViaEmailAccess = false;
+                record.NotApplicableAtUtc = null;
+                record.NotApplicableNotes = null;
+                record.NotApplicableViaEmailAccess = false;
+                record.ReopenedAtUtc = DateTimeOffset.UtcNow;
+                record.ReopenedViaEmailAccess = true;
+                record.CanCompleteFromLink = true;
+            }
+            return Task.FromResult(record);
+        }
+
         public Task<TaskCompletionRecord?> ReassignFromEmailAccessAsync(
             string accessToken,
             string taskToken,
@@ -773,7 +795,8 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
             CancellationToken cancellationToken) =>
             Task.FromResult<IReadOnlyList<TaskCompletionRecord>>(
                 _records.Values.Where(record => record.EventId == eventId &&
-                    (record.CompletedAtUtc is not null || record.NotApplicableAtUtc is not null)).ToArray());
+                    (record.CompletedAtUtc is not null || record.NotApplicableAtUtc is not null ||
+                     record.ReopenedAtUtc is not null)).ToArray());
 
         public Task<int> RetireEventAsync(
             string eventId,
@@ -946,6 +969,69 @@ public sealed class TaskEmailAlertServiceTests : IDisposable
         Assert.Contains(
             await registry.GetCompletedForEventAsync("event-1", CancellationToken.None),
             record => record.Token == taskToken && record.NotApplicableAtUtc == now);
+    }
+
+    [Fact]
+    public async Task CompletionRegistry_EmailAccessCanUndoItsOwnTerminalActionsOnly()
+    {
+        Directory.CreateDirectory(_contentRoot);
+        var now = new DateTimeOffset(2026, 10, 15, 9, 0, 0, TimeSpan.Zero);
+        var registry = new TaskCompletionRegistry(
+            new TestWebHostEnvironment(_contentRoot),
+            new FixedTimeProvider(now));
+        var completedToken = Guid.NewGuid().ToString("D");
+        var removedToken = Guid.NewGuid().ToString("D");
+        var completedElsewhereToken = Guid.NewGuid().ToString("D");
+        var accessToken = Guid.NewGuid().ToString("D");
+        foreach (var token in new[] { completedToken, removedToken, completedElsewhereToken })
+        {
+            await registry.RegisterAsync(
+                new RegisterCompletionLinkRequest
+                {
+                    Token = token,
+                    EventId = "event-1",
+                    EventName = "Autumn Event",
+                    TaskId = $"task-{token}",
+                    TaskTitle = "Event task"
+                },
+                CancellationToken.None);
+        }
+        await registry.RegisterEmailAccessAsync(
+            accessToken,
+            [completedToken, removedToken, completedElsewhereToken],
+            CancellationToken.None);
+        await registry.CompleteFromEmailAccessAsync(accessToken, completedToken, "Done", CancellationToken.None);
+        await registry.MarkNotApplicableFromEmailAccessAsync(accessToken, removedToken, "Not needed", CancellationToken.None);
+        await registry.CompleteAsync(completedElsewhereToken, "Completed elsewhere", CancellationToken.None);
+
+        var reopenedCompleted = await registry.ReopenFromEmailAccessAsync(
+            accessToken,
+            completedToken,
+            CancellationToken.None);
+        var reopenedRemoved = await registry.ReopenFromEmailAccessAsync(
+            accessToken,
+            removedToken,
+            CancellationToken.None);
+        var unchangedElsewhere = await registry.ReopenFromEmailAccessAsync(
+            accessToken,
+            completedElsewhereToken,
+            CancellationToken.None);
+
+        foreach (var reopened in new[] { reopenedCompleted, reopenedRemoved })
+        {
+            Assert.NotNull(reopened);
+            Assert.Null(reopened!.CompletedAtUtc);
+            Assert.Null(reopened.NotApplicableAtUtc);
+            Assert.Equal(now, reopened.ReopenedAtUtc);
+            Assert.True(reopened.ReopenedViaEmailAccess);
+            Assert.True(reopened.CanCompleteFromLink);
+        }
+        Assert.NotNull(unchangedElsewhere?.CompletedAtUtc);
+        Assert.Null(unchangedElsewhere!.ReopenedAtUtc);
+        Assert.Equal(
+            2,
+            (await registry.GetCompletedForEventAsync("event-1", CancellationToken.None))
+                .Count(record => record.ReopenedAtUtc == now));
     }
 
     [Fact]

@@ -76,7 +76,7 @@ public sealed class PlaybookConfigurationTests
 
         using var document = JsonDocument.Parse(dataJson);
         var root = document.RootElement;
-        Assert.Equal("4.1", root.GetProperty("schemaVersion").GetString());
+        Assert.Equal("4.2", root.GetProperty("schemaVersion").GetString());
 
         var closeDownQuestion = FindItem(root, "general-close-down-required");
         var context = closeDownQuestion.GetProperty("planningContext");
@@ -444,7 +444,7 @@ public sealed class PlaybookConfigurationTests
 
         using var document = JsonDocument.Parse(dataJson);
         var root = document.RootElement;
-        Assert.Equal("4.1", root.GetProperty("schemaVersion").GetString());
+        Assert.Equal("4.2", root.GetProperty("schemaVersion").GetString());
 
         foreach (var retiredId in new[]
         {

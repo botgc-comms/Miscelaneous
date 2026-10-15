@@ -28,6 +28,10 @@ public interface ITaskCompletionRegistry
         string taskToken,
         string? notes,
         CancellationToken cancellationToken);
+    Task<TaskCompletionRecord?> ReopenFromEmailAccessAsync(
+        string accessToken,
+        string taskToken,
+        CancellationToken cancellationToken);
     Task<TaskCompletionRecord?> ReassignFromEmailAccessAsync(
         string accessToken,
         string taskToken,
@@ -164,6 +168,8 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
             record.NotApplicableAtUtc = null;
             record.NotApplicableNotes = null;
             record.NotApplicableViaEmailAccess = false;
+            record.ReopenedAtUtc = null;
+            record.ReopenedViaEmailAccess = false;
             await SaveAsync(records, cancellationToken);
             return record;
         }
@@ -209,7 +215,8 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
             var records = await LoadAsync(cancellationToken);
             return records
                 .Where(x => string.Equals(x.EventId, eventId, StringComparison.OrdinalIgnoreCase) &&
-                            (x.CompletedAtUtc is not null || x.NotApplicableAtUtc is not null || x.ReassignedAtUtc is not null))
+                            (x.CompletedAtUtc is not null || x.NotApplicableAtUtc is not null ||
+                             x.ReopenedAtUtc is not null || x.ReassignedAtUtc is not null))
                 .ToList();
         }
         finally
@@ -347,6 +354,8 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
             record.NotApplicableAtUtc = null;
             record.NotApplicableNotes = null;
             record.NotApplicableViaEmailAccess = false;
+            record.ReopenedAtUtc = null;
+            record.ReopenedViaEmailAccess = false;
             record.CanCompleteFromLink = true;
             await SaveAsync(records, cancellationToken);
             return record;
@@ -379,6 +388,44 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
             }
 
             MarkNotApplicable(record, notes, viaEmailAccess: true);
+            record.CanCompleteFromLink = true;
+            await SaveAsync(records, cancellationToken);
+            return record;
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    public async Task<TaskCompletionRecord?> ReopenFromEmailAccessAsync(
+        string accessToken,
+        string taskToken,
+        CancellationToken cancellationToken)
+    {
+        await _gate.WaitAsync(cancellationToken);
+        try
+        {
+            var grant = (await LoadEmailAccessAsync(cancellationToken))
+                .SingleOrDefault(item => string.Equals(item.Token, accessToken, StringComparison.Ordinal));
+            if (grant is null || !grant.TaskTokens.Contains(taskToken, StringComparer.Ordinal)) return null;
+
+            var records = await LoadAsync(cancellationToken);
+            var record = records.SingleOrDefault(item => string.Equals(item.Token, taskToken, StringComparison.Ordinal));
+            if (record is null) return null;
+
+            var wasCompletedHere = record.CompletedAtUtc is not null && record.CompletedViaEmailAccess;
+            var wasRemovedHere = record.NotApplicableAtUtc is not null && record.NotApplicableViaEmailAccess;
+            if (!wasCompletedHere && !wasRemovedHere) return record;
+
+            record.CompletedAtUtc = null;
+            record.CompletionNotes = null;
+            record.CompletedViaEmailAccess = false;
+            record.NotApplicableAtUtc = null;
+            record.NotApplicableNotes = null;
+            record.NotApplicableViaEmailAccess = false;
+            record.ReopenedAtUtc = _timeProvider.GetUtcNow();
+            record.ReopenedViaEmailAccess = true;
             record.CanCompleteFromLink = true;
             await SaveAsync(records, cancellationToken);
             return record;
@@ -569,5 +616,7 @@ public sealed class TaskCompletionRegistry : ITaskCompletionRegistry
         record.NotApplicableAtUtc = _timeProvider.GetUtcNow();
         record.NotApplicableNotes = string.IsNullOrWhiteSpace(notes) ? null : notes.Trim();
         record.NotApplicableViaEmailAccess = viaEmailAccess;
+        record.ReopenedAtUtc = null;
+        record.ReopenedViaEmailAccess = false;
     }
 }

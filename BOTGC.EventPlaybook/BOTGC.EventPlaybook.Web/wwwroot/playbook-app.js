@@ -3748,6 +3748,33 @@
     return true;
   }
 
+  function applyServerTaskReopen(taskState, record) {
+    if (!record.reopenedAtUtc) return false;
+    const localTerminalAt = taskState.notRelevant === true
+      ? taskState.notRelevantAt
+      : taskState.completed === true
+        ? taskState.completedAt
+        : null;
+    if (localTerminalAt && new Date(localTerminalAt) > new Date(record.reopenedAtUtc)) return false;
+
+    delete taskState.reviewCompletionProvenance;
+    taskState.completed = false;
+    taskState.status = 'open';
+    taskState.completedAt = null;
+    taskState.completedBy = null;
+    taskState.completionJustification = null;
+    taskState.notRelevant = false;
+    taskState.notRelevantAt = null;
+    taskState.notRelevantBy = null;
+    taskState.notRelevantReason = null;
+    taskState.notRelevantSource = null;
+    taskState.reviewSignature = null;
+    taskState.reviewInvalidatedAt = null;
+    taskState.reopenedAt = record.reopenedAtUtc;
+    if (taskState.notificationStatus === 'not-relevant') taskState.notificationStatus = null;
+    return true;
+  }
+
   async function syncServerCompletions() {
     for (const event of state.events) {
       try {
@@ -3771,7 +3798,8 @@
           const taskState = ensureTaskState(event, record.taskId);
           if (!taskState.completionToken || taskState.completionToken !== record.token) continue;
           applyServerTaskReassignment(taskState, record);
-          if (record.notApplicableAtUtc) applyServerTaskNotApplicable(event, indexed.item, taskState, record);
+          if (record.reopenedAtUtc) applyServerTaskReopen(taskState, record);
+          else if (record.notApplicableAtUtc) applyServerTaskNotApplicable(event, indexed.item, taskState, record);
           else if (record.completedAtUtc) applyServerTaskCompletion(event, indexed.item, taskState, record);
         }
       } catch (error) {

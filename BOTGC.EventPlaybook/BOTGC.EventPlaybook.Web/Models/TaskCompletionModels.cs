@@ -38,6 +38,8 @@ public sealed class TaskCompletionRecord
     public DateTimeOffset? NotApplicableAtUtc { get; set; }
     public string? NotApplicableNotes { get; set; }
     public bool NotApplicableViaEmailAccess { get; set; }
+    public DateTimeOffset? ReopenedAtUtc { get; set; }
+    public bool ReopenedViaEmailAccess { get; set; }
     public string? AssignmentKind { get; set; }
     public string? AssignmentId { get; set; }
     public DateTimeOffset? ReassignedAtUtc { get; set; }

@@ -157,23 +157,29 @@
 
     function render(task) {
       if (task.notApplicableAtUtc) {
+        const canUndo = Boolean(accessToken && task.notApplicableViaEmailAccess);
         content.innerHTML = `
           <div class="completion-state-mark not-applicable">—</div>
           <h2>Task marked not applicable</h2>
           <p><strong>${escapeHtml(task.taskTitle)}</strong></p>
           <p class="help-text">${escapeHtml(task.eventName)}</p>
           <p>This task was removed from the active plan on ${new Date(task.notApplicableAtUtc).toLocaleString('en-GB')}.</p>
-          ${task.notApplicableNotes ? `<aside class="completion-task-note"><strong>Reason recorded</strong><p>${escapeHtml(task.notApplicableNotes)}</p></aside>` : ''}`;
+          ${task.notApplicableNotes ? `<aside class="completion-task-note"><strong>Reason recorded</strong><p>${escapeHtml(task.notApplicableNotes)}</p></aside>` : ''}
+          ${canUndo ? '<div class="completion-actions"><button class="button button-secondary" id="undoTaskButton">Restore task</button></div>' : ''}`;
+        document.getElementById('undoTaskButton')?.addEventListener('click', undoTaskStatus);
         return;
       }
 
       if (task.completedAtUtc) {
+        const canUndo = Boolean(accessToken && task.completedViaEmailAccess);
         content.innerHTML = `
           <div class="success-mark">✓</div>
           <h2>Task completed</h2>
           <p><strong>${escapeHtml(task.taskTitle)}</strong></p>
           <p class="help-text">${escapeHtml(task.eventName)}</p>
-          <p>This task was completed on ${new Date(task.completedAtUtc).toLocaleString('en-GB')}.</p>`;
+          <p>This task was completed on ${new Date(task.completedAtUtc).toLocaleString('en-GB')}.</p>
+          ${canUndo ? '<div class="completion-actions"><button class="button button-secondary" id="undoTaskButton">Undo completion</button></div>' : ''}`;
+        document.getElementById('undoTaskButton')?.addEventListener('click', undoTaskStatus);
         return;
       }
 
@@ -229,6 +235,30 @@
         buttons.forEach(candidate => { candidate.disabled = false; });
         button.textContent = originalText;
         alert(error instanceof Error ? error.message : 'The task could not be updated.');
+      }
+    }
+
+    async function undoTaskStatus() {
+      const button = document.getElementById('undoTaskButton');
+      if (!button || !accessToken) return;
+      const originalText = button.textContent;
+      button.disabled = true;
+      button.textContent = 'Restoring…';
+      try {
+        const response = await fetch(`/api/tasks/email-access/${encodeURIComponent(accessToken)}/tasks/${encodeURIComponent(token)}/reopen`, {
+          method: 'POST'
+        });
+        if (!response.ok) {
+          const failure = await response.json().catch(() => ({}));
+          throw new Error(failure.error || 'The task could not be restored.');
+        }
+        const updated = await response.json();
+        tasks = tasks.map(task => task.token === updated.token ? updated : task);
+        renderWorkspace();
+      } catch (error) {
+        button.disabled = false;
+        button.textContent = originalText;
+        alert(error instanceof Error ? error.message : 'The task could not be restored.');
       }
     }
 

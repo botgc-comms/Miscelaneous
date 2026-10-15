@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "4.1",
+  "schemaVersion": "4.2",
   "id": "botgc-event-playbook",
   "title": "Event Playbook",
   "description": "A data-driven event planning guide that turns answers into dated, assignable tasks, operational advisories and reusable event knowledge.",
@@ -5208,22 +5208,83 @@
               "id": "social-media-required",
               "type": "question",
               "answerType": "yesNo",
-              "label": "Should the event be promoted on social media?",
+              "label": "Should social media be used for this event?",
+              "helpText": "This can promote the event beforehand, share what happened afterwards, or do both.",
               "required": true,
               "source": "refined"
             },
             {
-              "id": "social-media-task",
-              "type": "task",
-              "title": "Prepare the social-media campaign and approved square artwork in the Communications Centre",
-              "detail": "Use the approved campaign style and square artwork to prepare the social copy and agree when and where it will be published.",
-              "deadlineCode": "B3",
+              "id": "social-media-timing",
+              "type": "question",
+              "answerType": "singleChoice",
+              "label": "When should social media be used?",
+              "helpText": "Choose whether the club should promote attendance before the event, showcase the event afterwards, or plan both kinds of post.",
+              "options": [
+                {
+                  "value": "before-event",
+                  "label": "Before the event — promote it"
+                },
+                {
+                  "value": "after-event",
+                  "label": "After the event — show what Burton-on-Trent does"
+                },
+                {
+                  "value": "both",
+                  "label": "Both before and after the event"
+                }
+              ],
               "showWhen": {
                 "all": [
                   {
                     "questionId": "social-media-required",
                     "operator": "equals",
                     "value": true
+                  }
+                ]
+              },
+              "required": true,
+              "source": "refined"
+            },
+            {
+              "id": "social-media-task",
+              "type": "task",
+              "title": "Prepare the pre-event social-media campaign and approved square artwork in the Communications Centre",
+              "detail": "Use the approved campaign style and square artwork to prepare promotional social copy, then agree when and where it will be published before the event.",
+              "deadlineCode": "B3",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "social-media-timing",
+                    "operator": "in",
+                    "value": [
+                      "before-event",
+                      "both"
+                    ]
+                  }
+                ]
+              },
+              "source": "refined",
+              "responsibleArea": "Communications",
+              "defaultOwnerRoleId": "communications",
+              "ownerFromQuestionId": "event-communications-owner",
+              "actionView": "artwork",
+              "actionLabel": "Open Communications Centre"
+            },
+            {
+              "id": "post-event-social-media-task",
+              "type": "task",
+              "title": "Share a post-event social-media update showing what Burton-on-Trent does",
+              "detail": "Select suitable event photos or approved artwork, prepare the follow-up copy and publish a positive account of the event after it has taken place.",
+              "deadlineCode": "A1",
+              "showWhen": {
+                "all": [
+                  {
+                    "questionId": "social-media-timing",
+                    "operator": "in",
+                    "value": [
+                      "after-event",
+                      "both"
+                    ]
                   }
                 ]
               },

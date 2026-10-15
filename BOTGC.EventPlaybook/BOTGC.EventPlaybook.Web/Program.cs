@@ -2757,6 +2757,22 @@ app.MapPost("/api/tasks/email-access/{accessToken}/tasks/{taskToken}/not-applica
     return record is null ? Results.NotFound() : Results.Ok(ToPublicTaskCompletion(record));
 });
 
+app.MapPost("/api/tasks/email-access/{accessToken}/tasks/{taskToken}/reopen", async (
+    string accessToken,
+    string taskToken,
+    ITaskCompletionRegistry registry,
+    CancellationToken cancellationToken) =>
+{
+    var record = await registry.ReopenFromEmailAccessAsync(
+        accessToken,
+        taskToken,
+        cancellationToken);
+    if (record is null) return Results.NotFound();
+    return record.CompletedAtUtc is not null || record.NotApplicableAtUtc is not null
+        ? Results.Conflict(new { error = "Only an action made from this email can be undone here." })
+        : Results.Ok(ToPublicTaskCompletion(record));
+});
+
 app.MapPost("/api/tasks/email-access/{accessToken}/tasks/{taskToken}/reassign", async (
     string accessToken,
     string taskToken,
@@ -2891,6 +2907,7 @@ static bool IsPublicTaskEmailAccessPath(HttpRequest request)
             Guid.TryParse(segments[5], out _) &&
             (string.Equals(segments[6], "complete", StringComparison.OrdinalIgnoreCase) ||
              string.Equals(segments[6], "not-applicable", StringComparison.OrdinalIgnoreCase) ||
+             string.Equals(segments[6], "reopen", StringComparison.OrdinalIgnoreCase) ||
              string.Equals(segments[6], "reassign", StringComparison.OrdinalIgnoreCase)));
 }
 
@@ -2914,6 +2931,8 @@ static object ToPublicTaskCompletion(TaskCompletionRecord record) => new
     record.NotApplicableAtUtc,
     record.NotApplicableNotes,
     record.NotApplicableViaEmailAccess,
+    record.ReopenedAtUtc,
+    record.ReopenedViaEmailAccess,
     record.AssignmentKind,
     record.AssignmentId,
     record.ReassignedAtUtc

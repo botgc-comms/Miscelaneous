@@ -31,7 +31,7 @@ const byId = new Map(items.map(item => [item.id, item]));
 
 test('golf events choose competition fees, event tickets, free booking or both before downstream questions', () => {
   const route = byId.get('admission-fee-route');
-  assert.equal(playbook.schemaVersion, '4.1');
+  assert.equal(playbook.schemaVersion, '4.2');
   assert.deepEqual(route.options.map(option => option.value), [
     'no-fee-booking',
     'competition-fee',
