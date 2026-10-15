@@ -39,6 +39,7 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
 {
     private const int MaximumSecretLength = 4_096;
     private const int MaximumSettingLength = 500;
+    private const string CurrentIntelligentGolfSiteUrl = "https://burtonontrent.intelligentgolf.co.uk";
     private const string DefaultYodeckPlaylistName = "Clubhouse";
     private const int DefaultYodeckMediaDurationSeconds = 15;
     private const int MinimumYodeckMediaDurationSeconds = 5;
@@ -81,7 +82,7 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
         {
             var document = await LoadAsync(cancellationToken);
             var current = document.IntelligentGolf ?? new IntelligentGolfPluginRecord();
-            var siteUrl = NormaliseHttpsUrl(request.SiteUrl, "The Intelligent Golf site URL");
+            var siteUrl = NormaliseIntelligentGolfSiteUrl(request.SiteUrl);
             var encryptedPin = UpdateSecret(current.EncryptedPin, request.EffectiveMemberId, "member ID");
             var encryptedPassword = UpdateSecret(current.EncryptedPassword, request.EffectiveMemberPassword, "member PIN/password");
             var encryptedAdminPassword = UpdateSecret(current.EncryptedAdminPassword, request.AdminPassword, "administrator password");
@@ -127,7 +128,7 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
         try
         {
             var current = (await LoadAsync(cancellationToken)).IntelligentGolf ?? new IntelligentGolfPluginRecord();
-            var siteUrl = NormaliseHttpsUrl(request.SiteUrl, "The Intelligent Golf site URL");
+            var siteUrl = NormaliseIntelligentGolfSiteUrl(request.SiteUrl);
             var memberId = ResolveSecret(current.EncryptedPin, request.EffectiveMemberId);
             var memberPassword = ResolveSecret(current.EncryptedPassword, request.EffectiveMemberPassword);
             var adminPassword = ResolveSecret(current.EncryptedAdminPassword, request.AdminPassword);
@@ -504,6 +505,21 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
         return normalised.TrimEnd('/');
     }
 
+    private static string? NormaliseIntelligentGolfSiteUrl(string? value)
+    {
+        var normalised = NormaliseHttpsUrl(value, "The Intelligent Golf site URL");
+        if (normalised is null) return null;
+
+        var uri = new Uri(normalised, UriKind.Absolute);
+        return IsLegacyIntelligentGolfHost(uri.Host)
+            ? CurrentIntelligentGolfSiteUrl
+            : normalised;
+    }
+
+    private static bool IsLegacyIntelligentGolfHost(string host) =>
+        string.Equals(host, "botgc.co.uk", StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(host, "www.botgc.co.uk", StringComparison.OrdinalIgnoreCase);
+
     private static string? NormaliseSetting(string? value, string label)
     {
         var normalised = value?.Trim();
@@ -576,9 +592,33 @@ public sealed class PluginSettingsStore : IPluginSettingsStore
     private async Task<PluginSettingsDocument> LoadAsync(CancellationToken cancellationToken)
     {
         if (!File.Exists(_path)) return new PluginSettingsDocument();
-        await using var stream = File.OpenRead(_path);
-        return await JsonSerializer.DeserializeAsync<PluginSettingsDocument>(stream, _jsonOptions, cancellationToken)
-            ?? new PluginSettingsDocument();
+        PluginSettingsDocument document;
+        await using (var stream = File.OpenRead(_path))
+        {
+            document = await JsonSerializer.DeserializeAsync<PluginSettingsDocument>(stream, _jsonOptions, cancellationToken)
+                ?? new PluginSettingsDocument();
+        }
+
+        if (document.IntelligentGolf is { SiteUrl: not null } intelligentGolf &&
+            Uri.TryCreate(intelligentGolf.SiteUrl, UriKind.Absolute, out var siteUri) &&
+            IsLegacyIntelligentGolfHost(siteUri.Host))
+        {
+            document.IntelligentGolf = new IntelligentGolfPluginRecord
+            {
+                Enabled = intelligentGolf.Enabled,
+                SiteUrl = CurrentIntelligentGolfSiteUrl,
+                EncryptedPin = intelligentGolf.EncryptedPin,
+                EncryptedPassword = intelligentGolf.EncryptedPassword,
+                EncryptedAdminPassword = intelligentGolf.EncryptedAdminPassword,
+                EmailSenderMemberNumber = intelligentGolf.EmailSenderMemberNumber,
+                EmailFromName = intelligentGolf.EmailFromName,
+                EmailFromAddress = intelligentGolf.EmailFromAddress,
+                UpdatedAtUtc = DateTimeOffset.UtcNow
+            };
+            await SaveAsync(document, cancellationToken);
+        }
+
+        return document;
     }
 
     private async Task SaveAsync(PluginSettingsDocument document, CancellationToken cancellationToken)

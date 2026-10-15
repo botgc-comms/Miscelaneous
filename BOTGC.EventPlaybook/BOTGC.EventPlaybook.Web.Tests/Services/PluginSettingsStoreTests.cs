@@ -165,6 +165,31 @@ public sealed class PluginSettingsStoreTests : IDisposable
         Assert.Null(await store.GetYodeckCredentialsAsync(CancellationToken.None));
     }
 
+    [Theory]
+    [InlineData("https://www.botgc.co.uk")]
+    [InlineData("https://botgc.co.uk/")]
+    public async Task GetOverviewAsync_MigratesLegacyIntelligentGolfSiteUrl(string legacySiteUrl)
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(SettingsPath())!);
+        await File.WriteAllTextAsync(SettingsPath(), $$"""
+            {
+              "version": 2,
+              "intelligentGolf": {
+                "enabled": false,
+                "siteUrl": "{{legacySiteUrl}}"
+              }
+            }
+            """);
+        var store = CreateStore();
+
+        var overview = await store.GetOverviewAsync(CancellationToken.None);
+
+        Assert.Equal("https://burtonontrent.intelligentgolf.co.uk", overview.IntelligentGolf.SiteUrl);
+        var persisted = await File.ReadAllTextAsync(SettingsPath());
+        Assert.Contains("https://burtonontrent.intelligentgolf.co.uk", persisted, StringComparison.Ordinal);
+        Assert.DoesNotContain(legacySiteUrl, persisted, StringComparison.OrdinalIgnoreCase);
+    }
+
     [Fact]
     public async Task YodeckSettingsProvider_UsesLegacyEnvironmentUntilPluginIsExplicitlyConfigured()
     {

@@ -14,7 +14,7 @@ public sealed class IntelligentGolfTransportMultipartTests
         var handler = new RecordingHandler();
         var transport = new IntelligentGolfTransport(
             new SingleClientFactory(new HttpClient(handler)),
-            new AuthenticatedSession("https://www.botgc.co.uk/"),
+            new AuthenticatedSession("https://burtonontrent.intelligentgolf.co.uk/"),
             new IntelligentGolfSessionOperationGate(),
             NullLogger<IntelligentGolfTransport>.Instance);
 
@@ -30,9 +30,9 @@ public sealed class IntelligentGolfTransportMultipartTests
 
         var request = Assert.Single(handler.Requests);
         Assert.Equal("XMLHttpRequest", Assert.Single(request.RequestedWith));
-        Assert.Equal("https://www.botgc.co.uk", request.Origin);
+        Assert.Equal("https://burtonontrent.intelligentgolf.co.uk", request.Origin);
         Assert.Equal(
-            "https://www.botgc.co.uk/compadmin3.php?compid=8541&tab=settings",
+            "https://burtonontrent.intelligentgolf.co.uk/compadmin3.php?compid=8541&tab=settings",
             request.Referrer?.ToString());
     }
 
@@ -43,7 +43,7 @@ public sealed class IntelligentGolfTransportMultipartTests
         var client = new HttpClient(handler);
         var transport = new IntelligentGolfTransport(
             new SingleClientFactory(client),
-            new AuthenticatedSession("https://www.botgc.co.uk/"),
+            new AuthenticatedSession("https://burtonontrent.intelligentgolf.co.uk/"),
             new IntelligentGolfSessionOperationGate(),
             NullLogger<IntelligentGolfTransport>.Instance);
         byte[] png = [137, 80, 78, 71, 13, 10, 26, 10, 1, 2, 3];
@@ -61,12 +61,12 @@ public sealed class IntelligentGolfTransportMultipartTests
         var request = Assert.Single(handler.Requests);
         Assert.Equal(HttpMethod.Post, request.Method);
         Assert.Equal(
-            "https://www.botgc.co.uk/event.php?eventid=4743&requestType=ajax&ajaxaction=eventimageupload",
+            "https://burtonontrent.intelligentgolf.co.uk/event.php?eventid=4743&requestType=ajax&ajaxaction=eventimageupload",
             request.Uri.ToString());
         Assert.Equal("XMLHttpRequest", Assert.Single(request.RequestedWith));
         Assert.Equal("*/*", Assert.Single(request.Accept));
-        Assert.Equal("https://www.botgc.co.uk", request.Origin);
-        Assert.Equal("https://www.botgc.co.uk/event.php?eventid=4743", request.Referrer?.ToString());
+        Assert.Equal("https://burtonontrent.intelligentgolf.co.uk", request.Origin);
+        Assert.Equal("https://burtonontrent.intelligentgolf.co.uk/event.php?eventid=4743", request.Referrer?.ToString());
         Assert.StartsWith("multipart/form-data; boundary=", request.ContentType, StringComparison.OrdinalIgnoreCase);
 
         var body = Encoding.GetEncoding(28591).GetString(request.Body);
@@ -89,7 +89,7 @@ public sealed class IntelligentGolfTransportMultipartTests
         var client = new HttpClient(handler);
         var transport = new IntelligentGolfTransport(
             new SingleClientFactory(client),
-            new AuthenticatedSession("https://www.botgc.co.uk/"),
+            new AuthenticatedSession("https://burtonontrent.intelligentgolf.co.uk/"),
             new IntelligentGolfSessionOperationGate(),
             NullLogger<IntelligentGolfTransport>.Instance);
 
@@ -101,12 +101,12 @@ public sealed class IntelligentGolfTransportMultipartTests
         var request = Assert.Single(handler.Requests);
         Assert.Equal(HttpMethod.Post, request.Method);
         Assert.Equal(
-            "https://www.botgc.co.uk/event.php?eventid=4743&requestType=ajax&ajaxaction=eventdetailssave",
+            "https://burtonontrent.intelligentgolf.co.uk/event.php?eventid=4743&requestType=ajax&ajaxaction=eventdetailssave",
             request.Uri.ToString());
         Assert.Equal("XMLHttpRequest", Assert.Single(request.RequestedWith));
         Assert.Equal("*/*", Assert.Single(request.Accept));
-        Assert.Equal("https://www.botgc.co.uk", request.Origin);
-        Assert.Equal("https://www.botgc.co.uk/event.php?eventid=4743", request.Referrer?.ToString());
+        Assert.Equal("https://burtonontrent.intelligentgolf.co.uk", request.Origin);
+        Assert.Equal("https://burtonontrent.intelligentgolf.co.uk/event.php?eventid=4743", request.Referrer?.ToString());
         Assert.StartsWith(
             "application/x-www-form-urlencoded",
             request.ContentType,
@@ -121,7 +121,7 @@ public sealed class IntelligentGolfTransportMultipartTests
         var client = new HttpClient(handler);
         var transport = new IntelligentGolfTransport(
             new SingleClientFactory(client),
-            new AuthenticatedSession("https://www.botgc.co.uk/"),
+            new AuthenticatedSession("https://burtonontrent.intelligentgolf.co.uk/"),
             new IntelligentGolfSessionOperationGate(),
             NullLogger<IntelligentGolfTransport>.Instance);
 
@@ -138,13 +138,13 @@ public sealed class IntelligentGolfTransportMultipartTests
         var request = Assert.Single(handler.Requests);
         Assert.Equal(HttpMethod.Post, request.Method);
         Assert.Equal(
-            "https://www.botgc.co.uk/eventview.php?date=12-12-2026&view=month&subView=all&organise=event&requestType=ajax&ajaxaction=displaymonthtable",
+            "https://burtonontrent.intelligentgolf.co.uk/eventview.php?date=12-12-2026&view=month&subView=all&organise=event&requestType=ajax&ajaxaction=displaymonthtable",
             request.Uri.ToString());
         Assert.Equal("XMLHttpRequest", Assert.Single(request.RequestedWith));
         Assert.Equal("*/*", Assert.Single(request.Accept));
-        Assert.Equal("https://www.botgc.co.uk", request.Origin);
+        Assert.Equal("https://burtonontrent.intelligentgolf.co.uk", request.Origin);
         Assert.Equal(
-            "https://www.botgc.co.uk/eventview.php?date=12-12-2026&view=month&subView=all&organise=event",
+            "https://burtonontrent.intelligentgolf.co.uk/eventview.php?date=12-12-2026&view=month&subView=all&organise=event",
             request.Referrer?.ToString());
         Assert.Equal(
             "date=12-12-2026&view=month&subView=all&organise=event",
@@ -158,7 +158,7 @@ public sealed class IntelligentGolfTransportMultipartTests
         var client = new HttpClient(handler);
         var transport = new IntelligentGolfTransport(
             new SingleClientFactory(client),
-            new AuthenticatedSession("https://www.botgc.co.uk/"),
+            new AuthenticatedSession("https://burtonontrent.intelligentgolf.co.uk/"),
             new IntelligentGolfSessionOperationGate(),
             NullLogger<IntelligentGolfTransport>.Instance);
 
@@ -174,7 +174,7 @@ public sealed class IntelligentGolfTransportMultipartTests
 
         var request = Assert.Single(handler.Requests);
         Assert.Equal(
-            "https://www.botgc.co.uk/event.php?eventid=4743&tab=ticket_admin",
+            "https://burtonontrent.intelligentgolf.co.uk/event.php?eventid=4743&tab=ticket_admin",
             request.Referrer?.ToString());
         Assert.Equal(
             "max_tickets=100&show_for_members=on&max_tickets_member=4&max_tickets_visitor=",
@@ -187,7 +187,7 @@ public sealed class IntelligentGolfTransportMultipartTests
         var handler = new RecordingHandler();
         var transport = new IntelligentGolfTransport(
             new SingleClientFactory(new HttpClient(handler)),
-            new AuthenticatedSession("https://www.botgc.co.uk/"),
+            new AuthenticatedSession("https://burtonontrent.intelligentgolf.co.uk/"),
             new IntelligentGolfSessionOperationGate(),
             NullLogger<IntelligentGolfTransport>.Instance);
 
@@ -205,7 +205,7 @@ public sealed class IntelligentGolfTransportMultipartTests
             CancellationToken.None);
 
         var request = Assert.Single(handler.Requests);
-        Assert.Equal("https://www.botgc.co.uk/event.php?eventid=4743&tab=notes", request.Referrer?.ToString());
+        Assert.Equal("https://burtonontrent.intelligentgolf.co.uk/event.php?eventid=4743&tab=notes", request.Referrer?.ToString());
         Assert.Equal(
             "noteid=&member_id=&eventid=4743&actiontype=0&followupdate=&assigned_userid=83642&note=This+event+was+created+by+the+Event+Playbook",
             Encoding.UTF8.GetString(request.Body));

@@ -17,7 +17,7 @@ public sealed class EventPlannerEventMatchingTests
     private const string DisplayMonthPath =
         "/eventview.php?date=12-12-2026&view=month&subView=all&organise=event&requestType=ajax&ajaxaction=displaymonthtable";
     private static readonly IIntelligentGolfSession Session =
-        new AuthenticatedSession("https://www.botgc.co.uk/");
+        new AuthenticatedSession("https://burtonontrent.intelligentgolf.co.uk/");
 
     [Fact]
     public async Task Synchronise_WhenDateAlreadyHasEvents_ReturnsCandidatesWithoutAllocatingOrUpdating()
@@ -135,7 +135,7 @@ public sealed class EventPlannerEventMatchingTests
             {
                 return Response(
                     string.Empty,
-                    "https://www.botgc.co.uk/eventadmin.php?group=-1&booking=4800");
+                    "https://burtonontrent.intelligentgolf.co.uk/eventadmin.php?group=-1&booking=4800");
             }
 
             if (request.Path == "/event.php?eventid=4800") return Response("<html></html>");
@@ -180,7 +180,7 @@ public sealed class EventPlannerEventMatchingTests
             if (request.Path == DisplayMonthPath)
                 return Response(DisplayMonthResponse(string.Empty));
             if (request.Path == "/eventadmin.php?group=-1&booking=-1&date=12-12-2026&")
-                return Response(string.Empty, "https://www.botgc.co.uk/eventadmin.php?group=-1&booking=4801");
+                return Response(string.Empty, "https://burtonontrent.intelligentgolf.co.uk/eventadmin.php?group=-1&booking=4801");
             if (request.Path == "/event.php?eventid=4801") return Response("<html></html>");
             if (request.Method == HttpMethod.Post &&
                 request.Path == "/event.php?eventid=4801&requestType=ajax&ajaxaction=confirmeditevent")
@@ -393,7 +393,7 @@ public sealed class EventPlannerEventMatchingTests
                 """, "<a href=\"eventadmin.php?group=151&amp;booking=4745\">Wrong-day event</a>")),
             "/event.php?eventid=4423" => Response(
                 KnownPlannerBookingDetailsHtml,
-                "https://www.botgc.co.uk/event.php?eventid=4423"),
+                "https://burtonontrent.intelligentgolf.co.uk/event.php?eventid=4423"),
             _ => throw Unexpected(request)
         });
         var handler = new ListPlannerEventCandidatesHandler(transport, Session);
@@ -439,7 +439,7 @@ public sealed class EventPlannerEventMatchingTests
         {
             "/event.php?eventid=4423" => Response(
                 KnownPlannerBookingDetailsHtml,
-                "https://www.botgc.co.uk/event.php?eventid=4423"),
+                "https://burtonontrent.intelligentgolf.co.uk/event.php?eventid=4423"),
             _ => throw Unexpected(request)
         });
         var handler = new LookupPlannerEventHandler(transport, Session);
@@ -462,7 +462,7 @@ public sealed class EventPlannerEventMatchingTests
         {
             "/event.php?eventid=4423" => Response(
                 "<input name='eventid' value='4423'>" + KnownPlannerBookingDetailsHtml,
-                "https://www.botgc.co.uk/event.php?eventid=4423"),
+                "https://burtonontrent.intelligentgolf.co.uk/event.php?eventid=4423"),
             _ => throw Unexpected(request)
         });
         var handler = new LookupPlannerEventHandler(transport, Session);
@@ -477,9 +477,9 @@ public sealed class EventPlannerEventMatchingTests
     }
 
     [Theory]
-    [InlineData("https://www.botgc.co.uk/event.php?eventid=4745")]
-    [InlineData("https://www.botgc.co.uk/event.php")]
-    [InlineData("https://www.botgc.co.uk/eventadmin.php?eventid=4423")]
+    [InlineData("https://burtonontrent.intelligentgolf.co.uk/event.php?eventid=4745")]
+    [InlineData("https://burtonontrent.intelligentgolf.co.uk/event.php")]
+    [InlineData("https://burtonontrent.intelligentgolf.co.uk/eventadmin.php?eventid=4423")]
     [InlineData("https://not-botgc.example/event.php?eventid=4423")]
     [InlineData("/eventadmin.php?eventid=4423")]
     public async Task LookupPlannerEvent_WhenBookingDetailsFinalUriDoesNotIdentifyRequestedEvent_Rejects(
@@ -501,7 +501,7 @@ public sealed class EventPlannerEventMatchingTests
     }
 
     [Theory]
-    [InlineData("https://www.botgc.co.uk/eventadmin.php?eventid=4423")]
+    [InlineData("https://burtonontrent.intelligentgolf.co.uk/eventadmin.php?eventid=4423")]
     [InlineData("https://elsewhere.example/event.php?eventid=4423")]
     [InlineData("/event.php?eventid=4745")]
     public async Task LookupPlannerEvent_WhenFormMatchesButFinalUriIsNotRequestedEvent_Rejects(

@@ -53,7 +53,7 @@ Secrets belong in Render's Environment settings. Do not commit them to Git, the 
 | Variable | Required | Purpose |
 | --- | --- | --- |
 | `EventPlaybookApi__ApiKey` | Yes outside Development | Required in the `X-Api-Key` header for every domain endpoint. Health and Swagger are exempt. |
-| `IntelligentGolf__BaseUrl` | No | Defaults to `https://www.botgc.co.uk`. |
+| `IntelligentGolf__BaseUrl` | No | Defaults to `https://burtonontrent.intelligentgolf.co.uk`. |
 | `IntelligentGolf__MemberId` | Legacy fallback only | Normally supplied securely by the Web service from Plugin administration. |
 | `IntelligentGolf__MemberPassword` | Legacy fallback only | Normally supplied securely by the Web service from Plugin administration. |
 | `IntelligentGolf__AdminPassword` | Legacy fallback only | Normally supplied securely by the Web service from Plugin administration. |

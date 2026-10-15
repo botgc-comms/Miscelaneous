@@ -162,7 +162,7 @@ public sealed class EventPlannerNotesTests
     private sealed class AuthenticatedSession : IIntelligentGolfSession
     {
         public IntelligentGolfSessionStatus Status { get; } = new(true, null, DateTimeOffset.UtcNow, null);
-        public string BaseUrl => "https://www.botgc.co.uk/";
+        public string BaseUrl => "https://burtonontrent.intelligentgolf.co.uk/";
         public string? MemberId => "83642";
         public IntelligentGolfEmailSenderIdentity EmailSender { get; } = new(null, null, null);
         public Task<IntelligentGolfSessionGrant> AuthenticateAsync(IntelligentGolfCredentials credentials, CancellationToken cancellationToken = default) => throw new NotSupportedException();
