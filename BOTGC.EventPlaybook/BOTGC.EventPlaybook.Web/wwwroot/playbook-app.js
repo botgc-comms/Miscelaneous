@@ -48,6 +48,8 @@
     cancelled: { label: 'Cancelled', summary: 'The event has been cancelled. The change-response checklist is active.' },
     completed: { label: 'Completed', summary: 'The event has finished and can be reviewed or reused.' }
   });
+  const CATALOGUE_EVENT_STATUSES = Object.freeze(
+    Object.keys(EVENT_STATUS_DEFINITIONS).filter(status => status !== 'idea'));
 
   const EVENT_RECORD_TYPES = Object.freeze({
     event: { label: 'Event to plan', summary: 'Create the operational plan, milestones and tasks now.' },
@@ -239,6 +241,7 @@
   let sharedStateSavePending = false;
   let applyingSharedState = false;
   let catalogueIdeasExpanded = false;
+  let catalogueSearchRenderTimer = null;
   const catalogueArtworkRecoveryChecks = new Map();
   let browserStateCacheMode = 'full';
   let browserStateCacheWarningShown = false;
@@ -311,6 +314,9 @@
           activeEventId: sessionUi.activeEventId,
           activeView: sessionUi.activeView,
           catalogueFilter: sessionUi.catalogueFilter,
+          catalogueSearch: sessionUi.catalogueSearch,
+          catalogueSort: sessionUi.catalogueSort,
+          catalogueStatuses: sessionUi.catalogueStatuses,
           taskFilter: 'open',
           dashboardTaskFilter: 'open',
           taskBoardMode: 'mine',
@@ -335,6 +341,9 @@
         activeEventId: sessionUi.activeEventId,
         activeView: sessionUi.activeView,
         catalogueFilter: sessionUi.catalogueFilter,
+        catalogueSearch: sessionUi.catalogueSearch,
+        catalogueSort: sessionUi.catalogueSort,
+        catalogueStatuses: sessionUi.catalogueStatuses,
         taskFilter: parsed.taskFilter ?? 'open',
         dashboardTaskFilter: ['open', 'done', 'all'].includes(parsed.dashboardTaskFilter) ? parsed.dashboardTaskFilter : 'open',
         taskBoardMode: parsed.taskBoardMode === 'overview' ? 'overview' : 'mine',
@@ -357,6 +366,9 @@
         activeEventId: sessionUi.activeEventId,
         activeView: sessionUi.activeView,
         catalogueFilter: sessionUi.catalogueFilter,
+        catalogueSearch: sessionUi.catalogueSearch,
+        catalogueSort: sessionUi.catalogueSort,
+        catalogueStatuses: sessionUi.catalogueStatuses,
         taskFilter: 'open',
         dashboardTaskFilter: 'open',
         taskBoardMode: 'mine',
@@ -382,11 +394,26 @@
       return {
         activeEventId: typeof parsed.activeEventId === 'string' && parsed.activeEventId ? parsed.activeEventId : null,
         activeView: typeof parsed.activeView === 'string' && parsed.activeView ? parsed.activeView : 'dashboard',
-        catalogueFilter: ['all', 'events', 'ideas'].includes(parsed.catalogueFilter) ? parsed.catalogueFilter : 'all'
+        catalogueFilter: ['all', 'events', 'ideas'].includes(parsed.catalogueFilter) ? parsed.catalogueFilter : 'all',
+        catalogueSearch: typeof parsed.catalogueSearch === 'string' ? parsed.catalogueSearch.substring(0, 200) : '',
+        catalogueSort: ['event-date', 'planning-start'].includes(parsed.catalogueSort) ? parsed.catalogueSort : 'event-date',
+        catalogueStatuses: normaliseCatalogueStatuses(parsed.catalogueStatuses)
       };
     } catch {
-      return { activeEventId: null, activeView: 'dashboard', catalogueFilter: 'all' };
+      return {
+        activeEventId: null,
+        activeView: 'dashboard',
+        catalogueFilter: 'all',
+        catalogueSearch: '',
+        catalogueSort: 'event-date',
+        catalogueStatuses: [...CATALOGUE_EVENT_STATUSES]
+      };
     }
+  }
+
+  function normaliseCatalogueStatuses(value) {
+    if (!Array.isArray(value)) return [...CATALOGUE_EVENT_STATUSES];
+    return [...new Set(value.filter(status => CATALOGUE_EVENT_STATUSES.includes(status)))];
   }
 
   async function initialiseAccessSession() {
@@ -1301,6 +1328,9 @@
       activeEventId: _activeEventId,
       activeView: _activeView,
       catalogueFilter: _catalogueFilter,
+      catalogueSearch: _catalogueSearch,
+      catalogueSort: _catalogueSort,
+      catalogueStatuses: _catalogueStatuses,
       ...browserState
     } = state;
     if (!compact) return JSON.stringify(browserState);
@@ -1338,7 +1368,10 @@
       sessionStorage.setItem(STORAGE_SESSION_UI, JSON.stringify({
         activeEventId: state.activeEventId ?? null,
         activeView: state.activeView ?? 'dashboard',
-        catalogueFilter: state.catalogueFilter ?? 'all'
+        catalogueFilter: state.catalogueFilter ?? 'all',
+        catalogueSearch: String(state.catalogueSearch ?? '').substring(0, 200),
+        catalogueSort: state.catalogueSort === 'planning-start' ? 'planning-start' : 'event-date',
+        catalogueStatuses: normaliseCatalogueStatuses(state.catalogueStatuses)
       }));
     } catch (error) {
       console.warn('This tab could not retain its selected event and view.', error);
@@ -8277,10 +8310,36 @@
     return tasks.sort((a, b) => (a.dueDate ?? '9999-99-99').localeCompare(b.dueDate ?? '9999-99-99'));
   }
 
-  function catalogueYear(event) {
-    if (event.eventDate && /^\d{4}-/.test(event.eventDate)) return event.eventDate.substring(0, 4);
-    if (event.createdAt && /^\d{4}-/.test(event.createdAt)) return event.createdAt.substring(0, 4);
-    return 'Date not set';
+  function cataloguePlanningStartedAt(event) {
+    return event?.idea?.adoptedAt || event?.createdAt || '';
+  }
+
+  function catalogueSortDate(event, sortMode) {
+    return sortMode === 'planning-start'
+      ? cataloguePlanningStartedAt(event)
+      : event?.eventDate || '';
+  }
+
+  function catalogueGroupLabel(event, sortMode) {
+    const value = catalogueSortDate(event, sortMode);
+    if (value && /^\d{4}-/.test(value)) return value.substring(0, 4);
+    return sortMode === 'planning-start' ? 'Planning date not recorded' : 'Event date not set';
+  }
+
+  function catalogueEventMatchesSearch(event, searchTerm) {
+    if (!searchTerm) return true;
+    const lifecycle = normaliseEventLifecycle(event);
+    const status = EVENT_STATUS_DEFINITIONS[lifecycle.status]?.label || lifecycle.status || '';
+    const haystack = [
+      event.name,
+      event.description,
+      event.organiser,
+      event.idea?.proposedBy,
+      event.eventDate,
+      cataloguePlanningStartedAt(event),
+      status
+    ].filter(Boolean).join(' ').toLocaleLowerCase('en-GB');
+    return haystack.includes(searchTerm);
   }
 
   function isRecoverableCatalogueArtworkSource(value) {
@@ -8401,25 +8460,48 @@
     const catalogueFilter = ['all', 'events', 'ideas'].includes(state.catalogueFilter)
       ? state.catalogueFilter
       : 'all';
+    const catalogueSearch = String(state.catalogueSearch ?? '').trim();
+    const searchTerm = catalogueSearch.toLocaleLowerCase('en-GB');
+    const catalogueSort = state.catalogueSort === 'planning-start' ? 'planning-start' : 'event-date';
+    const selectedStatuses = normaliseCatalogueStatuses(state.catalogueStatuses);
+    const selectedStatusSet = new Set(selectedStatuses);
     const showIdeas = catalogueFilter !== 'events';
     const showEvents = catalogueFilter !== 'ideas';
-    const ideasExpanded = catalogueFilter === 'ideas' || catalogueIdeasExpanded;
+    const ideasExpanded = catalogueFilter === 'ideas' || catalogueIdeasExpanded || Boolean(searchTerm);
     const catalogueEvents = state.events.filter(event => !isSeriesOccurrence(event));
-    const ideas = catalogueEvents
-      .filter(isEventIdea)
+    const allIdeas = catalogueEvents.filter(isEventIdea);
+    const allEvents = catalogueEvents.filter(event => !isEventIdea(event));
+    const ideas = allIdeas
+      .filter(event => catalogueEventMatchesSearch(event, searchTerm))
       .sort((a, b) => String(b.idea?.proposedAt || b.createdAt || '').localeCompare(String(a.idea?.proposedAt || a.createdAt || '')));
-    const sortedEvents = catalogueEvents.filter(event => !isEventIdea(event)).sort((a, b) => {
-      const aDate = a.eventDate || a.createdAt || '';
-      const bDate = b.eventDate || b.createdAt || '';
-      return bDate.localeCompare(aDate);
-    });
+    const searchedEvents = allEvents.filter(event => catalogueEventMatchesSearch(event, searchTerm));
+    const statusCounts = Object.fromEntries(CATALOGUE_EVENT_STATUSES.map(status => [
+      status,
+      searchedEvents.filter(event => normaliseEventLifecycle(event).status === status).length
+    ]));
+    const sortedEvents = searchedEvents
+      .filter(event => selectedStatusSet.has(normaliseEventLifecycle(event).status))
+      .sort((a, b) => {
+        const aDate = catalogueSortDate(a, catalogueSort);
+        const bDate = catalogueSortDate(b, catalogueSort);
+        if (!aDate && bDate) return 1;
+        if (aDate && !bDate) return -1;
+        return bDate.localeCompare(aDate) || String(a.name ?? '').localeCompare(String(b.name ?? ''), 'en-GB');
+      });
     scheduleMissingCatalogueArtworkRecovery([...ideas, ...sortedEvents]);
 
     for (const event of sortedEvents) {
-      const year = catalogueYear(event);
+      const year = catalogueGroupLabel(event, catalogueSort);
       if (!grouped.has(year)) grouped.set(year, []);
       grouped.get(year).push(event);
     }
+
+    const filtersChanged = Boolean(catalogueSearch) ||
+      catalogueFilter !== 'all' ||
+      catalogueSort !== 'event-date' ||
+      selectedStatuses.length !== CATALOGUE_EVENT_STATUSES.length;
+    const matchingRecordCount = (showIdeas ? ideas.length : 0) + (showEvents ? sortedEvents.length : 0);
+    const matchingRecordLabel = `${matchingRecordCount} matching ${matchingRecordCount === 1 ? 'record' : 'records'}`;
 
     return `
       <section class="catalogue-intro">
@@ -8431,14 +8513,41 @@
         <button class="button button-primary button-large" data-action="new-event">Create new event</button>
       </section>
 
-      <nav class="catalogue-filter-bar" aria-label="Filter event catalogue">
-        <span>Show</span>
-        <div class="catalogue-filter-options" role="group" aria-label="Catalogue record type">
-          <button type="button" class="catalogue-filter-button ${catalogueFilter === 'all' ? 'active' : ''}" data-catalogue-filter="all" aria-pressed="${catalogueFilter === 'all'}">All <strong>${catalogueEvents.length}</strong></button>
-          <button type="button" class="catalogue-filter-button ${catalogueFilter === 'events' ? 'active' : ''}" data-catalogue-filter="events" aria-pressed="${catalogueFilter === 'events'}">Events <strong>${sortedEvents.length}</strong></button>
-          <button type="button" class="catalogue-filter-button ${catalogueFilter === 'ideas' ? 'active' : ''}" data-catalogue-filter="ideas" aria-pressed="${catalogueFilter === 'ideas'}">Ideas <strong>${ideas.length}</strong></button>
+      <section class="catalogue-filter-bar" aria-label="Filter event catalogue">
+        <div class="catalogue-filter-primary">
+          <div class="catalogue-filter-group">
+            <span class="catalogue-filter-label">Show</span>
+            <div class="catalogue-filter-options" role="group" aria-label="Catalogue record type">
+              <button type="button" class="catalogue-filter-button ${catalogueFilter === 'all' ? 'active' : ''}" data-catalogue-filter="all" aria-pressed="${catalogueFilter === 'all'}">All <strong>${catalogueEvents.length}</strong></button>
+              <button type="button" class="catalogue-filter-button ${catalogueFilter === 'events' ? 'active' : ''}" data-catalogue-filter="events" aria-pressed="${catalogueFilter === 'events'}">Events <strong>${allEvents.length}</strong></button>
+              <button type="button" class="catalogue-filter-button ${catalogueFilter === 'ideas' ? 'active' : ''}" data-catalogue-filter="ideas" aria-pressed="${catalogueFilter === 'ideas'}">Ideas <strong>${allIdeas.length}</strong></button>
+            </div>
+          </div>
+          <label class="catalogue-search-field">
+            <span>Search</span>
+            <input id="catalogue-search" type="search" maxlength="200" autocomplete="off" placeholder="Search events, descriptions or organisers" value="${escapeHtml(catalogueSearch)}">
+          </label>
+          <label class="catalogue-sort-field">
+            <span>Arrange events by</span>
+            <select id="catalogue-sort">
+              <option value="event-date" ${catalogueSort === 'event-date' ? 'selected' : ''}>Event date · newest first</option>
+              <option value="planning-start" ${catalogueSort === 'planning-start' ? 'selected' : ''}>Planning started · newest first</option>
+            </select>
+          </label>
         </div>
-      </nav>
+        <div class="catalogue-status-row">
+          <span class="catalogue-filter-label">Event status</span>
+          <div class="catalogue-status-options" role="group" aria-label="Show or hide events by status">
+            ${CATALOGUE_EVENT_STATUSES.map(status => {
+              const definition = EVENT_STATUS_DEFINITIONS[status];
+              const selected = selectedStatusSet.has(status);
+              return `<button type="button" class="catalogue-status-button status-${escapeHtml(status)} ${selected ? 'active' : ''}" data-catalogue-status-filter="${escapeHtml(status)}" aria-pressed="${selected}"><span aria-hidden="true"></span>${escapeHtml(definition.label)} <strong>${statusCounts[status]}</strong></button>`;
+            }).join('')}
+          </div>
+          ${filtersChanged ? '<button type="button" class="catalogue-reset-filters" data-reset-catalogue-filters>Reset filters</button>' : ''}
+        </div>
+        <p class="catalogue-filter-result" aria-live="polite">${escapeHtml(matchingRecordLabel)}</p>
+      </section>
 
       ${showIdeas ? `
         <section class="catalogue-ideas-section" aria-labelledby="catalogue-ideas-heading">
@@ -8455,6 +8564,12 @@
           </div>
           ${!ideasExpanded ? '' : ideas.length
             ? `<div class="catalogue-grid catalogue-ideas-grid">${ideas.map(renderIdeaCatalogueCard).join('')}</div>`
+            : allIdeas.length && searchTerm
+              ? `<div class="catalogue-ideas-empty-inline">
+                  <span class="catalogue-idea-mark" aria-hidden="true">⌕</span>
+                  <div><strong>No ideas match this search</strong><p>Change the search wording or reset the catalogue filters.</p></div>
+                  <button class="button button-secondary" type="button" data-reset-catalogue-filters>Reset filters</button>
+                </div>`
             : `<div class="catalogue-ideas-empty-inline">
                 <span class="catalogue-idea-mark" aria-hidden="true">✦</span>
                 <div><strong>No ideas have been recorded yet</strong><p>Existing events are not automatically reclassified. Add a proposal here when it should remain outside operational planning until the club agrees to proceed.</p></div>
@@ -8462,7 +8577,13 @@
               </div>`}
         </section>` : ''}
 
-      ${showEvents && sortedEvents.length === 0 ? `
+      ${showEvents && sortedEvents.length === 0 ? allEvents.length ? `
+        <section class="empty-catalogue-state catalogue-events-empty">
+          <span class="eyebrow">No matching events</span>
+          <h2>Nothing matches the current filters</h2>
+          <p>Try another search or show more event statuses.</p>
+          <button class="button button-secondary" type="button" data-reset-catalogue-filters>Reset filters</button>
+        </section>` : `
         <section class="empty-catalogue-state catalogue-events-empty">
           <span class="eyebrow">No adopted events yet</span>
           <h2>Ideas can stay here until the club agrees</h2>
@@ -8474,13 +8595,13 @@
         <section class="catalogue-year-section">
           <div class="catalogue-year-heading">
             <div>
-              <span class="eyebrow">Events</span>
+              <span class="eyebrow">${catalogueSort === 'planning-start' ? 'Planning started' : 'Event date'}</span>
               <h3>${escapeHtml(year)}</h3>
             </div>
             <span>${events.length} event${events.length === 1 ? '' : 's'}</span>
           </div>
           <div class="catalogue-grid">
-            ${events.map(event => renderCatalogueCard(event)).join('')}
+            ${events.map(event => renderCatalogueCard(event, catalogueSort)).join('')}
           </div>
         </section>`).join('') : ''}
     `;
@@ -8535,7 +8656,7 @@
       </article>`;
   }
 
-  function renderCatalogueCard(event) {
+  function renderCatalogueCard(event, sortMode = 'event-date') {
     if (isEventIdea(event)) return renderIdeaCatalogueCard(event);
     const lifecycle = normaliseEventLifecycle(event);
     const statusDefinition = eventStatusDefinition(event);
@@ -8562,6 +8683,10 @@
     const legacyPortraitClass = catalogueArtwork && sourceIsSquare === false && thumbnailMode !== 'cover'
       ? sourceOutputId === 'a4' ? ' legacy-fitted-a4' : ' legacy-fitted-portrait'
       : '';
+    const planningStartedAt = cataloguePlanningStartedAt(event);
+    const catalogueDateLabel = sortMode === 'planning-start'
+      ? `Planning started ${planningStartedAt ? formatDate(planningStartedAt.substring(0, 10)) : 'date not recorded'}${event.eventDate ? ` · Event ${formatDate(event.eventDate)}` : ''}`
+      : event.eventDate ? formatDate(event.eventDate) : 'Event date not set';
     return `
       <article class="catalogue-card status-${escapeHtml(lifecycle.status)}${closed ? ' closed' : ''}${current ? ' current' : ''}">
         <button class="catalogue-poster" data-event-summary="${escapeHtml(event.id)}" aria-label="View summary for ${escapeHtml(event.name)}">
@@ -8575,7 +8700,7 @@
         <div class="catalogue-card-body">
           <div class="catalogue-card-heading">
             <div>
-              <span class="eyebrow">${escapeHtml(event.eventDate ? formatDate(event.eventDate) : 'Date not set')}</span>
+              <span class="eyebrow">${escapeHtml(catalogueDateLabel)}</span>
               <h3>${escapeHtml(event.name)}</h3>
             </div>
             <button class="catalogue-delete-event" type="button" data-delete-event="${escapeHtml(event.id)}" aria-label="Delete ${escapeHtml(event.name)}" title="Delete this event"><span aria-hidden="true">×</span> Delete</button>
@@ -12436,7 +12561,55 @@
         const filter = element.dataset.catalogueFilter;
         state.catalogueFilter = ['events', 'ideas'].includes(filter) ? filter : 'all';
         catalogueIdeasExpanded = state.catalogueFilter === 'ideas';
-        saveState();
+        cacheBrowserState();
+        render();
+      });
+    });
+
+    document.getElementById('catalogue-search')?.addEventListener('input', eventArgs => {
+      const input = eventArgs.currentTarget;
+      state.catalogueSearch = input.value.substring(0, 200);
+      cacheBrowserState();
+      if (catalogueSearchRenderTimer) clearTimeout(catalogueSearchRenderTimer);
+      catalogueSearchRenderTimer = setTimeout(() => {
+        catalogueSearchRenderTimer = null;
+        render();
+        requestAnimationFrame(() => {
+          const replacement = document.getElementById('catalogue-search');
+          if (!replacement) return;
+          replacement.focus({ preventScroll: true });
+          replacement.setSelectionRange(replacement.value.length, replacement.value.length);
+        });
+      }, 160);
+    });
+
+    document.getElementById('catalogue-sort')?.addEventListener('change', eventArgs => {
+      state.catalogueSort = eventArgs.currentTarget.value === 'planning-start' ? 'planning-start' : 'event-date';
+      cacheBrowserState();
+      render();
+    });
+
+    document.querySelectorAll('[data-catalogue-status-filter]').forEach(element => {
+      element.addEventListener('click', () => {
+        const status = element.dataset.catalogueStatusFilter;
+        if (!CATALOGUE_EVENT_STATUSES.includes(status)) return;
+        const selected = new Set(normaliseCatalogueStatuses(state.catalogueStatuses));
+        if (selected.has(status)) selected.delete(status);
+        else selected.add(status);
+        state.catalogueStatuses = CATALOGUE_EVENT_STATUSES.filter(candidate => selected.has(candidate));
+        cacheBrowserState();
+        render();
+      });
+    });
+
+    document.querySelectorAll('[data-reset-catalogue-filters]').forEach(element => {
+      element.addEventListener('click', () => {
+        state.catalogueFilter = 'all';
+        state.catalogueSearch = '';
+        state.catalogueSort = 'event-date';
+        state.catalogueStatuses = [...CATALOGUE_EVENT_STATUSES];
+        catalogueIdeasExpanded = false;
+        cacheBrowserState();
         render();
       });
     });
