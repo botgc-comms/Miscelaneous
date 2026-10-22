@@ -250,6 +250,9 @@
   let taskBoardDeepLinkTarget = null;
   const feedbackCache = new Map();
   const feedbackRequests = new Set();
+  const eventFileCache = new Map();
+  const eventFileRequests = new Map();
+  const eventFileMutations = new Set();
   const memberFeedbackSummaryRequests = new Map();
   const memberFeedbackSummaryFailedSignatures = new Map();
   const ticketBookingCache = new Map();
@@ -301,7 +304,7 @@
   let taskActionJustificationRequest = null;
   let taskActionReturnFocus = null;
   const requestedView = new URLSearchParams(window.location.search).get('view');
-  if (['dashboard', 'tasks', 'finances', 'briefing', 'catalogue', 'artwork', 'cancellation', 'retrospective', 'series', 'admin', 'plugins', 'references', 'directory'].includes(requestedView)) {
+  if (['dashboard', 'tasks', 'finances', 'briefing', 'catalogue', 'artwork', 'files', 'cancellation', 'retrospective', 'series', 'admin', 'plugins', 'references', 'directory'].includes(requestedView)) {
     state.activeView = requestedView;
   }
 
@@ -4867,6 +4870,184 @@
     })();
   }
 
+  function formatFileSize(value) {
+    const bytes = Number(value) || 0;
+    if (bytes < 1024) return `${bytes} B`;
+    const units = ['KB', 'MB', 'GB'];
+    let amount = bytes / 1024;
+    let unit = units[0];
+    for (let index = 1; index < units.length && amount >= 1024; index += 1) {
+      amount /= 1024;
+      unit = units[index];
+    }
+    return `${amount >= 10 ? amount.toFixed(0) : amount.toFixed(1)} ${unit}`;
+  }
+
+  function eventFileKind(file) {
+    const contentType = String(file?.contentType ?? '').toLocaleLowerCase();
+    const extension = String(file?.fileName ?? '').split('.').pop()?.toLocaleUpperCase() || 'FILE';
+    if (contentType.startsWith('image/')) return { className: 'image', label: 'IMG' };
+    if (contentType === 'application/pdf') return { className: 'pdf', label: 'PDF' };
+    if (contentType.includes('spreadsheet') || contentType.includes('excel') || ['XLS', 'XLSX', 'CSV'].includes(extension)) return { className: 'sheet', label: 'XLS' };
+    if (contentType.includes('word') || ['DOC', 'DOCX'].includes(extension)) return { className: 'document', label: 'DOC' };
+    return { className: 'other', label: extension.substring(0, 4) };
+  }
+
+  function renderEventFiles(event) {
+    const cache = eventFileCache.get(event.id) ?? { status: 'idle', files: [], notice: '', error: '' };
+    const files = Array.isArray(cache.files) ? cache.files : [];
+    const uploadKey = `${event.id}:upload`;
+    const uploading = eventFileMutations.has(uploadKey);
+    const totalBytes = files.reduce((sum, file) => sum + (Number(file.sizeBytes) || 0), 0);
+
+    return `<div class="event-files-page">
+      <section class="event-files-intro">
+        <div><span class="eyebrow">Event working library</span><h2>Files &amp; attachments</h2><p>Keep practical material with this event—from table plans and menus to supplier documents and photographs from the evening.</p></div>
+        <div class="event-files-summary"><strong>${files.length}</strong><span>${files.length === 1 ? 'file' : 'files'} · ${escapeHtml(formatFileSize(totalBytes))}</span></div>
+      </section>
+
+      <section class="event-files-upload-card">
+        <label class="event-files-dropzone ${uploading ? 'busy' : ''}" id="event-files-dropzone" for="event-files-input">
+          <input id="event-files-input" type="file" multiple ${uploading ? 'disabled' : ''}>
+          <span class="event-files-upload-icon" aria-hidden="true">↑</span>
+          <span><strong>${uploading ? 'Uploading files…' : 'Choose files or drop them here'}</strong><small>Any file type, up to 50 MB per file. Select several files at once if required.</small></span>
+        </label>
+        ${cache.notice ? `<p class="event-files-notice success" role="status">${escapeHtml(cache.notice)}</p>` : ''}
+        ${cache.error ? `<p class="event-files-notice error" role="alert">${escapeHtml(cache.error)}</p>` : ''}
+      </section>
+
+      <section class="event-files-library">
+        <header><div><span class="eyebrow">Attached to ${escapeHtml(event.name)}</span><h2>Event files</h2></div>${cache.status === 'ready' ? `<button class="button button-secondary" type="button" data-refresh-event-files>Refresh</button>` : ''}</header>
+        ${cache.status === 'loading' || cache.status === 'idle'
+          ? '<div class="event-files-loading"><span></span><p>Loading the files attached to this event…</p></div>'
+          : cache.status === 'error'
+            ? `<div class="event-files-empty error"><strong>Files could not be loaded</strong><p>${escapeHtml(cache.error || 'The file service returned an error.')}</p><button class="button button-secondary" type="button" data-refresh-event-files>Try again</button></div>`
+            : files.length
+              ? `<div class="event-files-list">${files.map(file => {
+                  const kind = eventFileKind(file);
+                  const mutationKey = `${event.id}:${file.id}`;
+                  const removing = eventFileMutations.has(mutationKey);
+                  const uploadedAt = file.uploadedAtUtc ? new Date(file.uploadedAtUtc).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' }) : 'Upload date unavailable';
+                  const downloadUrl = `/api/events/${encodeURIComponent(event.id)}/files/${encodeURIComponent(file.id)}`;
+                  return `<article class="event-file-row">
+                    <span class="event-file-type ${escapeHtml(kind.className)}" aria-hidden="true">${escapeHtml(kind.label)}</span>
+                    <div class="event-file-copy"><strong>${escapeHtml(file.fileName)}</strong><span>${escapeHtml(formatFileSize(file.sizeBytes))} · Uploaded ${escapeHtml(uploadedAt)}${file.uploadedBy ? ` by ${escapeHtml(file.uploadedBy)}` : ''}</span></div>
+                    <div class="event-file-actions"><a class="button button-secondary" href="${escapeHtml(downloadUrl)}" download="${escapeHtml(file.fileName)}">Download</a><button class="event-file-remove" type="button" data-remove-event-file="${escapeHtml(file.id)}" data-event-file-name="${escapeHtml(file.fileName)}" ${removing ? 'disabled' : ''}>${removing ? 'Removing…' : 'Remove'}</button></div>
+                  </article>`;
+                }).join('')}</div>`
+              : '<div class="event-files-empty"><span aria-hidden="true">▤</span><strong>No files attached yet</strong><p>Upload any material that the organiser or delivery team may need before, during or after the event.</p></div>'}
+      </section>
+    </div>`;
+  }
+
+  async function ensureEventFilesLoaded(eventId, force = false) {
+    const existing = eventFileCache.get(eventId);
+    if (!force && existing?.status === 'ready') return;
+    if (eventFileRequests.has(eventId)) return eventFileRequests.get(eventId);
+
+    eventFileCache.set(eventId, {
+      status: 'loading',
+      files: existing?.files ?? [],
+      notice: existing?.notice ?? '',
+      error: ''
+    });
+    const request = (async () => {
+      try {
+        const response = await fetch(`/api/events/${encodeURIComponent(eventId)}/files`, { cache: 'no-store' });
+        const payload = await response.json().catch(() => null);
+        if (!response.ok) throw new Error(payload?.error || `Event files could not be loaded (${response.status}).`);
+        eventFileCache.set(eventId, {
+          status: 'ready',
+          files: Array.isArray(payload) ? payload : [],
+          notice: eventFileCache.get(eventId)?.notice ?? '',
+          error: ''
+        });
+      } catch (error) {
+        eventFileCache.set(eventId, {
+          status: 'error',
+          files: existing?.files ?? [],
+          notice: '',
+          error: error.message || 'The event files could not be loaded.'
+        });
+      } finally {
+        eventFileRequests.delete(eventId);
+        if (state.activeView === 'files' && state.activeEventId === eventId) render();
+      }
+    })();
+    eventFileRequests.set(eventId, request);
+    return request;
+  }
+
+  async function uploadEventFiles(event, selectedFiles) {
+    const files = [...(selectedFiles ?? [])];
+    if (!files.length) return;
+    const invalid = files.find(file => file.size <= 0 || file.size > 50 * 1024 * 1024);
+    if (invalid) {
+      const current = eventFileCache.get(event.id) ?? { status: 'ready', files: [] };
+      eventFileCache.set(event.id, { ...current, notice: '', error: invalid.size <= 0 ? `${invalid.name} is empty.` : `${invalid.name} is larger than 50 MB.` });
+      render();
+      return;
+    }
+
+    const mutationKey = `${event.id}:upload`;
+    eventFileMutations.add(mutationKey);
+    const current = eventFileCache.get(event.id) ?? { status: 'ready', files: [] };
+    eventFileCache.set(event.id, { ...current, notice: '', error: '' });
+    render();
+    const failures = [];
+    let uploaded = 0;
+    try {
+      for (const file of files) {
+        try {
+          const response = await fetch(`/api/events/${encodeURIComponent(event.id)}/files?fileName=${encodeURIComponent(file.name)}`, {
+            method: 'POST',
+            headers: { 'Content-Type': file.type || 'application/octet-stream' },
+            body: file
+          });
+          const payload = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(payload.error || `${file.name} could not be uploaded (${response.status}).`);
+          uploaded += 1;
+        } catch (error) {
+          failures.push(error.message || `${file.name} could not be uploaded.`);
+        }
+      }
+    } finally {
+      eventFileMutations.delete(mutationKey);
+    }
+
+    if (eventFileRequests.has(event.id)) await eventFileRequests.get(event.id);
+    await ensureEventFilesLoaded(event.id, true);
+    const refreshed = eventFileCache.get(event.id) ?? { status: 'ready', files: [] };
+    eventFileCache.set(event.id, {
+      ...refreshed,
+      notice: uploaded ? `${uploaded} ${uploaded === 1 ? 'file' : 'files'} uploaded and attached to this event.` : '',
+      error: failures.join(' ')
+    });
+    if (state.activeView === 'files' && state.activeEventId === event.id) render();
+  }
+
+  async function removeEventFile(event, fileId, fileName) {
+    if (!confirm(`Remove “${fileName}” from this event? This permanently deletes the uploaded file.`)) return;
+    const mutationKey = `${event.id}:${fileId}`;
+    eventFileMutations.add(mutationKey);
+    render();
+    try {
+      const response = await fetch(`/api/events/${encodeURIComponent(event.id)}/files/${encodeURIComponent(fileId)}`, { method: 'DELETE' });
+      const payload = response.status === 204 ? {} : await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.error || `The file could not be removed (${response.status}).`);
+      if (eventFileRequests.has(event.id)) await eventFileRequests.get(event.id);
+      await ensureEventFilesLoaded(event.id, true);
+      const current = eventFileCache.get(event.id) ?? { status: 'ready', files: [] };
+      eventFileCache.set(event.id, { ...current, notice: `${fileName} was removed from this event.`, error: '' });
+    } catch (error) {
+      const current = eventFileCache.get(event.id) ?? { status: 'ready', files: [] };
+      eventFileCache.set(event.id, { ...current, notice: '', error: error.message || 'The file could not be removed.' });
+    } finally {
+      eventFileMutations.delete(mutationKey);
+      if (state.activeView === 'files' && state.activeEventId === event.id) render();
+    }
+  }
+
   function renderIntelligentGolfPlannerMatchBanner(event) {
     if (!pluginCapabilities.intelligentGolfEnabled || !event) return '';
     const status = intelligentGolfEventStatuses.get(event.id);
@@ -5661,6 +5842,7 @@
       : state.activeView === 'catalogue' ? 'Event Catalogue'
       : state.activeView === 'artwork' && event && isEventIdea(event) ? 'Idea Artwork'
       : state.activeView === 'artwork' ? 'Communications Centre'
+      : state.activeView === 'files' ? 'Event Files'
       : state.activeView === 'cancellation' ? 'Cancellation Control'
       : state.activeView === 'directory' ? 'People & Roles'
       : state.activeView === 'references' ? 'Image Library'
@@ -5676,6 +5858,7 @@
       : state.activeView === 'catalogue' ? 'Review previous events, clone successful plans and reuse the knowledge captured from earlier events.'
       : state.activeView === 'artwork' && event && isEventIdea(event) ? 'Create a visual concept for this proposal. The selected artwork is saved with the idea so people can judge it before it becomes an operational event.'
       : state.activeView === 'artwork' ? 'Create a campaign from three AI concepts or adapt an existing supplied design into matching artwork for screens, member communications and print.'
+      : state.activeView === 'files' ? 'Keep table plans, menus, photographs and every other supporting file with the event that they belong to.'
       : state.activeView === 'cancellation' ? 'Review every recorded publication and commitment, then coordinate the actions needed to withdraw or correct them.'
       : state.activeView === 'directory' ? 'Maintain the people, shared mailboxes, responsibilities and platform access used throughout every event.'
       : state.activeView === 'references' ? `Maintain reusable images of the clubhouse, course, trophies and interiors so Communications Centre artwork can look recognisably like ${clubBranding.clubName}.`
@@ -5686,7 +5869,7 @@
       : 'Plan the event consistently from first decision to final close-down, with every relevant question, responsibility and deadline in one place.';
     const showEventEditor = Boolean(event) && !ideaArtworkMode && state.activeView === 'module:start' && !isSeriesOccurrence(event);
     const showEventTools = Boolean(event) && !ideaArtworkMode && (isPlanningView || state.activeView === 'tasks' || state.activeView === 'retrospective');
-    const showLifecycleBanner = Boolean(event) && !ideaArtworkMode && (isPlanningView || ['tasks', 'finances', 'briefing', 'artwork', 'cancellation', 'retrospective', 'series'].includes(state.activeView));
+    const showLifecycleBanner = Boolean(event) && !ideaArtworkMode && (isPlanningView || ['tasks', 'finances', 'briefing', 'artwork', 'files', 'cancellation', 'retrospective', 'series'].includes(state.activeView));
     const lifecycle = event ? (ideaArtworkMode ? event.lifecycle : normaliseEventLifecycle(event)) : null;
     const lifecycleDefinition = event ? (ideaArtworkMode ? EVENT_STATUS_DEFINITIONS.idea : eventStatusDefinition(event)) : null;
 
@@ -5711,6 +5894,7 @@
             <button class="${state.activeView === 'finances' ? 'active' : ''}" data-view="finances" ${event && !ideaArtworkMode ? '' : 'disabled'}><span class="nav-icon">£</span>Event Finances</button>
             <button class="${state.activeView === 'series' ? 'active' : ''}" data-view="series" ${event && !ideaArtworkMode ? '' : 'disabled'}><span class="nav-icon">↻</span>${event && !ideaArtworkMode && (isRepeatingSeries(event) || isSeriesOccurrence(event)) ? 'Series Schedule' : 'Repeat Event'}</button>
             <button class="${state.activeView === 'artwork' ? 'active' : ''}" data-view="artwork" ${event ? '' : 'disabled'}><span class="nav-icon">✦</span>${ideaArtworkMode ? 'Idea Artwork' : 'Communications Centre'}</button>
+            <button class="${state.activeView === 'files' ? 'active' : ''}" data-view="files" ${event && !ideaArtworkMode ? '' : 'disabled'}><span class="nav-icon">▤</span>Files &amp; attachments</button>
             ${lifecycle?.status === 'cancelled' ? `<button class="cancellation-nav ${state.activeView === 'cancellation' ? 'active' : ''}" data-view="cancellation"><span class="nav-icon">!</span>Cancellation Control</button>` : ''}
             <button class="${state.activeView === 'retrospective' ? 'active' : ''}" data-view="retrospective" ${event && !ideaArtworkMode ? '' : 'disabled'}><span class="nav-icon">↺</span>Retrospectives</button>
           </nav>
@@ -5801,6 +5985,7 @@
               ${state.activeView === 'artwork' ? event && isEventIdea(event)
                   ? `<button class="button button-gold hero-page-action" type="button" data-adopt-idea="${escapeHtml(event.id)}">Adopt idea as event</button>`
                   : '<button id="shareTopButton" class="button button-gold hero-page-action" type="button" disabled>Share artwork</button>'
+                : state.activeView === 'files' ? '<button class="button button-gold hero-page-action" type="button" data-action="upload-event-files">Upload files</button>'
                 : state.activeView === 'directory' ? '<button class="button button-gold hero-page-action" data-action="add-directory-contact">Add person</button>'
                 : state.activeView === 'references' ? '<button class="button button-gold hero-page-action" data-action="add-library-image">Add image</button>'
                 : state.activeView === 'catalogue' ? '<button class="button button-gold hero-page-action" data-action="new-event">New event</button>'
@@ -5837,7 +6022,7 @@
           <main class="main-content ${state.activeView === 'artwork' ? 'poster-studio' : ''}">
             ${event && !isRepeatingSeries(event) ? renderIntelligentGolfPlannerMatchBanner(event) : ''}
             ${showLifecycleBanner ? renderEventLifecycleBanner(event) : ''}
-            ${state.activeView === 'dashboard' ? renderDashboard() : state.activeView === 'catalogue' ? renderCatalogue() : state.activeView === 'directory' ? renderDirectory() : state.activeView === 'references' ? renderReferenceLibrary() : state.activeView === 'plugins' ? renderPluginAdministration() : state.activeView === 'admin' ? renderAdmin() : !event ? renderEmptyState() : state.activeView === 'tasks' ? renderTaskBoard(event, tasks) : state.activeView === 'finances' ? renderEventFinances(event) : state.activeView === 'briefing' ? renderBriefing(event) : state.activeView === 'series' ? renderSeriesWorkspace(event) : state.activeView === 'artwork' ? renderArtworkStudio(event) : state.activeView === 'cancellation' ? renderCancellationWorkspace(event) : state.activeView === 'retrospective' ? renderRetrospective(event) : isPlanningView && isSeriesOccurrence(event) ? renderOccurrencePlan(event) : renderModuleView(event)}
+            ${state.activeView === 'dashboard' ? renderDashboard() : state.activeView === 'catalogue' ? renderCatalogue() : state.activeView === 'directory' ? renderDirectory() : state.activeView === 'references' ? renderReferenceLibrary() : state.activeView === 'plugins' ? renderPluginAdministration() : state.activeView === 'admin' ? renderAdmin() : !event ? renderEmptyState() : state.activeView === 'tasks' ? renderTaskBoard(event, tasks) : state.activeView === 'finances' ? renderEventFinances(event) : state.activeView === 'briefing' ? renderBriefing(event) : state.activeView === 'series' ? renderSeriesWorkspace(event) : state.activeView === 'artwork' ? renderArtworkStudio(event) : state.activeView === 'files' ? renderEventFiles(event) : state.activeView === 'cancellation' ? renderCancellationWorkspace(event) : state.activeView === 'retrospective' ? renderRetrospective(event) : isPlanningView && isSeriesOccurrence(event) ? renderOccurrencePlan(event) : renderModuleView(event)}
           </main>
         </main>
       </div>
@@ -5884,6 +6069,7 @@
       ensureTicketBookingsLoaded(event.id);
     }
     if (state.activeView === 'briefing' && event) ensureEventBriefing(event);
+    if (state.activeView === 'files' && event) ensureEventFilesLoaded(event.id);
     if (state.activeView === 'cancellation' && event && lifecycle?.status === 'cancelled') {
       import('./cancellation-app.js?v=20260918-cancellation-1')
         .then(module => module.mountCancellationWorkspace({
@@ -11783,6 +11969,50 @@
         if (state.activeView === 'tasks') state.taskBoardHorizon = 'auto';
         saveState();
         render();
+      });
+    });
+
+    document.querySelectorAll('[data-action="upload-event-files"]').forEach(element => {
+      element.addEventListener('click', () => document.getElementById('event-files-input')?.click());
+    });
+
+    document.getElementById('event-files-input')?.addEventListener('change', eventArgs => {
+      const activeEvent = getActiveEvent();
+      if (!activeEvent) return;
+      uploadEventFiles(activeEvent, eventArgs.currentTarget.files);
+    });
+
+    const eventFilesDropzone = document.getElementById('event-files-dropzone');
+    ['dragenter', 'dragover'].forEach(eventName => eventFilesDropzone?.addEventListener(eventName, eventArgs => {
+      eventArgs.preventDefault();
+      if (!eventFilesDropzone.classList.contains('busy')) eventFilesDropzone.classList.add('dragging');
+    }));
+    ['dragleave', 'drop'].forEach(eventName => eventFilesDropzone?.addEventListener(eventName, eventArgs => {
+      eventArgs.preventDefault();
+      eventFilesDropzone.classList.remove('dragging');
+    }));
+    eventFilesDropzone?.addEventListener('drop', eventArgs => {
+      const activeEvent = getActiveEvent();
+      if (!activeEvent || eventFilesDropzone.classList.contains('busy')) return;
+      uploadEventFiles(activeEvent, eventArgs.dataTransfer?.files);
+    });
+
+    document.querySelectorAll('[data-refresh-event-files]').forEach(element => {
+      element.addEventListener('click', () => {
+        const activeEvent = getActiveEvent();
+        if (!activeEvent) return;
+        const current = eventFileCache.get(activeEvent.id);
+        if (current) eventFileCache.set(activeEvent.id, { ...current, notice: '', error: '' });
+        ensureEventFilesLoaded(activeEvent.id, true);
+        render();
+      });
+    });
+
+    document.querySelectorAll('[data-remove-event-file]').forEach(element => {
+      element.addEventListener('click', () => {
+        const activeEvent = getActiveEvent();
+        if (!activeEvent) return;
+        removeEventFile(activeEvent, element.dataset.removeEventFile, element.dataset.eventFileName || 'this file');
       });
     });
 

@@ -134,6 +134,7 @@ builder.Services.AddSingleton<IRetrospectiveAnalysisService, RetrospectiveAnalys
 builder.Services.AddSingleton<IEventBriefingService, EventBriefingService>();
 builder.Services.AddSingleton<IPluginSettingsStore, PluginSettingsStore>();
 builder.Services.AddSingleton<IClubBrandingStore, ClubBrandingStore>();
+builder.Services.AddSingleton<IEventFileStore, EventFileStore>();
 builder.Services.AddSingleton<IPlaybookTemplateStore, PlaybookTemplateStore>();
 builder.Services.AddSingleton<IPlaybookAssistantService, PlaybookAssistantService>();
 builder.Services.AddSingleton<PrototypePersistenceStore>();
@@ -1374,6 +1375,111 @@ app.MapPut("/api/shared-state", async (
         await eventChangePublisher.PublishAsync(previous.State, result.Document.State, cancellationToken);
     }
     return result.Conflict ? Results.Conflict(result.Document) : Results.Ok(result.Document);
+});
+
+app.MapGet("/api/events/{eventId}/files", async (
+    string eventId,
+    ISharedPlaybookStateStore stateStore,
+    IEventFileStore fileStore,
+    CancellationToken cancellationToken) =>
+{
+    if (!await SharedEventExistsAsync(eventId, stateStore, cancellationToken))
+        return Results.NotFound(new { error = "The selected event could not be found." });
+
+    try
+    {
+        return Results.Ok(await fileStore.ListAsync(eventId, cancellationToken));
+    }
+    catch (ArgumentException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
+});
+
+app.MapPost("/api/events/{eventId}/files", async (
+    string eventId,
+    HttpContext context,
+    ISharedPlaybookStateStore stateStore,
+    IEventFileStore fileStore,
+    CancellationToken cancellationToken) =>
+{
+    if (!await SharedEventExistsAsync(eventId, stateStore, cancellationToken))
+        return Results.NotFound(new { error = "The selected event could not be found." });
+    if (context.Request.ContentLength is > EventFileStore.MaximumFileBytes)
+        return Results.BadRequest(new { error = "Files must be 50 MB or smaller." });
+
+    try
+    {
+        var saved = await fileStore.SaveAsync(
+            eventId,
+            context.Request.Query["fileName"].ToString(),
+            context.Request.ContentType,
+            context.Request.Body,
+            EventFileStore.MaximumFileBytes,
+            context.User.Identity?.Name,
+            cancellationToken);
+        var location = $"/api/events/{Uri.EscapeDataString(eventId.Trim())}/files/{saved.Id}";
+        return Results.Created(location, saved);
+    }
+    catch (ArgumentException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
+    catch (InvalidDataException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
+});
+
+app.MapGet("/api/events/{eventId}/files/{fileId}", async (
+    string eventId,
+    string fileId,
+    HttpContext context,
+    ISharedPlaybookStateStore stateStore,
+    IEventFileStore fileStore,
+    CancellationToken cancellationToken) =>
+{
+    if (!await SharedEventExistsAsync(eventId, stateStore, cancellationToken))
+        return Results.NotFound(new { error = "The selected event could not be found." });
+
+    try
+    {
+        var asset = await fileStore.GetAsync(eventId, fileId, cancellationToken);
+        if (asset is null) return Results.NotFound(new { error = "The requested event file could not be found." });
+        context.Response.Headers.CacheControl = "private, no-store";
+        context.Response.Headers.XContentTypeOptions = "nosniff";
+        return Results.File(
+            asset.Path,
+            asset.Metadata.ContentType,
+            asset.Metadata.FileName,
+            enableRangeProcessing: true);
+    }
+    catch (ArgumentException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
+});
+
+app.MapDelete("/api/events/{eventId}/files/{fileId}", async (
+    string eventId,
+    string fileId,
+    ISharedPlaybookStateStore stateStore,
+    IEventFileStore fileStore,
+    CancellationToken cancellationToken) =>
+{
+    if (!await SharedEventExistsAsync(eventId, stateStore, cancellationToken))
+        return Results.NotFound(new { error = "The selected event could not be found." });
+
+    try
+    {
+        return await fileStore.DeleteAsync(eventId, fileId, cancellationToken)
+            ? Results.NoContent()
+            : Results.NotFound(new { error = "The requested event file could not be found." });
+    }
+    catch (ArgumentException exception)
+    {
+        return Results.BadRequest(new { error = exception.Message });
+    }
 });
 
 app.MapGet("/api/poster/session", async (
@@ -2857,6 +2963,29 @@ app.MapPost("/api/tasks/events/{eventId}/retire", async (
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
 app.Run();
+
+static async Task<bool> SharedEventExistsAsync(
+    string? eventId,
+    ISharedPlaybookStateStore stateStore,
+    CancellationToken cancellationToken)
+{
+    var key = eventId?.Trim();
+    if (string.IsNullOrWhiteSpace(key)) return false;
+    var sharedState = await stateStore.GetAsync(cancellationToken);
+    if (!sharedState.State.HasValue ||
+        sharedState.State.Value.ValueKind != System.Text.Json.JsonValueKind.Object ||
+        !sharedState.State.Value.TryGetProperty("events", out var events) ||
+        events.ValueKind != System.Text.Json.JsonValueKind.Array)
+    {
+        return false;
+    }
+
+    return events.EnumerateArray().Any(item =>
+        item.ValueKind == System.Text.Json.JsonValueKind.Object &&
+        item.TryGetProperty("id", out var id) &&
+        id.ValueKind == System.Text.Json.JsonValueKind.String &&
+        string.Equals(id.GetString(), key, StringComparison.OrdinalIgnoreCase));
+}
 
 static bool PasswordMatches(string suppliedPassword, string configuredPassword)
 {
