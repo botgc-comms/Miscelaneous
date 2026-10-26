@@ -1385,40 +1385,88 @@ public sealed class IntelligentGolfEventIntegration(
 
     private async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        await sessionClient.AuthorizeAsync(request, cancellationToken);
         var client = httpClientFactory.CreateClient(IntelligentGolfApiSessionClient.HttpClientName);
-        HttpResponseMessage response;
-        try
+        using var retryRequest = await CloneRequestAsync(request, cancellationToken);
+        for (var attempt = 0; attempt < 2; attempt++)
         {
-            response = await client.SendAsync(request, cancellationToken);
-        }
-        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
-        {
-            throw new InvalidOperationException("The Event Playbook API did not respond in time.");
-        }
-        catch (HttpRequestException exception)
-        {
-            throw new InvalidOperationException("The Event Playbook API could not be reached.", exception);
+            var outgoingRequest = attempt == 0 ? request : retryRequest;
+            await sessionClient.AuthorizeAsync(outgoingRequest, cancellationToken);
+            var rejectedToken = outgoingRequest.Headers.TryGetValues(
+                IntelligentGolfApiSessionClient.SessionHeaderName,
+                out var tokenValues)
+                ? tokenValues.FirstOrDefault()
+                : null;
+
+            HttpResponseMessage response;
+            try
+            {
+                response = await client.SendAsync(outgoingRequest, cancellationToken);
+            }
+            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+            {
+                throw new InvalidOperationException("The Event Playbook API did not respond in time.");
+            }
+            catch (HttpRequestException exception)
+            {
+                throw new InvalidOperationException("The Event Playbook API could not be reached.", exception);
+            }
+
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized && attempt == 0)
+            {
+                response.Dispose();
+                sessionClient.Invalidate(rejectedToken);
+                continue;
+            }
+
+            if (response.IsSuccessStatusCode) return response;
+            var statusCode = (int)response.StatusCode;
+            var raw = await response.Content.ReadAsStringAsync(cancellationToken);
+            response.Dispose();
+            var problem = ExtractProblem(raw);
+            throw new IntelligentGolfApiRequestException(
+                problem?.Message ?? $"The Intelligent Golf event request failed ({statusCode}).",
+                statusCode,
+                problem?.Stage,
+                problem?.IntelligentGolfEventId,
+                problem?.IntelligentGolfRecordId,
+                problem?.Retryable ?? true,
+                problem?.EventDate,
+                problem?.Candidates ?? [],
+                problem?.MemberDiaryPublished ?? false,
+                problem?.MemberDiaryPublishedAtUtc,
+                problem?.ExpectedIntelligentGolfEventId,
+                problem?.CurrentIntelligentGolfEventId);
         }
 
-        if (response.IsSuccessStatusCode) return response;
-        var statusCode = (int)response.StatusCode;
-        var raw = await response.Content.ReadAsStringAsync(cancellationToken);
-        response.Dispose();
-        var problem = ExtractProblem(raw);
-        throw new IntelligentGolfApiRequestException(
-            problem?.Message ?? $"The Intelligent Golf event request failed ({statusCode}).",
-            statusCode,
-            problem?.Stage,
-            problem?.IntelligentGolfEventId,
-            problem?.IntelligentGolfRecordId,
-            problem?.Retryable ?? true,
-            problem?.EventDate,
-            problem?.Candidates ?? [],
-            problem?.MemberDiaryPublished ?? false,
-            problem?.MemberDiaryPublishedAtUtc,
-            problem?.ExpectedIntelligentGolfEventId,
-            problem?.CurrentIntelligentGolfEventId);
+        throw new InvalidOperationException("The Intelligent Golf event request could not be authorised.");
+    }
+
+    private static async Task<HttpRequestMessage> CloneRequestAsync(
+        HttpRequestMessage request,
+        CancellationToken cancellationToken)
+    {
+        var clone = new HttpRequestMessage(request.Method, request.RequestUri)
+        {
+            Version = request.Version,
+            VersionPolicy = request.VersionPolicy
+        };
+
+        foreach (var header in request.Headers)
+        {
+            clone.Headers.TryAddWithoutValidation(header.Key, header.Value);
+        }
+
+        if (request.Content is not null)
+        {
+            var content = new ByteArrayContent(await request.Content.ReadAsByteArrayAsync(cancellationToken));
+            foreach (var header in request.Content.Headers)
+            {
+                content.Headers.TryAddWithoutValidation(header.Key, header.Value);
+            }
+            clone.Content = content;
+        }
+
+        return clone;
     }
 
     private static IntelligentGolfApiProblem? ExtractProblem(string raw)

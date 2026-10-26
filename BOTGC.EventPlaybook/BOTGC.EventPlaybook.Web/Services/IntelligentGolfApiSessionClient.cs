@@ -10,6 +10,7 @@ public interface IIntelligentGolfApiSessionClient
 {
     Task ConnectAsync(IntelligentGolfPluginCredentials credentials, CancellationToken cancellationToken);
     Task AuthorizeAsync(HttpRequestMessage request, CancellationToken cancellationToken);
+    void Invalidate(string? rejectedToken);
     void Clear();
 }
 
@@ -50,7 +51,7 @@ public sealed class IntelligentGolfApiSessionClient(
         {
             var credentials = await pluginSettingsStore.GetIntelligentGolfCredentialsAsync(cancellationToken)
                 ?? throw new InvalidOperationException("The Intelligent Golf plugin has not been configured.");
-            await ConnectAsync(credentials, cancellationToken);
+            await EnsureConnectedAsync(credentials, cancellationToken);
             token = CurrentToken();
         }
 
@@ -63,6 +64,26 @@ public sealed class IntelligentGolfApiSessionClient(
         request.Headers.Remove(SessionHeaderName);
         request.Headers.Add(ApiKeyHeaderName, apiKey);
         request.Headers.Add(SessionHeaderName, token);
+    }
+
+    private async Task EnsureConnectedAsync(
+        IntelligentGolfPluginCredentials credentials,
+        CancellationToken cancellationToken)
+    {
+        await _connectGate.WaitAsync(cancellationToken);
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(CurrentToken()))
+            {
+                return;
+            }
+
+            await ConnectCoreAsync(credentials, cancellationToken);
+        }
+        finally
+        {
+            _connectGate.Release();
+        }
     }
 
     private async Task ConnectCoreAsync(
@@ -151,6 +172,25 @@ public sealed class IntelligentGolfApiSessionClient(
     {
         lock (_gate)
         {
+            _sessionToken = null;
+            _expiresAtUtc = null;
+        }
+    }
+
+    public void Invalidate(string? rejectedToken)
+    {
+        if (string.IsNullOrWhiteSpace(rejectedToken))
+        {
+            return;
+        }
+
+        lock (_gate)
+        {
+            if (!string.Equals(_sessionToken, rejectedToken, StringComparison.Ordinal))
+            {
+                return;
+            }
+
             _sessionToken = null;
             _expiresAtUtc = null;
         }

@@ -43,6 +43,41 @@ public sealed class IntelligentGolfEventIntegrationTests
     }
 
     [Fact]
+    public async Task SynchroniseEventAsync_WhenPrivateApiRejectsADeployStaleToken_ReauthenticatesAndRetries()
+    {
+        var scenario = new PrivateApiScenario(SynchronisedAt)
+        {
+            RejectFirstRequestAsUnauthorized = true
+        };
+        var session = new RotatingSessionClient();
+        var integration = CreateIntegration(
+            scenario,
+            new RecordingLinkStore(),
+            new RecordingActivityStore(),
+            session);
+
+        var result = await integration.SynchroniseEventAsync(
+            CreateSnapshot(),
+            force: true,
+            CancellationToken.None);
+
+        Assert.Equal(4743, result.IntelligentGolfEventId);
+        Assert.Collection(
+            scenario.Requests,
+            first =>
+            {
+                Assert.Equal("session-1", first.SessionToken);
+                Assert.Contains("\"eventPlaybookEventId\":\"event-123\"", first.Body);
+            },
+            retry =>
+            {
+                Assert.Equal("session-2", retry.SessionToken);
+                Assert.Equal(scenario.Requests[0].Body, retry.Body);
+            });
+        Assert.Equal(1, session.InvalidateCalls);
+    }
+
+    [Fact]
     public async Task PublishDiaryAsync_WithLinkedCompetition_UpdatesCompetitionInsteadOfCreatingDiary()
     {
         var scenario = new PrivateApiScenario(SynchronisedAt);
@@ -825,10 +860,11 @@ public sealed class IntelligentGolfEventIntegrationTests
     private static IntelligentGolfEventIntegration CreateIntegration(
         PrivateApiScenario scenario,
         RecordingLinkStore linkStore,
-        RecordingActivityStore activityStore) =>
+        RecordingActivityStore activityStore,
+        IIntelligentGolfApiSessionClient? sessionClient = null) =>
         new(
             new FakeHttpClientFactory(scenario.Handler),
-            new NoOpSessionClient(),
+            sessionClient ?? new NoOpSessionClient(),
             new ConfiguredPluginSettingsStore(),
             linkStore,
             activityStore,
@@ -905,6 +941,7 @@ public sealed class IntelligentGolfEventIntegrationTests
         public string? RelinkFailureStage { get; init; }
         public bool PauseDiaryResponse { get; init; }
         public bool RejectPlannerRemoval { get; init; }
+        public bool RejectFirstRequestAsUnauthorized { get; init; }
         public int PlannerEventId { get; set; } = 4743;
         public IReadOnlyList<IntelligentGolfPlannerEventCandidate> PlannerCandidates { get; init; } = [];
         public IntelligentGolfPlannerEventCandidate? PlannerLookupCandidate { get; init; }
@@ -912,6 +949,7 @@ public sealed class IntelligentGolfEventIntegrationTests
             new(TaskCreationOptions.RunContinuationsAsynchronously);
         private readonly TaskCompletionSource<bool> _releaseDiaryResponse =
             new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private bool _firstRequestRejected;
 
         public HttpMessageHandler Handler => new RecordingHandler(RespondAsync, Requests);
         public Task DiaryRequestStarted => _diaryRequestStarted.Task;
@@ -935,6 +973,15 @@ public sealed class IntelligentGolfEventIntegrationTests
 
         private HttpResponseMessage Respond(CapturedRequest request)
         {
+            if (RejectFirstRequestAsUnauthorized && !_firstRequestRejected)
+            {
+                _firstRequestRejected = true;
+                return Json(HttpStatusCode.Unauthorized, new
+                {
+                    title = "A valid Intelligent Golf session is required."
+                });
+            }
+
             if (request.Method == HttpMethod.Get &&
                 request.Path == $"/api/event-planner/events/{PlannerEventId}/ticket-bookings")
             {
@@ -1203,13 +1250,18 @@ public sealed class IntelligentGolfEventIntegrationTests
             var body = request.Content is null
                 ? string.Empty
                 : await request.Content.ReadAsStringAsync(cancellationToken);
-            var captured = new CapturedRequest(request.Method, request.RequestUri!, body);
+            var sessionToken = request.Headers.TryGetValues(
+                IntelligentGolfApiSessionClient.SessionHeaderName,
+                out var tokenValues)
+                ? tokenValues.FirstOrDefault()
+                : null;
+            var captured = new CapturedRequest(request.Method, request.RequestUri!, body, sessionToken);
             requests.Add(captured);
             return await responder(captured, cancellationToken);
         }
     }
 
-    private sealed record CapturedRequest(HttpMethod Method, Uri Uri, string Body)
+    private sealed record CapturedRequest(HttpMethod Method, Uri Uri, string Body, string? SessionToken)
     {
         public string Path => Uri.AbsolutePath;
     }
@@ -1231,9 +1283,47 @@ public sealed class IntelligentGolfEventIntegrationTests
             CancellationToken cancellationToken) =>
             Task.CompletedTask;
 
+        public void Invalidate(string? rejectedToken)
+        {
+        }
+
         public void Clear()
         {
         }
+    }
+
+    private sealed class RotatingSessionClient : IIntelligentGolfApiSessionClient
+    {
+        private int _generation = 1;
+
+        public int InvalidateCalls { get; private set; }
+
+        public Task ConnectAsync(
+            IntelligentGolfPluginCredentials credentials,
+            CancellationToken cancellationToken) =>
+            Task.CompletedTask;
+
+        public Task AuthorizeAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            request.Headers.Remove(IntelligentGolfApiSessionClient.SessionHeaderName);
+            request.Headers.Add(
+                IntelligentGolfApiSessionClient.SessionHeaderName,
+                $"session-{_generation}");
+            return Task.CompletedTask;
+        }
+
+        public void Invalidate(string? rejectedToken)
+        {
+            if (!string.Equals(rejectedToken, $"session-{_generation}", StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            InvalidateCalls++;
+            _generation++;
+        }
+
+        public void Clear() => _generation++;
     }
 
     private sealed class ConfiguredPluginSettingsStore : IPluginSettingsStore

@@ -145,6 +145,11 @@ public sealed class IntelligentGolfMemberCommunicationsClient(
         {
             using var request = requestFactory();
             await sessionClient.AuthorizeAsync(request, cancellationToken);
+            var rejectedToken = request.Headers.TryGetValues(
+                IntelligentGolfApiSessionClient.SessionHeaderName,
+                out var tokenValues)
+                ? tokenValues.FirstOrDefault()
+                : null;
             HttpResponseMessage response;
             try
             {
@@ -162,7 +167,7 @@ public sealed class IntelligentGolfMemberCommunicationsClient(
             if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized && attempt == 0)
             {
                 response.Dispose();
-                sessionClient.Clear();
+                sessionClient.Invalidate(rejectedToken);
                 continue;
             }
 

@@ -231,6 +231,8 @@ public sealed class IntelligentGolfMemberCommunicationsClientTests
             return Task.CompletedTask;
         }
 
+        public void Invalidate(string? rejectedToken) => ClearCalls++;
+
         public void Clear() => ClearCalls++;
     }
 
