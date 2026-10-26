@@ -7,6 +7,7 @@ import {
     selectDiverseStyleVariationIds,
     updateStyleVariationHistory
 } from './poster-style-selection.js?v=20261008-style-diversity-1';
+import { defaultScreenStartDate } from './poster-screen-schedule.js?v=20261026-one-month-default-1';
 
 const sessions = new Map();
 const REFERENCE_LIBRARY_STORAGE_KEY = 'botgc-event-playbook-reference-library-v1';
@@ -23,6 +24,9 @@ const SOURCE_DESIGN_MAX_BYTES = 40 * 1024 * 1024;
 const SOURCE_DESIGN_MIME_TYPES = new Set(['image/png', 'image/jpeg', 'image/webp']);
 const INTERRUPTED_GENERATION_MESSAGE = 'The previous generation did not finish. Completed artwork and settings have been kept so only the missing formats need to be retried.';
 const MEMBER_EMAIL_HTML_LIMIT = 200000;
+const MEMBER_EMAIL_IMAGE_SOURCE_MAX_BYTES = 25 * 1024 * 1024;
+const MEMBER_EMAIL_IMAGE_MAX_DIMENSION = 1600;
+const MEMBER_EMAIL_IMAGE_MIME_TYPES = new Set(['image/png', 'image/jpeg', 'image/webp', 'image/gif']);
 const MEMBER_EMAIL_ALLOWED_ELEMENTS = new Set([
     'A', 'B', 'BLOCKQUOTE', 'BR', 'DIV', 'EM', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'HR', 'I', 'IMG',
     'LI', 'OL', 'P', 'S', 'SPAN', 'STRONG', 'TABLE', 'TBODY', 'TD', 'TFOOT', 'TH', 'THEAD', 'TR', 'U', 'UL'
@@ -1341,6 +1345,12 @@ export async function mountPosterStudio(context = {}) {
         emailToolbar: document.querySelector('#memberEmailToolbar'),
         emailFormat: document.querySelector('#memberEmailFormat'),
         emailEditorHelp: document.querySelector('#memberEmailEditorHelp'),
+        emailImagePicker: document.querySelector('#memberEmailImagePicker'),
+        emailImageUseLatest: document.querySelector('#useLatestMemberEmailArtwork'),
+        emailImageUploadButton: document.querySelector('#uploadMemberEmailImage'),
+        emailImagePickerClose: document.querySelector('#closeMemberEmailImagePicker'),
+        emailImageInput: document.querySelector('#memberEmailImageInput'),
+        emailImageStatus: document.querySelector('#memberEmailImageStatus'),
         emailBodyPreview: document.querySelector('#memberEmailBodyPreview'),
         emailLoadAudienceButton: document.querySelector('#loadMemberEmailAudience'),
         emailAudienceModes: document.querySelectorAll('input[name="memberEmailAudienceMode"]'),
@@ -1633,7 +1643,18 @@ function wireEvents(session) {
         event.preventDefault();
         sendMemberCampaignEmail();
     });
-    elements.emailGenerateButton?.addEventListener('click', () => generateMemberEmailDraft(session));
+    elements.emailGenerateButton?.addEventListener('click', () => requestMemberEmailDraftRegeneration(session));
+    elements.emailImagePicker?.addEventListener('mousedown', event => {
+        if (event.target.closest('button')) event.preventDefault();
+    });
+    elements.emailImageUseLatest?.addEventListener('click', () => insertLatestMemberEmailArtwork(session));
+    elements.emailImageUploadButton?.addEventListener('click', () => elements.emailImageInput?.click());
+    elements.emailImagePickerClose?.addEventListener('click', () => setMemberEmailImagePickerVisible(false));
+    elements.emailImageInput?.addEventListener('change', async event => {
+        const [file] = Array.from(event.currentTarget.files ?? []);
+        event.currentTarget.value = '';
+        if (file) await insertUploadedMemberEmailImage(session, file);
+    });
     elements.emailLoadAudienceButton?.addEventListener('click', () => loadMemberEmailAudience(session, true));
     elements.emailSubject?.addEventListener('input', () => {
         captureMemberEmailDialog(session);
@@ -1646,7 +1667,28 @@ function wireEvents(session) {
         session,
         capture: captureMemberEmailDialog,
         renderPreview: renderMemberEmailPreview,
-        normalise: () => setMemberEmailEditorHtml(session.form.emailBodyHtml)
+        normalise: () => setMemberEmailEditorHtml(session.form.emailBodyHtml),
+        handleAction: action => {
+            if (action !== 'image') return false;
+            rememberMemberEmailEditorSelection();
+            setMemberEmailImagePickerVisible(elements.emailImagePicker?.classList.contains('hidden'));
+            return true;
+        }
+    });
+    elements.emailEditor?.addEventListener('paste', event => {
+        const image = Array.from(event.clipboardData?.files ?? []).find(file => file.type.startsWith('image/'));
+        if (!image) return;
+        event.preventDefault();
+        void insertUploadedMemberEmailImage(session, image);
+    });
+    elements.emailEditor?.addEventListener('dragover', event => {
+        if (Array.from(event.dataTransfer?.items ?? []).some(item => item.kind === 'file' && item.type.startsWith('image/'))) event.preventDefault();
+    });
+    elements.emailEditor?.addEventListener('drop', event => {
+        const image = Array.from(event.dataTransfer?.files ?? []).find(file => file.type.startsWith('image/'));
+        if (!image) return;
+        event.preventDefault();
+        void insertUploadedMemberEmailImage(session, image);
     });
     elements.emailTestAddress?.addEventListener('input', () => {
         captureMemberEmailDialog(session);
@@ -3709,7 +3751,7 @@ function applyRichTextEditorAction(editor, command, action, value, onChange) {
     onChange?.();
 }
 
-function bindRichTextEditor({ editor, toolbar, format, session, capture, renderPreview, normalise }) {
+function bindRichTextEditor({ editor, toolbar, format, session, capture, renderPreview, normalise, handleAction }) {
     if (!editor) return;
     const recordChange = () => {
         rememberRichTextEditorSelection(editor);
@@ -3733,6 +3775,7 @@ function bindRichTextEditor({ editor, toolbar, format, session, capture, renderP
         if (!button) return;
         const command = button.dataset.richTextCommand ?? button.dataset.emailEditorCommand;
         const action = button.dataset.richTextAction ?? button.dataset.emailEditorAction;
+        if (handleAction?.(action, button)) return;
         applyRichTextEditorAction(editor, command, action, null, recordChange);
     });
     format?.addEventListener('change', () => {
@@ -3765,6 +3808,142 @@ function captureMemberEmailDialog(session) {
     updateMemberEmailSendState(session);
 }
 
+function getSquareMemberEmailArtwork(session) {
+    const output = (session.config?.outputs ?? []).find(item =>
+        item.width === item.height && session.posterCanvases.has(item.id));
+    if (!output) return null;
+    return {
+        output,
+        canvas: session.posterCanvases.get(output.id),
+        sourceUrl: session.artworkByOutput.get(output.id)
+    };
+}
+
+function setMemberEmailImagePickerVisible(visible) {
+    elements.emailImagePicker?.classList.toggle('hidden', !visible);
+    if (!visible && elements.emailImageStatus) {
+        elements.emailImageStatus.textContent = 'Uploaded images are resized for email and do not count towards the message-size limit.';
+        elements.emailImageStatus.className = '';
+    }
+}
+
+function setMemberEmailImageStatus(message, mode = '') {
+    if (!elements.emailImageStatus) return;
+    elements.emailImageStatus.textContent = message;
+    elements.emailImageStatus.className = mode;
+}
+
+function setMemberEmailImageControlsBusy(busy) {
+    if (elements.emailImageUseLatest) elements.emailImageUseLatest.disabled = busy || !getSquareMemberEmailArtwork(activeSession);
+    if (elements.emailImageUploadButton) elements.emailImageUploadButton.disabled = busy;
+}
+
+async function stageMemberEmailImage(session, artwork) {
+    const response = await fetch('/api/poster/member-email/stage-artwork', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            eventId: session.context?.eventId || session.key,
+            artwork
+        })
+    });
+    const result = await readApiResponse(response);
+    if (!result?.url) throw new Error('The prepared email image did not return a usable address.');
+    return result.url;
+}
+
+function insertMemberEmailImage(session, imageUrl, alternativeText) {
+    if (!elements.emailEditor) return;
+    restoreMemberEmailEditorSelection();
+    const imageHtml = `<p style="margin:0 0 24px"><img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(alternativeText)}" style="display:block;width:100%;max-width:640px;height:auto;margin:0 auto;border:0"></p><p><br></p>`;
+    document.execCommand('insertHTML', false, imageHtml);
+    captureMemberEmailDialog(session);
+    renderMemberEmailPreview();
+    scheduleSessionPersistence(session);
+    setMemberEmailImagePickerVisible(false);
+}
+
+async function insertLatestMemberEmailArtwork(session) {
+    const artwork = getSquareMemberEmailArtwork(session);
+    if (!artwork) {
+        setMemberEmailImageStatus('Create the Email & Social square format first, then return here to insert it.', 'error');
+        return;
+    }
+
+    captureMemberEmailDialog(session);
+    setMemberEmailImageControlsBusy(true);
+    setMemberEmailImageStatus('Preparing the latest square artwork…', 'working');
+    try {
+        const imageUrl = await stageMemberEmailImage(session, {
+            outputId: artwork.output.id,
+            name: artwork.output.name,
+            sourceUrl: null,
+            dataUrl: artwork.canvas.toDataURL('image/png')
+        });
+        insertMemberEmailImage(session, imageUrl, `${getCampaignEventName(session)} poster`);
+        elements.emailDialogMessage.textContent = 'The latest square campaign artwork was added without changing the email text.';
+        elements.emailDialogMessage.className = 'poster-publish-dialog-message success';
+        await persistSession(session);
+    } catch (error) {
+        setMemberEmailImageStatus(error instanceof Error ? error.message : 'The latest campaign artwork could not be added.', 'error');
+    } finally {
+        setMemberEmailImageControlsBusy(false);
+    }
+}
+
+async function prepareUploadedMemberEmailImage(file) {
+    if (!MEMBER_EMAIL_IMAGE_MIME_TYPES.has(file.type)) {
+        throw new Error('Choose a PNG, JPEG, WebP or GIF image.');
+    }
+    if (file.size <= 0 || file.size > MEMBER_EMAIL_IMAGE_SOURCE_MAX_BYTES) {
+        throw new Error('Choose an image smaller than 25 MB. It will be resized automatically for email.');
+    }
+
+    const source = await fileToDataUrl(file);
+    const image = await loadImage(source);
+    const scale = Math.min(1, MEMBER_EMAIL_IMAGE_MAX_DIMENSION / Math.max(image.naturalWidth, image.naturalHeight));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+    canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+    const context = canvas.getContext('2d');
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    return canvas.toDataURL('image/png');
+}
+
+async function insertUploadedMemberEmailImage(session, file) {
+    rememberMemberEmailEditorSelection();
+    captureMemberEmailDialog(session);
+    setMemberEmailImagePickerVisible(true);
+    setMemberEmailImageControlsBusy(true);
+    setMemberEmailImageStatus(`Preparing ${file.name || 'the uploaded image'}…`, 'working');
+    try {
+        const dataUrl = await prepareUploadedMemberEmailImage(file);
+        const imageUrl = await stageMemberEmailImage(session, {
+            outputId: 'member-email-upload',
+            name: file.name || 'Email image',
+            dataUrl,
+            sourceUrl: null
+        });
+        insertMemberEmailImage(session, imageUrl, file.name || `${getCampaignEventName(session)} image`);
+        elements.emailDialogMessage.textContent = 'The uploaded image was resized and added without changing the email text.';
+        elements.emailDialogMessage.className = 'poster-publish-dialog-message success';
+        await persistSession(session);
+    } catch (error) {
+        setMemberEmailImageStatus(error instanceof Error ? error.message : 'The image could not be added to the email.', 'error');
+    } finally {
+        setMemberEmailImageControlsBusy(false);
+    }
+}
+
+function requestMemberEmailDraftRegeneration(session) {
+    captureMemberEmailDialog(session);
+    if (memberEmailHtmlHasContent(session.form.emailBodyHtml) &&
+        !window.confirm('Generate a new email draft? This replaces the current subject and body. To change only the image, use the Image button in the editor toolbar.')) {
+        return;
+    }
+    void generateMemberEmailDraft(session);
+}
+
 async function openMemberEmailDialog() {
     const session = activeSession;
     if (!session || !elements.emailDialog) return;
@@ -3792,6 +3971,9 @@ async function openMemberEmailDialog() {
         ? '<span></span><div><strong>Member email connection ready</strong><small>Recipients and delivery are handled securely through the club membership system.</small></div>'
         : '<span></span><div><strong>Member email connection unavailable</strong><small>An administrator must configure and enable the Intelligent Golf connection first.</small></div>';
     elements.emailGenerateButton.disabled = false;
+    elements.emailGenerateButton.textContent = session.form.emailBodyHtml ? 'Regenerate email with AI' : 'Generate email with AI';
+    setMemberEmailImagePickerVisible(false);
+    setMemberEmailImageControlsBusy(false);
     elements.emailLoadAudienceButton.disabled = !connection.configured;
     elements.emailTestButton.disabled = !connection.configured;
 
@@ -3862,7 +4044,7 @@ async function generateMemberEmailDraft(session) {
         elements.emailDialogMessage.className = 'poster-publish-dialog-message error';
     } finally {
         elements.emailGenerateButton.disabled = false;
-        elements.emailGenerateButton.textContent = 'Generate email with AI';
+        elements.emailGenerateButton.textContent = 'Regenerate email with AI';
         updateMemberEmailSendState(session);
     }
 }
@@ -3953,7 +4135,7 @@ function updateMemberEmailSendState(session) {
     elements.emailEditor?.setAttribute('aria-invalid', withinLimit ? 'false' : 'true');
     if (elements.emailEditorHelp) {
         elements.emailEditorHelp.textContent = withinLimit
-            ? 'Edit the message as you would a document. The formatted HTML is retained automatically for the preview and the email that is sent.'
+            ? 'Edit the message as you would a document. Use Image to add the latest square artwork or your own upload without regenerating the text.'
             : 'This email is too large to send. Remove some content or large pasted formatting.';
         elements.emailEditorHelp.classList.toggle('error', !withinLimit);
     }
@@ -4661,16 +4843,20 @@ function openScreenShareDialog() {
 
     const eventDate = session.form.eventDate;
     const today = getLocalTodayIso();
-    const defaultStartDate = today <= eventDate ? today : eventDate;
+    const minimumStartDate = today <= eventDate ? today : eventDate;
+    const defaultStartDate = defaultScreenStartDate(eventDate, today);
     const savedStartDate = session.form.publishStartDate;
-    const startDate = savedStartDate && savedStartDate <= eventDate ? savedStartDate : defaultStartDate;
+    const savedStartDateIsValid = savedStartDate
+        && savedStartDate >= minimumStartDate
+        && savedStartDate <= eventDate;
+    const startDate = savedStartDateIsValid ? savedStartDate : defaultStartDate;
 
     elements.publishPreview.src = primaryCanvas.toDataURL('image/png');
     elements.yodeckMediaName.value = session.form.publishMediaName
         || `${getCampaignEventName(session)} — Clubhouse screens — ${eventDate}`;
     elements.yodeckTags.value = session.form.publishTags || getDefaultShareTags(session);
     elements.yodeckStartDate.value = startDate;
-    elements.yodeckStartDate.min = defaultStartDate;
+    elements.yodeckStartDate.min = minimumStartDate;
     elements.yodeckStartDate.max = eventDate;
     elements.yodeckEndDate.value = eventDate;
     elements.publishDialogMessage.textContent = '';

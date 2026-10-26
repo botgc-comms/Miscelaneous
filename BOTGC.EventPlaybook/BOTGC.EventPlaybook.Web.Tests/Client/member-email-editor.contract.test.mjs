@@ -29,8 +29,35 @@ test('member emails use a rich-text editor instead of exposing HTML', () => {
   assert.match(studio, /data-email-editor-command="bold"/);
   assert.match(studio, /data-email-editor-command="insertUnorderedList"/);
   assert.match(studio, /data-email-editor-action="link"/);
+  assert.match(studio, /data-email-editor-action="image"/);
+  assert.match(studio, /id="memberEmailImagePicker"/);
+  assert.match(studio, /id="useLatestMemberEmailArtwork"/);
+  assert.match(studio, /id="memberEmailImageInput"[^>]*accept="image\/png,image\/jpeg,image\/webp,image\/gif"/);
   assert.doesNotMatch(studio, />HTML email body</);
   assert.match(studio, /id="memberEmailBody" hidden/);
+});
+
+test('email images can be inserted without regenerating or replacing edited copy', () => {
+  const stage = functionSource(posterSource, 'stageMemberEmailImage');
+  const insert = functionSource(posterSource, 'insertMemberEmailImage');
+  const latest = functionSource(posterSource, 'insertLatestMemberEmailArtwork');
+  const upload = functionSource(posterSource, 'insertUploadedMemberEmailImage');
+  const regenerate = functionSource(posterSource, 'requestMemberEmailDraftRegeneration');
+  assert.match(stage, /\/api\/poster\/member-email\/stage-artwork/);
+  assert.match(insert, /document\.execCommand\('insertHTML'/);
+  assert.match(insert, /captureMemberEmailDialog\(session\)/);
+  assert.match(latest, /getSquareMemberEmailArtwork\(session\)/);
+  assert.match(upload, /prepareUploadedMemberEmailImage\(file\)/);
+  assert.match(regenerate, /This replaces the current subject and body/);
+  assert.match(regenerate, /use the Image button/);
+});
+
+test('pasted and dropped email images use the hosted-image workflow instead of inline data', () => {
+  assert.match(posterSource, /emailEditor\?\.addEventListener\('paste'/);
+  assert.match(posterSource, /emailEditor\?\.addEventListener\('drop'/);
+  assert.match(functionSource(posterSource, 'prepareUploadedMemberEmailImage'), /MEMBER_EMAIL_IMAGE_MAX_DIMENSION/);
+  assert.match(functionSource(posterSource, 'insertUploadedMemberEmailImage'), /stageMemberEmailImage/);
+  assert.match(styleSource, /\.member-email-image-picker/);
 });
 
 test('member diary entries reuse the visual rich-text editor instead of exposing HTML', () => {

@@ -32,7 +32,7 @@ function compileFunction(name, dependencies = {}) {
 }
 
 test('the operational-controls client script uses its release cache key', () => {
-  assert.match(indexSource, /playbook-app\.js\?v=20261015-email-task-reopen-1/);
+  assert.match(indexSource, /playbook-app\.js\?v=20261026-member-email-images-1/);
 });
 
 test('food review provenance is migrated before task reconciliation and server completion sync', () => {

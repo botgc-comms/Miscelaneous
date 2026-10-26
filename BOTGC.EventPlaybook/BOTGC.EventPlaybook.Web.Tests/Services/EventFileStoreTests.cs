@@ -8,6 +8,29 @@ namespace BOTGC.EventPlaybook.Web.Tests.Services;
 
 public sealed class EventFileStoreTests
 {
+    [Theory]
+    [InlineData("image/png")]
+    [InlineData("image/jpeg")]
+    [InlineData("image/webp")]
+    [InlineData("image/gif")]
+    [InlineData("IMAGE/PNG; charset=binary")]
+    public void IsSafeImagePreviewContentType_AllowsSupportedRasterImages(string contentType)
+    {
+        Assert.True(EventFileStore.IsSafeImagePreviewContentType(contentType));
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("image/svg+xml")]
+    [InlineData("text/html")]
+    [InlineData("application/pdf")]
+    [InlineData("application/octet-stream")]
+    public void IsSafeImagePreviewContentType_RejectsDocumentsAndActiveContent(string? contentType)
+    {
+        Assert.False(EventFileStore.IsSafeImagePreviewContentType(contentType));
+    }
+
     [Fact]
     public async Task SaveListGetAndDelete_PersistsAnEventAttachmentOutsideSharedState()
     {

@@ -1134,12 +1134,53 @@ app.MapPost("/api/integrations/intelligent-golf/events/{eventId}/planner-match",
 
 app.MapGet("/api/poster/member-email/artwork/{token}", (
     string token,
+    HttpContext context,
     IMemberEmailArtworkStore artworkStore) =>
 {
     var path = artworkStore.Resolve(token);
-    return path is null
-        ? Results.NotFound()
-        : Results.File(path, "image/png", enableRangeProcessing: true);
+    if (path is null) return Results.NotFound();
+    context.Response.Headers.CacheControl = "public, max-age=31536000, immutable";
+    context.Response.Headers.XContentTypeOptions = "nosniff";
+    return Results.File(path, "image/png", enableRangeProcessing: true);
+});
+
+app.MapPost("/api/poster/member-email/stage-artwork", async (
+    MemberEmailArtworkStageRequest request,
+    HttpRequest httpRequest,
+    IMemberEmailArtworkStore artworkStore,
+    IPosterSessionStore posterSessionStore,
+    CancellationToken cancellationToken) =>
+{
+    if (string.IsNullOrWhiteSpace(request.EventId) || request.Artwork is null)
+    {
+        return Results.BadRequest(new { error = "Choose an image to add to the member email." });
+    }
+
+    var artworkBytes = await ResolveStoredPosterArtworkBytesAsync(
+        request.Artwork.SourceUrl,
+        posterSessionStore,
+        cancellationToken);
+    if (artworkBytes is null &&
+        !TryDecodePngDataUrl(request.Artwork.DataUrl, out artworkBytes, out var artworkError))
+    {
+        return Results.BadRequest(new { error = artworkError });
+    }
+
+    const int maximumEmailImageBytes = 20 * 1024 * 1024;
+    if (artworkBytes.Length > maximumEmailImageBytes)
+    {
+        return Results.BadRequest(new { error = "The email image must be smaller than 20 MB after preparation." });
+    }
+    if (!TryReadPngDimensions(artworkBytes, out var imageWidth, out var imageHeight) ||
+        imageWidth > 4096 || imageHeight > 4096 || (long)imageWidth * imageHeight > 16_777_216)
+    {
+        return Results.BadRequest(new { error = "The prepared email image is not a valid PNG or has unsafe dimensions." });
+    }
+
+    var artworkToken = await artworkStore.SaveAsync(request.EventId, artworkBytes, cancellationToken);
+    var publicScheme = httpRequest.Headers["X-Forwarded-Proto"].FirstOrDefault() ?? httpRequest.Scheme;
+    var artworkUrl = $"{publicScheme}://{httpRequest.Host}{httpRequest.PathBase}/api/poster/member-email/artwork/{artworkToken}";
+    return Results.Ok(new { url = artworkUrl });
 });
 
 app.MapPost("/api/poster/member-email/draft", async (
@@ -1434,6 +1475,7 @@ app.MapPost("/api/events/{eventId}/files", async (
 app.MapGet("/api/events/{eventId}/files/{fileId}", async (
     string eventId,
     string fileId,
+    bool? preview,
     HttpContext context,
     ISharedPlaybookStateStore stateStore,
     IEventFileStore fileStore,
@@ -1448,6 +1490,14 @@ app.MapGet("/api/events/{eventId}/files/{fileId}", async (
         if (asset is null) return Results.NotFound(new { error = "The requested event file could not be found." });
         context.Response.Headers.CacheControl = "private, no-store";
         context.Response.Headers.XContentTypeOptions = "nosniff";
+        if (preview is true && EventFileStore.IsSafeImagePreviewContentType(asset.Metadata.ContentType))
+        {
+            context.Response.Headers["Content-Security-Policy"] = "default-src 'none'; sandbox";
+            return Results.File(
+                asset.Path,
+                asset.Metadata.ContentType,
+                enableRangeProcessing: true);
+        }
         return Results.File(
             asset.Path,
             asset.Metadata.ContentType,

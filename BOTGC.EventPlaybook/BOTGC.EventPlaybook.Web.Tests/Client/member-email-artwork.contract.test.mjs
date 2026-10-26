@@ -22,3 +22,16 @@ test('the public email artwork route remains available without the Playbook sess
   assert.match(programSource, /path\.StartsWithSegments\("\/api\/poster\/member-email\/artwork"\)/);
   assert.match(programSource, /app\.MapGet\("\/api\/poster\/member-email\/artwork\/\{token\}"/);
 });
+
+test('existing or uploaded artwork can be staged without generating a new email draft', () => {
+  const endpointStart = programSource.indexOf('app.MapPost("/api/poster/member-email/stage-artwork"');
+  const endpointEnd = programSource.indexOf('app.MapPost("/api/poster/member-email/draft"', endpointStart);
+  assert.ok(endpointStart >= 0 && endpointEnd > endpointStart);
+  const endpoint = programSource.slice(endpointStart, endpointEnd);
+  assert.match(endpoint, /ResolveStoredPosterArtworkBytesAsync/);
+  assert.match(endpoint, /TryDecodePngDataUrl/);
+  assert.match(endpoint, /maximumEmailImageBytes/);
+  assert.match(endpoint, /TryReadPngDimensions/);
+  assert.match(endpoint, /artworkStore\.SaveAsync/);
+  assert.match(endpoint, /new \{ url = artworkUrl \}/);
+});

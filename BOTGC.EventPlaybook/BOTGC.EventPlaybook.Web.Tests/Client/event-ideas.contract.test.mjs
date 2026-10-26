@@ -62,7 +62,7 @@ test('the catalogue has an explicit ideas filter with record counts', () => {
   assert.match(catalogue, /data-catalogue-filter="all"/);
   assert.match(catalogue, /data-catalogue-filter="events"/);
   assert.match(catalogue, /data-catalogue-filter="ideas"/);
-  assert.match(catalogue, /Ideas <strong>\$\{ideas\.length\}<\/strong>/);
+  assert.match(catalogue, /Ideas <strong>\$\{allIdeas\.length\}<\/strong>/);
   assert.match(catalogue, /No ideas have been recorded yet/);
   assert.match(catalogue, /data-new-record-type="idea"/);
   assert.match(bindings, /state\.catalogueFilter = \['events', 'ideas'\]\.includes\(filter\) \? filter : 'all'/);

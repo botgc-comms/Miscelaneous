@@ -4884,13 +4884,34 @@
   }
 
   function eventFileKind(file) {
-    const contentType = String(file?.contentType ?? '').toLocaleLowerCase();
+    const contentType = String(file?.contentType ?? '').split(';', 1)[0].trim().toLocaleLowerCase();
     const extension = String(file?.fileName ?? '').split('.').pop()?.toLocaleUpperCase() || 'FILE';
-    if (contentType.startsWith('image/')) return { className: 'image', label: 'IMG' };
-    if (contentType === 'application/pdf') return { className: 'pdf', label: 'PDF' };
-    if (contentType.includes('spreadsheet') || contentType.includes('excel') || ['XLS', 'XLSX', 'CSV'].includes(extension)) return { className: 'sheet', label: 'XLS' };
-    if (contentType.includes('word') || ['DOC', 'DOCX'].includes(extension)) return { className: 'document', label: 'DOC' };
-    return { className: 'other', label: extension.substring(0, 4) };
+    if (contentType.startsWith('image/')) return { className: 'image', label: 'IMG', title: 'Image' };
+    if (contentType === 'application/pdf' || extension === 'PDF') return { className: 'pdf', label: 'PDF', title: 'PDF document' };
+    if (contentType.includes('spreadsheet') || contentType.includes('excel') || ['XLS', 'XLSX', 'CSV'].includes(extension)) return { className: 'sheet', label: extension === 'CSV' ? 'CSV' : 'XLS', title: 'Spreadsheet' };
+    if (contentType.includes('word') || ['DOC', 'DOCX'].includes(extension)) return { className: 'document', label: 'DOC', title: 'Word document' };
+    if (contentType.includes('presentation') || contentType.includes('powerpoint') || ['PPT', 'PPTX'].includes(extension)) return { className: 'presentation', label: 'PPT', title: 'Presentation' };
+    if (contentType.startsWith('audio/')) return { className: 'audio', label: 'AUD', title: 'Audio file' };
+    if (contentType.startsWith('video/')) return { className: 'video', label: 'VID', title: 'Video file' };
+    return { className: 'other', label: extension.substring(0, 4), title: 'Attached file' };
+  }
+
+  function eventFileCanPreviewImage(file) {
+    const contentType = String(file?.contentType ?? '').split(';', 1)[0].trim().toLocaleLowerCase();
+    return ['image/gif', 'image/jpeg', 'image/png', 'image/webp'].includes(contentType);
+  }
+
+  function eventFilePreviewMarkup(file, kind, downloadUrl) {
+    const documentTile = `<span class="event-file-document-sheet" aria-hidden="true"><strong>${escapeHtml(kind.label)}</strong></span><span class="event-file-kind-label">${escapeHtml(kind.title)}</span>`;
+    if (!eventFileCanPreviewImage(file)) {
+      return `<div class="event-file-preview file-icon ${escapeHtml(kind.className)}">${documentTile}</div>`;
+    }
+
+    const previewUrl = `${downloadUrl}?preview=true`;
+    return `<div class="event-file-preview image">
+      <span class="event-file-preview-fallback">${documentTile}</span>
+      <img src="${escapeHtml(previewUrl)}" alt="Preview of ${escapeHtml(file.fileName)}" loading="lazy" data-event-file-preview>
+    </div>`;
   }
 
   function renderEventFiles(event) {
@@ -4923,15 +4944,15 @@
           : cache.status === 'error'
             ? `<div class="event-files-empty error"><strong>Files could not be loaded</strong><p>${escapeHtml(cache.error || 'The file service returned an error.')}</p><button class="button button-secondary" type="button" data-refresh-event-files>Try again</button></div>`
             : files.length
-              ? `<div class="event-files-list">${files.map(file => {
+              ? `<div class="event-files-grid">${files.map(file => {
                   const kind = eventFileKind(file);
                   const mutationKey = `${event.id}:${file.id}`;
                   const removing = eventFileMutations.has(mutationKey);
                   const uploadedAt = file.uploadedAtUtc ? new Date(file.uploadedAtUtc).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' }) : 'Upload date unavailable';
                   const downloadUrl = `/api/events/${encodeURIComponent(event.id)}/files/${encodeURIComponent(file.id)}`;
-                  return `<article class="event-file-row">
-                    <span class="event-file-type ${escapeHtml(kind.className)}" aria-hidden="true">${escapeHtml(kind.label)}</span>
-                    <div class="event-file-copy"><strong>${escapeHtml(file.fileName)}</strong><span>${escapeHtml(formatFileSize(file.sizeBytes))} · Uploaded ${escapeHtml(uploadedAt)}${file.uploadedBy ? ` by ${escapeHtml(file.uploadedBy)}` : ''}</span></div>
+                  return `<article class="event-file-card">
+                    ${eventFilePreviewMarkup(file, kind, downloadUrl)}
+                    <div class="event-file-copy"><strong title="${escapeHtml(file.fileName)}">${escapeHtml(file.fileName)}</strong><span>${escapeHtml(kind.title)} · ${escapeHtml(formatFileSize(file.sizeBytes))}</span><small>Uploaded ${escapeHtml(uploadedAt)}${file.uploadedBy ? ` by ${escapeHtml(file.uploadedBy)}` : ''}</small></div>
                     <div class="event-file-actions"><a class="button button-secondary" href="${escapeHtml(downloadUrl)}" download="${escapeHtml(file.fileName)}">Download</a><button class="event-file-remove" type="button" data-remove-event-file="${escapeHtml(file.id)}" data-event-file-name="${escapeHtml(file.fileName)}" ${removing ? 'disabled' : ''}>${removing ? 'Removing…' : 'Remove'}</button></div>
                   </article>`;
                 }).join('')}</div>`
@@ -6573,7 +6594,7 @@
               <label class="field"><span>Artwork name</span><input id="yodeckMediaName" type="text" maxlength="180" required><small>This is how the artwork will be identified in the screen library.</small></label>
               <label class="field"><span>Tags</span><input id="yodeckTags" type="text" placeholder="event-playbook, clubhouse-screens, event-name"><small>Separate tags with commas. Event Playbook is always added automatically.</small></label>
               <div class="poster-publish-date-grid">
-                <label class="field"><span>Start showing</span><input id="yodeckStartDate" type="date" required><small>Yodeck makes the uploaded file available from this local calendar date.</small></label>
+                <label class="field"><span>Start showing</span><input id="yodeckStartDate" type="date" required><small>Defaults to one calendar month before the event. Change it here when a different promotion window is needed.</small></label>
                 <label class="field"><span>Stop showing</span><input id="yodeckEndDate" type="date" readonly><small>Fixed to the end of the selected event date in Yodeck.</small></label>
               </div>
               <div class="yodeck-playlist-summary"><span>Destination</span><strong id="yodeckPlaylistName">Clubhouse screens</strong><small>The artwork is added to the existing screen rotation without replacing anything already there.</small></div>
@@ -6591,7 +6612,7 @@
             <button id="closeMemberEmailDialog" class="icon-button" type="button" aria-label="Close member email dialog">×</button>
           </div>
           <div class="poster-publish-body member-email-body">
-            <aside class="poster-publish-preview email-preview"><img id="memberEmailArtworkPreview" alt="Campaign artwork selected for the member email"><span id="memberEmailArtworkName">Campaign artwork</span><small>Square artwork is preferred when available</small></aside>
+            <aside class="poster-publish-preview email-preview"><img id="memberEmailArtworkPreview" alt="Campaign artwork available for the member email"><span id="memberEmailArtworkName">Campaign artwork</span><small>This is a preview. Use the Image button in the editor to add the latest version without replacing your text.</small></aside>
             <div class="poster-publish-fields member-email-fields">
               <div id="memberEmailConnectionStatus" class="yodeck-connection-status checking"><span></span><div><strong>Checking the member email connection…</strong><small>The connection is managed securely by Event Playbook.</small></div></div>
               <div class="member-email-section-heading"><div><strong>Email message</strong><small>Generated from the selected event and editable before sending.</small></div><button id="generateMemberEmail" class="button button-secondary" type="button">Generate email with AI</button></div>
@@ -6610,6 +6631,7 @@
                     <button type="button" data-email-editor-command="insertOrderedList" aria-label="Numbered list" title="Numbered list">1. List</button>
                     <button type="button" data-email-editor-action="link" aria-label="Add link" title="Add link">Link</button>
                     <button type="button" data-email-editor-command="unlink" aria-label="Remove link" title="Remove link">Unlink</button>
+                    <button type="button" data-email-editor-action="image" aria-label="Insert image" title="Insert an image">Image</button>
                   </span>
                   <span class="member-email-toolbar-group" aria-label="Editing">
                     <button type="button" data-email-editor-command="undo" aria-label="Undo" title="Undo">↶</button>
@@ -6617,9 +6639,19 @@
                     <button type="button" data-email-editor-command="removeFormat" aria-label="Clear formatting" title="Clear formatting">Clear</button>
                   </span>
                 </div>
+                <div id="memberEmailImagePicker" class="member-email-image-picker hidden" aria-live="polite">
+                  <div><strong>Add an image without changing your email text</strong><small>Place the cursor where the image should appear, then use the latest square campaign artwork or upload your own image.</small></div>
+                  <div class="member-email-image-picker-actions">
+                    <button id="useLatestMemberEmailArtwork" class="button button-secondary" type="button">Use latest square artwork</button>
+                    <button id="uploadMemberEmailImage" class="button button-secondary" type="button">Upload an image</button>
+                    <button id="closeMemberEmailImagePicker" class="member-email-image-picker-close" type="button" aria-label="Close image options">×</button>
+                  </div>
+                  <input id="memberEmailImageInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden>
+                  <small id="memberEmailImageStatus">Uploaded images are resized for email and do not count towards the message-size limit.</small>
+                </div>
                 <div id="memberEmailEditor" class="member-email-rich-editor" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Email body" spellcheck="true" data-placeholder="Write the email to members here…"></div>
                 <textarea id="memberEmailBody" hidden aria-hidden="true" tabindex="-1"></textarea>
-                <small id="memberEmailEditorHelp">Edit the message as you would a document. The formatted HTML is retained automatically for the preview and the email that is sent.</small>
+                <small id="memberEmailEditorHelp">Edit the message as you would a document. Use Image to add the latest square artwork or your own upload without regenerating the text.</small>
               </div>
               <details class="member-email-preview-panel"><summary>Preview email</summary><iframe id="memberEmailBodyPreview" title="Member email preview" sandbox></iframe></details>
               <section class="member-email-audience">
@@ -12014,6 +12046,10 @@
         if (!activeEvent) return;
         removeEventFile(activeEvent, element.dataset.removeEventFile, element.dataset.eventFileName || 'this file');
       });
+    });
+
+    document.querySelectorAll('[data-event-file-preview]').forEach(image => {
+      image.addEventListener('error', () => image.closest('.event-file-preview')?.classList.add('failed'), { once: true });
     });
 
     document.querySelectorAll('[data-retry-briefing]').forEach(element => {

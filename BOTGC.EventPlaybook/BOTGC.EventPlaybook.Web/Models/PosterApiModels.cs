@@ -361,6 +361,13 @@ public sealed class MemberEmailDraftResult
     public required string Model { get; init; }
 }
 
+public sealed class MemberEmailArtworkStageRequest
+{
+    public required string EventId { get; init; }
+
+    public required PublishAsset Artwork { get; init; }
+}
+
 public sealed class MemberCancellationEmailDraftRequest
 {
     public required string EventId { get; init; }

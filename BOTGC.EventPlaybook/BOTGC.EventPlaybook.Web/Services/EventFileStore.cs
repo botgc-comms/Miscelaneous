@@ -26,6 +26,14 @@ public sealed class EventFileStore : IEventFileStore
 {
     public const long MaximumFileBytes = 50L * 1024L * 1024L;
 
+    private static readonly HashSet<string> SafeImagePreviewContentTypes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "image/gif",
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    };
+
     private readonly string _directory;
     private readonly SemaphoreSlim _gate = new(1, 1);
     private readonly JsonSerializerOptions _jsonOptions = new(JsonSerializerDefaults.Web)
@@ -37,6 +45,12 @@ public sealed class EventFileStore : IEventFileStore
     {
         _directory = Path.Combine(environment.ContentRootPath, "App_Data", "event-files");
         Directory.CreateDirectory(_directory);
+    }
+
+    public static bool IsSafeImagePreviewContentType(string? contentType)
+    {
+        var value = contentType?.Split(';', 2)[0].Trim();
+        return !string.IsNullOrWhiteSpace(value) && SafeImagePreviewContentTypes.Contains(value);
     }
 
     public async Task<IReadOnlyList<EventFileMetadata>> ListAsync(
