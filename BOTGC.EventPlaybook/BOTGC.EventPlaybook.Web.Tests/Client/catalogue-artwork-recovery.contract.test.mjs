@@ -26,12 +26,35 @@ test('catalogue cards recover a missing thumbnail from saved Communications Cent
   assert.match(selection, /storedSession\.selectedConceptId/);
   assert.match(selection, /storedSession\.sourceDesign\?\.artworkSource/);
   assert.match(recovery, /\/api\/poster\/session\?key=/);
+  assert.match(recovery, /isDurableCatalogueArtworkSource\(recovered\.source\)/);
   assert.match(recovery, /target\.cataloguePosterThumbnail = recovered\.source/);
+  assert.match(recovery, /target\.publishedCataloguePosterThumbnail = recovered\.source/);
   assert.match(recovery, /target\.cataloguePosterRecoveredAt/);
-  assert.match(scheduling, /!event\.publishedCataloguePosterThumbnail/);
-  assert.match(scheduling, /!event\.cataloguePosterThumbnail/);
+  assert.match(scheduling, /catalogueArtworkNeedsRecovery\(event\)/);
   assert.match(scheduling, /saveState\(\)/);
   assert.match(catalogue, /scheduleMissingCatalogueArtworkRecovery\(\[\.\.\.ideas, \.\.\.sortedEvents\]\)/);
+});
+
+test('catalogue recovery upgrades browser-only inline thumbnails as well as missing artwork', () => {
+  const needsRecovery = Function(
+    `'use strict';\n${functionSource('isDurableCatalogueArtworkSource')}\n${functionSource('catalogueArtworkNeedsRecovery')}\nreturn catalogueArtworkNeedsRecovery;`
+  )();
+
+  assert.equal(needsRecovery({}), true);
+  assert.equal(needsRecovery({ cataloguePosterThumbnail: 'data:image/jpeg;base64,old-browser-copy' }), true);
+  assert.equal(needsRecovery({ publishedCataloguePosterThumbnail: 'data:image/jpeg;base64,old-published-copy' }), true);
+  assert.equal(needsRecovery({ cataloguePosterThumbnail: '/api/poster/artwork?key=event-1&outputId=social&version=1' }), false);
+});
+
+test('newly completed artwork gives the catalogue a durable server reference', async () => {
+  const posterSource = await readFile(
+    new URL('../../BOTGC.EventPlaybook.Web/wwwroot/poster-app.js', import.meta.url),
+    'utf8');
+
+  assert.match(posterSource, /const catalogueArtworkSource = isPersistedArtworkSource\(storedArtworkSource\)/);
+  assert.match(posterSource, /generationContext\.onArtworkReady\(catalogueArtworkSource/);
+  assert.match(posterSource, /generationContext\.onSquareArtworkReady\(catalogueArtworkSource/);
+  assert.match(posterSource, /session\.context\.onArtworkPublished\(catalogueArtworkSource/);
 });
 
 test('recovery prefers finished square artwork and can fall back to the selected concept', () => {

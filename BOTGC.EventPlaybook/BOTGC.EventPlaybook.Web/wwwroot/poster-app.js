@@ -3373,11 +3373,20 @@ function notifyCatalogueArtworkReady(session, output, generationContext) {
     const canvas = session.posterCanvases.get(output.id);
     if (!canvas) return;
 
+    // Completed artwork is persisted before this callback is raised. Share the
+    // durable server URL with the catalogue instead of another large base64
+    // thumbnail; otherwise each browser has to retain its own disposable copy.
+    const storedArtworkSource = session.artworkByOutput.get(output.id);
+    const catalogueArtworkSource = isPersistedArtworkSource(storedArtworkSource)
+        && !isInlineArtworkSource(storedArtworkSource)
+        ? storedArtworkSource
+        : createCatalogueThumbnail(canvas);
+
     // Any completed campaign artwork can immediately provide a catalogue
     // thumbnail. A square campaign output is still preferred when one exists.
     if (typeof generationContext?.onArtworkReady === 'function') {
         try {
-            generationContext.onArtworkReady(createCatalogueThumbnail(canvas), {
+            generationContext.onArtworkReady(catalogueArtworkSource, {
                 outputId: output.id,
                 isSquare: output.width === output.height,
                 generationId: session.generationSnapshot?.id ?? null,
@@ -3390,7 +3399,7 @@ function notifyCatalogueArtworkReady(session, output, generationContext) {
 
     if (output.width === output.height && typeof generationContext?.onSquareArtworkReady === 'function') {
         try {
-            generationContext.onSquareArtworkReady(createCatalogueThumbnail(canvas), {
+            generationContext.onSquareArtworkReady(catalogueArtworkSource, {
                 outputId: output.id,
                 isSquare: true,
                 generationId: session.generationSnapshot?.id ?? null,
@@ -5003,7 +5012,12 @@ async function sendToClubhouseScreens() {
 
         if (bestOutput && typeof session.context?.onArtworkPublished === 'function') {
             const bestCanvas = session.posterCanvases.get(bestOutput.id);
-            session.context.onArtworkPublished(createCatalogueThumbnail(bestCanvas), {
+            const storedArtworkSource = session.artworkByOutput.get(bestOutput.id);
+            const catalogueArtworkSource = isPersistedArtworkSource(storedArtworkSource)
+                && !isInlineArtworkSource(storedArtworkSource)
+                ? storedArtworkSource
+                : createCatalogueThumbnail(bestCanvas);
+            session.context.onArtworkPublished(catalogueArtworkSource, {
                 outputId: bestOutput.id,
                 isSquare: bestOutput.width === bestOutput.height,
                 generationId: session.generationSnapshot?.id ?? null,

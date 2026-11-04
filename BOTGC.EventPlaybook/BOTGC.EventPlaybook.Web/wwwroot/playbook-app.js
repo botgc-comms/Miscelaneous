@@ -6120,7 +6120,7 @@
       maybeOpenIntelligentGolfPlannerMatch(event);
     }
     if (state.activeView === 'artwork' && event) {
-      import('./poster-app.js?v=20261008-style-diversity-1')
+      import('./poster-app.js?v=20261104-durable-catalogue-artwork-1')
         .then(module => module.mountPosterStudio({
           eventId: event.id,
           eventName: event.name,
@@ -8565,6 +8565,15 @@
       && (value.startsWith('/api/poster/artwork?') || value.startsWith('data:image/'));
   }
 
+  function isDurableCatalogueArtworkSource(value) {
+    return typeof value === 'string' && value.startsWith('/api/poster/artwork?');
+  }
+
+  function catalogueArtworkNeedsRecovery(event) {
+    const selectedArtwork = event?.publishedCataloguePosterThumbnail || event?.cataloguePosterThumbnail || '';
+    return !selectedArtwork || !isDurableCatalogueArtworkSource(selectedArtwork);
+  }
+
   function selectRecoveredCatalogueArtwork(storedSession) {
     if (!storedSession || typeof storedSession !== 'object') return null;
 
@@ -8628,7 +8637,7 @@
 
   async function recoverMissingCatalogueArtwork(eventId) {
     const event = state.events.find(candidate => candidate.id === eventId);
-    if (!event || event.publishedCataloguePosterThumbnail || event.cataloguePosterThumbnail) return false;
+    if (!event || !catalogueArtworkNeedsRecovery(event)) return false;
 
     try {
       const response = await fetch(`/api/poster/session?key=${encodeURIComponent(eventId)}`, { cache: 'no-store' });
@@ -8638,13 +8647,26 @@
       const document = await response.json();
       const recovered = selectRecoveredCatalogueArtwork(document?.session ?? document);
       const target = state.events.find(candidate => candidate.id === eventId);
-      if (!recovered || !target || target.publishedCataloguePosterThumbnail || target.cataloguePosterThumbnail) return false;
+      if (!recovered || !isDurableCatalogueArtworkSource(recovered.source) || !target || !catalogueArtworkNeedsRecovery(target)) return false;
 
-      target.cataloguePosterThumbnail = recovered.source;
-      target.cataloguePosterSourceOutputId = recovered.outputId;
-      target.cataloguePosterSourceIsSquare = recovered.isSquare;
-      target.cataloguePosterGenerationId = recovered.generationId;
-      target.cataloguePosterThumbnailMode = 'cover';
+      const publishedArtworkIsSelected = Boolean(target.publishedCataloguePosterThumbnail);
+      const publishedGenerationMatches = !target.publishedCataloguePosterGenerationId
+        || !recovered.generationId
+        || target.publishedCataloguePosterGenerationId === recovered.generationId;
+
+      if (publishedArtworkIsSelected && publishedGenerationMatches) {
+        target.publishedCataloguePosterThumbnail = recovered.source;
+        target.publishedCataloguePosterSourceOutputId = recovered.outputId;
+        target.publishedCataloguePosterSourceIsSquare = recovered.isSquare;
+        target.publishedCataloguePosterGenerationId = recovered.generationId;
+        target.publishedCataloguePosterThumbnailMode = 'cover';
+      } else {
+        target.cataloguePosterThumbnail = recovered.source;
+        target.cataloguePosterSourceOutputId = recovered.outputId;
+        target.cataloguePosterSourceIsSquare = recovered.isSquare;
+        target.cataloguePosterGenerationId = recovered.generationId;
+        target.cataloguePosterThumbnailMode = 'cover';
+      }
       target.posterUpdatedAt = recovered.generatedAt ?? new Date().toISOString();
       target.cataloguePosterRecoveredAt = new Date().toISOString();
       return true;
@@ -8658,8 +8680,7 @@
   function scheduleMissingCatalogueArtworkRecovery(events) {
     const candidates = events.filter(event =>
       event?.id
-      && !event.publishedCataloguePosterThumbnail
-      && !event.cataloguePosterThumbnail
+      && catalogueArtworkNeedsRecovery(event)
       && Date.now() - (catalogueArtworkRecoveryChecks.get(event.id) ?? 0) > 60_000);
     if (candidates.length === 0) return;
 
