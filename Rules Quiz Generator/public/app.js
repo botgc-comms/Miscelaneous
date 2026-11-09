@@ -103,7 +103,7 @@ function safeGitHubUrl(value) {
 function statusLabel(status) {
   if (status.deployedCurrent) return "Live";
   if (status.publishedCurrent) return "Published to PR";
-  if (status.compiledCurrent) return "Ready to publish";
+  if (status.compiledCurrent) return state.library.canonicalSource?.complete ? "Compiled" : "Ready to publish";
   if (status.deployed || status.published) return "Changed";
   if (status.compiled) return "Needs recompile";
   return "Draft";
@@ -125,6 +125,10 @@ function filteredRules() {
 }
 
 function renderCounts() {
+  const canonical = Boolean(state.library.canonicalSource?.complete);
+  // These counters belong to the legacy direct publisher, not the Services release.
+  elements.filters.querySelector('[data-filter="published"]').hidden = canonical;
+  elements.filters.querySelector('[data-filter="deployed"]').hidden = canonical;
   elements.sidebarTotal.textContent = state.library.counts.total ?? 0;
   document.getElementById("count-all").textContent = state.library.counts.total ?? 0;
   document.getElementById("count-drafts").textContent = state.library.counts.drafts ?? 0;
@@ -136,9 +140,9 @@ function renderCounts() {
   const configured = Boolean(state.library.publishing?.configured);
   elements.compileAllButton.textContent = `Compile ${drafts} draft${drafts === 1 ? "" : "s"}`;
   elements.compileAllButton.disabled = state.busy || drafts === 0;
-  elements.releaseButton.textContent = configured ? `Publish ${ready} ready` : "Publishing not configured";
-  elements.releaseButton.title = configured ? "Create a RulesReady content pull request" : "Configure the RulesReady GitHub repository and token on Render first.";
-  elements.releaseButton.disabled = state.busy || !configured || ready === 0;
+  elements.releaseButton.textContent = canonical ? "Release through Services" : configured ? `Publish ${ready} ready` : "Publishing not configured";
+  elements.releaseButton.title = canonical ? "Review and commit changes to the Services library, then deploy its release to each app." : configured ? "Create a RulesReady content pull request" : "Configure the RulesReady GitHub repository and token on Render first.";
+  elements.releaseButton.disabled = canonical || state.busy || !configured || ready === 0;
 }
 
 function renderList() {
@@ -161,6 +165,11 @@ function renderList() {
 }
 
 function statusBadges(status) {
+  if (state.library.canonicalSource?.complete) {
+    return status.compiledCurrent
+      ? '<span class="status-badge status-ready">Compiled working copy</span>'
+      : '<span class="status-badge status-draft">Working copy needs compilation</span>';
+  }
   const current = status.deployedCurrent
     ? '<span class="status-badge status-live">Live</span>'
     : status.publishedCurrent
@@ -214,9 +223,10 @@ function renderDetail() {
 
   if (!rule) return;
 
+  const canonical = state.library.canonicalSource?.complete ? state.library.canonicalSource : null;
   const publishingConfigured = Boolean(state.library.publishing?.configured);
-  const publishDisabled = !publishingConfigured || !rule.status.compiledCurrent || rule.status.publishedCurrent;
-  const publishLabel = rule.status.publishedCurrent
+  const publishDisabled = Boolean(canonical) || !publishingConfigured || !rule.status.compiledCurrent || rule.status.publishedCurrent;
+  const publishLabel = canonical ? "Release through Services" : rule.status.publishedCurrent
     ? "Published"
     : rule.status.compiledCurrent
       ? "Publish to RulesReady"
@@ -259,8 +269,13 @@ function renderDetail() {
     <div class="release-summary" aria-label="Publishing status">
       <div class="release-summary-item"><span>Working version</span><strong>${rule.status.compiledCurrent ? "Compiled" : "Draft changes"}</strong></div>
       <div class="release-summary-item"><span>Last compiled</span><strong>${escapeHtml(formatDate(rule.status.compiledAtUtc))}</strong></div>
+      ${canonical ? `
+      <div class="release-summary-item"><span>Imported Services baseline</span><strong><a href="/api/library/canonical-source" target="_blank" rel="noopener">${escapeHtml(canonical.contentVersion.slice(0, 12))}</a></strong><small>${escapeHtml(canonical.questionCount)} questions · imported baseline</small></div>
+      <div class="release-summary-item"><span>Website release</span><strong><a href="https://ruleready.golf/api/content-release" target="_blank" rel="noopener">Check loaded version</a></strong><small>Studio edits need a new Services release.</small></div>
+      ` : `
       <div class="release-summary-item"><span>RulesReady repository</span><strong>${repositoryState}</strong></div>
       <div class="release-summary-item"><span>Live site</span><strong>${escapeHtml(liveState)}</strong><small>Checked: ${escapeHtml(verificationState)}</small></div>
+      `}
     </div>
 
     <div class="detail-grid">
@@ -270,7 +285,7 @@ function renderDetail() {
           ${rule.imageUrl
             ? `<div class="image-stage"><img src="${escapeHtml(rule.imageUrl)}" alt="${escapeHtml(rule.metadata.imageAlt ?? rule.title)}"></div>`
             : '<div class="image-stage empty-state"><p>No illustration is available.</p></div>'}
-          <div class="image-caption"><span>Working-library asset</span><strong>${rule.status.deployedCurrent ? "Live" : rule.status.publishedCurrent ? "Published to PR" : "Not public"}</strong></div>
+          <div class="image-caption"><span>Working-library asset</span><strong>${canonical ? "Studio copy" : rule.status.deployedCurrent ? "Live" : rule.status.publishedCurrent ? "Published to PR" : "Not public"}</strong></div>
         </article>
 
         <details class="panel prompt-disclosure">
