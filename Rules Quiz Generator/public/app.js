@@ -7,6 +7,7 @@ const state = {
   action: null,
   busy: false,
   jobs: new Map(),
+  releaseEndpoint: "/api/publications/ready",
 };
 
 const elements = {
@@ -140,9 +141,9 @@ function renderCounts() {
   const configured = Boolean(state.library.publishing?.configured);
   elements.compileAllButton.textContent = `Compile ${drafts} draft${drafts === 1 ? "" : "s"}`;
   elements.compileAllButton.disabled = state.busy || drafts === 0;
-  elements.releaseButton.textContent = canonical ? "Release through Services" : configured ? `Publish ${ready} ready` : "Publishing not configured";
+  elements.releaseButton.textContent = canonical ? (configured ? `Release ${ready} through Services` : "Connect Services publishing") : configured ? `Publish ${ready} ready` : "Publishing not configured";
   elements.releaseButton.title = canonical ? "Review and commit changes to the Services library, then deploy its release to each app." : configured ? "Create a RulesReady content pull request" : "Configure the RulesReady GitHub repository and token on Render first.";
-  elements.releaseButton.disabled = canonical || state.busy || !configured || ready === 0;
+  elements.releaseButton.disabled = state.busy || !configured || ready === 0;
 }
 
 function renderList() {
@@ -225,7 +226,7 @@ function renderDetail() {
 
   const canonical = state.library.canonicalSource?.complete ? state.library.canonicalSource : null;
   const publishingConfigured = Boolean(state.library.publishing?.configured);
-  const publishDisabled = Boolean(canonical) || !publishingConfigured || !rule.status.compiledCurrent || rule.status.publishedCurrent;
+  const publishDisabled = !publishingConfigured || !rule.status.compiledCurrent || rule.status.publishedCurrent;
   const publishLabel = canonical ? "Release through Services" : rule.status.publishedCurrent
     ? "Published"
     : rule.status.compiledCurrent
@@ -401,11 +402,15 @@ function renderActivity() {
     const folderName = job.result?.folderName;
     const pullRequestUrl = safeGitHubUrl(job.result?.pullRequestUrl);
     const pullRequestNumber = job.result?.pullRequestNumber;
+    const commitUrl = safeGitHubUrl(job.result?.commitUrl);
+    const workflowUrl = safeGitHubUrl(job.result?.workflowUrl);
     const details = job.error ?? job.errors?.[0] ?? job.message ?? "Working…";
     const actions = isFinishedJob(job) ? `
       <div class="activity-actions">
         ${folderName ? `<button type="button" data-open-job="${escapeHtml(folderName)}">Open draft</button>` : ""}
         ${pullRequestUrl ? `<a href="${escapeHtml(pullRequestUrl)}" target="_blank" rel="noopener">Open PR${pullRequestNumber ? ` #${escapeHtml(pullRequestNumber)}` : ""}</a>` : ""}
+        ${commitUrl ? `<a href="${escapeHtml(commitUrl)}" target="_blank" rel="noopener">Services commit</a>` : ""}
+        ${workflowUrl ? `<a href="${escapeHtml(workflowUrl)}" target="_blank" rel="noopener">Deployment checks</a>` : ""}
         <button type="button" data-dismiss-job="${escapeHtml(job.id)}">Dismiss</button>
       </div>
     ` : "";
@@ -460,11 +465,11 @@ async function runPublication(endpoint, title) {
   renderCounts();
 
   try {
-    const job = await api(endpoint, { method: "POST" });
+    const job = await api(endpoint, { method: "POST", body: JSON.stringify({reviewed:true}) });
     const completed = await watchJob(job, title);
     await loadLibrary(state.selectedFolder);
     const number = completed.result?.pullRequestNumber;
-    toast(number ? `RulesReady pull request #${number} is ready for review.` : "The RulesReady release pull request is ready for review.");
+    toast(completed.result?.servicesCommit ? "Committed to Services. Deployment checks are running for both apps." : number ? `RulesReady pull request #${number} is ready for review.` : "The RulesReady release pull request is ready for review.");
   } catch (error) {
     toast(error.message, true);
   } finally {
@@ -501,10 +506,7 @@ elements.detail.addEventListener("click", (event) => {
   } else if (button.dataset.action === "compile") {
     void runRuleAction("Compile", () => api(`/api/rules/${encodeURIComponent(folder)}/compile`, { method: "POST" }));
   } else if (button.dataset.action === "publish") {
-    void runPublication(
-      `/api/rules/${encodeURIComponent(folder)}/publish`,
-      `Publishing · ${state.detail.title}`
-    );
+    openReleaseDialog(`/api/rules/${encodeURIComponent(folder)}/publish`, 1);
   }
 });
 
@@ -611,13 +613,17 @@ elements.compileForm.addEventListener("submit", async (event) => {
   }
 });
 
-elements.releaseButton.addEventListener("click", () => {
-  const count = state.library.counts.ready ?? 0;
+function openReleaseDialog(endpoint, count) {
+  state.releaseEndpoint = endpoint;
+  document.getElementById("release-reviewed").checked = false;
   const repository = state.library.publishing?.repository ?? "the configured RulesReady repository";
   const branch = state.library.publishing?.targetBranch ?? "main";
-  elements.releaseConfirmCopy.textContent = `${count} compiled rule${count === 1 ? "" : "s"} will be committed to a new branch in ${repository} and proposed against ${branch}.`;
+  elements.releaseConfirmCopy.textContent = state.library.canonicalSource?.complete
+    ? `${count} compiled rule${count === 1 ? "" : "s"} will be reconciled into ${repository}. Releasing commits to ${branch} and starts automatic deployment to the Junior app and RuleReady.`
+    : `${count} compiled rule${count === 1 ? "" : "s"} will be committed to a new branch in ${repository} and proposed against ${branch}.`;
   elements.releaseDialog.showModal();
-});
+}
+elements.releaseButton.addEventListener("click", () => openReleaseDialog("/api/publications/ready", state.library.counts.ready ?? 0));
 
 elements.releaseForm.addEventListener("submit", async (event) => {
   if (event.submitter?.value === "cancel") return;
@@ -625,7 +631,7 @@ elements.releaseForm.addEventListener("submit", async (event) => {
   elements.releaseConfirmButton.disabled = true;
   elements.releaseDialog.close();
   try {
-    await runPublication("/api/publications/ready", "Publishing compiled rules to RulesReady");
+    await runPublication(state.releaseEndpoint, "Releasing reviewed rules");
   } finally {
     elements.releaseConfirmButton.disabled = false;
   }

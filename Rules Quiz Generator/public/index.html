@@ -161,18 +161,19 @@
         <div class="dialog-heading">
           <div>
             <p class="eyebrow">Publish library</p>
-            <h2>Publish compiled rules?</h2>
+            <h2>Release reviewed rules?</h2>
           </div>
-          <button class="icon-button" value="cancel" type="submit" aria-label="Close dialog">×</button>
+          <button class="icon-button" value="cancel" type="submit" formnovalidate aria-label="Close dialog">×</button>
         </div>
         <p class="dialog-copy" id="release-confirm-copy">The compiled rules will be committed to a RulesReady release branch.</p>
         <div class="release-warning">
           <span aria-hidden="true">↗</span>
-          <p><strong>This creates a GitHub pull request.</strong> Nothing is marked Live until that change is merged, deployed, and confirmed by the RulesReady manifest.</p>
+          <p><strong>Services controls the released library.</strong> Deployment checks must finish before the release is considered live. Existing learner answers and scores are preserved.</p>
         </div>
+        <label class="field"><span><input id="release-reviewed" type="checkbox" required> I have reviewed the questions, every answer and explanation for both audiences.</span></label>
         <div class="dialog-actions">
-          <button class="button button-ghost" value="cancel" type="submit">Not yet</button>
-          <button class="button button-primary" id="release-confirm-button" value="default" type="submit">Create release PR</button>
+          <button class="button button-ghost" value="cancel" type="submit" formnovalidate>Not yet</button>
+          <button class="button button-primary" id="release-confirm-button" value="default" type="submit">Release reviewed rules</button>
         </div>
       </form>
     </dialog>

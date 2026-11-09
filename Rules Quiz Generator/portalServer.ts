@@ -14,6 +14,7 @@ import { importCanonicalSnapshot, readCanonicalReceipt } from "./canonicalMigrat
 import { ensureLibraryData, resolveLibraryPaths, type LibraryPaths } from "./libraryPaths.js";
 import { PortalJobManager, type JobReporter } from "./portalJobs.js";
 import { publishCompiledRules, repositoryPublishingConfiguration } from "./githubPublisher.js";
+import { publishServicesRules, readServicesPublication, servicesPublishingConfiguration } from "./servicesPublisher.js";
 import { assertSafeFolderName } from "./quizFiles.js";
 import { regenerateSingleImage } from "./regenerateSingleImage.js";
 import { suggestQuestionEdit } from "./suggestQuestionEdit.js";
@@ -175,7 +176,8 @@ function mutationRateLimit(windowMs = 15 * 60_000, limit = 40) {
 async function runReadyPublication(paths: LibraryPaths, reporter: JobReporter): Promise<unknown> {
   const library = await listRules(paths);
   const ready = library.rules.filter((rule) => rule.status.compiledCurrent && !rule.status.publishedCurrent);
-  return publishCompiledRules(paths, ready.map((rule) => rule.folderName), {
+  const publish = (await readCanonicalReceipt(paths))?.complete ? publishServicesRules : publishCompiledRules;
+  return publish(paths, ready.map((rule) => rule.folderName), {
     progress: (values) => reporter.update(values),
   });
 }
@@ -277,11 +279,13 @@ export async function createPortalApp(paths = resolveLibraryPaths()): Promise<ex
 
   app.get("/api/library", async (_req, res, next) => {
     try {
+      const canonicalSource = await readCanonicalReceipt(paths);
       res.setHeader("Cache-Control", "no-store");
       res.json({
         ...await listRules(paths),
-        publishing: repositoryPublishingConfiguration(),
-        canonicalSource: await readCanonicalReceipt(paths),
+        publishing: canonicalSource?.complete ? servicesPublishingConfiguration() : repositoryPublishingConfiguration(),
+        canonicalSource,
+        servicesRelease: await readServicesPublication(paths),
       });
     } catch (error) {
       next(error);
@@ -371,6 +375,8 @@ export async function createPortalApp(paths = resolveLibraryPaths()): Promise<ex
 
   app.post("/api/rules/:folderName/publish", changeLimiter, async (req, res, next) => {
     try {
+      const canonical = (await readCanonicalReceipt(paths))?.complete;
+      if (canonical && req.body?.reviewed !== true) throw new Error("Confirm review of both audiences before releasing.");
       const folderName = assertSafeFolderName(req.params.folderName);
       const rule = await getRule(paths, folderName);
       if (!rule.status.compiledCurrent) {
@@ -387,7 +393,7 @@ export async function createPortalApp(paths = resolveLibraryPaths()): Promise<ex
       }
 
       const job = jobs.start("publish-rules", `Publishing ${rule.title}...`, (reporter) =>
-        publishCompiledRules(paths, [folderName], {
+        (canonical ? publishServicesRules : publishCompiledRules)(paths, [folderName], {
           progress: (values) => reporter.update(values),
         })
       );
@@ -410,7 +416,9 @@ export async function createPortalApp(paths = resolveLibraryPaths()): Promise<ex
     res.status(202).json(job);
   });
 
-  app.post("/api/publications/ready", changeLimiter, (_req, res) => {
+  app.post("/api/publications/ready", changeLimiter, async (req, res, next) => {
+    try {
+    if ((await readCanonicalReceipt(paths))?.complete && req.body?.reviewed !== true) throw new Error("Confirm review of both audiences before releasing.");
     const running = jobs.findRunning("publish-rules");
 
     if (running) {
@@ -422,6 +430,7 @@ export async function createPortalApp(paths = resolveLibraryPaths()): Promise<ex
       runReadyPublication(paths, reporter)
     );
     res.status(202).json(job);
+    } catch (error) { next(error); }
   });
 
   app.get("/api/jobs/:jobId", (req, res) => {
@@ -494,7 +503,8 @@ async function main(): Promise<void> {
     console.warn("PORTAL_PASSWORD is not set; the local portal is running without authentication.");
   }
 
-  const paths = resolveLibraryPaths();
+  let paths = resolveLibraryPaths();
+  await ensureLibraryData(paths);
   const app = await createPortalApp(paths);
   const server = app.listen(PORT, HOST, () => {
     console.log(`RulesReady Content Studio listening on http://${HOST}:${PORT}`);
