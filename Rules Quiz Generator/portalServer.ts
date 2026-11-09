@@ -1,4 +1,5 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
+import { promises as fs } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { Readable } from "node:stream";
 import { pipeline } from "node:stream/promises";
@@ -9,6 +10,7 @@ import { compileFolder } from "./compilerService.js";
 import { createQuizFromRuleDescription } from "./createQuizFromRuleDescription.js";
 import { getRule, listRules } from "./libraryStore.js";
 import { exportLibrary } from "./libraryExport.js";
+import { importCanonicalSnapshot, readCanonicalReceipt } from "./canonicalMigration.js";
 import { ensureLibraryData, resolveLibraryPaths, type LibraryPaths } from "./libraryPaths.js";
 import { PortalJobManager, type JobReporter } from "./portalJobs.js";
 import { publishCompiledRules, repositoryPublishingConfiguration } from "./githubPublisher.js";
@@ -202,6 +204,7 @@ async function runDraftCompilation(paths: LibraryPaths, reporter: JobReporter): 
 
 export async function createPortalApp(paths = resolveLibraryPaths()): Promise<express.Express> {
   await ensureLibraryData(paths);
+  await importCanonicalSnapshot(paths);
 
   const app = express();
   const changeLimiter = mutationRateLimit();
@@ -278,10 +281,16 @@ export async function createPortalApp(paths = resolveLibraryPaths()): Promise<ex
       res.json({
         ...await listRules(paths),
         publishing: repositoryPublishingConfiguration(),
+        canonicalSource: await readCanonicalReceipt(paths),
       });
     } catch (error) {
       next(error);
     }
+  });
+
+  app.get("/api/library/canonical-source", async (_req, res, next) => {
+    try { res.setHeader("Cache-Control", "no-store"); res.json(await readCanonicalReceipt(paths)); }
+    catch (error) { next(error); }
   });
 
   app.get("/api/library/export", async (_req, res, next) => {
@@ -490,6 +499,16 @@ async function main(): Promise<void> {
   const server = app.listen(PORT, HOST, () => {
     console.log(`RulesReady Content Studio listening on http://${HOST}:${PORT}`);
   });
+  const imported = await readCanonicalReceipt(paths);
+  if (imported?.complete && !imported.compilationComplete) {
+    jobs.start("compile-canonical-import", "Compiling the imported Services collection...", async reporter => {
+      const result = await runDraftCompilation(paths, reporter);
+      const library = await listRules(paths);
+      if (library.counts.drafts !== 0) throw new Error("Some imported rules still need compilation.");
+      await fs.writeFile(path.join(paths.publishedDir, "services-library-import.json"), JSON.stringify({ ...imported, compilationComplete: true, compiledAtUtc: new Date().toISOString() }, null, 2));
+      return result;
+    });
+  }
 
   const shutdown = () => server.close(() => process.exit(0));
   process.on("SIGTERM", shutdown);
