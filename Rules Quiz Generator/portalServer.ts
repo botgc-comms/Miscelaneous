@@ -1,10 +1,14 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { fileURLToPath } from "node:url";
+import { Readable } from "node:stream";
+import { pipeline } from "node:stream/promises";
+import { createGzip } from "node:zlib";
 import express, { type NextFunction, type Request, type Response } from "express";
 import path from "node:path";
 import { compileFolder } from "./compilerService.js";
 import { createQuizFromRuleDescription } from "./createQuizFromRuleDescription.js";
 import { getRule, listRules } from "./libraryStore.js";
+import { exportLibrary } from "./libraryExport.js";
 import { ensureLibraryData, resolveLibraryPaths, type LibraryPaths } from "./libraryPaths.js";
 import { PortalJobManager, type JobReporter } from "./portalJobs.js";
 import { publishCompiledRules, repositoryPublishingConfiguration } from "./githubPublisher.js";
@@ -275,6 +279,17 @@ export async function createPortalApp(paths = resolveLibraryPaths()): Promise<ex
         ...await listRules(paths),
         publishing: repositoryPublishingConfiguration(),
       });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.get("/api/library/export", async (_req, res, next) => {
+    try {
+      res.setHeader("Cache-Control", "no-store");
+      res.type("application/gzip");
+      res.attachment(`rulesready-library-${new Date().toISOString().replace(/[:.]/g, "-")}.jsonl.gz`);
+      await pipeline(Readable.from(exportLibrary(paths)), createGzip(), res);
     } catch (error) {
       next(error);
     }

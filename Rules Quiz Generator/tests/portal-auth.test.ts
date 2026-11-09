@@ -5,6 +5,7 @@ import type { AddressInfo } from "node:net";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
+import { gunzipSync } from "node:zlib";
 import { createPortalApp } from "../portalServer.js";
 import type { LibraryPaths } from "../libraryPaths.js";
 
@@ -26,8 +27,9 @@ test("the portal uses an HTML login and a signed session cookie", async (t) => {
     inputDir: path.join(root, "Input"),
     compiledDir: path.join(root, "compiled"),
     publishedDir: path.join(root, "published"),
-    publicDir: path.resolve("public"),
+    publicDir: path.join(root, "public"),
   };
+  await fs.cp(path.resolve("public"), paths.publicDir, { recursive: true });
   const app = await createPortalApp(paths);
   const server = app.listen(0, "127.0.0.1");
   await once(server, "listening");
@@ -60,6 +62,7 @@ test("the portal uses an HTML login and a signed session cookie", async (t) => {
   const anonymousApi = await fetch(`${baseUrl}/api/library`);
   assert.equal(anonymousApi.status, 401);
   assert.deepEqual(await anonymousApi.json(), { error: "Your session has expired. Please sign in again." });
+  assert.equal((await fetch(`${baseUrl}/api/library/export`)).status, 401);
 
   const invalidLogin = await fetch(`${baseUrl}/login`, {
     method: "POST",
@@ -87,6 +90,13 @@ test("the portal uses an HTML login and a signed session cookie", async (t) => {
   const authenticatedApi = await fetch(`${baseUrl}/api/library`, { headers: { Cookie: cookie } });
   assert.equal(authenticatedApi.status, 200);
   assert.equal((await authenticatedApi.json() as { counts: { total: number } }).counts.total, 0);
+
+  const download = await fetch(`${baseUrl}/api/library/export`, { headers: { Cookie: cookie } });
+  assert.equal(download.status, 200);
+  assert.match(download.headers.get("content-disposition") ?? "", /attachment; filename=.*\.jsonl\.gz/);
+  assert.equal(download.headers.get("cache-control"), "no-store");
+  const records = gunzipSync(Buffer.from(await download.arrayBuffer())).toString("utf8").trim().split("\n").map(line => JSON.parse(line));
+  assert.equal(records.at(-1).type, "complete");
 
   const logout = await fetch(`${baseUrl}/logout`, {
     method: "POST",
