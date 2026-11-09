@@ -2,6 +2,7 @@ import {createHash, randomUUID} from 'node:crypto';
 import {promises as fs} from 'node:fs';
 import path from 'node:path';
 import {isDeepStrictEqual} from 'node:util';
+import {withServicesGitTransport} from './servicesGitTransport.js';
 import type {LibraryPaths} from './libraryPaths.js';
 import {assertSafeFolderName,computeSourceRevision,pathExists,readJson,resolveSourceSelection} from './quizFiles.js';
 
@@ -13,7 +14,7 @@ type TreeEntry={path:string;mode:'100644';type:'blob';sha?:string;content?:strin
 type ReleaseState={contentVersion:string;servicesCommit:string;commitUrl:string;workflowUrl:string;publishedAtUtc:string;rules:Record<string,{contentRevision:string;sourceRevision:string}>};
 
 export function servicesPublishingConfiguration(){
-  return {configured:Boolean(process.env.SERVICES_GITHUB_TOKEN?.trim()),repository:repo,targetBranch:branch,source:'services',contentPath:root};
+  return {configured:Boolean(process.env.SERVICES_GITHUB_TOKEN?.trim()||process.env.SERVICES_GITHUB_SSH_KEY?.trim()),repository:repo,targetBranch:branch,source:'services',contentPath:root};
 }
 export async function readServicesPublication(paths:LibraryPaths):Promise<ReleaseState|null>{
   const file=path.join(paths.publishedDir,stateName);
@@ -39,8 +40,9 @@ function validate(master:any){
   if(master.contentVersion!==hash(encode(master.rules)))throw new Error('Stale library content version.');
 }
 
-export async function publishServicesRules(paths:LibraryPaths,folderNames:string[],options:{fetchImplementation?:typeof fetch;token?:string;progress?:(v:{message:string;processed?:number;total?:number})=>void}={}){
+export async function publishServicesRules(paths:LibraryPaths,folderNames:string[],options:{fetchImplementation?:typeof fetch;token?:string;progress?:(v:{message:string;processed?:number;total?:number})=>void}={}):Promise<ReleaseState&{changedQuestions:number;preservedNewerRepositoryQuestions:number;deploymentStatus:string}>{
   const token=options.token??process.env.SERVICES_GITHUB_TOKEN?.trim();
+  if(!token&&process.env.SERVICES_GITHUB_SSH_KEY?.trim())return withServicesGitTransport(process.env.SERVICES_GITHUB_SSH_KEY,transport=>publishServicesRules(paths,folderNames,{...options,fetchImplementation:transport,token:'repository-deploy-key'}));
   if(!token)throw new Error('Services publishing needs a GitHub credential restricted to botgc-comms/services.');
   const transport=options.fetchImplementation??fetch;
   async function api<T>(method:string,route:string,body?:unknown):Promise<T>{

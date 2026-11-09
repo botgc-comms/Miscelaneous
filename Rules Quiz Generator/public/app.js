@@ -225,6 +225,9 @@ function renderDetail() {
   if (!rule) return;
 
   const canonical = state.library.canonicalSource?.complete ? state.library.canonicalSource : null;
+  const servicesRelease = state.library.servicesRelease;
+  const servicesCommitUrl = safeGitHubUrl(servicesRelease?.commitUrl);
+  const servicesChecksUrl = safeGitHubUrl(servicesRelease?.workflowUrl);
   const publishingConfigured = Boolean(state.library.publishing?.configured);
   const publishDisabled = !publishingConfigured || !rule.status.compiledCurrent || rule.status.publishedCurrent;
   const publishLabel = canonical ? "Release through Services" : rule.status.publishedCurrent
@@ -271,8 +274,10 @@ function renderDetail() {
       <div class="release-summary-item"><span>Working version</span><strong>${rule.status.compiledCurrent ? "Compiled" : "Draft changes"}</strong></div>
       <div class="release-summary-item"><span>Last compiled</span><strong>${escapeHtml(formatDate(rule.status.compiledAtUtc))}</strong></div>
       ${canonical ? `
-      <div class="release-summary-item"><span>Imported Services baseline</span><strong><a href="/api/library/canonical-source" target="_blank" rel="noopener">${escapeHtml(canonical.contentVersion.slice(0, 12))}</a></strong><small>${escapeHtml(canonical.questionCount)} questions · imported baseline</small></div>
-      <div class="release-summary-item"><span>Website release</span><strong><a href="https://ruleready.golf/api/content-release" target="_blank" rel="noopener">Check loaded version</a></strong><small>Studio edits need a new Services release.</small></div>
+      <div class="release-summary-item">${servicesCommitUrl
+        ? `<span>Latest Services submission</span><strong><a href="${escapeHtml(servicesCommitUrl)}" target="_blank" rel="noopener">${escapeHtml(servicesRelease.servicesCommit.slice(0,12))}</a></strong><small>${escapeHtml(formatDate(servicesRelease.publishedAtUtc))} · deployment checked separately</small>`
+        : `<span>Imported Services baseline</span><strong><a href="/api/library/canonical-source" target="_blank" rel="noopener">${escapeHtml(canonical.contentVersion.slice(0, 12))}</a></strong><small>${escapeHtml(canonical.questionCount)} questions · imported baseline</small>`}</div>
+      <div class="release-summary-item"><span>Consumer deployment</span><strong><a href="${escapeHtml(servicesChecksUrl ?? 'https://github.com/botgc-comms/services/actions?query=branch%3Amaster')}" target="_blank" rel="noopener">Check both apps</a></strong><small><a href="https://ruleready.golf/api/content-release" target="_blank" rel="noopener">Website loaded version</a> · edits need a release.</small></div>
       ` : `
       <div class="release-summary-item"><span>RulesReady repository</span><strong>${repositoryState}</strong></div>
       <div class="release-summary-item"><span>Live site</span><strong>${escapeHtml(liveState)}</strong><small>Checked: ${escapeHtml(verificationState)}</small></div>
