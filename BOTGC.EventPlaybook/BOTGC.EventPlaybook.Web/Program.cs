@@ -111,6 +111,9 @@ builder.Services.AddHttpClient(IntelligentGolfApiSessionClient.HttpClientName, c
 });
 builder.Services.AddSingleton<IIntelligentGolfApiSessionClient, IntelligentGolfApiSessionClient>();
 builder.Services.AddSingleton<IIntelligentGolfMemberCommunicationsClient, IntelligentGolfMemberCommunicationsClient>();
+builder.Services.AddSingleton<MemberEmailCampaignQueue>();
+builder.Services.AddSingleton<IMemberEmailCampaignQueue>(services => services.GetRequiredService<MemberEmailCampaignQueue>());
+builder.Services.AddHostedService(services => services.GetRequiredService<MemberEmailCampaignQueue>());
 builder.Services.AddSingleton<IIntelligentGolfIntegrationLinkStore, IntelligentGolfIntegrationLinkStore>();
 builder.Services.AddSingleton<IIntegrationActivityStore, IntegrationActivityStore>();
 builder.Services.AddSingleton<IIntelligentGolfEventIntegration, IntelligentGolfEventIntegration>();
@@ -1337,8 +1340,7 @@ app.MapPost("/api/poster/member-email/test", async (
 
 app.MapPost("/api/poster/member-email/send", async (
     MemberCampaignEmailRequest request,
-    IIntelligentGolfMemberCommunicationsClient communications,
-    IIntegrationActivityStore activityStore,
+    IMemberEmailCampaignQueue campaignQueue,
     CancellationToken cancellationToken) =>
 {
     if (request.MemberNumbers is null || request.MemberNumbers.Count == 0)
@@ -1348,47 +1350,22 @@ app.MapPost("/api/poster/member-email/send", async (
 
     try
     {
-        var result = await communications.SendCampaignAsync(request, cancellationToken);
-        await RecordIntegrationActivitySafelyAsync(
-            activityStore,
-            new IntegrationActivityWrite
-            {
-                Integration = "Member communications",
-                Operation = string.Equals(request.Operation, "cancellation", StringComparison.OrdinalIgnoreCase)
-                    ? "Send cancellation member email"
-                    : "Send member email",
-                Outcome = "succeeded",
-                EventPlaybookEventId = request.EventId,
-                EventName = request.EventName,
-                Stage = string.Equals(request.Operation, "cancellation", StringComparison.OrdinalIgnoreCase)
-                    ? "cancellation-email-send"
-                    : "member-email-send",
-                Message = $"Sent the approved email to {result.Sent} of {result.Requested} requested member{(result.Requested == 1 ? string.Empty : "s")}."
-            },
-            app.Logger);
-        return Results.Ok(result);
+        var result = await campaignQueue.EnqueueAsync(request, cancellationToken);
+        return Results.Accepted($"/api/poster/member-email/campaigns/{Uri.EscapeDataString(result.CampaignId)}", result);
     }
-    catch (InvalidOperationException exception)
+    catch (ArgumentException exception)
     {
-        await RecordIntegrationActivitySafelyAsync(
-            activityStore,
-            new IntegrationActivityWrite
-            {
-                Integration = "Member communications",
-                Operation = string.Equals(request.Operation, "cancellation", StringComparison.OrdinalIgnoreCase)
-                    ? "Send cancellation member email"
-                    : "Send member email",
-                Outcome = "failed",
-                EventPlaybookEventId = request.EventId,
-                EventName = request.EventName,
-                Stage = string.Equals(request.Operation, "cancellation", StringComparison.OrdinalIgnoreCase)
-                    ? "cancellation-email-send"
-                    : "member-email-send",
-                Message = exception.Message
-            },
-            app.Logger);
-        return Results.Problem(exception.Message, statusCode: StatusCodes.Status502BadGateway);
+        return Results.BadRequest(new { error = exception.Message });
     }
+});
+
+app.MapGet("/api/poster/member-email/campaigns/{campaignId}", async (
+    string campaignId,
+    IMemberEmailCampaignQueue campaignQueue,
+    CancellationToken cancellationToken) =>
+{
+    var result = await campaignQueue.GetAsync(campaignId, cancellationToken);
+    return result is null ? Results.NotFound(new { error = "The email campaign could not be found." }) : Results.Ok(result);
 });
 
 app.MapGet("/api/shared-state", async (

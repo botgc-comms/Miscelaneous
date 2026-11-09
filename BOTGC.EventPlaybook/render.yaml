@@ -12,7 +12,7 @@ services:
     disk:
       name: botgc-playbook-data
       mountPath: /app/App_Data
-      sizeGB: 1
+      sizeGB: 5
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production

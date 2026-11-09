@@ -647,9 +647,15 @@ function applyStoredSession(session, stored) {
             updatedAt: String(stored.diaryPublication.updatedAt ?? '')
         };
     }
-    if (stored.emailPublication && typeof stored.emailPublication === 'object' && Number(stored.emailPublication.sent) > 0) {
+    if (stored.emailPublication && typeof stored.emailPublication === 'object' &&
+        (Number(stored.emailPublication.sent) > 0 || stored.emailPublication.campaignId)) {
         session.emailPublication = {
+            campaignId: String(stored.emailPublication.campaignId ?? ''),
+            status: String(stored.emailPublication.status ?? 'completed'),
+            requested: Number(stored.emailPublication.requested ?? stored.emailPublication.sent ?? 0),
             sent: Number(stored.emailPublication.sent),
+            pending: Number(stored.emailPublication.pending ?? 0),
+            uncertain: Number(stored.emailPublication.uncertain ?? 0),
             sentAt: String(stored.emailPublication.sentAt ?? ''),
             subject: String(stored.emailPublication.subject ?? '')
         };
@@ -4148,13 +4154,16 @@ function updateMemberEmailSendState(session) {
             : 'This email is too large to send. Remove some content or large pasted formatting.';
         elements.emailEditorHelp.classList.toggle('error', !withinLimit);
     }
-    const ready = session.config?.memberEmail?.configured &&
+    const campaignInProgress = ['queued', 'processing'].includes(session.emailPublication?.status);
+    const ready = !campaignInProgress && session.config?.memberEmail?.configured &&
         elements.emailSubject?.value.trim() &&
         memberEmailHtmlHasContent(bodyHtml) &&
         withinLimit &&
         recipients.length > 0;
     elements.emailDialogConfirm.disabled = !ready;
-    elements.emailDialogConfirm.textContent = recipients.length > 0
+    elements.emailDialogConfirm.textContent = campaignInProgress
+        ? `Sending ${session.emailPublication.sent} of ${session.emailPublication.requested}…`
+        : recipients.length > 0
         ? `Send email to ${recipients.length} member${recipients.length === 1 ? '' : 's'}`
         : 'Send email to members';
 }
@@ -4235,20 +4244,69 @@ async function sendMemberCampaignEmail() {
             })
         });
         const result = await readApiResponse(response);
-        session.emailPublication = {
-            sent: Number(result.sent ?? recipients.length),
-            sentAt: new Date().toISOString(),
-            subject: session.form.emailSubject
-        };
-        elements.shareMessage.textContent = `“${session.form.emailSubject}” was sent to ${session.emailPublication.sent} active club members.`;
-        configureShareConnections(session);
-        setWorkflowStep(session, 4, true);
+        session.emailPublication = campaignProgressForSession(result, session.form.emailSubject);
+        elements.emailDialogMessage.textContent = result.message || `Queued for ${recipients.length} members. You can safely close this window.`;
+        elements.emailDialogMessage.className = 'poster-publish-dialog-message working';
         await persistSession(session);
-        elements.emailDialog.close();
+        configureShareConnections(session);
+        updateMemberEmailSendState(session);
+        await monitorMemberEmailCampaign(session, result.campaignId);
     } catch (error) {
         elements.emailDialogMessage.textContent = error instanceof Error ? error.message : 'The member campaign email could not be sent.';
         elements.emailDialogMessage.className = 'poster-publish-dialog-message error';
         updateMemberEmailSendState(session);
+    }
+}
+
+function campaignProgressForSession(result, subject) {
+    return {
+        campaignId: String(result.campaignId ?? ''),
+        status: String(result.status ?? 'queued'),
+        requested: Number(result.requested ?? 0),
+        sent: Number(result.sent ?? 0),
+        pending: Number(result.pending ?? 0),
+        uncertain: Number(result.uncertain ?? 0) + Number(result.failed ?? 0),
+        sentAt: String(result.status === 'completed' ? new Date().toISOString() : ''),
+        subject: String(subject ?? '')
+    };
+}
+
+async function monitorMemberEmailCampaign(session, campaignId) {
+    if (!campaignId || session.emailCampaignPollId === campaignId) return;
+    session.emailCampaignPollId = campaignId;
+    try {
+        for (let attempt = 0; attempt < 300; attempt += 1) {
+            await new Promise(resolve => window.setTimeout(resolve, 1000));
+            const response = await fetch(`/api/poster/member-email/campaigns/${encodeURIComponent(campaignId)}`, { cache: 'no-store' });
+            const result = await readApiResponse(response);
+            session.emailPublication = campaignProgressForSession(result, session.form.emailSubject);
+            elements.emailDialogMessage.textContent = result.message || 'The member email campaign is being processed.';
+            elements.emailDialogMessage.className = result.status === 'action-required'
+                ? 'poster-publish-dialog-message error'
+                : result.status === 'completed'
+                    ? 'poster-publish-dialog-message success'
+                    : 'poster-publish-dialog-message working';
+            configureShareConnections(session);
+            updateMemberEmailSendState(session);
+
+            if (result.status === 'completed') {
+                session.emailPublication.sentAt = new Date().toISOString();
+                elements.shareMessage.textContent = `“${session.form.emailSubject}” was sent to ${session.emailPublication.sent} active club members.`;
+                setWorkflowStep(session, 4, true);
+                await persistSession(session);
+                elements.emailDialog.close();
+                return;
+            }
+            if (result.status === 'action-required') {
+                await persistSession(session);
+                return;
+            }
+        }
+        elements.emailDialogMessage.textContent = 'The campaign is still running safely in the background. Reopen this email to check it later.';
+        elements.emailDialogMessage.className = 'poster-publish-dialog-message working';
+        await persistSession(session);
+    } finally {
+        if (session.emailCampaignPollId === campaignId) session.emailCampaignPollId = '';
     }
 }
 
@@ -4279,7 +4337,11 @@ function configureShareConnections(session) {
             elements.shareEmailStatus.textContent = 'Connection setup required';
             elements.shareEmailStatus.classList.remove('hidden');
         } else if (session.emailPublication) {
-            elements.shareEmailStatus.textContent = `Sent to ${session.emailPublication.sent} members`;
+            elements.shareEmailStatus.textContent = ['queued', 'processing'].includes(session.emailPublication.status)
+                ? `Sending ${session.emailPublication.sent} of ${session.emailPublication.requested}`
+                : session.emailPublication.status === 'action-required'
+                    ? `${session.emailPublication.sent} sent · review ${session.emailPublication.uncertain}`
+                    : `Sent to ${session.emailPublication.sent} members`;
             elements.shareEmailStatus.classList.remove('hidden');
         } else {
             elements.shareEmailStatus.classList.add('hidden');

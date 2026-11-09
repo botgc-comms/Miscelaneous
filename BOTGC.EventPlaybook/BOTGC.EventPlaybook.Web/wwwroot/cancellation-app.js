@@ -550,7 +550,7 @@ async function sendCancellationEmail(runtime) {
   updateResponse(runtime, 'email', { status: 'working', error: '' });
   renderWorkspace(runtime);
   try {
-    const result = await apiJson('/api/poster/member-email/send', {
+    let result = await apiJson('/api/poster/member-email/send', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -562,7 +562,30 @@ async function sendCancellationEmail(runtime) {
         operation: 'cancellation'
       })
     });
-    updateResponse(runtime, 'email', { status: 'complete', requested: Number(result.requested || members.length), sent: Number(result.sent || 0), completedAt: new Date().toISOString(), error: '' });
+    updateResponse(runtime, 'email', {
+      status: 'working',
+      campaignId: result.campaignId,
+      requested: Number(result.requested || members.length),
+      sent: Number(result.sent || 0),
+      error: result.message || 'The cancellation email is queued and sending safely in the background.'
+    });
+    renderWorkspace(runtime);
+    for (let attempt = 0; attempt < 300 && !['completed', 'action-required'].includes(result.status); attempt += 1) {
+      await new Promise(resolve => window.setTimeout(resolve, 1000));
+      result = await apiJson(`/api/poster/member-email/campaigns/${encodeURIComponent(result.campaignId)}`, { cache: 'no-store' });
+      updateResponse(runtime, 'email', {
+        status: 'working',
+        requested: Number(result.requested || members.length),
+        sent: Number(result.sent || 0),
+        error: result.message || ''
+      });
+      renderWorkspace(runtime);
+    }
+    if (result.status === 'completed') {
+      updateResponse(runtime, 'email', { status: 'complete', requested: Number(result.requested || members.length), sent: Number(result.sent || 0), completedAt: new Date().toISOString(), error: '' });
+    } else if (result.status === 'action-required') {
+      updateResponse(runtime, 'email', { status: 'failed', requested: Number(result.requested || members.length), sent: Number(result.sent || 0), error: result.message || 'Some recipient results need review. They were not retried, preventing duplicate emails.' });
+    }
   } catch (error) {
     updateResponse(runtime, 'email', { status: 'failed', error: error.message || 'The cancellation email could not be sent.' });
   }
