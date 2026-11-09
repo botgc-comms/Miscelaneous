@@ -7,7 +7,7 @@ import { assertSafeFolderName, clearFileHashCache, computeSourceRevision, findQu
 
 type Master = { schemaVersion: number; contentVersion: string; sourceExport: { sha256: string }; rules: { id: string; metadata: any; assets: { image: { sha256: string }; prompt: { sha256: string } }; provenance: { serverSourceRevision: string } }[] };
 type Write = { relative: string; before: string | null; after: string };
-type Journal = { contentVersion: string; sourceExportSha256: string; complete: boolean; writes: Write[]; verifiedQuestions?: number; importedAtUtc?: string };
+type Journal = { contentVersion: string; sourceExportSha256: string; complete: boolean; writes: Write[]; verifiedQuestions?: number; importedAtUtc?: string; previousReceipt?: unknown };
 const MIGRATION_FILE = "2026-11-09-services-library.json";
 const RECEIPT_FILE = "services-library-import.json";
 const hash = (value: Buffer | string) => createHash("sha256").update(value).digest("hex");
@@ -43,7 +43,7 @@ export async function readCanonicalReceipt(paths: LibraryPaths): Promise<any | n
  * appends revisions, and refuses to overwrite any source changed since export.
  * A crash can resume only if every planned target still has its before/after bytes.
  */
-export async function importCanonicalSnapshot(paths: LibraryPaths, snapshotFile = path.join(paths.projectRoot, "migrations", MIGRATION_FILE)): Promise<boolean> {
+export async function importCanonicalSnapshot(paths: LibraryPaths, snapshotFile = path.join(paths.projectRoot, "migrations", MIGRATION_FILE), previousSnapshotFile = path.join(paths.projectRoot, "migrations", "previous-services-library.json")): Promise<boolean> {
   if (!await pathExists(snapshotFile)) return false;
   const master = await readJson<Master>(snapshotFile);
   if (master.schemaVersion !== 1 || !/^[0-9a-f]{64}$/.test(master.contentVersion)) throw new Error("Invalid Services library snapshot.");
@@ -56,14 +56,34 @@ export async function importCanonicalSnapshot(paths: LibraryPaths, snapshotFile 
     journal = await readJson<Journal>(journalFile);
     if (journal.contentVersion !== master.contentVersion) throw new Error("Migration journal mismatch.");
   } else {
+    // A successor may replace only the exact previously imported release. The
+    // original export revision remains provenance, never a bypass for later edits.
+    let previous: Master | null = null;
+    if (existingReceipt?.complete) {
+      if (!await pathExists(previousSnapshotFile)) throw new Error("Previous Services snapshot required for successor import.");
+      previous = await readJson<Master>(previousSnapshotFile);
+      if (previous.contentVersion !== existingReceipt.contentVersion || previous.sourceExport.sha256 !== master.sourceExport.sha256) throw new Error("Previous Services receipt does not match the supplied predecessor.");
+      if (!isDeepStrictEqual(previous.rules.map(r => r.id).sort(), master.rules.map(r => r.id).sort())) throw new Error("Successor inventory differs from the previous release.");
+    } else if (existingReceipt) {
+      throw new Error("An incomplete prior Services import requires reconciliation.");
+    }
     const folders = await findQuestionFolders(paths.outputDir);
     const ids = master.rules.map(r => assertSafeFolderName(r.id));
     if (new Set(ids).size !== ids.length || !isDeepStrictEqual([...ids].sort(), folders.map(f => path.basename(f)).sort())) throw new Error("Server inventory changed since export; reconciliation required.");
-    journal = { contentVersion: master.contentVersion, sourceExportSha256: master.sourceExport.sha256, complete: false, writes: [] };
+    journal = { contentVersion: master.contentVersion, sourceExportSha256: master.sourceExport.sha256, complete: false, writes: [], previousReceipt: existingReceipt };
     for (const rule of master.rules) {
       const folder = path.join(paths.outputDir, rule.id);
       const selection = await resolveSourceSelection(folder);
-      if (await computeSourceRevision(selection) !== rule.provenance.serverSourceRevision) throw new Error(`Server question changed since export: ${rule.id}`);
+      if (previous) {
+        const prior = previous.rules.find(r => r.id === rule.id)!;
+        for (const q of prior.metadata.questions as AudienceQuestion[]) {
+          const current = q.audience === "standard" ? selection.standardQuestion : selection.juniorQuestion;
+          if (!isDeepStrictEqual(current, q)) throw new Error(`Server question changed since previous import: ${rule.id} (${q.audience})`);
+        }
+        for (const key of ["ruleNumber", "ruleName", "imageAlt", "editorialReview"]) {
+          if (!isDeepStrictEqual(selection.metadata[key], prior.metadata[key])) throw new Error(`Server metadata changed since previous import: ${rule.id} (${key})`);
+        }
+      } else if (await computeSourceRevision(selection) !== rule.provenance.serverSourceRevision) throw new Error(`Server question changed since export: ${rule.id}`);
       const questions: AudienceQuestion[] = rule.metadata.questions;
       if (questions.length !== 2 || new Set(questions.map(q => q.audience)).size !== 2) throw new Error(`Both age versions required: ${rule.id}`);
       questions.forEach(q => validate(q, rule.id));
