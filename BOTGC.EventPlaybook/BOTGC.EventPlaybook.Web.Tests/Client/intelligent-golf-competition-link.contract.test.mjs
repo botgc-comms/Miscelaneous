@@ -65,7 +65,7 @@ test('competition identity is persisted independently of the planner event ident
 });
 
 test('the task is completed only after the server verifies and persists the selected competition', () => {
-  const saveFunction = clientSource.match(/async function saveIntelligentGolfCompetitionLink[\s\S]*?\n  }\n/)?.[0] ?? '';
+  const saveFunction = clientSource.match(/async function saveIntelligentGolfCompetitionLink[\s\S]*?\r?\n  }\r?\n/)?.[0] ?? '';
   assert.match(saveFunction, /if \(!response\.ok\)/);
   assert.match(saveFunction, /taskState\.completed = true/);
   assert.ok(

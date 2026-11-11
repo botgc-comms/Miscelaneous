@@ -77,7 +77,7 @@ test('ideas are collapsed by default and retain their campaign artwork', () => {
   assert.match(playbookSource, /let catalogueIdeasExpanded = false/);
   assert.match(catalogue, /data-toggle-catalogue-ideas/);
   assert.match(catalogue, /View ideas/);
-  assert.match(ideaCard, /publishedCataloguePosterThumbnail \|\| event\.cataloguePosterThumbnail/);
+  assert.match(ideaCard, /selectCatalogueArtwork\(event\)/);
   assert.match(ideaCard, /class="catalogue-poster"/);
   assert.doesNotMatch(ideaCard, /Possible future event/);
 });

@@ -29,6 +29,18 @@ test('the relink action is only rendered from Intelligent Golf linked-event stat
     assert.match(renderContext, /Change linked planner event/);
 });
 
+test('the initial planner-match dialog preserves a selected alternative across background renders', () => {
+    const renderDialog = functionSource('renderIntelligentGolfPlannerMatchDialog');
+    const bindEvents = functionSource('bindEvents');
+    const resolveMatch = functionSource('resolveIntelligentGolfPlannerMatch');
+
+    assert.match(source, /const intelligentGolfPlannerMatchSelections = new Map\(\)/);
+    assert.match(renderDialog, /intelligentGolfPlannerMatchSelections\.get\(event\.id\)/);
+    assert.match(renderDialog, /availableCandidates\.some\(candidate => candidate\.intelligentGolfEventId === rememberedId\)/);
+    assert.match(bindEvents, /intelligentGolfPlannerMatchSelections\.set\(eventId, Number\(input\.value\) \|\| 0\)/);
+    assert.match(resolveMatch, /intelligentGolfPlannerMatchSelections\.delete\(eventId\)/);
+});
+
 test('opening the relink dialog obtains fresh candidates with the read-only endpoint', () => {
     const openDialog = functionSource('openIntelligentGolfPlannerLinkDialog');
 

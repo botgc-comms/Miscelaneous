@@ -46,6 +46,34 @@ test('catalogue recovery upgrades browser-only inline thumbnails as well as miss
   assert.equal(needsRecovery({ cataloguePosterThumbnail: '/api/poster/artwork?key=event-1&outputId=social&version=1' }), false);
 });
 
+test('a failed published image immediately falls back and forces repair from the latest session', () => {
+  const selectArtwork = Function(
+    `'use strict';\nconst failedCatalogueArtworkSources = new Map([['event-1', new Set(['/api/poster/artwork?key=event-1&outputId=social&version=old'])]]);\n${functionSource('selectCatalogueArtwork')}\nreturn selectCatalogueArtwork;`
+  )();
+  const selected = selectArtwork({
+    id: 'event-1',
+    publishedCataloguePosterThumbnail: '/api/poster/artwork?key=event-1&outputId=social&version=old',
+    cataloguePosterThumbnail: 'data:image/jpeg;base64,known-good-browser-copy',
+    cataloguePosterSourceOutputId: 'social'
+  });
+  assert.equal(selected.source, 'data:image/jpeg;base64,known-good-browser-copy');
+
+  const errorHandler = functionSource('handleCatalogueArtworkLoadError');
+  assert.match(errorHandler, /failedCatalogueArtworkSources\.get\(eventId\)\.add\(source\)/);
+  assert.match(errorHandler, /recoverMissingCatalogueArtwork\(eventId, \{ force: true \}\)/);
+  assert.match(source, /data-catalogue-artwork-event-id=/);
+});
+
+test('recovery rejects broken stored references before persisting a replacement', () => {
+  const recovery = functionSource('recoverMissingCatalogueArtwork');
+  const probe = functionSource('catalogueArtworkSourceLoads');
+
+  assert.match(probe, /image\.naturalWidth > 0 && image\.naturalHeight > 0/);
+  assert.match(recovery, /await catalogueArtworkSourceLoads\(candidate\.source\)/);
+  assert.match(recovery, /excludedSources\.add\(candidate\.source\)/);
+  assert.match(recovery, /failedCatalogueArtworkSources\.delete\(eventId\)/);
+});
+
 test('newly completed artwork gives the catalogue a durable server reference', async () => {
   const posterSource = await readFile(
     new URL('../../BOTGC.EventPlaybook.Web/wwwroot/poster-app.js', import.meta.url),
